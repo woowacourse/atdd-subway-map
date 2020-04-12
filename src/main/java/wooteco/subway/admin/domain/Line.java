@@ -13,6 +13,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -52,6 +53,10 @@ public class Line {
         return intervalTime;
     }
 
+    public Set<LineStation> getStations() {
+        return stations;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -77,13 +82,16 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation() {
+    public void addLineStation(LineStation lineStation) {
+        // TODO: 구현
     }
 
     public void removeLineStationById(Long stationId) {
+        // TODO: 구현
     }
 
     public List<Long> getLineStationsId() {
+        // TODO: 구현
         return new ArrayList<>();
     }
 }
