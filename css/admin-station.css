@@ -1,0 +1,3 @@
+.station-list-container {
+  max-height: calc(100% - 100px);
+}
