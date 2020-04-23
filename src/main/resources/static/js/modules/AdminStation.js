@@ -1,25 +1,28 @@
-import { EVENT_TYPE, ERROR_MESSAGE } from "../../utils/constants.js";
+import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
+import stationApiService from '../../api/modules/station.js'
 
 function AdminStation() {
-  const $stationAddButton = document.querySelector("#station-add-btn");
+  const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
 
   const onAddStationHandler = event => {
+    if (event.key !== KEY_TYPE.ENTER) {
+      return;
+    }
     event.preventDefault();
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
     if (!stationName) {
-      Snackbar.show({
-        text: ERROR_MESSAGE.NOT_EMPTY,
-        pos: "bottom-center",
-        showAction: false,
-        duration: 2000
-      });
+      alert(ERROR_MESSAGE.NOT_EMPTY);
       return;
     }
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    stationApiService.create({ name: stationName }).then((data) => {
+      $stationNameInput.value = "";
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    }).catch(() => {
+      alert("생성에 실패하였습니다.")
+    })
   };
 
   const onRemoveStationHandler = event => {
@@ -31,12 +34,16 @@ function AdminStation() {
   };
 
   const initEventListeners = () => {
-    $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
+    $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
     $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
   };
 
-  this.init = () => {
+  const init = () => {
     initEventListeners();
+  };
+
+  return {
+    init
   };
 }
 
