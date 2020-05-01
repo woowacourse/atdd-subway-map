@@ -15,7 +15,7 @@ function AdminLine() {
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
-  const createSubwayLineModal = new Modal();
+  const subwayLineModal = new Modal();
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
@@ -27,7 +27,7 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
-    createSubwayLineModal.toggleModal();
+    subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
   };
@@ -38,6 +38,19 @@ function AdminLine() {
     if (isDeleteButton) {
       $target.closest(".subway-line-item").remove();
     }
+  };
+
+  const onUpdateSubwayLine = event => {
+    const $target = event.target;
+    const isUpdateButton = $target.classList.contains("mdi-pencil");
+    if (isUpdateButton) {
+      subwayLineModal.toggle();
+    }
+  };
+
+  const onEditSubwayLine = event => {
+    const $target = event.target;
+    const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
   const initDefaultSubwayLines = () => {
@@ -51,6 +64,7 @@ function AdminLine() {
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
