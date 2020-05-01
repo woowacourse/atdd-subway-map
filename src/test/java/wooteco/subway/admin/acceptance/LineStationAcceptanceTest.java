@@ -7,8 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -32,7 +34,7 @@ public class LineStationAcceptanceTest {
      *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
      *     Then 지하철역 목록을 응답 받는다.
      *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *     
+     *
      *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
      *     Then 지하철역이 노선에서 제거 되었다.
      *
