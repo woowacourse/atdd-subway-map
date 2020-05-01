@@ -42,7 +42,7 @@ public class LineStationAcceptanceTest {
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
-    void removeLineStation() {
+    void manageLineStation() {
 
     }
 }
