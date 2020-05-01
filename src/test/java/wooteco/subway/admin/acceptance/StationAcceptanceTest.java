@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -34,16 +36,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 관리한다")
     @Test
     void manageStation() {
+        // when
         createStation("잠실역");
         createStation("종합운동장역");
         createStation("선릉역");
         createStation("강남역");
-
+        // then
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
 
+        // when
         deleteStation(stations.get(0).getId());
-
+        // then
         List<StationResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }

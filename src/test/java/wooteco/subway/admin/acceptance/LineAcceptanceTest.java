@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.LineDetailResponse;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -20,6 +22,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -47,7 +50,7 @@ public class LineAcceptanceTest {
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        LineDetailResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -60,7 +63,7 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        LineDetailResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
@@ -71,12 +74,12 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
+    private LineDetailResponse getLine(Long id) {
         return given().when().
                         get("/lines/" + id).
                 then().
                         log().all().
-                        extract().as(LineResponse.class);
+                        extract().as(LineDetailResponse.class);
     }
 
     private void createLine(String name) {

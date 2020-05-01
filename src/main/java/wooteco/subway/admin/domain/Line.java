@@ -13,9 +13,10 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Set<LineStation> stations = new LinkedHashSet<>();
 
     public Line() {
     }
@@ -83,15 +84,54 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation targetLineStation = stations.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
+
+        stations.remove(targetLineStation);
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        if (stations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LineStation firstLineStation = stations.stream()
+                .filter(it -> it.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        List<Long> stationIds = new ArrayList<>();
+        stationIds.add(firstLineStation.getStationId());
+
+        while (true) {
+            Long lastStationId = stationIds.get(stationIds.size() - 1);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(it -> Objects.equals(it.getPreStationId(), lastStationId))
+                    .findFirst();
+
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+
+            stationIds.add(nextLineStation.get().getStationId());
+        }
+
+        return stationIds;
     }
 }
