@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 public class LineController {
@@ -22,7 +24,7 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<?> create(
             @RequestBody LineRequest request
-            ) throws URISyntaxException {
+    ) throws URISyntaxException {
         String name = request.getName();
         LocalTime startTime = request.getStartTime();
         LocalTime endTime = request.getEndTime();
@@ -35,4 +37,8 @@ public class LineController {
         return ResponseEntity.created(url).body("{}");
     }
 
+    @GetMapping("/lines")
+    public List<Line> lines() {
+        return lineRepository.findAll();
+    }
 }
