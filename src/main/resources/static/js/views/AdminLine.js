@@ -1,4 +1,5 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
+import api from "../../api/index.js";
 import {
   subwayLinesTemplate,
   colorSelectOptionTemplate
@@ -54,11 +55,14 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
+    api.lines.get().then(data => {
+      data.map(line => {
+          $subwayLineList.insertAdjacentHTML(
+              "beforeend",
+              subwayLinesTemplate(line)
+          );
+        }
+      )
     });
   };
 

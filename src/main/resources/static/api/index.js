@@ -1,4 +1,4 @@
-const BASE_URL = "localhost:8080";
+const BASE_URL = "http://localhost:8080";
 
 const METHOD = {
   PUT() {
@@ -44,7 +44,7 @@ const api = (() => {
 
   const lines = {
     get() {
-      request(`${BASE_URL}/lines`);
+      return request(`${BASE_URL}/lines`);
     },
     create(data) {
       request(`${BASE_URL}/lines`, METHOD.POST(data));
