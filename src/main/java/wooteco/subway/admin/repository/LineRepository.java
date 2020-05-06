@@ -8,4 +8,7 @@ import java.util.List;
 public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
+
+    @Override
+    Line save(Line line);
 }
