@@ -1,11 +1,11 @@
 package wooteco.subway.admin.domain;
 
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import org.springframework.data.annotation.Id;
 
 public class Line {
     @Id
@@ -94,5 +94,19 @@ public class Line {
     public List<Long> getLineStationsId() {
         // TODO: 구현
         return new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", intervalTime=" + intervalTime +
+            ", stations=" + stations +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
     }
 }

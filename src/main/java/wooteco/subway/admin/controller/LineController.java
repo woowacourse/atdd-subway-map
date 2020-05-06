@@ -20,50 +20,47 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/api/lines")
 public class LineController {
-	private final LineService lineService;
 
-	public LineController(LineService lineService) {
-		this.lineService = lineService;
-	}
+    private final LineService lineService;
 
-	@GetMapping("")
-	public ResponseEntity<List<LineResponse>> getLines() {
-		List<Line> lines = lineService.showLines();
-		List<LineResponse> lineResponses = LineResponse.listOf(lines);
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
-		return new ResponseEntity<>(lineResponses, HttpStatus.OK);
-	}
+    @GetMapping("")
+    public ResponseEntity<List<LineResponse>> getLines() {
+        List<Line> lines = lineService.showLines();
+        List<LineResponse> lineResponses = LineResponse.listOf(lines);
+        return new ResponseEntity<>(lineResponses, HttpStatus.OK);
+    }
 
-	@PostMapping("")
-	public ResponseEntity<Void> createLine(@RequestBody LineRequest request) {
-		lineService.save(request.toLine());
+    @PostMapping("")
+    public ResponseEntity<Void> createLine(@RequestBody LineRequest request) {
+        lineService.save(request.toLine());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
-		return ResponseEntity
-			.status(HttpStatus.CREATED)
-			.build();
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
+        LineResponse lineResponse = lineService.findLineWithStationsById(id);
+        return new ResponseEntity<>(lineResponse, HttpStatus.OK);
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-		LineResponse lineResponse = lineService.findLineWithStationsById(id);
-		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLines(@PathVariable Long id,
+        @RequestBody LineRequest request) {
+        lineService.updateLine(id, request.toLine());
+        return ResponseEntity.ok().build();
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateLines(@PathVariable Long id,
-		@RequestBody LineRequest request) {
-		lineService.updateLine(id, request.toLine());
-		return ResponseEntity.ok().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.ok().build();
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		lineService.deleteLineById(id);
-		return ResponseEntity.ok().build();
-	}
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity handler(Exception e){
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handler(Exception e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
