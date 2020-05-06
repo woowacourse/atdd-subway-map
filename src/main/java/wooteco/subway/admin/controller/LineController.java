@@ -1,9 +1,12 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +37,12 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity getLines() {
-        return ResponseEntity.ok().body(lineRepository.findAll());
+        return ResponseEntity.ok().body(LineResponse.listOf(lineRepository.findAll()));
     }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity getLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(LineResponse.of(lineRepository.findById(id).get()));
+    }
+
 }

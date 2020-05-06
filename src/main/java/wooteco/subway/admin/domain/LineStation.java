@@ -2,7 +2,6 @@ package wooteco.subway.admin.domain;
 
 public class LineStation {
     // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Line line;
     private Long stationId;
     private Long preStationId;
     private int distance;
