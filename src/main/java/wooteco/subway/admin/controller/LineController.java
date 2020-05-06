@@ -26,18 +26,22 @@ public class LineController {
     @Autowired
     private LineService lineService;
 
-    // TODO: 2020/05/06 create URI 구현
+    @GetMapping("/admin-line")
+    public String adminLine() {
+        return "admin-line";
+    }
+
     @PostMapping("/lines")
     @ResponseBody
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+        System.out.println(lineRequest);
         Line line = new Line(
             lineRequest.getName(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
             lineRequest.getIntervalTime()
         );
-
-        return ResponseEntity.created(URI.create("")).body(lineService.save(line));
+        return ResponseEntity.created(URI.create("/index")).body(lineService.save(line));
     }
 
     @GetMapping("/lines")
