@@ -1,12 +1,14 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
+    const $subwayFirstTimeInput = document.querySelector("#first-time");
+    const $subwayLastTimeInput = document.querySelector("#last-time");
+    const $subwayIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
     const $createSubwayLineButton = document.querySelector(
@@ -16,17 +18,37 @@ function AdminLine() {
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
-        const newSubwayLine = {
-            title: $subwayLineNameInput.value,
+        const req = {
+            name: $subwayLineNameInput.value,
+            startTime: $subwayFirstTimeInput.value,
+            endTime: $subwayLastTimeInput.value,
+            intervalTime: $subwayIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
+        fetch("/lines", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(req)
+        }).then(res => {
+            if (res.ok) {
+                const newSubwayLine = {
+                    name: $subwayLineNameInput.value,
+                    bgColor: $subwayLineColorInput.value
+                };
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(newSubwayLine)
+                );
+                subwayLineModal.toggle();
+                $subwayLineNameInput.value = "";
+                $subwayFirstTimeInput.value = "";
+                $subwayLastTimeInput.value = "";
+                $subwayIntervalTimeInput.value = "";
+                $subwayLineColorInput.value = "";
+            }
+        })
     };
 
     const onDeleteSubwayLine = event => {
@@ -51,12 +73,15 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-        defaultSubwayLines.map(line => {
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(line)
+        fetch("/lines")
+            .then(response => response.json())
+            .then(lines => lines.map(line => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(line)
+                    );
+                })
             );
-        });
     };
 
     const initEventListeners = () => {
