@@ -12,6 +12,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -37,6 +38,11 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public Line findById(final Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(RuntimeException::new);
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
