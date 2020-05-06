@@ -45,6 +45,11 @@ public class LineService {
             .orElseThrow(RuntimeException::new);
     }
 
+    public boolean contains(String lineName) {
+        return showLines().stream()
+            .anyMatch(line -> line.getName().equals(lineName));
+    }
+
     public void addLineStation(Long id, LineStationCreateRequest request) {
         // TODO: 구현
     }

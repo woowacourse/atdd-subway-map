@@ -1,5 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -131,5 +131,28 @@ public class LineAcceptanceTest {
                 delete("/lines/" + id).
                 then().
                 log().all();
+    }
+
+    @DisplayName("지하철 노선 이름은 중복되는 경우 500 에러를 보내도록 함")
+    @Test
+    void duplicateName() {
+        createLine("종각역");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "종각역");
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            post("/lines").
+        then().
+            log().all().
+            statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 }

@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,11 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Line persistLine = lineService.save(lineRequest.toLine());;
+        if(lineService.contains(lineRequest.getName())) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
             .body(LineResponse.of(persistLine));
