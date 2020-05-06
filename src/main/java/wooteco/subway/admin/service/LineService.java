@@ -12,6 +12,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
