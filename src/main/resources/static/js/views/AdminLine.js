@@ -11,6 +11,9 @@ import Modal from "../../ui/Modal.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
   const $createSubwayLineButton = document.querySelector(
@@ -21,15 +24,23 @@ function AdminLine() {
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
       bgColor: $subwayLineColorInput.value
     };
+    api.lines.create(newSubwayLine);
+    console.log(newSubwayLine)
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
+    $subwayLineFirstTimeInput.value = "";
+    $subwayLineLastTimeInput.value = "";
+    $subwayLineIntervalTimeInput.value = "";
     $subwayLineColorInput.value = "";
   };
 
