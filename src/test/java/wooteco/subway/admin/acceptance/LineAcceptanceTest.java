@@ -54,21 +54,21 @@ public class LineAcceptanceTest {
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
-//
-//        // when
-//        LocalTime startTime = LocalTime.of(8, 00);
-//        LocalTime endTime = LocalTime.of(22, 00);
-//        updateLine(line.getId(), startTime, endTime);
-//        //then
-//        LineResponse updatedLine = getLine(line.getId());
-//        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
-//        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
-//
-//        // when
-//        deleteLine(line.getId());
-//        // then
-//        List<LineResponse> linesAfterDelete = getLines();
-//        assertThat(linesAfterDelete.size()).isEqualTo(3);
+
+        // when
+        LocalTime startTime = LocalTime.of(8, 00);
+        LocalTime endTime = LocalTime.of(22, 00);
+        updateLine(line.getId(), startTime, endTime);
+        //then
+        LineResponse updatedLine = getLine(line.getId());
+        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
+        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
+
+        // when
+        deleteLine(line.getId());
+        // then
+        List<LineResponse> linesAfterDelete = getLines();
+        assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
     private LineResponse getLine(Long id) {
@@ -106,9 +106,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
+        when().
                 put("/lines/" + id).
-                then().
+        then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
@@ -116,9 +116,9 @@ public class LineAcceptanceTest {
     private List<LineResponse> getLines() {
         return
                 given().
-                        when().
+                when().
                         get("/lines").
-                        then().
+                then().
                         log().all().
                         extract().
                         jsonPath().getList(".", LineResponse.class);
@@ -126,9 +126,9 @@ public class LineAcceptanceTest {
 
     private void deleteLine(Long id) {
         given().
-                when().
+        when().
                 delete("/lines/" + id).
-                then().
+        then().
                 log().all();
     }
 }

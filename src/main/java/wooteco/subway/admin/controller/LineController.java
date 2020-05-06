@@ -65,4 +65,12 @@ public class LineController {
         Line updated = lineRepository.save(line);
         return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("id") Long id
+    ) {
+        lineRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
