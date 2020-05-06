@@ -47,7 +47,8 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+        return LineResponse.of(line);
     }
 }
