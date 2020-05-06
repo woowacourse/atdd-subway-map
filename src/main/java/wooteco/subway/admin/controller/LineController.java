@@ -28,6 +28,12 @@ public class LineController {
 	@PostMapping("/lines")
 	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
 		Line line = lineRequest.toLine();
+		if (lineRepository.findByName(line.getName())) {
+			return ResponseEntity
+				.badRequest()
+				.build();
+		}
+
 		Line persistLine = lineRepository.save(line);
 
 		return ResponseEntity
