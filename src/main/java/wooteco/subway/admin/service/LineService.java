@@ -28,6 +28,11 @@ public class LineService {
         return lineRepository.findAll();
     }
 
+    public Line showLine(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+    }
+
     public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
