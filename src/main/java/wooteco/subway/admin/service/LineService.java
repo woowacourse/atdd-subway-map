@@ -8,6 +8,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class LineService {
@@ -23,8 +24,14 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public LineResponse showLine(Long id) {
+        return lineRepository.findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public List<LineResponse> showLines() {
+        return LineResponse.listOf(lineRepository.findAll());
     }
 
     public void updateLine(Long id, Line line) {
