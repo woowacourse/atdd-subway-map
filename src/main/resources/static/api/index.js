@@ -34,7 +34,7 @@ const api = (() => {
     create(data) {
       request(`${BASE_URL}/station`, METHOD.POST(data));
     },
-    update(data) {
+    update(id, data) {
       request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
@@ -42,7 +42,26 @@ const api = (() => {
     }
   };
 
+  const lines = {
+    get() {
+      request(`${BASE_URL}/lines`);
+    },
+    create(data) {
+      request(`${BASE_URL}/lines`, METHOD.POST(data));
+    },
+    find(id) {
+      request(`${BASE_URL}/lines/${id}`);
+    },
+    update(id, data) {
+      request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      request(`${BASE_URL}/lines/${id}`, METHOD.DELETE);
+    }
+  };
+
   return {
+    lines,
     station
   };
 })();
