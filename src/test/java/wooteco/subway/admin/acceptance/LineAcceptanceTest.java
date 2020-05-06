@@ -130,6 +130,7 @@ public class LineAcceptanceTest {
 			when().
 			delete("/lines/" + id).
 			then().
-			log().all();
+			log().all()
+			.statusCode(HttpStatus.NO_CONTENT.value());
 	}
 }
