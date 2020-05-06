@@ -35,7 +35,7 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineBy(Long id) {
         lineRepository.deleteById(id);
     }
 
