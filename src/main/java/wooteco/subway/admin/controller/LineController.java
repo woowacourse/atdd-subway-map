@@ -43,6 +43,12 @@ public class LineController {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 아이디를 입력하였습니다."));
         line.update(lineRequest.toLine());
-        return ResponseEntity.ok().body(lineRepository.save(line));
+        return ResponseEntity.ok().build();
     }
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity deleteLine(@PathVariable Long id) {
+		lineRepository.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 }
