@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,5 +50,18 @@ public class LineController {
 
         return ResponseEntity
                 .ok(LineResponse.of(line));
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        persistLine.update(line);
+        lineRepository.save(persistLine);
+
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }
