@@ -24,7 +24,8 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+                        LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
