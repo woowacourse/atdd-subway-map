@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,9 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
+
+        return LineResponse.of(line);
     }
 }

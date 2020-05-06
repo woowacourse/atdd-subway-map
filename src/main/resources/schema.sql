@@ -14,7 +14,7 @@ create table if not exists LINE_STATION
     distance int,
     duration int,
     created_at datetime,
-    updated_at datetime,
+    updated_at datetime
 );
 
 create table if not exists LINE
