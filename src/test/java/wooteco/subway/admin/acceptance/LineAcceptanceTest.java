@@ -64,11 +64,11 @@ public class LineAcceptanceTest {
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-//        // when : 제거
-//        deleteLine(line.getId());
-//        // then
-//        List<LineResponse> linesAfterDelete = getLines();
-//        assertThat(linesAfterDelete.size()).isEqualTo(3);
+        // when : 제거
+        deleteLine(line.getId());
+        // then
+        List<LineResponse> linesAfterDelete = getLines();
+        assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
     private LineResponse getLine(Long id) {
