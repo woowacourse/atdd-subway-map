@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Set;
 
 public class Line {
     @Id
@@ -90,8 +90,8 @@ public class Line {
         // TODO: 구현
     }
 
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
-    }
+//    public List<Long> getLineStationsId() {
+//        // TODO: 구현
+//        return new ArrayList<>();
+//    }
 }
