@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;

@@ -1,5 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -42,6 +42,7 @@ public class LineAcceptanceTest {
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
+
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);

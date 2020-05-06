@@ -25,6 +25,13 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        boolean sameName = showLines().stream()
+            .anyMatch(element -> element.getName().equals(line.getName()));
+
+        if (sameName) {
+            throw new IllegalArgumentException("중복되는 역 이름입니다.");
+        }
+
         return lineRepository.save(line);
     }
 
