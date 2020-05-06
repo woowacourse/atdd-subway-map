@@ -1,7 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.NoSuchElementException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,20 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
 public class LineController {
-	private LineRepository lineRepository;
+	private LineService service;
 
-	public LineController(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
+	public LineController(LineService service) {
+		this.service = service;
 	}
 
 	@PostMapping("/lines")
 	public ResponseEntity createLine(@RequestBody LineRequest view) {
-		Line line = view.toLine();
-		Line persistLine = lineRepository.save(line);
+		Line persistLine = service.save(view.toLine());
 
 		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
 			.body(LineResponse.of(persistLine));
@@ -36,30 +34,25 @@ public class LineController {
 
 	@GetMapping("/lines")
 	public ResponseEntity showLines() {
-		return ResponseEntity.ok().body(LineResponse.listOf(lineRepository.findAll()));
+		return ResponseEntity.ok().body(LineResponse.listOf(service.showLines()));
 	}
 
 	@GetMapping("/lines/{id}")
 	public ResponseEntity showLine(@PathVariable Long id) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new NoSuchElementException("해당하는 id 의 노선이 존재하지 않습니다."));
-
-		return ResponseEntity.ok().body(LineResponse.of(line));
+		return ResponseEntity.ok().body(LineResponse.of(service.showLine(id)));
 	}
 
 	@PutMapping("/lines/{id}")
 	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new NoSuchElementException("해당하는 id 의 노선이 존재하지 않습니다."));
-		line.update(view.toLine());
-		lineRepository.save(line);
+		Line line = view.toLine();
+		service.updateLine(id, line);
 
 		return ResponseEntity.ok().body(LineResponse.of(line));
 	}
 
 	@DeleteMapping("/lines/{id}")
 	public ResponseEntity deleteLine(@PathVariable Long id) {
-		lineRepository.deleteById(id);
+		service.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
 }
