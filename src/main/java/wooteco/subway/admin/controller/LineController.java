@@ -11,7 +11,6 @@ import java.net.URI;
 
 @RestController
 public class LineController {
-
     private LineService lineService;
 
     public LineController(LineService lineService) {
@@ -20,7 +19,6 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-//        return new ResponseEntity();
         Line line = lineRequest.toLine();
         Line persistLine = lineService.save(line);
 
