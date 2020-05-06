@@ -16,21 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.LineService;
 
 @RequestMapping("/lines")
 @RestController
 public class LineController {
-    private LineRepository lineRepository;
+    private final LineService lineService;
 
-    public LineController(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
-        Line persistLine = lineRepository.save(line);
+        Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
@@ -39,7 +38,7 @@ public class LineController {
 
     @GetMapping
     ResponseEntity<List<LineResponse>> getLines() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineService.showLines();
 
         return ResponseEntity
                 .ok(LineResponse.listOf(lines));
@@ -47,19 +46,15 @@ public class LineController {
 
     @GetMapping("/{id}")
     ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        LineResponse lineResponse = lineService.findLineWithStationsById(id);
 
         return ResponseEntity
-                .ok(LineResponse.of(line));
+                .ok(lineResponse);
     }
 
     @PutMapping("/{id}")
     ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
-        persistLine.update(line);
-        lineRepository.save(persistLine);
+        lineService.updateLine(id, lineRequest.toLine());
 
         return ResponseEntity
                 .ok()
@@ -68,7 +63,7 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
-        lineRepository.deleteById(id);
+        lineService.deleteLineById(id);
 
         return ResponseEntity
                 .ok()
