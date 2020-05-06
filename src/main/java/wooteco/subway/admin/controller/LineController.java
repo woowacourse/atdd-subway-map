@@ -48,4 +48,21 @@ public class LineController {
         return LineResponse.of(lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new));
     }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable("id") Long id, @RequestBody LineRequest request
+    ) {
+        String name = request.getName();
+        LocalTime startTime = request.getStartTime();
+        LocalTime endTime = request.getEndTime();
+        int intervalTime = request.getIntervalTime();
+
+        Line line = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+        line.update(new Line(name, startTime, endTime, intervalTime));
+
+        Line updated = lineRepository.save(line);
+        return ResponseEntity.ok(updated);
+    }
 }
