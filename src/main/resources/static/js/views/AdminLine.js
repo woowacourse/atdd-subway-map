@@ -56,12 +56,12 @@ function AdminLine() {
   const initDefaultSubwayLines = async () => {
     let subwayLines = await fetch(`http://localhost:8080/lines`, {method: "GET"})
         .then(res => res.json());
-    // defaultSubwayLines.map(line => {
-    //   $subwayLineList.insertAdjacentHTML(
-    //     "beforeend",
-    //     subwayLinesTemplate(line)
-    //   );
-    // });
+    subwayLines.map(line => {
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(line)
+      );
+    });
   };
 
   const initEventListeners = () => {
