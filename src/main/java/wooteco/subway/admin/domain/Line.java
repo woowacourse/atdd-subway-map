@@ -4,7 +4,10 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Line {
     @Id
@@ -13,7 +16,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -66,6 +69,7 @@ public class Line {
     }
 
     public void update(Line line) {
+        // TODO: 검증 로직에 대해서 생각해봐야됨
         if (line.getName() != null) {
             this.name = line.getName();
         }
@@ -83,7 +87,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {

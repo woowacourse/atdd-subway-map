@@ -2,7 +2,6 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -10,8 +9,8 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
-import java.util.Set;
 
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -23,6 +22,10 @@ public class LineService {
 
     public Line save(Line line) {
         return lineRepository.save(line);
+    }
+
+    public Station save(Station station) {
+        return stationRepository.save(station);
     }
 
     public List<Line> showLines() {
@@ -37,6 +40,19 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void deleteStationById(Long id) {
+        stationRepository.deleteById(id);
+    }
+
+    public List<Station> showStations() {
+        return stationRepository.findAll();
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {

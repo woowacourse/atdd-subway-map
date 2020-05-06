@@ -115,21 +115,20 @@ public class LineAcceptanceTest {
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
+        return given().
                 when().
-                        get("/lines").
+                    get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+                    log().all().
+                    extract().
+                    jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {
         given().
                 when().
-                delete("/lines/" + id).
+                    delete("/lines/" + id).
                 then().
-                log().all();
+                    log().all();
     }
 }
