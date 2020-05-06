@@ -5,23 +5,24 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private LineRepository lineRepository;
+    private LineService lineService;
 
-    public LineController(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity createLines(@RequestBody LineRequest view) {
         Line line = view.toLine();
-        Line persistLine = lineRepository.save(line);
+        Line persistLine = lineService.save(line);
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
@@ -30,25 +31,25 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity showLines() {
-        return ResponseEntity.ok().body(lineRepository.findAll());
+        List<Line> lines = lineService.showLines();
+        return ResponseEntity.ok().body(lines);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body((lineRepository.findById(id)));
+        LineResponse lineResponse = lineService.findLineWithStationsById(id);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 아이디를 입력하였습니다."));
-        line.update(lineRequest.toLine());
+        lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity deleteLine(@PathVariable Long id) {
-		lineRepository.deleteById(id);
+		lineService.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
 }
