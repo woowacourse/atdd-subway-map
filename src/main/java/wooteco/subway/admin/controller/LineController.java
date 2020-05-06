@@ -35,4 +35,13 @@ public class LineController {
         return ResponseEntity.ok()
                 .body(LineResponse.of(line));
     }
+
+    @PutMapping("/lines/{id}")
+    public void updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
+        line.update(view.toLine());
+        lineRepository.save(line);
+    }
+
 }
