@@ -52,4 +52,13 @@ public class LineController {
 					.body(e.getMessage());
 		}
 	}
+
+	@PutMapping("/lines/{id}")
+	public ResponseEntity updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
+		lineService.updateLine(id, view.toLine());
+
+		return ResponseEntity
+				.ok()
+				.build();
+	}
 }
