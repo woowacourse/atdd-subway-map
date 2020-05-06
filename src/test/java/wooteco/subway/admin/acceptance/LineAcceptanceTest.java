@@ -114,6 +114,11 @@ public class LineAcceptanceTest {
 			statusCode(HttpStatus.OK.value());
 	}
 
+	@Test
+	void test33() {
+		getLines();
+	}
+
 	private List<LineResponse> getLines() {
 		return
 			given().

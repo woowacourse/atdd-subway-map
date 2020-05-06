@@ -20,12 +20,12 @@ public class LineService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Line save(Line line) {
-		return lineRepository.save(line);
+	public LineResponse save(Line line) {
+		return LineResponse.of(lineRepository.save(line));
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public List<LineResponse> showLines() {
+		return LineResponse.listOf(lineRepository.findAll());
 	}
 
 	public void updateLine(Long id, Line line) {
