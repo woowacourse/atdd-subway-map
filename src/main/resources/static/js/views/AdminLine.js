@@ -5,6 +5,7 @@ import {
 } from "../../utils/templates.js";
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
+import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
@@ -54,6 +55,8 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
+    api.station
+
     defaultSubwayLines.map(line => {
       $subwayLineList.insertAdjacentHTML(
           "beforeend",
