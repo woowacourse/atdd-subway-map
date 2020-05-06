@@ -34,4 +34,4 @@ Feature: 지하철 노선 관리
 -[x] update : 지하철 노선 및 시간을 변경할 수 있다.
 -[x] delete : 등록된 노선을 삭제할 수 있다.
 
--[ ] refactor
+-[x] refactor

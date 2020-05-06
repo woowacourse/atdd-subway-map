@@ -38,10 +38,7 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        createLines("신분당선", "1호선", "2호선", "3호선");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -71,12 +68,10 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
+    private void createLines(String... lines) {
+        for (String line : lines) {
+            createLine(line);
+        }
     }
 
     private void createLine(String name) {
@@ -91,12 +86,20 @@ public class LineAcceptanceTest {
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+            when().
             post("/lines").
-        then().
+            then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
         // @formatter:on
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {

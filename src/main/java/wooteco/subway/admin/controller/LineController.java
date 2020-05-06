@@ -30,20 +30,24 @@ public class LineController {
     @PostMapping
     public ResponseEntity create(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.save(Line.of(lineRequest));
+        final LineResponse line = LineResponse.of(savedLine);
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(savedLine);
+            .body(line);
     }
 
     @GetMapping
     public ResponseEntity readAll() {
         final List<LineResponse> lines = LineResponse.listOf(lineService.showLines());
+
         return ResponseEntity.ok(lines);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity readById(@PathVariable Long id) {
         final LineResponse line = LineResponse.of(lineService.showLine(id));
+
         return ResponseEntity.ok(line);
     }
 
@@ -52,14 +56,15 @@ public class LineController {
         final Line line = lineService.showLine(id);
         line.update(lineRequest.toLine());
         lineService.updateLine(id, line);
+        final LineResponse updatedLine = LineResponse.of(line);
 
-        return ResponseEntity.ok(line);
+        return ResponseEntity.ok(updatedLine);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@PathVariable Long id) {
         lineService.deleteLineById(id);
-        
+
         return ResponseEntity.ok().build();
     }
 }
