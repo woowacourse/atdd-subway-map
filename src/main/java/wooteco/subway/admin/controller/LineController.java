@@ -55,4 +55,10 @@ public class LineController {
         return ResponseEntity.ok()
                 .body(LineResponse.listOf(lines));
     }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+        lineRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
