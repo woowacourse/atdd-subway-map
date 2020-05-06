@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -72,6 +73,33 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
+    @Test
+    @DisplayName("중복된 노선명이 추가될 경우 에러 발생 확인")
+    public void duplicateLineName() {
+        // when
+        createLine("신분당선");
+        createLine("1호선");
+        // then
+        given().
+                body(makeParam("1호선")).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/lines").
+        then().
+                log().all().
+                statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private Map<String, String> makeParam(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+        return params;
+    }
+
     private LineResponse getLine(Long id) {
         return given().when().
                         get("/lines/" + id).
@@ -81,11 +109,7 @@ public class LineAcceptanceTest {
     }
 
     private void createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+        Map<String, String> params = makeParam(name);
 
         given().
                 body(params).

@@ -24,6 +24,9 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if(isDuplicateName(line)) {
+            throw new IllegalArgumentException("중복된 이름입니다!");
+        }
         return lineRepository.save(line);
     }
 
@@ -39,6 +42,11 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private boolean isDuplicateName(Line line) {
+        return lineRepository.findAllName().stream()
+                .anyMatch(lineName -> lineName.equals(line.getName()));
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
