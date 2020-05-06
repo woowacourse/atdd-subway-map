@@ -12,6 +12,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -48,7 +49,7 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 id입니다"));
+        return LineResponse.of(line);
     }
 }
