@@ -1,7 +1,6 @@
 package wooteco.subway.admin.domain;
 
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -17,12 +16,12 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
-
     public Long getStationId() {
         return stationId;
+    }
+
+    public Long getPreStationId() {
+        return preStationId;
     }
 
     public int getDistance() {
@@ -31,9 +30,5 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
     }
 }

@@ -1,10 +1,17 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 
 public class Line {
     @Id
@@ -13,6 +20,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    @MappedCollection(idColumn = "line_id")
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -51,6 +59,16 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public Set<Station> convertStations(Function<Long, Optional<Station>> findFunction) {
+        List<Long> lineStationsId = this.getLineStationsId();
+        Set<Station> stations = new HashSet<>();
+        for (Long id : lineStationsId) {
+            Station station = findFunction.apply(id).orElseThrow(NoSuchElementException::new);
+            stations.add(station);
+        }
+        return stations;
     }
 
     public Set<LineStation> getStations() {
