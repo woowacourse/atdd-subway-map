@@ -34,6 +34,11 @@ public class LineService {
 		lineRepository.save(persistLine);
 	}
 
+	public LineResponse showLine(Long id) {
+		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		return LineResponse.of(line);
+	}
+
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
