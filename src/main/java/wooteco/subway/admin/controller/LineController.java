@@ -46,7 +46,11 @@ public class LineController {
         Line line = lineRepository.findById(id).get();
         line.update(lineRequest.toLine());
         Line persistLine = lineRepository.save(line);
-
         return ResponseEntity.ok().body(LineResponse.of(persistLine));
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public void deleteLine(@PathVariable Long id) {
+        lineRepository.deleteById(id);
     }
 }
