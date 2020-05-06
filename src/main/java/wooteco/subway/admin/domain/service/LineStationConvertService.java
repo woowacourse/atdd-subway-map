@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class LineStationService {
+public class LineStationConvertService {
 
     private final StationRepository stationRepository;
 
-    public LineStationService(final StationRepository stationRepository) {
+    public LineStationConvertService(final StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 

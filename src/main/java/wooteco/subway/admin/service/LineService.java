@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.domain.service.LineStationService;
+import wooteco.subway.admin.domain.service.LineStationConvertService;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -16,11 +16,11 @@ import java.util.Set;
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final LineStationService lineStationService;
+    private final LineStationConvertService lineStationConvertService;
 
-    public LineService(final LineRepository lineRepository, final LineStationService lineStationService) {
+    public LineService(final LineRepository lineRepository, final LineStationConvertService lineStationConvertService) {
         this.lineRepository = lineRepository;
-        this.lineStationService = lineStationService;
+        this.lineStationConvertService = lineStationConvertService;
     }
 
     @Transactional
@@ -39,7 +39,7 @@ public class LineService {
 
         List<LineResponse> lineResponses = new ArrayList<>();
         for (Line line : lines) {
-            Set<Station> stations = line.convertStations(lineStationService);
+            Set<Station> stations = line.convertStations(lineStationConvertService);
             LineResponse lineResponse = LineResponse.of(line, stations);
             lineResponses.add(lineResponse);
         }
@@ -73,6 +73,6 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        return LineResponse.of(line, line.convertStations(lineStationService));
+        return LineResponse.of(line, line.convertStations(lineStationConvertService));
     }
 }

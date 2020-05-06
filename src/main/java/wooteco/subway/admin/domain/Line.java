@@ -2,7 +2,7 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
-import wooteco.subway.admin.domain.service.LineStationService;
+import wooteco.subway.admin.domain.service.LineStationConvertService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -48,27 +48,27 @@ public class Line {
 
     public LocalTime getStartTime() {
         return startTime;
-    }
+	}
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
+	public LocalTime getEndTime() {
+		return endTime;
+	}
 
-    public int getIntervalTime() {
-        return intervalTime;
-    }
+	public int getIntervalTime() {
+		return intervalTime;
+	}
 
-    public Set<Station> convertStations(LineStationService lineStationService) {
-        return lineStationService.convertStation(this);
-    }
+	public Set<Station> convertStations(LineStationConvertService lineStationConvertService) {
+		return lineStationConvertService.convertStation(this);
+	}
 
-    public Set<LineStation> getStations() {
-        return stations;
-    }
+	public Set<LineStation> getStations() {
+		return stations;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;

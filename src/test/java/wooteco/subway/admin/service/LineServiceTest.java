@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.domain.service.LineStationService;
+import wooteco.subway.admin.domain.service.LineStationConvertService;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -28,18 +28,18 @@ import static org.mockito.Mockito.when;
 public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
-    @Mock
-    private StationRepository stationRepository;
-    @Mock
-    private LineStationService lineStationService;
+	@Mock
+	private StationRepository stationRepository;
+	@Mock
+	private LineStationConvertService lineStationConvertService;
 
     private Line line;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        lineService = new LineService(lineRepository, lineStationService);
+		line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		lineService = new LineService(lineRepository, lineStationConvertService);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
