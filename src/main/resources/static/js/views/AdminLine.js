@@ -1,8 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {
-    subwayLinesTemplate,
-    colorSelectOptionTemplate
-} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
@@ -17,8 +14,7 @@ function AdminLine() {
     );
     const subwayLineModal = new Modal();
 
-    const onCreateSubwayLine = event =
->
+    const onCreateSubwayLine = event =>
     {
         event.preventDefault();
         const newSubwayLine = {
@@ -35,8 +31,7 @@ function AdminLine() {
     }
     ;
 
-    const onDeleteSubwayLine = event =
->
+    const onDeleteSubwayLine = event =>
     {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -46,8 +41,7 @@ function AdminLine() {
     }
     ;
 
-    const onUpdateSubwayLine = event =
->
+    const onUpdateSubwayLine = event =>
     {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
@@ -57,18 +51,16 @@ function AdminLine() {
     }
     ;
 
-    const onEditSubwayLine = event =
->
+    const onEditSubwayLine = event =>
     {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-pencil");
     }
     ;
 
-    const initDefaultSubwayLines = () =
->
+    const initDefaultSubwayLines = () =>
     {
-        defaultSubwayLines.map(line = > {
+        defaultSubwayLines.map(line => {
             $subwayLineList.insertAdjacentHTML(
                 "beforeend",
                 subwayLinesTemplate(line)
@@ -78,8 +70,7 @@ function AdminLine() {
     }
     ;
 
-    const initEventListeners = () =
->
+    const initEventListeners = () =>
     {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
@@ -90,8 +81,7 @@ function AdminLine() {
     }
     ;
 
-    const onSelectColorHandler = event =
->
+    const onSelectColorHandler = event =>
     {
         event.preventDefault();
         const $target = event.target;
@@ -102,14 +92,13 @@ function AdminLine() {
     }
     ;
 
-    const initCreateSubwayLineForm = () =
->
+    const initCreateSubwayLineForm = () =>
     {
         const $colorSelectContainer = document.querySelector(
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-            .map((option, index) = > colorSelectOptionTemplate(option, index)
+            .map((option, index) => colorSelectOptionTemplate(option, index)
     )
     .
         join("");
@@ -121,8 +110,7 @@ function AdminLine() {
     }
     ;
 
-    this.init = () =
->
+    this.init = () =>
     {
         initDefaultSubwayLines();
         initEventListeners();

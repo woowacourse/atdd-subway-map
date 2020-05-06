@@ -24,8 +24,8 @@ const METHOD = {
     }
 };
 
-const api = (() = > {
-    const request = (uri, config) = > fetch(uri, config).then(data = > data.json()
+const api = (() => {
+    const request = (uri, config) => fetch(uri, config).then(data => data.json()
 )
 ;
 

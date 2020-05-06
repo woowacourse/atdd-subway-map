@@ -6,8 +6,7 @@ export default function Modal() {
     const $body = document.querySelector("body");
     const $modal = document.querySelector(".modal");
 
-    const toggle = event =
->
+    const toggle = event =>
     {
         if (event) {
             event.preventDefault();

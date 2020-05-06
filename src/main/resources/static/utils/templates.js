@@ -1,5 +1,4 @@
-export const listItemTemplate = value =
->
+export const listItemTemplate = value =>
 `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
     ${value}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
@@ -7,8 +6,7 @@ export const listItemTemplate = value =
     </button>
   </div>`;
 
-export const subwayLinesTemplate = line =
->
+export const subwayLinesTemplate = line =>
 `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.title}
@@ -20,8 +18,7 @@ export const subwayLinesTemplate = line =
       </button>
     </div>`;
 
-export const optionTemplate = value =
->
+export const optionTemplate = value =>
 `<option>${value}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
@@ -48,11 +45,10 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
     </div>
 </nav>`;
 
-export const subwayLinesItemTemplate = line =
->
+export const subwayLinesItemTemplate = line =>
 {
     const stationsTemplate = line.stations
-        .map(station = > listItemTemplate(station)
+        .map(station => listItemTemplate(station)
 )
 .
     join("");
@@ -67,15 +63,13 @@ export const subwayLinesItemTemplate = line =
 }
 ;
 
-export const initNavigation = () =
->
+export const initNavigation = () =>
 {
     document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
 }
 ;
 
-export const colorSelectOptionTemplate = (option, index) =
->
+export const colorSelectOptionTemplate = (option, index) =>
 {
     const hasNewLine = ++index % 7 === 0;
 

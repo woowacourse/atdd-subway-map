@@ -1,8 +1,7 @@
 import {initNavigation} from "../utils/templates.js";
 
 function AdminApp() {
-    const init = () =
->
+    const init = () =>
     {
         initNavigation();
     }
