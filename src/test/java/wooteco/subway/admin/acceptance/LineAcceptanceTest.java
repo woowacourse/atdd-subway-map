@@ -45,16 +45,16 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
-//
-//        // when : 조회 요청
-//        LineResponse line = getLine(lines.get(0).getId());
-//        // then
-//        assertThat(line.getId()).isNotNull();
-//        assertThat(line.getName()).isNotNull();
-//        assertThat(line.getStartTime()).isNotNull();
-//        assertThat(line.getEndTime()).isNotNull();
-//        assertThat(line.getIntervalTime()).isNotNull();
-//
+
+        // when : 조회 요청
+        LineResponse line = getLine(lines.get(0).getId());
+        // then
+        assertThat(line.getId()).isNotNull();
+        assertThat(line.getName()).isNotNull();
+        assertThat(line.getStartTime()).isNotNull();
+        assertThat(line.getEndTime()).isNotNull();
+        assertThat(line.getIntervalTime()).isNotNull();
+
 //        // when : 수정 요청
 //        LocalTime startTime = LocalTime.of(8, 00);
 //        LocalTime endTime = LocalTime.of(22, 00);
