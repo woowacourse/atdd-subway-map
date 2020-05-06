@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,5 +41,13 @@ public class LineController {
 
         return ResponseEntity
                 .ok(LineResponse.listOf(lines));
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+
+        return ResponseEntity
+                .ok(LineResponse.of(line));
     }
 }
