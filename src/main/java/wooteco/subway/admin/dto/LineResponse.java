@@ -18,7 +18,6 @@ public class LineResponse {
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private Set<Station> stations;
 
     public LineResponse() {
