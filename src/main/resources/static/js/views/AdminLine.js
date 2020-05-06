@@ -53,13 +53,15 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
-  const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
+  const initDefaultSubwayLines = async () => {
+    let subwayLines = await fetch(`http://localhost:8080/lines`, {method: "GET"})
+        .then(res => res.json());
+    // defaultSubwayLines.map(line => {
+    //   $subwayLineList.insertAdjacentHTML(
+    //     "beforeend",
+    //     subwayLinesTemplate(line)
+    //   );
+    // });
   };
 
   const initEventListeners = () => {
