@@ -35,6 +35,10 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime);
     }
 
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
