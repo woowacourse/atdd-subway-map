@@ -9,7 +9,4 @@ import java.util.Optional;
 public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
-
-    @Override
-    Optional<Line> findById(Long id);
 }

@@ -43,7 +43,8 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 없습니다!"));
         line.update(lineRequest.toLine());
         Line persistLine = lineRepository.save(line);
         return ResponseEntity.ok().body(LineResponse.of(persistLine));
