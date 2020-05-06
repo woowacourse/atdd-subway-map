@@ -27,7 +27,7 @@ Feature: 지하철 노선 관리
     And 지하철 노선 목록은 n-1개이다.
 ```
 #### TO-DO
--[ ] create : 지하철 노선을 추가할 수 있다.
+-[x] create : 지하철 노선을 추가할 수 있다.
 -[ ] read : 지하철 노선을 조회할 수 있다.
     -[ ] `findAll`
     -[ ] `findById`

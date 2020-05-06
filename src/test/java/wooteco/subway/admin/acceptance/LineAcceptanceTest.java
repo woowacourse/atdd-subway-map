@@ -86,15 +86,17 @@ public class LineAcceptanceTest {
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
 
+        // @formatter:off
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
+        when().
             post("/lines").
-            then().
+        then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
+        // @formatter:on
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
