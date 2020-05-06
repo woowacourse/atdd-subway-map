@@ -20,9 +20,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if (lineRepository.existsByName(line.getName())) {
-            throw new IllegalArgumentException("노선 이름이 중복됩니다.");
-        }
+        validateNameDuplicate(line);
         return lineRepository.save(line);
     }
 
@@ -31,9 +29,16 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
+        validateNameDuplicate(line);
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
         lineRepository.save(persistLine);
+    }
+
+    private void validateNameDuplicate(Line line) {
+        if (lineRepository.existsByName(line.getName())) {
+            throw new IllegalArgumentException("노선 이름이 중복됩니다.");
+        }
     }
 
     public void deleteLineById(Long id) {
