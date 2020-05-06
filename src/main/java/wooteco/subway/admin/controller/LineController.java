@@ -7,7 +7,9 @@ import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 
+import javax.xml.ws.Response;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -32,6 +34,7 @@ public class LineController {
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
+
         return ResponseEntity.ok()
                 .body(LineResponse.of(line));
     }
@@ -40,8 +43,16 @@ public class LineController {
     public void updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
+
         line.update(view.toLine());
         lineRepository.save(line);
     }
 
+    @GetMapping("/lines")
+    public ResponseEntity<List<LineResponse>> getLines(){
+        List<Line> lines = lineRepository.findAll();
+
+        return ResponseEntity.ok()
+                .body(LineResponse.listOf(lines));
+    }
 }
