@@ -1,4 +1,4 @@
-import { EVENT_TYPE } from "../utils/constants.js";
+import {EVENT_TYPE} from "../utils/constants.js";
 
 export default function Modal() {
   const $openModalButton = document.querySelector(".modal-open");

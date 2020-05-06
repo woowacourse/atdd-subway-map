@@ -15,6 +15,7 @@ create table if not exists LINE
    interval_time int not null,
    created_at datetime,
    updated_at datetime,
+   bg_color varchar(255),
    primary key(id)
 );
 
@@ -26,7 +27,7 @@ create table if not exists line_station (
     duration int
 );
 
-insert into line values (1, '1호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (2, '2호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (3, '3호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (4, '4호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into line values (1, '1호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-blue-700');
+insert into line values (2, '2호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-blue-500');
+insert into line values (3, '3호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-orange-500');
+insert into line values (4, '4호선', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-orange-700');

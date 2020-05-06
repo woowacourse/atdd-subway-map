@@ -1,28 +1,40 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
-import {
-  subwayLinesTemplate,
-  colorSelectOptionTemplate
-} from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
-import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
+  const $subwayLineStartTimeInput = document.querySelector("#first-time");
+  const $subwayLineEndTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalInput = document.querySelector("#interval-time");
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = event => {
+  const onCreateSubwayLine = async event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      name: $subwayLineNameInput.value,
+      bgColor: $subwayLineColorInput.value,
+      startTime: $subwayLineStartTimeInput.value,
+      endTime: $subwayLineEndTimeInput.value,
+      interval: $subwayLineIntervalInput.value
     };
+    await fetch(`http://localhost:8080/lines`, {method: "POST",
+      body: JSON.stringify({
+        name: newSubwayLine.name,
+        bgColor: newSubwayLine.bgColor,
+        startTime: newSubwayLine.startTime,
+        endTime: newSubwayLine.endTime,
+        intervalTime: newSubwayLine.interval
+      }),
+      headers: {"Content-Type": "application/json"}
+    });
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
