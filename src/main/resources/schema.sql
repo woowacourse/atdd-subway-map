@@ -17,3 +17,11 @@ create table if not exists LINE
    updated_at datetime,
    primary key(id)
 );
+
+create table if not exists line_station (
+    line bigint,
+    station_id bigint,
+    pre_station_id bigint,
+    distance int,
+    duration int
+);
