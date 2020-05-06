@@ -30,9 +30,10 @@ public class LineAcceptanceTest {
     }
 
     public static RequestSpecification given() {
-        return RestAssured.given().log().all();
+        return RestAssured.given()
+                .log()
+                .all();
     }
-
 
     @DisplayName("지하철 노선을 관리한다")
     @Test

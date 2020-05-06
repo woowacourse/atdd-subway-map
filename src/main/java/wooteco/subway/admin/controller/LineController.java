@@ -5,25 +5,23 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.LineService;
 
-import javax.xml.ws.Response;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class LineController {
-    private final LineRepository lineRepository;
+    private final LineService lineService;
 
-    public LineController(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
-        Line persistLine = lineRepository.save(line);
+        Line persistLine = lineService.save(line);
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
@@ -32,25 +30,20 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
+        LineResponse lineResponse = lineService.findLineWithStationsById(id);
 
         return ResponseEntity.ok()
-                .body(LineResponse.of(line));
+                .body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
     public void updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
-
-        line.update(view.toLine());
-        lineRepository.save(line);
+        lineService.updateLine(id, view.toLine());
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponse>> getLines(){
-        List<Line> lines = lineRepository.findAll();
+    public ResponseEntity<List<LineResponse>> getLines() {
+        List<Line> lines = lineService.showLines();
 
         return ResponseEntity.ok()
                 .body(LineResponse.listOf(lines));
@@ -58,7 +51,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
-        lineRepository.deleteById(id);
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 }
