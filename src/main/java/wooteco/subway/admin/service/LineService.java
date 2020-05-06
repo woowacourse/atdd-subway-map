@@ -1,16 +1,14 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class LineService {
@@ -23,10 +21,16 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        List<Line> lines = lineRepository.findAll();
+        boolean hasDuplicateName = lines.stream()
+            .anyMatch(persistLine -> persistLine.getName().equals(line.getName()));
+        if (hasDuplicateName) {
+            throw new IllegalArgumentException("중복된 노선 이름은 등록할 수 없습니다.");
+        }
         return lineRepository.save(line);
     }
 
-    public Line showLine(Long id){
+    public Line showLine(Long id) {
         return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 

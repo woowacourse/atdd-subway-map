@@ -28,12 +28,14 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
-
-        Line persistLine = lineService.save(line);
-
-        return ResponseEntity
-            .created(URI.create("/lines/" + persistLine.getId()))
-            .body(LineResponse.of(persistLine));
+        try {
+            Line persistLine = lineService.save(line);
+            return ResponseEntity
+                .created(URI.create("/lines/" + persistLine.getId()))
+                .body(LineResponse.of(persistLine));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/lines")
