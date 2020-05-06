@@ -1,11 +1,21 @@
 package wooteco.subway.admin.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalTime;
+import java.util.Optional;
+import java.util.Set;
+
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -13,15 +23,6 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.time.LocalTime;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -41,6 +42,17 @@ public class LineServiceTest {
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
+    }
+
+    @DisplayName("동일한 이름을 가진 노선이 입력되면 에러 발생")
+    @Test
+    void saveLinesWhenHaveSameNames() {
+        Line duplicatedLine = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        when(lineRepository.findByName(line.getName())).thenReturn(Optional.ofNullable(line));
+
+        assertThatThrownBy(() -> lineService.save(duplicatedLine))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("중복된 지하철 역입니다. name = " + duplicatedLine.getName());
     }
 
     @Test

@@ -22,6 +22,9 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
+        }
         return lineRepository.save(line);
     }
 
