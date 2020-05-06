@@ -2,10 +2,7 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -15,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LineController {
@@ -41,5 +39,13 @@ public class LineController {
     @GetMapping("/lines")
     public List<LineResponse> lines() {
         return LineResponse.listOf(lineRepository.findAll());
+    }
+
+    @GetMapping("/lines/{id}")
+    public LineResponse line(
+            @PathVariable("id") Long id
+    ) {
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new));
     }
 }
