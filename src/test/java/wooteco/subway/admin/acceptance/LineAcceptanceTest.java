@@ -55,15 +55,15 @@ public class LineAcceptanceTest {
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
 
-//        // when : 수정 요청
-//        LocalTime startTime = LocalTime.of(8, 00);
-//        LocalTime endTime = LocalTime.of(22, 00);
-//        updateLine(line.getId(), startTime, endTime);
-//        //then
-//        LineResponse updatedLine = getLine(line.getId());
-//        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
-//        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
-//
+        // when : 수정 요청
+        LocalTime startTime = LocalTime.of(8, 00);
+        LocalTime endTime = LocalTime.of(22, 00);
+        updateLine(line.getId(), startTime, endTime);
+        //then
+        LineResponse updatedLine = getLine(line.getId());
+        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
+        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
+
 //        // when : 제거
 //        deleteLine(line.getId());
 //        // then
@@ -73,10 +73,10 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
+                get("/lines/" + id).
                 then().
-                        log().all().
-                        extract().as(LineResponse.class);
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
@@ -90,9 +90,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -107,9 +107,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
@@ -117,9 +117,9 @@ public class LineAcceptanceTest {
     private List<LineResponse> getLines() {
         return
                 given().
-                when().
+                        when().
                         get("/lines").
-                then().
+                        then().
                         log().all().
                         extract().
                         jsonPath().getList(".", LineResponse.class);

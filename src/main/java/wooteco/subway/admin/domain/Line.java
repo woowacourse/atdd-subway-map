@@ -33,6 +33,10 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime);
     }
 
+    public Line(LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this(null, null, startTime, endTime, intervalTime);
+    }
+
     public Long getId() {
         return id;
     }
