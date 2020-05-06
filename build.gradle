@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
