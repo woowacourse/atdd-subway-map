@@ -1,11 +1,15 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table("LINE")
 public class Line {
     @Id
     private Long id;
@@ -84,14 +88,20 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
         // TODO: 구현
+        stations.remove(stationId);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> findLineStationsId() {
         // TODO: 구현
-        return new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (LineStation station : stations) {
+            ids.add(station.getStationId());
+        }
+        return ids;
     }
 }
