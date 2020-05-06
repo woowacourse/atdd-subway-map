@@ -12,6 +12,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -23,6 +24,10 @@ public class LineService {
 
     public Line save(Line line) {
         return lineRepository.save(line);
+    }
+
+    public Line showLine(Long id){
+        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
     public List<Line> showLines() {
