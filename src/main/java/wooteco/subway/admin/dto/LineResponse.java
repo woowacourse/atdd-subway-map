@@ -18,7 +18,6 @@ public class LineResponse {
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private Set<Station> stations;
 
     public LineResponse() {
@@ -41,7 +40,7 @@ public class LineResponse {
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(it -> LineResponse.of(it))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
