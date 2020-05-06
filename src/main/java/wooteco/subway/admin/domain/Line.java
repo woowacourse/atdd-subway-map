@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -90,7 +91,7 @@ public class Line {
         // TODO: 구현
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> findLineStationsId() {
         // TODO: 구현
         return new ArrayList<>();
     }
