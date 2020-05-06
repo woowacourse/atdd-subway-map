@@ -2,12 +2,13 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class LineService {
@@ -25,6 +26,21 @@ public class LineService {
 
     public List<Line> showLines() {
         return lineRepository.findAll();
+    }
+
+    public List<LineResponse> getLineResponses() {
+        List<Line> lines = lineRepository.findAll();
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line : lines) {
+            List<Long> lineStationsId = line.getLineStationsId();
+            Set<Station> stations = new HashSet<>();
+            for (Long id : lineStationsId) {
+                stations.add(stationRepository.findById(id).orElseThrow(NoSuchElementException::new));
+            }
+            LineResponse lineResponse = new LineResponse(line, stations);
+            lineResponses.add(lineResponse);
+        }
+        return lineResponses;
     }
 
     public void updateLine(Long id, Line line) {

@@ -24,8 +24,9 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getStations());
+    public LineResponse(Line line, Set<Station> stations) {
+        this(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(),
+                line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
