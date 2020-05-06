@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.service.LineStationService;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -29,6 +30,8 @@ public class LineServiceTest {
     private LineRepository lineRepository;
     @Mock
     private StationRepository stationRepository;
+    @Mock
+    private LineStationService lineStationService;
 
     private Line line;
     private LineService lineService;
@@ -36,7 +39,7 @@ public class LineServiceTest {
     @BeforeEach
     void setUp() {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        lineService = new LineService(lineRepository, stationRepository);
+        lineService = new LineService(lineRepository, lineStationService);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));

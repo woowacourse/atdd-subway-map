@@ -1,10 +1,14 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.domain.service.LineStationService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Line {
     @Id
@@ -13,6 +17,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    @MappedCollection(idColumn = "line_id")
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -51,6 +56,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public Set<Station> convertStations(LineStationService lineStationService) {
+        return lineStationService.convertStation(this);
     }
 
     public Set<LineStation> getStations() {
