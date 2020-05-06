@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLine(@RequestBody LineRequest request) {
+    public ResponseEntity showLine(@RequestBody LineRequest request) {
         Line line = request.toLine();
         Line persistLine = lineRepository.save(line);
 
@@ -30,12 +31,10 @@ public class LineController {
                 .body(LineResponse.of(persistLine));
     }
 
-//    @GetMapping("/lines/{id}")
-//    public ResponseEntity createLine(@PathVariable String line) {
-//        return ResponseEntity
-//                .created(URI.create("/stations/" + persistStation.getId()))
-//                .body(StationResponse.of(persistStation));
-//    }
+    @GetMapping("/lines/{id}")
+    public ResponseEntity showLine(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(lineRepository.findById(id));
+    }
 
     @GetMapping("/lines")
     public ResponseEntity showLines() {
