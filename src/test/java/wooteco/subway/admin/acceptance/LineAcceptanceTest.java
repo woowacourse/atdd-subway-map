@@ -33,6 +33,7 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
+    // @formatter:off
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -132,4 +133,6 @@ public class LineAcceptanceTest {
                 then().
                 log().all();
     }
+    // @formatter:on
+
 }
