@@ -10,4 +10,9 @@ public class WebController {
     public String index() {
         return "index";
     }
+
+    @GetMapping("/admin-line")
+    public String adminLine() {
+        return "admin-line";
+    }
 }

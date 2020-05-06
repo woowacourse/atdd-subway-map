@@ -6,46 +6,41 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.service.LineService;
 
-@Controller
+@RestController
+@RequestMapping("/lines")
 public class LineController {
 
     @Autowired
     private LineService lineService;
 
-    @GetMapping("/admin-line")
-    public String adminLine() {
-        return "admin-line";
-    }
-
-    @PostMapping("/lines")
-    @ResponseBody
+    @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        System.out.println(lineRequest);
+        System.out.println(lineRequest.toString());
         Line line = new Line(
             lineRequest.getName(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
             lineRequest.getIntervalTime()
         );
-        return ResponseEntity.created(URI.create("/index")).body(lineService.save(line));
+        System.out.println(line);
+        return ResponseEntity.created(URI.create("")).body(lineService.save(line));
     }
 
-    @GetMapping("/lines")
-    @ResponseBody
+    @GetMapping
     public List<LineResponse> getLines() {
         List<Line> lines = lineService.showLines();
 
@@ -54,14 +49,12 @@ public class LineController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/lines/{id}")
-    @ResponseBody
+    @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findLineWithStationsById(id));
     }
 
-    @PutMapping("/lines/{id}")
-    @ResponseBody
+    @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(
             lineRequest.getName(),
@@ -73,8 +66,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
-    @ResponseBody
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.ok().build();

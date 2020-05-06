@@ -1,8 +1,8 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-
 import java.time.LocalTime;
+
+import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
     private String name;
@@ -31,5 +31,15 @@ public class LineRequest {
 
     public Line toLine() {
         return new Line(name, startTime, endTime, intervalTime);
+    }
+
+    @Override
+    public String toString() {
+        return "LineRequest{" +
+            "name='" + name + '\'' +
+            ", startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", intervalTime=" + intervalTime +
+            '}';
     }
 }

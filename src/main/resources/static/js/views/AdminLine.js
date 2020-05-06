@@ -22,11 +22,28 @@ function AdminLine() {
             bgColor: $subwayLineColorInput.value
         };
 
+        let url = "/lines";
+        let createRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/JSON'
+            },
+            body: JSON.stringify({
+                name: `${newSubwayLine.title}`,
+                startTime: '13:00',
+                endTime: '15:00',
+                intervalTime: '1'
+            })
+        };
+        fetch(url, createRequest)
+            .then(response => response.json())
+            .then(date => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(data));
+            });
+
         // 유효성검사
-        // $subwayLineList.insertAdjacentHTML(
-        //   "beforeend",
-        //   subwayLinesTemplate(newSubwayLine)
-        // );
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
