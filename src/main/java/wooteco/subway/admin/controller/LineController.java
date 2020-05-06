@@ -1,10 +1,6 @@
 package wooteco.subway.admin.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,30 +14,29 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
-// @RequestMapping("/lines")
-public class MockLineController {
+@RequestMapping("/lines")
+public class LineController {
+	private final LineService lineService;
 
-	private Map<Long, Line> lines = new HashMap<>();
+	public LineController(LineService lineService) {
+		this.lineService = lineService;
+	}
 
 	@GetMapping("")
 	public ResponseEntity<List<LineResponse>> getLines() {
-		List<LineResponse> lineResponses = new ArrayList<>();
-		for (Long id : lines.keySet()) {
-			Line line = lines.get(id);
-			lineResponses.add(new LineResponse(id, line.getName(),
-				line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt()
-				, line.getUpdatedAt(), new HashSet<>()));
-		}
+		List<Line> lines = lineService.showLines();
+		List<LineResponse> lineResponses = LineResponse.listOf(lines);
+
 		return new ResponseEntity<>(lineResponses, HttpStatus.OK);
 	}
 
 	@PostMapping("")
 	public ResponseEntity<Void> createLine(@RequestBody LineRequest request) {
-		Line line = new Line(request.getName(), request.getStartTime(), request.getEndTime(),
-			request.getIntervalTime());
-		lines.put((long) lines.size() + 1, line);
+		lineService.save(request.toLine());
+
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.build();
@@ -49,28 +44,20 @@ public class MockLineController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-		Line line = lines.get(id);
-		LineResponse lineResponse = new LineResponse(id, line.getName(),
-			line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt()
-			, line.getUpdatedAt(), new HashSet<>());
+		LineResponse lineResponse = lineService.findLineWithStationsById(id);
 		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateLines(@PathVariable Long id,
 		@RequestBody LineRequest request) {
-
-		Line line = lines.get(id);
-		Line dummyLine = new Line(line.getName(), request.getStartTime(), request.getEndTime(),
-			request.getIntervalTime());
-
-		line.update(dummyLine);
+		lineService.updateLine(id, request.toLine());
 		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		lines.remove(id);
+		lineService.deleteLineById(id);
 		return ResponseEntity.ok().build();
 	}
 }
