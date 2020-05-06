@@ -22,11 +22,10 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity showLine(@RequestBody LineRequest request) {
         Line line = request.toLine();
-        Line persistLine = lineService.save(line);
-
+        LineResponse persistLine = lineService.save(line);
         return ResponseEntity
                 .created(URI.create("/stations/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+                .body(persistLine);
     }
 
     @GetMapping("/lines/{id}")
@@ -42,8 +41,7 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
         Line line = request.toLine();
-        Line updatedLine = lineService.updateLine(id, line);
-        return ResponseEntity.ok().body(updatedLine);
+        return ResponseEntity.ok().body(lineService.updateLine(id, line));
     }
 
     @DeleteMapping("/lines/{id}")
