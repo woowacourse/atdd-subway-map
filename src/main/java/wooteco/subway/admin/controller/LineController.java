@@ -26,14 +26,18 @@ public class LineController {
 
     @PostMapping
     ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
+        Line persistLine = lineRepository.save(line);
+
         return ResponseEntity
-                .created(URI.create("/lines/1"))
+                .created(URI.create("/lines/" + persistLine.getId()))
                 .build();
     }
 
     @GetMapping
     ResponseEntity<List<LineResponse>> getLines() {
         List<Line> lines = lineRepository.findAll();
+
         return ResponseEntity
                 .ok(LineResponse.listOf(lines));
     }
