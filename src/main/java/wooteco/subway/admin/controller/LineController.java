@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 
 import java.net.URI;
@@ -38,7 +39,7 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public List<Line> lines() {
-        return lineRepository.findAll();
+    public List<LineResponse> lines() {
+        return LineResponse.listOf(lineRepository.findAll());
     }
 }

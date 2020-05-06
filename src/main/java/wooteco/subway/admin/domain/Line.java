@@ -13,7 +13,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-//    private Set<LineStation> stations;
+    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -53,9 +53,9 @@ public class Line {
         return intervalTime;
     }
 
-//    public Set<LineStation> getStations() {
-//        return stations;
-//    }
+    public Set<LineStation> getStations() {
+        return stations;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
