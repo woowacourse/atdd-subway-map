@@ -34,6 +34,9 @@ public class LineService {
 
     public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
+        }
         persistLine.update(line);
         lineRepository.save(persistLine);
     }

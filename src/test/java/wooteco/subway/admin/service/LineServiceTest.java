@@ -55,6 +55,22 @@ public class LineServiceTest {
             .hasMessage("중복된 지하철 역입니다. name = " + duplicatedLine.getName());
     }
 
+    @DisplayName("수정된 노선 이름이 이미 존재한다면 에러 발생")
+    @Test
+    void updateLineWhenExistSameName() {
+        Line initial = new Line(2L, "3호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        Line updated = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.findById(initial.getId())).thenReturn(Optional.of(initial));
+
+        when(lineRepository.findByName(line.getName())).thenReturn(Optional.of(line));
+
+        assertThatThrownBy(() -> lineService.updateLine(initial.getId(), updated))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("중복된 지하철 역입니다. name = " + updated.getName());
+    }
+
     @Test
     void addLineStationAtTheFirstOfLine() {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
