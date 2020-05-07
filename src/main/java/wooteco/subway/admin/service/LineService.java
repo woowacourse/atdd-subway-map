@@ -31,13 +31,13 @@ public class LineService {
 		return LineResponse.listOf(lineRepository.findAll());
 	}
 
-	public void updateLine(Long id, Line line) {
+	public LineResponse updateLine(Long id, Line line) {
 		if (lineRepository.existsByName(line.getName())) {
 			throw new RuntimeException();
 		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
-		lineRepository.save(persistLine);
+		return LineResponse.of(lineRepository.save(persistLine));
 	}
 
 	public LineResponse showLine(Long id) {

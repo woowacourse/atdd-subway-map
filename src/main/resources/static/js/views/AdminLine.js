@@ -16,14 +16,20 @@ function AdminLine() {
   const $subwayLineFirstTimeInput = document.querySelector("#first-time");
   const $subwayLineLastTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
+  const $subwayLineAddButton = document.querySelector("#subway-line-add-btn")
 
   const $createSubwayLineButton = document.querySelector(
       "#subway-line-create-form #submit-button"
   );
   const subwayLineModal = new Modal();
 
+  let editId = null;
+
   const onCreateSubwayLine = event => {
     event.preventDefault();
+    if (editId) {
+      return;
+    }
     const newSubwayLine = {
       name: $subwayLineNameInput.value,
       color: $subwayLineColorInput.value,
@@ -42,11 +48,6 @@ function AdminLine() {
       );
     });
     subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
-    $subwayLineFirstTimeInput.value = "";
-    $subwayLineLastTimeInput.value = "";
-    $subwayLineIntervalTimeInput.value = "";
   };
 
   const onDeleteSubwayLine = event => {
@@ -58,16 +59,44 @@ function AdminLine() {
   };
 
   const onUpdateSubwayLine = event => {
-    const $target = event.target;
-    const isUpdateButton = $target.classList.contains("mdi-pencil");
-    if (isUpdateButton) {
+    event.preventDefault();
+    if (editId) {
+      const newSubwayLine = {
+        name: $subwayLineNameInput.value,
+        color: $subwayLineColorInput.value,
+        startTime: $subwayLineFirstTimeInput.value,
+        endTime: $subwayLineLastTimeInput.value,
+        intervalTime: $subwayLineIntervalTimeInput.value
+      };
+      api.line.update(newSubwayLine, editId).then(line => {
+        if (!line.name) {
+          return;
+        }
+        const $subwayLineItem = $subwayLineList.querySelector(`[data-id="${line.id}"]`);
+        const $newSubwayLineItem = document.createElement('div');
+        $newSubwayLineItem.innerHTML = subwayLinesTemplate(line);
+        $subwayLineList.insertBefore($newSubwayLineItem.firstChild, $subwayLineItem);
+        $subwayLineItem.remove();
+      });
       subwayLineModal.toggle();
     }
   };
 
   const onEditSubwayLine = event => {
     const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
+    const isUpdateButton = $target.classList.contains("mdi-pencil");
+    if (isUpdateButton) {
+      const $subwayLineItem = $target.closest(".subway-line-item");
+      editId = $subwayLineItem.dataset.id;
+      api.line.get(editId).then(line => {
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = line.name;
+        $subwayLineColorInput.value = line.color;
+        $subwayLineFirstTimeInput.value = line.startTime;
+        $subwayLineLastTimeInput.value = line.endTime;
+        $subwayLineIntervalTimeInput.value = line.intervalTime;
+      });
+    }
   };
 
   const onSelectSubwayLine = event => {
@@ -96,20 +125,28 @@ function AdminLine() {
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
-    $createSubwayLineButton.addEventListener(
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineAddButton.addEventListener(
         EVENT_TYPE.CLICK,
-        onCreateSubwayLine
-    );
+        () => {
+          editId = null;
+          $subwayLineNameInput.value = "";
+          $subwayLineColorInput.value = "";
+          $subwayLineFirstTimeInput.value = "";
+          $subwayLineLastTimeInput.value = "";
+          $subwayLineIntervalTimeInput.value = "";
+        }
+    )
   };
 
   const onSelectColorHandler = event => {
     event.preventDefault();
     const $target = event.target;
     if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
-          $target.dataset.color;
+      document.querySelector("#subway-line-color").value = $target.dataset.color;
     }
   };
 
@@ -121,10 +158,7 @@ function AdminLine() {
         .map((option, index) => colorSelectOptionTemplate(option, index))
         .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
-    $colorSelectContainer.addEventListener(
-        EVENT_TYPE.CLICK,
-        onSelectColorHandler
-    );
+    $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
   };
 
   this.init = () => {
