@@ -1,13 +1,16 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
+  const $subwayLineFirstTimeIntput = document.querySelector("#first-time");
+  const $subwayLineLastTimeIntput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeIntput = document.querySelector("#interval-time");
 
   const $createSubwayLineButton = document.querySelector(
       "#subway-line-create-form #submit-button"
@@ -17,16 +20,28 @@ function AdminLine() {
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      name: $subwayLineNameInput.value,
+      color: $subwayLineColorInput.value,
+      startTime: $subwayLineFirstTimeIntput.value,
+      endTime: $subwayLineLastTimeIntput.value,
+      intervalTime: $subwayLineIntervalTimeIntput.value
     };
-    $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(newSubwayLine)
-    );
+
+    api.line.create(newSubwayLine).then(line => {
+      if (!line.name) {
+        return;
+      }
+      $subwayLineList.insertAdjacentHTML(
+          "beforeend",
+          subwayLinesTemplate(line)
+      );
+    });
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
+    $subwayLineFirstTimeIntput.value = "";
+    $subwayLineLastTimeIntput.value = "";
+    $subwayLineIntervalTimeIntput.value = "";
   };
 
   const onDeleteSubwayLine = event => {
@@ -51,11 +66,13 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-          "beforeend",
-          subwayLinesTemplate(line)
-      );
+    api.line.get().then(lines => {
+      lines.map(line => {
+        $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(line)
+        );
+      });
     });
   };
 

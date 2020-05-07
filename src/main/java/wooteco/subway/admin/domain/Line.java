@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 public class Line {
 	@Id
 	private Long id;
+	private String color;
 	private String name;
 	private LocalTime startTime;
 	private LocalTime endTime;
@@ -22,8 +23,9 @@ public class Line {
 	public Line() {
 	}
 
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+	public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
 		this.name = name;
+		this.color = color;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
@@ -31,45 +33,16 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this(null, name, startTime, endTime, intervalTime);
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public LocalTime getStartTime() {
-		return startTime;
-	}
-
-	public LocalTime getEndTime() {
-		return endTime;
-	}
-
-	public int getIntervalTime() {
-		return intervalTime;
-	}
-
-	public Set<LineStation> getStations() {
-		return stations;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
+	public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+		this(null, name, color, startTime, endTime, intervalTime);
 	}
 
 	public void update(Line line) {
 		if (line.getName() != null) {
 			this.name = line.getName();
+		}
+		if (line.getColor() != null) {
+			this.color = line.getColor();
 		}
 		if (line.getStartTime() != null) {
 			this.startTime = line.getStartTime();
@@ -95,5 +68,41 @@ public class Line {
 	public List<Long> getLineStationsId() {
 		// TODO: 구현
 		return new ArrayList<>();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public LocalTime getStartTime() {
+		return startTime;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime;
+	}
+
+	public int getIntervalTime() {
+		return intervalTime;
+	}
+
+	public Set<LineStation> getStations() {
+		return stations;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
 }
