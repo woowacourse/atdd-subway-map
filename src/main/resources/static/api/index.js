@@ -1,9 +1,13 @@
 const BASE_URL = "http://localhost:8080";
 
 const METHOD = {
-    PUT() {
+    PUT(data) {
         return {
-            method: "PUT"
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         };
     },
     DELETE() {
@@ -44,11 +48,14 @@ const api = (() => {
         get() {
             return request(`${BASE_URL}/lines`);
         },
-        create(data) {
-            request(`${BASE_URL}/lines`, METHOD.POST(data));
+        find(id) {
+            return request(`${BASE_URL}/lines/${id}`);
         },
-        update(data) {
-            request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
+        create(data) {
+            return request(`${BASE_URL}/lines`, METHOD.POST(data));
+        },
+        update(id, data) {
+           return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             request(`${BASE_URL}/lines/${id}`, METHOD.DELETE);

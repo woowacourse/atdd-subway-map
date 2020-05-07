@@ -1,6 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
@@ -8,12 +7,16 @@ import api from "../../api/index.js";
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
+    const $subwayLineStartTimeInput = document.querySelector("#first-time");
+    const $subwayLineEndTimeInput = document.querySelector("#last-time");
+    const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
-
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
     const subwayLineModal = new Modal();
+
+    let lineId = null;
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -23,21 +26,42 @@ function AdminLine() {
         };
 
         const formData = {
+            id: lineId,
             name: $subwayLineNameInput.value,
             startTime: document.querySelector("#first-time").value,
             endTime: document.querySelector("#last-time").value,
             intervalTime: document.querySelector("#interval-time").value,
             color: $subwayLineColorInput.value
         };
+        if(lineId) {
+            api.line.update(lineId, formData).then(
+                data => {
+                    let oldLine = document.querySelector('div[data-id="'+lineId+'"]');
+                    oldLine.insertAdjacentHTML(
+                        "afterend",
+                        subwayLinesTemplate(data)
+                    );
+                    oldLine.remove();
+                    lineId = null;
+                }
+            );
+        }
+        else {
+            api.line.create(formData).then(
+                data => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(data)
+                    );
+                }
+            );
+        }
 
-        api.line.create(formData);
-
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
+        $subwayLineStartTimeInput.value = "";
+        $subwayLineEndTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
         $subwayLineColorInput.value = "";
     };
 
@@ -51,9 +75,17 @@ function AdminLine() {
 
     const onUpdateSubwayLine = event => {
         const $target = event.target;
+        lineId = $target.closest(".subway-line-item").dataset.id;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
             subwayLineModal.toggle();
+            api.line.find(lineId).then(data => {
+                $subwayLineNameInput.value = data.name;
+                $subwayLineStartTimeInput.value = data.startTime;
+                $subwayLineEndTimeInput.value = data.endTime;
+                $subwayLineIntervalTimeInput.value = data.intervalTime;
+                $subwayLineColorInput.value = data.color;
+            });
         }
     };
 

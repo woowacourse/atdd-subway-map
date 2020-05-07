@@ -38,8 +38,9 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-        lineService.updateLine(id, view.toLine());
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+        Line persistLine = lineService.updateLine(id, view.toLine());
+        return ResponseEntity.ok().body(LineResponse.of(persistLine));
     }
 
     @GetMapping("/lines")
