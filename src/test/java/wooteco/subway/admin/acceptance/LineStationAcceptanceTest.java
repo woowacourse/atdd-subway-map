@@ -1,13 +1,26 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -45,6 +58,46 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        createStation("낙성대역");
+        createStation("압구정로데오역");
 
+        List<StationResponse> stations = getStations();
+        assertThat(stations.size()).isEqualTo(2);
+
+        assertThat(stations
+            .stream()
+            .map(StationResponse::getName)
+            .toArray())
+            .containsAll(Arrays.asList("낙성대역", "압구정로데오역"));
+    }
+
+    private List<StationResponse> getStations() {
+        return given()
+            .when()
+            .get("/stations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .jsonPath().getList(".", StationResponse.class);
+    }
+
+    private void createStation(String name) {
+        // @formatter:off
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            post("/stations").
+        then().
+            log().all().
+            statusCode(anyOf(
+                is(HttpStatus.CREATED.value()),
+                is(HttpStatus.BAD_REQUEST.value()))
+            );
+        // @formatter:on
     }
 }
