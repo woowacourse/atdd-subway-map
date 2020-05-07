@@ -2,13 +2,13 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
-import wooteco.subway.admin.domain.service.LineStationConvertService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -18,7 +18,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     @MappedCollection(idColumn = "line_id")
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -48,27 +48,23 @@ public class Line {
 
     public LocalTime getStartTime() {
         return startTime;
-	}
+    }
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
+    public LocalTime getEndTime() {
+        return endTime;
+    }
 
-	public int getIntervalTime() {
-		return intervalTime;
-	}
+    public int getIntervalTime() {
+        return intervalTime;
+    }
 
-	public Set<Station> convertStations(LineStationConvertService lineStationConvertService) {
-		return lineStationConvertService.convertStation(this);
-	}
+    public Set<LineStation> getStations() {
+        return stations;
+    }
 
-	public Set<LineStation> getStations() {
-		return stations;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
@@ -100,7 +96,8 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }

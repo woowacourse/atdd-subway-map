@@ -3,29 +3,28 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.domain.service.LineStationConvertService;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final LineStationConvertService lineStationConvertService;
+    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository, final LineStationConvertService lineStationConvertService) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.lineStationConvertService = lineStationConvertService;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public Long save(Line line) {
+        Line persistLine = lineRepository.save(line);
+        return persistLine.getId();
     }
 
     @Transactional(readOnly = true)
@@ -37,14 +36,9 @@ public class LineService {
     public List<LineResponse> getLineResponses() {
         List<Line> lines = lineRepository.findAll();
 
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Line line : lines) {
-            Set<Station> stations = line.convertStations(lineStationConvertService);
-            LineResponse lineResponse = LineResponse.of(line, stations);
-            lineResponses.add(lineResponse);
-        }
-
-        return lineResponses;
+        return lines.stream()
+                .map(line -> LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId())))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -73,6 +67,6 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        return LineResponse.of(line, line.convertStations(lineStationConvertService));
+        return LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId()));
     }
 }
