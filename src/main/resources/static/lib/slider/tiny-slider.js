@@ -428,7 +428,7 @@ var tns = (function () {
     var supportsPassive = false
     try {
         var opts = Object.defineProperty({}, 'passive', {
-            get: function () {
+            getLines: function () {
                 supportsPassive = true
             }
         })
