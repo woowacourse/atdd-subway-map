@@ -61,7 +61,6 @@ Feature: 지하철 노선 관리
 ### 요구 사항
 인수 테스트를 통해 구현한 기능을 페이지에 연동하기
 
-![img](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-05-01T13%3A06%3A01.229image.png){: width="100", height="100"}
 
 ### 기능 목록
 **지하철 노선 관리 페이지**
@@ -71,20 +70,71 @@ Feature: 지하철 노선 관리
 - 노선 추가 버튼을 누르면 아래와 같은 팝업화면이 뜸  
 - 노선 이름과 정보를 입력  
 - 지하철 노선 추가 API 사용
-![img](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-05-01T13%3A06%3A35.629image.png){: width="100", height="100"}
 
 **노선 상세 정보 조회**
 - 목록에서 노선 선택 시 상세 정보를 조회
-![img](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-05-01T11%3A58%3A08.462image.png){: width="100", height="100"}
 
 **노선 수정**
 - 목록에서 우측 수정 버튼을 통해 수정 팝업화면 노출
 - 수정 팝업 노출 시 기존 정보는 입력되어 있어야 함
 - 정보 수정 후 지하철 노선 수정 API 사용
-![img](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-05-01T13%3A06%3A48.748image.png){: width="100", height="100"}
 
 **노선 삭제**
 - 목록에서 우측 삭제 버튼을 통해 삭제
 - 지하철 노선 삭제 API 사용
-![img](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-05-01T13%3A06%3A01.229image.png){: width="100", height="100"}
 
+## 레벨 3(노선별 지하철역 관리노선별 지하철역 관리)
+
+### 요구 사항
+
+- 인수 테스트(LineStationAcceptanceTest)를 완성 시키기
+- Mock 서버와 DTO 만 정의하여 테스트를 성공 시키기
+    - 기능 구현은 다음 단계에서 진행
+- 기존에 구현한 테스트들과의 중복을 제거하기
+
+### 기능 목록
+
+**지하철 노선에 역 추가**
+
+- 노선에 지하철 역이 추가될 경우 아래의 정보가 추가되어야 함
+    - 이전역과의 **`거리`**
+    - 이전역과의 **`소요시간`**
+- DTO 예시
+
+```
+public class LineStationCreateRequest {
+    private Long preStationId;
+    private Long stationId;
+    private int distance;
+    private int duration;
+    ...
+
+```
+
+**지하철 노선에 역 제거**
+
+- 노선과 제거할 지하차철역 식별값을 전달
+
+### 시나리오
+
+```
+Feature: 지하철 노선에 역 추가 / 제거
+
+Scenario: 지하철 노선에 역을 추가하고 제거한다.
+     Given 지하철역이 여러 개 추가되어있다.
+     And 지하철 노선이 추가되어있다.
+
+     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
+     Then 지하철역이 노선에 추가 되었다.
+
+     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+     Then 지하철역 목록을 응답 받는다.
+     And 새로 추가한 지하철역을 목록에서 찾는다.
+
+     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+     Then 지하철역이 노선에서 제거 되었다.
+
+     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+     Then 지하철역 목록을 응답 받는다.
+     And 제외한 지하철역이 목록에 존재하지 않는다.
+```
