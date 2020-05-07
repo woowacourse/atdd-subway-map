@@ -1,7 +1,8 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
 import {
   subwayLinesTemplate,
-  colorSelectOptionTemplate
+  colorSelectOptionTemplate,
+  subwayLineInfoTemplate
 } from "../../utils/templates.js";
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
@@ -59,6 +60,21 @@ function AdminLine() {
     }
   };
 
+  const showSubwayLineInfo = async event => {
+    const $target = event.target;
+    const $subwayLinesInfo = document.querySelector(".lines-info");
+    const isShowButton = $target.classList.contains("subway-line-item");
+    const lineListFromDb = await api.line.get();
+    if (isShowButton) {
+      lineListFromDb.map(line => {
+        if (line.title === $target.textContent.trim()) {
+          console.log(line);
+          $subwayLinesInfo.innerHTML = subwayLineInfoTemplate(line);
+        }
+      });
+    }
+  };
+
   const onEditSubwayLine = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-pencil");
@@ -81,11 +97,13 @@ function AdminLine() {
           subwayLinesTemplate(line)
       );
     })
+
   }
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, showSubwayLineInfo);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
