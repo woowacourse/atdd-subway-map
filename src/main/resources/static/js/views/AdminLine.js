@@ -45,11 +45,23 @@ function AdminLine() {
     componentClear();
   };
 
-  const onDeleteSubwayLine = event => {
+  const onDeleteSubwayLine = async event => {
+    event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       $target.closest(".subway-line-item").remove();
+      const lineName = event.target.parentNode.parentNode.innerText.trim();
+      const selectedLineId = subwayLines.find(subway => subway["name"] === lineName)["id"];
+      await api.line.delete(selectedLineId);
+      let index = 0;
+      for (let i = 0; i < subwayLines.length; i++) {
+        if (subwayLines[i]["id"] === selectedLineId) {
+          index = i;
+          break;
+        }
+      }
+      subwayLines.splice(index, 1);
     }
   };
 
