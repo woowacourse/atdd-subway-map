@@ -19,8 +19,33 @@ function AdminLine() {
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
-    saveLine();
+    if (validInput()) {
+      saveLine();
+    }
   };
+
+  function validInput() {
+    if ($subwayLineNameInput.value === "" || $subwayLineFirstTimeInput.value === "" ||
+      $subwayLineLastTimeInput.value === "" ||
+      $subwayLineColorInput.value === "") {
+      alert("값을 입력해야합니다.");
+      return false;
+    }
+
+    // todo 시간 유효성 검사
+
+    if (!/\d/.test($subwayLineIntervalTimeInput)) {
+      alert("숫자만 입력해주세요");
+      return false;
+    }
+
+    if ($subwayLineIntervalTimeInput.value <= 0) {
+      alert("양수만 입력해주세요.");
+      return false;
+    }
+
+    return true;
+  }
 
   function saveLine() {
     fetch("/lines", {
