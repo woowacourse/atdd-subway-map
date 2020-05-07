@@ -14,6 +14,9 @@ function AdminLine() {
     const $subwayLineFirstTime = document.querySelector("#first-time");
     const $subwayLineLastTime = document.querySelector("#last-time");
     const $subwayLineIntervalTime = document.querySelector("#interval-time");
+    const $viewStartTime = document.querySelector("#view-start-time");
+    const $viewEndTime = document.querySelector("#view-end-time");
+    const $viewIntervalTime = document.querySelector("#view-interval-time");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -32,7 +35,7 @@ function AdminLine() {
 
         const newSubwayLine = {
             name: $subwayLineNameInput.value,
-            //color: $subwayLineColorInput.value,
+            color: $subwayLineColorInput.value,
             startTime: $subwayLineFirstTime.value,
             endTime: $subwayLineLastTime.value,
             intervalTime: $subwayLineIntervalTime.value
@@ -41,6 +44,7 @@ function AdminLine() {
         api.line.create(newSubwayLine).then(
             function (response) {
                 if (response.status !== 201) {
+                    alert("생성 불가!");
                     throw new Error("HTTP status " + response.status);
                 }
                 addSubwayLineList(newSubwayLine);
@@ -53,6 +57,9 @@ function AdminLine() {
         $subwayLineFirstTime.value = "";
         $subwayLineLastTime.value = "";
         $subwayLineIntervalTime.value = "";
+        $viewStartTime.innerHTML = newSubwayLine.startTime;
+        $viewEndTime.innerHTML = newSubwayLine.endTime;
+        $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분"
     };
 
     const onDeleteSubwayLine = event => {
@@ -68,6 +75,20 @@ function AdminLine() {
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
             subwayLineModal.toggle();
+        }
+    };
+
+    const onSelectSubwayLine = event => {
+        const $target = event.target;
+        const isSelectSubwayLine
+            = $target.classList.contains("subway-line-item");
+        if (isSelectSubwayLine) {
+            api.line.get('/name/' + $target.innerText.trim()).then(line => {
+                    $viewStartTime.innerHTML = line.startTime.slice(0, 5);
+                    $viewEndTime.innerHTML = line.endTime.slice(0, 5);
+                    $viewIntervalTime.innerHTML = line.intervalTime + "분";
+                }
+            )
         }
     };
 
@@ -87,6 +108,7 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
             onCreateSubwayLine

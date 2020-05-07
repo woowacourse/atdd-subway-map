@@ -28,9 +28,8 @@ const api = (() => {
     const requestNoBody = (uri, config) => fetch(uri, config);
 
     const line = {
-        // request로 그냥 어떻게 처리하는지 모르겠어서 return을 했어요!
-        get() {
-            return request('/api/lines');
+        get(path = "") {
+            return request('/api/lines' + path);
         },
         create(data) {
             return requestNoBody(`/api/lines`, METHOD.POST(data));

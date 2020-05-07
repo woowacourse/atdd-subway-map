@@ -1,7 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -40,6 +38,12 @@ public class LineController {
 	public ResponseEntity<Void> createLine(@RequestBody LineRequest request) {
 		lineService.save(request.toLine());
 		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping("/name/{lineName}")
+	public ResponseEntity searchName(@PathVariable String lineName) {
+		LineResponse lineResponse = lineService.findLineWithStationByName(lineName);
+		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")

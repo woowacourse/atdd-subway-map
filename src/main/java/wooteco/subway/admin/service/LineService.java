@@ -1,21 +1,17 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-
 @Service
 public class LineService {
+
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -58,7 +54,14 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+        return LineResponse.of(line);
+    }
+
+    public LineResponse findLineWithStationByName(String name) {
+        Line line = lineRepository.findByLineName(name)
+            .orElseThrow(() -> new NoSuchElementException("해당하는 이름의 라인이 없습니다."));
         return LineResponse.of(line);
     }
 }
