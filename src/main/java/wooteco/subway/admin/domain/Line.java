@@ -53,6 +53,9 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }

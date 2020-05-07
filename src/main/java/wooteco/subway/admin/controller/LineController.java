@@ -15,6 +15,7 @@ import wooteco.subway.admin.dto.LineUpdateRequest;
 import wooteco.subway.admin.service.LineService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
@@ -45,15 +46,15 @@ public class LineController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable("id") Long lineId,
-                                           @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<Long> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId,
+                                           @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(lineId, lineUpdateRequest.toLine());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(lineId);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable("id") Long lineId) {
+    public ResponseEntity<Long> deleteLine(@PathVariable("id") Long lineId) {
         lineService.deleteLineById(lineId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(lineId);
     }
 }
