@@ -22,14 +22,6 @@ function AdminLine() {
             return alert(ERROR_MESSAGE.NOT_EMPTY);
         }
 
-        const newSubwayLine = {
-            title: $subwayLineNameInput.value,
-            startTime: $subwayStartTimeInput.value,
-            endTime: $subwayLastTimeInput.value,
-            intervalTime: $intervalTimeInput.value,
-            bgColor: $subwayLineColorInput.value
-        };
-
         let url = "/lines";
         let createRequest = {
             headers: {
@@ -37,25 +29,28 @@ function AdminLine() {
             },
             method: 'POST',
             body: JSON.stringify({
-                title: newSubwayLine.title,
-                startTime: newSubwayLine.startTime,
-                endTime: newSubwayLine.endTime,
-                intervalTime: newSubwayLine.intervalTime,
-                bgColor: newSubwayLine.bgColor
+                title: $subwayLineNameInput.value,
+                startTime: $subwayStartTimeInput.value,
+                endTime: $subwayLastTimeInput.value,
+                intervalTime: $intervalTimeInput.value,
+                bgColor: $subwayLineColorInput.value
             })
         };
 
         fetch(url, createRequest)
             .then(res => {
-                if (res.ok) {
-                    $subwayLineList.insertAdjacentHTML(
-                        "beforeend",
-                        subwayLinesTemplate(newSubwayLine)
-                    )
-                } else {
-                    alert("중복된 이름입니다");
+                    if (res.ok) {
+                        res.json().then(data => {
+                            $subwayLineList.insertAdjacentHTML(
+                                "beforeend",
+                                subwayLinesTemplate(data)
+                            )
+                        })
+                    } else {
+                        alert("중복된 이름입니다.");
+                    }
                 }
-            });
+            );
 
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
@@ -67,21 +62,12 @@ function AdminLine() {
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
-        const $title = $target.closest(".subway-line-item").innerText.trim();
-        console.log($name);
+        const $id = $target.closest(".subway-line-item").id;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton && confirm("지우시겠습니까?")) {
-            let deleteRequest = {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'delete',
-                body: JSON.stringify({
-                    title: $title
-                })
-            };
-
-            fetch("/lines", deleteRequest).then(res => {
+            fetch("/lines/" + $id, {
+                method: 'delete'
+            }).then(res => {
                 if (res.ok) {
                     $target.closest(".subway-line-item").remove();
                 }
@@ -93,7 +79,22 @@ function AdminLine() {
     const onUpdateSubwayLine = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
+        const $id = $target.closest(".subway-line-item").id;
         if (isUpdateButton) {
+            fetch(/lines/ + $id, {
+                method: 'get'
+            }).then(res => {
+                    if (res.ok) {
+                        res.json().then(data => {
+                            $subwayLineNameInput.value = data.title;
+                            $subwayLineColorInput.value = data.bgColor;
+                            $subwayStartTimeInput.value = data.startTime;
+                            $subwayLastTimeInput.value = data.endTime;
+                            $intervalTimeInput.value = data.intervalTime;
+                        })
+                    }
+                }
+            );
             subwayLineModal.toggle();
         }
     };

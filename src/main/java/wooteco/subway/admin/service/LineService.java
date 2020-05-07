@@ -59,12 +59,5 @@ public class LineService {
             throw new IllegalArgumentException("존재하는 이름입니다");
         });
         //이름형식검사
-
-    }
-
-    public void deleteLineByName(String name) {
-        lineRepository.findByTitle(name).ifPresent(line -> {
-            lineRepository.delete(line);
-        });
     }
 }

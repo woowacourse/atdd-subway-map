@@ -17,7 +17,7 @@ class LineRepositoryTest {
 
     @Test
     void save() {
-        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10, "bg-gray-300");
 
         Line persistLine = lineRepository.save(line);
 
@@ -26,20 +26,10 @@ class LineRepositoryTest {
 
     @Test
     void findByName() {
-        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10, "bg-gray-300");
 
         lineRepository.save(line);
 
         assertThat(lineRepository.findByTitle("1호선").get().getTitle()).isEqualTo("1호선");
-    }
-
-    @Test
-    void deleteByName() {
-        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
-
-        lineRepository.save(line);
-        lineRepository.delete(line);
-
-        assertThat(lineRepository.findByTitle("1호선").isPresent()).isFalse();
     }
 }
