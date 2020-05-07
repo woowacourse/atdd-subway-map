@@ -39,16 +39,16 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        createLine("신분당선", "blue");
+        createLine("1호선", "pink");
+        createLine("2호선", "yellow");
+        createLine("3호선", "green");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         //when
-        createDuplicatedLine("신분당선");
+        createDuplicatedLine("신분당선", "blue");
         //then
         List<LineResponse> linesAfterDuplication = getLines();
         assertThat(linesAfterDuplication.size()).isEqualTo(4);
@@ -86,12 +86,13 @@ public class LineAcceptanceTest {
                         extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    private void createLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("color", color);
 
         given().
                 body(params).
@@ -104,12 +105,13 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void createDuplicatedLine(String name) {
+    private void createDuplicatedLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("color", color);
 
         given().
             body(params).

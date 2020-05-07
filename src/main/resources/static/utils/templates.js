@@ -8,8 +8,9 @@ export const listItemTemplate = value =>
 
 export const subwayLinesTemplate = line =>
   `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
-      <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
-      ${line.title}
+      <span class="${line.color} w-3 h-3 rounded-full inline-block mr-1"></span>
+      <span class="line-name">${line.name}</span>
+      <div class="line-id" style="display:none">${line.id}</div>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-delete"></span>
       </button>
@@ -17,6 +18,16 @@ export const subwayLinesTemplate = line =>
          <span class="mdi mdi-pencil"></span>
       </button>
     </div>`;
+
+export const subwayLineInfoTemplate = line =>
+  `<div class="lines-info flex flex-wrap mb-3 w-full">
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.startTime}</div>
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.endTime}</div>
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
+    <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>
+  </div>`;
 
 export const optionTemplate = value =>
   `<option>${value}</option>`;

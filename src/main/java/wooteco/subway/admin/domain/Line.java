@@ -15,6 +15,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String color;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -22,17 +23,20 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String color) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.color = color;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String color) {
+        this(null, name, startTime, endTime, intervalTime, color);
     }
 
     public Long getId() {
@@ -53,6 +57,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public Set<LineStation> getStations() {
@@ -79,6 +87,9 @@ public class Line {
         }
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
         }
 
         this.updatedAt = LocalDateTime.now();

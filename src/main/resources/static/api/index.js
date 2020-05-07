@@ -1,5 +1,28 @@
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config);
+
+  const METHOD = {
+    PUT() {
+      return {
+        method: "PUT"
+      };
+    },
+    DELETE() {
+      return {
+        method: "DELETE"
+      };
+    },
+    POST(data) {
+      return {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      };
+    }
+  };
+
   const station = {
     get() {
       return request(`/stations`);
@@ -11,12 +34,30 @@ const api = (() => {
       return request(`/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+      return request(`/station/${id}`, METHOD.DELETE());
+    }
+  };
+
+  const line = {
+    get() {
+      return request(`/lines`);
+    },
+    getDetail(id) {
+      return request(`/lines/${id}`);
+    },
+    create(data) {
+      return request(`/lines`, METHOD.POST(data));
+    },
+    update(data, id) {
+      return request(`/lines/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      return request(`/lines/${id}`, METHOD.DELETE());
     }
   };
 
   return {
-    station
+    station, line
   };
 
 })();

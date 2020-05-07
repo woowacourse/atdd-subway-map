@@ -28,7 +28,7 @@ public class LineController {
 	@PostMapping("/lines")
 	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
 		Line line = lineRequest.toLine();
-		if (lineRepository.findByName(line.getName())) {
+		if (lineRepository.existsByName(line.getName())) {
 			return ResponseEntity
 				.badRequest()
 				.build();
@@ -71,5 +71,4 @@ public class LineController {
 		lineRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
-
 }
