@@ -40,6 +40,9 @@ const api = (() => {
     };
 
     const line = {
+        getOneLine(id) {
+            return request(`/api/lines/${id}`);
+        },
         get() {
             return request(`/api/lines`);
         },

@@ -63,6 +63,7 @@ function AdminLine() {
     /* 처음 지하철 정보들 뿌려주는 */
     const initDefaultSubwayLines = () => {
         api.line.get().then(data => data.map(line => {
+                console.log("#####" + line.intervalTime);
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(line)
@@ -71,9 +72,19 @@ function AdminLine() {
         )
     };
 
+    const onReadDetailedInfo = event => {
+        const $id = event.target.getAttribute("value");
+        api.line.getOneLine($id).then(data => {
+            document.querySelector('#start-time').textContent = data.startTime.slice(0, 5);
+            document.querySelector('#end-time').textContent = data.endTime.slice(0, 5);
+            document.querySelector('#interval').textContent = data.intervalTime;
+        });
+    };
+
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadDetailedInfo);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
