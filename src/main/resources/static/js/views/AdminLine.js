@@ -12,11 +12,29 @@ function AdminLine() {
     const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
+
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
 
     const subwayLineModal = new Modal();
+
+    const onViewSubwayInfo = event => {
+        const $target = event.target;
+        const $id = $target.id;
+
+        api.line.getLineById($id).then(data => {
+                const $subwayLineFirstTime = document.querySelector("#start-subway-time");
+                $subwayLineFirstTime.innerText = data.startTime;
+                const $subwayLineLastTime = document.querySelector("#last-subway-time");
+                $subwayLineLastTime.innerText = data.endTime;
+                const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
+                $subwayLineIntervalTime.innerText = data.intervalTime + "분";
+            }
+        );
+
+    }
+
     const onCreateSubwayLine = event => {
         event.preventDefault();
 
@@ -27,16 +45,16 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.create(data);
-        const newSubwayLine = {
-            title: $subwayLineNameInput.value,
-            bgColor: $subwayLineColorInput.value
-        };
-        console.log(newSubwayLine.title);
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
+        api.line.create(data)
+            .then(() => api.line.get().then(subwayLines => subwayLines.forEach(
+                subwayLine => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(subwayLine)
+                    );
+                }
+            )));
+
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
@@ -66,20 +84,12 @@ function AdminLine() {
     const initDefaultSubwayLines = () => {
         api.line.get().then(subwayLines => subwayLines.forEach(
             subwayLine => {
-                console.log(subwayLine);
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(subwayLine)
                 );
             }
         ));
-
-        // subwayData.map(line => {
-        //     $subwayLineList.insertAdjacentHTML(
-        //         "beforeend",
-        //         subwayLinesTemplate(line)
-        //     );
-        // });
     };
 
     const initEventListeners = () => {
@@ -89,6 +99,7 @@ function AdminLine() {
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
         );
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onViewSubwayInfo);
     };
 
     const onSelectColorHandler = event => {
@@ -116,8 +127,8 @@ function AdminLine() {
 
     this.init = () => {
         initDefaultSubwayLines();
-        initEventListeners();
         initCreateSubwayLineForm();
+        initEventListeners();
     };
 }
 
