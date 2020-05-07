@@ -1,5 +1,9 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
-import { colorSelectOptionTemplate, subwayLinesTemplate } from "../../utils/templates.js";
+import {
+  colorSelectOptionTemplate,
+  subwayLineInfoTemplate,
+  subwayLinesTemplate
+} from "../../utils/templates.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
@@ -10,6 +14,7 @@ function AdminLine() {
   const $firstTimeInput = document.querySelector("#first-time");
   const $lastTimeInput = document.querySelector("#last-time");
   const $intervalTimeInput = document.querySelector("#interval-time");
+  const $subwayLineInfo = document.querySelector("#subway-line-info");
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
@@ -33,13 +38,15 @@ function AdminLine() {
       body: JSON.stringify(newSubwayLine),
     }
     fetch("/lines", lineRequest)
-    .then(({ status }) => {
-      if (status !== 201) {
+    .then(response => {
+      if (response.status !== 201) {
         throw new Error("잘못된 요청입니다.");
       }
+      return response.json();
+    }).then(id => {
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
-        subwayLinesTemplate(newSubwayLine)
+        subwayLinesTemplate(newSubwayLine, id)
       );
       subwayLineModal.toggle();
       $subwayLineNameInput.value = "";
@@ -73,13 +80,27 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
-  const initDefaultSubwayLines = async () => {
+  const onGetSubwayLineInfo = event => {
+    const $target = event.target;
+    const id = $target.closest("div").id;
+    fetch(`/lines/${id}`)
+    .then(response => {
+      if (response.status === 200) {
+        return response.json();
+      }
+      throw new Error("잘못된 노선 번호입니다.");
+    }).then(line => {
+      $subwayLineInfo.innerHTML = subwayLineInfoTemplate(line);
+    }).catch(error => alert(error.message))
+  }
+
+  const initSubwayLines = async () => {
     const response = await fetch("/lines");
     const lines = await response.json();
     lines.map(line => {
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
-        subwayLinesTemplate(line)
+        subwayLinesTemplate(line, line.id)
       );
     });
   };
@@ -87,6 +108,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onGetSubwayLineInfo);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
@@ -117,7 +139,7 @@ function AdminLine() {
   };
 
   this.init = () => {
-    initDefaultSubwayLines();
+    initSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };
