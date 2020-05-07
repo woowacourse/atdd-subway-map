@@ -17,6 +17,7 @@ function AdminLine() {
     const $viewStartTime = document.querySelector("#view-start-time");
     const $viewEndTime = document.querySelector("#view-end-time");
     const $viewIntervalTime = document.querySelector("#view-interval-time");
+    const $subwayLineId = document.querySelector("#lineId");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -30,9 +31,12 @@ function AdminLine() {
         );
     }
 
-    const onCreateSubwayLine = event => {
-        event.preventDefault();
+    function removeSubwayLineList(id) {
+        let selectId = "#line-" + id;
+        $subwayLineList.removeChild(document.querySelector(selectId));
+    }
 
+    function onCreateSubwayLine() {
         let newSubwayLine = {
             name: $subwayLineNameInput.value,
             color: $subwayLineColorInput.value,
@@ -66,14 +70,15 @@ function AdminLine() {
         $subwayLineFirstTime.value = "";
         $subwayLineLastTime.value = "";
         $subwayLineIntervalTime.value = "";
+        $subwayLineId.value = "";
     };
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            const lineId = $target.closest(
-                ".subway-line-item").id;
+            const lineId = $target.closest(".subway-line-item").id.split(
+                "-")[1];
             api.line.delete("/" + lineId).then(response => {
                 if (response.status !== 200) {
                     alert("삭제불가!");
@@ -83,11 +88,22 @@ function AdminLine() {
         }
     };
 
-    const onUpdateSubwayLine = event => {
+    const onEditToggle = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            subwayLineModal.toggle();
+            const lineId = $target.closest(".subway-line-item").id.split(
+                "-")[1];
+            api.line.get('/' + lineId).then(res => {
+                    $subwayLineNameInput.value = res.name;
+                    $subwayLineColorInput.value = res.color;
+                    $subwayLineFirstTime.value = res.startTime;
+                    $subwayLineLastTime.value = res.endTime;
+                    $subwayLineIntervalTime.value = res.intervalTime;
+                    $subwayLineId.value = res.id;
+                    subwayLineModal.toggle();
+                }
+            )
         }
     };
 
@@ -120,12 +136,60 @@ function AdminLine() {
 
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditToggle);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
-            onCreateSubwayLine
+            createOrUpdate
         );
+    };
+
+    const createOrUpdate = event => {
+        event.preventDefault();
+
+        if ($subwayLineId.value === "") {
+            onCreateSubwayLine();
+            return;
+        }
+        onUpdateSubwayLine();
+    };
+
+    function onUpdateSubwayLine() {
+        let newSubwayLine = {
+            name: $subwayLineNameInput.value,
+            color: $subwayLineColorInput.value,
+            startTime: $subwayLineFirstTime.value,
+            endTime: $subwayLineLastTime.value,
+            intervalTime: $subwayLineIntervalTime.value
+        };
+
+        api.line.update("/" + $subwayLineId.value, newSubwayLine).then(res => {
+            if (res.status !== 200) {
+                return;
+            }
+            return res.json();
+        }).then(res => {
+            if (res === undefined) {
+                $viewStartTime.innerHTML = "";
+                $viewEndTime.innerHTML = "";
+                $viewIntervalTime.innerHTML = "";
+                return;
+            }
+            newSubwayLine['id'] = res.id;
+            removeSubwayLineList(res.id);
+            addSubwayLineList(newSubwayLine);
+            $viewStartTime.innerHTML = newSubwayLine.startTime;
+            $viewEndTime.innerHTML = newSubwayLine.endTime;
+            $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분";
+        });
+
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayLineFirstTime.value = "";
+        $subwayLineLastTime.value = "";
+        $subwayLineIntervalTime.value = "";
+        $subwayLineId.value = "";
     };
 
     const onSelectColorHandler = event => {
