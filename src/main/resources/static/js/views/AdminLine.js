@@ -11,13 +11,18 @@ function AdminLine() {
     const $subwayLineLastTimeInput = document.querySelector("#last-time");
     const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayLineId = document.querySelector("#subway-line-id");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
+    const $closeSubwayLineButton = document.querySelector(
+        "#subway-line-create-form .modal-close"
+    );
+
     const subwayLineModal = new Modal();
 
-    const onCreateSubwayLine = event => {
+    const checkCreateOrUpdate = async event => {
         event.preventDefault();
         const newSubwayLine = {
             name: $subwayLineNameInput.value,
@@ -26,32 +31,49 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             backgroundColor: $subwayLineColorInput.value
         };
-        let lineData = api.lines.create(newSubwayLine);
-        lineData.then(data => {
+        if ($subwayLineId.value === "") {
+            await onCreateSubwayLine(newSubwayLine);
+        } else {
+            await onEditSubwayLine(newSubwayLine);
+        }
+        subwayLineModal.toggle();
+        onEmptyInput();
+    };
+
+    const onCreateSubwayLine = (newSubwayLine) => {
+        return api.lines.create(newSubwayLine).then(data => {
             if (data.error) {
-                alert("입력값을 입력해주세요.")
+                alert("입력값을 입력해주세요.");
             } else {
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(data)
                 );
             }
+        });
+    }
+
+    const onEditSubwayLine = (newSubwayLine) => {
+        return api.lines.update($subwayLineId.value, newSubwayLine).then(data => {
+            if (data.error) {
+                alert("입력값을 입력해주세요.")
+            } else {
+                let standardNode = document.querySelector(`[data-id="${$subwayLineId.value}"]`);
+                let divNode = document.createElement("div");
+                divNode.innerHTML = subwayLinesTemplate(data);
+                $subwayLineList.insertBefore(divNode.firstChild, standardNode);
+                standardNode.remove();
+            }
         })
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineFirstTimeInput.value = "";
-        $subwayLineLastTimeInput.value = "";
-        $subwayLineIntervalTimeInput.value = "";
-        $subwayLineColorInput.value = "";
-    };
+    }
 
     const onSelectSubwayLine = event => {
         const $target = event.target;
         const isSubwayLine = $target.classList.contains("subway-line-item");
         if (isSubwayLine) {
             api.lines.find($target.id).then(data => {
-                document.querySelector("#line-info-first-time").innerText = data.startTime.substring(0,5);
-                document.querySelector("#line-info-last-time").innerText = data.endTime.substring(0,5);
+                document.querySelector("#line-info-first-time").innerText = data.startTime.substring(0, 5);
+                document.querySelector("#line-info-last-time").innerText = data.endTime.substring(0, 5);
                 document.querySelector("#line-info-interval-time").innerText = data.intervalTime;
             })
         }
@@ -62,7 +84,7 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
             $target.closest(".subway-line-item").remove();
-            let subwayLineId = $target.parentElement.parentElement.id;
+            let subwayLineId = $target.parentElement.parentElement.dataset.id;
             api.lines.delete(subwayLineId);
         }
     };
@@ -71,27 +93,28 @@ function AdminLine() {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            let subwayLineId = $target.parentElement.parentElement.id;
+            let subwayLineId = $target.parentElement.parentElement.dataset.id;
             api.lines.find(subwayLineId).then(data => {
+                $subwayLineId.value = data.id;
                 $subwayLineNameInput.value = data.name;
                 $subwayLineFirstTimeInput.value = data.startTime;
-                $subwayLineLastTimeInput.value = data.endTime;;
-                $subwayLineIntervalTimeInput.value = data.intervalTime;;
+                $subwayLineLastTimeInput.value = data.endTime;
+                $subwayLineIntervalTimeInput.value = data.intervalTime;
                 $subwayLineColorInput.value = data.backgroundColor;
             })
             subwayLineModal.toggle();
-            $subwayLineNameInput.value = "";
-            $subwayLineFirstTimeInput.value = "";
-            $subwayLineLastTimeInput.value = "";
-            $subwayLineIntervalTimeInput.value = "";
-            $subwayLineColorInput.value = "";
         }
+        onEmptyInput();
     };
 
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-pencil");
-    };
+    const onEmptyInput = () => {
+        $subwayLineId.value = "";
+        $subwayLineNameInput.value = "";
+        $subwayLineFirstTimeInput.value = "";
+        $subwayLineLastTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
+        $subwayLineColorInput.value = "";
+    }
 
     const initDefaultSubwayLines = () => {
         api.lines.get().then(data => {
@@ -109,9 +132,14 @@ function AdminLine() {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
+
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
-            onCreateSubwayLine
+            checkCreateOrUpdate
+        );
+        $closeSubwayLineButton.addEventListener(
+            EVENT_TYPE.CLICK,
+            onEmptyInput
         );
     };
 
