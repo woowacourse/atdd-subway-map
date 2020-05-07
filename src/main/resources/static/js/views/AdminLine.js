@@ -1,4 +1,4 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
@@ -19,6 +19,10 @@ function AdminLine() {
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
+        if (!$subwayLineNameInput.value) {
+            return alert(ERROR_MESSAGE.NOT_EMPTY);
+        }
+
         const newSubwayLine = {
             title: $subwayLineNameInput.value,
             startTime: $subwayStartTimeInput.value,
@@ -58,15 +62,37 @@ function AdminLine() {
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
+        $subwayStartTimeInput.value = "";
+        $subwayLastTimeInput.value = "";
+        $intervalTimeInput.value = "";
     };
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
+        const $name = $target.closest(".subway-line-item").innerText.trim();
+        console.log($name);
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            $target.closest(".subway-line-item").remove();
+            if (confirm("지우시겠습니까?")) {
+                let deleteRequest = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'delete',
+                    body: JSON.stringify({
+                        name: $name
+                    })
+                };
+
+                fetch("/lines", deleteRequest).then(res => {
+                    if (res.ok) {
+                        $target.closest(".subway-line-item").remove();
+                    }
+                });
+            }
         }
     };
+
 
     const onUpdateSubwayLine = event => {
         const $target = event.target;

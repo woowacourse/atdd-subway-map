@@ -28,8 +28,18 @@ class LineRepositoryTest {
     void findByName() {
         Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
 
-        Line persistLine = lineRepository.save(line);
+        lineRepository.save(line);
 
         assertThat(lineRepository.findByName("1호선").get().getName()).isEqualTo("1호선");
+    }
+
+    @Test
+    void deleteByName() {
+        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+
+        lineRepository.save(line);
+        lineRepository.delete(line);
+
+        assertThat(lineRepository.findByName("1호선").isPresent()).isFalse();
     }
 }

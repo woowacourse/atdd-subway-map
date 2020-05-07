@@ -15,4 +15,8 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("select * from line where name = :name")
     Optional<Line> findByName(@Param("name") String name);
+
+    // @Query("delete from line where name = :name")
+    // void deleteByName(String name);
+
 }

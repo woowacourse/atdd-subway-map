@@ -61,4 +61,10 @@ public class LineService {
         //이름형식검사
 
     }
+
+    public void deleteLineByName(String name) {
+        lineRepository.findByName(name).ifPresent(line -> {
+            lineRepository.delete(line);
+        });
+    }
 }
