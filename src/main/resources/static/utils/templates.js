@@ -11,10 +11,10 @@ export const subwayLinesTemplate = line =>
       <span class="${line.backgroundColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.name}
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
-         <span class="mdi mdi-delete"></span>
+         <span class="modal-open mdi mdi-delete"></span>
       </button>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
-         <span class="mdi mdi-pencil"></span>
+         <span class="modal-open mdi mdi-pencil"></span>
       </button>
     </div>`;
 

@@ -28,10 +28,14 @@ function AdminLine() {
         };
         let lineData = api.lines.create(newSubwayLine);
         lineData.then(data => {
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(data)
-            );
+            if (data.error) {
+                alert("입력값을 입력해주세요.")
+            } else {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(data)
+                );
+            }
         })
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
@@ -67,7 +71,20 @@ function AdminLine() {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
+            let subwayLineId = $target.parentElement.parentElement.id;
+            api.lines.find(subwayLineId).then(data => {
+                $subwayLineNameInput.value = data.name;
+                $subwayLineFirstTimeInput.value = data.startTime;
+                $subwayLineLastTimeInput.value = data.endTime;;
+                $subwayLineIntervalTimeInput.value = data.intervalTime;;
+                $subwayLineColorInput.value = data.backgroundColor;
+            })
             subwayLineModal.toggle();
+            $subwayLineNameInput.value = "";
+            $subwayLineFirstTimeInput.value = "";
+            $subwayLineLastTimeInput.value = "";
+            $subwayLineIntervalTimeInput.value = "";
+            $subwayLineColorInput.value = "";
         }
     };
 
