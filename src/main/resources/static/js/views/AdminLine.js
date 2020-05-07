@@ -3,6 +3,7 @@ import { colorSelectOptionTemplate, subwayLinesTemplate } from "../../utils/temp
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -59,6 +60,17 @@ function AdminLine() {
     });
   };
 
+  const initSubwayLines = async () => {
+    const initLines = await api.line.get();
+
+    initLines.map(line => {
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(line)
+      );
+    });
+  };
+
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
@@ -92,7 +104,7 @@ function AdminLine() {
   };
 
   this.init = () => {
-    initDefaultSubwayLines();
+    initSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };
