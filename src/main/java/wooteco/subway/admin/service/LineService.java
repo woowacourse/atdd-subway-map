@@ -21,7 +21,18 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
+        validate(line);
+        System.out.println("HERE "+ line.getName());
         return LineResponse.of(lineRepository.save(line));
+    }
+
+    private void validate(Line line) {
+        List<Line> savedLines = lineRepository.findAll();
+        for (Line savedLine : savedLines) {
+            if (savedLine.getName().equals(line.getName())) {
+                throw new IllegalArgumentException("중복되는 역이 존재합니다.");
+            }
+        }
     }
 
     public LineResponse findLine(Long id) {
