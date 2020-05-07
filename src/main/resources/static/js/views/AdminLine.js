@@ -1,6 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
@@ -10,12 +9,12 @@ function AdminLine() {
   const $subwayLineFirstTimeInput = document.querySelector("#first-time");
   const $subwayLineLastTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
-  const $createSubwayLineButton = document.querySelector(
-    "#subway-line-create-form #submit-button"
-  );
-
+  const $createSubwayLineButton = document.querySelector("#subway-line-create-form #submit-button");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
   const subwayLineModal = new Modal();
+  const $startTimeContainer = document.querySelector("#start-time-container");
+  const $endTimeContainer = document.querySelector("#end-time-container");
+  const $intervalTimeContainer = document.querySelector("#interval-time-container");
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
@@ -34,7 +33,7 @@ function AdminLine() {
 
     // todo 시간 유효성 검사
 
-    if (!/\d/.test($subwayLineIntervalTimeInput)) {
+    if (!/\d/.test($subwayLineIntervalTimeInput.value)) {
       alert("숫자만 입력해주세요");
       return false;
     }
@@ -65,6 +64,7 @@ function AdminLine() {
 
   function addLineInView(data) {
     const newSubwayLine = {
+      id: data.id,
       title: data.name,
       bgColor: data.lineColor
     };
@@ -72,9 +72,37 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
+    $subwayLineList.lastChild.addEventListener(
+      EVENT_TYPE.CLICK,
+      onReadSubwayLine
+    );
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
+  }
+
+  const onReadSubwayLine = event => {
+    event.preventDefault();
+    selectLine(event);
+  };
+
+  function selectLine(event) {
+    console.log(event.currentTarget);
+
+    const lineId = event.currentTarget.firstElementChild.id;
+
+    fetch(`/lines/${lineId}`, {
+      method: "GET",
+      headers: {"Content-Type": "application/json"}
+    })
+      .then(response => response.json())
+      .then(data => showLineDetail(data));
+  }
+
+  function showLineDetail(data) {
+    $startTimeContainer.innerHTML = data.startTime;
+    $endTimeContainer.innerHTML = data.endTime;
+    $intervalTimeContainer.innerHTML = data.intervalTime;
   }
 
   const onDeleteSubwayLine = event => {
@@ -99,12 +127,12 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
+    // defaultSubwayLines.map(line => {
+    //   $subwayLineList.insertAdjacentHTML(
+    //     "beforeend",
+    //     subwayLinesTemplate(line)
+    //   );
+    // });
   };
 
   const initEventListeners = () => {
@@ -140,7 +168,7 @@ function AdminLine() {
   };
 
   this.init = () => {
-    initDefaultSubwayLines();
+    // initDefaultSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };
