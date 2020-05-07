@@ -75,6 +75,9 @@ public class Line {
         if (line.getName() != null) {
             this.name = line.getName();
         }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
+        }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
         }
