@@ -25,17 +25,17 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => data.json());
+    const request = (uri, config) => fetch(uri, config);
 
     const station = {
         get() {
-            return request(`/stations`);
+            return request(`/stations`).then(data => data.json());
         },
         create(data) {
-            return request(`/stations`, METHOD.POST(data));
+            return request(`/stations`, METHOD.POST(data)).then(data => data.json());
         },
         update(data) {
-            return request(`/stations/${id}`, METHOD.PUT(data));
+            return request(`/stations/${id}`, METHOD.PUT(data)).then(data => data.json());
         },
         delete(id) {
             return request(`/stations/${id}`, METHOD.DELETE());
@@ -44,13 +44,13 @@ const api = (() => {
 
     const line = {
         get() {
-            return request(`/lines/${id}`);
+            return request(`/lines/${id}`).then(data => data.json());
         },
         create(data) {
-            return request(`/lines`, METHOD.POST(data));
+            return request(`/lines`, METHOD.POST(data)).then(data => data.json());
         },
         update(date) {
-            return request(`/lines/${id}`, METHOD.PUT(date));
+            return request(`/lines/${id}`, METHOD.PUT(date)).then(data => data.json());
         },
         delete(id) {
             return request(`/lines/${id}`, METHOD.DELETE());
@@ -59,7 +59,7 @@ const api = (() => {
 
     const lines = {
         get() {
-            return request(`/lines`);
+            return request(`/lines`).then(data => data.json());
         },
     };
 

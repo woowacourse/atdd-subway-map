@@ -6,6 +6,7 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
+    let lines = [];
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
     const $subwayFirstTimeInput = document.querySelector("#first-time");
@@ -18,7 +19,7 @@ function AdminLine() {
     );
     const subwayLineModal = new Modal();
 
-    const onCreateSubwayLine = event => {
+    const onCreateSubwayLine = async event => {
         event.preventDefault();
         const newSubwayLine = {
             name: $subwayLineNameInput.value,
@@ -27,7 +28,8 @@ function AdminLine() {
             intervalTime: $subwayIntervalInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.create(newSubwayLine);
+        const line = await api.line.create(newSubwayLine);
+        lines = [...lines, line];
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(newSubwayLine)
@@ -40,8 +42,12 @@ function AdminLine() {
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
+        const lineName = $target.closest('.subway-line-item').innerText.trim();
         if (isDeleteButton) {
             $target.closest(".subway-line-item").remove();
+            const deleteLine = lines.find(line => line.name === lineName);
+            api.line.delete(deleteLine.id);
+            lines = lines.filter(line => line.name !== lineName);
         }
     };
 
@@ -101,7 +107,7 @@ function AdminLine() {
 
     const showLines = async () => {
         const persistLines = await api.lines.get();
-        console.log(persistLines);
+        lines = [...persistLines];
         persistLines.forEach(persistLine => $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(persistLine)
