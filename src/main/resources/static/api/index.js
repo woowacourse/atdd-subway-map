@@ -40,10 +40,6 @@ const api = (() => {
         }
     };
 
-    return {
-        station
-    };
-
     const line = {
         get() {
             return request(`/lines`);
@@ -60,7 +56,7 @@ const api = (() => {
     };
 
     return {
-        line
+        station, line
     };
 })();
 
