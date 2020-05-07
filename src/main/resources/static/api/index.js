@@ -1,7 +1,12 @@
 const METHOD = {
-  PUT() {
+  PUT(data) {
     return {
-      method: "PUT"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "charset" : "UTF-8"
+      },
+      body: JSON.stringify(data)
     };
   },
   DELETE() {

@@ -24,11 +24,11 @@
       </div>
       <div class="lines-info flex flex-wrap mb-3 w-full">
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
-        <div id="selected-first-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">05:00</div>
+        <div id="selected-first-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">00:00</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
-        <div id="selected-last-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">23:30</div>
+        <div id="selected-last-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">00:00</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
-        <div id="selected-interval-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">10분</div>
+        <div id="selected-interval-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">0분</div>
       </div>
     </div>
     <div class="mt-5 flex subway-lines-container relative overflow-y-auto">
@@ -45,6 +45,7 @@
       <div class="flex justify-center items-center pb-3 pt-3">
         <p class="text-2xl font-bold ">노선 정보</p>
       </div>
+      <input id="selected-id" type="hidden" value="">
       <form id="subway-line-create-form" class="mb-4">
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="subway-line-name">
@@ -52,7 +53,6 @@
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="subway-line-name" type="text" placeholder="노선 이름을 입력해주세요">
         </div>
-
 
         <div class="flex mb-4">
           <div class="w-1/3 pr-2">
@@ -65,7 +65,7 @@
             <label class="block text-gray-700 text-sm font-bold mb-2" for="last-time">
               막차 시간
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="last-time" type="text" placeholder="막차 시간">
+            <input fclass="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="last-time" type="text" placeholder="막차 시간">
           </div>
 
           <div class="w-1/3">
