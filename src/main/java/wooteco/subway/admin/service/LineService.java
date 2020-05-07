@@ -52,4 +52,11 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 id입니다"));
         return LineResponse.of(line);
     }
+
+    public LineResponse findByName(String name) {
+        Line line = lineRepository.findByName(name)
+            .orElseThrow(()->new IllegalArgumentException("잘못된 이름입니다."));
+
+        return LineResponse.of(line);
+    }
 }

@@ -60,6 +60,29 @@ function AdminLine() {
     }
   };
 
+  const onReadSubwayLine = event => {
+    const $target = event.target;
+    const isSubwayLineItem = $target.classList.contains("subway-line-item");
+    if (isSubwayLineItem) {
+      const subwayLineName ={
+        name: $target.innerText.trim()
+      };
+
+      fetch("/lines/find", {
+        method:'POST',
+        headers:{
+          'Content-Type' : 'application/json; charset=utf-8'
+        },
+        body:JSON.stringify(subwayLineName)
+      }).then(response=>response.json())
+      .then(jsonResponse=>{
+        document.querySelector("#first-time-display").innerText = jsonResponse.startTime.toString().substr(0, 5);
+        document.querySelector("#last-time-display").innerText = jsonResponse.endTime.toString().substr(0, 5);
+        document.querySelector("#interval-time-display").innerText = jsonResponse.intervalTime + "분";
+      });
+    }
+  }
+
   const onUpdateSubwayLine = event => {
     const $target = event.target;
     const isUpdateButton = $target.classList.contains("mdi-pencil");
@@ -93,6 +116,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayLine);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
