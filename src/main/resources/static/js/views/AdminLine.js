@@ -23,24 +23,21 @@ function AdminLine() {
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
-    const newSubwayLine = {
+    let newSubwayLine = {
         title: $subwayLineNameInput.value,
         startTime: $subwayLineFirstTimeInput.value,
-        lastTime: $subwayLineLastTImeInput.value,
+        endTime: $subwayLineLastTImeInput.value,
         intervalTime: $subwayLineIntervalTimeInput.value,
         bgColor: $subwayLineColorInput.value
     };
 
-    fetch("/lines", {
-      method : 'POST',
-      body : newSubwayLine,
-      headers : {
-        'Content-Type' : 'application/json'
-      }}
-    ).then($subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(newSubwayLine)
-    )
+    api.line.create(newSubwayLine).
+    then(line => {
+      $subwayLineList.insertAdjacentHTML(
+          "beforeend",
+          subwayLinesTemplate(line)
+      )
+    }
   )
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";

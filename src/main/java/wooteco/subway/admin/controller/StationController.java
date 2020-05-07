@@ -30,6 +30,7 @@ public class StationController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest view) {
+        System.out.println(view.toString());
         Line persistLine = lineService.save(view.toLine());
 
         return ResponseEntity
@@ -44,7 +45,7 @@ public class StationController {
 
     @GetMapping("/lines")
     public ResponseEntity showLines() {
-        return ResponseEntity.ok().body(LineResponse.listOf(lineService.showLines()));
+        return ResponseEntity.ok(lineService.showLines());
     }
 
     @GetMapping("/lines/{id}")

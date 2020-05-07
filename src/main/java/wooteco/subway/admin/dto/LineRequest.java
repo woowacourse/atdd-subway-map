@@ -37,4 +37,15 @@ public class LineRequest {
     public Line toLine() {
         return new Line(title, startTime, endTime, intervalTime, bgColor);
     }
+
+    @Override
+    public String toString() {
+        return "LineRequest{" +
+                "title='" + title + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", intervalTime=" + intervalTime +
+                ", bgColor='" + bgColor + '\'' +
+                '}';
+    }
 }
