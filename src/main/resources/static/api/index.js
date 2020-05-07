@@ -63,7 +63,7 @@ const api = (() => {
             return request(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/lines/${id}`, METHOD.DELETE);
+            return request(`/lines/${id}`, METHOD.DELETE());
         }
     };
 
