@@ -1,7 +1,10 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +13,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 
@@ -19,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -65,12 +71,32 @@ public class LineStationAcceptanceTest {
         createLine("1호선");
 
         List<Line> lines = getLines();
-        Line line = getLine(lines.get(0).getId());
+        Long firstLineId = lines.get(0).getId();
+        System.out.println("id : " + firstLineId);
+        Line line = getLine(firstLineId);
 
-        createLineStation();
+        createLineStation(firstLineId);
+        Set<LineStation> stations = getStations(firstLineId);
+        assertThat(stations.size()).isEqualTo(1);
+        System.out.println("stations : " + stations.toString());
+
+
+
     }
 
-    private void createLineStation() {
+    private Set getStations(Long id) {
+        return given().
+        when().
+            get("/lines/" + id + "/stations").
+        then().
+            log().all().
+            statusCode(HttpStatus.OK.value()).
+            extract().
+            as(Set.class);
+
+    }
+
+    private void createLineStation(Long id) {
         Map<String, String> params = new HashMap<>();
         params.put("stationId", "1");
         params.put("preStationId", "2");
@@ -78,14 +104,14 @@ public class LineStationAcceptanceTest {
         params.put("duration", "1");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/line-station").
+            post("/lines/" + id + "/station-add").
         then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            log().all().
+            statusCode(HttpStatus.OK.value());
     }
 
     private void createStation(String name) {
@@ -93,14 +119,14 @@ public class LineStationAcceptanceTest {
         params.put("name", name);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/stations").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private void createLine(String name) {
@@ -112,32 +138,32 @@ public class LineStationAcceptanceTest {
         params.put("backgroundColor", "bg-red-800");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private List<Line> getLines() {
         return
-                given().
+            given().
                 when().
-                        get("/lines").
+                get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", Line.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", Line.class);
     }
 
     private Line getLine(Long id) {
         return given().when().
-                get("/lines/" + id).
-                then().
-                log().all().
-                extract().as(Line.class);
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(Line.class);
     }
 }
