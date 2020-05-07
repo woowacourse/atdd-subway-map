@@ -15,9 +15,7 @@ const METHOD = {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                content: data
-            })
+            body: JSON.stringify(data)
         };
     }
 };
@@ -30,13 +28,13 @@ const api = (() => {
             return request(`/api/stations`);
         },
         create(data) {
-            return request(`/api/station`, METHOD.POST(data));
+            return request(`/api/stations`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/api/station/${id}`, METHOD.PUT(data));
+            return request(`/api/stations/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/api/station/${id}`, METHOD.DELETE);
+            return request(`/api/stations/${id}`, METHOD.DELETE);
         }
     };
 
@@ -45,7 +43,7 @@ const api = (() => {
             return request(`/api/lines`);
         },
         create(data) {
-            return request(`/api/line`, METHOD.POST(data));
+            return request(`/api/lines`, METHOD.POST(data));
         },
         update(data, id) {
             return request(`/api/line/${id}`, METHOD.PUT(data));
@@ -56,7 +54,7 @@ const api = (() => {
     };
 
     return {
-        station
+        line
     };
 })();
 

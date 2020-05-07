@@ -26,13 +26,13 @@ public class LineController {
         this.service = service;
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity addLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
         Line persistLine = service.save(line);
 
         return ResponseEntity
-            .created(URI.create("/lines/" + persistLine.getId()))
+            .created(URI.create("/api/lines/" + persistLine.getId()))
             .body(LineResponse.of(persistLine));
     }
 
