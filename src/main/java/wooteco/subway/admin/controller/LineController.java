@@ -50,8 +50,8 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-        lineService.updateLine(id, view.toLine());
-        return ResponseEntity.ok().build();
+        Line line = lineService.updateLine(id, view.toLine());
+        return ResponseEntity.ok().body(line);
     }
 
     @DeleteMapping("/lines/{id}")
