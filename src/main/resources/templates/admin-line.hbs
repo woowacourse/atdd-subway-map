@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="kr">
 <head>
-  <meta charset="UTF-8"/>
-  <title>subway admin</title>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
-        name="viewport"/>
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css" rel="stylesheet"/>
-  <link href="css/admin-app.css" rel="stylesheet"/>
-  <link href="css/admin-line.css" rel="stylesheet"/>
+    <meta charset="UTF-8"/>
+    <title>subway admin</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+          name="viewport"/>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/>
+    <link href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css" rel="stylesheet"/>
+    <link href="/css/admin-app.css" rel="stylesheet"/>
+    <link href="/css/admin-line.css" rel="stylesheet"/>
 </head>
 <body class="bg-gray-200 h-screen">
 <div class="flex justify-center md:py-10 lg:py-10 app-container">
-  <div class="max-w-md width-450px rounded bg-white shadow-lg p-6">
-    <div>
-      <div class="font-bold text-xl mb-4 relative w-full flex items-stretch">
-        <div class="flex-1"></div>
-        <div class="flex-1 text-center">노선 관리</div>
-        <div class="flex-1 flex justify-end">
-          <button class="modal-open bg-transparent bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 text-sm px-3 py-1 rounded"
+    <div class="max-w-md width-450px rounded bg-white shadow-lg p-6">
+        <div>
+            <div class="font-bold text-xl mb-4 relative w-full flex items-stretch">
+                <div class="flex-1"></div>
+                <div class="flex-1 text-center">노선 관리</div>
+                <div class="flex-1 flex justify-end">
+                    <button class="modal-open bg-transparent bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 text-sm px-3 py-1 rounded"
                   id="subway-line-add-btn">
             노선 추가
           </button>
@@ -92,17 +92,17 @@
 
         <div class="flex justify-end pt-4">
           <button class="modal-close px-4 bg-transparent p-3 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-700 mr-2 text-sm">
-            취소
+              취소
           </button>
-          <button class="px-4 bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 rounded text-white text-sm"
-                  id="submit-button" type="submit">확인
-          </button>
+            <button class="px-4 bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 rounded text-white text-sm"
+                    id="submit-button" type="submit">확인
+            </button>
         </div>
       </form>
     </div>
   </div>
 </div>
-<script src="js/AdminApp.js" type="module"></script>
-<script src="js/views/AdminLine.js" type="module"></script>
+<script src="/js/AdminApp.js" type="module"></script>
+<script src="/js/views/AdminLine.js" type="module"></script>
 </body>
 </html>

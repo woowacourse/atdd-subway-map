@@ -40,6 +40,37 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime, color);
     }
 
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        // TODO: 구현
+    }
+
+    public void removeLineStationById(Long stationId) {
+        // TODO: 구현
+    }
+
+    public List<Long> getLineStationsId() {
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -72,34 +103,7 @@ public class Line {
         return updatedAt;
     }
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
-    }
-
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
-    }
-
-    public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+    public String getColor() {
+        return color;
     }
 }

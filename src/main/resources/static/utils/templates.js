@@ -23,21 +23,21 @@ export const optionTemplate = value => `<option>${value}</option>`;
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
       <a href="/" class="mr-2">
-        <img src="./images/logo_small.png" class="w-6">
+        <img src="/images/logo_small.png" class="w-6">
       </a>
     <div class="flex justify-start">
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-         <a href="/admin-station.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+         <a href="/templates/admin-station.hbs" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           역 관리
           </a>
       </div>
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-         <a href="/admin-line.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+         <a href="/templates/admin-line.hbs" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           노선 관리
           </a>
       </div>
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-          <a href="/admin-edge.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+          <a href="/templates/admin-edge.hbs" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           구간 관리
           </a>
       </div>

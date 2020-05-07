@@ -28,4 +28,4 @@ CREATE TABLE IF NOT EXISTS LINE_STATION
     distance       int                   not null,
     duration       int                   not null,
     primary key (id)
-)
+);

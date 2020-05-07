@@ -23,8 +23,15 @@ public class LineService {
 
     @Transactional
     public Long save(Line line) {
+        lineRepository.findByName(line.getName())
+                .ifPresent(this::throwAlreadySavedException);
+
         Line persistLine = lineRepository.save(line);
         return persistLine.getId();
+    }
+
+    private void throwAlreadySavedException(Line line) {
+        throw new IllegalArgumentException(line.getName() + " : 이미 존재하는 노선 이름입니다.");
     }
 
     @Transactional(readOnly = true)

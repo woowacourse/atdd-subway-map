@@ -1,4 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
+import {api} from "../../api/index.js"
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
@@ -51,6 +52,7 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
+        console.log(api.line.get());
         defaultSubwayLines.map(line => {
             $subwayLineList.insertAdjacentHTML(
                 "beforeend",

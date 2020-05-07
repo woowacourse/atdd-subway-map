@@ -1,4 +1,4 @@
-const METHOD = {
+export const METHOD = {
   PUT() {
     return {
       method: "PUT"
@@ -40,8 +40,14 @@ const api = (() => {
     }
   };
 
+  const line = {
+    get() {
+      return request(`/lines`);
+    }
+  };
+
   return {
-    station
+    station, line
   };
 })();
 

@@ -1,7 +1,7 @@
 spring:
-  mvc:
-    view:
-      suffix: .html
   h2:
     console:
       enabled: true
+  datasource:
+    schema: classpath:schema.sql
+    data: classpath:data.sql
