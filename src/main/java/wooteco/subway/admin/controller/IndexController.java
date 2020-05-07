@@ -11,14 +11,19 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/stations")
-    public String stations() {
+    @GetMapping("/admin-station")
+    public String admin_station() {
         return "admin-station";
     }
 
-    @GetMapping("/lines")
-    public String lines() {
+    @GetMapping("/admin-line")
+    public String stations() {
         return "admin-line";
+    }
+
+    @GetMapping("/admin-edge")
+    public String lines() {
+        return "admin-edge";
     }
 
 }

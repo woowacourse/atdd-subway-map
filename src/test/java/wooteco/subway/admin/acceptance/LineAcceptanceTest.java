@@ -1,15 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -73,8 +74,8 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
-                then().
+            get("/api/lines/" + id).
+            then().
                         log().all().
                         extract().as(LineResponse.class);
     }
@@ -87,12 +88,12 @@ public class LineAcceptanceTest {
         params.put("intervalTime", "10");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/api/lines").
+            then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -104,21 +105,21 @@ public class LineAcceptanceTest {
         params.put("intervalTime", "10");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                put("/lines/" + id).
-        then().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            put("/api/lines/" + id).
+            then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
 
     private List<LineResponse> getLines() {
         return
-                given().
+            given().
                 when().
-                        get("/lines").
+                get("/api/lines").
                 then().
                         log().all().
                         extract().
@@ -127,9 +128,9 @@ public class LineAcceptanceTest {
 
     private void deleteLine(Long id) {
         given().
-                when().
-                delete("/lines/" + id).
-                then().
+            when().
+            delete("/api/lines/" + id).
+            then().
                 log().all();
     }
 }

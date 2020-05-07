@@ -27,16 +27,31 @@ const api = (() => {
 
     const station = {
         get() {
-            return request(`/stations`);
+            return request(`/api/stations`);
         },
         create(data) {
-            return request(`/station`, METHOD.POST(data));
+            return request(`/api/station`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/station/${id}`, METHOD.PUT(data));
+            return request(`/api/station/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/station/${id}`, METHOD.DELETE);
+            return request(`/api/station/${id}`, METHOD.DELETE);
+        }
+    };
+
+    const line = {
+        get() {
+            return request(`/api/lines`);
+        },
+        create(data) {
+            return request(`/api/line`, METHOD.POST(data));
+        },
+        update(data, id) {
+            return request(`/api/line/${id}`, METHOD.PUT(data));
+        },
+        delete(id) {
+            return request(`/api/line/${id}`, METHOD.DELETE);
         }
     };
 
