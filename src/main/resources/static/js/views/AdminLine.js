@@ -3,6 +3,7 @@ import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templa
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js"
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
@@ -20,17 +21,17 @@ function AdminLine() {
     const onCreateSubwayLine = event => {
         event.preventDefault();
         const newSubwayLine = {
-            title: $subwayLineNameInput.value,
+            name: $subwayLineNameInput.value,
             bgColor: $subwayLineColorInput.value,
             startTime: $subwayLineStartTimeInput.value,
             endTime: $subwayLineEndTimeInput.value,
-            intervalTime: $subwayLineIntervalTimeInput
+            intervalTime: $subwayLineIntervalTimeInput.value
         };
+        let result = api.line.create(newSubwayLine);
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(newSubwayLine)
         );
-        fetch()
 
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
