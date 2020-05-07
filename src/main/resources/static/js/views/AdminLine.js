@@ -7,18 +7,41 @@ import Modal from "../../ui/Modal.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
-  const $subwayLineColorInput = document.querySelector("#subway-line-color");
-
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
+
+  const $subwayLineColorInput = document.querySelector("#subway-line-color");
   const subwayLineModal = new Modal();
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
+    saveLine();
+  };
+
+  function saveLine() {
+    fetch("/lines", {
+      method: "POST",
+      body: JSON.stringify({
+        name: $subwayLineNameInput.value,
+        startTime: $subwayLineFirstTimeInput.value,
+        endTime: $subwayLineLastTimeInput.value,
+        intervalTime: $subwayLineIntervalTimeInput.value,
+        lineColor: $subwayLineColorInput.value
+      }),
+      headers: {"Content-Type": "application/json"}
+    })
+      .then(response => response.json())
+      .then(data => addLineInView(data));
+  }
+
+  function addLineInView(data) {
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      title: data.name,
+      bgColor: data.lineColor
     };
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
@@ -27,7 +50,7 @@ function AdminLine() {
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
-  };
+  }
 
   const onDeleteSubwayLine = event => {
     const $target = event.target;

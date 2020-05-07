@@ -4,7 +4,9 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Line {
     @Id
@@ -13,6 +15,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String lineColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -20,17 +23,18 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.lineColor = lineColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
+        this(null, name, startTime, endTime, intervalTime, lineColor);
     }
 
     public Long getId() {
@@ -51,6 +55,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public String getLineColor() {
+        return lineColor;
     }
 
     public Set<LineStation> getStations() {
@@ -77,6 +85,9 @@ public class Line {
         }
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getLineColor() != null) {
+            this.lineColor = line.getLineColor();
         }
 
         this.updatedAt = LocalDateTime.now();
