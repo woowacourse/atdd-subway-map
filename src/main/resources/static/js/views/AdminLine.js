@@ -3,6 +3,7 @@ import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templa
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
@@ -29,13 +30,7 @@ function AdminLine() {
             color: $subwayLineColorInput.value
         };
 
-        fetch("/lines", {
-            method: "POST",
-            body: JSON.stringify(formData),
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
+        api.line.create(formData);
 
         $subwayLineList.insertAdjacentHTML(
             "beforeend",

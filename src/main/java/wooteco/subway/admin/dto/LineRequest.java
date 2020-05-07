@@ -3,6 +3,7 @@ package wooteco.subway.admin.dto;
 import wooteco.subway.admin.domain.Line;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public class LineRequest {
     private String name;
