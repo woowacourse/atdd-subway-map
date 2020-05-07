@@ -48,6 +48,12 @@ public class LineController {
         return ResponseEntity.ok(line);
     }
 
+    @GetMapping("/lines/v2/{name}")
+    public ResponseEntity<Line> getLineWithStationsByName(@PathVariable String name) {
+        Line line = lineService.findLineWithStationsByName(name);
+        return ResponseEntity.ok(line);
+    }
+
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
         lineService.updateLine(id, request.toLine());

@@ -22,7 +22,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if (lineRepository.findByName(line.getName()).isPresent()) {
+        if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
         return lineRepository.save(line);
@@ -34,7 +34,7 @@ public class LineService {
 
     public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        if (lineRepository.findByName(line.getName()).isPresent()) {
+        if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
         persistLine.update(line);
@@ -58,5 +58,10 @@ public class LineService {
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
 
         return LineResponse.of(line);
+    }
+
+    public Line findLineWithStationsByName(String name) {
+        return lineRepository.findLineWithStationsByName(name)
+            .orElseThrow(() -> new NoSuchElementException(name + " 은(는) 존재 하지 않습니다."));
     }
 }

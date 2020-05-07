@@ -6,6 +6,7 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
+  const $subwayLineInfoContainer = document.querySelector("#line-info-container");
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineFirstTimeInput = document.querySelector("#first-time");
@@ -29,12 +30,13 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value
     };
 
-    api.line.create(lineRequest).then(value => console.log(value));
+    api.line.create(lineRequest);
 
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
+      name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value
     };
+
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
@@ -59,6 +61,32 @@ function AdminLine() {
       subwayLineModal.toggle();
     }
   };
+
+  const onReadSubwayInfo = async (event) => {
+    const $target = event.target;
+    const isSubwayLineItem = $target.classList.contains("subway-line-item");
+    const lineInfo = $subwayLineInfoContainer.querySelector(".lines-info");
+
+    if (lineInfo) {
+      lineInfo.remove();
+    }
+
+    if (isSubwayLineItem) {
+      const lineName = $target.querySelector(".line-name").textContent;
+      const responseLine = await api.line.getByName(lineName);
+
+      const lineInfoTemplate = (first, last, interval) => `<div class="lines-info flex flex-wrap mb-3 w-full">
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차시간</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${first}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차시간</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${last}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${interval}</div>
+        </div>`;
+
+      $subwayLineInfoContainer.insertAdjacentHTML("afterbegin", lineInfoTemplate(responseLine.startTime, responseLine.endTime, responseLine.intervalTime));
+    }
+  }
 
   const onEditSubwayLine = event => {
     const $target = event.target;
@@ -88,6 +116,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayInfo)
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
@@ -108,8 +137,8 @@ function AdminLine() {
       "#subway-line-color-select-container"
     );
     const colorSelectTemplate = subwayLineColorOptions
-      .map((option, index) => colorSelectOptionTemplate(option, index))
-      .join("");
+    .map((option, index) => colorSelectOptionTemplate(option, index))
+    .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
     $colorSelectContainer.addEventListener(
       EVENT_TYPE.CLICK,

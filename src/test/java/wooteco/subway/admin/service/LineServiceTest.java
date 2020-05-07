@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -47,8 +48,8 @@ public class LineServiceTest {
     @DisplayName("동일한 이름을 가진 노선이 입력되면 에러 발생")
     @Test
     void saveLinesWhenHaveSameNames() {
-        Line duplicatedLine = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        when(lineRepository.findByName(line.getName())).thenReturn(Optional.ofNullable(line));
+        Line duplicatedLine = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
+        when(lineRepository.findLineWithStationsByName(line.getName())).thenReturn(Optional.ofNullable(line));
 
         assertThatThrownBy(() -> lineService.save(duplicatedLine))
             .isInstanceOf(IllegalArgumentException.class)
@@ -58,13 +59,12 @@ public class LineServiceTest {
     @DisplayName("수정된 노선 이름이 이미 존재한다면 에러 발생")
     @Test
     void updateLineWhenExistSameName() {
-        Line initial = new Line(2L, "3호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        Line updated = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        Line initial = new Line(2L, "3호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
+        Line updated = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
 
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(lineRepository.findById(initial.getId())).thenReturn(Optional.of(initial));
 
-        when(lineRepository.findByName(line.getName())).thenReturn(Optional.of(line));
+        when(lineRepository.findLineWithStationsByName(line.getName())).thenReturn(Optional.of(line));
 
         assertThatThrownBy(() -> lineService.updateLine(initial.getId(), updated))
             .isInstanceOf(IllegalArgumentException.class)

@@ -14,5 +14,5 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     List<Line> findAll();
 
     @Query("select * from Line where name = :name")
-    Optional<Line> findByName(@Param("name") String name);
+    Optional<Line> findLineWithStationsByName(@Param("name") String name);
 }

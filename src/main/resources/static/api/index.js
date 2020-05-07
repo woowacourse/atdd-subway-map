@@ -28,6 +28,9 @@ const api = (() => {
     get() {
       return request(`/lines`);
     },
+    getByName(name) {
+      return request(`/lines/v2/${name}`);
+    },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
