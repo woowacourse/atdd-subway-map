@@ -11,6 +11,9 @@ function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+    const $subwayLineLastTimeInput = document.querySelector("#last-time");
+    const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineAddBtn = document.querySelector("#subway-line-btn");
 
     const $createSubwayLineButton = document.querySelector(
@@ -21,16 +24,35 @@ function AdminLine() {
     const onCreateSubwayLine = event => {
         event.preventDefault();
         const newSubwayLine = {
-            title: $subwayLineNameInput.value,
-            bgColor: $subwayLineColorInput.value
+            name: $subwayLineNameInput.value,
+            color: $subwayLineColorInput.value,
+            startTime: $subwayLineFirstTimeInput.value,
+            endTime: $subwayLineLastTimeInput.value,
+            intervalTime: $subwayLineIntervalTimeInput.value
         };
+
+        sendNewLine(newSubwayLine);
+
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
-            subwayLinesTemplate(newSubwayLine)
+            subwayLinesTemplate({
+                title: newSubwayLine.name,
+                bgColor: newSubwayLine.color
+            })
         );
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
+    };
+
+    const sendNewLine = data => {
+        fetch("/lines", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).catch(err => console.log(err));
     };
 
     const onDeleteSubwayLine = event => {
