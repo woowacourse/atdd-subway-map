@@ -11,6 +11,7 @@ function AdminLine() {
   const $subwayLineStartTimeInput = document.querySelector("#first-time");
   const $subwayLineEndTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalInput = document.querySelector("#interval-time");
+  let subwayLines = [];
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
@@ -26,17 +27,8 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalInput.value
     };
-    await api.line.create(newSubwayLine);
-    // await fetch(`http://localhost:8080/lines`, {method: "POST",
-    //   body: JSON.stringify({
-    //     name: newSubwayLine.name,
-    //     bgColor: newSubwayLine.bgColor,
-    //     startTime: newSubwayLine.startTime,
-    //     endTime: newSubwayLine.endTime,
-    //     intervalTime: newSubwayLine.interval
-    //   }),
-    //   headers: {"Content-Type": "application/json"}
-    // });
+    const savedLine = await api.line.create(newSubwayLine);
+    subwayLines = [...subwayLines, savedLine];
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
@@ -62,14 +54,30 @@ function AdminLine() {
     }
   };
 
+  const onSelectSubwayLine = async event => {
+    event.preventDefault();
+    const $target = event.target;
+    const isDeleteButton = $target.classList.contains("mdi-delete");
+    const isModifyButton = $target.classList.contains("mid-pencil");
+    if (!isDeleteButton && !isModifyButton) {
+      const lineName = event.target.innerText.trim();
+      const selectedLine = subwayLines.find(subway => subway["name"] === lineName);
+      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(2)")
+          .innerText = selectedLine["startTime"];
+      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(4)")
+          .innerText = selectedLine["endTime"];
+      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(6)")
+          .innerText = selectedLine["intervalTime"];
+    }
+  }
+
   const onEditSubwayLine = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
   const initDefaultSubwayLines = async () => {
-    let subwayLines = await fetch(`http://localhost:8080/lines`, {method: "GET"})
-        .then(res => res.json());
+    subwayLines = await api.line.get();
     subwayLines.map(line => {
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
@@ -79,6 +87,7 @@ function AdminLine() {
   };
 
   const initEventListeners = () => {
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
     $createSubwayLineButton.addEventListener(
