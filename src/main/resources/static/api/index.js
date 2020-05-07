@@ -25,6 +25,7 @@ const METHOD = {
 };
 
 const api = (() => {
+  const deleteRequest = (uri, config) => fetch(uri, config);
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
   const station = {
@@ -38,7 +39,7 @@ const api = (() => {
       return request(`/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+      return deleteRequest(`/station/${id}`, METHOD.DELETE(id));
     }
   };
 
@@ -56,7 +57,7 @@ const api = (() => {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/lines/${id}`, METHOD.DELETE);
+      return deleteRequest(`/lines/${id}`, METHOD.DELETE(id));
     }
   }
 
