@@ -42,6 +42,9 @@ const api = (() => {
     get() {
       return request(`/lines`);
     },
+    findByName(name) {
+      return request(`/lines/name/${name}`);
+    },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },

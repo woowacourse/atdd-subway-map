@@ -54,6 +54,22 @@ function AdminLine() {
     }
   };
 
+  const onDetailSubwayLine = async (event) => {
+    const $target = event.target;
+    const isName = $target.classList.contains("name");
+    if (isName) {
+      let lineDetail = await api.line.findByName($target.innerHTML);
+      document.querySelector(".lines-info").innerHTML = `
+      <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${lineDetail.startTime}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${lineDetail.endTime}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${lineDetail.intervalTime}</div>
+      `;
+    }
+  }
+
   const onEditSubwayLine = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-pencil");
@@ -76,6 +92,7 @@ function AdminLine() {
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
     );
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDetailSubwayLine);
   };
 
   const onSelectColorHandler = event => {
