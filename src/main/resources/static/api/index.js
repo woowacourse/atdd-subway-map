@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080";
+// const BASE_URL = "http://localhost:8080";
 
 const METHOD = {
   PUT() {
@@ -17,9 +17,7 @@ const METHOD = {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        content: data
-      })
+      body: JSON.stringify(data)
     };
   }
 };
@@ -28,31 +26,31 @@ const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
   const line = {
     get() {
-      return request(`${BASE_URL}/lines`);
+      return request(`/lines`);
     },
     create(data) {
-      request(`${BASE_URL}/line`, METHOD.POST(data));
+      return request(`/lines`, METHOD.POST(data));
     },
     update(data) {
-      request(`${BASE_URL}/line/${id}`, METHOD.PUT(data));
+      request(`/line/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`${BASE_URL}/line/${id}`, METHOD.DELETE);
+      request(`/line/${id}`, METHOD.DELETE);
     }
   }
 
   const station = {
     get() {
-      request(`${BASE_URL}/stations`);
+      request(`/stations`);
     },
     create(data) {
-      request(`${BASE_URL}/station`, METHOD.POST(data));
+      request(`/station`, METHOD.POST(data));
     },
     update(data) {
-      request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+      request(`/station/${data.id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+      request(`/station/${id}`, METHOD.DELETE);
     }
   };
 

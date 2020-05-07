@@ -8,6 +8,9 @@ import api from "../../api/index.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
   const $createSubwayLineButton = document.querySelector(
@@ -17,6 +20,17 @@ function AdminLine() {
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
+
+    const lineRequest = {
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      bgColor: $subwayLineColorInput.value
+    };
+
+    api.line.create(lineRequest).then(value => console.log(value));
+
     const newSubwayLine = {
       title: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value

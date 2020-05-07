@@ -37,12 +37,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(id, name, startTime, endTime, intervalTime, "", new HashSet<>());
-    }
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor, new HashSet<>());
     }
 
     public Long getId() {
