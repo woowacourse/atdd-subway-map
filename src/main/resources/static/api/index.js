@@ -18,7 +18,7 @@ const METHOD = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                name: data
+                ...data
             })
         };
     }
@@ -42,8 +42,31 @@ const api = (() => {
         }
     };
 
+    const line = {
+        get() {
+            return request(`/lines/${id}`);
+        },
+        create(data) {
+            return request(`/lines`, METHOD.POST(data));
+        },
+        update(date) {
+            return request(`/lines/${id}`, METHOD.PUT(date));
+        },
+        delete(id) {
+            return request(`/lines/${id}`, METHOD.DELETE());
+        }
+    };
+
+    const lines = {
+        get() {
+            return request(`/lines`);
+        },
+    };
+
     return {
-        station
+        station,
+        line,
+        lines
     };
 })();
 

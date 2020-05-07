@@ -32,7 +32,7 @@ function AdminStation() {
 
         $stationNameInput.value = '';
         $stationList.insertAdjacentHTML('beforeend', listItemTemplate(stationName));
-        const persistStation = await api.station.create(stationName);
+        const persistStation = await api.station.create({name: stationName});
         stations = [...stations, persistStation];
     };
 
