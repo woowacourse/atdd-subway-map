@@ -32,7 +32,7 @@ function AdminLine() {
     api.line.create(newSubwayLineData);
 
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
+      name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value
     };
     $subwayLineList.insertAdjacentHTML(
@@ -68,11 +68,11 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
-  const initDefaultSubwayLines = () => {
+      const initDefaultSubwayLines = () => {
     const lines = api.line.get();
     lines.then(data => data.map(line => {
-         $subwayLineList.insertAdjacentHTML("beforeend",subwayLinesTemplate(line));
-       }))
+        $subwayLineList.insertAdjacentHTML("beforeend",subwayLinesTemplate(line));
+      }))
   };
 
   const initEventListeners = () => {
