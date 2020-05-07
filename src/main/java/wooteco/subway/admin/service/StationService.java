@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
@@ -18,11 +19,12 @@ public class StationService {
         return stationRepository.save(station);
     }
 
-    public List<Station> showStations() {
-        return stationRepository.findAll();
+    public List<StationResponse> showStations() {
+        return StationResponse.listOf(stationRepository.findAll());
     }
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+    public void deleteStationByName(String name) {
+        System.out.println("##" + name);
+        stationRepository.deleteByName(name);
     }
 }

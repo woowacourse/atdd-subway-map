@@ -42,10 +42,10 @@ public class StationAcceptanceTest {
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
 
-        deleteStation(stations.get(0).getId());
+        deleteStation(stations.get(0).getName());
 
         List<StationResponse> stationsAfterDelete = getStations();
-        assertThat(stationsAfterDelete.size()).isEqualTo(3);
+         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
     private void createStation(String name) {
@@ -57,7 +57,7 @@ public class StationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/stations").
+                post("/station").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -66,17 +66,17 @@ public class StationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/stations").
+                    get("/station").
                 then().
                     log().all().
                     extract().
                     jsonPath().getList(".", StationResponse.class);
     }
 
-    private void deleteStation(Long id) {
+    private void deleteStation(String name) {
         given().
         when().
-                delete("/stations/" + id).
+                delete("/station/" + name).
         then().
                 log().all();
     }
