@@ -11,11 +11,13 @@ function AdminLine() {
     const $intervalTimeInput = document.querySelector("#interval-time");
     const $firstTimeInput = document.querySelector("#first-time");
     const $lastTimeInput = document.querySelector("#last-time");
-
-    const $createSubwayLineButton = document.querySelector(
+    const $modalForm = document.querySelector("#subway-line-create-form");
+    const $submitSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
     const subwayLineModal = new Modal();
+
+    const hiddenInput = document.createElement("input");
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -27,8 +29,7 @@ function AdminLine() {
             bgColor: $subwayLineColorInput.value
         };
 
-        api.line
-            .create(newSubwayLine)
+        api.line.create(newSubwayLine)
             .then(line => {
                 if (!line.name) {
                     alert("저장 실패!");
@@ -51,17 +52,68 @@ function AdminLine() {
         }
     };
 
-    const onUpdateSubwayLine = event => {
+    const onReadSubwayLineToUpdate = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
-        if (isUpdateButton) {
-            subwayLineModal.toggle();
+        if (!isUpdateButton) {
+            return;
         }
+
+        subwayLineModal.toggle();
+
+        $submitSubwayLineButton.removeEventListener(
+            EVENT_TYPE.CLICK,
+            onCreateSubwayLine
+        );
+        $submitSubwayLineButton.addEventListener(
+            EVENT_TYPE.CLICK,
+            onUpdateSubwayLine
+        );
+
+        const targetId = $target.closest(".subway-line-item").id;
+
+        api.line.getById(targetId)
+            .then(line => {
+                $subwayLineNameInput.value = line.name;
+                $firstTimeInput.value = line.startTime;
+                $lastTimeInput.value = line.endTime;
+                $intervalTimeInput.value = line.intervalTime;
+                $subwayLineColorInput.value = line.bgColor;
+            })
+
+        hiddenInput.type = "hidden";
+        hiddenInput.id = targetId;
+        $modalForm.appendChild(hiddenInput);
     };
 
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-pencil");
+    const onUpdateSubwayLine = event => {
+        event.preventDefault();
+        const updatedSubwayLine = {
+            name: $subwayLineNameInput.value,
+            startTime: $firstTimeInput.value,
+            endTime: $lastTimeInput.value,
+            intervalTime: $intervalTimeInput.value,
+            bgColor: $subwayLineColorInput.value
+        };
+
+        api.line
+            .update(updatedSubwayLine, hiddenInput.id)
+            .then(line => {
+                //TODO : 업데이트 결과 반영.
+            });
+        subwayLineModal.toggle();
+
+
+        $submitSubwayLineButton.removeEventListener(
+            EVENT_TYPE.CLICK,
+            onUpdateSubwayLine
+        );
+        $submitSubwayLineButton.addEventListener(
+            EVENT_TYPE.CLICK,
+            onCreateSubwayLine
+        );
+
+        $modalForm.removeChild(hiddenInput);
     };
 
     const initDefaultSubwayLines = () => {
@@ -77,8 +129,8 @@ function AdminLine() {
 
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-        $createSubwayLineButton.addEventListener(
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayLineToUpdate);
+        $submitSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
         );
