@@ -8,6 +8,9 @@ function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayFirstTime = document.querySelector("#first-time");
+    const $subwayLastTime = document.querySelector("#last-time");
+    const $subwayIntervalTime = document.querySelector("#interval-time");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -18,15 +21,32 @@ function AdminLine() {
         event.preventDefault();
         const newSubwayLine = {
             title: $subwayLineNameInput.value,
+            startTime: $subwayFirstTime.value,
+            endTime: $subwayLastTime.value,
+            intervalTime: $subwayIntervalTime.value,
             bgColor: $subwayLineColorInput.value
         };
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
+
+
+        api.line.create(newSubwayLine)
+            .then(data => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(newSubwayLine)
+                )
+            })
+            .catch(error => {
+                const messages = [];
+                for (let errorDto of error.body) {
+                    messages.push(errorDto.message);
+                }
+                alert(messages.join("\n"));
+            })
+            .finally(() => {
+                subwayLineModal.toggle();
+                $subwayLineNameInput.value = "";
+                $subwayLineColorInput.value = "";
+            });
     };
 
     const onDeleteSubwayLine = event => {
@@ -57,13 +77,6 @@ function AdminLine() {
                 subwayLinesTemplate(line)
             );
         }));
-        // defaultSubwayLines.map(line => {
-        //     console.log(line)
-        //     $subwayLineList.insertAdjacentHTML(
-        //         "beforeend",
-        //         subwayLinesTemplate(line)
-        //     );
-        // });
     };
 
     const initEventListeners = () => {

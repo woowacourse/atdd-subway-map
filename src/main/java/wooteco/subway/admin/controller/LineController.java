@@ -14,6 +14,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineUpdateRequest;
 import wooteco.subway.admin.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+    public ResponseEntity<Long> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
         Long id = lineService.save(lineCreateRequest.toLine());
         return ResponseEntity.created(URI.create("/lines/" + id)).body(id);
     }

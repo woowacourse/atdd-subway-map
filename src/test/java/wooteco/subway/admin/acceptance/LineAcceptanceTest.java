@@ -87,15 +87,19 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("color", "#000000");
+        params.put("bgColor", "#000000");
+
+        System.out.println("#");
+        System.out.println(params);
+        System.out.println("#");
 
         given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
