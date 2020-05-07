@@ -28,6 +28,7 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value
         };
         let result = api.line.create(newSubwayLine);
+
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(newSubwayLine)

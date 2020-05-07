@@ -25,7 +25,16 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => data.json());
+    const request = (uri, config) => fetch(uri, config)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.text());
+            }
+        })
+        .catch(error => alert("오류입니다."));
+
     const station = {
         get() {
             return request(`/stations`);
@@ -40,6 +49,7 @@ const api = (() => {
             return request(`/station/${id}`, METHOD.DELETE);
         }
     };
+
     const line = {
         get() {
             return request(`/lines`);
