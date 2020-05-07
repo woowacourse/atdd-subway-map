@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -37,9 +39,9 @@ public class MockLineController {
 
 	@PostMapping("")
 	public ResponseEntity<Void> createLine(@RequestBody LineRequest request) {
-		Line line = new Line(request.getName(), request.getStartTime(), request.getEndTime(),
+		Line line = new Line(request.getName(), request.getColor(), request.getStartTime(), request.getEndTime(),
 			request.getIntervalTime());
-		lines.put((long) lines.size() + 1, line);
+		lines.put((long)lines.size() + 1, line);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.build();
@@ -59,7 +61,7 @@ public class MockLineController {
 		@RequestBody LineRequest request) {
 
 		Line line = lines.get(id);
-		Line dummyLine = new Line(line.getName(), request.getStartTime(), request.getEndTime(),
+		Line dummyLine = new Line(line.getName(), request.getColor(), request.getStartTime(), request.getEndTime(),
 			request.getIntervalTime());
 
 		line.update(dummyLine);
