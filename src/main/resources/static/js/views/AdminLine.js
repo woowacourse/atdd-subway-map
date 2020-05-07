@@ -39,12 +39,6 @@ function AdminLine() {
                     "beforeend",
                     subwayLinesTemplate(line)
                 );
-
-                $subwayLineNameInput.value = "";
-                $firstTimeInput.value = "";
-                $lastTimeInput.value = "";
-                $intervalTimeInput.value = "";
-                $subwayLineColorInput.value = "";
             });
         subwayLineModal.toggle();
     };
