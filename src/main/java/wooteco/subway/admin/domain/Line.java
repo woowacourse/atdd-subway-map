@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,39 +10,42 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Table("LINE")
 public class Line {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
     private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String bgColor;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this.name = name;
+    public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.bgColor = bgColor;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, title, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -68,10 +72,14 @@ public class Line {
         return updatedAt;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public void update(Line line) {
         // TODO: 검증 로직에 대해서 생각해봐야됨
-        if (line.getName() != null) {
-            this.name = line.getName();
+        if (line.getTitle() != null) {
+            this.title = line.getTitle();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();

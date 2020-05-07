@@ -1,4 +1,5 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
+import api from "../../api/index.js";
 import {
   subwayLinesTemplate,
   colorSelectOptionTemplate
@@ -10,6 +11,9 @@ import Modal from "../../ui/Modal.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTImeInput = document.querySelector("#last-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
   const $createSubwayLineButton = document.querySelector(
@@ -20,13 +24,24 @@ function AdminLine() {
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+        title: $subwayLineNameInput.value,
+        startTime: $subwayLineFirstTimeInput.value,
+        lastTime: $subwayLineLastTImeInput.value,
+        intervalTime: $subwayLineIntervalTimeInput.value,
+        bgColor: $subwayLineColorInput.value
     };
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
+
+    fetch("/lines", {
+      method : 'POST',
+      body : newSubwayLine,
+      headers : {
+        'Content-Type' : 'application/json'
+      }}
+    ).then($subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(newSubwayLine)
+    )
+  )
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
@@ -48,6 +63,17 @@ function AdminLine() {
     }
   };
 
+  const onSelectSubwayLine = event => {
+        let s = event.target.innerText.trim();
+      let lineRequestDto = {
+
+      }
+    const $target = event.target;
+    const isSelectSubwayLineItem = $target.classList.contains("subway-line-item");
+    if (isSelectSubwayLineItem) {
+    }
+  }
+
   const onEditSubwayLine = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-pencil");
@@ -65,6 +91,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
