@@ -55,6 +55,7 @@ public class LineAcceptanceTest {
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
+        assertThat(line.getLineColor()).isNotNull();
 
         // when
         LocalTime startTime = LocalTime.of(8, 00);
@@ -86,6 +87,7 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("lineColor", "bg-pink-700");
 
         given().
                 body(params).
