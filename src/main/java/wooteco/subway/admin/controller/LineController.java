@@ -33,7 +33,7 @@ public class LineController {
         lineService.validLine(lineRequest);
         System.out.println(lineRequest.toString());
         Line line = new Line(
-            lineRequest.getName(),
+            lineRequest.getTitle(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
             lineRequest.getIntervalTime(),
@@ -60,7 +60,7 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(
-            lineRequest.getName(),
+            lineRequest.getTitle(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
             lineRequest.getIntervalTime(),

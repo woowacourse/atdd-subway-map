@@ -37,7 +37,7 @@ function AdminLine() {
             },
             method: 'POST',
             body: JSON.stringify({
-                name: newSubwayLine.title,
+                title: newSubwayLine.title,
                 startTime: newSubwayLine.startTime,
                 endTime: newSubwayLine.endTime,
                 intervalTime: newSubwayLine.intervalTime,
@@ -48,8 +48,6 @@ function AdminLine() {
         fetch(url, createRequest)
             .then(res => {
                 if (res.ok) {
-                    console.log(newSubwayLine);
-                    console.log(newSubwayLine.name);
                     $subwayLineList.insertAdjacentHTML(
                         "beforeend",
                         subwayLinesTemplate(newSubwayLine)
@@ -69,7 +67,7 @@ function AdminLine() {
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
-        const $name = $target.closest(".subway-line-item").innerText.trim();
+        const $title = $target.closest(".subway-line-item").innerText.trim();
         console.log($name);
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton && confirm("지우시겠습니까?")) {
@@ -79,7 +77,7 @@ function AdminLine() {
                 },
                 method: 'delete',
                 body: JSON.stringify({
-                    name: $name
+                    title: $title
                 })
             };
 
@@ -105,19 +103,35 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-pencil");
     };
 
+    const onSelectColorHandler = event => {
+        event.preventDefault();
+        const $target = event.target;
+        if ($target.classList.contains("color-select-option")) {
+            document.querySelector("#subway-line-color").value =
+                $target.dataset.color;
+        }
+    };
+
+    this.init = () => {
+        initDefaultSubwayLines();
+        initEventListeners();
+        initCreateSubwayLineForm();
+    };
+
     const initDefaultSubwayLines = () => {
-        fetch("", {
+        fetch("/lines", {
             headers: {
                 'Content-Type': 'application/json'
             },
             method: 'get'
         }).then(res => res.json())
-            .then(data => data.map(line => {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(line)
-                )
-            }))
+            .then(data => data.map(
+                line => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(line)
+                    )
+                }))
     };
 
     const initEventListeners = () => {
@@ -128,16 +142,6 @@ function AdminLine() {
             onCreateSubwayLine
         );
     };
-
-    const onSelectColorHandler = event => {
-        event.preventDefault();
-        const $target = event.target;
-        if ($target.classList.contains("color-select-option")) {
-            document.querySelector("#subway-line-color").value =
-                $target.dataset.color;
-        }
-    };
-
     const initCreateSubwayLineForm = () => {
         const $colorSelectContainer = document.querySelector(
             "#subway-line-color-select-container"
@@ -150,12 +154,6 @@ function AdminLine() {
             EVENT_TYPE.CLICK,
             onSelectColorHandler
         );
-    };
-
-    this.init = () => {
-        initDefaultSubwayLines();
-        initEventListeners();
-        initCreateSubwayLineForm();
     };
 }
 

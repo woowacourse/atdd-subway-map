@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -14,8 +14,8 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -35,13 +35,13 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime, bgColor);
+        return new Line(title, startTime, endTime, intervalTime, bgColor);
     }
 
     @Override
     public String toString() {
         return "LineRequest{" +
-            "name='" + name + '\'' +
+            "name='" + title + '\'' +
             ", startTime=" + startTime +
             ", endTime=" + endTime +
             ", intervalTime=" + intervalTime +

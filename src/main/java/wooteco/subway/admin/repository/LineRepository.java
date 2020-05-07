@@ -13,8 +13,8 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
 
-    @Query("select * from line where name = :name")
-    Optional<Line> findByName(@Param("name") String name);
+    @Query("select * from line where title = :title")
+    Optional<Line> findByTitle(@Param("title") String title);
 
     // @Query("delete from line where name = :name")
     // void deleteByName(String name);

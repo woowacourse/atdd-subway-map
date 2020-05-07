@@ -55,7 +55,7 @@ public class LineService {
 
     public void validLine(LineRequest lineRequest) {
         //이름중복검사
-        lineRepository.findByName(lineRequest.getName()).ifPresent(line -> {
+        lineRepository.findByTitle(lineRequest.getTitle()).ifPresent(line -> {
             throw new IllegalArgumentException("존재하는 이름입니다");
         });
         //이름형식검사
@@ -63,7 +63,7 @@ public class LineService {
     }
 
     public void deleteLineByName(String name) {
-        lineRepository.findByName(name).ifPresent(line -> {
+        lineRepository.findByTitle(name).ifPresent(line -> {
             lineRepository.delete(line);
         });
     }

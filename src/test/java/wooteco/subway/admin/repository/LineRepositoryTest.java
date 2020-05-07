@@ -30,7 +30,7 @@ class LineRepositoryTest {
 
         lineRepository.save(line);
 
-        assertThat(lineRepository.findByName("1호선").get().getName()).isEqualTo("1호선");
+        assertThat(lineRepository.findByTitle("1호선").get().getTitle()).isEqualTo("1호선");
     }
 
     @Test
@@ -40,6 +40,6 @@ class LineRepositoryTest {
         lineRepository.save(line);
         lineRepository.delete(line);
 
-        assertThat(lineRepository.findByName("1호선").isPresent()).isFalse();
+        assertThat(lineRepository.findByTitle("1호선").isPresent()).isFalse();
     }
 }
