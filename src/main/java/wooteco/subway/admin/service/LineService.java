@@ -59,9 +59,4 @@ public class LineService {
 
         return LineResponse.of(line);
     }
-
-    public Line findLineWithStationsByName(String name) {
-        return lineRepository.findLineWithStationsByName(name)
-            .orElseThrow(() -> new NoSuchElementException(name + " 은(는) 존재 하지 않습니다."));
-    }
 }

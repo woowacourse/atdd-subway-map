@@ -1,5 +1,3 @@
-// const BASE_URL = "http://localhost:8080";
-
 const METHOD = {
   PUT() {
     return {
@@ -28,17 +26,17 @@ const api = (() => {
     get() {
       return request(`/lines`);
     },
-    getByName(name) {
-      return request(`/lines/v2/${name}`);
+    getById(id) {
+      return request(`/lines/${id}`);
     },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
     update(data) {
-      request(`/line/${id}`, METHOD.PUT(data));
+      request(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`/line/${id}`, METHOD.DELETE);
+      return request(`/lines/${id}`, METHOD.DELETE);
     }
   }
 

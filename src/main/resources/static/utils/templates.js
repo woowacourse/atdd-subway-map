@@ -8,6 +8,7 @@ export const listItemTemplate = value =>
 
 export const subwayLinesTemplate = line =>
   `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
+    <input type="hidden" class="line-id" value="${line.id}">
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       <span class="line-name">${line.name}</span>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">

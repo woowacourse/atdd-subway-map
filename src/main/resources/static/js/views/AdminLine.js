@@ -19,7 +19,7 @@ function AdminLine() {
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = event => {
+  const onCreateSubwayLine = async (event) => {
     event.preventDefault();
 
     const lineRequest = {
@@ -30,11 +30,12 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value
     };
 
-    api.line.create(lineRequest);
+    const lineResponse = await api.line.create(lineRequest);
 
     const newSubwayLine = {
-      name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      id: lineResponse.id,
+      name: lineResponse.name,
+      bgColor: lineResponse.bgColor
     };
 
     $subwayLineList.insertAdjacentHTML(
@@ -48,9 +49,16 @@ function AdminLine() {
 
   const onDeleteSubwayLine = event => {
     const $target = event.target;
+    event.preventDefault();
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
+      const $lineItem = $target.closest(".subway-line-item");
+      const lineId = $lineItem.querySelector(".line-id").value;
+
+      api.line.delete(lineId).then(
+        () => $lineItem.remove(),
+        reason => alert(reason)
+      );
     }
   };
 
@@ -72,8 +80,9 @@ function AdminLine() {
     }
 
     if (isSubwayLineItem) {
-      const lineName = $target.querySelector(".line-name").textContent;
-      const responseLine = await api.line.getByName(lineName);
+      const $lineItem = $target.closest(".subway-line-item");
+      const lineId = $lineItem.querySelector(".line-id").value;
+      const readResponse = await api.line.getById(lineId);
 
       const lineInfoTemplate = (first, last, interval) => `<div class="lines-info flex flex-wrap mb-3 w-full">
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차시간</div>
@@ -84,7 +93,8 @@ function AdminLine() {
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${interval}</div>
         </div>`;
 
-      $subwayLineInfoContainer.insertAdjacentHTML("afterbegin", lineInfoTemplate(responseLine.startTime, responseLine.endTime, responseLine.intervalTime));
+      $subwayLineInfoContainer.insertAdjacentHTML("afterbegin",
+        lineInfoTemplate(readResponse.startTime, readResponse.endTime, readResponse.intervalTime));
     }
   }
 
