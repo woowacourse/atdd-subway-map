@@ -2,6 +2,7 @@ import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -23,18 +24,19 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value,
       startTime: $subwayLineStartTimeInput.value,
       endTime: $subwayLineEndTimeInput.value,
-      interval: $subwayLineIntervalInput.value
+      intervalTime: $subwayLineIntervalInput.value
     };
-    await fetch(`http://localhost:8080/lines`, {method: "POST",
-      body: JSON.stringify({
-        name: newSubwayLine.name,
-        bgColor: newSubwayLine.bgColor,
-        startTime: newSubwayLine.startTime,
-        endTime: newSubwayLine.endTime,
-        intervalTime: newSubwayLine.interval
-      }),
-      headers: {"Content-Type": "application/json"}
-    });
+    await api.line.create(newSubwayLine);
+    // await fetch(`http://localhost:8080/lines`, {method: "POST",
+    //   body: JSON.stringify({
+    //     name: newSubwayLine.name,
+    //     bgColor: newSubwayLine.bgColor,
+    //     startTime: newSubwayLine.startTime,
+    //     endTime: newSubwayLine.endTime,
+    //     intervalTime: newSubwayLine.interval
+    //   }),
+    //   headers: {"Content-Type": "application/json"}
+    // });
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
