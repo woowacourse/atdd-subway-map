@@ -7,6 +7,9 @@ import api from "../../api/index.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
   const $createSubwayLineButton = document.querySelector(
@@ -14,15 +17,21 @@ function AdminLine() {
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = event => {
+  const onCreateSubwayLine = async (event) => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      name: $subwayLineNameInput.value,
+      bgColor: $subwayLineColorInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value
     };
+
+    let newLine = await api.line.create(newSubwayLine);
+
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
-      subwayLinesTemplate(newSubwayLine)
+      subwayLinesTemplate(newLine)
     );
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
