@@ -10,7 +10,15 @@ public class Station {
 	private String name;
 	private LocalDateTime createdAt;
 
+	public Station() {
+	}
+
 	public Station(String name) {
+		this(null, name);
+	}
+
+	public Station(final Long id, final String name) {
+		this.id = id;
 		this.name = name;
 		this.createdAt = LocalDateTime.now();
 	}

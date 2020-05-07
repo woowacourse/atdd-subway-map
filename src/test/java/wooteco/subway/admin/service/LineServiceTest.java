@@ -35,7 +35,7 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		line = new Line(1L, "2호선", "blue", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
 		lineService = new LineService(lineRepository, stationRepository);
 
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
