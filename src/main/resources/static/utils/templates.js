@@ -16,6 +16,7 @@ export const subwayLinesTemplate = line =>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-pencil"></span>
       </button>
+      <input class="subway-line-id" type="hidden" value=${line.id}>
     </div>`;
 
 export const optionTemplate = value => `<option>${value}</option>`;

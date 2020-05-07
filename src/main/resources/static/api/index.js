@@ -42,6 +42,9 @@ const line = {
   get() {
     return request(`/lines`);
   },
+  getBy(id) {
+    return request(`/lines/${id}`);
+  },
   create(data) {
     return request(`/lines`, METHOD.POST(data));
   },

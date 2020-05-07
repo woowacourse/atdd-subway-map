@@ -20,6 +20,31 @@ function AdminLine() {
   );
   const subwayLineModal = new Modal();
 
+  const onShowSubwayLine = event => {
+    event.preventDefault();
+    if (event.target && event.target.classList.contains("subway-line-item")) {
+      const id = event.target.querySelector(".subway-line-id");
+      const line = api.line.getBy(id.value);
+      line.then(data => {
+        const $firstTime = document.querySelector("#selected-first-time");
+        const $lastTime = document.querySelector("#selected-last-time");
+        const $intervalTime = document.querySelector("#selected-interval-time");
+        $firstTime.innerText = data.startTime;
+        $lastTime.innerText = data.endTime;
+        $intervalTime.innerText = data.intervalTime;
+      });
+    } else {
+      return;
+    }
+  }
+
+  const initDefaultSubwayLines = () => {
+    const lines = api.line.get();
+    lines.then(data => data.map(line => {
+      $subwayLineList.insertAdjacentHTML("beforeend",subwayLinesTemplate(line));
+    }))
+  };
+
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLineData = {
@@ -29,22 +54,17 @@ function AdminLine() {
       intervalTime : $subwayLineIntervalTime.value,
       bgColor: $subwayLineColorInput.value
     }
-    api.line.create(newSubwayLineData);
-
-    const newSubwayLine = {
-      name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
-    };
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
-    subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
-    $subwayLineFirstTime.value = "";
-    $subwayLineLastTime.value = "";
-    $subwayLineIntervalTime.value ="";
+    api.line.create(newSubwayLineData).then(() => {
+      $subwayLineList.innerHTML = "";
+          console.log(initDefaultSubwayLines);
+          initDefaultSubwayLines();
+          subwayLineModal.toggle();
+          $subwayLineNameInput.value = "";
+          $subwayLineColorInput.value = "";
+          $subwayLineFirstTime.value = "";
+          $subwayLineLastTime.value = "";
+          $subwayLineIntervalTime.value ="";
+    });
   };
 
   const onDeleteSubwayLine = event => {
@@ -68,12 +88,6 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
-      const initDefaultSubwayLines = () => {
-    const lines = api.line.get();
-    lines.then(data => data.map(line => {
-        $subwayLineList.insertAdjacentHTML("beforeend",subwayLinesTemplate(line));
-      }))
-  };
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
@@ -82,6 +96,7 @@ function AdminLine() {
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
     );
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onShowSubwayLine);
   };
 
   const onSelectColorHandler = event => {
