@@ -6,6 +6,7 @@ import {
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
