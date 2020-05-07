@@ -43,7 +43,9 @@ public class LineService {
 	}
 
 	public void addLineStation(Long id, LineStationCreateRequest request) {
-		// TODO: 구현
+		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		persistLine.addLineStation(request.toLineStation());
+		lineRepository.save(persistLine);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {

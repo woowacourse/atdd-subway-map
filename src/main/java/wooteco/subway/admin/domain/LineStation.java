@@ -12,11 +12,16 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
+    public LineStation(Long line, Long stationId, Long preStationId, int distance, int duration) {
+        this.line = line;
         this.stationId = stationId;
+        this.preStationId = preStationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+        this(null, preStationId, stationId, distance, duration);
     }
 
     public Long getLine() {
