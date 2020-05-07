@@ -10,7 +10,9 @@ public class LineUpdateRequest {
 	private LocalTime endTime;
 	private int intervalTime;
 
-	public LineUpdateRequest() {
+	private String color;
+
+	protected LineUpdateRequest() {
 	}
 
 	public String getName() {
@@ -29,7 +31,11 @@ public class LineUpdateRequest {
 		return intervalTime;
 	}
 
+	public String getColor() {
+		return color;
+	}
+
 	public Line toLine() {
-		return new Line(this.name, this.startTime, this.endTime, this.intervalTime);
+		return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.color);
 	}
 }

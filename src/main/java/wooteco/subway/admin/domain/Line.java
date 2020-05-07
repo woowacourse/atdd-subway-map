@@ -17,6 +17,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String color;
     @MappedCollection(idColumn = "line_id")
     private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
@@ -25,17 +26,18 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.color = color;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
+        this(null, name, startTime, endTime, intervalTime, color);
     }
 
     public Long getId() {
