@@ -14,7 +14,9 @@ function AdminLine() {
     const $subwayLineFirstTimeInput = document.querySelector("#first-time");
     const $subwayLineLastTimeInput = document.querySelector("#last-time");
     const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
-    const $subwayLineAddBtn = document.querySelector("#subway-line-btn");
+    const $subwayLineFirstTimeInfo = document.querySelector("#first-time-info");
+    const $subwayLineLastTimeInfo = document.querySelector("#last-time-info");
+    const $subwayLineIntervalTimeInfo = document.querySelector("#interval-time-info");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -31,7 +33,7 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value
         };
 
-        sendNewLine(newSubwayLine);
+        sendNewLine(newSubwayLine).then(() => location.reload());
 
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
@@ -46,7 +48,7 @@ function AdminLine() {
     };
 
     const sendNewLine = data => {
-        fetch("/lines", {
+        return fetch("/lines", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -76,6 +78,26 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-pencil");
     };
 
+    const onDetailSubwayLine = async event => {
+        event.preventDefault();
+        if (event.target && event.target.classList.contains("subway-line-item")) {
+            const $id = event.target.querySelector('input');
+            const line = await getLine($id.value);
+            $subwayLineFirstTimeInfo.innerText = line.startTime;
+            $subwayLineLastTimeInfo.innerText = line.endTime;
+            $subwayLineIntervalTimeInfo.innerText = line.intervalTime;
+        }
+    }
+
+    const getLine = (id) => {
+        return fetch(`/lines/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json());
+    }
+
     const initDefaultSubwayLines = () => {
         defaultSubwayLines.map(line => {
             $subwayLineList.insertAdjacentHTML(
@@ -88,6 +110,7 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDetailSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
