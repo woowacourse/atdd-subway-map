@@ -67,10 +67,14 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
-    $subwayLineList.lastChild.addEventListener(
+    $subwayLineList.lastChild.addEventListener( // todo 위임 알아보기
       EVENT_TYPE.CLICK,
       onReadSubwayLine
     );
+    $subwayLineList.lastChild.addEventListener(
+      EVENT_TYPE.CLICK,
+      onDeleteSubwayLine
+    )
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
@@ -82,6 +86,9 @@ function AdminLine() {
   };
 
   function selectLine(event) {
+    if (event.target.classList.contains("mdi-delete")) {
+      return;
+    }
     const lineId = event.currentTarget.firstElementChild.id;
 
     api.line
@@ -96,9 +103,14 @@ function AdminLine() {
   }
 
   const onDeleteSubwayLine = event => {
+    event.stopPropagation();
     const $target = event.target;
+    const lineId = $target.closest(".subway-line-item").firstElementChild.id;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      fetch(`/lines/${lineId}`, {
+        method: "DELETE"
+      })
       $target.closest(".subway-line-item").remove();
     }
   };
@@ -128,10 +140,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-    $createSubwayLineButton.addEventListener(
-      EVENT_TYPE.CLICK,
-      onCreateSubwayLine
-    );
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
   };
 
   const onSelectColorHandler = event => {
