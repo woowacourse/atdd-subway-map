@@ -12,11 +12,19 @@ function AdminLine() {
   const $subwayLineEndTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalInput = document.querySelector("#interval-time");
   let subwayLines = [];
+  let selectedSubwayId = null;
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
   const subwayLineModal = new Modal();
+
+  function componentClear() {
+    $subwayLineNameInput.value = "";
+    $subwayLineStartTimeInput.value = "";
+    $subwayLineEndTimeInput.value = "";
+    $subwayLineColorInput.value = "";
+  }
 
   const onCreateSubwayLine = async event => {
     event.preventDefault();
@@ -34,8 +42,7 @@ function AdminLine() {
       subwayLinesTemplate(newSubwayLine)
     );
     subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
+    componentClear();
   };
 
   const onDeleteSubwayLine = event => {
@@ -46,34 +53,69 @@ function AdminLine() {
     }
   };
 
-  const onUpdateSubwayLine = event => {
-    const $target = event.target;
-    const isUpdateButton = $target.classList.contains("mdi-pencil");
-    if (isUpdateButton) {
-      subwayLineModal.toggle();
+  const onUpdateSubwayLine = async event => {
+    const updatedLine = {
+      name: $subwayLineNameInput.value,
+      bgColor: $subwayLineColorInput.value,
+      startTime: $subwayLineStartTimeInput.value,
+      endTime: $subwayLineEndTimeInput.value,
+      intervalTime: $subwayLineIntervalInput.value
+    };
+    await api.line.update(updatedLine, selectedSubwayId);
+    let index = 0;
+    for (let i = 0; i < subwayLines.length; i++) {
+      if (subwayLines[i]["id"] === selectedSubwayId) {
+        index = i;
+        break;
+      }
     }
+    subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
+    subwayLineModal.toggle();
+    componentClear();
+    changeEvent();
   };
 
-  const onSelectSubwayLine = async event => {
+  const onSelectSubwayLine = event => {
     event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     const isModifyButton = $target.classList.contains("mid-pencil");
-    if (!isDeleteButton && !isModifyButton) {
+    if ($target && !isDeleteButton && !isModifyButton) {
       const lineName = event.target.innerText.trim();
       const selectedLine = subwayLines.find(subway => subway["name"] === lineName);
-      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(2)")
-          .innerText = selectedLine["startTime"];
-      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(4)")
-          .innerText = selectedLine["endTime"];
-      document.querySelector("body > div.flex.justify-center.md\\:py-10.lg\\:py-10.app-container > div > div:nth-child(1) > div.lines-info.flex.flex-wrap.mb-3.w-full > div:nth-child(6)")
-          .innerText = selectedLine["intervalTime"];
+      const detailDiv = document.querySelectorAll(".lines-info > div");
+      detailDiv[1].innerText = selectedLine["startTime"];
+      detailDiv[3].innerText = selectedLine["endTime"];
+      detailDiv[5].innerText = selectedLine["intervalTime"];
     }
   }
 
+  function changeEvent() {
+    if ($subwayLineNameInput.value === "") {
+      $createSubwayLineButton.removeEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+      $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
+      return;
+    }
+    $createSubwayLineButton.removeEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+  }
+
   const onEditSubwayLine = event => {
+    event.preventDefault();
     const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
+    const isModifyButton = $target.classList.contains("mdi-pencil");
+    if ($target && isModifyButton) {
+      const lineName = event.target.parentNode.parentNode.innerText.trim();
+      const selectedLine = subwayLines.find(subway => subway["name"] === lineName);
+      $subwayLineNameInput.value = selectedLine["name"];
+      $subwayLineStartTimeInput.value = selectedLine["startTime"];
+      $subwayLineEndTimeInput.value = selectedLine["endTime"];
+      $subwayLineIntervalInput.value = selectedLine["intervalTime"];
+      $subwayLineColorInput.value = selectedLine["bgColor"];
+      selectedSubwayId = selectedLine["id"];
+      changeEvent();
+      subwayLineModal.toggle();
+    }
   };
 
   const initDefaultSubwayLines = async () => {
@@ -89,11 +131,8 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-    $createSubwayLineButton.addEventListener(
-      EVENT_TYPE.CLICK,
-      onCreateSubwayLine
-    );
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
+    changeEvent();
   };
 
   const onSelectColorHandler = event => {
