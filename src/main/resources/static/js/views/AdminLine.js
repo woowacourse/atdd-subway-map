@@ -1,7 +1,6 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {api} from "../../api/index.js"
+import api from "../../api/index.js"
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
@@ -52,13 +51,19 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-        console.log(api.line.get());
-        defaultSubwayLines.map(line => {
+        api.line.get().then(savedLines => savedLines.map(line => {
             $subwayLineList.insertAdjacentHTML(
                 "beforeend",
                 subwayLinesTemplate(line)
             );
-        });
+        }));
+        // defaultSubwayLines.map(line => {
+        //     console.log(line)
+        //     $subwayLineList.insertAdjacentHTML(
+        //         "beforeend",
+        //         subwayLinesTemplate(line)
+        //     );
+        // });
     };
 
     const initEventListeners = () => {

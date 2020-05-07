@@ -1,4 +1,4 @@
-export const METHOD = {
+const METHOD = {
   PUT() {
     return {
       method: "PUT"
