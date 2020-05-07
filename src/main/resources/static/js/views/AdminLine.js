@@ -6,6 +6,7 @@ import {
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import { ERROR_MESSAGE } from '../../utils/constants.js';
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -26,6 +27,8 @@ function AdminLine() {
       name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value
     };
+
+    validate(newSubwayLine.name);
 
     let data = {
       name: $subwayLineNameInput.value,
@@ -51,6 +54,30 @@ function AdminLine() {
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
   };
+
+  function validate(lineName) {
+    if (!lineName) {
+      alert(ERROR_MESSAGE.NOT_EMPTY);
+      throw new Error();
+    }
+    if (lineName.includes(" ")) {
+      alert(ERROR_MESSAGE.NOT_BLANK);
+      throw new Error();
+    }
+    //myCode
+    if (duplicatedName(lineName)) {
+      alert(ERROR_MESSAGE.DUPLICATE_NAME);
+      throw new Error();
+    }
+  }
+
+  function duplicatedName(input) {
+    const names = document.querySelectorAll(".subway-line-item");
+    const namesArr = Array.from(names);
+    return namesArr.some(element => {
+      return element.innerText.trim() === input;
+    });
+  }
 
   const onDeleteSubwayLine = event => {
     const $target = event.target;
