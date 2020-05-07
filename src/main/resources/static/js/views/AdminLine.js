@@ -1,23 +1,24 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {
-    colorSelectOptionTemplate,
-    subwayLinesTemplate
-} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
+    const form = {
+        'subwayLineNameInput': document.querySelector("#subway-line-name"),
+        'subwayLineColorInput': document.querySelector("#subway-line-color"),
+        'subwayLineFirstTime': document.querySelector("#first-time"),
+        'subwayLineLastTime': document.querySelector("#last-time"),
+        'subwayLineIntervalTime': document.querySelector("#interval-time"),
+        'subwayLineId': document.querySelector("#lineId")
+    };
+
     const $subwayLineList = document.querySelector("#subway-line-list");
-    const $subwayLineNameInput = document.querySelector("#subway-line-name");
-    const $subwayLineColorInput = document.querySelector("#subway-line-color");
-    const $subwayLineFirstTime = document.querySelector("#first-time");
-    const $subwayLineLastTime = document.querySelector("#last-time");
-    const $subwayLineIntervalTime = document.querySelector("#interval-time");
     const $viewStartTime = document.querySelector("#view-start-time");
     const $viewEndTime = document.querySelector("#view-end-time");
     const $viewIntervalTime = document.querySelector("#view-interval-time");
-    const $subwayLineId = document.querySelector("#lineId");
+
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -36,13 +37,19 @@ function AdminLine() {
         $subwayLineList.removeChild(document.querySelector(selectId));
     }
 
+    function clearForm() {
+        for (let key in form) {
+            form[key].value = "";
+        }
+    }
+
     function onCreateSubwayLine() {
         let newSubwayLine = {
-            name: $subwayLineNameInput.value,
-            color: $subwayLineColorInput.value,
-            startTime: $subwayLineFirstTime.value,
-            endTime: $subwayLineLastTime.value,
-            intervalTime: $subwayLineIntervalTime.value
+            name: form.subwayLineNameInput.value,
+            color: form.subwayLineColorInput.value,
+            startTime: form.subwayLineFirstTime.value,
+            endTime: form.subwayLineLastTime.value,
+            intervalTime: form.subwayLineIntervalTime.value
         };
 
         api.line.create(newSubwayLine).then(res => {
@@ -65,12 +72,7 @@ function AdminLine() {
         });
 
         subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineFirstTime.value = "";
-        $subwayLineLastTime.value = "";
-        $subwayLineIntervalTime.value = "";
-        $subwayLineId.value = "";
+        clearForm();
     };
 
     const onDeleteSubwayLine = event => {
@@ -88,19 +90,19 @@ function AdminLine() {
         }
     };
 
-    const onEditToggle = event => {
+    const onEditSubwayLine = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
             const lineId = $target.closest(".subway-line-item").id.split(
                 "-")[1];
             api.line.get('/' + lineId).then(res => {
-                    $subwayLineNameInput.value = res.name;
-                    $subwayLineColorInput.value = res.color;
-                    $subwayLineFirstTime.value = res.startTime;
-                    $subwayLineLastTime.value = res.endTime;
-                    $subwayLineIntervalTime.value = res.intervalTime;
-                    $subwayLineId.value = res.id;
+                    form.subwayLineNameInput.value = res.name;
+                    form.subwayLineColorInput.value = res.color;
+                    form.subwayLineFirstTime.value = res.startTime;
+                    form.subwayLineLastTime.value = res.endTime;
+                    form.subwayLineIntervalTime.value = res.intervalTime;
+                    form.subwayLineId.value = res.id;
                     subwayLineModal.toggle();
                 }
             )
@@ -121,11 +123,6 @@ function AdminLine() {
         }
     };
 
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-pencil");
-    };
-
     const initDefaultSubwayLines = () => {
         api.line.get().then(newSubwayLines => {
             newSubwayLines.forEach(newSubwayLine => {
@@ -136,7 +133,7 @@ function AdminLine() {
 
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditToggle);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
@@ -147,7 +144,7 @@ function AdminLine() {
     const createOrUpdate = event => {
         event.preventDefault();
 
-        if ($subwayLineId.value === "") {
+        if (form.subwayLineId.value === "") {
             onCreateSubwayLine();
             return;
         }
@@ -156,14 +153,14 @@ function AdminLine() {
 
     function onUpdateSubwayLine() {
         let newSubwayLine = {
-            name: $subwayLineNameInput.value,
-            color: $subwayLineColorInput.value,
-            startTime: $subwayLineFirstTime.value,
-            endTime: $subwayLineLastTime.value,
-            intervalTime: $subwayLineIntervalTime.value
+            name: form.subwayLineNameInput.value,
+            color: form.subwayLineColorInput.value,
+            startTime: form.subwayLineFirstTime.value,
+            endTime: form.subwayLineLastTime.value,
+            intervalTime: form.subwayLineIntervalTime.value
         };
 
-        api.line.update("/" + $subwayLineId.value, newSubwayLine).then(res => {
+        api.line.update("/" + form.subwayLineId.value, newSubwayLine).then(res => {
             if (res.status !== 200) {
                 return;
             }
@@ -184,12 +181,7 @@ function AdminLine() {
         });
 
         subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineFirstTime.value = "";
-        $subwayLineLastTime.value = "";
-        $subwayLineIntervalTime.value = "";
-        $subwayLineId.value = "";
+        clearForm();
     };
 
     const onSelectColorHandler = event => {
@@ -206,8 +198,8 @@ function AdminLine() {
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-        .map((option, index) => colorSelectOptionTemplate(option, index))
-        .join("");
+            .map((option, index) => colorSelectOptionTemplate(option, index))
+            .join("");
         $colorSelectContainer.insertAdjacentHTML("beforeend",
             colorSelectTemplate);
         $colorSelectContainer.addEventListener(
