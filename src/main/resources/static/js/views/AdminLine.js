@@ -1,11 +1,8 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
-import {
-  subwayLinesTemplate,
-  colorSelectOptionTemplate
-} from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
+import { colorSelectOptionTemplate, subwayLinesTemplate } from "../../utils/templates.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -53,8 +50,9 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
 
-  const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
+  const initDefaultSubwayLines = async () => {
+    const lines = await api.line.get();
+    lines.map(line => {
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
         subwayLinesTemplate(line)
@@ -85,8 +83,8 @@ function AdminLine() {
       "#subway-line-color-select-container"
     );
     const colorSelectTemplate = subwayLineColorOptions
-      .map((option, index) => colorSelectOptionTemplate(option, index))
-      .join("");
+    .map((option, index) => colorSelectOptionTemplate(option, index))
+    .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
     $colorSelectContainer.addEventListener(
       EVENT_TYPE.CLICK,

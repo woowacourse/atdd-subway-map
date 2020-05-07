@@ -40,8 +40,23 @@ const api = (() => {
     }
   };
 
+  const line = {
+    get() {
+      return request(`/lines`);
+    },
+    create(data) {
+      return request(`/lines`, METHOD.POST(data));
+    },
+    update(data) {
+      return request(`/lines/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      return request(`/lines/${id}`, METHOD.DELETE);
+    }
+  }
+
   return {
-    station
+    station, line
   };
 })();
 
