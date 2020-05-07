@@ -33,7 +33,7 @@ public class LineController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
-                .build();
+                .body(LineResponse.of(persistLine));
     }
 
     @GetMapping
@@ -54,11 +54,10 @@ public class LineController {
 
     @PutMapping("/{id}")
     ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest.toLine());
+        Line line = lineService.updateLine(id, lineRequest.toLine());
 
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(LineResponse.of(line));
     }
 
     @DeleteMapping("/{id}")
