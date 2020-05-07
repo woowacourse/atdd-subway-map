@@ -24,7 +24,7 @@ public class LineController {
         this.service = service;
     }
 
-    @PostMapping("/lines")
+    @PostMapping("/linesl")
     public ResponseEntity addLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
         Line persistLine = service.save(line);
@@ -34,7 +34,7 @@ public class LineController {
             .body(LineResponse.of(persistLine));
     }
 
-    @GetMapping("/lines")
+    @GetMapping("/linesl")
     public ResponseEntity showLines() {
         return ResponseEntity.ok().body(service.showLines());
     }
