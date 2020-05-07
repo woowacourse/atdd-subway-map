@@ -4,7 +4,7 @@ import api from "../../api/index.js";
 
 
 function AdminStation() {
-    let stations = [];
+    let stationNames = [];
     const $stationInput = document.querySelector('#station-name');
     const $stationList = document.querySelector('#station-list');
     const $stationAddButton = document.querySelector('#station-add-btn');
@@ -25,12 +25,12 @@ function AdminStation() {
             alert(ERROR_MESSAGE.NOT_BLANK);
             return;
         }
-        if (stations.includes(stationName)) {
+        if (stationNames.includes(stationName)) {
             alert(ERROR_MESSAGE.NOT_DUPLICATE);
             return;
         }
 
-        stations = [...stations, stationName];
+        stationNames = [...stationNames, stationName];
 
         $stationNameInput.value = '';
         $stationList.insertAdjacentHTML('beforeend', listItemTemplate(stationName));
@@ -43,8 +43,16 @@ function AdminStation() {
         const stationName = $target.closest('.list-item').innerText;
         if (isDeleteButton && confirm('정말 삭제하시겠습니까?')) {
             $target.closest('.list-item').remove();
-            stations = stations.filter((station) => station !== stationName);
+            stationNames = stationNames.filter((station) => station !== stationName);
         }
+    };
+
+    const showStations = async () => {
+        const stations = await api.station.get();
+        stations.forEach(station => {
+            $stationList.insertAdjacentHTML('beforeend', listItemTemplate(station.name));
+            stationNames = [...stationNames, station.name];
+        });
     };
 
     const initEventListeners = () => {
@@ -55,6 +63,7 @@ function AdminStation() {
 
     const init = () => {
         initEventListeners();
+        showStations();
     };
 
     return {
