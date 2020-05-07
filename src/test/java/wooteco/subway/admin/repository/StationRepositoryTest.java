@@ -10,15 +10,15 @@ import wooteco.subway.admin.domain.Station;
 
 @DataJdbcTest
 public class StationRepositoryTest {
-	@Autowired
-	private StationRepository stationRepository;
+    @Autowired
+    private StationRepository stationRepository;
 
-	@Test
-	void save() {
-		Station station = new Station("강남역");
+    @Test
+    void save() {
+        Station station = new Station("강남역");
 
-		Station persistStation = stationRepository.save(station);
+        Station persistStation = stationRepository.save(station);
 
-		assertThat(persistStation.getId()).isNotNull();
-	}
+        assertThat(persistStation.getId()).isNotNull();
+    }
 }

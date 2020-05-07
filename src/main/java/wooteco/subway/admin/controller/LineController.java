@@ -21,38 +21,39 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-	private final LineService lineService;
+    private final LineService lineService;
 
-	public LineController(LineService lineService) {
-		this.lineService = lineService;
-	}
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
-	@PostMapping
-	public ResponseEntity createLines(@RequestBody LineRequest lineRequest) {
-		lineService.save(lineRequest.toLine());
-		return ResponseEntity.status(HttpStatus.CREATED).build();
-	}
+    @PostMapping
+    public ResponseEntity createLines(@RequestBody LineRequest lineRequest) {
+        System.out.println(lineRequest);
+        lineService.save(lineRequest.toLine());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
-	@GetMapping
-	public List<LineResponse> findLines() {
-		return lineService.showLines().stream()
-			.map(LineResponse::of)
-			.collect(Collectors.toList());
-	}
+    @GetMapping
+    public List<LineResponse> findLines() {
+        return lineService.showLines().stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
+    }
 
-	@GetMapping("/{id}")
-	public LineResponse findLine(@PathVariable Long id) {
-		return lineService.findById(id);
-	}
+    @GetMapping("/{id}")
+    public LineResponse findLine(@PathVariable Long id) {
+        return lineService.findById(id);
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		lineService.updateLine(id, lineRequest.toLine());
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(id, lineRequest.toLine());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
-		lineService.deleteLineById(id);
-	}
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+    }
 }
