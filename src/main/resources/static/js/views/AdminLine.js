@@ -23,12 +23,7 @@ function AdminLine() {
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
-    const newSubwayLine = {
-      name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
-    };
 
-    validate(newSubwayLine.name);
 
     let data = {
       name: $subwayLineNameInput.value,
@@ -38,37 +33,47 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value
     };
 
+    validate(data);
+
     fetch("/lines", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
+    }).then(response => response.json())
+    .then(jsonResponse=> {
+      const newSubwayLine = {
+        id: jsonResponse.id,
+        name: jsonResponse.name,
+        bgColor: jsonResponse.bgColor
+      };
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(newSubwayLine)
+      );
     });
 
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
   };
 
-  function validate(lineName) {
-    if (!lineName) {
+  function validate(line) {
+    if (!line.name || !line.startTime || !line.endTime || !line.intervalTime || !line.bgColor) {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       throw new Error();
     }
-    if (lineName.includes(" ")) {
+    if (line.name.includes(" ")) {
       alert(ERROR_MESSAGE.NOT_BLANK);
       throw new Error();
     }
     //myCode
-    if (duplicatedName(lineName)) {
+    if (duplicatedName(line.name)) {
       alert(ERROR_MESSAGE.DUPLICATE_NAME);
       throw new Error();
     }
+
   }
 
   function duplicatedName(input) {
@@ -91,16 +96,15 @@ function AdminLine() {
     const $target = event.target;
     const isSubwayLineItem = $target.classList.contains("subway-line-item");
     if (isSubwayLineItem) {
-      const subwayLineName ={
-        name: $target.innerText.trim()
+      const subwayLine ={
+        id: document.querySelector(".line-id").innerText.trim()
       };
 
-      fetch("/lines/find", {
-        method:'POST',
+      fetch("/lines/"+subwayLine.id, {
+        method:'GET',
         headers:{
           'Content-Type' : 'application/json; charset=utf-8'
-        },
-        body:JSON.stringify(subwayLineName)
+        }
       }).then(response=>response.json())
       .then(jsonResponse=>{
         document.querySelector("#first-time-display").innerText = jsonResponse.startTime.toString().substr(0, 5);
@@ -111,10 +115,27 @@ function AdminLine() {
   }
 
   const onUpdateSubwayLine = event => {
+    event.preventDefault();
     const $target = event.target;
     const isUpdateButton = $target.classList.contains("mdi-pencil");
     if (isUpdateButton) {
       subwayLineModal.toggle();
+
+      const updatedSubwayLine = {
+        name: $subwayLineNameInput.value,
+        bgColor: $subwayLineColorInput.value
+      };
+
+      const data = {
+        name: $subwayLineNameInput.value,
+        startTime: $subwayLineFirstTimeInput.value,
+        endTime: $subwayLineLastTimeInput.value,
+        intervalTime: $subwayLineIntervalTimeInput.value,
+        bgColor: $subwayLineColorInput.value
+      }
+
+      fetch("")
+
     }
   };
 
