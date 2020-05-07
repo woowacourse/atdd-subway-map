@@ -19,24 +19,24 @@
                 <div class="flex-1 text-center">노선 관리</div>
                 <div class="flex-1 flex justify-end">
                     <button class="modal-open bg-transparent bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 text-sm px-3 py-1 rounded"
-                  id="subway-line-add-btn">
-            노선 추가
-          </button>
+                            id="subway-line-add-btn">
+                        노선 추가
+                    </button>
+                </div>
+            </div>
+            <div class="lines-info flex flex-wrap mb-3 w-full">
+                <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
+                <div id="first-time-info" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">05:00</div>
+                <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
+                <div id="last-time-info" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">23:30</div>
+                <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
+                <div id="interval-time-info" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">10분</div>
+            </div>
         </div>
-      </div>
-      <div class="lines-info flex flex-wrap mb-3 w-full">
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">05:00</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">23:30</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">10분</div>
-      </div>
+        <div class="mt-5 flex subway-lines-container relative overflow-y-auto">
+            <div class="w-full" id="subway-line-list"></div>
+        </div>
     </div>
-    <div class="mt-5 flex subway-lines-container relative overflow-y-auto">
-      <div class="w-full" id="subway-line-list"></div>
-    </div>
-  </div>
 </div>
 </div>
 

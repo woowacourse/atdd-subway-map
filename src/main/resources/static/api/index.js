@@ -52,6 +52,9 @@ const api = (() => {
         get() {
             return request(`/lines`);
         },
+        findById(id) {
+            return request(`/lines/${id}`);
+        },
         create(data) {
             return request(`/lines`, METHOD.POST(data));
         }
