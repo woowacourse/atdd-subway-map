@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -25,9 +25,9 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations, String bgColor) {
+    public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations, String bgColor) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -51,8 +51,8 @@ public class LineResponse {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {

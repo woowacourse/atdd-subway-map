@@ -1,8 +1,10 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.annotation.Generated;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;

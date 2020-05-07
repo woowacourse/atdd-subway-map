@@ -4,7 +4,6 @@ import {
   subwayLinesTemplate,
   colorSelectOptionTemplate
 } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
@@ -77,11 +76,13 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
+    api.line.get().then(lines => {
+      lines.map(line => {
+        $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(line)
+        );
+      });
     });
   };
 
