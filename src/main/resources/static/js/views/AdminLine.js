@@ -12,7 +12,6 @@ function AdminLine() {
     const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
-
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
@@ -88,8 +87,15 @@ function AdminLine() {
                     "beforeend",
                     subwayLinesTemplate(subwayLine)
                 );
+                let deleteButton = document.querySelector("#delete-" + subwayLine.id);
+                deleteButton.addEventListener(EVENT_TYPE.CLICK, onDeleteLine)
             }
         ));
+    };
+
+    const onDeleteLine = event => {
+        const $target = event.target;
+        console.log($target.id);
     };
 
     const initEventListeners = () => {
