@@ -69,6 +69,10 @@ public class Line {
         return updatedAt;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public void update(Line line) {
         if (line.getName() != null) {
             this.name = line.getName();

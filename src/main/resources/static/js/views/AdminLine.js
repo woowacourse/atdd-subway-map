@@ -99,8 +99,18 @@ function AdminLine() {
         );
     };
 
+    const showLines = async () => {
+        const persistLines = await api.lines.get();
+        console.log(persistLines);
+        persistLines.forEach(persistLine => $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(persistLine)
+        ));
+    };
+
     this.init = () => {
-        initDefaultSubwayLines();
+        // initDefaultSubwayLines();
+        showLines();
         initEventListeners();
         initCreateSubwayLineForm();
     };
