@@ -71,7 +71,7 @@ function AdminLine() {
         const $target = event.target;
         const isSubwayLine = $target.classList.contains("subway-line-item");
         if (isSubwayLine) {
-            api.lines.find($target.id).then(data => {
+            api.lines.find($target.dataset.id).then(data => {
                 document.querySelector("#line-info-first-time").innerText = data.startTime.substring(0, 5);
                 document.querySelector("#line-info-last-time").innerText = data.endTime.substring(0, 5);
                 document.querySelector("#line-info-interval-time").innerText = data.intervalTime;
