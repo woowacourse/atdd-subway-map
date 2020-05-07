@@ -26,22 +26,20 @@ const METHOD = {
 
 const api = (() => {
     const request = (uri, config) => fetch(uri, config).then(data => data.json());
-
     const station = {
         get() {
-            request(`${BASE_URL}/stations`);
+            return request(`/stations`);
         },
         create(data) {
-            request(`${BASE_URL}/station`, METHOD.POST(data));
+            return request(`/station`, METHOD.POST(data));
         },
-        update(data) {
-            request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+        update(data, id) {
+            return request(`/station/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+            return request(`/station/${id}`, METHOD.DELETE);
         }
     };
-
     return {
         station
     };
