@@ -38,14 +38,4 @@ public class LineRequest {
         return new Line(name, color, startTime, endTime, intervalTime);
     }
 
-    @Override
-    public String toString() {
-        return "LineRequest{" +
-            "name='" + name + '\'' +
-            ", color='" + color + '\'' +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", intervalTime=" + intervalTime +
-            '}';
-    }
 }
