@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -62,6 +64,12 @@ public class LineController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		lineService.deleteLineById(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/name/{lineName}")
+	public ResponseEntity<Void> deleteByName(@PathVariable String lineName) {
+		lineService.deleteLineByName(lineName);
 		return ResponseEntity.ok().build();
 	}
 

@@ -34,6 +34,9 @@ const api = (() => {
         create(data) {
             return requestNoBody(`/api/lines`, METHOD.POST(data));
         },
+        delete(path = "") {
+            return requestNoBody('/api/lines' + path, METHOD.DELETE());
+        }
     };
 
     const station = {

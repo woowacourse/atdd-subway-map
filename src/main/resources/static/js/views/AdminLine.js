@@ -1,8 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {
-    colorSelectOptionTemplate,
-    subwayLinesTemplate
-} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
@@ -41,8 +38,7 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTime.value
         };
 
-        api.line.create(newSubwayLine).then(
-            function (response) {
+        api.line.create(newSubwayLine).then(response => {
                 if (response.status !== 201) {
                     alert("생성 불가!");
                     throw new Error("HTTP status " + response.status);
@@ -66,7 +62,13 @@ function AdminLine() {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            $target.closest(".subway-line-item").remove();
+            const lineName = $target.closest(".subway-line-item").innerText.trim();
+            api.line.delete("/name/" + lineName).then(response => {
+                if (response.status !== 200) {
+                    alert("삭제불가!");
+                    throw new Error("HTTP status " + response.status);
+                }
+            }).then(() => $target.closest(".subway-line-item").remove());
         }
     };
 
@@ -129,8 +131,8 @@ function AdminLine() {
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-        .map((option, index) => colorSelectOptionTemplate(option, index))
-        .join("");
+            .map((option, index) => colorSelectOptionTemplate(option, index))
+            .join("");
         $colorSelectContainer.insertAdjacentHTML("beforeend",
             colorSelectTemplate);
         $colorSelectContainer.addEventListener(
