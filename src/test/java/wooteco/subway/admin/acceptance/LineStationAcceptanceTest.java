@@ -7,7 +7,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -45,6 +56,88 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        // when
+        createStation("잠실역");
+        createStation("종합운동장역");
+        createStation("선릉역");
+        createStation("강남역");
+        // and
+        createLine("1호선");
 
+        List<Line> lines = getLines();
+        Line line = getLine(lines.get(0).getId());
+
+        createLineStation();
+    }
+
+    private void createLineStation() {
+        Map<String, String> params = new HashMap<>();
+        params.put("stationId", "1");
+        params.put("preStationId", "2");
+        params.put("distance", "1");
+        params.put("duration", "1");
+
+        given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/line-station").
+        then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/stations").
+        then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void createLine(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-red-800");
+
+        given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/lines").
+        then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<Line> getLines() {
+        return
+                given().
+                when().
+                        get("/lines").
+                then().
+                        log().all().
+                        extract().
+                        jsonPath().getList(".", Line.class);
+    }
+
+    private Line getLine(Long id) {
+        return given().when().
+                get("/lines/" + id).
+                then().
+                log().all().
+                extract().as(Line.class);
     }
 }

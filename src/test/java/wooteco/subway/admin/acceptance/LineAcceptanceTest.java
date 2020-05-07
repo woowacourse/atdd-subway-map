@@ -85,6 +85,7 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-red-800");
 
         given().
                 body(params).
@@ -102,6 +103,7 @@ public class LineAcceptanceTest {
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-red-800");
 
         given().
                 body(params).
