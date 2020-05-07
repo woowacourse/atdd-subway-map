@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.res.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -83,7 +83,6 @@ public class LineAcceptanceTest {
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
 
-        // @formatter:off
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -93,7 +92,6 @@ public class LineAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
-        // @formatter:on
     }
 
     private LineResponse getLine(Long id) {

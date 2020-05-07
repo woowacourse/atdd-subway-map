@@ -1,4 +1,4 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.res;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

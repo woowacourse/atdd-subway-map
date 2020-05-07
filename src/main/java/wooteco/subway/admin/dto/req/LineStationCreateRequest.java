@@ -1,4 +1,4 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.req;
 
 public class LineStationCreateRequest {
     private Long preStationId;

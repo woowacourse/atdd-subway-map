@@ -1,8 +1,8 @@
-package wooteco.subway.admin.dto;
-
-import wooteco.subway.admin.domain.Station;
+package wooteco.subway.admin.dto.res;
 
 import java.time.LocalDateTime;
+
+import wooteco.subway.admin.domain.Station;
 
 public class StationResponse {
     private Long id;

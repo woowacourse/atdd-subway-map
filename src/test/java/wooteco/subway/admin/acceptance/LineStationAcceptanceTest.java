@@ -1,13 +1,27 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.res.LineResponse;
+import wooteco.subway.admin.dto.res.LineStationResponse;
+import wooteco.subway.admin.dto.res.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -45,6 +59,101 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //given
+        createStation("강남");
+        createStation("서초");
+        createStation("구의");
+        createLine("2호선");
+        //when
+        register(getStations());
+        List<LineStationResponse> edges = getEdges();
+        //then
+        assertThat(edges.get(0).getDistance()).isNotNull();
+        assertThat(edges.get(0).getDuration()).isNotNull();
+        assertThat(edges.get(0).getLineResponse()).isNotNull();
+        assertThat(edges.get(0).getPreStation()).isNotNull();
+        assertThat(edges.get(0).getStation()).isNotNull();
+    }
 
+    private List<LineStationResponse> getEdges() {
+        return given()
+            .when()
+            .get("/edges")
+            .then()
+            .log()
+            .all()
+            .extract()
+            .jsonPath()
+            .getList("", LineStationResponse.class);
+    }
+
+    private void register(List<StationResponse> stations) {
+        for (StationResponse station : stations) {
+            Map<String, String> params = new HashMap<>();
+            params.put("preStationId", "1");
+            params.put("stationId", String.valueOf(station.getId()));
+            params.put("distance", "2");
+            params.put("duration", "2");
+
+            given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/edges/2").
+                then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
+        }
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
+    }
+
+    private List<StationResponse> getStations() {
+        return given().when()
+            .get("/stations")
+            .then()
+            .extract()
+            .jsonPath()
+            .getList(".", StationResponse.class);
+    }
+
+    private void createStation(String station) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", station);
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void createLine(String line) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", line);
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 }

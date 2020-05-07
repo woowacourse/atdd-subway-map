@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
-import wooteco.subway.admin.dto.LineRequest;
+import wooteco.subway.admin.dto.req.LineRequest;
 
 public class Line {
     @Id
