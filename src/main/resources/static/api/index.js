@@ -15,9 +15,7 @@ const METHOD = {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                content: data
-            })
+            body: JSON.stringify(data)
         };
     }
 };

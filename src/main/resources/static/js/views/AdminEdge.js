@@ -31,7 +31,7 @@ function AdminEdge() {
 
   const initSubwayLineOptions = () => {
     const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line.title))
+      .map(line => optionTemplate(line.name))
       .join("");
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"

@@ -5,103 +5,120 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
-  const $subwayLineList = document.querySelector("#subway-line-list");
-  const $subwayLineNameInput = document.querySelector("#subway-line-name");
-  const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayLineList = document.querySelector("#subway-line-list");
+    const $subwayLineNameInput = document.querySelector("#subway-line-title");
+    const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+    const $subwayLineLastTimeInput = document.querySelector("#last-time");
+    const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
+    const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
-  const $createSubwayLineButton = document.querySelector(
-    "#subway-line-create-form #submit-button"
-  );
-  const subwayLineModal = new Modal();
+    const $createSubwayLineButton = document.querySelector(
+        "#subway-line-create-form #submit-button"
+    );
 
-  const onCreateSubwayLine = event => {
-    event.preventDefault();
-    const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+    const subwayLineModal = new Modal();
+    const onCreateSubwayLine = event => {
+        event.preventDefault();
+
+        const data = {
+            name: $subwayLineNameInput.value,
+            startTime: $subwayLineFirstTimeInput.value,
+            endTime: $subwayLineLastTimeInput.value,
+            intervalTime: $subwayLineIntervalTimeInput.value,
+            bgColor: $subwayLineColorInput.value
+        };
+        api.line.create(data);
+        const newSubwayLine = {
+            title: $subwayLineNameInput.value,
+            bgColor: $subwayLineColorInput.value
+        };
+        console.log(newSubwayLine.title);
+        $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(newSubwayLine)
+        );
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
     };
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
-    subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
-  };
 
-  const onDeleteSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
-    }
-  };
+    const onDeleteSubwayLine = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (isDeleteButton) {
+            $target.closest(".subway-line-item").remove();
+        }
+    };
 
-  const onUpdateSubwayLine = event => {
-    const $target = event.target;
-    const isUpdateButton = $target.classList.contains("mdi-pencil");
-    if (isUpdateButton) {
-      subwayLineModal.toggle();
-    }
-  };
+    const onUpdateSubwayLine = event => {
+        const $target = event.target;
+        const isUpdateButton = $target.classList.contains("mdi-pencil");
+        if (isUpdateButton) {
+            subwayLineModal.toggle();
+        }
+    };
 
-  const onEditSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
-  };
+    const onEditSubwayLine = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-pencil");
+    };
 
-  const initDefaultSubwayLines = () => {
-    const subwayData = [{}];
+    const initDefaultSubwayLines = () => {
+        api.line.get().then(subwayLines => subwayLines.forEach(
+            subwayLine => {
+                console.log(subwayLine);
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(subwayLine)
+                );
+            }
+        ));
 
-    api.line.get().then(subwayLines => subwayLines.forEach(
-        subwayLine => {subwayData.add(subwayLine)}
-    ));
+        // subwayData.map(line => {
+        //     $subwayLineList.insertAdjacentHTML(
+        //         "beforeend",
+        //         subwayLinesTemplate(line)
+        //     );
+        // });
+    };
 
-    subwayData.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
-  };
+    const initEventListeners = () => {
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $createSubwayLineButton.addEventListener(
+            EVENT_TYPE.CLICK,
+            onCreateSubwayLine
+        );
+    };
 
-  const initEventListeners = () => {
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-    $createSubwayLineButton.addEventListener(
-      EVENT_TYPE.CLICK,
-      onCreateSubwayLine
-    );
-  };
+    const onSelectColorHandler = event => {
+        event.preventDefault();
+        const $target = event.target;
+        if ($target.classList.contains("color-select-option")) {
+            document.querySelector("#subway-line-color").value =
+                $target.dataset.color;
+        }
+    };
 
-  const onSelectColorHandler = event => {
-    event.preventDefault();
-    const $target = event.target;
-    if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
-        $target.dataset.color;
-    }
-  };
+    const initCreateSubwayLineForm = () => {
+        const $colorSelectContainer = document.querySelector(
+            "#subway-line-color-select-container"
+        );
+        const colorSelectTemplate = subwayLineColorOptions
+            .map((option, index) => colorSelectOptionTemplate(option, index))
+            .join("");
+        $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
+        $colorSelectContainer.addEventListener(
+            EVENT_TYPE.CLICK,
+            onSelectColorHandler
+        );
+    };
 
-  const initCreateSubwayLineForm = () => {
-    const $colorSelectContainer = document.querySelector(
-      "#subway-line-color-select-container"
-    );
-    const colorSelectTemplate = subwayLineColorOptions
-      .map((option, index) => colorSelectOptionTemplate(option, index))
-      .join("");
-    $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
-    $colorSelectContainer.addEventListener(
-      EVENT_TYPE.CLICK,
-      onSelectColorHandler
-    );
-  };
-
-  this.init = () => {
-    initDefaultSubwayLines();
-    initEventListeners();
-    initCreateSubwayLineForm();
-  };
+    this.init = () => {
+        initDefaultSubwayLines();
+        initEventListeners();
+        initCreateSubwayLineForm();
+    };
 }
 
 const adminLine = new AdminLine();
