@@ -37,7 +37,7 @@ function AdminLine() {
 
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
-                    subwayLinesTemplate(newSubwayLine)
+                    subwayLinesTemplate(line)
                 );
 
                 $subwayLineNameInput.value = "";
