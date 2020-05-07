@@ -21,7 +21,17 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(response => response.json());
+    const request = (uri, config) => fetch(uri, config).then(response => {
+        if (!response.ok) {
+            throw Error("메서드 호출에 실패했습니다.");
+        }
+        return response.json();
+    });
+    const noContentRequest = (uri, config) => fetch(uri, config).then(response => {
+        if (!response.ok) {
+            throw Error("메서드 호출에 실패했습니다.");
+        }
+    });
 
     const station = {
         get() {
@@ -34,7 +44,7 @@ const api = (() => {
             return request(`/stations/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/stations/${id}`, METHOD.DELETE);
+            return noContentRequest(`/stations/${id}`, METHOD.DELETE());
         }
     };
 
@@ -52,7 +62,7 @@ const api = (() => {
             return request(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/lines/${id}`, METHOD.DELETE);
+            return noContentRequest(`/lines/${id}`, METHOD.DELETE());
         }
     };
 
