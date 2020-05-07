@@ -1,10 +1,19 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {
+    colorSelectOptionTemplate,
+    subwayLinesTemplate
+} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
+    const $subwayLineList = document.querySelector("#subway-line-list");
+    const $createSubwayLineButton = document.querySelector(
+        "#subway-line-create-form #submit-button"
+    );
+    const subwayLineModal = new Modal();
+
     const form = {
         'subwayLineNameInput': document.querySelector("#subway-line-name"),
         'subwayLineColorInput': document.querySelector("#subway-line-color"),
@@ -13,89 +22,80 @@ function AdminLine() {
         'subwayLineIntervalTime': document.querySelector("#interval-time"),
         'subwayLineId': document.querySelector("#lineId")
     };
-
-    const $subwayLineList = document.querySelector("#subway-line-list");
-    const $viewStartTime = document.querySelector("#view-start-time");
-    const $viewEndTime = document.querySelector("#view-end-time");
-    const $viewIntervalTime = document.querySelector("#view-interval-time");
-
-
-    const $createSubwayLineButton = document.querySelector(
-        "#subway-line-create-form #submit-button"
-    );
-    const subwayLineModal = new Modal();
-
-    function addSubwayLineList(newSubwayLine) {
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
-    }
-
-    function removeSubwayLineList(id) {
-        let selectId = "#line-" + id;
-        $subwayLineList.removeChild(document.querySelector(selectId));
-    }
-
-    function clearForm() {
-        for (let key in form) {
-            form[key].value = "";
+    const formManager = {
+        close() {
+            subwayLineModal.toggle();
+            for (let key in form) {
+                form[key].value = "";
+            }
+        },
+        setting() {
+            return {
+                name: form.subwayLineNameInput.value,
+                color: form.subwayLineColorInput.value,
+                startTime: form.subwayLineFirstTime.value,
+                endTime: form.subwayLineLastTime.value,
+                intervalTime: form.subwayLineIntervalTime.value
+            };
         }
-    }
+    };
+
+    const linesInfo = {
+        'viewStartTime': document.querySelector("#view-start-time"),
+        'viewEndTime': document.querySelector("#view-end-time"),
+        'viewIntervalTime': document.querySelector("#view-interval-time")
+    };
+    const linesInfoManger = {
+        clear() {
+            linesInfo.viewStartTime.innerHTML = "";
+            linesInfo.viewEndTime.innerHTML = "";
+            linesInfo.viewIntervalTime.innerHTML = "";
+        },
+        setting(line) {
+            linesInfo.viewStartTime.innerHTML = line.startTime.slice(0, 5);
+            linesInfo.viewEndTime.innerHTML = line.endTime.slice(0, 5);
+            linesInfo.viewIntervalTime.innerHTML = line.intervalTime + "분";
+        }
+    };
 
     function onCreateSubwayLine() {
-        let newSubwayLine = {
-            name: form.subwayLineNameInput.value,
-            color: form.subwayLineColorInput.value,
-            startTime: form.subwayLineFirstTime.value,
-            endTime: form.subwayLineLastTime.value,
-            intervalTime: form.subwayLineIntervalTime.value
-        };
+        let newSubwayLine = formManager.setting();
 
         api.line.create(newSubwayLine).then(res => {
             if (res.status !== 201) {
+                linesInfoManger.clear();
                 return;
             }
-            return res.json();
-        }).then(res => {
-            if (res === undefined) {
-                $viewStartTime.innerHTML = "";
-                $viewEndTime.innerHTML = "";
-                $viewIntervalTime.innerHTML = "";
-                return;
-            }
-            newSubwayLine['id'] = res.id;
-            addSubwayLineList(newSubwayLine);
-            $viewStartTime.innerHTML = newSubwayLine.startTime;
-            $viewEndTime.innerHTML = newSubwayLine.endTime;
-            $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분";
+            res.json().then(res => {
+                newSubwayLine['id'] = res.id;
+                addSubwayLineList(newSubwayLine);
+                linesInfoManger.setting(newSubwayLine);
+            });
         });
-
-        subwayLineModal.toggle();
-        clearForm();
+        formManager.close();
     };
 
-    const onDeleteSubwayLine = event => {
+    const onSelectSubwayLine = event => {
         const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            const lineId = $target.closest(".subway-line-item").id.split(
-                "-")[1];
-            api.line.delete("/" + lineId).then(response => {
-                if (response.status !== 200) {
-                    alert("삭제불가!");
-                    throw new Error("HTTP status " + response.status);
+        const isSelectSubwayLine
+            = $target.classList.contains("subway-line-item");
+        if (isSelectSubwayLine) {
+            api.line.get('/' + $target.id).then(line => {
+                    linesInfoManger.setting(line);
                 }
-            }).then(() => $target.closest(".subway-line-item").remove());
+            )
         }
     };
+
+    function parseId(target) {
+        return target.split("-")[1];
+    }
 
     const onEditSubwayLine = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            const lineId = $target.closest(".subway-line-item").id.split(
-                "-")[1];
+            const lineId = parseId($target.closest(".subway-line-item").id);
             api.line.get('/' + lineId).then(res => {
                     form.subwayLineNameInput.value = res.name;
                     form.subwayLineColorInput.value = res.color;
@@ -109,19 +109,52 @@ function AdminLine() {
         }
     };
 
-    const onSelectSubwayLine = event => {
-        const $target = event.target;
-        const isSelectSubwayLine
-            = $target.classList.contains("subway-line-item");
-        if (isSelectSubwayLine) {
-            api.line.get('/' + $target.id).then(line => {
-                    $viewStartTime.innerHTML = line.startTime.slice(0, 5);
-                    $viewEndTime.innerHTML = line.endTime.slice(0, 5);
-                    $viewIntervalTime.innerHTML = line.intervalTime + "분";
+    function onUpdateSubwayLine() {
+        let newSubwayLine = formManager.setting();
+
+        api.line.update("/" + form.subwayLineId.value, newSubwayLine).then(
+            res => {
+                if (res.status !== 200) {
+                    linesInfoManger.clear();
+                    return;
                 }
-            )
-        }
+                res.json().then(res => {
+                    newSubwayLine['id'] = res.id;
+                    removeSubwayLineList(res.id);
+                    addSubwayLineList(newSubwayLine);
+                    linesInfoManger.setting(res);
+                });
+            });
+        formManager.close();
     };
+
+    const onDeleteSubwayLine = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (!isDeleteButton) {
+            return;
+        }
+
+        const lineId = parseId($target.closest(".subway-line-item").id);
+        api.line.delete("/" + lineId).then(response => {
+            if (response.status !== 200) {
+                alert("삭제불가!");
+                throw new Error("HTTP status " + response.status);
+            }
+        }).then(() => $target.closest(".subway-line-item").remove());
+    };
+
+    function addSubwayLineList(newSubwayLine) {
+        $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(newSubwayLine)
+        );
+    }
+
+    function removeSubwayLineList(id) {
+        let selectId = "#line-" + id;
+        $subwayLineList.removeChild(document.querySelector(selectId));
+    }
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(newSubwayLines => {
@@ -137,11 +170,11 @@ function AdminLine() {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
-            createOrUpdate
+            save
         );
     };
 
-    const createOrUpdate = event => {
+    const save = event => {
         event.preventDefault();
 
         if (form.subwayLineId.value === "") {
@@ -149,39 +182,6 @@ function AdminLine() {
             return;
         }
         onUpdateSubwayLine();
-    };
-
-    function onUpdateSubwayLine() {
-        let newSubwayLine = {
-            name: form.subwayLineNameInput.value,
-            color: form.subwayLineColorInput.value,
-            startTime: form.subwayLineFirstTime.value,
-            endTime: form.subwayLineLastTime.value,
-            intervalTime: form.subwayLineIntervalTime.value
-        };
-
-        api.line.update("/" + form.subwayLineId.value, newSubwayLine).then(res => {
-            if (res.status !== 200) {
-                return;
-            }
-            return res.json();
-        }).then(res => {
-            if (res === undefined) {
-                $viewStartTime.innerHTML = "";
-                $viewEndTime.innerHTML = "";
-                $viewIntervalTime.innerHTML = "";
-                return;
-            }
-            newSubwayLine['id'] = res.id;
-            removeSubwayLineList(res.id);
-            addSubwayLineList(newSubwayLine);
-            $viewStartTime.innerHTML = newSubwayLine.startTime;
-            $viewEndTime.innerHTML = newSubwayLine.endTime;
-            $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분";
-        });
-
-        subwayLineModal.toggle();
-        clearForm();
     };
 
     const onSelectColorHandler = event => {
@@ -198,8 +198,8 @@ function AdminLine() {
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-            .map((option, index) => colorSelectOptionTemplate(option, index))
-            .join("");
+        .map((option, index) => colorSelectOptionTemplate(option, index))
+        .join("");
         $colorSelectContainer.insertAdjacentHTML("beforeend",
             colorSelectTemplate);
         $colorSelectContainer.addEventListener(
