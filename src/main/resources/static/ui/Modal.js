@@ -1,24 +1,56 @@
 import {EVENT_TYPE} from "../utils/constants.js";
 
 export default function Modal() {
-  const $openModalButton = document.querySelector(".modal-open");
-  const $closeModalButton = document.querySelector(".modal-close");
-  const $body = document.querySelector("body");
-  const $modal = document.querySelector(".modal");
+    const $openModalButton = document.querySelector(".modal-open");
+    const $closeModalButton = document.querySelector(".modal-close");
+    const $body = document.querySelector("body");
+    const $modal = document.querySelector(".modal");
+    const $forms = {
+        'subwayLineNameInput': document.querySelector("#subway-line-name"),
+        'subwayLineColorInput': document.querySelector("#subway-line-color"),
+        'subwayLineFirstTime': document.querySelector("#first-time"),
+        'subwayLineLastTime': document.querySelector("#last-time"),
+        'subwayLineIntervalTime': document.querySelector("#interval-time"),
+        'subwayLineId': document.querySelector("#lineId"),
+    };
 
-  const toggle = event => {
-    if (event) {
-      event.preventDefault();
-    }
-    $body.classList.toggle("modal-active");
-    $modal.classList.toggle("opacity-0");
-    $modal.classList.toggle("pointer-events-none");
-  };
+    const toggle = event => {
+        if (event) {
+            event.preventDefault();
+        }
+        $body.classList.toggle("modal-active");
+        $modal.classList.toggle("opacity-0");
+        $modal.classList.toggle("pointer-events-none");
+        for (let key in $forms) {
+            $forms[key].value = "";
+        }
+    };
 
-  $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
-  $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+    $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+    $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
 
-  return {
-    toggle
-  };
+    const subwayLineId = () => {
+        return $forms.subwayLineId.value;
+    };
+
+    const makeFrom = () => {
+        return {
+            name: $forms.subwayLineNameInput.value,
+            color: $forms.subwayLineColorInput.value,
+            startTime: $forms.subwayLineFirstTime.value,
+            endTime: $forms.subwayLineLastTime.value,
+            intervalTime: $forms.subwayLineIntervalTime.value
+        };
+    };
+
+    const setBy = data => {
+        $forms.subwayLineNameInput.value = data.name;
+        $forms.subwayLineColorInput.value = data.color;
+        $forms.subwayLineFirstTime.value = data.startTime;
+        $forms.subwayLineLastTime.value = data.endTime;
+        $forms.subwayLineIntervalTime.value = data.intervalTime;
+        $forms.subwayLineId.value = data.id;
+    };
+
+    return {$forms, toggle, subwayLineId, makeFrom, setBy};
 }

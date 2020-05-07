@@ -1,13 +1,14 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -45,7 +43,6 @@ public class LineAcceptanceTest {
 
 		// then
 		List<LineResponse> lines = getLines();
-		System.out.println(lines.get(0).toString() + ">>>>>>>>>>>>>>>>>>>>>>>");
 		assertThat(lines.size()).isEqualTo(4);
 
 		// when
