@@ -4,6 +4,9 @@ import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
+const UPDATE_BUTTON_CLASS_NAME = "mdi-pencil";
+const DELETE_BUTTON_CLASS_NAME = "mdi-delete";
+
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
@@ -17,10 +20,12 @@ function AdminLine() {
   const $endTimeContainer = document.querySelector("#end-time-container");
   const $intervalTimeContainer = document.querySelector("#interval-time-container");
 
+  let updatingId = 0;
+
   const onCreateSubwayLine = event => {
     event.preventDefault();
     if (validInput()) {
-      saveLine();
+      saveOrUpdateLine();
     }
   };
 
@@ -47,14 +52,49 @@ function AdminLine() {
     return true;
   }
 
+  function saveOrUpdateLine() {
+    if (updatingId) {
+      updateLine();
+      updatingId = 0;
+      return;
+    }
+    let savedLine = saveLine();
+    savedLine.then(data => addLineInView(data));
+  }
+
+  function updateLine() {
+    fetch(`/lines/${updatingId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: $subwayLineNameInput.value,
+        startTime: $subwayLineFirstTimeInput.value,
+        endTime: $subwayLineLastTimeInput.value,
+        intervalTime: $subwayLineIntervalTimeInput.value,
+        lineColor: $subwayLineColorInput.value
+      })
+    }).then(data => closeAndResetModalValue());
+  }
+
   function saveLine() {
-    api.line.create({
+    return api.line.create({
       name: $subwayLineNameInput.value,
       startTime: $subwayLineFirstTimeInput.value,
       endTime: $subwayLineLastTimeInput.value,
       intervalTime: $subwayLineIntervalTimeInput.value,
       lineColor: $subwayLineColorInput.value
-    }).then(data => addLineInView(data));
+    });
+  }
+
+  function closeAndResetModalValue() {
+    subwayLineModal.toggle();
+    $subwayLineNameInput.value = "";
+    $subwayLineFirstTimeInput.value = "";
+    $subwayLineLastTimeInput.value = "";
+    $subwayLineIntervalTimeInput.value = "";
+    $subwayLineColorInput.value = "";
   }
 
   function addLineInView(data) {
@@ -67,17 +107,23 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
-    $subwayLineList.lastChild.addEventListener( // todo 위임 알아보기
+    addClickListeners();
+    closeAndResetModalValue();
+  }
+
+  function addClickListeners() {
+    $subwayLineList.lastChild.addEventListener(
       EVENT_TYPE.CLICK,
       onReadSubwayLine
     );
     $subwayLineList.lastChild.addEventListener(
       EVENT_TYPE.CLICK,
       onDeleteSubwayLine
-    )
-    subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
+    );
+    $subwayLineList.lastChild.addEventListener(
+      EVENT_TYPE.CLICK,
+      onUpdateSubwayLine
+    );
   }
 
   const onReadSubwayLine = event => {
@@ -86,7 +132,7 @@ function AdminLine() {
   };
 
   function selectLine(event) {
-    if (event.target.classList.contains("mdi-delete")) {
+    if (event.target.classList.contains(DELETE_BUTTON_CLASS_NAME) || event.target.classList.contains(UPDATE_BUTTON_CLASS_NAME)) {
       return;
     }
     const lineId = event.currentTarget.firstElementChild.id;
@@ -106,26 +152,38 @@ function AdminLine() {
     event.stopPropagation();
     const $target = event.target;
     const lineId = $target.closest(".subway-line-item").firstElementChild.id;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
+    const isDeleteButton = $target.classList.contains(DELETE_BUTTON_CLASS_NAME);
     if (isDeleteButton) {
       fetch(`/lines/${lineId}`, {
         method: "DELETE"
-      })
+      });
       $target.closest(".subway-line-item").remove();
     }
   };
 
   const onUpdateSubwayLine = event => {
     const $target = event.target;
-    const isUpdateButton = $target.classList.contains("mdi-pencil");
+    const lineId = $target.closest(".subway-line-item").firstElementChild.id;
+    // Update만의 모달을 띄워야해요!
+    // data들을 가져와야함
+    const isUpdateButton = $target.classList.contains(UPDATE_BUTTON_CLASS_NAME);
     if (isUpdateButton) {
-      subwayLineModal.toggle();
+      api.line.getBy(lineId)
+        .then(data => {
+          $subwayLineNameInput.value = data.name;
+          $subwayLineFirstTimeInput.value = data.startTime;
+          $subwayLineLastTimeInput.value = data.endTime;
+          $subwayLineIntervalTimeInput.value = data.intervalTime;
+          $subwayLineColorInput.value = data.lineColor;
+          updatingId = lineId;
+        });
+      closeAndResetModalValue();
     }
   };
 
   const onEditSubwayLine = event => {
     const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
+    const isDeleteButton = $target.classList.contains(UPDATE_BUTTON_CLASS_NAME);
   };
 
   const initDefaultSubwayLines = () => {
@@ -147,8 +205,7 @@ function AdminLine() {
     event.preventDefault();
     const $target = event.target;
     if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
-        $target.dataset.color;
+      document.querySelector("#subway-line-color").value = $target.dataset.color;
     }
   };
 
