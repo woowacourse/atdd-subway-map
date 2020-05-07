@@ -1,10 +1,6 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
-import {
-  colorSelectOptionTemplate,
-  subwayLineInfoTemplate,
-  subwayLinesTemplate
-} from "../../utils/templates.js";
-import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
+import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
@@ -38,12 +34,12 @@ function AdminLine() {
       body: JSON.stringify(newSubwayLine),
     }
     fetch("/lines", lineRequest)
-    .then(response => {
-      if (response.status !== 201) {
-        throw new Error("잘못된 요청입니다.");
-      }
-      return response.json();
-    }).then(id => {
+      .then(response => {
+        if (response.status !== 201) {
+          throw new Error("잘못된 요청입니다.");
+        }
+        return response.json();
+      }).then(id => {
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
         subwayLinesTemplate(newSubwayLine, id)
@@ -61,9 +57,17 @@ function AdminLine() {
 
   const onDeleteSubwayLine = event => {
     const $target = event.target;
+    const id = $target.closest("div").id;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
+      fetch(`/lines/${id}`, {method: "DELETE",})
+        .then(response => {
+          if (response.status !== 204) {
+            throw new Error("삭제 실패");
+          }
+          $target.closest(".subway-line-item").remove();
+        }).catch(error => alert(error.message))
+      event.stopPropagation();
     }
   };
 
@@ -82,16 +86,19 @@ function AdminLine() {
 
   const onGetSubwayLineInfo = event => {
     const $target = event.target;
-    const id = $target.closest("div").id;
-    fetch(`/lines/${id}`)
-    .then(response => {
-      if (response.status === 200) {
-        return response.json();
-      }
-      throw new Error("잘못된 노선 번호입니다.");
-    }).then(line => {
-      $subwayLineInfo.innerHTML = subwayLineInfoTemplate(line);
-    }).catch(error => alert(error.message))
+    const isSubwayLineItem = $target.classList.contains("subway-line-item");
+    if (isSubwayLineItem) {
+      const id = $target.closest("div").id;
+      fetch(`/lines/${id}`)
+        .then(response => {
+          if (response.status === 200) {
+            return response.json();
+          }
+          throw new Error("잘못된 노선 번호입니다.");
+        }).then(line => {
+        $subwayLineInfo.innerHTML = subwayLineInfoTemplate(line);
+      }).catch(error => alert(error.message))
+    }
   }
 
   const initSubwayLines = async () => {
@@ -129,8 +136,8 @@ function AdminLine() {
       "#subway-line-color-select-container"
     );
     const colorSelectTemplate = subwayLineColorOptions
-    .map((option, index) => colorSelectOptionTemplate(option, index))
-    .join("");
+      .map((option, index) => colorSelectOptionTemplate(option, index))
+      .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
     $colorSelectContainer.addEventListener(
       EVENT_TYPE.CLICK,
