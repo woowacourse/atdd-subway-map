@@ -1,10 +1,12 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,27 +23,31 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/edges")
 public class LineStationController {
-    private final LineService lineService;
+    private List<LineStationResponse> response;
 
     public LineStationController(LineService lineService) {
-        this.lineService = lineService;
+        this.response = new ArrayList<>();
     }
 
     @PostMapping("/{lineId}")
     public ResponseEntity create(@PathVariable Long lineId,
         @RequestBody LineStationCreateRequest request) {
         final LineStationResponse response =
-            new LineStationResponse(new StationResponse(), new StationResponse(), 1, 2,
+            new LineStationResponse(1L, new StationResponse(), new StationResponse(), 1, 2,
                 new LineResponse());
+        this.response.add(response);
         return ResponseEntity.created(URI.create("/edges/" + 2))
             .body(response);
     }
 
     @GetMapping
     public ResponseEntity showAll() {
-        final List<LineStationResponse> response = Arrays.asList(
-            new LineStationResponse(new StationResponse(), new StationResponse(), 1, 2,
-                new LineResponse()));
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteById(@PathVariable Long id) {
+        response.remove(0);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

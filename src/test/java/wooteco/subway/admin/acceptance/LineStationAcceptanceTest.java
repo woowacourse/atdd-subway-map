@@ -68,11 +68,34 @@ public class LineStationAcceptanceTest {
         register(getStations());
         List<LineStationResponse> edges = getEdges();
         //then
-        assertThat(edges.get(0).getDistance()).isNotNull();
-        assertThat(edges.get(0).getDuration()).isNotNull();
-        assertThat(edges.get(0).getLineResponse()).isNotNull();
-        assertThat(edges.get(0).getPreStation()).isNotNull();
-        assertThat(edges.get(0).getStation()).isNotNull();
+        assertThat(edges.size()).isEqualTo(3);
+        //when
+        final LineStationResponse lineStationResponse = edges.get(0);
+        //then
+        assertThat(lineStationResponse.getDistance()).isNotNull();
+        assertThat(lineStationResponse.getDuration()).isNotNull();
+        assertThat(lineStationResponse.getLineResponse()).isNotNull();
+        assertThat(lineStationResponse.getPreStation()).isNotNull();
+        assertThat(lineStationResponse.getStation()).isNotNull();
+        //when
+        final int statusCode = deleteEdge(lineStationResponse.getId());
+        //then
+        assertThat(statusCode).isEqualTo(204);
+        //then
+        final List<LineStationResponse> edgesAfterDelete = getEdges();
+        assertThat(edgesAfterDelete.size()).isEqualTo(2);
+    }
+
+    private int deleteEdge(Long id) {
+        return given()
+            .when()
+            .delete("/edges/" + id)
+            .then()
+            .log()
+            .all()
+            .extract()
+            .statusCode()
+            ;
     }
 
     private List<LineStationResponse> getEdges() {
