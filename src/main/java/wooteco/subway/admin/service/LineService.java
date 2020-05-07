@@ -53,11 +53,19 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public void validLine(LineRequest lineRequest) {
+    public void validateTitle(LineRequest lineRequest) {
         //이름중복검사
         lineRepository.findByTitle(lineRequest.getTitle()).ifPresent(line -> {
             throw new IllegalArgumentException("존재하는 이름입니다");
         });
         //이름형식검사
+    }
+
+    public void validateTitleWhenUpdate(Long id, LineRequest lineRequest) {
+        Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        if (lineById.getTitle().equals(lineRequest.getTitle())) {
+            return;
+        }
+        validateTitle(lineRequest);
     }
 }

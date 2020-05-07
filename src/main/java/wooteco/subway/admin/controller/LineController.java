@@ -29,7 +29,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        lineService.validLine(lineRequest);
+        lineService.validateTitle(lineRequest);
         System.out.println(lineRequest.toString());
         Line line = new Line(
             lineRequest.getTitle(),
@@ -58,6 +58,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.validateTitleWhenUpdate(id, lineRequest);
         Line line = new Line(
             lineRequest.getTitle(),
             lineRequest.getStartTime(),
