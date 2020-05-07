@@ -1,6 +1,5 @@
 package wooteco.subway.admin.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
@@ -37,7 +36,7 @@ public class LineController {
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest request) {
         lineService.updateLine(id, request.toLine());
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/lines/{id}")
