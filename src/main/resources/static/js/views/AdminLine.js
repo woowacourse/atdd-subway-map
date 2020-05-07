@@ -6,9 +6,13 @@ import {
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import { lineApi } from "../../api/index.js"
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
+  const $subwayLineStartTimeInput = document.querySelector("#first-time");
+  const $subwayLineEndTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
@@ -20,13 +24,21 @@ function AdminLine() {
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value
+      name: $subwayLineNameInput.value,
+      color: $subwayLineColorInput.value
     };
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
+    let data = {
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineStartTimeInput.value,
+      endTime: $subwayLineEndTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      color: $subwayLineColorInput.value
+    }
+    lineApi.line.create(data);
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
@@ -94,8 +106,17 @@ function AdminLine() {
     );
   };
 
+  const initLine = async () => {
+    const lines =  await lineApi.line.get();
+    console.log(lines)
+    lines.forEach(line => {
+      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line))
+    });
+  };
+
   this.init = () => {
-    initDefaultSubwayLines();
+    // initDefaultSubwayLines();
+    initLine();
     initEventListeners();
     initCreateSubwayLineForm();
   };

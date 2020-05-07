@@ -19,21 +19,23 @@ public class Line {
     private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String color;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.color = color;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
+        this(null, name, startTime, endTime, intervalTime, color);
     }
 
     public Long getId() {
@@ -97,5 +99,9 @@ public class Line {
         return stations.stream()
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
+    }
+
+    public String getColor() {
+        return color;
     }
 }

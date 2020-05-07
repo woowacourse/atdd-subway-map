@@ -1,6 +1,6 @@
 import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
-import { api } from "../../api/index.js"
+import { stationApi } from "../../api/index.js"
 
 function AdminStation() {
   const $stationAddButton = document.querySelector("#station-add-btn");
@@ -26,7 +26,7 @@ function AdminStation() {
     let data = {
       name: stationName
     }
-    api.station.create(data)
+    stationApi.station.create(data)
     $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
   };
 
@@ -35,22 +35,17 @@ function AdminStation() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       console.log($target.parentElement.parentElement.innerText)
-      api.station.delete($target.parentElement.parentElement.innerText)
+      stationApi.station.delete($target.parentElement.parentElement.innerText)
       $target.closest(".list-item").remove();
     }
   };
 
   const initStations = async () => {
-    const stations =  await getStations();
+    const stations =  await stationApi.station.get();
     stations.forEach(station => {
       $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station.name))
     });
   };
-
-  const getStations =  async function () {
-    const stations = await api.station.get();
-    return stations;
-  }
 
   const initEventListeners = () => {
     $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);

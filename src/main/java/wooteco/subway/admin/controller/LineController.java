@@ -10,7 +10,7 @@ import wooteco.subway.admin.service.LineService;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping("/line")
 public class LineController {
     private LineService lineService;
 
@@ -23,7 +23,7 @@ public class LineController {
         Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
+                .created(URI.create("/line/" + persistLine.getId()))
                 .body(LineResponse.of(persistLine));
     }
 
