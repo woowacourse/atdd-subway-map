@@ -36,7 +36,8 @@ public class LineController {
             lineRequest.getName(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
-            lineRequest.getIntervalTime()
+            lineRequest.getIntervalTime(),
+            lineRequest.getBgColor()
         );
         System.out.println(line);
         return ResponseEntity.created(URI.create("/lines")).body(lineService.save(line));
@@ -62,7 +63,8 @@ public class LineController {
             lineRequest.getName(),
             lineRequest.getStartTime(),
             lineRequest.getEndTime(),
-            lineRequest.getIntervalTime()
+            lineRequest.getIntervalTime(),
+            lineRequest.getBgColor()
         );
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
@@ -76,10 +78,7 @@ public class LineController {
 
     @DeleteMapping
     public ResponseEntity deleteLineByName(@RequestBody deleteDto deleteDto) {
-        System.out.println(">>>>>" + deleteDto.getName());
-        System.out.println(">>>" + deleteDto.getName().length());
         lineService.deleteLineByName(deleteDto.getName());
         return ResponseEntity.ok().build();
     }
-
 }

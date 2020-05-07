@@ -1,6 +1,5 @@
 import {ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
@@ -41,7 +40,8 @@ function AdminLine() {
                 name: newSubwayLine.title,
                 startTime: newSubwayLine.startTime,
                 endTime: newSubwayLine.endTime,
-                intervalTime: newSubwayLine.intervalTime
+                intervalTime: newSubwayLine.intervalTime,
+                bgColor: newSubwayLine.bgColor
             })
         };
 
@@ -72,24 +72,22 @@ function AdminLine() {
         const $name = $target.closest(".subway-line-item").innerText.trim();
         console.log($name);
         const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            if (confirm("지우시겠습니까?")) {
-                let deleteRequest = {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    method: 'delete',
-                    body: JSON.stringify({
-                        name: $name
-                    })
-                };
+        if (isDeleteButton && confirm("지우시겠습니까?")) {
+            let deleteRequest = {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'delete',
+                body: JSON.stringify({
+                    name: $name
+                })
+            };
 
-                fetch("/lines", deleteRequest).then(res => {
-                    if (res.ok) {
-                        $target.closest(".subway-line-item").remove();
-                    }
-                });
-            }
+            fetch("/lines", deleteRequest).then(res => {
+                if (res.ok) {
+                    $target.closest(".subway-line-item").remove();
+                }
+            });
         }
     };
 
@@ -108,12 +106,18 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-        defaultSubwayLines.map(line => {
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(line)
-            );
-        });
+        fetch("", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'get'
+        }).then(res => res.json())
+            .then(data => data.map(line => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(line)
+                )
+            }))
     };
 
     const initEventListeners = () => {
