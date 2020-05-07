@@ -15,19 +15,14 @@ const METHOD = {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        name: data.title,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        intervalTime: data.intervalTime,
-        bgColor: data.bgColor
-      })
+      body: JSON.stringify(data)
     };
   }
 };
 
 const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const nonRequest = (uri, config) => fetch(uri, config);
 
   const station = {
     get() {
@@ -55,7 +50,7 @@ const api = (() => {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/lines/${id}`, METHOD.DELETE());
+      return nonRequest(`/lines/${id}`, METHOD.DELETE());
     }
   };
 

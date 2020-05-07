@@ -39,7 +39,7 @@ public class LineResponse {
 	}
 
 	public static LineResponse of(Line line) {
-		return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
+		return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
 			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
 	}
 

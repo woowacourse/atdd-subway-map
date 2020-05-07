@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Line {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -22,8 +22,8 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
-        this.name = name;
+    public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -32,20 +32,20 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime, "bgColor");
+    public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this(null, title, startTime, endTime, intervalTime, "bgColor");
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
-        this(null, name, startTime, endTime, intervalTime, bgColor);
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, title, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -77,8 +77,8 @@ public class Line {
     }
 
     public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
+        if (line.getTitle() != null) {
+            this.title = line.getTitle();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();

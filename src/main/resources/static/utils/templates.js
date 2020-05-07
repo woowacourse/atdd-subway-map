@@ -20,9 +20,9 @@ export const subwayLinesTemplate = line =>
 
 export const subwayLineInfoTemplate = line =>
     `<div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.startTime}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.startTime.slice(0, -3)}</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
-        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.endTime}</div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.endTime.slice(0, -3)}</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>`;
 
