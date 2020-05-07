@@ -10,6 +10,9 @@ import Modal from "../../ui/Modal.js";
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
+  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
   const $createSubwayLineButton = document.querySelector(
@@ -20,9 +23,26 @@ function AdminLine() {
   const onCreateSubwayLine = event => {
     event.preventDefault();
     const newSubwayLine = {
-      title: $subwayLineNameInput.value,
+      name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value
     };
+
+    let data = {
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      bgColor: $subwayLineColorInput.value
+    };
+
+    fetch("/lines", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
@@ -54,12 +74,20 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
+    fetch("/lines", {
+      method: "GET",
+      headers: {
+        'Content-type': 'application/json'
+      }
+    }).then(response => response.json())
+    .then(jsonResponse=>{
+      for (const line of jsonResponse) {
+        $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
+      }
+    }).catch(error=>{
+      alert(error);
     });
+
   };
 
   const initEventListeners = () => {
