@@ -1,7 +1,9 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.relational.core.mapping.Table;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
+    private Long line;
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -15,6 +17,10 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public Long getLine() {
+        return line;
     }
 
     public Long getPreStationId() {
