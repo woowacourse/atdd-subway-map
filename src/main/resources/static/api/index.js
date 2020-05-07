@@ -1,7 +1,11 @@
 const METHOD = {
-    PUT() {
+    PUT(data) {
         return {
-            method: "PUT"
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         };
     },
     DELETE() {
@@ -58,7 +62,7 @@ const api = (() => {
         create(data) {
             return request(`/lines`, METHOD.POST(data));
         },
-        update(data) {
+        update(id, data) {
             return request(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {

@@ -5,6 +5,11 @@ export default function Modal() {
     const $closeModalButton = document.querySelector(".modal-close");
     const $body = document.querySelector("body");
     const $modal = document.querySelector(".modal");
+    const $subwayLineNameInput = document.getElementById("subway-line-name");
+    const $subwayStartTimeInput = document.getElementById("first-time");
+    const $subwayEndTimeInput = document.getElementById("last-time");
+    const $subwayIntervalTimeInput = document.getElementById("interval-time");
+    const $subwayLineBgColorInput = document.getElementById("subway-line-color");
 
     const toggle = event => {
         if (event) {
@@ -15,8 +20,17 @@ export default function Modal() {
         $modal.classList.toggle("pointer-events-none");
     };
 
+    const clear = () => {
+        $subwayLineNameInput.value = "";
+        $subwayStartTimeInput.value = "";
+        $subwayEndTimeInput.value = "";
+        $subwayIntervalTimeInput.value = "";
+        $subwayLineBgColorInput.value = "";
+    };
+
     $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
     $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+    $closeModalButton.addEventListener(EVENT_TYPE.CLICK, clear);
 
     return {
         toggle
