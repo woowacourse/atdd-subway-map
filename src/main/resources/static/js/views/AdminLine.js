@@ -1,12 +1,14 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
 import {
   subwayLinesTemplate,
+  innerSubwayLinesTemplate,
   colorSelectOptionTemplate
 } from "../../utils/templates.js";
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import { ERROR_MESSAGE } from '../../utils/constants.js';
+
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -15,26 +17,32 @@ function AdminLine() {
   const $subwayLineLastTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
+  let updateId = null;
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = event => {
-    event.preventDefault();
+  function updateLine(data) {
+    fetch("lines/" + updateId, {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(() => {
+      let lines = document.querySelectorAll(".line-id");
+      for (let line of lines) {
+        if (line.innerText.trim() === updateId) {
+          line.parentNode.innerHTML = innerSubwayLinesTemplate(data);
+        }
+      }
+      updateId = null;
+    });
+  }
 
-
-    let data = {
-      name: $subwayLineNameInput.value,
-      startTime: $subwayLineFirstTimeInput.value,
-      endTime: $subwayLineLastTimeInput.value,
-      intervalTime: $subwayLineIntervalTimeInput.value,
-      bgColor: $subwayLineColorInput.value
-    };
-
-    validate(data);
-
+  function createLine(data) {
     fetch("/lines", {
       method: "POST",
       headers: {
@@ -42,7 +50,7 @@ function AdminLine() {
       },
       body: JSON.stringify(data)
     }).then(response => response.json())
-    .then(jsonResponse=> {
+    .then(jsonResponse => {
       const newSubwayLine = {
         id: jsonResponse.id,
         name: jsonResponse.name,
@@ -53,6 +61,26 @@ function AdminLine() {
         subwayLinesTemplate(newSubwayLine)
       );
     });
+  }
+
+  const onCreateSubwayLine = event => {
+    event.preventDefault();
+
+    const data = {
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      bgColor: $subwayLineColorInput.value
+    }
+
+    validate(data);
+
+    if(updateId){
+      updateLine(data);
+    } else {
+      createLine(data);
+    }
 
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
@@ -97,9 +125,8 @@ function AdminLine() {
     const isSubwayLineItem = $target.classList.contains("subway-line-item");
     if (isSubwayLineItem) {
       const subwayLine ={
-        id: document.querySelector(".line-id").innerText.trim()
+        id: $target.firstElementChild.innerHTML.trim()
       };
-
       fetch("/lines/"+subwayLine.id, {
         method:'GET',
         headers:{
@@ -120,22 +147,7 @@ function AdminLine() {
     const isUpdateButton = $target.classList.contains("mdi-pencil");
     if (isUpdateButton) {
       subwayLineModal.toggle();
-
-      const updatedSubwayLine = {
-        name: $subwayLineNameInput.value,
-        bgColor: $subwayLineColorInput.value
-      };
-
-      const data = {
-        name: $subwayLineNameInput.value,
-        startTime: $subwayLineFirstTimeInput.value,
-        endTime: $subwayLineLastTimeInput.value,
-        intervalTime: $subwayLineIntervalTimeInput.value,
-        bgColor: $subwayLineColorInput.value
-      }
-
-      fetch("")
-
+      updateId = $target.parentElement.parentElement.firstElementChild.innerHTML;
     }
   };
 
