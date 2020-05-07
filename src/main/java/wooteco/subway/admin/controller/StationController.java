@@ -25,7 +25,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
@@ -35,7 +35,7 @@ public class StationController {
                 .body(StationResponse.of(persistStation));
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity showStations() {
         return ResponseEntity.ok().body(stationRepository.findAll());
     }
