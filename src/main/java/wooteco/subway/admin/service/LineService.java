@@ -21,6 +21,9 @@ public class LineService {
 	}
 
 	public LineResponse save(Line line) {
+		if (lineRepository.existsByName(line.getName())) {
+			throw new RuntimeException();
+		}
 		return LineResponse.of(lineRepository.save(line));
 	}
 
@@ -29,6 +32,9 @@ public class LineService {
 	}
 
 	public void updateLine(Long id, Line line) {
+		if (lineRepository.existsByName(line.getName())) {
+			throw new RuntimeException();
+		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
 		lineRepository.save(persistLine);
