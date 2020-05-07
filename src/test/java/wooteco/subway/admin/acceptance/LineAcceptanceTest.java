@@ -41,7 +41,8 @@ public class LineAcceptanceTest {
         createLines("신분당선", "1호선", "2호선", "3호선");
         // then
         List<LineResponse> lines = getLines();
-        assertThat(lines.size()).isEqualTo(4);
+        // assertThat(lines.size()).isEqualTo(4);
+        assertThat(lines.size()).isEqualTo(5);
 
         // when
         LineResponse line = getLine(lines.get(0).getId());
@@ -65,7 +66,8 @@ public class LineAcceptanceTest {
         deleteLine(line.getId());
         // then
         List<LineResponse> linesAfterDelete = getLines();
-        assertThat(linesAfterDelete.size()).isEqualTo(3);
+        // assertThat(linesAfterDelete.size()).isEqualTo(3);
+        assertThat(linesAfterDelete.size()).isEqualTo(4);
     }
 
     private void createLines(String... lines) {

@@ -33,11 +33,6 @@ public class LineService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
     }
 
-    public Line findByName(String name) {
-        return lineRepository.findByName(name)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이름입니다."));
-    }
-
     public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);

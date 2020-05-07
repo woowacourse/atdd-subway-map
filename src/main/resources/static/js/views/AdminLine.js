@@ -5,6 +5,8 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
+  let isUpdate = false;
+
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineFirstTimeInput = document.querySelector("#first-time");
@@ -22,20 +24,27 @@ function AdminLine() {
     const newSubwayLine = {
       name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value,
-      startTime: $subwayLineFirstTimeInput.value,
-      endTime: $subwayLineLastTimeInput.value,
+      startTime: $subwayLineFirstTimeInput.value + ":00",
+      endTime: $subwayLineLastTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
     };
 
-    let newLine = await api.line.create(newSubwayLine);
+    if (!isUpdate) {
+      let newLine = await api.line.create(newSubwayLine);
 
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newLine)
-    );
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(newLine)
+      );
+      $subwayLineNameInput.value = "";
+      $subwayLineColorInput.value = "";
+    } else {
+      const id = document.querySelector(".modal").dataset.sourceId;
+      await api.line.update(id, newSubwayLine);
+      await initDefaultSubwayLines();
+    }
+    isUpdate = false;
     subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
   };
 
   const onDeleteSubwayLine = event => {
@@ -46,10 +55,21 @@ function AdminLine() {
     }
   };
 
-  const onUpdateSubwayLine = event => {
+  const onUpdateSubwayLine = async (event) => {
     const $target = event.target;
     const isUpdateButton = $target.classList.contains("mdi-pencil");
     if (isUpdateButton) {
+      const id = $target.closest(".subway-line-item").id;
+      const line = await api.line.findById(id);
+      document.querySelector("#subway-line-name").value = line.title;
+      document.querySelector("#first-time").value = line.startTime.substr(0, 5);
+      document.querySelector("#last-time").value = line.endTime.substr(0, 5);
+      document.querySelector("#interval-time").value = line.intervalTime;
+      document.querySelector("#subway-line-color").value = line.bgColor;
+
+      document.querySelector(".modal").dataset.sourceId = id;
+
+      isUpdate = true;
       subwayLineModal.toggle();
     }
   };
@@ -58,7 +78,8 @@ function AdminLine() {
     const $target = event.target;
     const isName = $target.classList.contains("name");
     if (isName) {
-      let lineDetail = await api.line.findByName($target.innerHTML);
+      const id = $target.closest(".subway-line-item").id;
+      const lineDetail = await api.line.findById(id);
       document.querySelector(".lines-info").innerHTML = `
       <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${lineDetail.startTime}</div>
@@ -76,6 +97,8 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = async () => {
+    $subwayLineList.innerHTML = '';
+
     const lines = await api.line.get();
     lines.map(line => {
       $subwayLineList.insertAdjacentHTML(
