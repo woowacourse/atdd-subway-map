@@ -66,7 +66,12 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
             event.preventDefault();
-            $target.closest(".subway-line-item").remove();
+            const subwayLineId = $target.closest("div").id.split("subway-")[1];
+            api.line.delete(subwayLineId)
+                .then(response => {
+                    $target.closest(".subway-line-item").remove();
+                })
+                .catch(alert);
         }
     };
 

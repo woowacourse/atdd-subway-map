@@ -66,6 +66,9 @@ const api = (() => {
         },
         update(id, data) {
             return request(`/lines/${id}`, METHOD.PUT(data));
+        },
+        delete(id) {
+            return request(`/lines/${id}`, METHOD.DELETE());
         }
     };
 
