@@ -47,7 +47,7 @@ public class LineAcceptanceTest {
         LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
-        assertThat(line.getName()).isNotNull();
+        assertThat(line.getTitle()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
