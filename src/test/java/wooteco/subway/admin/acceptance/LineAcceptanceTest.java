@@ -1,15 +1,8 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -33,7 +36,6 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
@@ -41,6 +43,7 @@ public class LineAcceptanceTest {
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
+        createLine("3호선");
         createLine("3호선");
         // then
         List<LineResponse> lines = getLines();
@@ -73,10 +76,10 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
-                then().
-                        log().all().
-                        extract().as(LineResponse.class);
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
@@ -87,14 +90,17 @@ public class LineAcceptanceTest {
         params.put("intervalTime", "10");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(anyOf(
+                is(HttpStatus.CREATED.value()),
+                is(HttpStatus.BAD_REQUEST.value()))
+            );
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -104,32 +110,32 @@ public class LineAcceptanceTest {
         params.put("intervalTime", "10");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                put("/lines/" + id).
-        then().
-                log().all().
-                statusCode(HttpStatus.OK.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            put("/lines/" + id).
+            then().
+            log().all().
+            statusCode(HttpStatus.OK.value());
     }
 
     private List<LineResponse> getLines() {
         return
-                given().
+            given().
                 when().
-                        get("/lines").
+                get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {
         given().
-                when().
-                delete("/lines/" + id).
-                then().
-                log().all();
+            when().
+            delete("/lines/" + id).
+            then().
+            log().all();
     }
 }

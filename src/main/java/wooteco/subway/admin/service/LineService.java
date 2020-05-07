@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicateLineException;
 import wooteco.subway.admin.exception.LineNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -22,7 +23,14 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        return lineRepository.save(line);
+        if (isDistinct(line.getName())) {
+            return lineRepository.save(line);
+        }
+        throw new DuplicateLineException(line.getName());
+    }
+
+    private boolean isDistinct(String name) {
+        return lineRepository.countDistinctByName(name) == 0;
     }
 
     public List<Line> showLines() {
@@ -30,13 +38,16 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id));
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line persistLine = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id));
+        lineRepository.deleteById(persistLine.getId());
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
