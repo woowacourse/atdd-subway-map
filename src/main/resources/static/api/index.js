@@ -1,9 +1,15 @@
 const BASE_URL = "localhost:8080";
 
 const METHOD = {
-    PUT() {
+    PUT(data) {
         return {
-            method: "PUT"
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                data
+            )
         };
     },
     DELETE() {
@@ -26,14 +32,7 @@ const METHOD = {
 
 const api = (() => {
     const request = (uri, config) => fetch(uri, config)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error(response.text());
-            }
-        })
-        .catch(error => alert("오류입니다."));
+        .then(data => data.json());
 
     const station = {
         get() {
@@ -51,7 +50,10 @@ const api = (() => {
     };
 
     const line = {
-        get() {
+        getLine(id) {
+            return request(`/lines/${id}`);
+        },
+        getLines() {
             return request(`/lines`);
         },
         create(data) {

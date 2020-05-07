@@ -22,7 +22,6 @@ public class LineService {
 
     public LineResponse save(Line line) {
         validate(line);
-        System.out.println("HERE "+ line.getName());
         return LineResponse.of(lineRepository.save(line));
     }
 
