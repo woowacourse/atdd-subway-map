@@ -3,6 +3,7 @@ package wooteco.subway.admin.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -20,16 +21,24 @@ public class LineController {
     @Autowired
     private LineRepository lineRepository;
 
+    @GetMapping("/admin-line")
+    public ModelAndView adminLine() {
+        ModelAndView mv = new ModelAndView("admin-line");
+        mv.addObject("lines", LineResponse.listOf(lineRepository.findAll()));
+        return mv;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<?> create(
             @RequestBody LineRequest request
     ) throws URISyntaxException {
         String name = request.getName();
+        String color = request.getColor();
         LocalTime startTime = request.getStartTime();
         LocalTime endTime = request.getEndTime();
         int intervalTime = request.getIntervalTime();
 
-        Line line = new Line(name, startTime, endTime, intervalTime);
+        Line line = new Line(name, color, startTime, endTime, intervalTime);
         Line created = lineRepository.save(line);
 
         final URI url = new URI("/lines/" + created.getId());
@@ -54,13 +63,14 @@ public class LineController {
             @PathVariable("id") Long id, @RequestBody LineRequest request
     ) {
         String name = request.getName();
+        String color = request.getColor();
         LocalTime startTime = request.getStartTime();
         LocalTime endTime = request.getEndTime();
         int intervalTime = request.getIntervalTime();
 
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
-        line.update(new Line(name, startTime, endTime, intervalTime));
+        line.update(new Line(name, color, startTime, endTime, intervalTime));
 
         Line updated = lineRepository.save(line);
         return ResponseEntity.ok(updated);
