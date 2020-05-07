@@ -4,12 +4,12 @@ import api from "../../api/index.js";
 
 
 function AdminStation() {
-    let stationNames = [];
+    let stations = [];
     const $stationInput = document.querySelector('#station-name');
     const $stationList = document.querySelector('#station-list');
     const $stationAddButton = document.querySelector('#station-add-btn');
 
-    const onAddStationHandler = (event) => {
+    const onAddStationHandler = async (event) => {
         if (event.key !== KEY_TYPE.ENTER && event.key !== KEY_TYPE.CLICK) {
             return;
         }
@@ -25,16 +25,15 @@ function AdminStation() {
             alert(ERROR_MESSAGE.NOT_BLANK);
             return;
         }
-        if (stationNames.includes(stationName)) {
+        if (stations.map(station => station.name).includes(stationName)) {
             alert(ERROR_MESSAGE.NOT_DUPLICATE);
             return;
         }
 
-        stationNames = [...stationNames, stationName];
-
         $stationNameInput.value = '';
         $stationList.insertAdjacentHTML('beforeend', listItemTemplate(stationName));
-        api.station.create(stationName);
+        const persistStation = await api.station.create(stationName);
+        stations = [...stations, persistStation];
     };
 
     const onRemoveStationHandler = (event) => {
@@ -43,15 +42,17 @@ function AdminStation() {
         const stationName = $target.closest('.list-item').innerText;
         if (isDeleteButton && confirm('정말 삭제하시겠습니까?')) {
             $target.closest('.list-item').remove();
-            stationNames = stationNames.filter((station) => station !== stationName);
+            const deleteStation = stations.find(station => station.name === stationName);
+            api.station.delete(deleteStation.id);
+            stations = stations.filter(station => station.name !== stationName);
         }
     };
 
     const showStations = async () => {
-        const stations = await api.station.get();
-        stations.forEach(station => {
+        const persistStations = await api.station.get();
+        stations = [...persistStations];
+        persistStations.forEach(station => {
             $stationList.insertAdjacentHTML('beforeend', listItemTemplate(station.name));
-            stationNames = [...stationNames, station.name];
         });
     };
 
