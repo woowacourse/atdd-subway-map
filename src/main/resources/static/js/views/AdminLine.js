@@ -8,6 +8,9 @@ function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayLineStartTimeInput = document.querySelector("#first-time");
+    const $subwayLineEndTimeInput = document.querySelector("#last-time");
+    const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -18,15 +21,23 @@ function AdminLine() {
         event.preventDefault();
         const newSubwayLine = {
             title: $subwayLineNameInput.value,
-            bgColor: $subwayLineColorInput.value
+            bgColor: $subwayLineColorInput.value,
+            startTime: $subwayLineStartTimeInput.value,
+            endTime: $subwayLineEndTimeInput.value,
+            intervalTime: $subwayLineIntervalTimeInput
         };
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(newSubwayLine)
         );
+        fetch()
+
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
+        $subwayLineStartTimeInput.value = "";
+        $subwayLineEndTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
     };
 
     const onDeleteSubwayLine = event => {
@@ -62,10 +73,7 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-        $createSubwayLineButton.addEventListener(
-            EVENT_TYPE.CLICK,
-            onCreateSubwayLine
-        );
+        $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
     };
 
     const onSelectColorHandler = event => {
