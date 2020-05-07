@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 
@@ -14,7 +15,9 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
     private int intervalTime;
     private LocalDateTime createdAt;

@@ -20,8 +20,8 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public Long save(Line line) {
+        return lineRepository.save(line).getId();
     }
 
     public List<Line> showLines() {

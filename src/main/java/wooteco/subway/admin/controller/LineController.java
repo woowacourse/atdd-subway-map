@@ -29,9 +29,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLines(@RequestBody LineRequest lineRequest) {
-        System.out.println(lineRequest);
-        lineService.save(lineRequest.toLine());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Long id = lineService.save(lineRequest.toLine());
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @GetMapping
