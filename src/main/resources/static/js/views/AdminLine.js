@@ -13,6 +13,9 @@ function AdminLine() {
     const $subwayLastTimeInput = document.querySelector("#last-time");
     const $subwayIntervalInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
+    const $subwayFirstTime = document.querySelector("#display-first-time");
+    const $subwayLastTime = document.querySelector("#display-last-time");
+    const $subwayInterval = document.querySelector("#display-interval-time");
 
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
@@ -59,6 +62,18 @@ function AdminLine() {
         }
     };
 
+    const onShowSubwayLine = event => {
+        const $target = event.target;
+        const lineName = $target.closest('.subway-line-item').innerText.trim();
+        const isSubwayLineItem = $target.classList.contains("subway-line-item");
+        if (isSubwayLineItem) {
+            const showLine = lines.find(line => line.name === lineName);
+            $subwayFirstTime.innerText = showLine.startTime;
+            $subwayLastTime.innerText = showLine.endTime;
+            $subwayInterval.innerText = `${showLine.intervalTime} 분`;
+        }
+    };
+
     const onEditSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-pencil");
@@ -76,6 +91,7 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onShowSubwayLine);
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
