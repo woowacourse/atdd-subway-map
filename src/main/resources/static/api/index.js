@@ -45,10 +45,10 @@ const api = (() => {
       return request(`${BASE_URL}/lines`);
     },
     create(data) {
-      request(`${BASE_URL}/lines`, METHOD.POST(data));
+      return request(`${BASE_URL}/lines`, METHOD.POST(data));
     },
     find(id) {
-      request(`${BASE_URL}/lines/${id}`);
+      return request(`${BASE_URL}/lines/${id}`);
     },
     update(id, data) {
       request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
