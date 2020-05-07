@@ -2,6 +2,7 @@ import {EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -47,19 +48,13 @@ function AdminLine() {
   }
 
   function saveLine() {
-    fetch("/lines", {
-      method: "POST",
-      body: JSON.stringify({
-        name: $subwayLineNameInput.value,
-        startTime: $subwayLineFirstTimeInput.value,
-        endTime: $subwayLineLastTimeInput.value,
-        intervalTime: $subwayLineIntervalTimeInput.value,
-        lineColor: $subwayLineColorInput.value
-      }),
-      headers: {"Content-Type": "application/json"}
-    })
-      .then(response => response.json())
-      .then(data => addLineInView(data));
+    api.line.create({
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineFirstTimeInput.value,
+      endTime: $subwayLineLastTimeInput.value,
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      lineColor: $subwayLineColorInput.value
+    }).then(data => addLineInView(data));
   }
 
   function addLineInView(data) {
@@ -87,15 +82,10 @@ function AdminLine() {
   };
 
   function selectLine(event) {
-    console.log(event.currentTarget);
-
     const lineId = event.currentTarget.firstElementChild.id;
 
-    fetch(`/lines/${lineId}`, {
-      method: "GET",
-      headers: {"Content-Type": "application/json"}
-    })
-      .then(response => response.json())
+    api.line
+      .getBy(lineId)
       .then(data => showLineDetail(data));
   }
 
