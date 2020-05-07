@@ -1,87 +1,138 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
 public class LineStationAcceptanceTest {
-	@LocalServerPort
-	int port;
 
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
-	}
+    @LocalServerPort
+    int port;
 
-	@BeforeEach
-	void setUp() {
-		RestAssured.port = port;
-	}
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
 
-	/**
-	 *     Given 지하철역이 여러 개 추가되어있다.
-	 *     And 지하철 노선이 추가되어있다.
-	 *
-	 *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-	 *     Then 지하철역이 노선에 추가 되었다.
-	 *
-	 *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-	 *     Then 지하철역 목록을 응답 받는다.
-	 *     And 새로 추가한 지하철역을 목록에서 찾는다.
-	 *
-	 *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-	 *     Then 지하철역이 노선에서 제거 되었다.
-	 *
-	 *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-	 *     Then 지하철역 목록을 응답 받는다.
-	 *     And 제외한 지하철역이 목록에 존재하지 않는다.
-	 */
-	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
-	@Test
-	void manageLineStation() {
-		// Given 지하철역이 여러 개 추가되어있다.
-		// And 지하철 노선이 추가되어있다.
-		stationSetting();
-		lineSetting();
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
-		Line line;
-		Station station;
+    /**
+     * Given 지하철역이 여러 개 추가되어있다. And 지하철 노선이 추가되어있다.
+     * <p>
+     * When 지하철 노선에 지하철역을 등록하는 요청을 한다. Then 지하철역이 노선에 추가 되었다.
+     * <p>
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 새로 추가한 지하철역을 목록에서 찾는다.
+     * <p>
+     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다. Then 지하철역이 노선에서 제거 되었다.
+     * <p>
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 제외한 지하철역이 목록에 존재하지 않는다.
+     */
+    @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
+    @Test
+    void manageLineStation() {
+        // Given 지하철역이 여러 개 추가되어있다.
+        // And 지하철 노선이 추가되어있다.
+        createLine("신분당선");
+        createStation("잠실역");
+        createStation("종합운동장역");
+        LineResponse line = getLines().get(0);
+        StationResponse station = getStations().get(0);
+        // When 지하철 노선에 지하철역을 등록하는 요청을 한다.
+        addStationToLine(line.getId(), station.getId());
+        // Then 지하철역이 노선에 추가 되었다.
+        assertThat(findStationsByLineId(line.getId())).isNotNull();
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        List<StationResponse> stationResponses = findStationsByLineId(line.getId());
+        // Then 지하철역 목록을 응답 받는다.
+        assertThat(stationResponses.size()).isNotEqualTo(0);
+        // And 새로 추가한 지하철역을 목록에서 찾는다.
+        assertThat(stationResponses).contains(station);
+        // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+        deleteStation(line.getId(), station.getId());
+        // Then 지하철역이 노선에서 제거 되었다.
+        stationResponses = findStationsByLineId(line.getId());
+        assertThat(stationResponses).doseNotContain(station);
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        stationResponses = findAllStation(line.getId());
+        // Then 지하철역 목록을 응답 받는다.
+        assertThat(stationResponses).isNotNull();
+        // And 제외한 지하철역이 목록에 존재하지 않는다.
+        assertThat(stationResponses).doseNotContain(station);
+    }
 
-		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-		addStationToLine(line, station);
-		// Then 지하철역이 노선에 추가 되었다.
-		assertThat(line.getStations).isNotNull();
+    private void addStationToLine(Long lineId, Long stationId) {
+    }
 
-		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-		List<Station> stations = findAllStation(station);
-		// Then 지하철역 목록을 응답 받는다.
-		assertThat(stations).isNotNull();
-		// And 새로 추가한 지하철역을 목록에서 찾는다.
-		assertThat(stations).contains(station);
+    private List<LineResponse> getLines() {
+        return
+            given().
+                when().
+                get("/api/lines").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
+    }
 
-		// When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-		deleteStation(line, station);
-		// Then 지하철역이 노선에서 제거 되었다.
-		assertThat(stations).doseNotContain(station);
+    private void createLine(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", "무지개색");
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/api/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
+    }
 
-		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-		stations = findAllStation(line);
-		// Then 지하철역 목록을 응답 받는다.
-		assertThat(stations).isNotNull();
-		// And 제외한 지하철역이 목록에 존재하지 않는다.
-		assertThat(stations).doseNotContain(station);
-	}
+    private void createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<StationResponse> getStations() {
+        return given().
+            when().
+            get("/stations").
+            then().
+            log().all().
+            extract().
+            jsonPath().getList(".", StationResponse.class);
+    }
 }
