@@ -9,6 +9,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
-        registry.viewResolver(new InternalResourceViewResolver("/",".html"));
+        registry.viewResolver(new InternalResourceViewResolver("./", ".html"));
     }
 }
