@@ -1,5 +1,8 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {
+    colorSelectOptionTemplate,
+    subwayLinesTemplate
+} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
@@ -30,7 +33,7 @@ function AdminLine() {
     const onCreateSubwayLine = event => {
         event.preventDefault();
 
-        const newSubwayLine = {
+        let newSubwayLine = {
             name: $subwayLineNameInput.value,
             color: $subwayLineColorInput.value,
             startTime: $subwayLineFirstTime.value,
@@ -38,14 +41,24 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTime.value
         };
 
-        api.line.create(newSubwayLine).then(response => {
-                if (response.status !== 201) {
-                    alert("생성 불가!");
-                    throw new Error("HTTP status " + response.status);
-                }
-                addSubwayLineList(newSubwayLine);
+        api.line.create(newSubwayLine).then(res => {
+            if (res.status !== 201) {
+                return;
             }
-        );
+            return res.json();
+        }).then(res => {
+            if (res === undefined) {
+                $viewStartTime.innerHTML = "";
+                $viewEndTime.innerHTML = "";
+                $viewIntervalTime.innerHTML = "";
+                return;
+            }
+            newSubwayLine['id'] = res.id;
+            addSubwayLineList(newSubwayLine);
+            $viewStartTime.innerHTML = newSubwayLine.startTime;
+            $viewEndTime.innerHTML = newSubwayLine.endTime;
+            $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분";
+        });
 
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
@@ -53,17 +66,15 @@ function AdminLine() {
         $subwayLineFirstTime.value = "";
         $subwayLineLastTime.value = "";
         $subwayLineIntervalTime.value = "";
-        $viewStartTime.innerHTML = newSubwayLine.startTime;
-        $viewEndTime.innerHTML = newSubwayLine.endTime;
-        $viewIntervalTime.innerHTML = newSubwayLine.intervalTime + "분"
     };
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            const lineName = $target.closest(".subway-line-item").innerText.trim();
-            api.line.delete("/name/" + lineName).then(response => {
+            const lineId = $target.closest(
+                ".subway-line-item").id;
+            api.line.delete("/" + lineId).then(response => {
                 if (response.status !== 200) {
                     alert("삭제불가!");
                     throw new Error("HTTP status " + response.status);
@@ -85,7 +96,7 @@ function AdminLine() {
         const isSelectSubwayLine
             = $target.classList.contains("subway-line-item");
         if (isSelectSubwayLine) {
-            api.line.get('/name/' + $target.innerText.trim()).then(line => {
+            api.line.get('/' + $target.id).then(line => {
                     $viewStartTime.innerHTML = line.startTime.slice(0, 5);
                     $viewEndTime.innerHTML = line.endTime.slice(0, 5);
                     $viewIntervalTime.innerHTML = line.intervalTime + "분";
@@ -131,8 +142,8 @@ function AdminLine() {
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-            .map((option, index) => colorSelectOptionTemplate(option, index))
-            .join("");
+        .map((option, index) => colorSelectOptionTemplate(option, index))
+        .join("");
         $colorSelectContainer.insertAdjacentHTML("beforeend",
             colorSelectTemplate);
         $colorSelectContainer.addEventListener(

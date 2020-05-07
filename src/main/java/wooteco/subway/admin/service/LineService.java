@@ -2,9 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -22,7 +20,7 @@ public class LineService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Line save(Line line) {
+	public LineResponse save(Line line) {
 		boolean sameName = showLines().stream()
 			.anyMatch(element -> element.getName().equals(line.getName()));
 
@@ -30,7 +28,7 @@ public class LineService {
 			throw new IllegalArgumentException("중복되는 역 이름입니다.");
 		}
 
-		return lineRepository.save(line);
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	public List<Line> showLines() {
@@ -59,15 +57,5 @@ public class LineService {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
 		return LineResponse.of(line);
-	}
-
-	public LineResponse findLineWithStationByName(String name) {
-		Line line = lineRepository.findByLineName(name)
-			.orElseThrow(() -> new NoSuchElementException("해당하는 이름의 라인이 없습니다."));
-		return LineResponse.of(line);
-	}
-
-	public void deleteLineByName(String lineName) {
-		lineRepository.deleteByName(lineName);
 	}
 }
