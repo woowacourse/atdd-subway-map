@@ -27,7 +27,7 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => data.json());
+    const request = (uri, config) => fetch(uri, config);
 
     const station = {
         get() {
@@ -46,19 +46,19 @@ const api = (() => {
 
     const line = {
         get() {
-            return request(`${BASE_URL}/lines`);
+            return request(`${BASE_URL}/lines`).then(data => data.json());
         },
         find(id) {
-            return request(`${BASE_URL}/lines/${id}`);
+            return request(`${BASE_URL}/lines/${id}`).then(data => data.json());
         },
         create(data) {
-            return request(`${BASE_URL}/lines`, METHOD.POST(data));
+            return request(`${BASE_URL}/lines`, METHOD.POST(data)).then(data => data.json());
         },
         update(id, data) {
-           return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
+           return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
         },
         delete(id) {
-            request(`${BASE_URL}/lines/${id}`, METHOD.DELETE);
+            return request(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
         }
     };
 

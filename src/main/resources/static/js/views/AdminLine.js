@@ -11,19 +11,14 @@ function AdminLine() {
     const $subwayLineEndTimeInput = document.querySelector("#last-time");
     const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
-    const $createSubwayLineButton = document.querySelector(
-        "#subway-line-create-form #submit-button"
-    );
+    const $createSubwayLineButton = document.querySelector("#subway-line-create-form #submit-button");
+
     const subwayLineModal = new Modal();
 
     let lineId = null;
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
-        const newSubwayLine = {
-            title: $subwayLineNameInput.value,
-            bgColor: $subwayLineColorInput.value
-        };
 
         const formData = {
             id: lineId,
@@ -33,20 +28,19 @@ function AdminLine() {
             intervalTime: document.querySelector("#interval-time").value,
             color: $subwayLineColorInput.value
         };
-        if(lineId) {
+
+        if (lineId) {
             api.line.update(lineId, formData).then(
                 data => {
-                    let oldLine = document.querySelector('div[data-id="'+lineId+'"]');
+                    let oldLine = document.querySelector('div[data-id="' + lineId + '"]');
                     oldLine.insertAdjacentHTML(
                         "afterend",
                         subwayLinesTemplate(data)
                     );
                     oldLine.remove();
                     lineId = null;
-                }
-            );
-        }
-        else {
+                });
+        } else {
             api.line.create(formData).then(
                 data => {
                     $subwayLineList.insertAdjacentHTML(
@@ -68,8 +62,14 @@ function AdminLine() {
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
+        lineId = $target.closest(".subway-line-item").dataset.id;
         if (isDeleteButton) {
-            $target.closest(".subway-line-item").remove();
+            api.line.delete(lineId).then(response => {
+                if (response.status === 204) {
+                    $target.closest(".subway-line-item").remove();
+                }
+                lineId = null;
+            });
         }
     };
 
