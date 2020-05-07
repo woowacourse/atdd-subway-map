@@ -58,6 +58,8 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
             $target.closest(".subway-line-item").remove();
+            let subwayLineId = $target.parentElement.parentElement.id;
+            api.lines.delete(subwayLineId);
         }
     };
 

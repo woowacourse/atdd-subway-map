@@ -23,38 +23,39 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const dataRequest = (uri, config) => fetch(uri, config).then(data => data.json());
+  const noDataRequest = (uri, config) => fetch(uri, config);
 
   const station = {
     get() {
-      request(`${BASE_URL}/stations`);
+      dataRequest(`${BASE_URL}/stations`);
     },
     create(data) {
-      request(`${BASE_URL}/station`, METHOD.POST(data));
+      dataRequest(`${BASE_URL}/station`, METHOD.POST(data));
     },
     update(id, data) {
-      request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+      noDataRequest(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+      noDataRequest(`${BASE_URL}/station/${id}`, METHOD.DELETE());
     }
   };
 
   const lines = {
     get() {
-      return request(`${BASE_URL}/lines`);
+      return dataRequest(`${BASE_URL}/lines`);
     },
     create(data) {
-      return request(`${BASE_URL}/lines`, METHOD.POST(data));
+      return dataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
     },
     find(id) {
-      return request(`${BASE_URL}/lines/${id}`);
+      return dataRequest(`${BASE_URL}/lines/${id}`);
     },
     update(id, data) {
-      request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
+      noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`${BASE_URL}/lines/${id}`, METHOD.DELETE);
+      noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
     }
   };
 
