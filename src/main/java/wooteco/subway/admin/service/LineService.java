@@ -37,11 +37,11 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public void updateLine(Long id, Line line) {
+    public Line updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
         persistLine.update(line);
-        lineRepository.save(persistLine);
+        return lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {

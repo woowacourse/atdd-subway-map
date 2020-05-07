@@ -1,10 +1,12 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
     @Id
@@ -13,6 +15,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String bgColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -20,17 +23,19 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
@@ -51,6 +56,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public String getBgColor() {
+        return bgColor;
     }
 
     public Set<LineStation> getStations() {
@@ -77,6 +86,9 @@ public class Line {
         }
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
         }
 
         this.updatedAt = LocalDateTime.now();

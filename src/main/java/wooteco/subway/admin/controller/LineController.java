@@ -32,7 +32,7 @@ public class LineController {
         Line saved = lineService.save(lineRequest.toLine());
         return ResponseEntity
             .created(URI.create("/lines/" + saved.getId()))
-            .build();
+            .body(LineResponse.of(saved));
     }
 
     @GetMapping
@@ -48,8 +48,8 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest.toLine());
-        return ResponseEntity.ok().build();
+        Line line = lineService.updateLine(id, lineRequest.toLine());
+        return ResponseEntity.ok().body(LineResponse.of(line));
     }
 
     @DeleteMapping("/{id}")
