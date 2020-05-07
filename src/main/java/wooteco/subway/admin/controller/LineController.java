@@ -29,6 +29,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+        lineService.validLine(lineRequest);
         System.out.println(lineRequest.toString());
         Line line = new Line(
             lineRequest.getName(),
@@ -37,7 +38,7 @@ public class LineController {
             lineRequest.getIntervalTime()
         );
         System.out.println(line);
-        return ResponseEntity.created(URI.create("")).body(lineService.save(line));
+        return ResponseEntity.created(URI.create("/lines")).body(lineService.save(line));
     }
 
     @GetMapping

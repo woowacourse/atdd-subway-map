@@ -7,6 +7,9 @@ import Modal from "../../ui/Modal.js";
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
+    const $subwayStartTimeInput = document.querySelector("#first-time");
+    const $subwayLastTimeInput = document.querySelector("#last-time");
+    const $intervalTimeInput = document.querySelector("#interval-time");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
 
     const $createSubwayLineButton = document.querySelector(
@@ -16,34 +19,42 @@ function AdminLine() {
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
-
         const newSubwayLine = {
             title: $subwayLineNameInput.value,
+            startTime: $subwayStartTimeInput.value,
+            endTime: $subwayLastTimeInput.value,
+            intervalTime: $intervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
 
         let url = "/lines";
         let createRequest = {
-            method: 'POST',
             headers: {
-                'Content-Type': 'application/JSON'
+                'Content-Type': 'application/json'
             },
+            method: 'POST',
             body: JSON.stringify({
-                name: `${newSubwayLine.title}`,
-                startTime: '13:00',
-                endTime: '15:00',
-                intervalTime: '1'
+                name: newSubwayLine.title,
+                startTime: newSubwayLine.startTime,
+                endTime: newSubwayLine.endTime,
+                intervalTime: newSubwayLine.intervalTime
             })
         };
+
         fetch(url, createRequest)
-            .then(response => response.json())
-            .then(date => {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(data));
+            .then(res => {
+                if (res.ok) {
+                    console.log(newSubwayLine);
+                    console.log(newSubwayLine.name);
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(newSubwayLine)
+                    )
+                } else {
+                    alert("중복된 이름입니다");
+                }
             });
 
-        // 유효성검사
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";

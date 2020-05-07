@@ -17,10 +17,19 @@ class LineRepositoryTest {
 
     @Test
     void save() {
-        Line line = new Line("강남역", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
 
         Line persistLine = lineRepository.save(line);
 
         assertThat(persistLine.getId()).isNotNull();
+    }
+
+    @Test
+    void findByName() {
+        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+
+        Line persistLine = lineRepository.save(line);
+
+        assertThat(lineRepository.findByName("1호선").get().getName()).isEqualTo("1호선");
     }
 }
