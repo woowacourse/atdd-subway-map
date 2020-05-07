@@ -19,12 +19,11 @@ public class LineController {
     public LineController(final LineService lineService) {
         this.lineService = lineService;
     }
-    
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
         Line persistLine = lineService.save(line);
-
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
                 .body(LineResponse.of(persistLine));
@@ -46,7 +45,6 @@ public class LineController {
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> getLines() {
         List<Line> lines = lineService.showLines();
-
         return ResponseEntity.ok()
                 .body(LineResponse.listOf(lines));
     }

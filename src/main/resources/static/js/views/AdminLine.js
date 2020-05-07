@@ -63,12 +63,13 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-        defaultSubwayLines.map(line => {
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(line)
-            );
-        });
+        api.line.get().then(data =>
+            data.map(line => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(line)
+                );
+            }));
     };
 
     const initEventListeners = () => {
