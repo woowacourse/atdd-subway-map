@@ -47,10 +47,10 @@ function AdminLine() {
                 });
         }
         subwayLineModal.toggle();
-        initLineInformation();
+        initLineModal();
     };
 
-    function fillLineInformation(id, name, color, start, end, interval) {
+    function fillLineModal(id, name, color, start, end, interval) {
         $subwayLineIdInput.innerText = id;
         $subwayLineNameInput.value = name;
         $subwayLineColorInput.value = color;
@@ -59,8 +59,19 @@ function AdminLine() {
         $subwayLineIntervalTimeInput.value = interval;
     }
 
-    function initLineInformation() {
-        fillLineInformation("", "", "", "", "", "");
+    function initLineModal() {
+        fillLineModal("", "", "", "", "", "");
+    }
+
+    function fillLineInformation(start, end, interval) {
+        const $subwayLineStartTime = document.querySelector("#line-start-time");
+        const $subwayLineEndTime = document.querySelector("#line-end-time");
+        const $subwayLineIntervalTime = document.querySelector("#line-interval-time");
+
+        $subwayLineStartTime.innerText = start;
+        $subwayLineEndTime.innerText = end;
+        $subwayLineIntervalTime.innerText = interval;
+
     }
 
     const onDeleteSubwayLine = event => {
@@ -83,8 +94,26 @@ function AdminLine() {
             let selectedLineId = selectedLine.querySelector(".line-id").innerText;
 
             api.line.getLine(selectedLineId)
-                .then(response => fillLineInformation(response.id, response.name, response.bgColor, response.startTime, response.endTime, response.intervalTime));
+                .then(response => fillLineModal(response.id, response.name, response.bgColor, response.startTime, response.endTime, response.intervalTime));
             subwayLineModal.toggle();
+        }
+    };
+
+
+    const onShowSubwayInformation = event => {
+        const $target = event.target;
+
+        const isUpdateButton = $target.classList.contains("mdi-pencil");
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+
+        if (!isUpdateButton && !isDeleteButton) {
+            let selectedLine = $target.closest(".subway-line-item");
+            let selectedLineId = selectedLine.querySelector(".line-id").innerText;
+
+            api.line.getLine(selectedLineId)
+                .then(response => fillLineInformation(response.startTime, response.endTime, response.intervalTime));
+
+
         }
     };
 
@@ -106,6 +135,7 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onShowSubwayInformation);
         $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
     };
 
