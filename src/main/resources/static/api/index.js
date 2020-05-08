@@ -31,16 +31,16 @@ const api = (() => {
 
     const station = {
         get() {
-            request(`${BASE_URL}/stations`);
+            return request(`${BASE_URL}/stations`);
         },
         create(data) {
-            request(`${BASE_URL}/station`, METHOD.POST(data));
+            return request(`${BASE_URL}/stations`, METHOD.POST(data));
         },
         update(data) {
-            request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+            return request(`${BASE_URL}/stations/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+            return request(`${BASE_URL}/stations/${id}`, METHOD.DELETE);
         }
     };
 
@@ -55,7 +55,7 @@ const api = (() => {
             return request(`${BASE_URL}/lines`, METHOD.POST(data)).then(data => data.json());
         },
         update(id, data) {
-           return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
+            return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
         },
         delete(id) {
             return request(`${BASE_URL}/lines/${id}`, METHOD.DELETE());

@@ -1,10 +1,11 @@
 import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE, CONFIRM_MESSAGE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
+import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
-  const $stationAddButtn = document.querySelector("#station-add-btn");
+  const $stationAddButton = document.querySelector("#station-add-btn");
 
   const onAddStationHandler = event => {
     if (event.type !== EVENT_TYPE.CLICK && event.key !== KEY_TYPE.ENTER) {
@@ -32,8 +33,14 @@ function AdminStation() {
       return;
     }
 
+    const station = {
+      name: stationName
+    }
+
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    api.station.create(station).then(() => {
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    })
   };
 
   function validateReduplication(stationName) {
@@ -67,7 +74,7 @@ function AdminStation() {
   const initEventListeners = () => {
     $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
     $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
-    $stationAddButtn.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
+    $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
   };
 
   const init = () => {
