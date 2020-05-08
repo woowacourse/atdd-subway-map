@@ -87,9 +87,9 @@ function AdminStation() {
     const stationRequest = {
       name: stationName
     };
-    api.station.create(stationRequest).then(data => console.log(data));
+    api.station.create(stationRequest);
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationRequest));
   };
 
   const onRemoveStationHandler = event => {
@@ -106,6 +106,18 @@ function AdminStation() {
     }
   };
 
+  const initDefaultSubwayStation = () => {
+    api.station.get().then(data => {
+      data.map(station => {
+            $stationList.insertAdjacentHTML(
+                "beforeend",
+                listItemTemplate(station)
+            );
+          }
+      )
+    });
+  }
+
   const initEventListeners = () => {
     $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, enterAddStation);
     $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, clickAddStationBtn);
@@ -113,6 +125,7 @@ function AdminStation() {
   };
 
   const init = () => {
+    initDefaultSubwayStation();
     initEventListeners();
   };
 

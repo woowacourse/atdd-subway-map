@@ -32,7 +32,7 @@ const api = (() => {
 
   const station = {
     get() {
-      dataRequest(`${BASE_URL}/stations`);
+      return dataRequest(`${BASE_URL}/stations`);
     },
     create(data) {
       return dataRequest(`${BASE_URL}/stations`, METHOD.POST(data));
