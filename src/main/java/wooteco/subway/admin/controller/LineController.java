@@ -46,19 +46,16 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity readById(@PathVariable Long id) {
-        final LineResponse line = LineResponse.of(lineService.showLine(id));
+        final LineResponse line = lineService.showLine(id);
 
         return ResponseEntity.ok(line);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        final Line line = lineService.showLine(id);
-        line.update(lineRequest.toLine());
-        lineService.updateLine(id, line);
-        final LineResponse updatedLine = LineResponse.of(line);
+        LineResponse lineResponse = lineService.updateLine(id, lineRequest);
 
-        return ResponseEntity.ok(updatedLine);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @DeleteMapping("/{id}")

@@ -23,31 +23,23 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/edges")
 public class LineStationController {
-    private List<LineStationResponse> response;
+    private LineService lineService;
 
     public LineStationController(LineService lineService) {
-        this.response = new ArrayList<>();
+        this.lineService = lineService;
     }
 
     @PostMapping("/{lineId}")
     public ResponseEntity create(@PathVariable Long lineId,
-        @RequestBody LineStationCreateRequest request) {
-        final LineStationResponse response =
-            new LineStationResponse(1L, new StationResponse(), new StationResponse(), 1, 2,
-                new LineResponse());
-        this.response.add(response);
-        return ResponseEntity.created(URI.create("/edges/" + 2))
-            .body(response);
+                                 @RequestBody LineStationCreateRequest request) {
+        LineResponse lineResponse = lineService.addLineStation(lineId, request);
+        return ResponseEntity.created(URI.create("/edges/" + lineId))
+                .body(lineResponse);
     }
 
-    @GetMapping
-    public ResponseEntity showAll() {
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable Long id) {
-        response.remove(0);
+    @DeleteMapping("/{lineId}/{stationId}")
+    public ResponseEntity deleteById(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
