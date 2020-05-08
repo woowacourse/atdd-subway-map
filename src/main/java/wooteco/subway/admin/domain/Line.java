@@ -101,6 +101,7 @@ public class Line {
                 if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
                     stations.get(i).updatePreLineStation(lineStation.getStationId());
                     stations.add(i, lineStation);
+                    return;
                 }
             }
         }
@@ -113,6 +114,19 @@ public class Line {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 station 정보가 없습니다."));
         stations.remove(lineStation);
+
+        for (int i = 0; i < stations.size() - 1; i++){
+            if (i == 0) {
+                if (stations.get(i).getPreStationId() != null) {
+                    stations.get(i).updatePreLineStation(null);
+                }
+            }
+            if (i != 0) {
+                if (stations.get(i).getStationId() != stations.get(i+1).getPreStationId()) {
+                    stations.get(i+1).updatePreLineStation(stations.get(i).getStationId());
+                }
+            }
+        }
     }
 
     public List<Long> getLineStationsId() {

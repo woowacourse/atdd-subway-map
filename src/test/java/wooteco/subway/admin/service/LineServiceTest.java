@@ -39,11 +39,8 @@ public class LineServiceTest {
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
-        System.out.println(line.getLineStationsId());
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        System.out.println(line.getLineStationsId());
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
-        System.out.println(line.getLineStationsId());
     }
 
     @Test
@@ -52,7 +49,7 @@ public class LineServiceTest {
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
-        System.out.println(line.getLineStationsId());
+
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
