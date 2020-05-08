@@ -29,20 +29,19 @@ const METHOD = {
 const api = (() => {
     const request = (uri, config) => fetch(uri, config).then(
         data => data.json());
-    const requestNoJson = (uri, config) => fetch(uri, config);
 
     const line = {
         get(path = "") {
             return request('/api/lines' + path);
         },
         create(data) {
-            return requestNoJson(`/api/lines`, METHOD.POST(data));
+            return fetch(`/api/lines`, METHOD.POST(data));
         },
         delete(path = "") {
-            return requestNoJson('/api/lines' + path, METHOD.DELETE());
+            return fetch('/api/lines' + path, METHOD.DELETE());
         },
         update(path, data) {
-            return requestNoJson('/api/lines' + path, METHOD.PUT(data))
+            return fetch('/api/lines' + path, METHOD.PUT(data))
         }
     };
 

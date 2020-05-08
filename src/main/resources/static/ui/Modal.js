@@ -13,6 +13,19 @@ export default function Modal() {
         'subwayLineIntervalTime': document.querySelector("#interval-time"),
         'subwayLineId': document.querySelector("#lineId"),
     };
+    const $changeInfo = {
+        target: null,
+        beforeName: null,
+        beforeColor: null,
+    };
+
+    const onOpenModalButtonClick = event => {
+        if (event && event.target.id === 'subway-line-add-btn') {
+            for (let key in $changeInfo) {
+                $changeInfo[key] = null;
+            }
+        }
+    };
 
     const toggle = event => {
         if (event) {
@@ -21,6 +34,7 @@ export default function Modal() {
         $body.classList.toggle("modal-active");
         $modal.classList.toggle("opacity-0");
         $modal.classList.toggle("pointer-events-none");
+        onOpenModalButtonClick(event);
         for (let key in $forms) {
             $forms[key].value = "";
         }
@@ -52,5 +66,5 @@ export default function Modal() {
         $forms.subwayLineId.value = data.id;
     };
 
-    return {$forms, toggle, subwayLineId, makeFrom, setBy};
+    return {$changeInfo, toggle, subwayLineId, makeFrom, setBy};
 }

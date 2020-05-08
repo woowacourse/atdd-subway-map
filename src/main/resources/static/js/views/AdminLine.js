@@ -12,6 +12,7 @@ function AdminLine() {
     const $createSubwayLineButton =
         document.querySelector("#subway-line-create-form #submit-button");
     const subwayLineModal = new Modal();
+    const changeInfo = subwayLineModal.$changeInfo;
     const linesInfo = {
         'viewStartTime': document.querySelector("#view-start-time"),
         'viewEndTime': document.querySelector("#view-end-time"),
@@ -30,40 +31,57 @@ function AdminLine() {
         }
     };
 
-    function settingLineList(statusCode, res) {
+    const settingLineList = (statusCode, res) => {
         if (res.status !== statusCode) {
             linesInfo.clear();
             return;
         }
         res.json().then(res => {
-            removeSubwayLineList(res.id);
-            addSubwayLineList(res);
+            if (changeInfo.target !== null) {
+                updateSubwayLineList(res);
+            } else {
+                addSubwayLineList(res);
+            }
             linesInfo.setBy(res);
         });
-    }
+    };
+
+    const addSubwayLineList = newSubwayLine => {
+        $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(newSubwayLine)
+        );
+    };
+
+    const updateSubwayLineList = res => {
+        changeInfo.target.querySelector("span").classList.remove(
+            changeInfo.beforeColor);
+        changeInfo.target.querySelector("span").classList.add(res.color);
+        changeInfo.target.innerHTML = changeInfo.target.innerHTML.replace(
+            changeInfo.beforeName, res.name);
+    };
 
     const onSelectSubwayLine = event => {
         const $target = event.target;
         const isSelectSubwayLine
             = $target.classList.contains("subway-line-item");
         if (isSelectSubwayLine) {
-            api.line.get('/' + parseId($target.id)).then(line => {
+            api.line.get('/' + $target.dataset.lineId).then(line => {
                     linesInfo.setBy(line);
                 }
             )
         }
     };
 
-    function parseId(target) {
-        return target.split("-")[1];
-    }
-
     const onEditSubwayLine = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            const lineId = parseId($target.closest(".subway-line-item").id);
+            changeInfo.target = $target.closest(".subway-line-item");
+            const lineId = changeInfo.target.dataset.lineId;
             api.line.get('/' + lineId).then(res => {
+                    changeInfo.beforeName = res.name;
+                    changeInfo.beforeColor = res.color;
                     subwayLineModal.toggle();
                     subwayLineModal.setBy(res);
                 }
@@ -78,7 +96,7 @@ function AdminLine() {
             return;
         }
 
-        const lineId = parseId($target.closest(".subway-line-item").id);
+        const lineId = $target.closest(".subway-line-item").dataset.lineId;
         api.line.delete("/" + lineId).then(res => {
             if (res.status !== 200) {
                 alert("삭제불가!");
@@ -87,21 +105,6 @@ function AdminLine() {
             $target.closest(".subway-line-item").remove()
         });
     };
-
-    function addSubwayLineList(newSubwayLine) {
-        $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(newSubwayLine)
-        );
-    }
-
-    function removeSubwayLineList(id) {
-        let selectId = "#line-" + id;
-        let removeSubwayLine = document.querySelector(selectId);
-        if (removeSubwayLine) {
-            $subwayLineList.removeChild(document.querySelector(selectId));
-        }
-    }
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(newSubwayLines => {
@@ -118,7 +121,7 @@ function AdminLine() {
         $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, save);
     };
 
-    const save = event => {
+    const save = (event) => {
         event.preventDefault();
         if (subwayLineModal.subwayLineId() === "") {
             onCreateSubwayLine();
