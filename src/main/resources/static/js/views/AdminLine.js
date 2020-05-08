@@ -51,7 +51,7 @@ function AdminLine() {
                 );
             }
         );
-    }
+    };
 
     const updateLineColumn = formData => {
         api.line.update(lineId, formData).then(
@@ -113,8 +113,7 @@ function AdminLine() {
             })
 
         }
-
-    }
+    };
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(data =>

@@ -87,8 +87,7 @@ function AdminStation() {
                 $stationList.insertAdjacentHTML("beforeend", listItemTemplate(line));
             })
         })
-    }
-
+    };
 
     const init = () => {
         initStations();
