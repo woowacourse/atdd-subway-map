@@ -11,13 +11,12 @@ function AdminLine() {
     const $intervalTimeInput = document.querySelector("#interval-time");
     const $firstTimeInput = document.querySelector("#first-time");
     const $lastTimeInput = document.querySelector("#last-time");
-    const $modalForm = document.querySelector("#subway-line-create-form");
     const $submitSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
     const subwayLineModal = new Modal();
 
-    const hiddenInput = document.createElement("input");
+    let $updateLineItem = null;
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -70,7 +69,8 @@ function AdminLine() {
             onUpdateSubwayLine
         );
 
-        const targetId = $target.closest(".subway-line-item").id;
+        $updateLineItem = $target.closest(".subway-line-item");
+        const targetId = $updateLineItem.dataset.lineId;
 
         api.line.getById(targetId)
             .then(line => {
@@ -79,11 +79,7 @@ function AdminLine() {
                 $lastTimeInput.value = line.endTime;
                 $intervalTimeInput.value = line.intervalTime;
                 $subwayLineColorInput.value = line.bgColor;
-            })
-
-        hiddenInput.type = "hidden";
-        hiddenInput.id = targetId;
-        $modalForm.appendChild(hiddenInput);
+            });
     };
 
     const onUpdateSubwayLine = event => {
@@ -97,9 +93,14 @@ function AdminLine() {
         };
 
         api.line
-            .update(updatedSubwayLine, hiddenInput.id)
+            .update(updatedSubwayLine, $updateLineItem.dataset.lineId)
             .then(line => {
                 //TODO : 업데이트 결과 반영.
+                $updateLineItem.insertAdjacentHTML(
+                    "afterend",
+                    subwayLinesTemplate(line)
+                );
+                $updateLineItem.remove();
             });
         subwayLineModal.toggle();
 
@@ -112,8 +113,6 @@ function AdminLine() {
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
         );
-
-        $modalForm.removeChild(hiddenInput);
     };
 
     const initDefaultSubwayLines = () => {
