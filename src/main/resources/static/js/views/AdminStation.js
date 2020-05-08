@@ -87,9 +87,10 @@ function AdminStation() {
     const stationRequest = {
       name: stationName
     };
-    api.station.create(stationRequest);
+    api.station.create(stationRequest).then(data => {
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+    });
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationRequest));
   };
 
   const onRemoveStationHandler = event => {
@@ -102,6 +103,7 @@ function AdminStation() {
     }
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      api.station.delete($target.closest(".list-item").dataset.stationId);
       $target.closest(".list-item").remove();
     }
   };

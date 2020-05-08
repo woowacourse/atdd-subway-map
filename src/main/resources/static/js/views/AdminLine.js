@@ -34,7 +34,7 @@ function AdminLine() {
         if ($subwayLineId.value === "") {
             await onCreateSubwayLine(newSubwayLine);
         } else {
-            await onEditSubwayLine(newSubwayLine);
+            await onUpdateSubwayLine(newSubwayLine);
         }
         subwayLineModal.toggle();
         onEmptyInput();
@@ -53,12 +53,12 @@ function AdminLine() {
         });
     }
 
-    const onEditSubwayLine = (newSubwayLine) => {
+    const onUpdateSubwayLine = (newSubwayLine) => {
         return api.lines.update($subwayLineId.value, newSubwayLine).then(data => {
             if (data.error) {
                 alert("입력값을 입력해주세요.")
             } else {
-                let standardNode = document.querySelector(`[data-id="${$subwayLineId.value}"]`);
+                let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
                 let divNode = document.createElement("div");
                 divNode.innerHTML = subwayLinesTemplate(data);
                 $subwayLineList.insertBefore(divNode.firstChild, standardNode);
@@ -71,7 +71,7 @@ function AdminLine() {
         const $target = event.target;
         const isSubwayLine = $target.classList.contains("subway-line-item");
         if (isSubwayLine) {
-            api.lines.find($target.dataset.id).then(data => {
+            api.lines.find($target.dataset.lineId).then(data => {
                 document.querySelector("#line-info-first-time").innerText = data.startTime.substring(0, 5);
                 document.querySelector("#line-info-last-time").innerText = data.endTime.substring(0, 5);
                 document.querySelector("#line-info-interval-time").innerText = data.intervalTime;
@@ -84,16 +84,16 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
             $target.closest(".subway-line-item").remove();
-            let subwayLineId = $target.parentElement.parentElement.dataset.id;
+            let subwayLineId = $target.closest(".subway-line-item").dataset.lineId;
             api.lines.delete(subwayLineId);
         }
     };
 
-    const onUpdateSubwayLine = event => {
+    const onEditSubwayLine = event => {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            let subwayLineId = $target.parentElement.parentElement.dataset.id;
+            let subwayLineId = $target.closest(".subway-line-item").dataset.lineId;
             api.lines.find(subwayLineId).then(data => {
                 $subwayLineId.value = data.id;
                 $subwayLineNameInput.value = data.name;
@@ -130,7 +130,7 @@ function AdminLine() {
 
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
 
         $createSubwayLineButton.addEventListener(
