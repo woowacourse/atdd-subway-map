@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,9 @@ public class LineStationAcceptanceTest {
         lineHandler.createLine("3호선", "green");
 
         //when
-
+        lineHandler.addLineStation(1L, 0L, 1L);
+        Assertions.assertThat(lineHandler.findLineWithStations(1L).getStations().size())
+            .isEqualTo(1);
         //then
     }
 

@@ -104,4 +104,32 @@ public class LineHandler {
             then().
             log().all();
     }
+
+    public void addLineStation(Long lineId, Long preStationId, Long stationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("preStationId", preStationId.toString());
+        params.put("stationId", stationId.toString());
+        params.put("distance", "10");
+        params.put("duration", "10");
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/line-station/" + lineId).
+            then().
+            log().all().
+            statusCode(HttpStatus.OK.value());
+    }
+
+    public LineResponse findLineWithStations(Long id) {
+        return
+            given()
+                .when().
+                get("/line-station/" + id).
+                then().
+                log().all().
+                extract().as(LineResponse.class);
+    }
 }
