@@ -3,6 +3,7 @@ import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} 
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
+import {replaceEventListener} from "../../utils/util";
 
 function AdminLine() {
     const $subwayLineInfo = document.querySelector(".lines-info");
@@ -19,19 +20,22 @@ function AdminLine() {
 
     let $updateLineItem = null;
 
+    const renderSubwayLineInfo = line => {
+        $subwayLineInfo.innerHTML = "";
+        $subwayLineInfo.insertAdjacentHTML(
+            "beforeend",
+            subwayLineInfoTemplate(line)
+        );
+    }
+
     const onShowSubwayLine = event => {
         const $target = event.target.closest(".subway-line-item");
         event.preventDefault();
 
         api.line.getById($target.dataset.lineId)
             .then(data => data.json())
-            .then(line => {
-                $subwayLineInfo.innerHTML = "";
-                $subwayLineInfo.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLineInfoTemplate(line)
-                );
-            });
+            .then(line => renderSubwayLineInfo(line))
+            .catch(error => console.log(error));
     }
 
     const onCreateSubwayLine = event => {
@@ -46,17 +50,12 @@ function AdminLine() {
 
         api.line.create(newSubwayLine)
             .then(data => data.json())
-            .then(line => {
-                if (!line.name) {
-                    alert("저장 실패!");
-                    return;
-                }
-
+            .then(line =>
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
-                    subwayLinesTemplate(line)
-                );
-            });
+                    subwayLinesTemplate(line)))
+            .catch(error => console.log(error));
+
         subwayLineModal.toggle();
     };
 
@@ -70,6 +69,7 @@ function AdminLine() {
         const $deleteLineItem = $target.closest(".subway-line-item");
         api.line.delete($deleteLineItem.dataset.lineId)
             .then(() => $deleteLineItem.remove())
+            .catch(error => console.log(error));
     };
 
     const onReadSubwayLineToUpdate = event => {
@@ -80,19 +80,14 @@ function AdminLine() {
         }
 
         subwayLineModal.toggle();
-
-        $submitSubwayLineButton.removeEventListener(
-            EVENT_TYPE.CLICK,
-            onCreateSubwayLine
-        );
-        $submitSubwayLineButton.addEventListener(
-            EVENT_TYPE.CLICK,
+        replaceEventListener(
+            $submitSubwayLineButton,
+            onCreateSubwayLine,
             onUpdateSubwayLine
         );
 
         $updateLineItem = $target.closest(".subway-line-item");
         const targetId = $updateLineItem.dataset.lineId;
-
         api.line.getById(targetId)
             .then(data => data.json())
             .then(line => {
@@ -122,22 +117,13 @@ function AdminLine() {
                     subwayLinesTemplate(line)
                 );
                 $updateLineItem.remove();
-
-                $subwayLineInfo.innerHTML = "";
-                $subwayLineInfo.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLineInfoTemplate(line)
-                );
+                renderSubwayLineInfo(line);
             });
+
         subwayLineModal.toggle();
-
-
-        $submitSubwayLineButton.removeEventListener(
-            EVENT_TYPE.CLICK,
-            onUpdateSubwayLine
-        );
-        $submitSubwayLineButton.addEventListener(
-            EVENT_TYPE.CLICK,
+        replaceEventListener(
+            $submitSubwayLineButton,
+            onUpdateSubwayLine,
             onCreateSubwayLine
         );
     };
