@@ -24,7 +24,6 @@ public class StationService {
     }
 
     public void deleteStationByName(String name) {
-        System.out.println("##" + name);
         stationRepository.deleteByName(name);
     }
 }

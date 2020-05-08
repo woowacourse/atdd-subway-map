@@ -2,15 +2,15 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -41,15 +41,31 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        line.addLineStation(request.toLineStation());
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        line.removeLineStationByStationId(stationId);
+        lineRepository.save(line);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
+    public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         return LineResponse.of(line);
+    }
+
+    public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        List<Long> orderedStationIds = line.getOrderedStationIds();
+        orderedStationIds.forEach(test -> {
+            System.out.println("##"+test);
+        });
+        List<Station> orderedStations = orderedStationIds.stream()
+                .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
+                .collect(Collectors.toList());
+        return LineWithOrderedStationsResponse.of(line, orderedStations);
     }
 }

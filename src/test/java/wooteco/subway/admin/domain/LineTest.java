@@ -22,7 +22,7 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getStationsId();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -32,8 +32,8 @@ public class LineTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
-        line.removeLineStationById(stationId);
+        line.removeLineStationByStationId(stationId);
 
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getLineStations()).hasSize(1);
     }
 }
