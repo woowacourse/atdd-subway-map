@@ -103,9 +103,7 @@ function AdminLine() {
         }
     };
 
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        console.log($target);
+    const onEditSubwayLine = () => {
         let url = "/lines/" + $editId;
         let editRequest = {
             headers: {
@@ -122,20 +120,39 @@ function AdminLine() {
         };
         fetch(url, editRequest)
             .then(res => {
-                    if (res.ok) {
-                        res.json().then(data => {
-                            $target.closest(".subway-line-item").remove();
-                            $subwayLineList.insertAdjacentHTML(
-                                "beforeend",
-                                subwayLinesTemplate(data)
-                            )
-                        })
-                    } else {
+                    if (!res.ok) {
                         alert("중복된 이름입니다.");
                     }
                 }
             );
         subwayLineModal.toggle();
+    };
+
+    const onInfoSubwayLine = event => {
+        const $target = event.target;
+        const $id = $target.closest(".subway-line-item").id;
+        const isUpdateButton = $target.classList.contains("mdi-pencil");
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+
+        if (!(isUpdateButton && isDeleteButton)) {
+            fetch("/lines/" + $id, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }).then(res => {
+                if (res.ok) {
+                    res.json().then(data => {
+                        document.querySelector("#info-first-time").innerHTML = data.startTime;
+                        document.querySelector("#info-last-time").innerHTML = data.endTime;
+                        document.querySelector("#info-interval-time").innerHTML = data.intervalTime;
+                    })
+                } else {
+                    alert("데이터를 불러오지 못했습니다.");
+                }
+            })
+        }
+
     };
 
     const onSelectColorHandler = event => {
@@ -172,6 +189,8 @@ function AdminLine() {
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onInfoSubwayLine);
+
         $createSubwayLineButton.addEventListener(
             EVENT_TYPE.CLICK, function (event) {
                 if ($isEdit) {
