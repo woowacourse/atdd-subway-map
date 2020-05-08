@@ -2,10 +2,17 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationAddRequest;
 import wooteco.subway.admin.dto.LineUpdateRequest;
 import wooteco.subway.admin.service.LineService;
 
@@ -48,5 +55,14 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLineById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/lineStations")
+    public ResponseEntity createLineStations(@RequestBody LineStationAddRequest request) {
+        LineResponse response = lineService.addLineStation(1L, request);
+
+        return ResponseEntity
+                .created(URI.create("/lineStations/" + 1))
+                .body(response);
     }
 }
