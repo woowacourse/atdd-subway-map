@@ -15,4 +15,9 @@ public class WebController {
     public String adminLine() {
         return "admin-line";
     }
+
+    @GetMapping("/admin-edge")
+    public String adminEdge() {
+        return "admin-edge";
+    }
 }

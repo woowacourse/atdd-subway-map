@@ -1,7 +1,6 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -50,7 +49,7 @@ public class LineService {
 
 		LineStation toInput = new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(),
 				request.getDuration());
-		line.updatePreStation(toInput);
+		line.updatePreStationWhenAdd(toInput);
 		line.addLineStation(toInput);
 		lineRepository.save(line);
 	}

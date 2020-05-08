@@ -131,7 +131,7 @@ public class LineServiceTest {
 
     @Test
     void updateLineStation(){
-        line.updatePreStation(new LineStation(null,5L,10,10));
+        line.updatePreStationWhenAdd(new LineStation(null,5L,10,10));
     }
 
 }

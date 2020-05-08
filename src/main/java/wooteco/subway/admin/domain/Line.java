@@ -126,7 +126,7 @@ public class Line {
                 .findAny().orElseThrow(IllegalArgumentException::new);
     }
 
-    public void updatePreStation(final LineStation toInput) {
+    public void updatePreStationWhenAdd(final LineStation toInput) {
         stations.stream()
                 .filter(x -> x.getPreStationId()
                         .equals(toInput.getPreStationId()))
