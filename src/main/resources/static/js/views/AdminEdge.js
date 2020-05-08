@@ -29,8 +29,8 @@ function AdminEdge() {
     $currentStation.value = "";
   }
 
-  const initSubwayLinesSlider = () => {
-    api.lines.get().then(data => {
+  const initSubwayLinesSlider = async () => {
+    await api.lines.get().then(data => {
       $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line))
           .join("");
     });
@@ -49,10 +49,12 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line))
-      .join("");
+  const initSubwayLineOptions = async () => {
+    let subwayLineOptionTemplate;
+    await api.lines.get().then(data => {
+      subwayLineOptionTemplate = data.map(line => optionTemplate(line)).join("");
+    })
+
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
     );
