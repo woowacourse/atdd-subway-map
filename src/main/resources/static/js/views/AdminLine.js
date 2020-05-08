@@ -163,6 +163,9 @@ function AdminLine() {
         method: "DELETE"
       });
       $target.closest(".subway-line-item").remove();
+      $startTimeContainer.innerHTML = "00:00:00";
+      $endTimeContainer.innerHTML = "00:00:00";
+      $intervalTimeContainer.innerHTML = "00";
     }
   };
 
