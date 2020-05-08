@@ -3,7 +3,6 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,9 +20,6 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
-    }
-
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
         String bgColor, Set<LineStation> stations) {
         this.id = id;
@@ -35,10 +31,6 @@ public class Line {
         this.stations = stations;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
-        this(null, name, startTime, endTime, intervalTime, bgColor, new HashSet<>());
     }
 
     public Long getId() {
