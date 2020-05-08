@@ -32,22 +32,21 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         lineService.validateTitle(lineRequest);
         Line line = new Line(
-            lineRequest.getTitle(),
-            lineRequest.getStartTime(),
-            lineRequest.getEndTime(),
-            lineRequest.getIntervalTime(),
-            lineRequest.getBgColor()
+                lineRequest.getTitle(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(),
+                lineRequest.getBgColor()
         );
-        return ResponseEntity.created(URI.create("/lines")).body(lineService.save(line));
+	    Line savedLine = lineService.save(line);
+        return ResponseEntity.created(URI.create("/lines/"+savedLine.getId())).body(savedLine);
     }
 
     @GetMapping
     public List<LineResponse> getLines() {
-        List<Line> lines = lineService.showLines();
-
         return lineService.showLines().stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -59,11 +58,11 @@ public class LineController {
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.validateTitleWhenUpdate(id, lineRequest);
         Line line = new Line(
-            lineRequest.getTitle(),
-            lineRequest.getStartTime(),
-            lineRequest.getEndTime(),
-            lineRequest.getIntervalTime(),
-            lineRequest.getBgColor()
+                lineRequest.getTitle(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(),
+                lineRequest.getBgColor()
         );
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
@@ -77,7 +76,7 @@ public class LineController {
 
     @PostMapping("/addStation/{id}")
     public ResponseEntity addStation(@PathVariable Long id,
-        @RequestBody LineStationCreateRequest LineStationCreateRequest) {
+                                     @RequestBody LineStationCreateRequest LineStationCreateRequest) {
         lineService.addLineStation(id, LineStationCreateRequest);
         return ResponseEntity.ok().build();
     }

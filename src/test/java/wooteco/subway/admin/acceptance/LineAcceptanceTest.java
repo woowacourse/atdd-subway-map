@@ -43,11 +43,9 @@ public class LineAcceptanceTest {
         createLine("2호선");
         createLine("3호선");
         // then
-        System.out.println(">>>>create");
 
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
-        System.out.println(">>>>getLine");
 
         // when
         LineResponse line = getLine(lines.get(0).getId());
@@ -57,7 +55,6 @@ public class LineAcceptanceTest {
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
-        System.out.println(">>>isNotNull");
 
         // when
         LocalTime startTime = LocalTime.of(8, 00);

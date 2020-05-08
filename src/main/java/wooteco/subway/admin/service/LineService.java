@@ -70,8 +70,9 @@ public class LineService {
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = lineRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
-
-		return LineResponse.of(line);
+		LineResponse lineResponse = LineResponse.of(line);
+		lineResponse.setStations(stationRepository.findAllById(line.getLineStationsId()));
+		return lineResponse;
 	}
 
 	public void validateTitle(LineRequest lineRequest) {

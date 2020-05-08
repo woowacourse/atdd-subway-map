@@ -85,4 +85,8 @@ public class LineResponse {
     public String getBgColor() {
         return bgColor;
     }
+
+    public void setStations(final Iterable<Station> allById) {
+        allById.forEach(station -> stations.add(station));
+    }
 }
