@@ -15,12 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.res.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -41,8 +43,7 @@ public class LineAcceptanceTest {
         createLines("신분당선", "1호선", "2호선", "3호선");
         // then
         List<LineResponse> lines = getLines();
-        // assertThat(lines.size()).isEqualTo(4);
-        assertThat(lines.size()).isEqualTo(5);
+        assertThat(lines.size()).isEqualTo(4);
 
         // when
         LineResponse line = getLine(lines.get(0).getId());
@@ -66,8 +67,7 @@ public class LineAcceptanceTest {
         deleteLine(line.getId());
         // then
         List<LineResponse> linesAfterDelete = getLines();
-        // assertThat(linesAfterDelete.size()).isEqualTo(3);
-        assertThat(linesAfterDelete.size()).isEqualTo(4);
+        assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
     private void createLines(String... lines) {

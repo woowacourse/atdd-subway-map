@@ -4,13 +4,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 
 import wooteco.subway.admin.dto.req.LineRequest;
 
 public class Line {
+    private static final int FIRST_INDEX = 0;
+    private static final int NEXT_STATION_INDEX = 1;
+
     @Id
     private Long id;
     private String name;
@@ -18,7 +22,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private List<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,6 +38,7 @@ public class Line {
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.stations = new ArrayList<>();
     }
 
     public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
@@ -70,7 +75,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -104,15 +109,49 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        if (lineStation.isFirstOnLine()) {
+            update(lineStation, FIRST_INDEX);
+            return;
+        }
+
+        int targetIndex = IntStream.range(0, stations.size())
+            .filter(index -> stations.get(index).isSameWithPreStationId(lineStation))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("이전역이 존재하지 않습니다."));
+
+        update(lineStation, targetIndex + NEXT_STATION_INDEX);
+    }
+
+    private void update(LineStation lineStation, int nextStationIndex) {
+        stations.add(nextStationIndex, lineStation);
+
+        if (isNotLast(nextStationIndex)) {
+            int lastIndex = nextStationIndex + NEXT_STATION_INDEX;
+            stations.get(lastIndex).updatePreLineStation(lineStation.getStationId());
+        }
+    }
+
+    private boolean isNotLast(int nextStation) {
+        return stations.size() >= nextStation + 2;
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        int targetIndex = IntStream.range(0, stations.size())
+            .filter(index -> stations.get(index).isSameId(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+
+        LineStation station = stations.get(targetIndex);
+        stations.remove(targetIndex);
+
+        if (targetIndex != stations.size()) {
+            stations.get(targetIndex).updatePreLineStation(station.getPreStationId());
+        }
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }

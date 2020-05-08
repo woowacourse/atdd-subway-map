@@ -2,9 +2,8 @@ package wooteco.subway.admin.dto.res;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.Line;
@@ -20,14 +19,14 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<Station> stations;
+    private List<Station> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(Long id, String title, String bgColor, LocalTime startTime,
         LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
-        Set<Station> stations) {
+        List<Station> stations) {
         this.id = id;
         this.bgColor = bgColor;
         this.title = title;
@@ -42,7 +41,13 @@ public class LineResponse {
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
             line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
-            line.getUpdatedAt(), new HashSet<>());
+            line.getUpdatedAt(), new ArrayList<>());
+    }
+
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
+            line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
+            line.getUpdatedAt(), stations);
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
@@ -75,7 +80,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return stations;
     }
 
