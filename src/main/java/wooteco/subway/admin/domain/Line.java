@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
@@ -31,6 +32,7 @@ public class Line {
         this.backgroundColor = backgroundColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.stations = new ArrayList<>();
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
@@ -94,6 +96,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (stations.size() != 0) {
+            for (int i = 0; i < stations.size(); i++) {
+                if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
+                    stations.get(i).updatePreLineStation(lineStation.getStationId());
+                    stations.add(i, lineStation);
+                }
+            }
+        }
         stations.add(lineStation);
     }
 
@@ -106,7 +116,8 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }
