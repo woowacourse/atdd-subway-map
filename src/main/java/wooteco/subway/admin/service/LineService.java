@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.NotFoundLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -27,6 +28,11 @@ public class LineService {
 	public List<Line> showLines() {
 		return lineRepository.findAll();
 	}
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(NotFoundLineException::new);
+    }
 
 	public void updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
