@@ -10,6 +10,9 @@ public class LineStationResponse {
     private String name;
     private Set<Station> stations;
 
+    public LineStationResponse() {
+    }
+
     public LineStationResponse(Long id, String name, Set<Station> stations) {
         this.id = id;
         this.name = name;

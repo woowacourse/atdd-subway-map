@@ -10,11 +10,18 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineStationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -53,8 +60,8 @@ public class LineStationAcceptanceTest {
     void manageLineStation() {
         // 노선 추가
         //given
-        createStation("잠실역");
-        createStation("삼성역");
+        Station station1 = createStation("잠실역");
+        Station station2 = createStation("삼성역");
         createLine("2호선");
 
         //when
@@ -63,35 +70,44 @@ public class LineStationAcceptanceTest {
         params.put("preStationName", "잠실역");
         params.put("stationName", "삼성역");
 
-        addLineStation(params);
+        LineStationResponse response = addLineStation(params);
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getStations().size()).isEqualTo(2);
 
-        // LineStation이 추가되었는지 확인
-        findAllLineStations();
+        // given : 지하철 노선의 지하철 역 목록 조회
+        List<LineStationResponse> allLineStations = findAllLineStations();
+        // then
+        Set<Station> savedStations = allLineStations.get(0).getStations();
+        List<String> savedStationNames = savedStations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(savedStationNames).contains("잠실역");
+        assertThat(savedStationNames).contains("삼성역");
     }
 
-    private void findAllLineStations() {
-        given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lineStations")
-                .then()
-                .log().all()
-                .statusCode(HttpStatus.OK.value());
+    private List<LineStationResponse> findAllLineStations() {
+        return given().
+                when().
+                get("/lineStations").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineStationResponse.class);
     }
 
-    private void createStation(String name) {
+    private Station createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        given().body(params)
+        return given().body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then()
                 .log().all()
-                .statusCode(HttpStatus.CREATED.value());
+                .extract()
+                .as(Station.class);
     }
 
     private void createLine(String name) {
@@ -113,14 +129,16 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void addLineStation(Map<String, String> params) {
-        given().body(params)
+    private LineStationResponse addLineStation(Map<String, String> params) {
+        return given().body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lineStations")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
-                .log().all();
+                .log().all()
+                .extract()
+                .as(LineStationResponse.class);
     }
 }
