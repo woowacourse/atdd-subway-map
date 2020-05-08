@@ -104,8 +104,15 @@ public class Line {
                     return;
                 }
             }
+            stations.add(lineStation);
         }
-        stations.add(lineStation);
+        if (stations.size() == 0) {
+            if (lineStation.getPreStationId() != null) {
+                stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
+            }
+            stations.add(lineStation);
+        }
+
     }
 
     public void removeLineStationById(Long stationId) {

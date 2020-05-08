@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -63,20 +64,29 @@ public class LineStationAcceptanceTest {
         createStation("강남역");
         createLine("1호선");
         // 지하철 노선에 지하철 역 추가
+
         Long lineId = 1L;
         createLineStation(lineId, "2", "1", "10", "10");
         createLineStation(lineId, "3", "2", "10", "10");
         // 지하철 노선의 지하철 역 목록 조회
         List<LineStation> stations = getLineStations(lineId);
-        assertThat(stations.size()).isEqualTo(2);
-        assertThat(stations.get(0).getStationId()).isEqualTo(2);
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.get(0).getStationId()).isEqualTo(1);
 
         Long stationId = 2L; // 추가 및 삭제할 stationId
         // 지하철 노선에 포함된 특정 지하철 역을 제외
         deleteLineStation(lineId, stationId);
         // 제외한 지하철 목록 존재하지 않는지 확인
         List<LineStation> restStations = getLineStations(lineId);
-        assertThat(restStations.size()).isEqualTo(1);
+        assertThat(restStations.size()).isEqualTo(2);
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+                get("/lines/" + id).
+            then().
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     // 지하철 노선에 포함된 지하철 역을 제거하는 요청
