@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.response.LineStationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -82,6 +82,9 @@ public class LineStationAcceptanceTest {
         //when 노선의 특정 지하철역 제거
         deleteLineStation(1L, 1L);
         //then
+        List<LineStationResponse> deletedLineStations = findAllLineStations();
+        Set<Station> deletedStations = deletedLineStations.get(0).getStations();
+        assertThat(deletedStations.size()).isEqualTo(1);
 
     }
 
