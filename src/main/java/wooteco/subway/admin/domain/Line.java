@@ -1,11 +1,16 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
 	@Id
@@ -98,24 +103,65 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
-		if (stations == null) {
-			stations = new HashSet<>();
+		if (lineStation.getPreStationId() == null && stations.size() != 0) {
+			LineStation prevFirstLineStation = stations.stream()
+				.filter(value -> value.getPreStationId() == null)
+				.findFirst()
+				.orElseThrow(NoSuchElementException::new);
+			prevFirstLineStation.updatePreLineStation(lineStation.getStationId());
+		} else if (stations.size() != 0) {
+			stations.stream()
+				.filter(value -> value.getPreStationId() == lineStation.getPreStationId())
+				.findFirst()
+				.ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
 		}
 		stations.add(lineStation);
 	}
 
 	public void removeLineStationById(Long stationId) {
-		LineStation lineStation = stations.stream()
-			.filter(value -> value.getStationId().equals(stationId))
+		LineStation removeStation = stations.stream()
+			.filter(value -> value.getStationId() == stationId)
 			.findFirst()
 			.orElseThrow(NoSuchElementException::new);
 
-		stations.remove(lineStation);
+		LineStation headStation = stations.stream()
+			.filter(value -> value.getPreStationId() == null)
+			.findFirst()
+			.orElseThrow(NoSuchElementException::new);
+
+		if(headStation.getStationId() == stationId) {
+			stations.remove(removeStation);
+			LineStation newHeadStation = stations.stream()
+				.filter(value -> value.getPreStationId() == stationId)
+				.findFirst()
+				.orElseThrow(NoSuchElementException::new);
+			newHeadStation.updatePreLineStation(null);
+			return;
+		}
+
+		stations.stream()
+			.filter(value -> value.getPreStationId() == stationId)
+			.findFirst()
+			.ifPresent(lineStation -> lineStation.updatePreLineStation(removeStation.getPreStationId()));
+		stations.remove(removeStation);
 	}
 
 	public List<Long> getLineStationsId() {
-		return stations.stream()
-			.map(LineStation::getStationId)
-			.collect(Collectors.toList());
+		LineStation headStation = stations.stream()
+			.filter(value -> value.getPreStationId() == null)
+			.findFirst()
+			.orElseThrow(NoSuchElementException::new);
+
+		List<Long> newStations = new ArrayList<>(Arrays.asList(headStation.getStationId()));
+
+		while (newStations.size() != stations.size()) {
+			newStations.add(stations.stream()
+				.filter(value -> value.getPreStationId() == (newStations.get(newStations.size() - 1)))
+				.findFirst()
+				.map(LineStation::getStationId)
+				.orElseThrow(NoSuchElementException::new));
+		}
+
+		return newStations;
 	}
 }

@@ -105,7 +105,7 @@ public class LineController {
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("없"));
 
-		line.addLineStation(view.toLineStation(id));
+		line.addLineStation(view.toLineStation());
 
 		Set<Station> stationsOfLine = line.getStations()
 			.stream()
