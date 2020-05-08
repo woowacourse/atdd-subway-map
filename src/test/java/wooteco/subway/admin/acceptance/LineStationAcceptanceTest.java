@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.*;
 
-import java.util.Arrays;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -58,17 +60,55 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        // given
         createStation("낙성대역");
         createStation("압구정로데오역");
+        // and
+        createLine("1호선");
+        // when
+        StationResponse naksungdae = getStations().get(0);
+        StationResponse apgujeongRodeo = getStations().get(1);
+        LineResponse line = getLine(3L);
+        addStationToEmptyLine(naksungdae, line);
+        addStationToEmptyLine(apgujeongRodeo, line);
+        // then
+        LineResponse updatedLine = getLine(3L);
+        assertThat(updatedLine.getStations()).hasSize(line.getStations().size() + 2);
+    }
 
-        List<StationResponse> stations = getStations();
-        assertThat(stations.size()).isEqualTo(2);
+    private LineResponse getLine(Long id) {
+        return given().when().
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
+    }
 
-        assertThat(stations
-            .stream()
-            .map(StationResponse::getName)
-            .toArray())
-            .containsAll(Arrays.asList("낙성대역", "압구정로데오역"));
+    private void addStationToEmptyLine(final StationResponse station, final LineResponse line) {
+        Map<String, String> params = new HashMap<>();
+        params.put("preStationId", null);
+        params.put("stationId", station.getId().toString());
+        params.put("distance", "1");
+        params.put("duration", "1");
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when()
+            .post("/lines/{id}", line.getId())
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<LineResponse> getLines() {
+        return given()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .jsonPath().getList(".", LineResponse.class);
     }
 
     private List<StationResponse> getStations() {
@@ -79,6 +119,30 @@ public class LineStationAcceptanceTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .jsonPath().getList(".", StationResponse.class);
+    }
+
+    private void createLine(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+        params.put("bgColor", "bg-gray-100");
+
+        // @formatter:off
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            post("/lines").
+        then().
+            log().all().
+            statusCode(anyOf(
+                is(HttpStatus.CREATED.value()),
+                is(HttpStatus.BAD_REQUEST.value()))
+            );
+        // @formatter:on
     }
 
     private void createStation(String name) {

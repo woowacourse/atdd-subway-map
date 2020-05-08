@@ -1,10 +1,14 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.DuplicateLineException;
@@ -51,7 +55,10 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line persistLine = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id));
+        persistLine.addLineStation(request.toLineStation());
+        lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -62,6 +69,11 @@ public class LineService {
         // TODO: 구현
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
-        return LineResponse.of(line);
+        Set<Station> stations = stationRepository.findAllById(line.getStations()
+            .stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList())
+        );
+        return LineResponse.of(line, stations);
     }
 }

@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
+import wooteco.subway.admin.exception.LineStationNotFoundException;
+
 public class Line {
     @Id
     private Long id;
@@ -95,7 +97,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 @RequestMapping("/lines")
@@ -28,8 +29,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Line saved = lineService.save(lineRequest.toLine());
+    public ResponseEntity createLine(@RequestBody LineRequest request) {
+        Line saved = lineService.save(request.toLine());
         return ResponseEntity
             .created(URI.create("/lines/" + saved.getId()))
             .body(LineResponse.of(saved));
@@ -47,8 +48,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineService.updateLine(id, lineRequest.toLine());
+    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest request) {
+        Line line = lineService.updateLine(id, request.toLine());
         return ResponseEntity.ok().body(LineResponse.of(line));
     }
 
@@ -56,5 +57,12 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity addStation(@PathVariable("id") Long id,
+        @RequestBody LineStationCreateRequest request) {
+        lineService.addLineStation(id, request);
+        return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
 }
