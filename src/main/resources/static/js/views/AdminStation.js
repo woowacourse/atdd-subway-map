@@ -1,6 +1,6 @@
 import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
-import { stationApi } from "../../api/index.js"
+import { api } from "../../api/index.js"
 
 function AdminStation() {
   const $stationAddButton = document.querySelector("#station-add-btn");
@@ -26,7 +26,7 @@ function AdminStation() {
     let data = {
       name: stationName
     }
-    stationApi.station.create(data)
+    api.station.create(data)
     $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
   };
 
@@ -35,13 +35,13 @@ function AdminStation() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       console.log($target.parentElement.parentElement.innerText)
-      stationApi.station.delete($target.parentElement.parentElement.innerText)
+      api.station.delete($target.parentElement.parentElement.innerText)
       $target.closest(".list-item").remove();
     }
   };
 
   const initStations = async () => {
-    const stations =  await stationApi.station.get();
+    const stations =  await api.station.get();
     stations.forEach(station => {
       $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station.name))
     });

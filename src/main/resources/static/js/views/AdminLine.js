@@ -6,7 +6,7 @@ import {
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
-import { lineApi } from "../../api/index.js"
+import { api } from "../../api/index.js"
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -21,16 +21,8 @@ function AdminLine() {
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = event => {
+  const onCreateSubwayLine = async event => {
     event.preventDefault();
-    const newSubwayLine = {
-      name: $subwayLineNameInput.value,
-      color: $subwayLineColorInput.value
-    };
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
     let data = {
       name: $subwayLineNameInput.value,
       startTime: $subwayLineStartTimeInput.value,
@@ -38,7 +30,12 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTimeInput.value,
       color: $subwayLineColorInput.value
     }
-    lineApi.line.create(data);
+    const response = await api.line.create(data);
+    console.log(response);
+    $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(response)
+    );
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
@@ -48,6 +45,7 @@ function AdminLine() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      api.line.delete($target.parentElement.parentElement.dataset.lineId)
       $target.closest(".subway-line-item").remove();
     }
   };
@@ -107,7 +105,7 @@ function AdminLine() {
   };
 
   const initLine = async () => {
-    const lines =  await lineApi.line.get();
+    const lines =  await api.line.get();
     console.log(lines)
     lines.forEach(line => {
       $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line))

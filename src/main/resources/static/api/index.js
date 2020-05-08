@@ -22,8 +22,9 @@ const METHOD = {
     }
 };
 
-export const stationApi = (() => {
+export const api = (() => {
     const request = (uri, config) => fetch(uri, config).then(data => data.json());
+    const requestWithoutResponseBody = (uri, config) => fetch(uri, config);
 
     const station = {
         get() {
@@ -37,38 +38,30 @@ export const stationApi = (() => {
             return request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
         },
         delete(name) {
-            return request(`${BASE_URL}/station/${name}`, METHOD.DELETE());
+            return requestWithoutResponseBody(
+                `${BASE_URL}/station/${name}`, METHOD.DELETE());
         }
-
     };
 
-    return {
-        station
-    };
-})();
-
-
-export const lineApi = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
     const line = {
         get() {
             return request(`${BASE_URL}/line`);
         },
         create(data) {
-            console.log(data)
             return request(`${BASE_URL}/line`, METHOD.POST(data));
         },
         update(lineId, data) {
             return request(`${BASE_URL}/line/${lineId}`, METHOD.PUT(data));
         },
         delete(lineId) {
-            return request(`${BASE_URL}/line/${lineId}`, METHOD.DELETE());
+            console.log(lineId)
+            return requestWithoutResponseBody(
+                `${BASE_URL}/line/${lineId}`, METHOD.DELETE());
         }
     };
-
     return {
+        station,
         line
     };
 })();
-
