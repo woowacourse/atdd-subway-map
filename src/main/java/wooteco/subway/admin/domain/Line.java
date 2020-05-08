@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -62,14 +63,16 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
-		if (lineStation.getPreStationId() == null && stations.size() != 0) {
+		if (lineStation.isStartStation() && stations.size() != 0) {
 			LineStation startLineStation = stations.stream()
-				.filter(station -> station.getPreStationId() == null)
-				.findFirst().orElseThrow(RuntimeException::new);
+				.filter(LineStation::isStartStation)
+				.findFirst()
+				.orElseThrow(RuntimeException::new);
 			startLineStation.updatePreLineStation(lineStation.getStationId());
 		}
 		stations.stream()
-			.filter(station -> lineStation.getPreStationId() == station.getPreStationId())
+			.filter(station -> Objects.nonNull(lineStation.getPreStationId()) && lineStation.getPreStationId()
+				.equals(station.getPreStationId()))
 			.findFirst()
 			.ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
 		stations.add(lineStation);
@@ -77,10 +80,12 @@ public class Line {
 
 	public void removeLineStationById(Long stationId) {
 		LineStation lineStation = stations.stream()
-			.filter(station -> station.getStationId() == stationId)
-			.findFirst().orElseThrow(RuntimeException::new);
+			.filter(station -> station.getStationId().equals(stationId))
+			.findFirst()
+			.orElseThrow(RuntimeException::new);
 		stations.stream()
-			.filter(station -> station.getPreStationId() == stationId)
+			.filter(
+				station -> Objects.nonNull(station.getPreStationId()) && station.getPreStationId().equals(stationId))
 			.findFirst()
 			.ifPresent(nextLineStation -> nextLineStation.updatePreLineStation(lineStation.getPreStationId()));
 		stations.remove(lineStation);
@@ -96,11 +101,10 @@ public class Line {
 		queue.add(startLineStation.getStationId());
 
 		while (!queue.isEmpty()) {
-			Long l = queue.poll();
-			lineStationsId.add(l);
-			System.out.println(l);
+			Long stationId = queue.poll();
+			lineStationsId.add(stationId);
 			stations.stream()
-				.filter(station -> l.equals(station.getPreStationId()))
+				.filter(station -> stationId.equals(station.getPreStationId()))
 				.findFirst()
 				.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
 		}
@@ -141,5 +145,41 @@ public class Line {
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
+	}
+
+	public void setId(final Long id) {
+		this.id = id;
+	}
+
+	public void setColor(final String color) {
+		this.color = color;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setStartTime(final LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setEndTime(final LocalTime endTime) {
+		this.endTime = endTime;
+	}
+
+	public void setIntervalTime(final int intervalTime) {
+		this.intervalTime = intervalTime;
+	}
+
+	public void setStations(final Set<LineStation> stations) {
+		this.stations = stations;
+	}
+
+	public void setCreatedAt(final LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public void setUpdatedAt(final LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 }

@@ -3,6 +3,10 @@ package wooteco.subway.admin.acceptance;
 import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +37,10 @@ public class LineStationAcceptanceTest {
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = port;
+		createLine("2호선");
+		createStation("강남");
+		createStation("선릉");
+		createStation("삼성");
 	}
 
 	/**
@@ -59,14 +67,47 @@ public class LineStationAcceptanceTest {
 		addLineStation(1L, null, 1L, 0, 0);
 		addLineStation(1L, 1L, 2L, 3, 3);
 		addLineStation(1L, 2L, 3L, 3, 3);
-		addLineStation(1L, 3L, 4L, 3, 3);
 
 		Set<Station> stations = findLineWithStationsById(1L).getStations();
-		assertThat(stations).hasSize(4);
+		assertThat(stations).hasSize(3);
 
 		removeLineStation(1L, 1L);
 		stations = findLineWithStationsById(1L).getStations();
-		assertThat(stations).hasSize(3);
+		assertThat(stations).hasSize(2);
+	}
+
+	private void createStation(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+
+		given().
+			body(params).
+			contentType(MediaType.APPLICATION_JSON_VALUE).
+			accept(MediaType.APPLICATION_JSON_VALUE).
+			when().
+			post("/stations").
+			then().
+			log().all().
+			statusCode(HttpStatus.CREATED.value());
+	}
+
+	private void createLine(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", "blue");
+		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+		params.put("intervalTime", "10");
+
+		given().
+			body(params).
+			contentType(MediaType.APPLICATION_JSON_VALUE).
+			accept(MediaType.APPLICATION_JSON_VALUE).
+			when().
+			post("/lines").
+			then().
+			log().all().
+			statusCode(HttpStatus.CREATED.value());
 	}
 
 	private void removeLineStation(final Long lineId, final long stationId) {
@@ -88,9 +129,14 @@ public class LineStationAcceptanceTest {
 	private void addLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
 		LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStationId, stationId,
 			distance, duration);
+		Map<String, String> params = new HashMap<>();
+		params.put("preStationId", String.valueOf(preStationId));
+		params.put("stationId", String.valueOf(stationId));
+		params.put("distance", String.valueOf(distance));
+		params.put("duration", String.valueOf(duration));
 
 		given().
-			body(lineStationCreateRequest).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().

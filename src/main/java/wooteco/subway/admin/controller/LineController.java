@@ -49,7 +49,7 @@ public class LineController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity showLine(@PathVariable Long id) {
-		return ResponseEntity.ok(lineService.showLine(id));
+		return ResponseEntity.ok(lineService.findById(id));
 	}
 
 	@PutMapping("/{id}")

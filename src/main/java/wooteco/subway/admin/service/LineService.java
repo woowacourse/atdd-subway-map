@@ -1,10 +1,12 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -40,11 +42,6 @@ public class LineService {
 		return LineResponse.of(lineRepository.save(persistLine));
 	}
 
-	public LineResponse showLine(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		return LineResponse.of(line);
-	}
-
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
@@ -52,15 +49,23 @@ public class LineService {
 	public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
 		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		line.addLineStation(lineStationCreateRequest.toLineStation());
+		lineRepository.save(line);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
 		line.removeLineStationById(stationId);
+		lineRepository.save(line);
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {
-		// TODO: 구현
-		return new LineResponse();
+		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+		return LineResponse.of(line, stations);
+	}
+
+	public LineResponse findById(final Long id) {
+		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		return LineResponse.of(line);
 	}
 }
