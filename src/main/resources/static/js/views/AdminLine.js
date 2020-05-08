@@ -1,6 +1,5 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
 import { colorSelectOptionTemplate, subwayLinesTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
@@ -19,18 +18,18 @@ function AdminLine() {
   );
   const subwayLineModal = new Modal();
 
-  const onCreateSubwayLine = async (event) => {
-    event.preventDefault();
-
-    const lineRequest = {
+  const getLineRequest = () => {
+    return {
       name: $subwayLineNameInput.value,
       startTime: $subwayLineFirstTimeInput.value,
       endTime: $subwayLineLastTimeInput.value,
       intervalTime: $subwayLineIntervalTimeInput.value,
       bgColor: $subwayLineColorInput.value
-    };
+    }
+  };
 
-    const lineResponse = await api.line.create(lineRequest);
+  const onCreateSubwayLine = async () => {
+    const lineResponse = await api.line.create(getLineRequest());
 
     const newSubwayLine = {
       id: lineResponse.id,
@@ -42,6 +41,29 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
+
+    subwayLineModal.toggle();
+    $subwayLineNameInput.value = "";
+    $subwayLineColorInput.value = "";
+  };
+
+  const onUpdateSubwayLine = async ($lineItem) => {
+    const lineId = $lineItem.dataset.lineId;
+    const lineBgColor = $lineItem.dataset.bgColor;
+    const lineResponse = await api.line.update(lineId, getLineRequest());
+
+
+    const newSubwayLine = {
+      id: lineResponse.id,
+      name: lineResponse.name,
+      bgColor: lineResponse.bgColor
+    };
+
+    $lineItem.querySelector(`.${lineBgColor}`).classList.replace(lineBgColor,
+      newSubwayLine.bgColor);
+    $lineItem.querySelector(".line-name").innerText = newSubwayLine.name;
+
+    subwayLineModal.removeUpdateFromClassList();
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
@@ -53,20 +75,27 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const $lineItem = $target.closest(".subway-line-item");
-      const lineId = $lineItem.querySelector(".line-id").value;
+      const lineId = $lineItem.dataset.lineId;
 
-      api.line.delete(lineId).then(
-        () => $lineItem.remove(),
-        reason => alert(reason)
-      );
+      api.line.delete(lineId)
+      .then(response => {
+        if (response.ok) {
+          $lineItem.remove();
+        } else {
+          alert(response);
+        }
+      });
     }
   };
 
-  const onUpdateSubwayLine = event => {
+  const onEditSubwayLine = async (event) => {
     const $target = event.target;
     const isUpdateButton = $target.classList.contains("mdi-pencil");
     if (isUpdateButton) {
+      const $lineItem = $target.closest(".subway-line-item");
       subwayLineModal.toggle();
+      subwayLineModal.addUpdateToClassList();
+      subwayLineModal.addCurrentLineItem($lineItem);
     }
   };
 
@@ -81,7 +110,7 @@ function AdminLine() {
 
     if (isSubwayLineItem) {
       const $lineItem = $target.closest(".subway-line-item");
-      const lineId = $lineItem.querySelector(".line-id").value;
+      const lineId = $lineItem.dataset.lineId;
       const readResponse = await api.line.getById(lineId);
 
       const lineInfoTemplate = (first, last, interval) => `<div class="lines-info flex flex-wrap mb-3 w-full">
@@ -98,20 +127,6 @@ function AdminLine() {
     }
   }
 
-  const onEditSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
-  };
-
-  const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
-  };
-
   const initSubwayLines = async () => {
     const initLines = await api.line.get();
 
@@ -123,14 +138,24 @@ function AdminLine() {
     });
   };
 
+  const isCreate = (event) => {
+    const $target = event.target;
+    const $modal = $target.closest(".modal");
+
+    event.preventDefault();
+
+    if ($modal.classList.contains("update")) {
+      const $lineItem = subwayLineModal.getCurrentLineItem();
+      return onUpdateSubwayLine($lineItem);
+    }
+    return onCreateSubwayLine();
+  }
+
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayInfo)
-    $createSubwayLineButton.addEventListener(
-      EVENT_TYPE.CLICK,
-      onCreateSubwayLine
-    );
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayInfo);
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, isCreate);
   };
 
   const onSelectColorHandler = event => {

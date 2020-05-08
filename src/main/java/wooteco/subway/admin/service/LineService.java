@@ -32,13 +32,13 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public void updateLine(Long id, Line line) {
+    public Line updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
         persistLine.update(line);
-        lineRepository.save(persistLine);
+        return lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {

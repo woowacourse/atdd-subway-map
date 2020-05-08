@@ -5,6 +5,23 @@ export default function Modal() {
   const $closeModalButton = document.querySelector(".modal-close");
   const $body = document.querySelector("body");
   const $modal = document.querySelector(".modal");
+  let $currentLine = null;
+
+  const addCurrentLineItem = ($lineItem) => {
+    $currentLine = $lineItem;
+  }
+
+  const getCurrentLineItem = () => {
+    return $currentLine;
+  }
+
+  const addUpdateToClassList = () => {
+    $modal.classList.add("update");
+  };
+
+  const removeUpdateFromClassList = () => {
+    $modal.classList.remove("update");
+  };
 
   const toggle = event => {
     if (event) {
@@ -19,6 +36,10 @@ export default function Modal() {
   $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
 
   return {
-    toggle
+    toggle,
+    addUpdateToClassList,
+    removeUpdateFromClassList,
+    addCurrentLineItem,
+    getCurrentLineItem
   };
 }
