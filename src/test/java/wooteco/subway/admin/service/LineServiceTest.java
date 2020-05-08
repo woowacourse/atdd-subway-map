@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,6 +66,7 @@ public class LineServiceTest {
 		lineService.addLineStation(line.getId(), request);
 
 		assertThat(line.getStations()).hasSize(4);
+		System.out.println(Arrays.toString(line.getLineStationsId().toArray()));
 		assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
 		assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
 		assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);

@@ -3,7 +3,10 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -29,6 +32,7 @@ public class Line {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
+		this.stations = new HashSet<>();
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 	}
@@ -58,16 +62,49 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
-		// TODO: 구현
+		if (lineStation.getPreStationId() == null && stations.size() != 0) {
+			LineStation startLineStation = stations.stream()
+				.filter(station -> station.getPreStationId() == null)
+				.findFirst().orElseThrow(RuntimeException::new);
+			startLineStation.updatePreLineStation(lineStation.getStationId());
+		}
+		stations.stream()
+			.filter(station -> lineStation.getPreStationId() == station.getPreStationId())
+			.findFirst()
+			.ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+		stations.add(lineStation);
 	}
 
 	public void removeLineStationById(Long stationId) {
-		// TODO: 구현
+		LineStation lineStation = stations.stream()
+			.filter(station -> station.getStationId() == stationId)
+			.findFirst().orElseThrow(RuntimeException::new);
+		stations.stream()
+			.filter(station -> station.getPreStationId() == stationId)
+			.findFirst()
+			.ifPresent(nextLineStation -> nextLineStation.updatePreLineStation(lineStation.getPreStationId()));
+		stations.remove(lineStation);
 	}
 
 	public List<Long> getLineStationsId() {
-		// TODO: 구현
-		return new ArrayList<>();
+		List<Long> lineStationsId = new ArrayList<>();
+		LineStation startLineStation = stations.stream()
+			.filter(station -> station.getPreStationId() == null)
+			.findFirst().orElseThrow(RuntimeException::new);
+
+		Queue<Long> queue = new LinkedList<>();
+		queue.add(startLineStation.getStationId());
+
+		while (!queue.isEmpty()) {
+			Long l = queue.poll();
+			lineStationsId.add(l);
+			System.out.println(l);
+			stations.stream()
+				.filter(station -> l.equals(station.getPreStationId()))
+				.findFirst()
+				.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
+		}
+		return lineStationsId;
 	}
 
 	public Long getId() {
