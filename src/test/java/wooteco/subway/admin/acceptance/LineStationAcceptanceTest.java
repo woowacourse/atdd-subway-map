@@ -36,17 +36,6 @@ public class LineStationAcceptanceTest {
         RestAssured.port = port;
     }
 
-    /**
-     * Given 지하철역이 여러 개 추가되어있다. And 지하철 노선이 추가되어있다.
-     * <p>
-     * When 지하철 노선에 지하철역을 등록하는 요청을 한다. Then 지하철역이 노선에 추가 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 새로 추가한 지하철역을 목록에서 찾는다.
-     * <p>
-     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다. Then 지하철역이 노선에서 제거 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
@@ -57,30 +46,67 @@ public class LineStationAcceptanceTest {
         createStation("종합운동장역");
         LineResponse line = getLines().get(0);
         StationResponse station = getStations().get(0);
-        // When 지하철 노선에 지하철역을 등록하는 요청을 한다.
+
+        // When 지하철 노선에 지하철역을 등록하는 요청을 한다. - LINE
         addStationToLine(line.getId(), station.getId());
-        // Then 지하철역이 노선에 추가 되었다.
+        // Then 지하철역이 노선에 추가 되었다
         assertThat(findStationsByLineId(line.getId())).isNotNull();
-        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다. - LINE
         List<StationResponse> stationResponses = findStationsByLineId(line.getId());
         // Then 지하철역 목록을 응답 받는다.
         assertThat(stationResponses.size()).isNotEqualTo(0);
         // And 새로 추가한 지하철역을 목록에서 찾는다.
         assertThat(stationResponses).contains(station);
-        // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+
+        // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다. - LINE
         deleteStation(line.getId(), station.getId());
         // Then 지하철역이 노선에서 제거 되었다.
         stationResponses = findStationsByLineId(line.getId());
-        assertThat(stationResponses).doseNotContain(station);
-        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        stationResponses = findAllStation(line.getId());
+        assertThat(stationResponses).doesNotContain(station);
+
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.  - LINE
+        stationResponses = findStationsByLineId(line.getId());
         // Then 지하철역 목록을 응답 받는다.
         assertThat(stationResponses).isNotNull();
         // And 제외한 지하철역이 목록에 존재하지 않는다.
-        assertThat(stationResponses).doseNotContain(station);
+        assertThat(stationResponses).doesNotContain(station);
     }
 
     private void addStationToLine(Long lineId, Long stationId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+        params.put("stationId", stationId);
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post(String.format("/api/line/%d/stations/%d", lineId, stationId)).
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<StationResponse> findStationsByLineId(Long lineId) {
+        return
+            given().
+                when().
+                get(String.format("/api/line/%d/stations", lineId)).
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
+    }
+
+    private void deleteStation(Long lineId, Long stationId) {
+        given().
+            when().
+            delete(String.format("/api/line/%d/stations/%d", lineId, stationId)).
+            then().
+            log().all()
+            .statusCode(HttpStatus.OK.value());
     }
 
     private List<LineResponse> getLines() {
