@@ -37,6 +37,7 @@ public class LineService {
     }
 
 	public void updateLine(Long id, Line line) {
+		checkExistLine(line);
 		Line persistLine = findLineById(id);
 		persistLine.update(line);
 		lineRepository.save(persistLine);
