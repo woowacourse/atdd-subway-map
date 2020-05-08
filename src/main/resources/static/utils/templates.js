@@ -42,6 +42,7 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
           </a>
       </div>
     </div>
+  </div>
 </nav>`;
 
 export const subwayLinesItemTemplate = line => {
