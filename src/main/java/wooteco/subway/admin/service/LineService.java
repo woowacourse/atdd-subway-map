@@ -41,6 +41,7 @@ public class LineService {
 	public LineResponse updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
+
 		Line updatedLine = lineRepository.save(persistLine);
 		return LineResponse.of(updatedLine);
 	}
@@ -52,7 +53,6 @@ public class LineService {
 	public void addLineStation(Long lineId, LineStationCreateRequest request) {
 		Line line = lineRepository.findById(lineId)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
-		checkPreStation(request, line);
 
 		LineStation lineStation = request.toLineStation();
 		line.addLineStation(lineStation);
@@ -78,17 +78,5 @@ public class LineService {
 
 		List<Station> stations = stationRepository.findAllById(stationIds);
 		return LineResponse.of(line, stations);
-	}
-
-	private void checkPreStation(LineStationCreateRequest request, Line line) {
-		Long preStationId = request.getPreStationId();
-		if (preStationId != null && hasNotPreStation(line, preStationId)) {
-			throw new IllegalArgumentException("이전역을 찾을 수 없습니다.");
-		}
-	}
-
-	private boolean hasNotPreStation(Line line, Long preStationId) {
-		return line.getStations().stream()
-			.noneMatch(lineStation -> lineStation.getStationId().equals(preStationId));
 	}
 }

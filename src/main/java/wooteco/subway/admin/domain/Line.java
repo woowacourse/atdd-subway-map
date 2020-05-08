@@ -98,6 +98,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation requestLineStation) {
+        checkPreStation(requestLineStation);
         int index = lineStations.stream()
             .filter(lineStation -> lineStation.isPreStationBy(requestLineStation))
             .map(lineStation -> lineStations.indexOf(lineStation) + 1)
@@ -107,13 +108,23 @@ public class Line {
         lineStations.add(index, requestLineStation);
 
         int nextLineStationIndex = index + 1;
-
         if (isExcessIndex(nextLineStationIndex)) {
             return;
         }
-
         LineStation nextStation = lineStations.get(nextLineStationIndex);
         nextStation.updatePreStationId(requestLineStation.getPreStationId());
+    }
+
+    private void checkPreStation(LineStation requestLineStation) {
+        Long preStationId = requestLineStation.getPreStationId();
+        if (preStationId != null && hasNotPreStation(preStationId)) {
+            throw new IllegalArgumentException("이전역을 찾을 수 없습니다.");
+        }
+    }
+
+    private boolean hasNotPreStation(Long preStationId) {
+        return lineStations.stream()
+            .noneMatch(lineStation -> lineStation.getStationId().equals(preStationId));
     }
 
     private boolean isExcessIndex(int nextLineStationIndex) {
