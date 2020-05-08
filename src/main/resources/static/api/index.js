@@ -1,9 +1,13 @@
 const BASE_URL = "http://localhost:8080";
 
 const METHOD = {
-    PUT() {
+    PUT(data) {
         return {
-            method: "PUT"
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         };
     },
     DELETE() {
@@ -52,7 +56,7 @@ export const api = (() => {
             return request(`${BASE_URL}/line`, METHOD.POST(data));
         },
         update(lineId, data) {
-            return request(`${BASE_URL}/line/${lineId}`, METHOD.PUT(data));
+            return requestWithoutResponseBody(`${BASE_URL}/line/${lineId}`, METHOD.PUT(data));
         },
         delete(lineId) {
             console.log(lineId)

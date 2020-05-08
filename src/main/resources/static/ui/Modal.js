@@ -1,7 +1,6 @@
 import { EVENT_TYPE } from "../utils/constants.js";
 
 export default function Modal() {
-  const $openModalButton = document.querySelector(".modal-open");
   const $closeModalButton = document.querySelector(".modal-close");
   const $body = document.querySelector("body");
   const $modal = document.querySelector(".modal");
@@ -15,7 +14,6 @@ export default function Modal() {
     $modal.classList.toggle("pointer-events-none");
   };
 
-  $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
   $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
 
   return {
