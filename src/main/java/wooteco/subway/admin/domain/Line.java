@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
@@ -18,7 +19,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private Set<LineStation> stations;
+    private List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -36,7 +37,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -64,7 +66,7 @@ public class Line {
         return bgColor;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -100,12 +102,47 @@ public class Line {
         stations.add(lineStation);
     }
 
+    public void addLineStation(int index, LineStation lineStation) {
+        stations.add(index, lineStation);
+    }
+
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation stationToRemove = stations.stream()
+            .filter(lineStation -> lineStation.getStationId().equals(stationId))
+            .findFirst()
+            .orElseThrow(() -> new LineStationNotFoundException(stationId));
+        if (stationToRemove.getPreStationId() == null) {
+            nextOf(stationToRemove).ifPresent(
+                lineStation -> lineStation.updatePreLineStation(null));
+            stations.remove(stationToRemove);
+            return;
+        }
+        nextOf(stationToRemove).ifPresent(
+            lineStation -> lineStation.updatePreLineStation(stationToRemove.getPreStationId()));
+        stations.remove(stationToRemove);
+    }
+
+    private Optional<LineStation> nextOf(LineStation station) {
+
+        try {
+            return Optional.of(stations.get(stations.indexOf(station) + 1));
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<LineStation> previousOf(LineStation station) {
+        try {
+            return Optional.of(stations.get(stations.indexOf(station) - 1));
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations
+            .stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }

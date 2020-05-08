@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -65,6 +67,7 @@ public class LineStationAcceptanceTest {
         createStation("압구정로데오역");
         // and
         createLine("1호선");
+
         // when
         StationResponse naksungdae = getStations().get(0);
         StationResponse apgujeongRodeo = getStations().get(1);
@@ -74,6 +77,27 @@ public class LineStationAcceptanceTest {
         // then
         LineResponse updatedLine = getLine(3L);
         assertThat(updatedLine.getStations()).hasSize(line.getStations().size() + 2);
+        // and
+        assertThat(updatedLine.getStations()
+            .stream()
+            .map(Station::getName)
+            .collect(Collectors.toList())).contains(naksungdae.getName(), apgujeongRodeo.getName());
+
+        // when
+        deleteStationFromLine(line.getId(), naksungdae.getId());
+        // then
+        LineResponse stationExcludedLine = getLine(3L);
+        assertThat(stationExcludedLine.getStations().size()).isEqualTo(1);
+        assertThat(stationExcludedLine.getStations().stream().map(Station::getName)).doesNotContain(
+            naksungdae.getName());
+    }
+
+    private void deleteStationFromLine(Long lineId, Long stationId) {
+        given()
+            .when()
+            .delete("/lines/{lineId}/{stationId}", lineId, stationId)
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private LineResponse getLine(Long id) {
