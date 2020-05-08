@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
 	@Id
@@ -16,7 +17,8 @@ public class Line {
 	private LocalTime startTime;
 	private LocalTime endTime;
 	private int intervalTime;
-	private Set<LineStation> stations;
+	@MappedCollection(idColumn = "line", keyColumn = "sequence")
+	private List<LineStation> lineStations = new ArrayList<>();
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -61,8 +63,8 @@ public class Line {
 		return color;
 	}
 
-	public Set<LineStation> getStations() {
-		return stations;
+	public List<LineStation> getStations() {
+		return lineStations;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -93,8 +95,27 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void addLineStation(LineStation lineStation) {
-		// TODO: 구현
+	public void addLineStation(LineStation requestLineStation) {
+		int index = lineStations.stream()
+			.filter(lineStation -> lineStation.isPreStationBy(requestLineStation))
+			.map(lineStation -> lineStations.indexOf(lineStation) + 1)
+			.findAny()
+			.orElse(0);
+
+		lineStations.add(index, requestLineStation);
+
+		int nextLineStationIndex = index + 1;
+
+		if (isExcessIndex(nextLineStationIndex)) {
+			return;
+		}
+
+		LineStation nextStation = lineStations.get(nextLineStationIndex);
+		nextStation.updatePreLineStation(requestLineStation.getStationId());
+	}
+
+	private boolean isExcessIndex(int nextLineStationIndex) {
+		return nextLineStationIndex == lineStations.size();
 	}
 
 	public void removeLineStationById(Long stationId) {
@@ -102,8 +123,9 @@ public class Line {
 	}
 
 	public List<Long> getLineStationsId() {
-		// TODO: 구현
-		return new ArrayList<>();
+		return lineStations.stream()
+			.map(LineStation::getStationId)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -114,7 +136,7 @@ public class Line {
 			", startTime=" + startTime +
 			", endTime=" + endTime +
 			", intervalTime=" + intervalTime +
-			", stations=" + stations +
+			", stations=" + lineStations +
 			", createdAt=" + createdAt +
 			", updatedAt=" + updatedAt +
 			'}';

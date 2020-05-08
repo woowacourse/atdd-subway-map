@@ -2,8 +2,11 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -47,7 +50,13 @@ public class LineService {
 	}
 
 	public void addLineStation(Long id, LineStationCreateRequest request) {
-		// TODO: 구현
+		Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+		checkPreStation(request, line);
+
+		LineStation lineStation = request.toLineStation();
+		line.addLineStation(lineStation);
+
+		lineRepository.save(line);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
@@ -58,5 +67,17 @@ public class LineService {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
 		return LineResponse.of(line);
+	}
+
+	private void checkPreStation(LineStationCreateRequest request, Line line) {
+		Long preStationId = request.getPreStationId();
+		if (preStationId != null && hasNotPreStation(line, preStationId)) {
+			throw new IllegalArgumentException("이전역을 찾을 수 없습니다.");
+		}
+	}
+
+	private boolean hasNotPreStation(Line line, Long preStationId) {
+		return line.getStations().stream()
+			.noneMatch(lineStation -> lineStation.getStationId().equals(preStationId));
 	}
 }
