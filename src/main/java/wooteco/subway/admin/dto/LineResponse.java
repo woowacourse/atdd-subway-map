@@ -36,6 +36,10 @@ public class LineResponse {
         this.color = color;
     }
 
+    public static LineResponse of(Line line, Set<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getColor());
+    }
+
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>(), line.getColor());
     }
@@ -80,9 +84,5 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public void addStation(Station station) {
-        stations.add(station);
     }
 }

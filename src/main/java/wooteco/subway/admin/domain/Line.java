@@ -98,6 +98,23 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if(!stations.isEmpty() && lineStation.getPreStationId() == null){
+            LineStation firstStation = stations.stream()
+                    .filter(eachLineStation -> eachLineStation.getPreStationId() == null)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
+            firstStation.updatePreLineStation(lineStation.getStationId());
+        }else if(!stations.isEmpty() && stations.stream()
+                .filter(eachLineStation -> eachLineStation.getPreStationId() != null)
+                .anyMatch(eachLineStation -> eachLineStation.getPreStationId()
+                        .equals(lineStation.getPreStationId()))){
+            LineStation previousLineStation = stations.stream()
+                    .filter(eachLineStation -> eachLineStation.getPreStationId() != null)
+                    .filter(eachLineStation -> lineStation.getPreStationId().equals(eachLineStation.getPreStationId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
+            previousLineStation.updatePreLineStation(lineStation.getStationId());
+        }
         stations.add(lineStation);
     }
 
@@ -120,7 +137,6 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        System.out.println(stations.size());
         if(stations.isEmpty()) {
             return new ArrayList<>();
         }
@@ -149,6 +165,4 @@ public class Line {
 
         return stationIds;
     }
-
-
 }

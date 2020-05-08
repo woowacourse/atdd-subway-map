@@ -2,28 +2,23 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
-import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 public class LineController {
     private final LineService lineService;
-    private final StationService stationService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.stationService = stationService;
     }
 
     @PostMapping("/lines")
@@ -33,21 +28,13 @@ public class LineController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+                .body(LineResponse.of(persistLine, new HashSet<Station>()));
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        Line line = lineService.findLineWithStationsById(id);
-        LineResponse lineResponse = LineResponse.of(line);
-        List<Long> lineStationsId = line.getLineStationsId();
-
-        for (long stationId : lineStationsId){
-            lineResponse.addStation(stationService.findById(stationId));
-        }
-
         return ResponseEntity.ok()
-                .body(lineResponse);
+                .body(lineService.findLineWithStationsById(id));
     }
 
     @PutMapping("/lines/{id}")
@@ -60,7 +47,6 @@ public class LineController {
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> getLines() {
         List<Line> lines = lineService.showLines();
-        System.out.println(lines);
         return ResponseEntity.ok()
                 .body(LineResponse.listOf(lines));
     }
@@ -83,10 +69,6 @@ public class LineController {
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")
     public void deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId){
-        Line line = lineService.findLineWithStationsById(lineId);
-
-        line.removeLineStationById(stationId);
-        System.out.println(line.getStations().size());
-        lineService.updateLine(lineId, line);
+        lineService.removeLineStation(lineId, stationId);
     }
 }

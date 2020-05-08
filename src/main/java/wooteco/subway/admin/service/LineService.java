@@ -1,5 +1,6 @@
 package wooteco.subway.admin.service;
 
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonIntegerFormatVisitor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -35,7 +36,7 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = findLineWithStationsById(id);
+        Line persistLine = findById(id);
         persistLine.update(line);
         return lineRepository.save(persistLine);
     }
@@ -50,17 +51,27 @@ public class LineService {
     }
 
     public Line addLineStation(Long id, LineStation lineStation) {
-        Line persistLine = findLineWithStationsById(id);
+        Line persistLine = findById(id);
         persistLine.addLineStation(lineStation);
         return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = findById(lineId);
+        line.removeLineStationById(stationId);
+        updateLine(lineId, line);
     }
 
-    public Line findLineWithStationsById(Long id) {
+    public LineResponse findLineWithStationsById(Long id) {
+        Line line = findById(id);
+        List<Long> lineStationsId = line.getLineStationsId();
+        Set<Station> stations = stationRepository.findAllById(lineStationsId);
+
+        return LineResponse.of(line ,stations);
+    }
+
+    public Line findById(Long id){
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 노선입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
     }
 }
