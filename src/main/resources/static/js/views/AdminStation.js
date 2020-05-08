@@ -81,7 +81,17 @@ function AdminStation() {
         $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
     };
 
+    const initStations = () => {
+        api.station.get().then(data => {
+            data.map(line => {
+                $stationList.insertAdjacentHTML("beforeend", listItemTemplate(line));
+            })
+        })
+    }
+
+
     const init = () => {
+        initStations();
         initEventListeners();
     };
 
