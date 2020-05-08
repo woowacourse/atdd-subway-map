@@ -87,7 +87,7 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-        if (line.getStations().isEmpty()) {
+        if (!line.getStations().isEmpty()) {
             this.stations = line.getStations();
         }
         if (line.getColor() != null) {
@@ -102,7 +102,20 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation previousLineStation = null;
+        LineStation nextLineStation = null;
+
+        for (LineStation lineStation : stations){
+            if(stationId.equals(lineStation.getStationId())) {
+                previousLineStation = lineStation;
+            }
+            if(stationId.equals(lineStation.getPreStationId())){
+                nextLineStation = lineStation;
+            }
+        }
+
+        nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
+        stations.remove(previousLineStation);
     }
 
     public List<Long> getLineStationsId() {
@@ -135,4 +148,6 @@ public class Line {
 
         return stationIds;
     }
+
+
 }

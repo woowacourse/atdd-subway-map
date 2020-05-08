@@ -14,6 +14,7 @@ import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class LineController {
@@ -59,6 +60,7 @@ public class LineController {
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> getLines() {
         List<Line> lines = lineService.showLines();
+        System.out.println(lines);
         return ResponseEntity.ok()
                 .body(LineResponse.listOf(lines));
     }
@@ -77,5 +79,14 @@ public class LineController {
 
         return ResponseEntity.ok()
                 .body(LineResponse.of(persistLine));
+    }
+
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    public void deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId){
+        Line line = lineService.findLineWithStationsById(lineId);
+
+        line.removeLineStationById(stationId);
+        System.out.println(line.getStations().size());
+        lineService.updateLine(lineId, line);
     }
 }

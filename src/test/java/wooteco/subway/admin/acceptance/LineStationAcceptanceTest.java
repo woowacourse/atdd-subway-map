@@ -60,13 +60,28 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         createStation("잠실");
-        createStation("석촌");
+        createStation("천호");
         createStation("몽촌토성");
+
         createLine("8호선");
+
         createLineStation(1L, null, 1L);
-        createLineStation(1L, 1L, 3L);
+        createLineStation(1L, 1L, 2L);
+        createLineStation(1L, 2L, 3L);
+
         Set<Station> lineStations = getLine(1L).getStations();
-        assertThat(lineStations.size()).isEqualTo(2);
+        assertThat(lineStations.size()).isEqualTo(3);
+
+        deleteLineStation(1L, 2L);
+
+        assertThat(getLine(1L).getStations().size()).isEqualTo(2);
+    }
+
+    private void deleteLineStation(long lineId, long stationId) {
+        given().when().
+                delete("/lines/" + lineId + "/stations/" + stationId).
+                then().
+                log().all();
     }
 
     private LineResponse getLine(Long id) {
