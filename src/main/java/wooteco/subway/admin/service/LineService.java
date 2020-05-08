@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicatedLineException;
 import wooteco.subway.admin.exception.NotFoundLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -22,6 +23,7 @@ public class LineService {
 	}
 
 	public Line save(Line line) {
+		checkExistLine(line);
 		return lineRepository.save(line);
 	}
 
@@ -42,6 +44,12 @@ public class LineService {
 
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	private void checkExistLine(Line line) {
+		if (lineRepository.existsByName(line.getName())) {
+			throw new DuplicatedLineException(line.getName());
+		}
 	}
 
 	public void addLineStation(Long id, LineStationCreateRequest request) {
