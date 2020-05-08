@@ -27,3 +27,8 @@ create table if not exists LINE_STATION
     duration integer not null,
     line varchar(20)
 );
+
+insert into line values (1, '1호선', 'bg-blue-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into line values (2, '2호선', 'bg-blue-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into line values (3, '3호선', 'bg-orange-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+insert into line values (4, '4호선', 'bg-orange-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());

@@ -7,6 +7,8 @@ import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
+// TODO: validate 구현한 파일 분리
+// TODO: fetch 파일 분리
 function AdminLine() {
     // list
     const $subwayLineList = document.querySelector("#subway-line-list");
@@ -44,6 +46,7 @@ function AdminLine() {
             inputSubwayLine.id = $subwayLineUpdateId.value;
         }
 
+        // validateSubwayLine(inputSubwayLine);
         sendNewLine(inputSubwayLine).then(() => location.reload());
 
         const newLineTemplate = subwayLinesTemplate({
@@ -108,6 +111,7 @@ function AdminLine() {
             isEdit = true;
             $currentSubwayLineItem = event.target.closest("div");
             const $id = $currentSubwayLineItem.querySelector('input');
+            //const $id = $currentSubwayLineItem.dataset.lineId;
             const line = await getLine($id.value);
             $subwayLineUpdateId.value = line.id;
             $subwayLineNameInput.value = line.name;
