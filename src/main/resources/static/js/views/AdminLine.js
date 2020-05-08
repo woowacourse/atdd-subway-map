@@ -132,7 +132,6 @@ function AdminLine() {
                 subwayLinesTemplate(line)
             );
         })
-
     }
 
     const initEventListeners = () => {

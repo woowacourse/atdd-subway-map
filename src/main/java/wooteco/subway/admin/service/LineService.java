@@ -61,7 +61,6 @@ public class LineService {
 
 	public LineResponse findLineWithStationsById(Long id) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-
 		Set<Station> stations = stationRepository.findAllById(persistLine.getLineStationsId());
 
 		return LineResponse.of(persistLine, stations);

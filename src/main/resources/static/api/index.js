@@ -33,13 +33,13 @@ const api = (() => {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/station/${id}`, METHOD.PUT(data));
+      return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE());
+      return nonRequest(`/stations/${id}`, METHOD.DELETE());
     }
   };
 

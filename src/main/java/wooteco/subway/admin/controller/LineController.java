@@ -27,120 +27,63 @@ import wooteco.subway.admin.service.LineService;
 
 @RestController
 public class LineController {
-	// private LineService service;
-	//
-	// public LineController(LineService service) {
-	// 	this.service = service;
-	// }
+	private LineService service;
 
-
-	private List<Line> lines;
-	private List<Station> stations;
-
-	@Autowired
-	public LineController() {
-		this.lines = new ArrayList<>();
-		this.stations = new ArrayList<>();
-		lines.add(new Line(1L, "2호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10));
-		stations.add(new Station(0L, "잠실"));
-		stations.add(new Station(1L, "잠실나루"));
+	public LineController(LineService service) {
+		this.service = service;
 	}
 
-	// @PostMapping("/lines")
-	// public ResponseEntity createLine(@RequestBody LineRequest view) {
-	// 	Line persistLine = service.save(view.toLine());
-	//
-	// 	return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
-	// 		.body(LineResponse.of(persistLine));
-	// }
-	//
-	// @GetMapping("/lines")
-	// public ResponseEntity showLines() {
-	// 	return ResponseEntity.ok().body(LineResponse.listOf(service.showLines()));
-	// }
-	//
-	// @GetMapping("/lines/{id}")
-	// public ResponseEntity showLine(@PathVariable Long id) {
-	// 	return ResponseEntity.ok().body(LineResponse.of(service.showLine(id)));
-	// }
-	//
-	// @PutMapping("/lines/{id}")
-	// public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-	// 	Line line = view.toLine();
-	// 	service.updateLine(id, line);
-	//
-	// 	return ResponseEntity.ok().body(LineResponse.of(line));
-	// }
-	//
-	// @DeleteMapping("/lines/{id}")
-	// public ResponseEntity deleteLine(@PathVariable Long id) {
-	// 	service.deleteLineById(id);
-	// 	return ResponseEntity.noContent().build();
-	// }
 
+	@PostMapping("/lines")
+	public ResponseEntity createLine(@RequestBody LineRequest view) {
+		Line persistLine = service.save(view.toLine());
+
+		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
+			.body(LineResponse.of(persistLine));
+	}
+
+	@GetMapping("/lines")
+	public ResponseEntity showLines() {
+		return ResponseEntity.ok().body(LineResponse.listOf(service.showLines()));
+	}
 
 	@GetMapping("/lines/{id}")
 	public ResponseEntity showLine(@PathVariable Long id) {
-		Line line = lines.stream()
-			.filter(x -> x.getId().equals(id))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("없"));
+		return ResponseEntity.ok().body(LineResponse.of(service.showLine(id)));
+	}
 
-		Set<Station> stationsOfLine = line.getStations()
-			.stream()
-			.map(lineStation -> this.stations.get((lineStation.getStationId()).intValue()))
-			.collect(Collectors.toSet());
+	@PutMapping("/lines/{id}")
+	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+		Line line = view.toLine();
+		service.updateLine(id, line);
 
-		LineResponse lineResponse = new LineResponse(line.getId(), line.getTitle(), line.getStartTime(),
-			line.getEndTime(),
-			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stationsOfLine);
+		return ResponseEntity.ok().body(LineResponse.of(line));
+	}
 
-		return ResponseEntity.ok().body(lineResponse);
+	@DeleteMapping("/lines/{id}")
+	public ResponseEntity deleteLine(@PathVariable Long id) {
+		service.deleteLineById(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/lines/{id}/stations")
 	public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest view) {
-		Line line = lines.stream()
-			.filter(x -> x.getId().equals(id))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("없"));
+		Line persistLine = service.showLine(id);
+		persistLine.addLineStation(view.toLineStation());
 
-		line.addLineStation(view.toLineStation());
-
-		Set<Station> stationsOfLine = line.getStations()
-			.stream()
-			.map(lineStation -> this.stations.get((lineStation.getStationId()).intValue()))
-			.collect(Collectors.toSet());
-
-		LineResponse lineResponse = new LineResponse(line.getId(), line.getTitle(), line.getStartTime(),
-			line.getEndTime(),
-			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stationsOfLine);
-
-		return ResponseEntity.ok().body(lineResponse);
+		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
 	}
 
 	@GetMapping("/lines/{id}/stations")
 	public ResponseEntity showLineStations(@PathVariable Long id) {
-		Line line = lines.stream()
-			.filter(x -> x.getId().equals(id))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("없"));
+		LineResponse response = service.findLineWithStationsById(id);
 
-		Set<Station> stationsOfLine = line.getStations()
-			.stream()
-			.map(lineStation -> this.stations.get((lineStation.getStationId()).intValue()))
-			.collect(Collectors.toSet());
-
-		return ResponseEntity.ok().body(StationResponse.of(stationsOfLine));
+		return ResponseEntity.ok().body(StationResponse.of(response.getStations()));
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")
 	public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
-		Line line = lines.stream()
-			.filter(x -> x.getId().equals(lineId))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("없"));
-		line.removeLineStationById(stationId);
+		service.removeLineStation(lineId, stationId);
 
 		return ResponseEntity.noContent().build();
 	}
