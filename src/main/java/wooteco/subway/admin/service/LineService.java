@@ -35,8 +35,7 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."));
+        Line persistLine = findLineWithStationsById(id);
         persistLine.update(line);
         return lineRepository.save(persistLine);
     }
@@ -50,8 +49,10 @@ public class LineService {
                 .anyMatch(lineName -> lineName.equals(line.getName()));
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+    public Line addLineStation(Long id, LineStation lineStation) {
+        Line persistLine = findLineWithStationsById(id);
+        persistLine.addLineStation(lineStation);
+        return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

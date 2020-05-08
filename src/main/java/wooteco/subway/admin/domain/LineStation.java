@@ -3,10 +3,10 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
-    @Column("station")
-    private Long stationId;
     @Column("pre_station")
     private Long preStationId;
+    @Column("station")
+    private Long stationId;
     private int distance;
     private int duration;
 

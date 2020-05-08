@@ -81,4 +81,8 @@ public class LineResponse {
     public String getColor() {
         return color;
     }
+
+    public void addStation(Station station) {
+        stations.add(station);
+    }
 }

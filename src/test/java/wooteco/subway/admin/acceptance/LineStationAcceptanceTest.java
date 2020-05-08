@@ -10,11 +10,18 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -58,12 +65,22 @@ public class LineStationAcceptanceTest {
         createLine("8호선");
         createLineStation(1L, null, 1L);
         createLineStation(1L, 1L, 3L);
+        Set<Station> lineStations = getLine(1L).getStations();
+        assertThat(lineStations.size()).isEqualTo(2);
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+                get("/lines/" + id).
+                then().
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLineStation(Long lineId, Long preStationId, Long stationId) {
         Map<String, Long> params = new HashMap<>();
-        params.put("preStationId", preStationId);
         params.put("stationId", stationId);
+        params.put("preStationId", preStationId);
         params.put("distance", 2L);
         params.put("duration", 2L);
 
@@ -72,7 +89,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                put("/line-stations/" + lineId).
+                put("/lines/" + lineId+ "/stations").
         then().
                 log().all().
                 statusCode(HttpStatus.OK.value());

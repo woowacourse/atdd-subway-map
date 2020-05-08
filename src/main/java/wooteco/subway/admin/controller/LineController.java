@@ -10,6 +10,7 @@ import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
+import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 import java.util.List;
@@ -17,15 +18,18 @@ import java.util.List;
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final StationService stationService;
 
-    public LineController(final LineService lineService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
         Line line = view.toLine();
         Line persistLine = lineService.save(line);
+
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
                 .body(LineResponse.of(persistLine));
@@ -34,9 +38,15 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         Line line = lineService.findLineWithStationsById(id);
+        LineResponse lineResponse = LineResponse.of(line);
+        List<Long> lineStationsId = line.getLineStationsId();
+
+        for (long stationId : lineStationsId){
+            lineResponse.addStation(stationService.findById(stationId));
+        }
 
         return ResponseEntity.ok()
-                .body(LineResponse.of(line));
+                .body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
@@ -60,14 +70,12 @@ public class LineController {
                 .build();
     }
 
-    @PutMapping("/line-stations/{id}")
+    @PutMapping("/lines/{id}/stations")
     public ResponseEntity<LineResponse> createLineStation(@PathVariable Long id,
                                             @RequestBody LineStationCreateRequest lineStationCreateRequest){
-        Line line = lineService.findLineWithStationsById(id);
-        line.addLineStation(lineStationCreateRequest.toLineStation());
-        line = lineService.updateLine(id, line);
+        Line persistLine = lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
 
         return ResponseEntity.ok()
-                .body(LineResponse.of(line));
+                .body(LineResponse.of(persistLine));
     }
 }

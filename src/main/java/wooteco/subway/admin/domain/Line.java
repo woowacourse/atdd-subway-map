@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -86,6 +87,9 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getStations().isEmpty()) {
+            this.stations = line.getStations();
+        }
         if (line.getColor() != null) {
             this.color = line.getColor();
         }
@@ -102,7 +106,33 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        System.out.println(stations.size());
+        if(stations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LineStation firstLineStation = stations.stream()
+                .filter(lineStation -> lineStation.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        List<Long> stationIds = new ArrayList<>();
+
+        stationIds.add(firstLineStation.getStationId());
+
+        while(true) {
+            Long lastStationId = stationIds.get(stationIds.size() - 1);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(lineStation -> Objects.equals(lineStation.getPreStationId(), lastStationId))
+                    .findFirst();
+
+            if(!nextLineStation.isPresent()) {
+                break;
+            }
+
+            stationIds.add(nextLineStation.get().getStationId());
+        }
+
+        return stationIds;
     }
 }
