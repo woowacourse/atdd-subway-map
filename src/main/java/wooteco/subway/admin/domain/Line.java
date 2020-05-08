@@ -3,8 +3,13 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
@@ -31,6 +36,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
+        stations = new HashSet<>();
     }
 
     public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
@@ -94,18 +100,26 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
+        this.stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        stations.stream().filter(x -> x.getStationId().equals(stationId))
+        this.stations.stream().filter(x -> x.getStationId().equals(stationId))
             .findAny().ifPresent(target -> {
-            stations.remove(target);
+            this.stations.remove(target);
         });
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> result = new ArrayList<>();
+
+        Map<Boolean, List<LineStation>> group = stations.stream()
+            .collect(Collectors.partitioningBy(lineStation -> Objects.isNull(lineStation.getPreStationId())));
+
+        result.add(group.get(true).get(0).getStationId());
+        result.addAll(group.get(false).stream()
+            .sorted(Comparator.comparing(LineStation::getPreStationId))
+            .map(LineStation::getStationId).collect(Collectors.toList()));
+        return result;
     }
 }

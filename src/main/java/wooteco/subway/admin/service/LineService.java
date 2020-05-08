@@ -46,6 +46,9 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+
+        // if (request.getPreStationId() == null) {
+        // }
         line.addLineStation(
             new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(),
                 request.getDuration())
