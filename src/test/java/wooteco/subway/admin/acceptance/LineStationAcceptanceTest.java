@@ -64,8 +64,11 @@ public class LineStationAcceptanceTest {
         createStation("강남역");
         createLine("1호선");
         // 지하철 노선에 지하철 역 추가
+        List<LineResponse> lines = getLines();
+        // when
+        LineResponse line = getLine(lines.get(0).getId());
+        Long lineId = line.getId();
 
-        Long lineId = 1L;
         createLineStation(lineId, "2", "1", "10", "10");
         createLineStation(lineId, "3", "2", "10", "10");
         // 지하철 노선의 지하철 역 목록 조회
@@ -79,6 +82,25 @@ public class LineStationAcceptanceTest {
         // 제외한 지하철 목록 존재하지 않는지 확인
         List<LineStation> restStations = getLineStations(lineId);
         assertThat(restStations.size()).isEqualTo(2);
+    }
+
+    private List<LineResponse> getLines() {
+        return
+            given().
+            when().
+                get("/lines").
+            then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
+    }
+
+    private void deleteLine(Long id) {
+        given().
+        when().
+            delete("/lines/" + id).
+        then().
+            log().all();
     }
 
     private LineResponse getLine(Long id) {
