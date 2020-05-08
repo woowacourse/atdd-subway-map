@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -9,6 +10,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class LineService {
@@ -45,15 +47,20 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        line.addLineStation(request.toLineStation());
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        return LineResponse.of(line, stations);
     }
 }

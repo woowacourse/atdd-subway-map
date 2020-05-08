@@ -2,6 +2,7 @@ package wooteco.subway.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
@@ -48,6 +49,10 @@ public class LineResponse {
         return lines.stream()
                 .map(it -> LineResponse.of(it))
                 .collect(Collectors.toList());
+    }
+
+    public static LineResponse of(Line line, Set<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getBgColor());
     }
 
     public Long getId() {
