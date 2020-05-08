@@ -38,8 +38,18 @@ const api = (() => {
     }
   };
 
+  const line = {
+    get() {
+      return request(`/lines`);
+    },
+    create(data) {
+      return request(`/lines`, METHOD.POST(data));
+    }
+  };
+
   return {
-    station
+    station,
+    line
   };
 })();
 

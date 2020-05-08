@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.LineIdResponse;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.service.LineService;
@@ -26,10 +26,11 @@ public class LineController {
 
 	@PostMapping("/lines")
 	public ResponseEntity save(@RequestBody LineRequest lineRequest) {
-		Line persistLine = lineService.save(lineRequest.toLine());
+		Long id = lineService.save(lineRequest.toLine())
+				.getId();
 		return ResponseEntity
-				.created(URI.create("/lines/" + persistLine.getId()))
-				.build();
+				.created(URI.create("/lines/" + id))
+				.body(new LineIdResponse(id));
 	}
 
 	@GetMapping("/lines")
@@ -44,7 +45,7 @@ public class LineController {
 
 	@PutMapping("/lines/{id}")
 	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		lineService.updateLine(id,lineRequest.toLine());
+		lineService.updateLine(id, lineRequest.toLine());
 		return ResponseEntity.ok().build();
 	}
 
