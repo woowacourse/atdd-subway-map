@@ -32,6 +32,9 @@ public class LineController {
 
     @PostMapping("/{id}/stations")
     public ResponseEntity createLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        System.out.println("id : " + id);
+        System.out.println("getPreStationId : " + lineStationCreateRequest.getPreStationId());
+        System.out.println("getStationId : " + lineStationCreateRequest.getStationId());
         lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.ok().build();
     }

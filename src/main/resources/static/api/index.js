@@ -34,6 +34,9 @@ const api = (() => {
     get() {
       return dataRequest(`${BASE_URL}/stations`);
     },
+    getId(name) {
+      return dataRequest(`${BASE_URL}/stations/${name}`);
+    },
     create(data) {
       return dataRequest(`${BASE_URL}/stations`, METHOD.POST(data));
     },
@@ -51,6 +54,9 @@ const api = (() => {
     },
     create(data) {
       return dataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
+    },
+    createLineStation(id, data) {
+      noDataRequest(`${BASE_URL}/lines/${id}/stations`, METHOD.POST(data));
     },
     find(id) {
       return dataRequest(`${BASE_URL}/lines/${id}`);

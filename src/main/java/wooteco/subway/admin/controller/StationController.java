@@ -27,6 +27,17 @@ public class StationController {
                 .body(StationResponse.of(persistStation));
     }
 
+    @GetMapping("/stations/{name}")
+    public ResponseEntity getStation(@PathVariable String name) {
+        System.out.println(name);
+
+        Station station = stationRepository.findByName(name);
+
+        System.out.println(station.getName() + " : " + station.getId());
+
+        return ResponseEntity.ok().body(station.getId());
+    }
+
     @GetMapping("/stations")
     public ResponseEntity showStations() {
         return ResponseEntity.ok().body(stationRepository.findAll());
