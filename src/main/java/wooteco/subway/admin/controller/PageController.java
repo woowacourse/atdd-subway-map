@@ -14,6 +14,8 @@ import java.util.List;
 
 @Controller
 public class PageController {
+    public static final String REGEX = ":";
+
     private LineService lineService;
 
     public PageController(LineService lineService) {
@@ -38,13 +40,15 @@ public class PageController {
                                  @RequestParam("endTime") String endTime,
                                  @RequestParam("intervalTime") int intervalTime,
                                  Model model) {
-        Line line = new Line(name,
-                LocalTime.of(
-                        Integer.parseInt(startTime.split(":")[0]),
-                        Integer.parseInt(startTime.split(":")[1])),
-                LocalTime.of(Integer.parseInt(endTime.split(":")[0]),
-                        Integer.parseInt(endTime.split(":")[1])),
-                intervalTime);
+
+        LocalTime start = LocalTime.of(
+                Integer.parseInt(startTime.split(REGEX)[0]),
+                Integer.parseInt(startTime.split(REGEX)[1]));
+
+        LocalTime end = LocalTime.of(Integer.parseInt(endTime.split(REGEX)[0]),
+                Integer.parseInt(endTime.split(REGEX)[1]));
+
+        Line line = new Line(name, start, end, intervalTime);
         lineService.save(line);
 
         List<Line> lines = lineService.findAll();
