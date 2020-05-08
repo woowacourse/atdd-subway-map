@@ -22,7 +22,7 @@ public class LineRepositoryTest {
         //given
         Line line = new Line("신분당선", LocalTime.of(5, 30),
             LocalTime.of(23, 30),
-            10);
+            10, "bg-orange-100");
         //when
         Line persistLine = lineRepository.save(line);
         //then
@@ -30,10 +30,10 @@ public class LineRepositoryTest {
     }
 
     @Test
-    void findAll(){
+    void findAll() {
         Line line = new Line("신분당선", LocalTime.of(5, 30),
             LocalTime.of(23, 30),
-            10);
+            10, "bg-orange-100");
 
         Line persistLine = lineRepository.save(line);
 
