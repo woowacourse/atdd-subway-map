@@ -3,14 +3,15 @@ import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const createSubwayEdgeModal = new Modal();
 
-  const initSubwayLinesSlider = () => {
-
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
+  const initSubwayLinesSlider = async () => {
+    let lines = await api.line.get();
+    $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
     .join("");
     tns({
@@ -27,8 +28,9 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
+  const initSubwayLineOptions = async () => {
+    let lines = await api.line.get();
+    const subwayLineOptionTemplate = lines
     .map(line => optionTemplate(line.title))
     .join("");
     const $stationSelectOptions = document.querySelector(
