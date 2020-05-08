@@ -104,6 +104,7 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         // TODO: 구현
+        stations.removeIf(lineStation -> lineStation.getStationId().equals(stationId));
     }
 
     public List<Long> findLineStationsId() {
