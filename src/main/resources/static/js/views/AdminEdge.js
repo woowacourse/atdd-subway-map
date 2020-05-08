@@ -14,32 +14,26 @@ function AdminEdge() {
   const $preStation = document.querySelector("#depart-station-name");
   const $currentStation = document.querySelector("#arrival-station-name");
   const $createLineStationButton = document.querySelector("#submit-button");
+  const $closeSubwayLineStationButton = document.querySelector(
+      ".modal-close"
+  );
 
   const createSubwayEdgeModal = new Modal();
 
-  const onCreateSubwayPreStation = async () => {
+  const onCreateSubwayEdge = async event => {
+    event.preventDefault();
+
+    let preStationId;
+    let currentStationId;
+
     await api.station.getId($preStation.value).then(data => {
-      return data;
+      preStationId = data;
     });
-  }
-
-  const onCreateSubwayCurrentStation = async () => {
     await api.station.getId($currentStation.value).then(data => {
-      return data;
+      currentStationId = data;
     });
-  }
 
-  const onCreateSubwayEdge = event => {
-    let preStationId = onCreateSubwayPreStation();
-    let currentStationId = onCreateSubwayCurrentStation();
-
-    console.log("preStationId : " + preStationId);
-    console.log("currentStationId : " + currentStationId);
-
-    const $target = event.target;
-    let lineId = $target.dataset.edgeId;
-
-    console.log("lineId : " + lineId);
+    const lineId = $selectStation.options[$selectStation.selectedIndex].dataset.edgeId;
 
     const newSubwayEdge = {
       preStationId: preStationId,
@@ -49,10 +43,8 @@ function AdminEdge() {
     }
 
     api.lines.createLineStation(lineId, newSubwayEdge);
-
-    $selectStation.value = "";
-    $preStation.value = "";
-    $currentStation.value = "";
+    createSubwayEdgeModal.toggle();
+    onEmptyInput();
   }
 
   const initSubwayLinesSlider = async () => {
@@ -98,9 +90,16 @@ function AdminEdge() {
     }
   };
 
+  const onEmptyInput = () => {
+    $selectStation.value = "";
+    $preStation.value = "";
+    $currentStation.value = "";
+  }
+
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayEdge);
+    $closeSubwayLineStationButton.addEventListener(EVENT_TYPE.CLICK, onEmptyInput);
   };
 
   this.init = () => {
