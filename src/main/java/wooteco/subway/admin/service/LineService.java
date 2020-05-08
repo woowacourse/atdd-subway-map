@@ -61,7 +61,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public LineResponse addLineStation(Long id, LineStationAddRequest request) {
+    public LineStationResponse addLineStation(Long id, LineStationAddRequest request) {
         // TODO: 구현
         //request의 lineName을 받아서 line을 찾고,
         //station 두 개가 존재하는지 찾고 -> 없으면 에러
@@ -79,7 +79,7 @@ public class LineService {
         line.addLineStation(lineStation);
 
         Line savedLine = lineRepository.save(line);
-        return LineResponse.of(savedLine);
+        return new LineStationResponse(savedLine, new HashSet<>(stationMockTable.values()));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

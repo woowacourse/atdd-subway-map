@@ -57,7 +57,7 @@ public class LineController {
 
     @PostMapping("/lineStations")
     public ResponseEntity createLineStations(@RequestBody LineStationAddRequest request) {
-        LineResponse response = lineService.addLineStation(1L, request);
+        LineStationResponse response = lineService.addLineStation(1L, request);
 
         return ResponseEntity
                 .created(URI.create("/lineStations/" + 1))
