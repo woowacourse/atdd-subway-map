@@ -55,11 +55,10 @@ public class LineController {
 
 	@PutMapping("/lines/{id}")
 	public ResponseEntity updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
-		lineService.updateLine(id, view.toLine());
-
+		Line persistLine = lineService.updateLine(id, view.toLine());
 		return ResponseEntity
 				.ok()
-				.build();
+				.body(LineResponse.of(persistLine));
 	}
 
 	@DeleteMapping("/lines/{id}")

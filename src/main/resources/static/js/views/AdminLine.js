@@ -76,7 +76,31 @@ function AdminLine() {
         intervalTime: $subwayLineIntervalTimeInput.value,
         lineColor: $subwayLineColorInput.value
       })
-    }).then(data => closeAndResetModalValue());
+    })
+      .then(response => response.json())
+      .then(data => {
+        convertLineItemBy(data);
+        closeAndResetModalValue()
+      });
+  }
+
+  function convertLineItemBy(data) {
+    const lineId = data.id;
+    const name = data.name;
+    const lineColor = data.lineColor;
+
+    let querySelector = document.getElementById(lineId).parentNode;
+
+    querySelector.innerHTML =
+      `<div class="id-class" id=${lineId}></div>
+      <span class="${lineColor} w-3 h-3 rounded-full inline-block mr-1"></span>
+      ${name}
+      <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
+         <span class="mdi mdi-delete"></span>
+      </button>
+      <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
+         <span class="mdi mdi-pencil"></span>
+      </button>`
   }
 
   function saveLine() {
