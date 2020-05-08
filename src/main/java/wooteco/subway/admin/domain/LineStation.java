@@ -1,7 +1,9 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
+@Table("line_station")
 public class LineStation {
     // TODO: 테이블 컬럼명과 변수명이 다른 경우
     @Column("station")

@@ -9,10 +9,8 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -60,8 +58,11 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalStateException::new);
 
-        Set<Station> stations = (Set<Station>) stationRepository.findAllById(new ArrayList<>());
+        List<Long> stationIds = line.getStations().stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
 
+        Set<Station> stations = new HashSet<>((List<Station>) stationRepository.findAllById(stationIds));
         return LineResponse.withStations(line, stations);
 
     }

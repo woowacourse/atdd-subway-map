@@ -1,25 +1,25 @@
 create table if not exists STATION
 (
    id bigint auto_increment not null,
-   title varchar(255) not null,
+   name varchar(255) not null,
    created_at datetime,
    primary key(id)
 );
 
 -- 1호선
-insert into STATION (title) values ('수원');
-insert into STATION (title) values ('화서');
-insert into STATION (title) values ('성균관대');
+insert into STATION (name) values ('수원');
+insert into STATION (name) values ('화서');
+insert into STATION (name) values ('성균관대');
 
 -- 2호선
-insert into STATION (title) values ('교대');
-insert into STATION (title) values ('강남');
-insert into STATION (title) values ('역삼');
-insert into STATION (title) values ('선릉');
-insert into STATION (title) values ('삼성');
-insert into STATION (title) values ('종합운동장');
-insert into STATION (title) values ('잠실새내');
-insert into STATION (title) values ('잠실');
+insert into STATION (name) values ('교대');
+insert into STATION (name) values ('강남');
+insert into STATION (name) values ('역삼');
+insert into STATION (name) values ('선릉');
+insert into STATION (name) values ('삼성');
+insert into STATION (name) values ('종합운동장');
+insert into STATION (name) values ('잠실새내');
+insert into STATION (name) values ('잠실');
 
 create table if not exists LINE
 (
@@ -42,7 +42,7 @@ insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('
 insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('6호선', '06:00:00', '22:00:00', '10', 'bg-yellow-500');
 insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('7호선', '06:00:00', '22:00:00', '10', 'bg-green-500');
 insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('8호선', '06:00:00', '22:00:00', '10', 'bg-pink-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('9호선', '06:00:00', '22:00:00', '10', '신분당선');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('신분당선', '06:00:00', '22:00:00', '10', 'bg-red-500');
 
 create table if not exists LINE_STATION
 (

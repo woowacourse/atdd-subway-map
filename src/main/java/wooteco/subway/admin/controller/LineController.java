@@ -13,6 +13,9 @@ import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 public class LineController {
@@ -39,7 +42,16 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity showLines() {
-        return ResponseEntity.ok().body(LineResponse.listOf(lineService.showLines()));
+        List<Line> lines = lineService.showLines();
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line : lines) {
+            LineResponse lineResponse = lineService.findLineWithStationsById(line.getId());
+            lineResponses.add(lineResponse);
+        }
+//        Set<Station> stations = (Set<Station>) stationRepository.findAllById(stationIds);
+
+//        return LineResponse.withStations(line, stations);
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/lines/{id}")
