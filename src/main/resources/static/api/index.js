@@ -1,7 +1,12 @@
 const METHOD = {
-    PUT() {
+    // todo: 업데이트를 위해 메서드 수정
+    PUT(data) {
         return {
-            method: "PUT"
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         };
     },
     DELETE() {
@@ -49,10 +54,12 @@ const api = (() => {
             return request(`/lines`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/lines/${id}`, METHOD.PUT(data));
+            // todo: fetch 방식으로 변경
+            return fetch(`/lines/${id}`, METHOD.PUT(data)).then();
         },
         delete(id) {
-            return request(`/lines/${id}`, METHOD.DELETE);
+            // todo: request 메서드를 사용하면 json으로 바꿔야 하는데..그럴 데이터가 없음
+            return fetch(`/lines/${id}`, METHOD.DELETE()).then();
         }
     };
 

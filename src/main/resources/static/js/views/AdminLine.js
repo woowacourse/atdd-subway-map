@@ -18,21 +18,24 @@ function AdminLine() {
 
     const subwayLineModal = new Modal();
 
+    // todo: 노선 이름을 클릭했을 때 나오도록 수정!
     const onViewSubwayInfo = event => {
         const $target = event.target;
-        const $id = $target.id;
+        const isSubwayTitle = $target.classList.contains("subway-line-title");
+        if (isSubwayTitle) {
+            const $id = $target.id;
 
-        api.line.getLineById($id).then(data => {
-                const $subwayLineFirstTime = document.querySelector("#start-subway-time");
-                $subwayLineFirstTime.innerText = data.startTime;
-                const $subwayLineLastTime = document.querySelector("#last-subway-time");
-                $subwayLineLastTime.innerText = data.endTime;
-                const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
-                $subwayLineIntervalTime.innerText = data.intervalTime + "분";
-            }
-        );
-
-    }
+            api.line.getLineById($id).then(data => {
+                    const $subwayLineFirstTime = document.querySelector("#start-subway-time");
+                    $subwayLineFirstTime.innerText = data.startTime;
+                    const $subwayLineLastTime = document.querySelector("#last-subway-time");
+                    $subwayLineLastTime.innerText = data.endTime;
+                    const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
+                    $subwayLineIntervalTime.innerText = data.intervalTime + "분";
+                }
+            );
+        }
+    };
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -44,25 +47,38 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.create(data)
-            .then(() => api.line.get().then(subwayLines => subwayLines.forEach(
-                subwayLine => {
-                    $subwayLineList.insertAdjacentHTML(
-                        "beforeend",
-                        subwayLinesTemplate(subwayLine)
-                    );
-                }
-            )));
 
+        // todo: get을 해오면, 기존에 보여지는 라인에 붙어서 다시 라인이 나옴. 만든 한 줄만 가져왔으!!
+        api.line.create(data)
+            .then(subwayLine => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(subwayLine)
+                );
+                subwayLineModal.toggle();
+            })
+            // todo: 중복 발생 시에도 경고?
+            .catch(error => {
+                alert("에러가 발생하였습니다!");
+            })
+
+        // todo: 입력창 비우기 코드 추가!
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
+        $subwayLineFirstTimeInput.value = "";
+        $subwayLineLastTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
     };
 
+    // todo: delete 기능 구현!!
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
+            const $id = $target.id;
+
+            api.line.delete($id).then();
             $target.closest(".subway-line-item").remove();
         }
     };
@@ -72,12 +88,43 @@ function AdminLine() {
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
             subwayLineModal.toggle();
+
+            // todo: getLineById로 갖고 온 노선 1개의 데이터를 수정 창에 입력시킴!!
+            // todo: 그런데 시간이 안 찍힘!!!
+            const $id = $target.id;
+
+            api.line.getLineById($id).then(data => {
+                const $subwayLineTitle = document.getElementById("subway-line-title");
+                $subwayLineTitle.value = data.title;
+                const $subwayLineFirstTime = document.getElementById("first-time");
+                $subwayLineFirstTime.innerText = data.startTime;
+                const $subwayLineLastTime = document.getElementById("last-time");
+                $subwayLineLastTime.innerText = data.endTime;
+                const $subwayLineIntervalTime = document.getElementById("interval-time");
+                $subwayLineIntervalTime.innerText = data.intervalTime + "분";
+                const $subwayLineColor = document.getElementById("subway-line-color");
+                $subwayLineColor.value = data.bgColor;
+            });
+
+            // todo: 확인 버튼에 이벤트 걸기. 함수 인자로 id와 수정할 데이터 전달 필요!
+            // todo: 확인 버튼이 생성 버튼과 중복되므로 post와 put의 분기를 추가해야 한다.
+            // todo: 기존에 버튼이 갖고 있던 이벤트를 remove 메서드로 제거하고 사용?
+            const $confirmButton = document.getElementById("submit-button");
+            const data = {
+                name: $subwayLineNameInput.value,
+                startTime: $subwayLineFirstTimeInput.value,
+                endTime: $subwayLineLastTimeInput.value,
+                intervalTime: $subwayLineIntervalTimeInput.value,
+                bgColor: $subwayLineColorInput.value
+            };
+            $confirmButton.addEventListener(EVENT_TYPE.CLICK, function() {
+                onEditSubwayLine($id, data);
+            });
         }
     };
 
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-pencil");
+    function onEditSubwayLine(id, data) {
+        api.line.update(id, data).then();
     };
 
     const initDefaultSubwayLines = () => {
@@ -87,15 +134,8 @@ function AdminLine() {
                     "beforeend",
                     subwayLinesTemplate(subwayLine)
                 );
-                let deleteButton = document.querySelector("#delete-" + subwayLine.id);
-                deleteButton.addEventListener(EVENT_TYPE.CLICK, onDeleteLine)
             }
         ));
-    };
-
-    const onDeleteLine = event => {
-        const $target = event.target;
-        console.log($target.id);
     };
 
     const initEventListeners = () => {

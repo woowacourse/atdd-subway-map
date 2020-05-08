@@ -19,6 +19,8 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+
+        // todo: 1단계 - 제약사항 : 지하철 노선 이름은 중복될 수 없다는 요구사항 반영 필요
         Line line = lineRequest.toLine();
         Line persistLine = lineService.save(line);
 
