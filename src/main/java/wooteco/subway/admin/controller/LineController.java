@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,5 +39,11 @@ public class LineController {
 	@GetMapping("/lines/{id}")
 	public ResponseEntity findLineById(@PathVariable Long id) {
 		return ResponseEntity.ok(LineResponse.of(lineService.findLineById(id)));
+	}
+
+	@PutMapping("/lines/{id}")
+	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+		lineService.updateLine(id,lineRequest.toLine());
+		return ResponseEntity.ok().build();
 	}
 }
