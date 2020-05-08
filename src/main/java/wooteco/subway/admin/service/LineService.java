@@ -5,19 +5,24 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.LineStationRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
     private LineRepository lineRepository;
+    private LineStationRepository lineStationRepository;
     private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository,
+        LineStationRepository lineStationRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.lineStationRepository = lineStationRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -40,11 +45,23 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+        line.addLineStation(
+            new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(),
+                request.getDuration())
+        );
+        lineRepository.save(line);
+    }
+
+    public List<LineStation> getLineStations(Long id) {
+        return lineStationRepository.findAllByLine(id);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
@@ -67,5 +84,13 @@ public class LineService {
             return;
         }
         validateTitle(lineRequest);
+    }
+
+    public Line findById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(IllegalAccessError::new);
+    }
+
+    public Line findByTitle(String lineName) {
+        return lineRepository.findByTitle(lineName).orElseThrow(IllegalArgumentException::new);
     }
 }

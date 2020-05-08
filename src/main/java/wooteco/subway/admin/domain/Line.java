@@ -94,11 +94,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        stations.stream().filter(x -> x.getStationId().equals(stationId))
+            .findAny().ifPresent(target -> {
+            stations.remove(target);
+        });
     }
 
     public List<Long> getLineStationsId() {

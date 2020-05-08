@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
@@ -30,7 +31,6 @@ public class LineController {
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         lineService.validateTitle(lineRequest);
-        System.out.println(lineRequest.toString());
         Line line = new Line(
             lineRequest.getTitle(),
             lineRequest.getStartTime(),
@@ -38,7 +38,6 @@ public class LineController {
             lineRequest.getIntervalTime(),
             lineRequest.getBgColor()
         );
-        System.out.println(line);
         return ResponseEntity.created(URI.create("/lines")).body(lineService.save(line));
     }
 
@@ -73,6 +72,24 @@ public class LineController {
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/addStation/{id}")
+    public ResponseEntity addStation(@PathVariable Long id,
+        @RequestBody LineStationCreateRequest LineStationCreateRequest) {
+        lineService.addLineStation(id, LineStationCreateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/lineStations/{id}")
+    public ResponseEntity lineStations(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.getLineStations(id));
+    }
+
+    @DeleteMapping("/station/{lineId}/{stationId}")
+    public ResponseEntity deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }
