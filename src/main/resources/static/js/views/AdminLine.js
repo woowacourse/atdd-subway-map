@@ -105,8 +105,8 @@ function AdminLine() {
         subwayLineModal.toggle();
         $subwayLineNameInput.value = line.name;
         $subwayLineColorInput.value = line.color;
-        $subwayLineFirstTimeInput.value = line.startTime;
-        $subwayLineLastTimeInput.value = line.endTime;
+        $subwayLineFirstTimeInput.value = viewTime(line.startTime);
+        $subwayLineLastTimeInput.value = viewTime(line.endTime);
         $subwayLineIntervalTimeInput.value = line.intervalTime;
       });
     }
