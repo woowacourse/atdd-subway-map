@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Table("Line")
 public class Line {
     public static final long PRE_ID_OF_FIRST_STATION = -1L;
+
     @Id
     private Long id;
     @Column("name")
@@ -102,7 +103,22 @@ public class Line {
     }
 
     public void removeLineStationByStationId(Long stationId) {
-        this.lineStations.removeIf(station->station.isStationId(stationId));
+        Optional<LineStation> preStationId = this.lineStations.stream()
+                .filter(lineStation -> lineStation.isStationId(stationId))
+                .findFirst();
+        Optional<LineStation> nextStationId = this.lineStations.stream()
+                .filter(lineStation -> lineStation.isPreStationId(stationId))
+                .findFirst();
+        if (nextStationId.isPresent() && preStationId.isPresent()) {
+            updatePreOfLineStation(nextStationId.get().getStationId(), preStationId.get().getPreStationId());
+        }
+        this.lineStations.removeIf(lineStation -> lineStation.isStationId(stationId));
+    }
+
+    private void updatePreOfLineStation(Long stationId, Long newPreStationId) {
+        this.lineStations.stream()
+                .filter(lineStation -> lineStation.isStationId(stationId))
+                .forEach(lineStation -> lineStation.updatePreStationId(newPreStationId));
     }
 
     public List<Long> getStationsId() {

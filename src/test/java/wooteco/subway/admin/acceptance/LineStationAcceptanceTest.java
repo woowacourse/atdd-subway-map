@@ -64,7 +64,7 @@ public class LineStationAcceptanceTest {
         assertThat(station.getName()).isEqualTo("몽촌토성역");
 
         //when
-        deleteLineStation(lines.get(0).getId(),station.getId());
+        deleteLineStation(lines.get(0).getId(),orderedStations.get(orderedStations.size() - 1).getId());
         //then
         assertThat(lineWithStations.getOrderedStations().size()).isEqualTo(3);
 

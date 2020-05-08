@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Objects;
+
 @Table("LineStation")
 public class LineStation {
     @Id
@@ -32,6 +34,24 @@ public class LineStation {
         this(null, preStationId, stationId, distance, duration);
     }
 
+    public void updatePreStationId(Long newPreStationId) {
+        this.preStationId = newPreStationId;
+    }
+
+    public boolean isStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean isPreStationId(Long preStationId) {
+        if (this.preStationId == null && preStationId == null) {
+            return true;
+        }
+        if (preStationId == null) {
+            return false;
+        }
+        return preStationId.equals(this.preStationId);
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,9 +70,5 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public boolean isStationId(Long stationId) {
-        return this.stationId.equals(stationId);
     }
 }
