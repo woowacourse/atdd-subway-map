@@ -1,24 +1,45 @@
-import { EVENT_TYPE } from "../utils/constants.js";
+import {EVENT_TYPE} from "../utils/constants.js";
 
 export default function Modal() {
-  const $openModalButton = document.querySelector(".modal-open");
-  const $closeModalButton = document.querySelector(".modal-close");
-  const $body = document.querySelector("body");
-  const $modal = document.querySelector(".modal");
+    const $openModalButton = document.querySelector(".modal-open");
+    const $closeModalButton = document.querySelector(".modal-close");
+    const $body = document.querySelector("body");
+    const $modal = document.querySelector(".modal");
 
-  const toggle = event => {
-    if (event) {
-      event.preventDefault();
-    }
-    $body.classList.toggle("modal-active");
-    $modal.classList.toggle("opacity-0");
-    $modal.classList.toggle("pointer-events-none");
-  };
+    const $subwayLineFormSubmitButton = document.querySelector("#submit-button");
 
-  $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
-  $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+    // const toggle = event => {
+    //     if (event) {
+    //         event.preventDefault();
+    //     }
+    //     $body.classList.toggle("modal-active");
+    //     $modal.classList.toggle("opacity-0");
+    //     $modal.classList.toggle("pointer-events-none");
+    //     const hasClass = $subwayLineFormSubmitButton.classList.contains('update-submit-button')
+    //     if (hasClass) {
+    //         $subwayLineFormSubmitButton.classList.remove('update-submit-button')
+    //     }
+    // };
 
-  return {
-    toggle
-  };
+    const toggle = event => {
+        if (event) {
+            event.preventDefault();
+        }
+        $body.classList.toggle("modal-active");
+        $modal.classList.toggle("opacity-0");
+        $modal.classList.toggle("pointer-events-none");
+        const hasClass = $subwayLineFormSubmitButton.classList.contains('update-submit-button')
+        if (hasClass) {
+            $subwayLineFormSubmitButton.classList.remove('update-submit-button')
+        }
+    };
+
+    $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+    $closeModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
+
+
+
+    return {
+        toggle
+    };
 }

@@ -8,8 +8,8 @@ export const listItemTemplate = value =>
 
 // todo: line.id 붙일 부분 수정 필요
 export const subwayLinesTemplate = line =>
-    `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
-      <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
+    `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" data-line-id="${line.id}">
+      <span class="${line.bgColor} color w-3 h-3 rounded-full inline-block mr-1"></span>
       <span class="subway-line-title" data-line-id="${line.id}"> ${line.title} </span>
       
         <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
@@ -19,7 +19,8 @@ export const subwayLinesTemplate = line =>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-pencil" data-line-id="${line.id}"></span>
       </button>
-    </div>`;
+    </div>`
+;
 
 export const optionTemplate = value => `<option>${value}</option>`;
 
