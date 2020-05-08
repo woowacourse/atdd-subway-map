@@ -97,6 +97,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // TODO validation을 LineStation에서 할 건데, 생성자 validation이 requestbody일 때 잘 적용이 될까요?
+    // 안된다면 여기에서 해야할 것 같아요. preStationId != stationId, stationId 필수
     public void addLineStation(LineStation requestLineStation) {
         checkPreStation(requestLineStation);
         int index = lineStations.stream()

@@ -4,6 +4,7 @@ import java.util.Objects;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
+
 	@Column("station")
 	private Long stationId;
 	@Column("pre_station")
@@ -14,6 +15,7 @@ public class LineStation {
 	public LineStation() {
 	}
 
+	// TODO 여기서 사실 validation을 해야할 것 같아요. preStationId != stationId
 	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
 		this.preStationId = preStationId;
 		this.stationId = stationId;

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import wooteco.subway.admin.domain.Line;
 
 public class LineResponse {
@@ -50,10 +49,10 @@ public class LineResponse {
 			.collect(Collectors.toList());
 	}
 
-	public static LineResponse of(Line line, List<StationResponse> stationResponses) {
+	public static LineResponse of(Line line, List<StationResponse> station) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(),
 			line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(),
-			stationResponses);
+			station);
 	}
 
 	public Long getId() {
