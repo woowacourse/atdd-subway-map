@@ -2,9 +2,7 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.data.annotation.Id;
 
@@ -16,7 +14,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -101,6 +99,7 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
