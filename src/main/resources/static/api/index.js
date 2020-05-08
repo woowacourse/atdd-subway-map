@@ -48,6 +48,9 @@ const api = (() => {
     },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
+    },
+    update(data, id) {
+      return fetch(`/lines/${id}`, METHOD.PUT(data));
     }
   };
 

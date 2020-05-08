@@ -53,12 +53,17 @@ function CreateSubwayLineModal() {
       endTime: $subwayLineLastTimeInput.value,
       intervalTime: $subwayLineIntervalTimeInput.value
     };
-  }
+  };
 
-  const toggle = () => {
-    clear();
-    subwayLineModal.toggle();
-  }
+  const setData = data => {
+    $subwayLineNameInput.value = data.name;
+    $subwayLineColorInput.value = data.color;
+    $subwayLineFirstTimeInput.value = data.startTime;
+    $subwayLineLastTimeInput.value = data.endTime;
+    $subwayLineIntervalTimeInput.value = data.intervalTime;
+  };
+
+  const toggle = () => subwayLineModal.toggle();
 
   const onSelectColorHandler = event => {
     event.preventDefault();
@@ -104,6 +109,8 @@ function CreateSubwayLineModal() {
   return {
     init,
     json,
+    clear,
+    setData,
     toggle,
     ...eventBus
   };
