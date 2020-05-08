@@ -64,7 +64,7 @@ function AdminLine() {
                 oldLine.remove();
                 lineId = null;
             });
-    }
+    };
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;

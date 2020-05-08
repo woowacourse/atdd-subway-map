@@ -31,16 +31,13 @@ const api = (() => {
 
     const station = {
         get() {
-            return request(`${BASE_URL}/stations`);
+            return request(`${BASE_URL}/stations`).then(data => data.json());
         },
         create(data) {
-            return request(`${BASE_URL}/stations`, METHOD.POST(data));
-        },
-        update(data) {
-            return request(`${BASE_URL}/stations/${id}`, METHOD.PUT(data));
+            return request(`${BASE_URL}/stations`, METHOD.POST(data)).then(data => data.json());
         },
         delete(id) {
-            return request(`${BASE_URL}/stations/${id}`, METHOD.DELETE);
+            return request(`${BASE_URL}/stations/${id}`, METHOD.DELETE());
         }
     };
 
