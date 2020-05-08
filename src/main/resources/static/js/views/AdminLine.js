@@ -30,7 +30,8 @@ function AdminLine() {
   };
 
   function validInput() {
-    if ($subwayLineNameInput.value === "" || $subwayLineFirstTimeInput.value === "" ||
+    if ($subwayLineNameInput.value === "" ||
+      $subwayLineFirstTimeInput.value === "" ||
       $subwayLineLastTimeInput.value === "" ||
       $subwayLineColorInput.value === "") {
       alert("값을 입력해야합니다.");
@@ -100,8 +101,8 @@ function AdminLine() {
   function addLineInView(data) {
     const newSubwayLine = {
       id: data.id,
-      title: data.name,
-      bgColor: data.lineColor
+      name: data.name,
+      lineColor: data.lineColor
     };
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
@@ -132,9 +133,6 @@ function AdminLine() {
   };
 
   function selectLine(event) {
-    if (event.target.classList.contains(DELETE_BUTTON_CLASS_NAME) || event.target.classList.contains(UPDATE_BUTTON_CLASS_NAME)) {
-      return;
-    }
     const lineId = event.currentTarget.firstElementChild.id;
 
     api.line
@@ -186,13 +184,20 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains(UPDATE_BUTTON_CLASS_NAME);
   };
 
-  const initDefaultSubwayLines = () => {
-    // defaultSubwayLines.map(line => {
-    //   $subwayLineList.insertAdjacentHTML(
-    //     "beforeend",
-    //     subwayLinesTemplate(line)
-    //   );
-    // });
+  const initDefaultSubwayLines = () => { // 이벤트 위임으로 처리하셨다.
+    api.line.get()
+      .then(data => {
+        if (data.length === 0) {
+          return;
+        }
+        data.forEach(line =>
+          $subwayLineList.insertAdjacentHTML(
+            "beforeend",
+            subwayLinesTemplate(line)
+          )
+        )
+        ;
+      });
   };
 
   const initEventListeners = () => {
@@ -224,7 +229,7 @@ function AdminLine() {
   };
 
   this.init = () => {
-    // initDefaultSubwayLines();
+    initDefaultSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };

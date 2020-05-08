@@ -5,12 +5,12 @@ export const listItemTemplate = value =>
        <span class="mdi mdi-delete"></span>
     </button>
   </div>`;
-
+// todo line id 넣지말고 data를 이용 가능
 export const subwayLinesTemplate = line =>
   `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
       <div class="id-class" id=${line.id}></div>
-      <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
-      ${line.title}
+      <span class="${line.lineColor} w-3 h-3 rounded-full inline-block mr-1"></span>
+      ${line.name}
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-delete"></span>
       </button>
