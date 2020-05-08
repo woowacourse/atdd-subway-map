@@ -16,120 +16,123 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
-	@LocalServerPort
-	int port;
 
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
-	}
+    @LocalServerPort
+    int port;
 
-	@BeforeEach
-	void setUp() {
-		RestAssured.port = port;
-	}
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
 
-	@DisplayName("지하철 노선을 관리한다")
-	@Test
-	void manageLine() {
-		// when
-		createLine("신분당선");
-		createLine("1호선");
-		createLine("2호선");
-		createLine("3호선");
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
-		// then
-		List<LineResponse> lines = getLines();
-		assertThat(lines.size()).isEqualTo(4);
+    @DisplayName("지하철 노선을 관리한다")
+    @Test
+    void manageLine() {
+        // when
+        createLine("신분당선");
+        createLine("1호선");
+        createLine("2호선");
+        createLine("3호선");
 
-		// when
-		LineResponse line = getLine(lines.get(0).getId());
-		// then
-		assertThat(line.getId()).isNotNull();
-		assertThat(line.getName()).isNotNull();
-		assertThat(line.getStartTime()).isNotNull();
-		assertThat(line.getEndTime()).isNotNull();
-		assertThat(line.getIntervalTime()).isNotNull();
+        // then
+        List<LineResponse> lines = getLines();
+        assertThat(lines.size()).isEqualTo(4);
 
-		// when
-		LocalTime startTime = LocalTime.of(8, 00);
-		LocalTime endTime = LocalTime.of(22, 00);
-		updateLine(line.getId(), startTime, endTime);
-		//then
-		LineResponse updatedLine = getLine(line.getId());
-		assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
-		assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
+        // when
+        LineResponse line = getLine(lines.get(0).getId());
+        // then
+        assertThat(line.getId()).isNotNull();
+        assertThat(line.getName()).isNotNull();
+        assertThat(line.getStartTime()).isNotNull();
+        assertThat(line.getEndTime()).isNotNull();
+        assertThat(line.getIntervalTime()).isNotNull();
 
-		// when
-		deleteLine(line.getId());
-		// then
-		List<LineResponse> linesAfterDelete = getLines();
-		assertThat(linesAfterDelete.size()).isEqualTo(3);
-	}
+        // when
+        LocalTime startTime = LocalTime.of(8, 00);
+        LocalTime endTime = LocalTime.of(22, 00);
+        updateLine(line.getId(), startTime, endTime);
+        //then
+        LineResponse updatedLine = getLine(line.getId());
+        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
+        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-	private LineResponse getLine(Long id) {
-		return given().when().
-			get("/api/lines/" + id).
-			then().
-			log().all().
-			extract().as(LineResponse.class);
-	}
+        // when
+        deleteLine(line.getId());
+        // then
+        List<LineResponse> linesAfterDelete = getLines();
+        assertThat(linesAfterDelete.size()).isEqualTo(3);
+    }
 
-	private void createLine(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", "무지개색");
-		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("intervalTime", "10");
+    private LineResponse getLine(Long id) {
+        return given().when().
+            get("/api/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
+    }
 
-		given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			post("/api/lines").
-			then().
-			log().all().
-			statusCode(HttpStatus.CREATED.value());
-	}
+    private void createLine(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", "무지개색");
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
 
-	private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-		Map<String, String> params = new HashMap<>();
-		params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("intervalTime", "10");
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/api/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
+    }
 
-		given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			put("/api/lines/" + id).
-			then().
-			log().all().
-			statusCode(HttpStatus.OK.value());
-	}
+    private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
 
-	private List<LineResponse> getLines() {
-		return
-			given().
-				when().
-				get("/api/lines").
-				then().
-				log().all().
-				extract().
-				jsonPath().getList(".", LineResponse.class);
-	}
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            put("/api/lines/" + id).
+            then().
+            log().all().
+            statusCode(HttpStatus.OK.value());
+    }
 
-	private void deleteLine(Long id) {
-		given().
-			when().
-			delete("/api/lines/" + id).
-			then().
-			log().all();
-	}
+    private List<LineResponse> getLines() {
+        return
+            given().
+                when().
+                get("/api/lines").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
+    }
+
+    private void deleteLine(Long id) {
+        given().
+            when().
+            delete("/api/lines/" + id).
+            then().
+            log().all();
+    }
 }
