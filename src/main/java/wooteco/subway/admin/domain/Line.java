@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    @Nullable
     private String bgColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;

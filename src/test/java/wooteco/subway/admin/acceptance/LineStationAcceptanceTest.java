@@ -1,13 +1,29 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.print.attribute.standard.Media;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -45,6 +61,113 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //given
+        LineResponse lineResponse1 = createLine("1호선");
+        StationResponse stationResponse1 = createStation("유안역");
+        StationResponse stationResponse2 = createStation("디디역");
+
+        //when
+        LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null, stationResponse1.getId());
+        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(), stationResponse1.getId(), stationResponse2.getId());
+
+        //then
+        List<LineStationResponse> lineStations = getLineStations(lineResponse1.getId());
+        assertThat(lineStations.size()).isEqualTo(2);
+        assertThat(lineStations).contains(lineStationResponse1);
+
+        deleteLineStation(lineStationResponse1.getId());
+        List<LineStationResponse> lineStations2 = getLineStations(lineResponse1.getId());
+        assertThat(lineStations2.size()).isEqualTo(1);
+
+        assertThat(lineStations2).doesNotContain(lineStationResponse1);
+    }
+
+    private void deleteLineStation(Long lineStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lineStationId", String.valueOf(lineStationId));
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            delete("lineStations/" + lineStationId).
+        then().
+            log().all().
+            statusCode(HttpStatus.OK.value());
+    }
+
+    private List<LineStationResponse> getLineStations(Long lineId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lineId", String.valueOf(lineId));
+
+        return given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            get("/lineStations").
+        then().
+            log().all().
+            statusCode(HttpStatus.OK.value()).
+            extract().jsonPath().getList(".", LineStationResponse.class);
 
     }
+
+    private LineStationResponse createLineStation(Long lineId, Long preStationId, Long stationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lineId", String.valueOf(lineId));
+        params.put("preStationId", String.valueOf(preStationId));
+        params.put("stationId", String.valueOf(stationId));
+        params.put("duration", "10");
+        params.put("distance", "10");
+
+        return given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            post("/lineStations").
+        then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value())
+            .extract().as(LineStationResponse.class);
+    }
+
+    private StationResponse createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value()).
+            extract().as(StationResponse.class);
+    }
+
+    private LineResponse createLine(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+        params.put("bgColor", "bg-orange-500");
+
+        return given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value())
+            .extract().as(LineResponse.class);
+    }
+
 }

@@ -1,7 +1,11 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
+
 public class LineStation {
     // TODO: 테이블 컬럼명과 변수명이 다른 경우
+    @Id
+    private Long id;
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -10,11 +14,16 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStation(Long id, Long preStationId, Long stationId, int distance, int duration) {
+        this.id = id;
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getPreStationId() {
