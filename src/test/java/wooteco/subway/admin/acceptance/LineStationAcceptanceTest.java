@@ -14,17 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -62,53 +56,63 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
-        // when
+        // 지하철 역 및 지하철 노선 추가
         createStation("잠실역");
         createStation("종합운동장역");
         createStation("선릉역");
         createStation("강남역");
-        // and
         createLine("1호선");
+        // 지하철 노선에 지하철 역 추가
+        Long lineId = 1L;
+        createLineStation(lineId, "2", "1", "10", "10");
+        createLineStation(lineId, "3", "2", "10", "10");
+        // 지하철 노선의 지하철 역 목록 조회
+        List<LineStation> stations = getLineStations(lineId);
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations.get(0).getStationId()).isEqualTo(2);
 
-        List<Line> lines = getLines();
-        Long firstLineId = lines.get(0).getId();
-        System.out.println("id : " + firstLineId);
-        Line line = getLine(firstLineId);
-
-        createLineStation(firstLineId);
-        Set<LineStation> stations = getStations(firstLineId);
-        assertThat(stations.size()).isEqualTo(1);
-        System.out.println("stations : " + stations.toString());
-
-
-
+        Long stationId = 2L; // 추가 및 삭제할 stationId
+        // 지하철 노선에 포함된 특정 지하철 역을 제외
+        deleteLineStation(lineId, stationId);
+        // 제외한 지하철 목록 존재하지 않는지 확인
+        List<LineStation> restStations = getLineStations(lineId);
+        assertThat(restStations.size()).isEqualTo(1);
     }
 
-    private Set getStations(Long id) {
-        return given().
+    // 지하철 노선에 포함된 지하철 역을 제거하는 요청
+    private void deleteLineStation(Long lineId, Long stationId) {
+        given().
         when().
-            get("/lines/" + id + "/stations").
+            delete("/lines/" + lineId + "/stations/" + stationId).
         then().
             log().all().
-            statusCode(HttpStatus.OK.value()).
-            extract().
-            as(Set.class);
+            statusCode(HttpStatus.OK.value());
+    }
+
+    private List<LineStation> getLineStations(Long id) {
+        return given().
+            when().
+                get("/lines/" + id + "/stations").
+            then().
+                log().all().
+                statusCode(HttpStatus.OK.value()).
+                extract().
+                jsonPath().getList(".", LineStation.class);
 
     }
 
-    private void createLineStation(Long id) {
+    private void createLineStation(Long id, String stationId, String preStationId, String distance, String duration) {
         Map<String, String> params = new HashMap<>();
-        params.put("stationId", "1");
-        params.put("preStationId", "2");
-        params.put("distance", "1");
-        params.put("duration", "1");
-
+        params.put("stationId", stationId);
+        params.put("preStationId", preStationId);
+        params.put("distance", distance);
+        params.put("duration", duration);
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-            post("/lines/" + id + "/station-add").
+            post("/lines/" + id + "/stations").
         then().
             log().all().
             statusCode(HttpStatus.OK.value());
@@ -117,14 +121,13 @@ public class LineStationAcceptanceTest {
     private void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
+        when().
             post("/stations").
-            then().
+        then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
     }
@@ -136,34 +139,14 @@ public class LineStationAcceptanceTest {
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
         params.put("backgroundColor", "bg-red-800");
-
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
+        when().
             post("/lines").
-            then().
+        then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
-    }
-
-    private List<Line> getLines() {
-        return
-            given().
-                when().
-                get("/lines").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", Line.class);
-    }
-
-    private Line getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(Line.class);
     }
 }

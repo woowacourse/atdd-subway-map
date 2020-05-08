@@ -16,7 +16,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String backgroundColor;
-    private Set<LineStation> stations;
+    private List<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -61,7 +61,7 @@ public class Line {
         return backgroundColor;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -98,7 +98,11 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = stations.stream()
+                .filter(station -> station.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 station 정보가 없습니다."));
+        stations.remove(lineStation);
     }
 
     public List<Long> getLineStationsId() {

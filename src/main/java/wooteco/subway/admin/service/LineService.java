@@ -51,11 +51,16 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        LineStation lineStation = request.toLineStation();
+        Line line = findById(id);
+        line.addLineStation(lineStation);
+        save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = findById(lineId);
+        line.removeLineStationById(stationId);
+        save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
