@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
+        this.stations = new HashSet<>();
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {

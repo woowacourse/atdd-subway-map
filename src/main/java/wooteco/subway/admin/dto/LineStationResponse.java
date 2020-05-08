@@ -6,6 +6,9 @@ public class LineStationResponse {
     private int distance;
     private int duration;
 
+    public LineStationResponse(){
+    }
+
     public LineStationResponse(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
