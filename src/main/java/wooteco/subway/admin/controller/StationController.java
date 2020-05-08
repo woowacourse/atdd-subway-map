@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.dto.request.StationCreateRequest;
+import wooteco.subway.admin.dto.response.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.net.URI;
