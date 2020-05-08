@@ -20,11 +20,11 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
-        Station persistStation = stationRepository.save(station);
+//        Station persistStation = stationRepository.save(station);
 
         return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
-                .body(StationResponse.of(persistStation));
+                .created(URI.create("/stations/" + 1))
+                .body(StationResponse.of(station));
     }
 
     @GetMapping("/stations")

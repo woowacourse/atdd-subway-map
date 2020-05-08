@@ -95,6 +95,7 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        this.stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
