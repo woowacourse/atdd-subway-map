@@ -45,3 +45,30 @@
 #### 노선 삭제
 - [x] 목록에서 우측 버튼을 누르면 삭제된다.
     - [x] 삭제 API를 사용한다.
+
+## 3단계 - 노선별 지하철역 / 인수 테스트
+
+### 요구 사항  
+- 인수 테스트(LineStationAcceptanceTest)를 완성 시키기
+- Mock 서버와 DTO 만 정의하여 테스트를 성공 시키기
+- 기능 구현은 다음 단계에서 진행
+- 기존에 구현한 테스트들과의 중복을 제거하기
+
+### 기능 목록
+- [ ] 지하철 노선에 역 추가
+- [ ] 노선에 지하철 역이 추가될 경우 아래의 정보가 추가되어야 함
+- [ ] 이전역과의 거리
+- [ ] 이전역과의 소요시간
+
+### DTO 예시
+
+```java
+public class LineStationCreateRequest {
+    private Long preStationId;
+    private Long stationId;
+    private int distance;
+    private int duration;
+```
+
+### 지하철 노선에 역 제거
+- [ ] 노선과 제거할 지하차철역 식별값을 전달
