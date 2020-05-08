@@ -17,6 +17,10 @@ function AdminLine() {
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
   const $openModalButton = document.querySelector(".modal-open");
 
+  const $subwayLineStartTimeInfo = document.querySelector(".lines-info .start-time")
+  const $subwayLineEndTimeInfo = document.querySelector(".lines-info .end-time")
+  const $subwayLineIntervalTimeInfo = document.querySelector(".lines-info .interval-time")
+
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
   );
@@ -30,10 +34,7 @@ function AdminLine() {
 
   const onToggleModalForUpdate = event => {
     const $target = event.target;
-    const isUpdateButton = $target.classList.contains("mdi-pencil");
-    if (isUpdateButton) {
-      subwayLineModal.toggle();
-    }
+    subwayLineModal.toggle();
     $createSubwayLineButton.dataset.lineId = $target.closest(".subway-line-item").dataset.lineId
     $createSubwayLineButton.classList.remove("create")
     $createSubwayLineButton.classList.add("update")
@@ -90,16 +91,28 @@ function AdminLine() {
         "beforeend",
         subwayLinesTemplate(data)
     );
+    initDetail()
   };
 
   const onDeleteSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      api.line.delete($target.parentElement.parentElement.dataset.lineId)
-      $target.closest(".subway-line-item").remove();
-    }
+    const $target = event.target
+    api.line.delete($target.parentElement.parentElement.dataset.lineId)
+    $target.closest(".subway-line-item").remove();
+    initDetail()
   };
+
+  const showDetailLine = async event => {
+    const line = await api.line.getLine(event.target.dataset.lineId)
+    $subwayLineStartTimeInfo.innerHTML = line.startTime
+    $subwayLineEndTimeInfo.innerHTML = line.endTime
+    $subwayLineIntervalTimeInfo.innerHTML = line.intervalTime
+  }
+
+  const initDetail = () => {
+    $subwayLineStartTimeInfo.innerHTML = ""
+    $subwayLineEndTimeInfo.innerHTML = ""
+    $subwayLineIntervalTimeInfo.innerHTML = ""
+  }
 
   const onEditSubwayLine = event => {
     const $target = event.target;
@@ -115,9 +128,21 @@ function AdminLine() {
     });
   };
 
+  const onSubwayLineListClicked = (event) => {
+    const $target = event.target;
+    if ($target.classList.contains("mdi-delete")) {  // is delete button
+      onDeleteSubwayLine(event)
+      return
+    }
+    if ($target.classList.contains("mdi-pencil")) {
+      onToggleModalForUpdate(event)
+      return;
+    }
+    showDetailLine(event)
+  }
+
   const initEventListeners = () => {
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onToggleModalForUpdate);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSubwayLineListClicked);
     $openModalButton.addEventListener(EVENT_TYPE.CLICK, onToggleModalForCreate);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
@@ -149,7 +174,7 @@ function AdminLine() {
   };
 
   const initLine = async () => {
-    const lines =  await api.line.get();
+    const lines =  await api.line.getLines();
     console.log(lines)
     lines.forEach(line => {
       $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line))

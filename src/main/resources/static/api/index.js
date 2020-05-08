@@ -49,8 +49,11 @@ export const api = (() => {
 
 
     const line = {
-        get() {
+        getLines() {
             return request(`${BASE_URL}/line`);
+        },
+        getLine(lineId) {
+            return request(`${BASE_URL}/line/${lineId}`)
         },
         create(data) {
             return request(`${BASE_URL}/line`, METHOD.POST(data));
