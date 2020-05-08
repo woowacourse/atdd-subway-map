@@ -23,7 +23,7 @@ function AdminLine() {
         const $target = event.target;
         const isSubwayTitle = $target.classList.contains("subway-line-title");
         if (isSubwayTitle) {
-            const $id = $target.id;
+            const $id = $target.dataset.lineId;
 
             api.line.getLineById($id).then(data => {
                     const $subwayLineFirstTime = document.querySelector("#start-subway-time");
@@ -63,7 +63,6 @@ function AdminLine() {
             })
 
         // todo: 입력창 비우기 코드 추가!
-        subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
         $subwayLineFirstTimeInput.value = "";
@@ -76,10 +75,17 @@ function AdminLine() {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            const $id = $target.id;
+            const $id = $target.dataset.lineId;
 
             api.line.delete($id).then();
             $target.closest(".subway-line-item").remove();
+
+            const $subwayLineFirstTime = document.querySelector("#start-subway-time");
+            $subwayLineFirstTime.innerText = "";
+            const $subwayLineLastTime = document.querySelector("#last-subway-time");
+            $subwayLineLastTime.innerText = "";
+            const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
+            $subwayLineIntervalTime.innerText = "";
         }
     };
 
@@ -91,7 +97,7 @@ function AdminLine() {
 
             // todo: getLineById로 갖고 온 노선 1개의 데이터를 수정 창에 입력시킴!!
             // todo: 그런데 시간이 안 찍힘!!!
-            const $id = $target.id;
+            const $id = $target.dataset.lineId;
 
             api.line.getLineById($id).then(data => {
                 const $subwayLineTitle = document.getElementById("subway-line-title");
@@ -125,7 +131,7 @@ function AdminLine() {
 
     function onEditSubwayLine(id, data) {
         api.line.update(id, data).then();
-    };
+    }
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(subwayLines => subwayLines.forEach(
