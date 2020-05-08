@@ -15,6 +15,8 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,11 +41,8 @@ public class LineServiceTest {
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
-        System.out.println(line.getLineStationsId());
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        System.out.println(line.getLineStationsId());
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
-        System.out.println(line.getLineStationsId());
     }
 
     @Test
@@ -52,7 +51,7 @@ public class LineServiceTest {
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
-        System.out.println(line.getLineStationsId());
+
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
@@ -120,7 +119,7 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 

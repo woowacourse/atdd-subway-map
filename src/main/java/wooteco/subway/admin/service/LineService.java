@@ -9,6 +9,7 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -64,7 +65,10 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = findById(id);
+        List<Long> lineStationsIds = line.getLineStationsId();
+        List<Station> stations = stationRepository.findAllById(lineStationsIds);
+
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 }
