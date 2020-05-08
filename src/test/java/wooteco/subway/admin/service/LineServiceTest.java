@@ -129,4 +129,9 @@ public class LineServiceTest {
         assertThat(lineResponse.getStations()).hasSize(3);
     }
 
+    @Test
+    void updateLineStation(){
+        line.updatePreStation(new LineStation(null,5L,10,10));
+    }
+
 }
