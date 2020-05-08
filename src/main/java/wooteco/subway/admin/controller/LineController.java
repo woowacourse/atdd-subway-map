@@ -1,7 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,60 +15,65 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
 public class LineController {
-	private final LineRepository lineRepository;
+    private final LineService lineService;
 
-	public LineController(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
-	}
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
-	@PostMapping("/lines")
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-		Line line = lineRequest.toLine();
-		if (lineRepository.existsByName(line.getName())) {
-			return ResponseEntity
-				.badRequest()
-				.build();
-		}
+    @PostMapping("/lines")
+    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
 
-		Line persistLine = lineRepository.save(line);
+        if (lineService.existsByName(line.getName())) {
+            return ResponseEntity
+                .badRequest()
+                .build();
+        }
 
-		return ResponseEntity
-			.created(URI.create("/lines/" + persistLine.getId()))
-			.body(LineResponse.of(persistLine));
-	}
+        Line persistLine = lineService.save(line);
 
-	@GetMapping("/lines")
-	public ResponseEntity showLines() {
-		return ResponseEntity
-			.ok()
-			.body(lineRepository.findAll());
-	}
+        return ResponseEntity
+            .created(URI.create("/lines/" + persistLine.getId()))
+            .body(LineResponse.of(persistLine));
+    }
 
-	@GetMapping("/lines/{id}")
-	public ResponseEntity showLine(@PathVariable Long id) {
-		return ResponseEntity
-			.ok()
-			.body(lineRepository.findById(id));
-	}
+    @GetMapping("/lines")
+    public ResponseEntity showLines() {
+        List<Line> persistLines = lineService.showLines();
 
-	@PutMapping("/lines/{id}")
-	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-		line.update(lineRequest.toLine());
-		Line persistLine = lineRepository.save(line);
+        return ResponseEntity
+            .ok()
+            .body(persistLines);
+    }
 
-		return ResponseEntity
-			.ok()
-			.body(LineResponse.of(persistLine));
-	}
+    @GetMapping("/lines/{id}")
+    public ResponseEntity showLine(@PathVariable Long id) {
+        Line persistLine = lineService.showLine(id);
 
-	@DeleteMapping("/lines/{id}")
-	public ResponseEntity deleteLine(@PathVariable Long id) {
-		lineRepository.deleteById(id);
-		return ResponseEntity.noContent().build();
-	}
+        return ResponseEntity
+            .ok()
+            .body(persistLine);
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line line = lineService.showLine(id);
+        line.update(lineRequest.toLine());
+        lineService.updateLine(id, line);
+
+        return ResponseEntity
+            .ok()
+            .body(LineResponse.of(line));
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
