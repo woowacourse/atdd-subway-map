@@ -16,6 +16,7 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line( "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-orange-500");
+        line.addLineStation(new LineStation(null, 1L));
         line.addLineStation(new LineStation(1L, 2L));
         line.addLineStation(new LineStation(2L, 3L));
     }
@@ -34,6 +35,6 @@ public class LineTest {
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getStations()).hasSize(2);
     }
 }

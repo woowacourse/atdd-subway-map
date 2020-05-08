@@ -115,7 +115,7 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         Optional<LineStation> station = stations.stream()
-            .filter(lineStation -> lineStation.getStationId() == stationId)
+            .filter(lineStation -> lineStation.getStationId().equals(stationId))
             .findAny();
 
         station.ifPresent(lineStation -> stations.remove(lineStation));
