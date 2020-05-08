@@ -74,6 +74,11 @@ public class LineStationAcceptanceTest {
 
         List<LineStationResponse> lineStations = getLineStations(line.getId());
         assertThat(lineStations.size()).isEqualTo(3);
+
+        LineStationResponse lineStationResponse = lineStations.get(0);
+        assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
+        assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(0).getId());
+        assertThat(lineStationResponse.getPreStationId()).isNull();
     }
 
     private void createStation(String name) {
