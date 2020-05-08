@@ -1,10 +1,10 @@
 package wooteco.subway.admin.dto;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 
 public class LineStationResponse {
     private Long stationId;
@@ -27,15 +27,24 @@ public class LineStationResponse {
         this.duration = duration;
     }
 
-    public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getStationId(), null, lineStation.getPreStationId(),
+    public static LineStationResponse of(LineStation lineStation, Station station, Station preStation) {
+        return new LineStationResponse(lineStation.getStationId(), station.getName(), lineStation.getPreStationId(),
+                preStation.getName(), lineStation.getDistance(), lineStation.getDuration());
+    }
+
+    public static LineStationResponse of(LineStation lineStation, Station station) {
+        return new LineStationResponse(lineStation.getStationId(), station.getName(), null,
                 null, lineStation.getDistance(), lineStation.getDuration());
     }
 
-    public static List<LineStationResponse> listOf(Set<LineStation> stations) {
-        return stations.stream()
-                .map(LineStationResponse::of)
-                .collect(Collectors.toList());
+    public static List<LineStationResponse> listOf(List<LineStation> lineStations, List<Station> stations) {
+        List<LineStationResponse> lineStationResponses = new ArrayList<>();
+        lineStationResponses.add(LineStationResponse.of(lineStations.get(0), stations.get(0)));
+        for (int i = 1; i < lineStations.size(); i++) {
+            LineStation lineStation = lineStations.get(i);
+            lineStationResponses.add(LineStationResponse.of(lineStation, stations.get(i), stations.get(i - 1)));
+        }
+        return lineStationResponses;
     }
 
     public Long getStationId() {

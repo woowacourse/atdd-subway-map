@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 
 public class LineStationsResponse {
     private Long lineId;
@@ -20,13 +21,14 @@ public class LineStationsResponse {
         this.lineStations = lineStations;
     }
 
-    public static LineStationsResponse of(Line line) {
-        return new LineStationsResponse(line.getId(), line.getName(), LineStationResponse.listOf(line.getStations()));
+    public static LineStationsResponse of(Line line, List<Station> stations) {
+        return new LineStationsResponse(line.getId(), line.getName(),
+                LineStationResponse.listOf(line.getStations(), stations));
     }
 
-    public static List<LineStationsResponse> listOf(List<Line> lines) {
+    public static List<LineStationsResponse> listOf(List<Line> lines, List<Station> stations) {
         return lines.stream()
-                .map(LineStationsResponse::of)
+                .map(line -> LineStationsResponse.of(line, stations))
                 .collect(Collectors.toList());
     }
 

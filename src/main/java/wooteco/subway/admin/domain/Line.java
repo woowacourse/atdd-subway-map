@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
     @Id
@@ -16,7 +17,8 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private Set<LineStation> stations;
+    @MappedCollection
+    private List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -61,7 +63,7 @@ public class Line {
         return bgColor;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -93,7 +95,33 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
+        if (lineStation.getPreStationId() == null) {
+            addLineStationAtFirst(lineStation);
+        } else {
+            for (int index = 0; index < stations.size(); index++) {
+                LineStation currentLineStation = stations.get(index);
+                int nextIndex = index + 1;
+                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
+                        && nextIndex < stations.size()) {
+                    LineStation target = stations.get(nextIndex);
+                    target.updatePreLineStation(lineStation.getStationId());
+                    stations.add(nextIndex, lineStation);
+                    break;
+                }
+                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
+                        && nextIndex == stations.size()) {
+                    stations.add(nextIndex, lineStation);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void addLineStationAtFirst(LineStation lineStation) {
+        stations.add(0, lineStation);
+        if (stations.size() > 1) {
+            stations.get(1).updatePreLineStation(lineStation.getStationId());
+        }
     }
 
     public void removeLineStationById(Long stationId) {
@@ -101,11 +129,28 @@ public class Line {
                 .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+
+        int targetIndex = findLineStationIndex(stationId);
+        if (targetIndex != stations.size() - 1) {
+            LineStation nextLineStation = stations.get(targetIndex + 1);
+            nextLineStation.updatePreLineStation(stations.get(targetIndex).getPreStationId());
+        }
         stations.remove(lineStation);
     }
 
+    private int findLineStationIndex(Long stationId) {
+        for (int index = 0; index < stations.size(); index++) {
+            LineStation currentLineStation = stations.get(index);
+            if (currentLineStation.getStationId().equals(stationId)) {
+                return index;
+            }
+        }
+        return 0;
+    }
+
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }
