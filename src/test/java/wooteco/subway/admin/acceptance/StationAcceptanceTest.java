@@ -48,7 +48,7 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
-    private void createStation(String name) {
+    public static void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -63,7 +63,7 @@ public class StationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private List<StationResponse> getStations() {
+    public static List<StationResponse> getStations() {
         return given().
                 when().
                 get("/stations").

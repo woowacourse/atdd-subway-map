@@ -79,7 +79,7 @@ public class LineAcceptanceTest {
                 extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    public static void createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -116,7 +116,7 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineResponse> getLines() {
+    public static List<LineResponse> getLines() {
         return
                 given().
                         when().
