@@ -1,10 +1,12 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +47,12 @@ public class LineResponse {
         return lines.stream()
                 .map(it -> LineResponse.of(it))
                 .collect(Collectors.toList());
+    }
+
+    public static LineResponse withStations(Line line, Set<Station> stations) {
+        LineResponse of = of(line);
+        of.stations = stations;
+        return of;
     }
 
     public Long getId() {

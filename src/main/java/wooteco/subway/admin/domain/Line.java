@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -94,17 +95,52 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
-        this.stations = new HashSet<>();
+        if (lineStation.getPreStationId() == null && this.stations != null) {
+            Set tmp = this.stations;
+            this.stations = new LinkedHashSet<>();
+            this.stations.add(lineStation);
+            this.stations.addAll(tmp);
+            return;
+
+        }
+
+        if (lineStation.getPreStationId() != null && this.stations != null) {
+            Set<LineStation> tmp = this.stations;
+            this.stations = new LinkedHashSet<>();
+            for (LineStation lineStationGot : tmp) {
+                if (lineStationGot.getPreStationId() == null) {
+                    this.stations.add(lineStationGot);
+                } else if (!lineStationGot.getPreStationId().equals(lineStation.getPreStationId())) {
+                    this.stations.add(lineStationGot);
+                } else {
+                    this.stations.add(lineStation);
+                    this.stations.add(lineStationGot);
+                }
+            }
+
+        }
+
+        if (this.stations == null) {
+            this.stations = new LinkedHashSet<>();
+        }
+
+
         this.stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
+        for (LineStation lineStation : stations) {
+            if (lineStation.getStationId().equals(stationId)) {
+                stations.remove(lineStation);
+                break;
+            }
+        }
         // TODO: 구현
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }
