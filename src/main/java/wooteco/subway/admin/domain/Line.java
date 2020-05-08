@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
+import wooteco.subway.admin.exception.InvalidStationInsertionException;
 import wooteco.subway.admin.exception.LineStationNotFoundException;
 
 public class Line {
@@ -99,41 +101,48 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
-    }
+        if (lineStation.isFirst()) {
+            Optional<LineStation> currentFirst = stations.stream()
+                .filter(LineStation::isFirst)
+                .findFirst();
+            currentFirst.ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+            stations.add(0, lineStation);
+            return;
+        }
 
-    public void addLineStation(int index, LineStation lineStation) {
-        stations.add(index, lineStation);
+        LineStation preStation = stations.stream()
+            .filter(station -> station.isPreviousOf(lineStation))
+            .findFirst()
+            .orElseThrow(() -> new InvalidStationInsertionException(lineStation.getPreStationId()));
+
+        if (!nextOf(preStation).isPresent()) {
+            stations.add(lineStation);
+            return;
+        }
+
+        nextOf(preStation).ifPresent(station -> {
+            station.updatePreLineStation(lineStation.getStationId());
+            stations.add(stations.indexOf(station), lineStation);
+        });
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation stationToRemove = stations.stream()
+        LineStation target = stations.stream()
             .filter(lineStation -> lineStation.getStationId().equals(stationId))
             .findFirst()
             .orElseThrow(() -> new LineStationNotFoundException(stationId));
-        if (stationToRemove.getPreStationId() == null) {
-            nextOf(stationToRemove).ifPresent(
-                lineStation -> lineStation.updatePreLineStation(null));
-            stations.remove(stationToRemove);
+        if (Objects.isNull(target.getPreStationId())) {
+            nextOf(target).ifPresent(lineStation -> lineStation.updatePreLineStation(null));
+            stations.remove(target);
             return;
         }
-        nextOf(stationToRemove).ifPresent(
-            lineStation -> lineStation.updatePreLineStation(stationToRemove.getPreStationId()));
-        stations.remove(stationToRemove);
+        nextOf(target).ifPresent(lineStation -> lineStation.updatePreLineStation(target.getPreStationId()));
+        stations.remove(target);
     }
 
     private Optional<LineStation> nextOf(LineStation station) {
-
         try {
             return Optional.of(stations.get(stations.indexOf(station) + 1));
-        } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<LineStation> previousOf(LineStation station) {
-        try {
-            return Optional.of(stations.get(stations.indexOf(station) - 1));
         } catch (IndexOutOfBoundsException e) {
             return Optional.empty();
         }
