@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,11 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{lineId}/stations/{stationId}")
+    public void deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
+    }
+
     @PostMapping()
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         if(lineService.contains(lineRequest.getName())) {
@@ -48,33 +54,32 @@ public class LineController {
         Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
-            .body(LineResponse.of(persistLine));
+            .body(lineService.findLineWithStationsById(persistLine.getId()));
     }
 
     @GetMapping()
     public List<LineResponse> getLines() {
-        return LineResponse.listOf(lineService.showLines());
+        List<Line> lines = lineService.showLines();
+
+        return lines.stream()
+            .map(line -> lineService.findLineWithStationsById(line.getId()))
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(LineResponse.of(lineService.findById(id)));
+        return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
     }
 
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineService.updateLine(id, lineRequest.toLine());
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
     }
 
     @DeleteMapping("/{id}")
     public void deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
-    }
-
-    @DeleteMapping("/{lineId}/stations/{stationId}")
-    public void deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
-        lineService.removeLineStation(lineId, stationId);
     }
 }

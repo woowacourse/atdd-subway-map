@@ -2,7 +2,6 @@ import {
   optionTemplate,
   subwayLinesItemTemplate
 } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -49,8 +48,7 @@ function AdminEdge() {
 
   const initSubwayLinesSlider = async () => {
     await api.lines.get().then(data => {
-      $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line))
-          .join("");
+      $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line)).join("");
     });
 
     tns({
@@ -87,6 +85,10 @@ function AdminEdge() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       $target.closest(".list-item").remove();
+      let lineId = $target.closest(".line-edge").dataset.lineEdgeId;
+      let stationId = $target.closest(".list-item").dataset.stationId;
+
+      api.lines.deleteLineStation(lineId, stationId);
     }
   };
 
