@@ -4,10 +4,10 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -32,7 +32,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
-        this.stations = new HashSet<>();
+        this.stations = new LinkedHashSet<>();
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
@@ -96,15 +96,45 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        Set<LineStation> newStations = new LinkedHashSet<>();
+        int updated = 0;
+        for (LineStation station : stations) {
+            if (lineStation.getPreStationId() == null) {
+                updated = 1;
+                newStations.add(lineStation);
+                newStations.add(station);
+                station.updatePreLineStation(lineStation.getStationId());
+                continue;
+            }
+            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
+                updated = 1;
+                newStations.add(lineStation);
+                newStations.add(station);
+                station.updatePreLineStation(lineStation.getStationId());
+                continue;
+            }
+            newStations.add(station);
+        }
+        if (updated == 0) {
+            newStations.add(lineStation);
+        }
+        if (stations.size() == 0) {
+            newStations.add(lineStation);
+        }
+        stations = newStations;
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = stations.stream()
+                .filter(station -> station.isSameId(stationId))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+        stations.remove(lineStation);
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }
