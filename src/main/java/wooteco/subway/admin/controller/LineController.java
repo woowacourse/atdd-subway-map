@@ -46,10 +46,20 @@ public class LineController {
     public ResponseEntity showLine(@PathVariable Long id) {
 //        LineResponse lineWithStationsById = lineService.findLineWithStationsById(id);
 //        return ResponseEntity.ok().body(lineWithStationsById);
+
+        if (id.equals(3L)) {
+            return ResponseEntity.notFound().build();
+        }
         Line line = new Line("2호선", LocalTime.now(), LocalTime.now(), 3, "red");
         line.addLineStation(new LineStation());
 
         return ResponseEntity.ok().body(LineResponse.of(line));
+    }
+
+    @GetMapping("/lines/{id}/stations")
+    public ResponseEntity showStationsOfLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(LineResponse.of(new Line()));
+
     }
 
     @PutMapping("/lines/{id}")

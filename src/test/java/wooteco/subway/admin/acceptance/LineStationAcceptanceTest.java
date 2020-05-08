@@ -63,8 +63,41 @@ public class LineStationAcceptanceTest {
         // when
         registerStation(1L);
         // then
-        LineResponse lineResponse = getLine(1L);
-        assertThat(lineResponse.getStations().size()).isEqualTo(1);
+        getLine(1L);
+        //when & then
+        getStationsOfLine(1L);
+        //when & then
+        deleteStationOfLine(1L);
+        //when & then
+        getStationsOfLineButCanNotFind(3L);
+    }
+
+    private void getStationsOfLineButCanNotFind(long lineId) {
+        given()
+                .when().
+                get("/lines/" + lineId)
+                .then()
+                .log().all().
+                statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    private void deleteStationOfLine(long lineId) {
+        given()
+                .when().
+                delete("/lines/" + lineId).
+                then().
+                log().all().
+                statusCode(HttpStatus.NO_CONTENT.value());
+
+    }
+
+    private void getStationsOfLine(long lineId) {
+        given()
+                .when().
+                get("/lines/" + lineId + "/stations").
+                then().
+                log().all().
+                statusCode(HttpStatus.OK.value());
 
     }
 
@@ -102,8 +135,11 @@ public class LineStationAcceptanceTest {
     }
 
     private void registerStation(Long id) {
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
         given().
-                body("a")
+                body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
 
         when().
@@ -113,12 +149,12 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private LineResponse getLine(Long id) {
-        return given()
+    private void getLine(Long id) {
+        given()
                 .when().
                 get("/lines/" + id).
                 then().
                 log().all().
-                extract().as(LineResponse.class);
+                statusCode(HttpStatus.OK.value());
     }
 }

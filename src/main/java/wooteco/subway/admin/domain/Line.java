@@ -95,6 +95,7 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        this.stations = new HashSet<>();
         this.stations.add(lineStation);
     }
 
