@@ -120,7 +120,7 @@ public class Line {
 
 	public void removeLineStationById(Long stationId) {
 		LineStation removeStation = stations.stream()
-			.filter(value -> value.getStationId() == stationId)
+			.filter(value -> stationId.equals(value.getStationId()))
 			.findFirst()
 			.orElseThrow(NoSuchElementException::new);
 
@@ -132,7 +132,7 @@ public class Line {
 		if(headStation.getStationId() == stationId) {
 			stations.remove(removeStation);
 			LineStation newHeadStation = stations.stream()
-				.filter(value -> value.getPreStationId() == stationId)
+				.filter(value -> stationId.equals(value.getPreStationId()))
 				.findFirst()
 				.orElseThrow(NoSuchElementException::new);
 			newHeadStation.updatePreLineStation(null);
@@ -140,7 +140,7 @@ public class Line {
 		}
 
 		stations.stream()
-			.filter(value -> value.getPreStationId() == stationId)
+			.filter(value -> stationId.equals(value.getPreStationId()))
 			.findFirst()
 			.ifPresent(lineStation -> lineStation.updatePreLineStation(removeStation.getPreStationId()));
 		stations.remove(removeStation);
