@@ -10,7 +10,11 @@ import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,7 +87,10 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(IllegalArgumentException::new);
+        line.removeLineStationById(stationId);
+        stationMockTable.remove(stationId);
     }
 
     public LineResponse findLineWithStationsById(Long id) {

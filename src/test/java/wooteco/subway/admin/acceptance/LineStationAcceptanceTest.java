@@ -58,31 +58,42 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
-        // 노선 추가
         //given
         Station station1 = createStation("잠실역");
         Station station2 = createStation("삼성역");
         createLine("2호선");
 
-        //when
-        Map<String, String> params = new HashMap<>();
-        params.put("lineName", "2호선");
-        params.put("preStationName", "잠실역");
-        params.put("stationName", "삼성역");
-
-        LineStationResponse response = addLineStation(params);
+        //when 노선 추가
+        LineStationResponse response = addLineStation();
+        //then
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getStations().size()).isEqualTo(2);
 
-        // given : 지하철 노선의 지하철 역 목록 조회
+        //when 노선의 지하철역 조회
         List<LineStationResponse> allLineStations = findAllLineStations();
-        // then
+        //then
         Set<Station> savedStations = allLineStations.get(0).getStations();
         List<String> savedStationNames = savedStations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(savedStationNames).contains("잠실역");
         assertThat(savedStationNames).contains("삼성역");
+
+        //when 노선의 특정 지하철역 제거
+        deleteLineStation(1L, 1L);
+        //then
+
+    }
+
+    private void deleteLineStation(Long lineId, Long stationId) {
+        given().body(stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lineStations/" + lineId)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all();
     }
 
     private List<LineStationResponse> findAllLineStations() {
@@ -129,7 +140,12 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private LineStationResponse addLineStation(Map<String, String> params) {
+    private LineStationResponse addLineStation() {
+        Map<String, String> params = new HashMap<>();
+        params.put("lineName", "2호선");
+        params.put("preStationName", "잠실역");
+        params.put("stationName", "삼성역");
+
         return given().body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
