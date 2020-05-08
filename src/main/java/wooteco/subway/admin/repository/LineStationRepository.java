@@ -1,6 +1,7 @@
 package wooteco.subway.admin.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,4 +12,7 @@ import wooteco.subway.admin.domain.LineStation;
 public interface LineStationRepository extends CrudRepository<LineStation, Long> {
     @Query("SELECT * FROM LINE_STATION WHERE line = :id")
     List<LineStation> findAllByLine(@Param("id") Long id);
+
+    @Query("SELECT * FROM LINE_STATION WHERE pre_station_id = :pre_station_id")
+    Optional<LineStation> findByPreStationId(@Param("pre_station_id") Long pre_station_id);
 }

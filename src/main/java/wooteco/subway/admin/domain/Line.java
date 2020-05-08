@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,12 +113,13 @@ public class Line {
         List<Long> result = new ArrayList<>();
 
         Map<Boolean, List<LineStation>> group = stations.stream()
-            .collect(Collectors.partitioningBy(lineStation -> Objects.isNull(lineStation.getPreStationId())));
+            .collect(Collectors.partitioningBy(lineStation -> lineStation.getPreStationId() == 0));
 
         result.add(group.get(true).get(0).getStationId());
         result.addAll(group.get(false).stream()
             .sorted(Comparator.comparing(LineStation::getPreStationId))
             .map(LineStation::getStationId).collect(Collectors.toList()));
+        System.out.println(result);
         return result;
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 public class LineStation {
     private Long stationId;
     private Long preStationId;
@@ -10,10 +12,14 @@ public class LineStation {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+        if (Objects.nonNull(preStationId)) {
+            this.preStationId = preStationId;
+            return;
+        }
+        this.preStationId = 0L;
     }
 
     public Long getPreStationId() {
