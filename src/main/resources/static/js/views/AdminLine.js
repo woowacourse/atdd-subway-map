@@ -54,13 +54,8 @@ function AdminLine() {
       const lineName = event.target.parentNode.parentNode.innerText.trim();
       const selectedLineId = subwayLines.find(subway => subway["name"] === lineName)["id"];
       await api.line.delete(selectedLineId);
-      let index = 0;
-      for (let i = 0; i < subwayLines.length; i++) {
-        if (subwayLines[i]["id"] === selectedLineId) {
-          index = i;
-          break;
-        }
-      }
+      const index = subwayLines.map(subway => subway["id"])
+          .indexOf(selectedLineId);
       subwayLines.splice(index, 1);
     }
   };
@@ -74,24 +69,19 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalInput.value
     };
     await api.line.update(updatedLine, selectedSubwayId);
-    let index = 0;
-    for (let i = 0; i < subwayLines.length; i++) {
-      if (subwayLines[i]["id"] === selectedSubwayId) {
-        index = i;
-        break;
-      }
-    }
+    const index = subwayLines.map(subway => subway["id"])
+        .indexOf(selectedSubwayId);
     subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
     subwayLineModal.toggle();
     componentClear();
     changeEvent();
-  };
+  }
 
   const onSelectSubwayLine = event => {
     event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    const isModifyButton = $target.classList.contains("mid-pencil");
+    const isModifyButton = $target.classList.contains("mdi-pencil");
     if ($target && !isDeleteButton && !isModifyButton) {
       const lineName = event.target.innerText.trim();
       const selectedLine = subwayLines.find(subway => subway["name"] === lineName);
