@@ -32,27 +32,7 @@ function AdminLine() {
             color: $subwayLineColorInput.value
         };
 
-        if (lineId) {
-            api.line.update(lineId, formData).then(
-                data => {
-                    let oldLine = document.querySelector('div[data-id="' + lineId + '"]');
-                    oldLine.insertAdjacentHTML(
-                        "afterend",
-                        subwayLinesTemplate(data)
-                    );
-                    oldLine.remove();
-                    lineId = null;
-                });
-        } else {
-            api.line.create(formData).then(
-                data => {
-                    $subwayLineList.insertAdjacentHTML(
-                        "beforeend",
-                        subwayLinesTemplate(data)
-                    );
-                }
-            );
-        }
+        lineId ? updateLineColumn(formData) : insertLineColumn(formData);
 
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
@@ -61,6 +41,30 @@ function AdminLine() {
         $subwayLineIntervalTimeInput.value = "";
         $subwayLineColorInput.value = "";
     };
+
+    const insertLineColumn = formData => {
+        api.line.create(formData).then(
+            data => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(data)
+                );
+            }
+        );
+    }
+
+    const updateLineColumn = formData => {
+        api.line.update(lineId, formData).then(
+            data => {
+                let oldLine = document.querySelector('div[data-id="' + lineId + '"]');
+                oldLine.insertAdjacentHTML(
+                    "afterend",
+                    subwayLinesTemplate(data)
+                );
+                oldLine.remove();
+                lineId = null;
+            });
+    }
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
@@ -86,7 +90,7 @@ function AdminLine() {
                 $subwayLineNameInput.value = data.name;
                 $subwayLineStartTimeInput.value = data.startTime.substring(0,5);
                 $subwayLineEndTimeInput.value = data.endTime.substring(0,5);
-                $subwayLineIntervalTimeInput.value = data.intervalTime+"분";
+                $subwayLineIntervalTimeInput.value = data.intervalTime;
                 $subwayLineColorInput.value = data.color;
             });
         }
@@ -105,7 +109,7 @@ function AdminLine() {
             api.line.find(id).then(data => {
                 $subwayLineStartTimeView.innerHTML = data.startTime.substring(0,5);
                 $subwayLineEndTimeView.innerHTML = data.endTime.substring(0,5);
-                $subwayLineIntervalTimeView.innerHTML = data.intervalTime;
+                $subwayLineIntervalTimeView.innerHTML = data.intervalTime.toString()+"분";
             })
 
         }
