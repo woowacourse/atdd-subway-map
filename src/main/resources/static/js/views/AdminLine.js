@@ -1,10 +1,11 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
+    const $subwayLineInfo = document.querySelector(".lines-info");
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $subwayLineNameInput = document.querySelector("#subway-line-name");
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
@@ -17,6 +18,21 @@ function AdminLine() {
     const subwayLineModal = new Modal();
 
     let $updateLineItem = null;
+
+    const onShowSubwayLine = event => {
+        const $target = event.target.closest(".subway-line-item");
+        event.preventDefault();
+
+        api.line.getById($target.dataset.lineId)
+            .then(data => data.json())
+            .then(line => {
+                $subwayLineInfo.innerHTML = "";
+                $subwayLineInfo.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLineInfoTemplate(line)
+                );
+            });
+    }
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -106,6 +122,12 @@ function AdminLine() {
                     subwayLinesTemplate(line)
                 );
                 $updateLineItem.remove();
+
+                $subwayLineInfo.innerHTML = "";
+                $subwayLineInfo.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLineInfoTemplate(line)
+                );
             });
         subwayLineModal.toggle();
 
@@ -133,6 +155,7 @@ function AdminLine() {
     };
 
     const initEventListeners = () => {
+        $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onShowSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayLineToUpdate);
         $submitSubwayLineButton.addEventListener(
