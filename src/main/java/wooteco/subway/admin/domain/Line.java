@@ -28,6 +28,7 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.color = color;
+        this.stations = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -93,7 +94,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {

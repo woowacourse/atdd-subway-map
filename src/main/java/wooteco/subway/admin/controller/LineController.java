@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
@@ -31,16 +33,17 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findLineWithStationsById(id);
+        Line line = lineService.findLineWithStationsById(id);
 
         return ResponseEntity.ok()
-                .body(lineResponse);
+                .body(LineResponse.of(line));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
         Line persistLine = lineService.updateLine(id, view.toLine());
-        return ResponseEntity.ok().body(LineResponse.of(persistLine));
+        return ResponseEntity.ok()
+                .body(LineResponse.of(persistLine));
     }
 
     @GetMapping("/lines")
@@ -53,6 +56,18 @@ public class LineController {
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
+    }
+
+    @PutMapping("/line-stations/{id}")
+    public ResponseEntity<LineResponse> createLineStation(@PathVariable Long id,
+                                            @RequestBody LineStationCreateRequest lineStationCreateRequest){
+        Line line = lineService.findLineWithStationsById(id);
+        line.addLineStation(lineStationCreateRequest.toLineStation());
+        line = lineService.updateLine(id, line);
+
+        return ResponseEntity.ok()
+                .body(LineResponse.of(line));
     }
 }

@@ -35,7 +35,8 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."));
         persistLine.update(line);
         return lineRepository.save(persistLine);
     }
@@ -57,10 +58,8 @@ public class LineService {
         // TODO: 구현
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
+    public Line findLineWithStationsById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 노선입니다."));
-
-        return LineResponse.of(line);
     }
 }
