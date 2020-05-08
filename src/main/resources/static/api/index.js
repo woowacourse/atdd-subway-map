@@ -35,13 +35,13 @@ const api = (() => {
       dataRequest(`${BASE_URL}/stations`);
     },
     create(data) {
-      dataRequest(`${BASE_URL}/station`, METHOD.POST(data));
+      return dataRequest(`${BASE_URL}/stations`, METHOD.POST(data));
     },
     update(id, data) {
-      noDataRequest(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+      noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      noDataRequest(`${BASE_URL}/station/${id}`, METHOD.DELETE());
+      noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.DELETE());
     }
   };
 
