@@ -39,8 +39,8 @@ const api = (() => {
   };
 
   const line = {
-    get() {
-      return request(`/lines`);
+    get(id = "") {
+      return request(`/lines/${id}`);
     },
     create(data) {
       return request(`/lines`, METHOD.POST(data));

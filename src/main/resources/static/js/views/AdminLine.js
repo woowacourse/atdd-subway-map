@@ -1,10 +1,12 @@
 import { EVENT_TYPE, ERROR_MESSAGE } from "../../utils/constants.js";
-import { subwayLinesTemplate } from "../../utils/templates.js";
+import { subwayLinesTemplate, detailSubwayLineTemplate } from "../../utils/templates.js";
 import CreateSubWayLineModal from "../../ui/CreateSubwayLineModal.js"
 import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
+  const $linesInfo = document.querySelector(".lines-info");
+  
   const subwayLineModal = new CreateSubWayLineModal();  
 
   const onCreateSubwayLine = async data => {
@@ -39,6 +41,15 @@ function AdminLine() {
     }
   };
 
+  const onSelectSubwayLine = async event => {
+    const $target = event.target;
+    const isSubwayLineItem = $target.classList.contains("subway-line-item");
+    if (isSubwayLineItem) {
+      const line = await api.line.get($target.dataset.lineId);
+      $linesInfo.innerHTML = detailSubwayLineTemplate(line);
+    }
+  }
+
   const onEditSubwayLine = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-pencil");
@@ -57,6 +68,7 @@ function AdminLine() {
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
     subwayLineModal.on('submit', onCreateSubwayLine);
   };
 
