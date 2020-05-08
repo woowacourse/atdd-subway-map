@@ -33,13 +33,13 @@ const api = (() => {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
-    update(data) {
-      return request(`/station/${id}`, METHOD.PUT(data));
+    update(id, data) {
+      return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return deleteRequest(`/station/${id}`, METHOD.DELETE(id));
+      return deleteRequest(`/stations/${id}`, METHOD.DELETE());
     }
   };
 
@@ -56,8 +56,8 @@ const api = (() => {
     update(id, data) {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
-    delete(id) {
-      return deleteRequest(`/lines/${id}`, METHOD.DELETE(id));
+    delete() {
+      return deleteRequest(`/lines/${id}`, METHOD.DELETE());
     }
   }
 

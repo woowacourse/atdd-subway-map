@@ -1,11 +1,12 @@
-import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
+import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
+import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
 
-  const onAddStationHandler = event => {
+  const onAddStationHandler = async event => {
     if (event.key !== KEY_TYPE.ENTER) {
       return;
     }
@@ -16,8 +17,13 @@ function AdminStation() {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       return;
     }
+    const newStation = {
+      name: stationName
+    };
+    const saveStation = await api.station.create(newStation);
+
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(saveStation.name));
   };
 
   const onRemoveStationHandler = event => {
