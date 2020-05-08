@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
-    @Column("station")
-    private Long stationId;
     @Column("pre_station")
     private Long preStationId;
+    @Column("station")
+    private Long stationId;
     private int distance;
     private int duration;
     private LocalDateTime createdAt;
@@ -17,9 +17,9 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(Long stationId, Long preStationId, int distance, int duration) {
-        this.stationId = stationId;
+    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
+        this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
         this.createdAt = LocalDateTime.now();
@@ -50,8 +50,15 @@ public class LineStation {
         return updatedAt;
     }
 
+    public boolean isBaseStation(Long stationId) {
+        return this.stationId == stationId;
+    }
+
+    public boolean isPreStation(Long preStationId) {
+        return this.preStationId == preStationId;
+    }
+
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }
-
 }

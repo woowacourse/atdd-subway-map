@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -96,15 +97,40 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        Long preStation = null;
+        for (LineStation lineStation : stations) {
+            if (lineStation.isBaseStation(stationId)) {
+                preStation = lineStation.getPreStationId();
+                stations.remove(lineStation);
+            }
+        }
+        for (LineStation lineStation : stations) {
+            if (lineStation.isPreStation(stationId)) {
+                if (preStation == null) {
+                    stations.remove(lineStation);
+                } else {
+                    lineStation.updatePreLineStation(preStation);
+                }
+                break;
+            }
+        }
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        LinkedList<Long> stations = new LinkedList<>();
+        for (LineStation lineStation : this.stations) {
+            Long preStationId = lineStation.getPreStationId();
+            Long stationId = lineStation.getStationId();
+            if (!stations.contains(preStationId)) {
+                stations.add(preStationId);
+            }
+            int index = stations.indexOf(preStationId);
+            stations.add(index + 1, stationId);
+        }
+        return new ArrayList<>(stations);
     }
 }
