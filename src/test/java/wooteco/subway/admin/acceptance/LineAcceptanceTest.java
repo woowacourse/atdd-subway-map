@@ -81,6 +81,7 @@ public class LineAcceptanceTest {
 
     private void createLine(String name) {
         LineRequest request = new LineRequest(name,
+                "bg-red-500",
                 LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
                 LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
                 10);
