@@ -29,7 +29,7 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.color = color;
-        this.stations = new HashSet<>();
+        this.stations = new LinkedHashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

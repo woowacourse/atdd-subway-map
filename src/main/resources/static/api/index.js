@@ -59,8 +59,14 @@ const api = (() => {
         }
     };
 
+    const lineStation = {
+        create(id, data) {
+            return request(`${BASE_URL}/lines/${id}/stations`, METHOD.PUT(data)).then(data => data.json());
+        }
+    }
+
     return {
-        station, line
+        station, line, lineStation
     };
 })();
 

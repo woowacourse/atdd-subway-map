@@ -6,7 +6,8 @@ import api from "../../api/index.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-    const $createLineStationButton = document.querySelector("#subway-line-add-btn");
+    const $createLineStationButton = document.querySelector("#submit-button");
+    const $stationSelectOptions = document.querySelector("#station-select-options");
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = () => {
@@ -30,21 +31,34 @@ function AdminEdge() {
     };
 
     const initSubwayLineOptions = () => {
-        const subwayLineOptionTemplate = api.line.get().then(data =>
-            data.map(line => optionTemplate(line.name))
-                .join(""));
-
-        const $stationSelectOptions = document.querySelector(
-            "#station-select-options"
-        );
-        $stationSelectOptions.insertAdjacentHTML(
-            "afterbegin",
-            subwayLineOptionTemplate
-        );
+        api.line.get().then(data => {
+            const subwayLineOptionTemplate = data.map(line => optionTemplate(line))
+                .join("")
+            const $stationSelectOptions = document.querySelector(
+                "#station-select-options"
+            );
+            $stationSelectOptions.insertAdjacentHTML(
+                "afterbegin",
+                subwayLineOptionTemplate
+            );
+    });
     };
 
-    const createLineStation = event => {
+    const onCreateLineStationHandler = async event => {
         event.preventDefault();
+        const stations = await api.station.get();
+        const preStation = stations.find(station => station.name === document.querySelector("#depart-station-name").value);
+        const station = stations.find(station => station.name === document.querySelector("#arrival-station-name").value);
+        const request = {
+          preStationId: preStation ? preStation.id : null,
+          stationId: station ? station.id : null,
+          distance: 2,
+          duration: 2
+        }
+        console.log(request);
+        api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
+          console.log(data);
+        })
     };
 
     const onRemoveStationHandler = event => {
@@ -62,7 +76,7 @@ function AdminEdge() {
         );
         $createLineStationButton.addEventListener(
             EVENT_TYPE.CLICK,
-            createLineStation
+            onCreateLineStationHandler
         );
     };
 

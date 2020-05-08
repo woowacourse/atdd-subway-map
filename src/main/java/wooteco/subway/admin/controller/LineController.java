@@ -28,7 +28,7 @@ public class LineController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine, new HashSet<Station>()));
+                .body(LineResponse.of(persistLine));
     }
 
     @GetMapping("/lines/{id}")
@@ -64,7 +64,7 @@ public class LineController {
         Line persistLine = lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
 
         return ResponseEntity.ok()
-                .body(LineResponse.of(persistLine));
+                .body(lineService.findLineWithStationsById(id));
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")
