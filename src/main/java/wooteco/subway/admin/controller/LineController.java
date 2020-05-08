@@ -39,7 +39,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+    public void updateLine(@PathVariable Long id,@RequestBody LineRequest view) {
         lineService.updateLine(id, view.toLine());
     }
 

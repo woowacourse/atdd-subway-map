@@ -5,6 +5,7 @@ export default function Modal() {
   const $closeModalButton = document.querySelector(".modal-close");
   const $body = document.querySelector("body");
   const $modal = document.querySelector(".modal");
+  const $subwaySubmitButton = document.querySelector("#submit-button");
 
   const toggle = event => {
     if (event) {
@@ -13,6 +14,10 @@ export default function Modal() {
     $body.classList.toggle("modal-active");
     $modal.classList.toggle("opacity-0");
     $modal.classList.toggle("pointer-events-none");
+    const hasClass = $subwaySubmitButton.classList.contains('update-submit-button');
+    if (hasClass) {
+      $subwaySubmitButton.classList.remove('update-submit-button');
+    }
   };
 
   $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);
