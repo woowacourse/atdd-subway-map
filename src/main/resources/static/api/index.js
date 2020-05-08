@@ -4,7 +4,7 @@ const METHOD = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "charset" : "UTF-8"
+        "charset": "UTF-8"
       },
       body: JSON.stringify(data)
     };
@@ -24,10 +24,8 @@ const METHOD = {
     };
   }
 };
-
 const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
-
   const station = {
     get() {
       return request(`/stations`);
@@ -39,31 +37,28 @@ const api = (() => {
       return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/stations/${id}`, METHOD.DELETE);
+      return request(`/stations/${id}`, METHOD.DELETE());
     }
   };
-
-const line = {
-  get() {
-    return request(`/lines`);
-  },
-  getBy(id) {
-    return request(`/lines/${id}`);
-  },
-  create(data) {
-    return request(`/lines`, METHOD.POST(data));
-  },
-  update(data, id) {
-    return request(`/lines/${id}`, METHOD.PUT(data));
-  },
-  delete(id) {
-    return request(`/lines/${id}`, METHOD.DELETE);
-  }
-};
-
+  const line = {
+    get() {
+      return request(`/lines`);
+    },
+    getBy(id) {
+      return request(`/lines/${id}`);
+    },
+    create(data) {
+      return request(`/lines`, METHOD.POST(data));
+    },
+    update(data, id) {
+      return request(`/lines/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      return request(`/lines/${id}`, METHOD.DELETE());
+    }
+  };
   return {
     station, line
   };
 })();
-
 export default api;

@@ -5,9 +5,8 @@ export const listItemTemplate = value =>
        <span class="mdi mdi-delete"></span>
     </button>
   </div>`;
-
 export const subwayLinesTemplate = line =>
-  `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
+  `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" data-subway-id=${line.id}>
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.name}
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
@@ -16,11 +15,8 @@ export const subwayLinesTemplate = line =>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-pencil"></span>
       </button>
-      <input class="subway-line-id" type="hidden" value=${line.id}>
     </div>`;
-
 export const optionTemplate = value => `<option>${value}</option>`;
-
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
       <a href="/" class="mr-2">
@@ -44,7 +40,6 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
       </div>
     </div>
 </nav>`;
-
 export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
     .map(station => listItemTemplate(station))
@@ -58,14 +53,11 @@ export const subwayLinesItemTemplate = line => {
             </div>
           </div>`;
 };
-
 export const initNavigation = () => {
   document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
 };
-
 export const colorSelectOptionTemplate = (option, index) => {
   const hasNewLine = ++index % 7 === 0;
-
   return ` <button data-color="${
     option.bgColor
   }" class="color-select-option button w-6 h-6 ${option.bgColor} ${
