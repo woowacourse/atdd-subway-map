@@ -19,7 +19,7 @@ public class Line {
     private int intervalTime;
     private String color;
     @MappedCollection(idColumn = "line_id")
-    private Set<LineStation> stations = new HashSet<>();
+    private Set<Edge> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -60,7 +60,7 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
+    public void addLineStation(Edge edge) {
         // TODO: 구현
     }
 
@@ -70,7 +70,7 @@ public class Line {
 
     public List<Long> getLineStationsId() {
         return stations.stream()
-                .map(LineStation::getStationId)
+                .map(Edge::getStationId)
                 .collect(Collectors.toList());
     }
 
@@ -94,7 +94,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public Set<Edge> getStations() {
         return stations;
     }
 

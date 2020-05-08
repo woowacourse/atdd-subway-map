@@ -75,10 +75,10 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
+                get("/lines/" + id).
                 then().
-                        log().all().
-                        extract().as(LineResponse.class);
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
@@ -87,11 +87,7 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("bgColor", "#000000");
-
-        System.out.println("#");
-        System.out.println(params);
-        System.out.println("#");
+        params.put("bgColor", "bg-red-200");
 
         given().
                 body(params).
@@ -114,9 +110,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
@@ -124,9 +120,9 @@ public class LineAcceptanceTest {
     private List<LineResponse> getLines() {
         return
                 given().
-                when().
+                        when().
                         get("/lines").
-                then().
+                        then().
                         log().all().
                         extract().
                         jsonPath().getList(".", LineResponse.class);

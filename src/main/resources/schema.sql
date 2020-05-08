@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS LINE
     primary key (id)
 );
 
-CREATE TABLE IF NOT EXISTS LINE_STATION
+CREATE TABLE IF NOT EXISTS EDGE
 (
     id             bigint auto_increment not null,
     line_id        bigint                not null,

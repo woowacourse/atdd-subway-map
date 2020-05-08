@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -38,14 +38,14 @@ public class LineServiceTest {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "#000000");
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addLineStation(new Edge(null, 1L, 10, 10));
+        line.addLineStation(new Edge(1L, 2L, 10, 10));
+        line.addLineStation(new Edge(2L, 3L, 10, 10));
     }
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -59,7 +59,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -73,7 +73,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);

@@ -3,8 +3,8 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -61,7 +61,7 @@ public class LineService {
     }
 
     @Transactional
-    public void addLineStation(Long id, LineStationCreateRequest request) {
+    public void addLineStation(Long id, EdgeCreateRequest request) {
         // TODO: 구현
     }
 
