@@ -59,7 +59,7 @@ public class LineService {
 
     public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        List<Long> orderedStationIds = line.getOrderedStationIds();
+        List<Long> orderedStationIds = line.getStationsId();
         orderedStationIds.forEach(test -> {
             System.out.println("##"+test);
         });

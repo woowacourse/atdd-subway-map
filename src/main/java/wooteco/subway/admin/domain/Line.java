@@ -99,6 +99,13 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        Optional<LineStation> lineStationWithSamePreStation = this.lineStations.stream()
+                .filter(anyLineStation -> anyLineStation.isPreStationId(lineStation.getPreStationId()))
+                .findFirst();
+        if (lineStationWithSamePreStation.isPresent()) {
+            updatePreOfLineStation(lineStationWithSamePreStation.get().getStationId(),
+                    lineStation.getStationId());
+        }
         this.lineStations.add(lineStation);
     }
 
@@ -122,12 +129,6 @@ public class Line {
     }
 
     public List<Long> getStationsId() {
-        return lineStations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-    }
-
-    public List<Long> getOrderedStationIds() {
         Map<Long, Long> stationIdOrder = new HashMap<>();    // key: 전 역 ID, value: 현재 역 ID
         List<Long> orderedStations = new ArrayList<>();
 
