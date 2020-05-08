@@ -17,12 +17,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -62,7 +64,7 @@ public class LineAcceptanceTest {
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
-        //then
+        // then
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
@@ -75,11 +77,14 @@ public class LineAcceptanceTest {
     }
 
     private LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
+        // @formatter:off
+        return given()
+        .when()
+            .get("/lines/" + id)
+        .then()
+            .log().all()
+            .extract().as(LineResponse.class);
+        // @formatter:on
     }
 
     private void createLine(String name) {
@@ -89,19 +94,20 @@ public class LineAcceptanceTest {
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
         params.put("bgColor", "bg-gray-100");
-
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(anyOf(
+        // @formatter:off
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .post("/lines")
+        .then()
+            .log().all()
+            .statusCode(anyOf(
                 is(HttpStatus.CREATED.value()),
                 is(HttpStatus.BAD_REQUEST.value()))
             );
+        // @formatter:on
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -109,34 +115,38 @@ public class LineAcceptanceTest {
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            put("/lines/" + id).
-            then().
-            log().all().
-            statusCode(HttpStatus.OK.value());
+        // @formatter:off
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .put("/lines/" + id)
+        .then()
+            .log().all()
+            .statusCode(HttpStatus.OK.value());
+        // @formatter:on
     }
 
     private List<LineResponse> getLines() {
-        return
-            given().
-                when().
+        // @formatter:off
+        return given().
+            when().
                 get("/lines").
-                then().
+            then().
                 log().all().
                 extract().
                 jsonPath().getList(".", LineResponse.class);
+        // @formatter:on
     }
 
     private void deleteLine(Long id) {
-        given().
-            when().
-            delete("/lines/" + id).
-            then().
-            log().all();
+        // @formatter:off
+        given()
+        .when()
+            .delete("/lines/" + id)
+        .then()
+            .log().all();
+        // @formatter:on
     }
 }

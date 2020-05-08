@@ -43,6 +43,7 @@ public class LineStationAcceptanceTest {
 
     /**
      *     Given 지하철역이 여러 개 추가되어있다.
+     *
      *     And 지하철 노선이 추가되어있다.
      *
      *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
@@ -71,11 +72,11 @@ public class LineStationAcceptanceTest {
         // when
         StationResponse naksungdae = getStations().get(0);
         StationResponse apgujeongRodeo = getStations().get(1);
-        LineResponse line = getLine(3L);
+        LineResponse line = getLine(1L);
         addStationToEmptyLine(naksungdae, line);
         addStationToEmptyLine(apgujeongRodeo, line);
         // then
-        LineResponse updatedLine = getLine(3L);
+        LineResponse updatedLine = getLine(1L);
         assertThat(updatedLine.getStations()).hasSize(line.getStations().size() + 2);
         // and
         assertThat(updatedLine.getStations()
@@ -86,26 +87,31 @@ public class LineStationAcceptanceTest {
         // when
         deleteStationFromLine(line.getId(), naksungdae.getId());
         // then
-        LineResponse stationExcludedLine = getLine(3L);
+        LineResponse stationExcludedLine = getLine(1L);
         assertThat(stationExcludedLine.getStations().size()).isEqualTo(1);
         assertThat(stationExcludedLine.getStations().stream().map(Station::getName)).doesNotContain(
             naksungdae.getName());
     }
 
     private void deleteStationFromLine(Long lineId, Long stationId) {
+        // @formatter:off
         given()
-            .when()
+        .when()
             .delete("/lines/{lineId}/{stationId}", lineId, stationId)
-            .then().log().all()
+        .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
+        // @formatter:on
     }
 
     private LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
+        // @formatter:off
+        return given()
+        .when()
+            .get("/lines/" + id)
+        .then()
+            .log().all()
+            .extract().as(LineResponse.class);
+        // @formatter:on
     }
 
     private void addStationToEmptyLine(final StationResponse station, final LineResponse line) {
@@ -115,34 +121,40 @@ public class LineStationAcceptanceTest {
         params.put("distance", "1");
         params.put("duration", "1");
 
+        // @formatter:off
         given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .body(params)
-            .when()
+        .when()
             .post("/lines/{id}", line.getId())
-            .then().log().all()
+        .then().log().all()
             .statusCode(HttpStatus.CREATED.value());
+        // @formatter:on
     }
 
     private List<LineResponse> getLines() {
+        // @formatter:off
         return given()
-            .when()
+        .when()
             .get("/lines")
-            .then().log().all()
+        .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .extract()
             .jsonPath().getList(".", LineResponse.class);
+        // @formatter:on
     }
 
     private List<StationResponse> getStations() {
+        // @formatter:off
         return given()
-            .when()
+        .when()
             .get("/stations")
-            .then().log().all()
+        .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .extract()
             .jsonPath().getList(".", StationResponse.class);
+        // @formatter:on
     }
 
     private void createLine(String name) {
@@ -154,14 +166,14 @@ public class LineStationAcceptanceTest {
         params.put("bgColor", "bg-gray-100");
 
         // @formatter:off
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-            post("/lines").
-        then().
-            log().all().
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .post("/lines")
+        .then()
+            .log().all().
             statusCode(anyOf(
                 is(HttpStatus.CREATED.value()),
                 is(HttpStatus.BAD_REQUEST.value()))
@@ -174,15 +186,15 @@ public class LineStationAcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-            post("/stations").
-        then().
-            log().all().
-            statusCode(anyOf(
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .post("/stations")
+        .then()
+            .log().all()
+            .statusCode(anyOf(
                 is(HttpStatus.CREATED.value()),
                 is(HttpStatus.BAD_REQUEST.value()))
             );

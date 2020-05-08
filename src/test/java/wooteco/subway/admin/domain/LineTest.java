@@ -16,8 +16,8 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-700");
-        line.addLineStation(new LineStation(null, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
+        line.addLineStation(new LineStation(1L, 2L, 10, 10));
     }
 
     @Test
@@ -25,12 +25,12 @@ public class LineTest {
         List<Long> stationIds = line.getLineStationsId();
 
         assertThat(stationIds.size()).isEqualTo(2);
-        assertThat(stationIds.get(0)).isEqualTo(2L);
-        assertThat(stationIds.get(1)).isEqualTo(3L);
+        assertThat(stationIds.get(0)).isEqualTo(1L);
+        assertThat(stationIds.get(1)).isEqualTo(2L);
     }
 
     @ParameterizedTest
-    @ValueSource(longs = {2L, 3L})
+    @ValueSource(longs = {1L, 2L})
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
         assertThat(line.getStations()).hasSize(1);
