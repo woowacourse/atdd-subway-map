@@ -141,6 +141,9 @@ public class Line {
         });
 
         Long now = PRE_ID_OF_FIRST_STATION;
+        if(stationIdOrder.isEmpty()) {
+            return orderedStations;
+        }
         if(!stationIdOrder.containsKey(PRE_ID_OF_FIRST_STATION)) {
             throw new IllegalArgumentException("순환 발생 했거나 시작 역이 없다 - 향후 수정");
         }

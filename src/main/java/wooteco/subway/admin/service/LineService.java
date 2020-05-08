@@ -9,6 +9,7 @@ import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,10 @@ public class LineService {
 
     public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return findLineWithOrderedStations(line);
+    }
+
+    private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
         List<Long> orderedStationIds = line.getStationsId();
         orderedStationIds.forEach(test -> {
             System.out.println("##"+test);
@@ -67,5 +72,13 @@ public class LineService {
                 .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
                 .collect(Collectors.toList());
         return LineWithOrderedStationsResponse.of(line, orderedStations);
+    }
+
+    public List<LineWithOrderedStationsResponse> showLinesWithStations() {
+        List<Line> lines = lineRepository.findAll();
+        return Collections.unmodifiableList(
+                lines.stream()
+                    .map(this::findLineWithOrderedStations)
+                    .collect(Collectors.toList()));
     }
 }

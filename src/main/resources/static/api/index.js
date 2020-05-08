@@ -62,13 +62,27 @@ export const api = (() => {
             return requestWithoutResponseBody(`${BASE_URL}/line/${lineId}`, METHOD.PUT(data));
         },
         delete(lineId) {
-            console.log(lineId)
             return requestWithoutResponseBody(
                 `${BASE_URL}/line/${lineId}`, METHOD.DELETE());
         }
     };
+
+    const lineStation = {
+        getLines() {
+            return request(`${BASE_URL}/lineStation`);
+        },
+        create(lineId, data) {
+            return request(`${BASE_URL}/lineStation/${lineId}`, METHOD.POST(data));
+        },
+        delete(lineId, stationId) {
+            return requestWithoutResponseBody(
+                `${BASE_URL}/lineStation/${lineId}/${stationId}`, METHOD.DELETE());
+        }
+    };
+
     return {
         station,
-        line
+        line,
+        lineStation
     };
 })();
