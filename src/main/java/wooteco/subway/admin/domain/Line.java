@@ -15,7 +15,7 @@ public class Line {
 	private LocalTime endTime;
 	private int intervalTime;
 	private String bgColor;
-	private Set<LineStation> stations;
+	private Set<LineStation> stations = new LinkedHashSet<>();
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -23,6 +23,7 @@ public class Line {
 	}
 
 	public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+		this.id = id;
 		this.title = title;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -33,7 +34,7 @@ public class Line {
 	}
 
 	public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this(null, title, startTime, endTime, intervalTime, "bgColor");
+		this(id, title, startTime, endTime, intervalTime, "bgColor");
 	}
 
 	public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
@@ -104,7 +105,12 @@ public class Line {
 	}
 
 	public void removeLineStationById(Long stationId) {
-		// TODO: 구현
+		LineStation lineStation = stations.stream()
+			.filter(value -> value.getStationId().equals(stationId))
+			.findFirst()
+			.orElseThrow(NoSuchElementException::new);
+
+		stations.remove(lineStation);
 	}
 
 	public List<Long> getLineStationsId() {

@@ -4,18 +4,18 @@ import org.springframework.data.relational.core.mapping.Table;
 
 public class LineStation {
     private Long line;
-    private Long stationId;
     private Long preStationId;
+    private Long stationId;
     private int distance;
     private int duration;
 
     public LineStation() {
     }
 
-    public LineStation(Long line, Long stationId, Long preStationId, int distance, int duration) {
+    public LineStation(Long line, Long preStationId, Long stationId, int distance, int duration) {
         this.line = line;
-        this.stationId = stationId;
         this.preStationId = preStationId;
+        this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
     }

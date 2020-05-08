@@ -1,12 +1,18 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -33,9 +39,13 @@ public class LineStationAcceptanceTest {
 	public static RequestSpecification given() {
 		return RestAssured.given().log().all();
 	}
+
 	/**
-	 *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-	 *     Then 지하철역이 노선에 추가 되었다.
+	 *     Given 지하철역이 여러 개 추가되어있다. - ok
+	 *     And 지하철 노선이 여러 개 추가되어있다. - ok
+	 *
+	 *     When 지하철 노선에 두 지하철역을 통해 구간을 등록하는 요청을 한다. - ok
+	 *     Then 지하철역이 추가 되었다.
 	 *
 	 *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 	 *     Then 지하철역 목록을 응답 받는다.
@@ -51,51 +61,43 @@ public class LineStationAcceptanceTest {
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
 	void manageLineStation() {
-		StationResponse firstStation = createStation("잠실");
-		StationResponse secondStation = createStation("잠실새내");
-		LineResponse line = createLine("2호선");
+		addLineStation(1L, null, 0L);
+		addLineStation(1L, 0L, 1L);
+		LineResponse line = getLine(1L);
+		assertThat(line.getStations()).hasSize(2);
 
-		addLineStation(line.getId(), null, firstStation.getId());
+		List<String> stationIds = getStations(line.getId()).stream()
+			.map(StationResponse::getName)
+			.collect(Collectors.toList());
+		assertThat(stationIds).contains("잠실", "잠실나루");
 
-		//createLineStation(1L, null, 1L);
+		deleteLineStation(1L, 0L);
+		line = getLine(1L);
+		assertThat(line.getStations()).hasSize(1);
 	}
 
-	private StationResponse createStation(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
+	private LineResponse getLine(Long id) {
+		return given()
+			.when()
+			.get("/lines/" + id)
+			.then()
+			.log().all()
+			.extract().as(LineResponse.class);
 
-		return given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			post("/stations").
-			then().
-			log().all().
-			extract().as(StationResponse.class);
 	}
 
-	private LineResponse createLine(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("title", name);
-		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("bgColor", "bg-red-400");
-		params.put("intervalTime", "10");
-
-		return given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			post("/lines").
-			then().
-			log().all().extract().as(LineResponse.class);
+	private List<StationResponse> getStations(Long id) {
+		return given()
+			.when()
+			.get("/lines/" + id + "/stations")
+			.then()
+			.log().all()
+			.extract()
+			.jsonPath().getList(".", StationResponse.class);
 	}
 
 	private void addLineStation(Long lineId, Long preStationId, Long stationId) {
 		Map<String, String> params = new HashMap<>();
-		params.put("line", String.valueOf(lineId));
 		params.put("preStationId", String.valueOf(preStationId));
 		params.put("stationId", String.valueOf(stationId));
 		params.put("distance", "1000");
@@ -106,9 +108,16 @@ public class LineStationAcceptanceTest {
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
-			post("/lineStation/" + lineId).
+			put("/lines/" + lineId + "/stations").
 			then().
-			log().all().
-			statusCode(HttpStatus.CREATED.value());
+			log().all().statusCode(HttpStatus.OK.value());
+	}
+
+	private void deleteLineStation(Long lineId, Long stationId) {
+		given()
+			.when()
+			.delete("/lines/" + lineId + "/stations/" + stationId)
+			.then()
+			.log().all();
 	}
 }

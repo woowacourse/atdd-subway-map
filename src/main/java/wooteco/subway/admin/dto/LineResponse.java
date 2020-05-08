@@ -19,7 +19,7 @@ public class LineResponse {
 	private String bgColor;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private Set<Station> stations;
+	private Set<Station> stations = new HashSet<>();
 
 	public LineResponse() {
 	}
