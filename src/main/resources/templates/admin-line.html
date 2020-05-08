@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>subway admin</title>
-  <meta title="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
   <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css" rel="stylesheet" />
   <link href="./css/admin-app.css" rel="stylesheet" />
@@ -24,11 +24,11 @@
       </div>
       <div class="lines-info flex flex-wrap mb-3 w-full">
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
-        <div id="start-subway-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100"></div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">05:00</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
-        <div id="last-subway-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100"></div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">23:30</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
-        <div id="subway-interval-time" class="w-1/2 p-2 text-center text-gray-800 bg-gray-100"></div>
+        <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">10분</div>
       </div>
     </div>
     <div class="mt-5 flex subway-lines-container relative overflow-y-auto">
@@ -47,10 +47,10 @@
       </div>
       <form id="subway-line-create-form" class="mb-4">
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="subway-line-title">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="subway-line-name">
             노선 이름
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="subway-line-title" type="text" placeholder="노선 이름을 입력해주세요">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="subway-line-name" type="text" placeholder="노선 이름을 입력해주세요">
         </div>
 
 
