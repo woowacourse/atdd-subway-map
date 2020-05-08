@@ -1,32 +1,19 @@
 package wooteco.subway.admin.controller.mock;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.StationResponse;
 
 @RestController
 @RequestMapping("/api/lines")
 public class MockLineController {
+ /*
+	private static Map<Long, Station> stations = new HashMap<>();
+	private static Map<Long, List<Long>> lineStations = new HashMap<>();
 
-    private static Map<Long, Station> stations = new HashMap<>();
-    private static Map<Long, List<Long>> lineStations = new HashMap<>();
-
-    static {
-        stations.put(1L, new Station("잠실역"));
-        stations.put(2L, new Station("종합운동장역"));
-    }
+	static {
+		stations.put(1L, new Station("잠실역"));
+		stations.put(2L, new Station("종합운동장역"));
+	}
 
     @PostMapping("{lineId}/stations/{stationId}")
     public ResponseEntity<Void> addStationToLine(@PathVariable Long lineId,
@@ -59,7 +46,7 @@ public class MockLineController {
             .status(HttpStatus.OK)
             .build();
     }
-    /*
+
     private Map<Long, Line> lines = new HashMap<>();
 
     @GetMapping("")
