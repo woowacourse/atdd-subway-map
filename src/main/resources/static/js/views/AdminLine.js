@@ -2,7 +2,8 @@ import { EVENT_TYPE } from "../../utils/constants.js";
 import api from "../../api/index.js";
 import {
   subwayLinesTemplate,
-  colorSelectOptionTemplate
+  colorSelectOptionTemplate,
+  lineInformationTemplate
 } from "../../utils/templates.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
@@ -63,13 +64,13 @@ function AdminLine() {
   };
 
   const onSelectSubwayLine = event => {
-        let s = event.target.innerText.trim();
-      let lineRequestDto = {
-
-      }
     const $target = event.target;
+    const $subwayLineItem = $target.closest(".subway-line-item");
     const isSelectSubwayLineItem = $target.classList.contains("subway-line-item");
     if (isSelectSubwayLineItem) {
+      api.line.getById($subwayLineItem.dataset.lineId).then(data => {
+        document.querySelector(".lines-info").innerHTML = lineInformationTemplate(data);
+      })
     }
   }
 

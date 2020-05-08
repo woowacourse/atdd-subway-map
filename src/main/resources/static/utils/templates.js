@@ -72,3 +72,13 @@ export const colorSelectOptionTemplate = (option, index) => {
   } font-bold p-1 rounded">
              </button> ${hasNewLine ? "<br/>" : ""}`;
 };
+
+export const lineInformationTemplate = value =>
+    `
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">첫차 시간</div>
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${value.startTime}</div>
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">막차 시간</div>
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${value.endTime}</div>
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
+     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${value.intervalTime}분</div>
+    `;

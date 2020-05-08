@@ -43,6 +43,9 @@ const api = (() => {
     get() {
       return request(`/lines`);
     },
+    getById(id) {
+      return request(`/lines/${id}`);
+    },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
