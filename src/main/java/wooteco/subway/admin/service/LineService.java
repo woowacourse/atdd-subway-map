@@ -6,12 +6,11 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationAddRequest;
+import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,5 +89,10 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         // TODO: 구현
         return new LineResponse();
+    }
+
+    public List<LineStationResponse> findAllLineStations() {
+        LineStationResponse lineStationResponse = new LineStationResponse(1L, "2호선", new HashSet<>(stationMockTable.values()));
+        return Arrays.asList(lineStationResponse);
     }
 }

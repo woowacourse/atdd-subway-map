@@ -34,7 +34,6 @@ public class LineStationAcceptanceTest {
     /**
      * Given 지하철역이 여러 개 추가되어있다.
      * And 지하철 노선이 추가되어있다.
-     * <p>
      * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
      * Then 지하철역이 노선에 추가 되었다.
      * <p>
@@ -52,6 +51,7 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        // 노선 추가
         //given
         createStation("잠실역");
         createStation("삼성역");
@@ -65,7 +65,19 @@ public class LineStationAcceptanceTest {
 
         addLineStation(params);
 
+        // LineStation이 추가되었는지 확인
+        findAllLineStations();
+    }
 
+    private void findAllLineStations() {
+        given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lineStations")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 
     private void createStation(String name) {
