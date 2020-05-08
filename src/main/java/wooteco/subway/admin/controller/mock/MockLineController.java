@@ -1,12 +1,42 @@
 package wooteco.subway.admin.controller.mock;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import wooteco.subway.admin.dto.StationResponse;
 
 @RestController
 @RequestMapping("/api/lines")
 public class MockLineController {
 
+	@PostMapping("{lineId}/stations/{stationId}")
+	public ResponseEntity<Void> addStationToLine(@PathVariable String lineId, @PathVariable String stationId) {
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.build();
+	}
+
+	@GetMapping("{lineId}/stations")
+	public ResponseEntity<List<StationResponse>> findStationsByLineId(@PathVariable String lineId) {
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(null);
+	}
+
+	@DeleteMapping("{lineId}/stations/{stationsId}")
+	public ResponseEntity<Void> deleteStationByLineId(@PathVariable String lineId, @PathVariable String stationsId) {
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.build();
+	}
     /*
     private Map<Long, Line> lines = new HashMap<>();
 
