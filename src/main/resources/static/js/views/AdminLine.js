@@ -117,18 +117,17 @@ function AdminLine() {
       EVENT_TYPE.CLICK,
       onReadSubwayLine
     );
-    $subwayLineList.lastChild.addEventListener(
+    $subwayLineList.lastChild.querySelector(`.${DELETE_BUTTON_CLASS_NAME}`).addEventListener(
       EVENT_TYPE.CLICK,
       onDeleteSubwayLine
     );
-    $subwayLineList.lastChild.addEventListener(
+    $subwayLineList.lastChild.querySelector(`.${UPDATE_BUTTON_CLASS_NAME}`).addEventListener(
       EVENT_TYPE.CLICK,
       onUpdateSubwayLine
     );
   }
 
   const onReadSubwayLine = event => {
-    event.preventDefault();
     selectLine(event);
   };
 
@@ -146,10 +145,18 @@ function AdminLine() {
     $intervalTimeContainer.innerHTML = data.intervalTime;
   }
 
+  // todo 이렇게 바꿔보자.
+  // const showLineDetail = (data) => {
+  //   $startTimeContainer.innerHTML = data.startTime;
+  //   $endTimeContainer.innerHTML = data.endTime;
+  //   $intervalTimeContainer.innerHTML = data.intervalTime;
+  // };
+
   const onDeleteSubwayLine = event => {
     event.stopPropagation();
     const $target = event.target;
     const lineId = $target.closest(".subway-line-item").firstElementChild.id;
+
     const isDeleteButton = $target.classList.contains(DELETE_BUTTON_CLASS_NAME);
     if (isDeleteButton) {
       fetch(`/lines/${lineId}`, {
@@ -160,10 +167,10 @@ function AdminLine() {
   };
 
   const onUpdateSubwayLine = event => {
+    event.stopPropagation();
     const $target = event.target;
     const lineId = $target.closest(".subway-line-item").firstElementChild.id;
-    // Update만의 모달을 띄워야해요!
-    // data들을 가져와야함
+
     const isUpdateButton = $target.classList.contains(UPDATE_BUTTON_CLASS_NAME);
     if (isUpdateButton) {
       api.line.getBy(lineId)
