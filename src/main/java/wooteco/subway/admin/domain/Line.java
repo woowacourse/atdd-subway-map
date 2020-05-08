@@ -108,13 +108,14 @@ public class Line {
         for (LineStation lineStation : stations){
             if(stationId.equals(lineStation.getStationId())) {
                 previousLineStation = lineStation;
-            }
-            if(stationId.equals(lineStation.getPreStationId())){
+            } else if(stationId.equals(lineStation.getPreStationId())){
                 nextLineStation = lineStation;
             }
         }
 
-        nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
+        if(nextLineStation != null) {
+            nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
+        }
         stations.remove(previousLineStation);
     }
 
