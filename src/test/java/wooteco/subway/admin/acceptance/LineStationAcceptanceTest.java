@@ -79,6 +79,23 @@ public class LineStationAcceptanceTest {
         assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
         assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(0).getId());
         assertThat(lineStationResponse.getPreStationId()).isNull();
+
+        deleteLineStation(line.getId(), stations.get(0).getId());
+        List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());
+        assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
+
+        boolean isExistLineStation = lineStationsAfterDelete.stream()
+            .filter(response -> response.getLineId().equals(lineStationResponse.getLineId()))
+            .anyMatch(response -> response.getStationId().equals(lineStationResponse.getStationId()));
+        assertThat(isExistLineStation).isFalse();
+    }
+
+    private void deleteLineStation(Long lineId, Long stationId) {
+        given().
+            when().
+            delete("/lines/" + lineId + "/stations/" + stationId).
+            then().
+            log().all();
     }
 
     private void createStation(String name) {
@@ -151,7 +168,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/line-stations").
+                post("/lines/" + lineId + "/stations").
                 then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -161,7 +178,7 @@ public class LineStationAcceptanceTest {
         return
                 given().
                         when().
-                        get("/line-stations/" + lineId).
+                        get("/lines/" + lineId + "/stations").
                         then().
                         log().all().
                         extract().
