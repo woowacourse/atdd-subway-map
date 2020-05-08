@@ -25,7 +25,7 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config);
 
   const station = {
     get() {
@@ -38,7 +38,7 @@ const api = (() => {
       return request(`/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+      return request(`/station/${id}`, METHOD.DELETE());
     }
   };
 
@@ -56,7 +56,7 @@ const api = (() => {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/lines/${id}`, METHOD.DELETE);
+      return request(`/lines/${id}`, METHOD.DELETE());
     }
   };
 

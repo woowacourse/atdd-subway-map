@@ -29,6 +29,7 @@ function AdminLine() {
         };
 
         api.line.create(newSubwayLine)
+            .then(data => data.json())
             .then(line => {
                 if (!line.name) {
                     alert("저장 실패!");
@@ -46,9 +47,13 @@ function AdminLine() {
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            $target.closest(".subway-line-item").remove();
+        if (!isDeleteButton) {
+            return;
         }
+
+        const $deleteLineItem = $target.closest(".subway-line-item");
+        api.line.delete($deleteLineItem.dataset.lineId)
+            .then(() => $deleteLineItem.remove())
     };
 
     const onReadSubwayLineToUpdate = event => {
@@ -73,6 +78,7 @@ function AdminLine() {
         const targetId = $updateLineItem.dataset.lineId;
 
         api.line.getById(targetId)
+            .then(data => data.json())
             .then(line => {
                 $subwayLineNameInput.value = line.name;
                 $firstTimeInput.value = line.startTime;
@@ -92,10 +98,9 @@ function AdminLine() {
             bgColor: $subwayLineColorInput.value
         };
 
-        api.line
-            .update(updatedSubwayLine, $updateLineItem.dataset.lineId)
+        api.line.update(updatedSubwayLine, $updateLineItem.dataset.lineId)
+            .then(data => data.json())
             .then(line => {
-                //TODO : 업데이트 결과 반영.
                 $updateLineItem.insertAdjacentHTML(
                     "afterend",
                     subwayLinesTemplate(line)
@@ -117,6 +122,7 @@ function AdminLine() {
 
     const initDefaultSubwayLines = () => {
         api.line.get()
+            .then(data => data.json())
             .then(lines =>
                 lines.map(line => {
                     $subwayLineList.insertAdjacentHTML(
