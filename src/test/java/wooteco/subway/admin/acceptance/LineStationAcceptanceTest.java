@@ -77,6 +77,16 @@ public class LineStationAcceptanceTest {
         assertThat(mocklineStations.get(0).getStationId()).isEqualTo(2L);
         assertThat(mocklineStations.get(0).getDistance()).isEqualTo(3);
         assertThat(mocklineStations.get(0).getDuration()).isEqualTo(4);
+
+        //When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+        mocklineStations = new ArrayList<>();
+        deleteLine(lines.get(0).getId(), stations.get(0).getId());
+        //Then 지하철역이 노선에서 제거 되었다.
+        assertThat(mocklineStations.size()).isEqualTo(0);
+
+        //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        //Then 지하철역 목록을 응답 받는다.
+        //And 제외한 지하철역이 목록에 존재하지 않는다.
     }
 
     private void addLineStation(Long lineId, Long stationId, Long preStationId) {
@@ -105,5 +115,13 @@ public class LineStationAcceptanceTest {
                 log().all().
                 extract().
                 jsonPath().getList(".", LineStationResponse.class);
+    }
+
+    private void deleteLine(Long lineId, Long stationId) {
+        given().
+                when().
+                delete("/lines/" + lineId + "/stations/" + stationId).
+                then().
+                log().all();
     }
 }

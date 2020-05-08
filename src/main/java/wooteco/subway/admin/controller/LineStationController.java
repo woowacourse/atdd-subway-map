@@ -23,4 +23,11 @@ public class LineStationController {
                 .ok()
                 .body(Arrays.asList(new LineStationResponse(1L, 2L, 3, 4)));
     }
+
+    @DeleteMapping("/lines/{id}/stations/{stationId}")
+    public ResponseEntity deleteLineStation(@PathVariable String lineId, @PathVariable String StationId) {
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
 }
