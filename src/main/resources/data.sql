@@ -1,0 +1,11 @@
+INSERT INTO LINE (name, color, start_time, end_time, interval_time) VALUES ('1호선', 'bg-blue-500', '12:00', '18:00', 5);
+INSERT INTO LINE (name, color, start_time, end_time, interval_time) VALUES ('2호선', 'bg-green-500', '12:00', '18:00', 5);
+INSERT INTO LINE (name, color, start_time, end_time, interval_time) VALUES ('3호선', 'bg-orange-500', '12:00', '18:00', 5);
+INSERT INTO STATION (name) VALUES ('강남역');
+INSERT INTO STATION (name) VALUES ('선릉역');
+INSERT INTO STATION (name) VALUES ('삼성역');
+INSERT INTO STATION (name) VALUES ('잠실역');
+INSERT INTO STATION (name) VALUES ('강변역');
+INSERT INTO LINE_STATION (line, station, pre_station, distance, duration) VALUES (2, 1, null, 10, 10);
+INSERT INTO LINE_STATION (line, station, pre_station, distance, duration) VALUES (2, 2, 1, 10, 10);
+INSERT INTO LINE_STATION (line, station, pre_station, distance, duration) VALUES (2, 3, 2, 10, 10);

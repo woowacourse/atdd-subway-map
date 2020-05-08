@@ -93,21 +93,22 @@ public class Line {
 
 	public List<Long> getLineStationsId() {
 		List<Long> lineStationsId = new ArrayList<>();
-		LineStation startLineStation = stations.stream()
+		stations.stream()
 			.filter(station -> station.getPreStationId() == null)
-			.findFirst().orElseThrow(RuntimeException::new);
+			.findFirst().ifPresent(startLineStation -> {
 
-		Queue<Long> queue = new LinkedList<>();
-		queue.add(startLineStation.getStationId());
+			Queue<Long> queue = new LinkedList<>();
+			queue.add(startLineStation.getStationId());
 
-		while (!queue.isEmpty()) {
-			Long stationId = queue.poll();
-			lineStationsId.add(stationId);
-			stations.stream()
-				.filter(station -> stationId.equals(station.getPreStationId()))
-				.findFirst()
-				.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
-		}
+			while (!queue.isEmpty()) {
+				Long stationId = queue.poll();
+				lineStationsId.add(stationId);
+				stations.stream()
+					.filter(station -> stationId.equals(station.getPreStationId()))
+					.findFirst()
+					.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
+			}
+		});
 		return lineStationsId;
 	}
 

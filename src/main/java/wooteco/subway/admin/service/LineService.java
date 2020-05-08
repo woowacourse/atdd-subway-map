@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -58,10 +59,19 @@ public class LineService {
 		lineRepository.save(line);
 	}
 
+	public List<LineResponse> findAllLineWithStations() {
+		List<Line> lines = lineRepository.findAll();
+		List<Set<Station>> stations = lines.stream().map(this::getStations).collect(Collectors.toList());
+		return LineResponse.listOf(lines, stations);
+	}
+
+	private Set<Station> getStations(Line line) {
+		return stationRepository.findAllById(line.getLineStationsId());
+	}
+
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-		return LineResponse.of(line, stations);
+		return LineResponse.of(line, getStations(line));
 	}
 
 	public LineResponse findById(final Long id) {
