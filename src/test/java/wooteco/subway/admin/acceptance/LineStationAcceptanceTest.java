@@ -1,13 +1,14 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -46,8 +44,8 @@ public class LineStationAcceptanceTest {
 		createLine("신분당선");
 		createStation("잠실역");
 		createStation("종합운동장역");
-		LineResponse line = getLines().get(0);
-		StationResponse station = getStations().get(0);
+		LineResponse line = getLines().get(0); // 신분당
+		StationResponse station = getStations().get(0); // 잠실
 
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다. - LINE
 		addStationToLine(line.getId(), station.getId());
@@ -67,7 +65,7 @@ public class LineStationAcceptanceTest {
 		stationResponses = findStationsByLineId(line.getId());
 		assertThat(stationResponses).doesNotContain(station);
 
-		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.  - LINE
+		// When 지하철 노선의 지하철역 목록 조회 요청을 한다. - LINE
 		stationResponses = findStationsByLineId(line.getId());
 		// Then 지하철역 목록을 응답 받는다.
 		assertThat(stationResponses).isNotNull();
@@ -107,8 +105,7 @@ public class LineStationAcceptanceTest {
 			when().
 			delete(String.format("/api/lines/%d/stations/%d", lineId, stationId)).
 			then().
-			log().all()
-			.statusCode(HttpStatus.OK.value());
+			log().all();
 	}
 
 	private List<LineResponse> getLines() {

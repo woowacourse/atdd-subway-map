@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.admin.domain.Line;
@@ -83,6 +84,33 @@ public class LineResponse {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LineResponse that = (LineResponse) o;
+        return intervalTime == that.intervalTime &&
+            Objects.equals(id, that.id) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(color, that.color) &&
+            Objects.equals(startTime, that.startTime) &&
+            Objects.equals(endTime, that.endTime) &&
+            Objects.equals(createdAt, that.createdAt) &&
+            Objects.equals(updatedAt, that.updatedAt) &&
+            Objects.equals(stations, that.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(id, name, color, startTime, endTime, intervalTime, createdAt, updatedAt,
+                stations);
     }
 
     @Override

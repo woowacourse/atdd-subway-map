@@ -1,7 +1,10 @@
 package wooteco.subway.admin.controller.mock;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,33 +13,52 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationResponse;
 
 @RestController
 @RequestMapping("/api/lines")
 public class MockLineController {
 
-	@PostMapping("{lineId}/stations/{stationId}")
-	public ResponseEntity<Void> addStationToLine(@PathVariable String lineId, @PathVariable String stationId) {
-		return ResponseEntity
-			.status(HttpStatus.CREATED)
-			.build();
-	}
+    private static Map<Long, Station> stations = new HashMap<>();
+    private static Map<Long, List<Long>> lineStations = new HashMap<>();
 
-	@GetMapping("{lineId}/stations")
-	public ResponseEntity<List<StationResponse>> findStationsByLineId(@PathVariable String lineId) {
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.body(null);
-	}
+    static {
+        stations.put(1L, new Station("잠실역"));
+        stations.put(2L, new Station("종합운동장역"));
+    }
 
-	@DeleteMapping("{lineId}/stations/{stationsId}")
-	public ResponseEntity<Void> deleteStationByLineId(@PathVariable String lineId, @PathVariable String stationsId) {
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.build();
-	}
+    @PostMapping("{lineId}/stations/{stationId}")
+    public ResponseEntity<Void> addStationToLine(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
+        List<Long> stations = new ArrayList<>();
+        stations.add(stationId);
+        lineStations.put(lineId, stations);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .build();
+    }
+
+    @GetMapping("{lineId}/stations")
+    public ResponseEntity<List<StationResponse>> findStationsByLineId(@PathVariable Long lineId) {
+        List<StationResponse> stationsResponses = lineStations.get(lineId).stream()
+            .map(stationId -> stations.get(stationId))
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(stationsResponses);
+    }
+
+    @DeleteMapping("{lineId}/stations/{stationsId}")
+    public ResponseEntity<Void> deleteStationByLineId(@PathVariable Long lineId,
+        @PathVariable Long stationsId) {
+        List<Long> stations = lineStations.get(lineId);
+        stations.remove(stationsId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    }
     /*
     private Map<Long, Line> lines = new HashMap<>();
 
