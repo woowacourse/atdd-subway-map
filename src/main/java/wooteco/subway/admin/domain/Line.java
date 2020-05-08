@@ -1,6 +1,9 @@
 package wooteco.subway.admin.domain;
 
+import static java.util.stream.Collectors.*;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
@@ -14,9 +17,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    @Nullable
     private String bgColor;
-    private Set<LineStation> stations;
+    private List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -61,7 +63,7 @@ public class Line {
         return bgColor;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -95,14 +97,51 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        if (Objects.isNull(lineStation.getPreStationId())) {
+            stations.add(0, lineStation);
+            return;
+        }
+
+        Optional<LineStation> next = next(lineStation);
+        if (next.isPresent()) {
+            LineStation realNext = next.get();
+            realNext.updatePreLineStation(lineStation.getStationId());
+            stations.add(stations.indexOf(realNext), lineStation);
+            return;
+        }
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        Optional<LineStation> station = stations.stream()
+            .filter(lineStation -> lineStation.getStationId() == stationId)
+            .findAny();
+
+        station.ifPresent(lineStation -> stations.remove(lineStation));
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+            .map(LineStation::getStationId)
+            .collect(toList());
+    }
+
+    //입력한 lineStation의 이전 노드 위치를 반환
+    private LineStation prev(LineStation lineStation) {
+        return stations.stream()
+            .filter(station-> station.getStationId()
+                .equals(lineStation.getPreStationId()))
+            .findAny()
+            .orElse(null);
+    }
+
+    //입력한 lineStation의 다음 노드 위치를 반환
+    private Optional<LineStation> next(LineStation lineStation) {
+        return stations.stream()
+            .filter(station-> Objects.nonNull(station.getPreStationId()))
+            .filter(station-> station.getPreStationId()
+                .equals(lineStation.getPreStationId()))
+            .findAny();
     }
 }

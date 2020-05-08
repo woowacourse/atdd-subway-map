@@ -75,7 +75,7 @@ public class LineStationAcceptanceTest {
         assertThat(lineStations.size()).isEqualTo(2);
         assertThat(lineStations).contains(lineStationResponse1);
 
-        deleteLineStation(lineStationResponse1.getId());
+        // deleteLineStation(lineStationResponse1.getId());
         List<LineStationResponse> lineStations2 = getLineStations(lineResponse1.getId());
         assertThat(lineStations2.size()).isEqualTo(1);
 

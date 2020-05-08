@@ -33,7 +33,8 @@ public class LineStationController {
 
     @PostMapping
     public ResponseEntity createLineStation(@RequestBody LineStationCreateRequest request) {
-        LineStationResponse lineStationResponse = new LineStationResponse(10L, request.getLineId(), request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
+
+        LineStationResponse lineStationResponse = new LineStationResponse(1L, request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
         mockResponses.add(lineStationResponse);
 
         return ResponseEntity.created(URI.create("/lineStation/"+(id++)))

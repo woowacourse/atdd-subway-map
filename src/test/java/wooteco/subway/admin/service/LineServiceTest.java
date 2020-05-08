@@ -1,5 +1,6 @@
 package wooteco.subway.admin.service;
 
+import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,17 +37,17 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-orange-500");
+        line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-orange-500");
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(1L, null, 1L, 10, 10));
-        line.addLineStation(new LineStation(2L, 1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(3L, 2L, 3L, 10, 10));
+        line.addLineStation(new LineStation(null, 1L));
+        line.addLineStation(new LineStation(1L, 2L));
+        line.addLineStation(new LineStation(2L, 3L));
     }
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(4L, null, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -59,7 +61,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(5L, 1L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -73,7 +75,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(6L, 3L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -117,9 +119,10 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        List<Station> stations = Lists.newArrayList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
+
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
