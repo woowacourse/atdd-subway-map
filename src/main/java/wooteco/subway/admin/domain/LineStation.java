@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
@@ -40,7 +41,35 @@ public class LineStation {
 		return this.stationId.equals(other.preStationId);
 	}
 
-	public void updatePreLineStation(Long preStationId) {
+	public void updatePreStationId(Long preStationId) {
 		this.preStationId = preStationId;
+	}
+
+	public void updatePreStationId(LineStation other) {
+		this.preStationId = other.getStationId();
+	}
+
+	public boolean isSameStationId(Long stationId) {
+		return this.stationId.equals(stationId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		LineStation that = (LineStation) o;
+		return distance == that.distance &&
+			duration == that.duration &&
+			Objects.equals(stationId, that.stationId) &&
+			Objects.equals(preStationId, that.preStationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(stationId, preStationId, distance, duration);
 	}
 }

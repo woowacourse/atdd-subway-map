@@ -5,140 +5,163 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
-	@Id
-	private Long id;
-	private String name;
-	private String color;
-	private LocalTime startTime;
-	private LocalTime endTime;
-	private int intervalTime;
-	@MappedCollection(idColumn = "line", keyColumn = "sequence")
-	private List<LineStation> lineStations = new ArrayList<>();
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
 
-	public Line() {
-	}
+    @Id
+    private Long id;
+    private String name;
+    private String color;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private int intervalTime;
+    @MappedCollection(idColumn = "line", keyColumn = "sequence")
+    private List<LineStation> lineStations = new ArrayList<>();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-	public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this.name = name;
-		this.color = color;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.intervalTime = intervalTime;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
-	}
+    public Line() {
+    }
 
-	public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this(null, name, color, startTime, endTime, intervalTime);
-	}
+    public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
+        int intervalTime) {
+        this.name = name;
+        this.color = color;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Line(String name, String color, LocalTime startTime, LocalTime endTime,
+        int intervalTime) {
+        this(null, name, color, startTime, endTime, intervalTime);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public LocalTime getStartTime() {
-		return startTime;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
+    public LocalTime getStartTime() {
+        return startTime;
+    }
 
-	public int getIntervalTime() {
-		return intervalTime;
-	}
+    public LocalTime getEndTime() {
+        return endTime;
+    }
 
-	public String getColor() {
-		return color;
-	}
+    public int getIntervalTime() {
+        return intervalTime;
+    }
 
-	public List<LineStation> getStations() {
-		return lineStations;
-	}
+    public String getColor() {
+        return color;
+    }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public List<LineStation> getStations() {
+        return lineStations;
+    }
 
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-	public void update(Line line) {
-		if (line.getName() != null) {
-			this.name = line.getName();
-		}
-		if (line.getStartTime() != null) {
-			this.startTime = line.getStartTime();
-		}
-		if (line.getEndTime() != null) {
-			this.endTime = line.getEndTime();
-		}
-		if (line.getIntervalTime() != 0) {
-			this.intervalTime = line.getIntervalTime();
-		}
-		if (line.getColor() != null) {
-			this.color = line.getColor();
-		}
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
-		this.updatedAt = LocalDateTime.now();
-	}
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
+        }
 
-	public void addLineStation(LineStation requestLineStation) {
-		int index = lineStations.stream()
-			.filter(lineStation -> lineStation.isPreStationBy(requestLineStation))
-			.map(lineStation -> lineStations.indexOf(lineStation) + 1)
-			.findAny()
-			.orElse(0);
+        this.updatedAt = LocalDateTime.now();
+    }
 
-		lineStations.add(index, requestLineStation);
+    public void addLineStation(LineStation requestLineStation) {
+        int index = lineStations.stream()
+            .filter(lineStation -> lineStation.isPreStationBy(requestLineStation))
+            .map(lineStation -> lineStations.indexOf(lineStation) + 1)
+            .findAny()
+            .orElse(0);
 
-		int nextLineStationIndex = index + 1;
+        lineStations.add(index, requestLineStation);
 
-		if (isExcessIndex(nextLineStationIndex)) {
-			return;
-		}
+        int nextLineStationIndex = index + 1;
 
-		LineStation nextStation = lineStations.get(nextLineStationIndex);
-		nextStation.updatePreLineStation(requestLineStation.getStationId());
-	}
+        if (isExcessIndex(nextLineStationIndex)) {
+            return;
+        }
 
-	private boolean isExcessIndex(int nextLineStationIndex) {
-		return nextLineStationIndex == lineStations.size();
-	}
+        LineStation nextStation = lineStations.get(nextLineStationIndex);
+        nextStation.updatePreStationId(requestLineStation.getPreStationId());
+    }
 
-	public void removeLineStationById(Long stationId) {
-		// TODO: 구현
-	}
+    private boolean isExcessIndex(int nextLineStationIndex) {
+        return nextLineStationIndex == lineStations.size();
+    }
 
-	public List<Long> getLineStationsId() {
-		return lineStations.stream()
-			.map(LineStation::getStationId)
-			.collect(Collectors.toList());
-	}
+    public void removeLineStationById(Long stationId) {
+        int index = lineStations.stream()
+            .filter(lineStation -> lineStation.isSameStationId(stationId))
+            .map(lineStation -> lineStations.indexOf(lineStation))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("해당 지하철이 없습니다."));
 
-	@Override
-	public String toString() {
-		return "Line{" +
-			"id=" + id +
-			", name='" + name + '\'' +
-			", startTime=" + startTime +
-			", endTime=" + endTime +
-			", intervalTime=" + intervalTime +
-			", stations=" + lineStations +
-			", createdAt=" + createdAt +
-			", updatedAt=" + updatedAt +
-			'}';
-	}
+        lineStations.remove(index);
+
+        if (isExcessIndex(index)) {
+            return;
+        }
+        Long preStationId = findPreStationId(index);
+        LineStation nextStation = lineStations.get(index);
+        nextStation.updatePreStationId(preStationId);
+    }
+
+    private Long findPreStationId(int index) {
+        Long preStationId = null;
+        if (index != 0) {
+            preStationId = (long) (index - 1);
+        }
+        return preStationId;
+    }
+
+    public List<Long> getLineStationsId() {
+        return lineStations.stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", intervalTime=" + intervalTime +
+            ", stations=" + lineStations +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
+    }
 }

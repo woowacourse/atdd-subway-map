@@ -2,10 +2,9 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -20,13 +19,14 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<Station> stations;
+    private List<Station> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
-        int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+        int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
+        List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -35,19 +35,25 @@ public class LineResponse {
         this.intervalTime = intervalTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stations = stations;
+        this.stations = new ArrayList<>(stations);
     }
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(),
             line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(),
-            new HashSet<>());
+            new ArrayList<>());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList());
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(),
+            line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(),
+            stations);
     }
 
     public Long getId() {
@@ -74,7 +80,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return stations;
     }
 

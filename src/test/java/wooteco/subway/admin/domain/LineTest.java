@@ -1,10 +1,9 @@
 package wooteco.subway.admin.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +15,7 @@ public class LineTest {
 	@BeforeEach
 	void setUp() {
 		line = new Line(1L, "2호선", "임시 컬러", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		line.addLineStation(new LineStation(null, 1L, 10, 10));
 		line.addLineStation(new LineStation(1L, 2L, 10, 10));
 		line.addLineStation(new LineStation(2L, 3L, 10, 10));
 	}
@@ -34,6 +34,6 @@ public class LineTest {
 	void removeLineStation(Long stationId) {
 		line.removeLineStationById(stationId);
 
-		assertThat(line.getStations()).hasSize(1);
+		assertThat(line.getStations()).hasSize(2);
 	}
 }
