@@ -3,7 +3,9 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -16,14 +18,15 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new LinkedHashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -33,7 +36,8 @@ public class Line {
         this.bgColor = bgColor;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -94,15 +98,48 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        if (lineStation == null) {
+            throw new NullPointerException("지하철역이 없슴니다.");
+        }
+
+        stations.stream()
+            .filter(existLineStation -> existLineStation.getPreStationId()
+                == lineStation.getPreStationId())
+            .findFirst()
+            .ifPresent(existLineStation -> existLineStation.updatePreLineStation(
+                lineStation.getStationId()));
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation deleteTarget = stations.stream()
+            .filter(station -> station.getStationId() == stationId)
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
+        stations.stream()
+            .filter(station -> station.getPreStationId() == stationId)
+            .findFirst()
+            .ifPresent(station -> station.updatePreLineStation(deleteTarget.getPreStationId()));
+        stations.remove(deleteTarget);
     }
 
     public List<Long> findLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> linesStationsId = new ArrayList<>();
+        LineStation startStation = stations.stream()
+            .filter(station -> station.getPreStationId() == null)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException());
+
+        linesStationsId.add(startStation.getStationId());
+
+        while (linesStationsId.size() != stations.size()) {
+            linesStationsId.add(stations.stream()
+                .filter(station -> station.getPreStationId() == linesStationsId.get(
+                    linesStationsId.size() - 1))
+                .findFirst()
+                .map(LineStation::getStationId)
+                .orElseThrow(NoSuchElementException::new));
+        }
+        return linesStationsId;
     }
 }

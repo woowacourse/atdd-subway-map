@@ -74,6 +74,8 @@ public class LineController {
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         mockLineStations.add(new Station(lineStationCreateRequest.getStationId(), "잠실역"));
 
+        lineService.addLineStation(id, lineStationCreateRequest);
+
         return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
             .body(new LineStationResponse(1L, lineStationCreateRequest.getStationId(),
                 lineStationCreateRequest.getPreStationId(), lineStationCreateRequest.getDistance(),
