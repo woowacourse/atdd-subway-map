@@ -1,28 +1,27 @@
 package wooteco.subway.admin.domain;
 
-public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
+public class Edge {
     private Long stationId;
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    public Edge() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public Edge(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
-
     public Long getStationId() {
         return stationId;
+    }
+
+    public Long getPreStationId() {
+        return preStationId;
     }
 
     public int getDistance() {
@@ -31,9 +30,5 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
     }
 }

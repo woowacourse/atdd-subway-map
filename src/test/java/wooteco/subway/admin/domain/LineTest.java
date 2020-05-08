@@ -15,9 +15,9 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
+        line.addLineStation(new Edge(1L, 2L, 10, 10));
+        line.addLineStation(new Edge(2L, 3L, 10, 10));
     }
 
     @Test

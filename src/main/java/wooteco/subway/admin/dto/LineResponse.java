@@ -12,10 +12,11 @@ import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String bgColor;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,19 +25,25 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
+                        final String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getColor(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+    }
+
+    public static LineResponse of(Line line, Set<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
@@ -49,8 +56,8 @@ public class LineResponse {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -75,5 +82,9 @@ public class LineResponse {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getBgColor() {
+        return bgColor;
     }
 }
