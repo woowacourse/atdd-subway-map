@@ -39,7 +39,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity readAll() {
-        final List<LineResponse> lines = LineResponse.listOf(lineService.showLines());
+        final List<LineResponse> lines = lineService.showLines();
 
         return ResponseEntity.ok(lines);
     }
