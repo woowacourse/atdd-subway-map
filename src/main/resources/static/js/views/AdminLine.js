@@ -26,7 +26,6 @@ function AdminLine() {
       startTime: $subwayLineStartTime.value,
       endTime: $subwayLineEndTime.value,
       intervalTime: $subwayIntervalTime.value
-      // color: $subwayLineColorInput.value
     };
     api.line
       .create(newSubwayLine)
@@ -57,20 +56,6 @@ function AdminLine() {
     })
   };
 
-  const updateSubwayLine = () => {
-    const updatedSubwayLine = {
-      name: $subwayLineNameInput.value,
-      startTime: $subwayLineStartTime.value,
-      endTime: $subwayLineEndTime.value,
-      intervalTime: $subwayIntervalTime.value
-    };
-    api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) => {
-      subwayLineModal.toggle();
-    }).catch(() => {
-      alert('업데이트에 실패했습니다.')
-    })
-  };
-
   const onShowUpdateSubwayLineModal = event => {
     const $target = event.target;
     const $subwayLineItem = $target.closest(".subway-line-item")
@@ -92,6 +77,21 @@ function AdminLine() {
       alert('데이터를 불러올 수 없습니다.')
     })
   }
+
+  const updateSubwayLine = () => {
+    const updatedSubwayLine = {
+      name: $subwayLineNameInput.value,
+      startTime: $subwayLineStartTime.value,
+      endTime: $subwayLineEndTime.value,
+      intervalTime: $subwayIntervalTime.value
+    };
+    api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) => {
+      subwayLineModal.toggle();
+      $activeSubwayLineItem.querySelector('.line-name').innerText = line.name
+    }).catch(() => {
+      alert('업데이트에 실패했습니다.')
+    })
+  };
 
   const onSubmitHandler = (event) => {
     event.preventDefault()

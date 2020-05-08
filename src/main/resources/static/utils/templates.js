@@ -8,8 +8,8 @@ export const listItemTemplate = value =>
 
 export const subwayLinesTemplate = line =>
   `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" data-line-id="${line.id}">
-      <span class="line-name w-3 h-3 rounded-full inline-block mr-1"></span>
-      ${line.name}
+      <span class="w-3 h-3 rounded-full inline-block mr-1"></span>
+      <span class="line-name">${line.name}</span>
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
          <span class="mdi mdi-delete"></span>
       </button>
@@ -17,16 +17,6 @@ export const subwayLinesTemplate = line =>
          <span class="mdi mdi-pencil"></span>
       </button>
     </div>`;
-  // `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
-  //     <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
-  //     ${line.title}
-  //     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
-  //        <span class="mdi mdi-delete"></span>
-  //     </button>
-  //     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
-  //        <span class="mdi mdi-pencil"></span>
-  //     </button>
-  //   </div>`;
 
 export const optionTemplate = value => `<option>${value}</option>`;
 
@@ -67,15 +57,6 @@ export const subwayLinesItemTemplate = line => {
               </div>
             </div>
           </div>`;
-
-  // return `<div class="inline-block w-1/2 px-2">
-  //           <div class="rounded-sm w-full slider-list">
-  //             <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
-  //             <div class="overflow-y-auto height-90">
-  //             ${stationsTemplate}
-  //             </div>
-  //           </div>
-  //         </div>`;
 };
 
 export const initNavigation = () => {
