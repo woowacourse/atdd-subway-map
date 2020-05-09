@@ -5,8 +5,10 @@ import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 public class Line {
     @Id
@@ -69,6 +71,21 @@ public class Line {
 
     public List<Long> getLineStationsId() {
         return stations.getLineStationsId();
+    }
+
+    public List<Station> createSortedStations(List<Station> stations) {
+        List<Station> newStations = new ArrayList<>();
+        for (Long id : getLineStationsId()) {
+            addByLineStationID(stations, newStations, id);
+        }
+        return newStations;
+    }
+
+    private void addByLineStationID(List<Station> stations, List<Station> newStations, Long id) {
+        stations.stream()
+                .filter(station -> Objects.equals(station.getId(), id))
+                .findAny()
+                .ifPresent(newStations::add);
     }
 
     public Long getId() {

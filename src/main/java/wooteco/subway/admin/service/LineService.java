@@ -62,6 +62,6 @@ public class LineService {
     }
 
     private LineResponse findLineWithStationsByLine(Line line) {
-        return LineResponse.of(line, stationRepository.findAllById(line.getLineStationsId()));
+        return LineResponse.of(line, line.createSortedStations(stationRepository.findAllById(line.getLineStationsId())));
     }
 }
