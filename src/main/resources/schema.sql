@@ -22,6 +22,7 @@ create table if not exists LINE
 create table if not exists LINE_STATION
 (
     line bigint not null,
+    line_key bigint not null,
     pre_station_id bigint,
     station_id bigint not null,
     distance int not null,

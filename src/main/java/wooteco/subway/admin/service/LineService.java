@@ -81,7 +81,7 @@ public class LineService {
     }
 
     private Set<Station> getStationsAtLine(Line savedLine) {
-        Set<LineStation> lineStations = savedLine.getStations();
+        List<LineStation> lineStations = savedLine.getStations();
         Set<Station> stations = new LinkedHashSet<>();
 
         for (LineStation ls : lineStations) {

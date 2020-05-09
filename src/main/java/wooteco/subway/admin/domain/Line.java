@@ -14,7 +14,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations = new LinkedHashSet<>();
+    private List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -62,7 +62,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -95,19 +95,26 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // 처음에 추가
-        if (lineStation.getPreStationId() == null) {
-            Optional<LineStation> originFirstLineStation = stations.stream().findFirst();
-            if (originFirstLineStation.isPresent()) {
-                LineStation secondLineStation = new LineStation(lineStation.getStationId(),
-                        originFirstLineStation.get().getStationId(), 10, 10);
-                stations.remove(originFirstLineStation.get());
-                stations.add(secondLineStation);
-            }
+        LineStation beforeLineStation;
+        if (stations.isEmpty()) {
+            stations.add(lineStation);
+            return;
         }
-        //중간에 들어올 때 추가
-
+        if (lineStation.getPreStationId() == null) {
+            beforeLineStation = stations.get(0);
+            stations.remove(0);
+            stations.add(0, new LineStation(lineStation.getStationId(), beforeLineStation.getStationId()));
+            stations.add(0, lineStation);
+            return;
+        }
         stations.add(lineStation);
+    }
+
+    public Set<LineStation> combineLineStations(Set<LineStation> frontLineStations, Set<LineStation> backLineStations) {
+        Set<LineStation> lineStations = new LinkedHashSet<>();
+        lineStations.addAll(frontLineStations);
+        lineStations.addAll(backLineStations);
+        return lineStations;
     }
 
     public void removeLineStationById(Long stationId) {
@@ -123,18 +130,11 @@ public class Line {
         return stationsIds;
     }
 
-    public List<LineStation> sortedLineStations() {
-        List<LineStation> sorted = new ArrayList<>();
-        for (LineStation station : stations) {
-
-        }
-        return sorted;
-    }
-
-    private LineStation findLineStationByPreStationId(Long id) {
-        for (LineStation lineStation : stations) {
-
-        }
-    }
+//
+//    private LineStation findLineStationByPreStationId(Long id) {
+//        for (LineStation lineStation : stations) {
+//
+//        }
+//    }
 
 }

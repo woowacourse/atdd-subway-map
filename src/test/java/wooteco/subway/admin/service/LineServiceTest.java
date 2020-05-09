@@ -3,6 +3,7 @@ package wooteco.subway.admin.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +32,7 @@ public class LineServiceTest {
     private Line line;
     private Map<String, Long> stations = new LinkedHashMap<>();
 
+    @InjectMocks
     private LineService lineService;
 
     @BeforeEach
@@ -46,22 +49,20 @@ public class LineServiceTest {
         stations.put(station3.getName(), station3.getId());
         stations.put(station4.getName(), station4.getId());
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
-
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findIdByName(null)).thenReturn(null);
-        when(stationRepository.findIdByName("잠실역")).thenReturn(1L);
-        when(stationRepository.findIdByName("잠실나루역")).thenReturn(2L);
-        when(stationRepository.findIdByName("강변역")).thenReturn(3L);
-        when(stationRepository.findIdByName("구의역")).thenReturn(4L);
+        lenient().when(stationRepository.findIdByName("잠실역")).thenReturn(1L);
+        lenient().when(stationRepository.findIdByName("잠실나루역")).thenReturn(2L);
+        lenient().when(stationRepository.findIdByName("강변역")).thenReturn(3L);
+        lenient().when(stationRepository.findIdByName("구의역")).thenReturn(4L);
         when(stationRepository.findById(1L)).thenReturn(Optional.of(station1));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(station2));
         when(stationRepository.findById(3L)).thenReturn(Optional.of(station3));
         when(stationRepository.findById(4L)).thenReturn(Optional.of(station4));
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 
-        when(lineRepository.save(line)).thenReturn(line);
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
+        line.addLineStation(new LineStation(1L, 2L, 10, 10));
+        line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
 
     @Test
@@ -69,6 +70,7 @@ public class LineServiceTest {
 //        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
         LineStationAddRequest request = new LineStationAddRequest(null, "구의역", 10, 10);
 
+        when(lineRepository.save(line)).thenReturn(line);
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
