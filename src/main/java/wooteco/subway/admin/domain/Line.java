@@ -51,6 +51,34 @@ public class Line {
             lineRequest.getIntervalTime());
     }
 
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    public void removeLineStationById(Long stationId) {
+        lineStations.remove(stationId);
+    }
+
+    public List<Long> getLineStationsId() {
+        return lineStations.getLineStationsId();
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
@@ -85,34 +113,5 @@ public class Line {
 
     public String getBgColor() {
         return bgColor;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-    }
-
-    public void removeLineStationById(Long stationId) {
-        lineStations.remove(stationId);
-    }
-
-    public List<Long> getLineStationsId() {
-        return lineStations.getLineStationsId();
     }
 }

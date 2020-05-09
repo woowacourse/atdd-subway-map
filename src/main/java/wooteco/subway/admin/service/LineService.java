@@ -48,14 +48,13 @@ public class LineService {
     public LineResponse showLine(Long id) {
         Line line = findById(id);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-
         return LineResponse.of(line, stations);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = findById(id);
-        line.update(lineRequest.toLine());
         try {
+            Line line = findById(id);
+            line.update(lineRequest.toLine());
             lineRepository.save(line);
             List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
             return LineResponse.of(line, stations);
@@ -70,7 +69,6 @@ public class LineService {
 
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = findById(id);
-
         line.addLineStation(request.toEntity());
         lineRepository.save(line);
         List<Station> stations = findStations(line);
@@ -84,7 +82,6 @@ public class LineService {
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = findById(lineId);
-
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
@@ -92,7 +89,6 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long stationId) {
         Line line = findById(stationId);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-
         return LineResponse.of(line, stations);
     }
 }

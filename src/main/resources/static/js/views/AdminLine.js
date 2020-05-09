@@ -101,14 +101,8 @@ function AdminLine() {
     }
   }
 
-  const onEditSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
-  };
-
   const initDefaultSubwayLines = async () => {
     $subwayLineList.innerHTML = '';
-
     const lines = await api.line.get();
     lines.map(line => {
       $subwayLineList.insertAdjacentHTML(

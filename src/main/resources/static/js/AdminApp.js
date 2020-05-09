@@ -4,7 +4,6 @@ function AdminApp() {
   const init = () => {
     initNavigation();
   };
-
   return {
     init
   };
