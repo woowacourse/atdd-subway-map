@@ -17,24 +17,24 @@ public class LineResponse {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
+    private Set<Station> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Set<Station> stations;
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, Set<Station> stations, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.bgColor = bgColor;
+        this.stations = stations;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stations = stations;
     }
 
     public static LineResponse of(Line line, Set<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), stations, line.getCreatedAt(), line.getUpdatedAt());
     }
 
     public static LineResponse of(Line line) {

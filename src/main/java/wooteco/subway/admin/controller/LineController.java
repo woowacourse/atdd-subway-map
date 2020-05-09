@@ -37,8 +37,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> getLines() {
-        List<Line> lines = lineService.showLines();
-        List<LineResponse> lineResponses = LineResponse.listOf(lines);
+        List<LineResponse> lineResponses = lineService.findAllLineWithStations();
         return ResponseEntity.ok(lineResponses);
     }
 

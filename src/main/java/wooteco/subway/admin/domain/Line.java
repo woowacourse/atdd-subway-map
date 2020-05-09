@@ -132,7 +132,7 @@ public class Line {
         stations.remove(nodeToRemove);
     }
 
-    public List<Long> getStationsId() {
+    public List<Long> getSortedStationsId() {
         List<Long> sortedStationsId = new ArrayList<>();
 
         LineStation preNode = stations.stream()

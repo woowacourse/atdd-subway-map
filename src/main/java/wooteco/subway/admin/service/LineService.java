@@ -1,5 +1,9 @@
 package wooteco.subway.admin.service;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -30,8 +34,21 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> findAllLineWithStations() {
+        List<LineResponse> result = new ArrayList<>();
+        List<Line> lines = lineRepository.findAll();
+
+        for (Line line : lines) {
+            Set<Station> stations = line.getSortedStationsId()
+                .stream()
+                .map(stationId -> stationRepository.findById(stationId)
+                    .orElseThrow(AssertionError::new))
+                .collect(toCollection(LinkedHashSet::new));
+
+            result.add(LineResponse.of(line, stations));
+        }
+
+        return result;
     }
 
     public Line updateLine(Long id, Line line) {
@@ -63,7 +80,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
 
-        Set<Station> stations = stationRepository.findAllById(line.getStationsId());
+        Set<Station> stations = stationRepository.findAllById(line.getSortedStationsId());
         return LineResponse.of(line, stations);
     }
 }

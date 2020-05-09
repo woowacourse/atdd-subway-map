@@ -83,10 +83,10 @@ public class LineServiceTest {
 
         // then
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsId().get(0)).isEqualTo(4L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(1L);
-        assertThat(line.getStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(4L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(1L);
+        assertThat(line.getSortedStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.getSortedStationsId().get(3)).isEqualTo(3L);
     }
 
     @DisplayName("노선의 시작역을 중간에 추가")
@@ -98,10 +98,10 @@ public class LineServiceTest {
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(4L);
-        assertThat(line.getStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(4L);
+        assertThat(line.getSortedStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.getSortedStationsId().get(3)).isEqualTo(3L);
     }
 
     @DisplayName("노선의 시작역을 마지막에 추가")
@@ -113,10 +113,10 @@ public class LineServiceTest {
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(2L);
-        assertThat(line.getStationsId().get(2)).isEqualTo(3L);
-        assertThat(line.getStationsId().get(3)).isEqualTo(4L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.getSortedStationsId().get(2)).isEqualTo(3L);
+        assertThat(line.getSortedStationsId().get(3)).isEqualTo(4L);
     }
 
     @DisplayName("노선의 시작역을 노선에서 제외")
@@ -126,8 +126,8 @@ public class LineServiceTest {
         lineService.removeLineStation(line.getId(), 1L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsId().get(0)).isEqualTo(2L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(2L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(3L);
     }
 
     @DisplayName("노선의 중간역을 노선에서 제외")
@@ -137,8 +137,8 @@ public class LineServiceTest {
         lineService.removeLineStation(line.getId(), 2L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(3L);
     }
 
     @DisplayName("노선의 마지막 역을 노선에서 제외")
@@ -148,8 +148,8 @@ public class LineServiceTest {
         lineService.removeLineStation(line.getId(), 3L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.getSortedStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getSortedStationsId().get(1)).isEqualTo(2L);
     }
 
     @DisplayName("노선과 노선의 지하철역을 조회")
