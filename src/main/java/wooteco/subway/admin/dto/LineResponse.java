@@ -2,11 +2,8 @@ package wooteco.subway.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -48,12 +45,11 @@ public class LineResponse {
                 .collect(Collectors.toList());
     }
 
-    public static LineResponse of(Line line, Set<Station> stations) {
+    public static LineResponse of(Line line, List<StationResponse> stations) {
         String[] stationArray = new String[stations.size()];
-        Iterator<Station> stationsIterator = stations.iterator();
         int i = 0;
-        while (stationsIterator.hasNext()) {
-            stationArray[i++] = stationsIterator.next().getName();
+        for (StationResponse stationResponse : stations) {
+            stationArray[i++] = stationResponse.getName();
         }
         return new LineResponse(line.getId(), line.getName(), line.getStartTime().toString(), line.getEndTime().toString(), line.getIntervalTime(), line.getCreatedAt().toString(), line.getUpdatedAt().toString(), stationArray, line.getBgColor());
     }

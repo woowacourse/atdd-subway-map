@@ -99,7 +99,7 @@ public class Line {
         Set<LineStation> newStations = new LinkedHashSet<>();
         int updated = 0;
         for (LineStation station : stations) {
-            if (lineStation.getPreStationId() == 0) {
+            if (lineStation.getPreStationId() == null || lineStation.getPreStationId() == 0) {
                 updated = 1;
                 newStations.add(lineStation);
                 newStations.add(station);

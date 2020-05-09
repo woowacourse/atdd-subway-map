@@ -10,9 +10,8 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -29,7 +28,12 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return LineResponse.listOf(lineRepository.findAll());
+        List<Line> lines = lineRepository.findAll();
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line : lines) {
+            lineResponses.add(findLineWithStationsById(line.getId()));
+        }
+        return lineResponses;
     }
 
     public void updateLine(Long id, Line line) {
@@ -49,24 +53,28 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-        return LineResponse.of(line, stations);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+
+        return LineResponse.of(line, findStationsByLineId(id));
     }
 
     public List<StationResponse> findStationsByLineId(Long id) {
         List<StationResponse> stations = new ArrayList<>();
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        Set<Station> foundStations = stationRepository.findAllById(line.getLineStationsId());
-        Iterator<Station> iterator = foundStations.iterator();
-        while (iterator.hasNext()) {
-            stations.add(StationResponse.of(iterator.next()));
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        List<Long> stationsIds = line.getLineStationsId();
+
+        for (int i = 0; i < stationsIds.size(); i++) {
+            Optional<Station> foundStation = stationRepository.findById(stationsIds.get(i));
+            foundStation.ifPresent(station -> stations.add(StationResponse.of(station)));
         }
         return stations;
     }

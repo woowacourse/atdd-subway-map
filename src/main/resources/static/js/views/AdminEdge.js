@@ -60,14 +60,12 @@ function AdminEdge() {
     var $arrivalStationId = null;
 
     api.station.getByName($departStation.value).then(departData => {
-        console.log(departData);
         $departStationId = departData;
         if($departStationId == null){
             alert("이전역 이름이 올바르지 않습니다.");
             return;
         }
         api.station.getByName($arrivalStation.value).then(arrivalData => {
-            console.log(arrivalData);
             $arrivalStationId = arrivalData;
             if($arrivalStationId == null){
             alert("다음역 이름이 올바르지 않습니다.");
@@ -78,9 +76,11 @@ function AdminEdge() {
               stationId: $arrivalStationId
             };
             api.lineStation.create(newSubwayLineData, lineId).then(() => {
+              initSubwayLinesSlider();
+              initSubwayLineOptions();
+              createSubwayEdgeModal.toggle();
               $departStation.value = "";
               $arrivalStation.value = "";
-              createSubwayEdgeModal.toggle();
             });
         });
     });
@@ -89,9 +89,17 @@ function AdminEdge() {
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      $target.closest(".list-item").remove();
-    }
+    const $targetParent = $target.closest(".list-item");
+    const $name = $targetParent.innerText;
+    const $lineId = $target.closest(".rounded-sm").querySelector(".station").dataset.subwayId;
+    api.station.getByName($name).then(stationId => {
+      if (isDeleteButton) {
+        if(confirm("정말로 삭제하시겠습니까?")){
+          $targetParent.remove();
+          api.lineStation.delete($lineId ,stationId);
+        }
+      }
+    });
   };
 
   const initEventListeners = () => {

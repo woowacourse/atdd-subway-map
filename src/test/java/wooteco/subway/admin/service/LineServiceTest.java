@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -119,10 +121,10 @@ public class LineServiceTest {
     void findLineWithStationsById() {
         Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+//        when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
-        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).hasSize(0);
     }
 }

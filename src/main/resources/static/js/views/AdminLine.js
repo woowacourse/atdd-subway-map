@@ -41,7 +41,6 @@ function AdminLine() {
       const id = $targetParent.dataset.subwayId;
       const line = api.line.getBy(id);
       line.then(data => {
-        console.log(data);
         $subwayLineNameInput.value = data.name;
         $subwayLineColorInput.value = data.bgColor;
         $subwayLineFirstTime.value = data.startTime;
@@ -83,8 +82,10 @@ function AdminLine() {
     const $targetParent = $target.closest(".subway-line-item");
     const id = $targetParent.dataset.subwayId;
     if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
-      api.line.delete(id);
+      if(confirm("정말로 삭제하시겠습니까?")){
+        $target.closest(".subway-line-item").remove();
+        api.line.delete(id);
+      }
     }
   };
   const changModeToUpdate = event => {
