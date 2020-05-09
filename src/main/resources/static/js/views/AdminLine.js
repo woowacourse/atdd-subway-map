@@ -16,6 +16,10 @@ function AdminLine() {
     const $createSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
+    const $cancelSubWayLineButton = document.querySelector(
+        "#subway-line-cancel-button"
+    );
+
     const subwayLineModal = new Modal();
 
     const onCreateSubwayLine = event => {
@@ -55,11 +59,6 @@ function AdminLine() {
             );
 
         subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayStartTimeInput.value = "";
-        $subwayLastTimeInput.value = "";
-        $intervalTimeInput.value = "";
     };
 
     const onDeleteSubwayLine = event => {
@@ -135,7 +134,7 @@ function AdminLine() {
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         const isDeleteButton = $target.classList.contains("mdi-delete");
 
-        if (!(isUpdateButton && isDeleteButton)) {
+        if (!(isUpdateButton || isDeleteButton)) {
             fetch("/lines/" + $id, {
                 method: 'GET',
                 headers: {
@@ -196,14 +195,30 @@ function AdminLine() {
             EVENT_TYPE.CLICK, function (event) {
                 if ($isEdit) {
                     onEditSubwayLine(event);
-                    $isEdit = false;
-                    $editId = "";
                 } else {
                     onCreateSubwayLine(event);
                 }
+                stateInit();
             }
         );
+
+        $cancelSubWayLineButton.addEventListener(
+            EVENT_TYPE.CLICK, function () {
+                stateInit();
+            }
+        )
     };
+
+    function stateInit() {
+        $isEdit = false;
+        $editId = "";
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayStartTimeInput.value = "";
+        $subwayLastTimeInput.value = "";
+        $intervalTimeInput.value = "";
+    }
+
     const initCreateSubwayLineForm = () => {
         const $colorSelectContainer = document.querySelector(
             "#subway-line-color-select-container"
