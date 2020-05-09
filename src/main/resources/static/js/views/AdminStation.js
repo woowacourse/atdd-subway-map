@@ -1,4 +1,4 @@
-import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
+import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
 
 function AdminStation() {
@@ -27,14 +27,14 @@ function AdminStation() {
       },
       body: JSON.stringify(data)
     }).then(response => response.json())
-    .then(response=>{
-      console.log(JSON.stringify(response));
-    }).catch(error=>{
+    .then(response => {
+      $stationNameInput.value = "";
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(response));
+    }).catch(error => {
       alert(error);
     });
 
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+
   };
 
   function validate(stationName) {
@@ -70,7 +70,15 @@ function AdminStation() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      const deleteId = $target.closest(".list-item").dataset.stationId;
+      fetch('/stations/'+deleteId, {
+        method: 'DELETE'
+      }).then(()=>{
+        $target.closest(".list-item").remove();
+      }).catch(error =>{
+        alert(error);
+        throw new Error();
+      });
     }
   };
 
@@ -92,15 +100,15 @@ function AdminStation() {
 const adminStation = new AdminStation();
 const $stationList = document.querySelector("#station-list");
 adminStation.init();
-window.onload = async function(event) {
+window.onload = async function (event) {
   const response = await fetch("/stations", {
-      method: "GET",
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    method: "GET",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
   const jsonResponse = await response.json();
-  for(const station of jsonResponse) {
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station.name));
+  for (const station of jsonResponse) {
+    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
   }
 };
