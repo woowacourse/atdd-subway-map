@@ -2,14 +2,11 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
-
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Embedded;
+
 import wooteco.subway.admin.dto.req.LineRequest;
 
 public class Line {
@@ -29,7 +26,7 @@ public class Line {
     }
 
     public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
-                int intervalTime) {
+        int intervalTime) {
         this.name = name;
         this.bgColor = bgColor;
         this.startTime = startTime;
@@ -41,17 +38,17 @@ public class Line {
     }
 
     public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
-                int intervalTime) {
+        int intervalTime) {
         this(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
     public static Line of(LineRequest lineRequest) {
         return new Line(
-                lineRequest.getName(),
-                lineRequest.getBgColor(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime());
+            lineRequest.getName(),
+            lineRequest.getBgColor(),
+            lineRequest.getStartTime(),
+            lineRequest.getEndTime(),
+            lineRequest.getIntervalTime());
     }
 
     public Long getId() {

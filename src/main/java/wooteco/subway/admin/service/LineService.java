@@ -1,17 +1,17 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.req.LineStationCreateRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class LineService {
@@ -24,41 +24,41 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
-        if (lineRepository.findByName(line.getName()).isPresent()) {
-            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
-        }
+        validateSameLine(line);
 
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
+    }
+
+    private void validateSameLine(Line line) {
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
+        }
     }
 
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
         List<LineResponse> lineResponses = new ArrayList<>();
         for (Line line : lines) {
-            List<Station> stations = new ArrayList<>();
-            for (Long stationId : line.getLineStationsId()) {
-                stations.add(stationRepository.findById(stationId).get());
-            }
+            List<Station> stations = findStations(line);
             lineResponses.add(LineResponse.of(line, stations));
         }
         return lineResponses;
     }
 
+    private List<Station> findStations(Line line) {
+        return stationRepository.findAllById(line.getLineStationsId());
+    }
+
     public LineResponse showLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        Line line = findById(id);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
 
         return LineResponse.of(line, stations);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
-        if (lineRepository.findByName(line.getName()).isPresent()) {
-            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
-        }
+        Line line = findById(id);
         line.update(lineRequest.toLine());
         lineRepository.save(line);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
@@ -70,29 +70,28 @@ public class LineService {
     }
 
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        Line line = findById(id);
 
         line.addLineStation(request.toEntity());
         lineRepository.save(line);
-        List<Station> stations = new ArrayList<>();
-        for (Long stationId : line.getLineStationsId()) {
-            stations.add(stationRepository.findById(stationId).get());
-        }
+        List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
     }
 
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+    }
+
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        Line line = findById(lineId);
 
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long stationId) {
-        Line line = lineRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        Line line = findById(stationId);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
 
         return LineResponse.of(line, stations);

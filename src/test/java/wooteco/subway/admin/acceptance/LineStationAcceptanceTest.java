@@ -19,10 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.res.LineResponse;
-import wooteco.subway.admin.dto.res.LineStationResponse;
 import wooteco.subway.admin.dto.res.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -86,13 +84,13 @@ public class LineStationAcceptanceTest {
 
     private int deleteEdge(Long lineId, Long stationId) {
         return given()
-                .when()
-                .delete("/edges/" + lineId + "/" + stationId)
-                .then()
-                .log()
-                .all()
-                .extract()
-                .statusCode();
+            .when()
+            .delete("/edges/" + lineId + "/" + stationId)
+            .then()
+            .log()
+            .all()
+            .extract()
+            .statusCode();
     }
 
     private void register(List<StationResponse> stations, Long id) {
@@ -111,32 +109,32 @@ public class LineStationAcceptanceTest {
             params.put("duration", "2");
 
             given().
-                    body(params).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
-                    accept(MediaType.APPLICATION_JSON_VALUE).
-                    when().
-                    post("/edges/" + id).
-                    then().
-                    log().all().
-                    statusCode(HttpStatus.CREATED.value());
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/edges/" + id).
+                then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
         }
     }
 
     private LineResponse getLine(Long id) {
         return given().when().
-                get("/lines/" + id).
-                then().
-                log().all().
-                extract().as(LineResponse.class);
+            get("/lines/" + id).
+            then().
+            log().all().
+            extract().as(LineResponse.class);
     }
 
     private List<StationResponse> getStations() {
         return given().when()
-                .get("/stations")
-                .then()
-                .extract()
-                .jsonPath()
-                .getList(".", StationResponse.class);
+            .get("/stations")
+            .then()
+            .extract()
+            .jsonPath()
+            .getList(".", StationResponse.class);
     }
 
     private void createStation(String station) {
@@ -144,14 +142,14 @@ public class LineStationAcceptanceTest {
         params.put("name", station);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/stations").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private void createLine(String line) {
@@ -162,13 +160,13 @@ public class LineStationAcceptanceTest {
         params.put("intervalTime", "10");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 }

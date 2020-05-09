@@ -1,5 +1,9 @@
-import { optionTemplate, currentStationOptionTemplate, preStationOptionTemplate, subwayLinesItemTemplate, listItemTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
+import {
+  currentStationOptionTemplate,
+  optionTemplate,
+  preStationOptionTemplate,
+  subwayLinesItemTemplate
+} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -8,7 +12,7 @@ import api from "../../api/index.js";
 function AdminEdge() {
   const $subwayLine = document.querySelector("#station-select-options");
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const $createSubwayLineStationButton = document.querySelector("#submit-button" );
+  const $createSubwayLineStationButton = document.querySelector("#submit-button");
   const $preSubwayStation = document.querySelector("#pre-station-select-options");
   const $currentSubwayStation = document.querySelector("#current-station-select-options");
   const $duration = document.querySelector("#duration");
@@ -56,25 +60,25 @@ function AdminEdge() {
       name: "없음",
     };
     const preSubwayStationOptionTemplate =
-        preStationOptionTemplate(firstNullStation) +
-        stations.map(station => preStationOptionTemplate(station))
-        .join("");
+      preStationOptionTemplate(firstNullStation) +
+      stations.map(station => preStationOptionTemplate(station))
+      .join("");
     const currentSubwayStationOptionTemplate = stations
-        .map(station => currentStationOptionTemplate(station))
-        .join("");
+    .map(station => currentStationOptionTemplate(station))
+    .join("");
     const $preStationSelectOptions = document.querySelector(
-        "#pre-station-select-options"
+      "#pre-station-select-options"
     );
     $preStationSelectOptions.insertAdjacentHTML(
-        "afterbegin",
-        preSubwayStationOptionTemplate
+      "afterbegin",
+      preSubwayStationOptionTemplate
     );
     const $currentStationSelectOptions = document.querySelector(
-        "#current-station-select-options"
+      "#current-station-select-options"
     );
     $currentStationSelectOptions.insertAdjacentHTML(
-        "afterbegin",
-        currentSubwayStationOptionTemplate
+      "afterbegin",
+      currentSubwayStationOptionTemplate
     );
   };
 

@@ -1,11 +1,11 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.relational.core.mapping.MappedCollection;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class LineStations {
     private static final int FIRST_INDEX = 0;
@@ -33,9 +33,9 @@ public class LineStations {
         }
 
         int targetIndex = IntStream.range(0, stations.size())
-                .filter(index -> stations.get(index).isSameWithPreStationId(lineStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("이전역이 존재하지 않습니다."));
+            .filter(index -> stations.get(index).isSameWithPreStationId(lineStation))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("이전역이 존재하지 않습니다."));
         return targetIndex + NEXT_STATION_INDEX;
     }
 
@@ -65,15 +65,15 @@ public class LineStations {
 
     private int findRemoveIndex(Long stationId) {
         return IntStream.range(0, stations.size())
-                .filter(index -> stations.get(index).isSameId(stationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+            .filter(index -> stations.get(index).isSameId(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
     }
 
     List<Long> getLineStationsId() {
         return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 
     List<LineStation> getStations() {
