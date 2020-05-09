@@ -38,19 +38,21 @@ function AdminEdge() {
     }
   };
 
-  const convertToId = async stationName => {
+  const convertToId = (stationName, required = true) => {
     const station = stations.find(station => station.name === stationName);
     if (station) {
       return station.id;
     }
-    throw ERROR_MESSAGE.NOT_FOUND;
-  }
+    if (required) {
+      throw ERROR_MESSAGE.NOT_FOUND;
+    }
+  };
 
   const onCreateEdge = async data => {
     try {
       const convertData = {
-        preStationId: await convertToId(data.preStation),
-        stationId: await convertToId(data.station),
+        preStationId: convertToId(data.preStation, false),
+        stationId: convertToId(data.station),
         distance: 10,
         duration: 10
       };

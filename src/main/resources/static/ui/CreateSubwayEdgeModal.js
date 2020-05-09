@@ -18,9 +18,6 @@ function CreateSubwayEdgeModal() {
     if (!$stationSelectOptions.options[$stationSelectOptions.selectedIndex].value) {
       throw ERROR_MESSAGE.NOT_EMPTY;
     }
-    if (!$departStationNameInput.value) {
-      throw ERROR_MESSAGE.NOT_EMPTY;
-    }
     if (!$arrivalStationNameInput.value) {
       throw ERROR_MESSAGE.NOT_EMPTY;
     }
