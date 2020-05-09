@@ -1,11 +1,22 @@
 import {CONFIRM, ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
-import api from "../../api/index.js"
+import api from "../../api/index.js";
 
 function AdminStation() {
     const $stationInput = document.querySelector("#station-name");
     const $stationList = document.querySelector("#station-list");
     const $stationAddBtn = document.querySelector("#station-add-btn");
+
+    const initDefaultSubwayStations = () => {
+        api.station.get()
+            .then(response => {
+                response.forEach(line => $stationList.insertAdjacentHTML(
+                    "beforeend",
+                    listItemTemplate
+                    (line)
+                ));
+            });
+    };
 
     function isValidate(stationName) {
         if (stationName === "") {
@@ -72,6 +83,7 @@ function AdminStation() {
     };
     const init = () => {
         initEventListeners();
+        initDefaultSubwayStations();
     };
     return {
         init
