@@ -68,8 +68,8 @@ public class LineStationAcceptanceTest {
         //when
         LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null,
             stationResponse1.getName());
-        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(),
-            stationResponse1.getName(), stationResponse2.getName());
+        createLineStation(lineResponse1.getId(), stationResponse1.getName(),
+            stationResponse2.getName());
 
         //then
         List<LineResponse> lines = getLineStations();
