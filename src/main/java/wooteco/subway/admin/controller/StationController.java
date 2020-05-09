@@ -27,7 +27,6 @@ public class StationController {
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
-
         return ResponseEntity
             .created(URI.create("/stations/" + persistStation.getId()))
             .body(StationResponse.of(persistStation));

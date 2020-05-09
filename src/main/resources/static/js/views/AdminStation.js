@@ -1,10 +1,22 @@
 import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate } from "../../utils/templates.js";
+import { listItemTemplate, subwayStationsTemplate } from "../../utils/templates.js";
 import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
+
+  const initDefaultSubwayStations = async () => {
+    $stationList.innerHTML = '';
+    const stations = api.station.get();
+    console.log(stations);
+    stations.map(station => {
+      $stationList.insertAdjacentElement(
+        "beforeend",
+        subwayStationsTemplate(station)
+      );
+    });
+  };
 
   const onAddStationHandler = async event => {
     if (event.key !== KEY_TYPE.ENTER) {
@@ -21,9 +33,8 @@ function AdminStation() {
       name: stationName
     };
     const saveStation = await api.station.create(newStation);
-
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(saveStation.name));
+    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(saveStation));
   };
 
   const onRemoveStationHandler = event => {
@@ -40,6 +51,7 @@ function AdminStation() {
   };
 
   const init = () => {
+    initDefaultSubwayStations();
     initEventListeners();
   };
 
