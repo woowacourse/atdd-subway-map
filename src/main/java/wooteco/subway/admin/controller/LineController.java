@@ -1,10 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,19 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
 public class LineController {
 
     private final LineService lineService;
-
-    private final Set<Station> mockLineStations = new HashSet<>();
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
@@ -72,27 +64,22 @@ public class LineController {
     @PostMapping("/lines/{id}/stations")
     public ResponseEntity addLineStation(@PathVariable Long id,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        mockLineStations.add(new Station(lineStationCreateRequest.getStationId(), "잠실역"));
-
         lineService.addLineStation(id, lineStationCreateRequest);
-
         return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
-            .body(new LineStationResponse(1L, lineStationCreateRequest.getStationId(),
-                lineStationCreateRequest.getPreStationId(), lineStationCreateRequest.getDistance(),
-                lineStationCreateRequest.getDuration(), LocalDateTime.now(), LocalDateTime.now()));
+            .build();
     }
 
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity findLine(@PathVariable Long id) {
+        LineResponse lineResponse = lineService.findLineWithStationsById(id);
         return ResponseEntity.ok()
-            .body(new LineResponse(id, "2호선", LocalTime.now(), LocalTime.now(), 10,
-                "bg-red-100", LocalDateTime.now(), LocalDateTime.now(), mockLineStations));
+            .body(lineResponse);
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId,
         @PathVariable Long stationId) {
-        mockLineStations.removeIf(station -> station.getId() == stationId);
+        lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -65,6 +65,7 @@ public class LineStationAcceptanceTest {
         LineResponse line = createLine("2호선");
 
         // when
+        addLineStation(line.getId(), null, station1.getId());
         addLineStation(line.getId(), station1.getId(), station2.getId());
         addLineStation(line.getId(), station2.getId(), station3.getId());
         addLineStation(line.getId(), station3.getId(), station1.getId());
