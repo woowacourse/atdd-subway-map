@@ -1,9 +1,7 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
-import {subwayLinesTemplate} from "../../utils/templates.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -58,26 +56,10 @@ function AdminEdge() {
             })
     };
 
-    const onRemoveStationHandler = event => {
-        const $target = event.target;
-        const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
-        const $selectedStationId = $target.closest(".list-item").dataset.stationId
-        const isDeleteButton = $target.classList.contains("mdi-delete");
-
-        if (isDeleteButton && confirm("삭제하시겠습니까?")) {
-            const url = "lines/station/" + $selectedLineId + "/" + $selectedStationId;
-            fetch(url, {
-                method: 'delete'
-            }).then(res => {
-                if (res.ok){
-                    $target.closest(".list-item").remove()
-                }
-            })
-        }
-    };
-
     const createEdge = event => {
-        const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
+        const $selectedIndex = document.querySelector("#station-select-options").selectedIndex;
+        const $selectedLineId = document.querySelector("#station-select-options")
+            .options[$selectedIndex].dataset.lineId;
         const $preStationName = document.querySelector("#depart-station-name").value;
         const $stationName = document.querySelector("#arrival-station-name").value;
         const $distance = document.querySelector("#distance").value;
@@ -96,6 +78,24 @@ function AdminEdge() {
             })
         })
     }
+
+    const onRemoveStationHandler = event => {
+        const $target = event.target;
+        const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
+        const $selectedStationId = $target.closest(".list-item").dataset.stationId
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+
+        if (isDeleteButton && confirm("삭제하시겠습니까?")) {
+            const url = "lines/station/" + $selectedLineId + "/" + $selectedStationId;
+            fetch(url, {
+                method: 'delete'
+            }).then(res => {
+                if (res.ok){
+                    $target.closest(".list-item").remove()
+                }
+            })
+        }
+    };
 
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(
