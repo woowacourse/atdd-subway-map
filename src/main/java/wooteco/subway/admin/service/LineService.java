@@ -78,10 +78,7 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = findLineById(id);
-        Set<Long> ids = mockLineStations.get(id)
-                .stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toSet());
+        List<Long> ids = line.getLineStationsId();
         Set<Station> stations = stationRepository.findAllById(ids);
         return LineResponse.of(line, stations);
     }
