@@ -8,10 +8,10 @@ function AdminStation() {
 
   const initDefaultSubwayStations = async () => {
     $stationList.innerHTML = '';
-    const stations = api.station.get();
+    const stations = await api.station.get();
     console.log(stations);
-    stations.map(station => {
-      $stationList.insertAdjacentElement(
+    stations.forEach(station => {
+      $stationList.insertAdjacentHTML(
         "beforeend",
         subwayStationsTemplate(station)
       );
