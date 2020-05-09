@@ -93,7 +93,9 @@ public class Line {
         if (line.getColor() != null) {
             this.color = line.getColor();
         }
-
+        if (line.getStations() != null) {
+            this.lineStations = new ArrayList<>(line.getStations());
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -130,7 +132,7 @@ public class Line {
     }
 
     private boolean isExcessIndex(int nextLineStationIndex) {
-        return nextLineStationIndex == lineStations.size();
+        return nextLineStationIndex >= lineStations.size();
     }
 
     public void removeLineStationById(Long stationId) {

@@ -5,73 +5,80 @@ import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
 
-	@Column("station")
-	private Long stationId;
-	@Column("pre_station")
-	private Long preStationId;
-	private int distance;
-	private int duration;
+    @Column("station")
+    private Long stationId;
+    @Column("pre_station")
+    private Long preStationId;
+    private int distance;
+    private int duration;
 
-	public LineStation() {
-	}
+    public LineStation() {
+    }
 
-	// TODO 여기서 사실 validation을 해야할 것 같아요. preStationId != stationId
-	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-		this.preStationId = preStationId;
-		this.stationId = stationId;
-		this.distance = distance;
-		this.duration = duration;
-	}
+    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+        validate(preStationId, stationId);
+        this.preStationId = preStationId;
+        this.stationId = stationId;
+        this.distance = distance;
+        this.duration = duration;
+    }
 
-	public Long getPreStationId() {
-		return preStationId;
-	}
+    private void validate(Long preStationId, Long stationId) {
+        Objects.requireNonNull(stationId, "대상역이 존재하지 않습니다.");
+        if (preStationId != null && preStationId.equals(stationId)) {
+            throw new IllegalArgumentException("이전역과 대상역이 같을 수 없습니다.");
+        }
+    }
 
-	public Long getStationId() {
-		return stationId;
-	}
+    public Long getPreStationId() {
+        return preStationId;
+    }
 
-	public int getDistance() {
-		return distance;
-	}
+    public Long getStationId() {
+        return stationId;
+    }
 
-	public int getDuration() {
-		return duration;
-	}
+    public int getDistance() {
+        return distance;
+    }
 
-	public boolean isPreStationBy(LineStation other) {
-		return this.stationId.equals(other.preStationId);
-	}
+    public int getDuration() {
+        return duration;
+    }
 
-	public void updatePreStationId(Long preStationId) {
-		this.preStationId = preStationId;
-	}
+    public boolean isPreStationBy(LineStation other) {
+        return this.stationId.equals(other.preStationId);
+    }
 
-	public void updatePreStationId(LineStation other) {
-		this.preStationId = other.getStationId();
-	}
+    public void updatePreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
 
-	public boolean isSameStationId(Long stationId) {
-		return this.stationId.equals(stationId);
-	}
+    public void updatePreStationId(LineStation other) {
+        this.preStationId = other.getStationId();
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		LineStation that = (LineStation) o;
-		return distance == that.distance &&
-			duration == that.duration &&
-			Objects.equals(stationId, that.stationId) &&
-			Objects.equals(preStationId, that.preStationId);
-	}
+    public boolean isSameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(stationId, preStationId, distance, duration);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LineStation that = (LineStation) o;
+        return distance == that.distance &&
+            duration == that.duration &&
+            Objects.equals(stationId, that.stationId) &&
+            Objects.equals(preStationId, that.preStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stationId, preStationId, distance, duration);
+    }
 }

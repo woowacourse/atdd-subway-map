@@ -31,7 +31,6 @@ public class StationController {
             .body(StationResponse.of(persistStation));
     }
 
-    // TODO 이 친구를 Iterable이 아닌 것으로 Override 하는 것은 어떨까요?
     @GetMapping("/stations")
     public ResponseEntity<Iterable<Station>> showStations() {
         return ResponseEntity.ok().body(stationRepository.findAll());

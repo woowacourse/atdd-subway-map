@@ -60,8 +60,7 @@ public class LineController {
 		return ResponseEntity.ok().build();
 	}
 
-	// TODO stationId를 꼭 PathVariable로 넣어야 할까요?
-	@PostMapping("{lineId}/stations/{stationId}")
+	@PostMapping("{lineId}/stations")
 	public ResponseEntity<Void> addStationToLine(@PathVariable Long lineId,
 		@RequestBody LineStationCreateRequest request) {
 
