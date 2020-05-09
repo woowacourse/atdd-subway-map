@@ -56,7 +56,7 @@ const api = (() => {
       return dataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
     },
     createLineStation(id, data) {
-      noDataRequest(`${BASE_URL}/lines/${id}/stations`, METHOD.POST(data));
+      return dataRequest(`${BASE_URL}/lines/${id}/stations`, METHOD.POST(data));
     },
     find(id) {
       return dataRequest(`${BASE_URL}/lines/${id}`);
