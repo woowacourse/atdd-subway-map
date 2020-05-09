@@ -4,9 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Line {
     @Id
@@ -16,7 +14,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new LinkedHashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -97,15 +95,46 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        // 처음에 추가
+        if (lineStation.getPreStationId() == null) {
+            Optional<LineStation> originFirstLineStation = stations.stream().findFirst();
+            if (originFirstLineStation.isPresent()) {
+                LineStation secondLineStation = new LineStation(lineStation.getStationId(),
+                        originFirstLineStation.get().getStationId(), 10, 10);
+                stations.remove(originFirstLineStation.get());
+                stations.add(secondLineStation);
+            }
+        }
+        //중간에 들어올 때 추가
+
         stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
+
         // TODO: 구현
     }
 
     public List<Long> findLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> stationsIds = new ArrayList<>();
+        for (LineStation lineStation : stations) {
+            stationsIds.add(lineStation.getStationId());
+        }
+        return stationsIds;
     }
+
+    public List<LineStation> sortedLineStations() {
+        List<LineStation> sorted = new ArrayList<>();
+        for (LineStation station : stations) {
+
+        }
+        return sorted;
+    }
+
+    private LineStation findLineStationByPreStationId(Long id) {
+        for (LineStation lineStation : stations) {
+
+        }
+    }
+
 }

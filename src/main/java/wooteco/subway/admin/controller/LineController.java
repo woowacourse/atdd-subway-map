@@ -2,19 +2,13 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.request.LineStationAddRequest;
 import wooteco.subway.admin.dto.request.LineUpdateRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
-import wooteco.subway.admin.dto.response.LineStationResponse;
+import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
@@ -59,23 +53,24 @@ public class LineController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
     @GetMapping("/lineStations")
     public ResponseEntity showLineStations() {
-        List<LineStationResponse> response = lineService.findAllLineStations();
+        List<StationsAtLineResponse> response = lineService.findAllLineStations();
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/lineStations")
-    public ResponseEntity createLineStations(@RequestBody LineStationAddRequest request) {
-        LineStationResponse response = lineService.addLineStation(1L, request);
+    @PostMapping("/lineStations/{lineId}")
+    public ResponseEntity createLineStations(@PathVariable("lineId") Long lineId, @RequestBody LineStationAddRequest request) {
+        StationsAtLineResponse response = lineService.addLineStation(lineId, request);
 
         return ResponseEntity
-                .created(URI.create("/lineStations/" + 1))
+                .created(URI.create("/lineStations/" + lineId))
                 .body(response);
     }
 
-    @DeleteMapping("/lineStations/{id}")
-    public ResponseEntity<Void> deleteLineStation(@PathVariable("id") Long lineId, @RequestBody Long stationId) {
+    @DeleteMapping("/lineStations/{lineId}/{stationId}")
+    public ResponseEntity<Void> deleteLineStation(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
