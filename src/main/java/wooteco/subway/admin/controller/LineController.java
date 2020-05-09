@@ -61,10 +61,9 @@ public class LineController {
     @PostMapping("/{id}")
     public ResponseEntity addStation(@PathVariable("id") Long id,
         @RequestBody LineStationCreateRequest request) {
-        Line saved = lineService.addLineStation(id, request);
         return ResponseEntity
             .created(URI.create("/lines/" + id))
-            .body(LineResponse.of(saved));
+            .body(lineService.addLineStation(id, request));
     }
 
     @DeleteMapping("/{lineId}/{stationId}")

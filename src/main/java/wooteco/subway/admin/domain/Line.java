@@ -70,18 +70,17 @@ public class Line {
                 .findFirst()
                 .ifPresent(station -> station.updatePreLineStation(newLineStation.getStationId()));
             stations.add(0, newLineStation);
-        } else {
-            LineStation preStation = stations.stream()
-                .filter(station -> station.isPreviousOf(newLineStation))
-                .findFirst()
-                .orElseThrow(
-                    () -> new InvalidStationInsertionException(newLineStation.getPreStationId()));
-
-            nextOf(preStation).ifPresent(
-                station -> station.updatePreLineStation(newLineStation.getStationId()));
-
-            stations.add(stations.indexOf(preStation) + 1, newLineStation);
+            return;
         }
+        LineStation preStation = stations.stream()
+            .filter(station -> station.isPreviousOf(newLineStation))
+            .findFirst()
+            .orElseThrow(() -> new InvalidStationInsertionException(newLineStation.getPreStationId()));
+
+        Optional<LineStation> maybeNextStation = nextOf(preStation);
+        maybeNextStation.ifPresent(station -> station.updatePreLineStation(newLineStation.getStationId()));
+
+        stations.add(stations.indexOf(preStation) + 1, newLineStation);
     }
 
     public void removeLineStationById(Long stationId) {

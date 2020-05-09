@@ -65,11 +65,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Line addLineStation(Long id, LineStationCreateRequest request) {
+    public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
         persistLine.addLineStation(request.toLineStation());
-        return lineRepository.save(persistLine);
+        Long savedId = lineRepository.save(persistLine).getId();
+        return findLineWithStationsById(savedId);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

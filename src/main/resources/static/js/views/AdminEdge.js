@@ -18,8 +18,8 @@ function AdminEdge() {
 
   const initSubwayLinesSlider = () => {
     $subwayLinesSlider.innerHTML = subwayLines
-    .map(line => subwayLinesItemTemplate(line))
-    .join("");
+      .map(line => subwayLinesItemTemplate(line))
+      .join("");
     tns({
       container: ".subway-lines-slider",
       loop: true,
@@ -36,8 +36,8 @@ function AdminEdge() {
 
   const initSubwayLineOptions = () => {
     const subwayLineOptionTemplate = subwayLines
-    .map(line => optionTemplate(line.name))
-    .join("");
+      .map(line => optionTemplate(line.name))
+      .join("");
     const $stationSelectOptions = document.querySelector("#station-select-options");
     $stationSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);
   };
@@ -50,62 +50,64 @@ function AdminEdge() {
       const stationId = parseInt($target.closest(".list-item").dataset.stationId);
 
       api.line.deleteStation(lineId, stationId)
-      .then(() => {
-        subwayLines.map(line => {
-          if (line => line.id === lineId) {
-            line = line.filter(station => station !== stationId);
-          }
-          return line;
+        .then(() => {
+          subwayLines.map(line => line.id === lineId ? line.filter(station => station !== stationId) : line);
         })
-      })
-      .catch(error => {
-        console.log(error);
-      });
+        .catch(error => {
+          console.log(error);
+        });
       $target.closest(".list-item").remove();
     }
-
   };
 
   const initDefaultLines = () => {
     api.line.getAll()
-    .then(data => {
-      subwayLines = data;
-      initSubwayLinesSlider();
-      initSubwayLineOptions();
-    });
+      .then(data => {
+        subwayLines = data;
+        initSubwayLinesSlider();
+        initSubwayLineOptions();
+      });
   };
 
   const initDefaultStations = () => {
     api.station.getAll()
-    .then(data => {
-      stations = data;
-    })
+      .then(data => {
+        stations = data;
+      });
   };
 
-  function onAddStationHandler(event) {
+  const onAddStationHandler = (event) => {
     event.preventDefault();
     const lineName = $lineSelect.value;
-    const preStationName = $departStationInput.value.trim();
-    const stationName = $arrivalStationInput.value.trim();
-
     const lineId = subwayLines.find(line => line.name === lineName).id;
-    const preStationId = stations.find(station => station.name === preStationName).id;
-    const stationId = stations.find(station => station.name === stationName).id;
+    const departStationName = $departStationInput.value.trim();
+    const arrivalStationName = $arrivalStationInput.value.trim();
+    const stationsIdInLine = subwayLines.find(line => line.id === lineId).stations
+      .map(station => station.id);
+    console.log(stationsIdInLine);
 
-    api.line.addStation(lineId, { preStationId, stationId })
-    .then(response => {
-      subwayLines = subwayLines.map(line => {
-        if (line => line.id === response.id) {
-          line = response;
-          // 추가될 내용 들어갈 자리 찾기
-          $subwayLinesSlider.insertAdjacentHTML("afterbegin", subwayLinesItemTemplate(line));
-        }
-        return line;
+    if (!stations.some(station => station.name === departStationName)) {
+      alert("입력한 출발역은 존재하지 않습니다.");
+      return;
+    }
+    if (!stations.some(station => station.name === arrivalStationName)) {
+      alert("입력한 도착역은 존재하지 않습니다.");
+      return;
+    }
+
+    const departStationId = stations.find(station => station.name === departStationName).id;
+    const arrivalStationId = stations.find(station => station.name === arrivalStationName).id;
+
+    api.line.addStation(lineId, { preStationId: departStationId, stationId: arrivalStationId })
+      .then(response => {
+        subwayLines = subwayLines.map(line => line.id === response.id ? response : line);
+        initSubwayLinesSlider();
+      })
+      .catch(error => console.log(error))
+      .finally(() => {
+        createSubwayEdgeModal.toggle();
       });
-    })
-    .catch(error => console.log(error));
-    createSubwayEdgeModal.toggle();
-  }
+  };
 
   function onClickModalOpen() {
     $lineSelect.value = "";
