@@ -5,16 +5,14 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Embedded;
 import wooteco.subway.admin.dto.req.LineRequest;
 
 public class Line {
-    private static final int FIRST_INDEX = 0;
-    private static final int NEXT_STATION_INDEX = 1;
-
     @Id
     private Long id;
     private String name;
@@ -22,7 +20,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private List<LineStation> stations;
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_EMPTY)
+    private LineStations lineStations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -30,7 +29,7 @@ public class Line {
     }
 
     public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
+                int intervalTime) {
         this.name = name;
         this.bgColor = bgColor;
         this.startTime = startTime;
@@ -38,21 +37,21 @@ public class Line {
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.stations = new ArrayList<>();
+        this.lineStations = LineStations.createEmpty();
     }
 
     public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
+                int intervalTime) {
         this(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
     public static Line of(LineRequest lineRequest) {
         return new Line(
-            lineRequest.getName(),
-            lineRequest.getBgColor(),
-            lineRequest.getStartTime(),
-            lineRequest.getEndTime(),
-            lineRequest.getIntervalTime());
+                lineRequest.getName(),
+                lineRequest.getBgColor(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime());
     }
 
     public Long getId() {
@@ -76,7 +75,7 @@ public class Line {
     }
 
     public List<LineStation> getStations() {
-        return stations;
+        return lineStations.getStations();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -109,49 +108,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.isFirstOnLine()) {
-            update(lineStation, FIRST_INDEX);
-            return;
-        }
-
-        int targetIndex = IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isSameWithPreStationId(lineStation))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("이전역이 존재하지 않습니다."));
-
-        update(lineStation, targetIndex + NEXT_STATION_INDEX);
-    }
-
-    private void update(LineStation lineStation, int nextStationIndex) {
-        stations.add(nextStationIndex, lineStation);
-
-        if (isNotLast(nextStationIndex)) {
-            int lastIndex = nextStationIndex + NEXT_STATION_INDEX;
-            stations.get(lastIndex).updatePreLineStation(lineStation.getStationId());
-        }
-    }
-
-    private boolean isNotLast(int nextStation) {
-        return stations.size() >= nextStation + 2;
+        lineStations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        int targetIndex = IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isSameId(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
-
-        LineStation station = stations.get(targetIndex);
-        stations.remove(targetIndex);
-
-        if (targetIndex != stations.size()) {
-            stations.get(targetIndex).updatePreLineStation(station.getPreStationId());
-        }
+        lineStations.remove(stationId);
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
+        return lineStations.getLineStationsId();
     }
 }

@@ -29,12 +29,11 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody LineRequest lineRequest) {
-        Line savedLine = lineService.save(Line.of(lineRequest));
-        final LineResponse line = LineResponse.of(savedLine);
+        LineResponse response = lineService.save(Line.of(lineRequest));
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(line);
+            .body(response);
     }
 
     @GetMapping
