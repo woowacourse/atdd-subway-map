@@ -29,7 +29,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.showLine(id));
+        return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
     }
 
     @GetMapping("/lines")
