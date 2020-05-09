@@ -37,7 +37,7 @@ const api = (() => {
       return request(`/lines`, METHOD.POST(data));
     },
     createLineStation(id, data) {
-      return fetch(`/lines/${id}/stations/`, {
+      return fetch(`/lines/${id}/stations`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
