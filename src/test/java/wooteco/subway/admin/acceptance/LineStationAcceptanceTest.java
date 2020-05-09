@@ -1,24 +1,26 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 import wooteco.subway.admin.service.LineStationService;
-
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 //@Sql("/truncate.sql")
 @ExtendWith(MockitoExtension.class)
@@ -45,10 +47,6 @@ public class LineStationAcceptanceTest {
         preStation = new Station(2L, "사당역");
         station = new Station(3L, "강남역");
     }
-//
-//    public static RequestSpecification given() {
-//        return RestAssured.given().log().all();
-//    }
     /**
      * Given 지하철역이 여러 개 추가되어있다.
      * And 지하철 노선이 추가되어있다.
@@ -80,5 +78,12 @@ public class LineStationAcceptanceTest {
         assertThat(lineStation.getPreStationId()).isEqualTo(2L);
         assertThat(lineStation.getStationId()).isEqualTo(3L);
 
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        // Then 지하철역 목록을 응답 받는다.
+        // And 새로 추가한 지하철역을 목록에서 찾는다.
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+
+        Set<LineStation> lineStations = lineStationService.findLineStation(1L);
+        assertThat(lineStations.contains(lineStation)).isTrue();
     }
 }
