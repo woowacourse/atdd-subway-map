@@ -67,5 +67,5 @@
         - [x] 역 추가
         - [x] 역 제거
         - [x] 역 조회
- - [ ] LineStationAcceptanceTest Mock 대체
-    - [ ] LineController 기능 구
+ - [x] LineStationAcceptanceTest Mock 대체
+    - [x] LineController 기능 구현 

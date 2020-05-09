@@ -63,6 +63,12 @@ public class LineService {
         return LineResponse.of(line, findStationsOf(line));
     }
 
+    public Set<Station> findStationsOf(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+        return findStationsOf(line);
+    }
+
     private Set<Station> findStationsOf(Line line) {
         Set<Station> stations = new HashSet<>();
         for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
