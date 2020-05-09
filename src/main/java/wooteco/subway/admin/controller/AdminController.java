@@ -15,4 +15,14 @@ public class AdminController {
 	public String getAdminLine() {
 		return "admin-line";
 	}
+
+	@GetMapping("/admin-station")
+	public String getAdminStation() {
+		return "admin-station";
+	}
+
+	@GetMapping("/admin-edge")
+	public String getAdminEdge() {
+		return "admin-edge";
+	}
 }
