@@ -1,5 +1,4 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -32,17 +31,19 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line.title))
-      .join("");
+  const initSubwayLineOptions = async () => {
+    const subwayLineOptionTemplate = await api.line.get()
+      .then(data => {
+        return data
+          .map(line => optionTemplate(line))
+          .join("");
+      });
+
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
     );
-    $stationSelectOptions.insertAdjacentHTML(
-      "afterbegin",
-      subwayLineOptionTemplate
-    );
+
+    $stationSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);
   };
 
   const onRemoveStationHandler = event => {
