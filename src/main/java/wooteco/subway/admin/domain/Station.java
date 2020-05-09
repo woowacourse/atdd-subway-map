@@ -26,4 +26,8 @@ public class Station {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public String toJsonString() {
+        return "{ id : " + id + ", name : " + name + ", createdAt : " + createdAt + "}";
+    }
 }

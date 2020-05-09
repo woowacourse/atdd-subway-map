@@ -2,12 +2,9 @@ package wooteco.subway.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,20 +13,20 @@ public class LineResponse {
     private Long id;
     private String name;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime startTime;
+    private String startTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime endTime;
+    private String endTime;
     private int intervalTime;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
     private String bgColor;
 
-    private Set<Station> stations;
+    private String[] stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations, String bgColor) {
+    public LineResponse(Long id, String name, String startTime, String endTime, int intervalTime, String createdAt, String updatedAt, String[] stations, String bgColor) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -42,7 +39,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>(), line.getBgColor());
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime().toString(), line.getEndTime().toString(), line.getIntervalTime(), line.getCreatedAt().toString(), line.getUpdatedAt().toString(), new String[0], line.getBgColor());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
@@ -52,7 +49,13 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line, Set<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getBgColor());
+        String[] stationArray = new String[stations.size()];
+        Iterator<Station> stationsIterator = stations.iterator();
+        int i = 0;
+        while (stationsIterator.hasNext()) {
+            stationArray[i++] = stationsIterator.next().toJsonString();
+        }
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime().toString(), line.getEndTime().toString(), line.getIntervalTime(), line.getCreatedAt().toString(), line.getUpdatedAt().toString(), stationArray, line.getBgColor());
     }
 
     public Long getId() {
@@ -63,11 +66,11 @@ public class LineResponse {
         return name;
     }
 
-    public LocalTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public LocalTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
@@ -75,15 +78,15 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public String[] getStations() {
         return stations;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 

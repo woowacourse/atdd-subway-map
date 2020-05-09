@@ -3,29 +3,36 @@ package wooteco.subway.admin.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
-import java.util.Arrays;
 
 @RestController
 public class LineStationController {
+    private LineService lineService;
+
+    public LineStationController(LineService lineService) {
+        this.lineService = lineService;
+    }
+
     @PostMapping("/lines/{lineId}/stations")
-    public ResponseEntity createLineStation(@RequestBody LineStationCreateRequest lineStationCreateRequest, @PathVariable String lineId) {
+    public ResponseEntity createLineStation(@RequestBody LineStationCreateRequest lineStationCreateRequest, @PathVariable Long lineId) {
+        lineService.addLineStation(lineId, lineStationCreateRequest);
         return ResponseEntity
                 .created(URI.create("/line-station/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-                .body(Arrays.asList(new LineStationResponse(1L, 2L, 3, 4)));
+                .build();
     }
 
     @GetMapping("/lines/{lineId}/stations")
-    public ResponseEntity showLineStations(@PathVariable String lineId) {
+    public ResponseEntity showLineStations(@PathVariable Long lineId) {
         return ResponseEntity
                 .ok()
-                .body(Arrays.asList(new LineStationResponse(1L, 2L, 3, 4)));
+                .body(lineService.findStationsByLineId(lineId));
     }
 
-    @DeleteMapping("/lines/{id}/stations/{stationId}")
-    public ResponseEntity deleteLineStation(@PathVariable String lineId, @PathVariable String StationId) {
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
         return ResponseEntity
                 .noContent()
                 .build();

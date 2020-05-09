@@ -125,11 +125,26 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> station.isSameId(stationId))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-        stations.remove(lineStation);
+        Set<LineStation> newStations = new LinkedHashSet<>();
+        int flag = 0;
+        Long preLineStationId = null;
+        for (LineStation station : stations) {
+            System.out.println("a");
+            if (station.getStationId().equals(stationId)) {
+                System.out.println("b");
+                flag = 1;
+                continue;
+            }
+            if (flag == 1) {
+                System.out.println("c");
+                station.updatePreLineStation(preLineStationId);
+                flag = 0;
+            }
+            System.out.println("d");
+            newStations.add(station);
+            preLineStationId = station.getStationId();
+        }
+        stations = newStations;
     }
 
     public List<Long> getLineStationsId() {

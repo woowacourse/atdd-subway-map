@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
-    @Query("SELECT * FROM station WHERE station_id in :ids")
+    @Query("SELECT * FROM station WHERE id in (:ids)")
     Set<Station> findAllById(@Param("ids") List<Long> ids);
 }

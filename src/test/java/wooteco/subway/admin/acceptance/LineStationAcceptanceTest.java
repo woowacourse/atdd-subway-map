@@ -1,5 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,21 +11,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.admin.acceptance.LineAcceptanceTest.createLine;
-import static wooteco.subway.admin.acceptance.LineAcceptanceTest.getLines;
+import static wooteco.subway.admin.acceptance.LineAcceptanceTest.*;
 import static wooteco.subway.admin.acceptance.StationAcceptanceTest.createStation;
 import static wooteco.subway.admin.acceptance.StationAcceptanceTest.getStations;
 
@@ -46,7 +41,7 @@ public class LineStationAcceptanceTest {
 
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
-    void manageLineStation() {
+    void manageLineStation() throws JsonProcessingException {
         //Given 지하철역이 여러 개 추가되어있다
         createStation("잠실역");
         createStation("종합운동장역");
@@ -62,31 +57,34 @@ public class LineStationAcceptanceTest {
         List<LineResponse> lines = getLines();
         List<StationResponse> stations = getStations();
         addLineStation(lines.get(0).getId(), stations.get(0).getId(), stations.get(1).getId());
+        addLineStation(lines.get(0).getId(), stations.get(1).getId(), stations.get(2).getId());
         //Then 지하철역이 노선에 추가 되었다.
-        LineStation mockLineStation = new LineStation(1L, 2L, 3, 4);
-        Line mockLine = new Line("아무거나", LocalTime.of(5, 30), LocalTime.of(23, 30), 10, "5");
-        mockLine.getStations().add(mockLineStation);
-        assertThat(mockLine.getStations().size()).isEqualTo(1);
+        LineResponse lineResponse = getLine(lines.get(0).getId());
+        assertThat(lineResponse.getStations()[0].contains(stations.get(0).getName())).isTrue();
+        assertThat(lineResponse.getStations()[1].contains(stations.get(1).getName())).isTrue();
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        List<LineStationResponse> mocklineStations = getLineStations(lines.get(0).getId());
+        List<StationResponse> stationResponses = getStationsByLineId(lines.get(0).getId());
         //Then 지하철역 목록을 응답 받는다.
-        assertThat(mocklineStations.size()).isEqualTo(1);
+        assertThat(stationResponses.size()).isEqualTo(2);
         //And 새로 추가한 지하철역을 목록에서 찾는다.
-        assertThat(mocklineStations.get(0).getPreStationId()).isEqualTo(1L);
-        assertThat(mocklineStations.get(0).getStationId()).isEqualTo(2L);
-        assertThat(mocklineStations.get(0).getDistance()).isEqualTo(3);
-        assertThat(mocklineStations.get(0).getDuration()).isEqualTo(4);
+        assertThat(stationResponses.get(0).getId()).isEqualTo(1L);
+        assertThat(stationResponses.get(1).getId()).isEqualTo(2L);
 
         //When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-        mocklineStations = new ArrayList<>();
-        deleteLine(lines.get(0).getId(), stations.get(0).getId());
+        deleteLineStation(lines.get(0).getId(), stations.get(0).getId());
         //Then 지하철역이 노선에서 제거 되었다.
-        assertThat(mocklineStations.size()).isEqualTo(0);
+        stationResponses = getStationsByLineId(lines.get(0).getId());
+        assertThat(stationResponses.size()).isEqualTo(1);
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        stationResponses = getStationsByLineId(lines.get(0).getId());
         //Then 지하철역 목록을 응답 받는다.
+        assertThat(stationResponses.size()).isEqualTo(1);
         //And 제외한 지하철역이 목록에 존재하지 않는다.
+        for (StationResponse stationResponse : stationResponses) {
+            assertThat(stationResponse.getId().equals(1L)).isFalse();
+        }
     }
 
     private void addLineStation(Long lineId, Long stationId, Long preStationId) {
@@ -107,17 +105,17 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private List<LineStationResponse> getLineStations(Long lineId) {
+    private List<StationResponse> getStationsByLineId(Long lineId) {
         return given().
                 when().
                 get("/lines/" + lineId + "/stations").
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", LineStationResponse.class);
+                jsonPath().getList(".", StationResponse.class);
     }
 
-    private void deleteLine(Long lineId, Long stationId) {
+    private void deleteLineStation(Long lineId, Long stationId) {
         given().
                 when().
                 delete("/lines/" + lineId + "/stations/" + stationId).
