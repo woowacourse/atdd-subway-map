@@ -24,6 +24,10 @@ public class LineStation {
         return preStationId == null;
     }
 
+    public boolean isPreStationOf(LineStation lineStation) {
+        return this.stationId.equals(lineStation.getPreStationId());
+    }
+
     public void setPreStationId(Long preStationId) {
         this.preStationId = preStationId;
     }

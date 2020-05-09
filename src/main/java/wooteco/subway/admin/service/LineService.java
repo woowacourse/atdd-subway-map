@@ -40,12 +40,15 @@ public class LineService {
 	}
 
 	public void addLineStation(Long id, LineStationCreateRequest request) {
-		if (request.getPreStationId() == null) {
-			Line persistLine = lineRepository.findById(id)
-					.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+		Line persistLine = lineRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-			persistLine.addStationOnFirst(request.toLineStation());
+		if (request.getPreStationId() == null) {
+			persistLine.addLineStationOnFirst(request.toLineStation());
+			return;
 		}
+
+		persistLine.addLineStation(request.toLineStation());
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {

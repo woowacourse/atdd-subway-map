@@ -95,7 +95,7 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addStationOnFirst(LineStation inputLineStation) {
+    public void addLineStationOnFirst(LineStation inputLineStation) {
         LineStation lineStation = stations.stream()
                 .filter(LineStation::isFirstLineStation)
                 .findFirst()
@@ -105,7 +105,29 @@ public class Line {
         stations.add(0, inputLineStation);
     }
 
-    public void addLineStation(LineStation lineStation) {
+    public void addLineStation(LineStation inputLineStation) {
+        LineStation preLineStation = stations.stream()
+                .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
+
+        if (isLastStation(preLineStation)) {
+            addLineStationOnLast(inputLineStation);
+            return;
+        }
+
+        int index = stations.indexOf(preLineStation);
+        LineStation nextByInputLineStation = stations.get(index + 1);
+        nextByInputLineStation.setPreStationId(inputLineStation.getStationId());
+        stations.add(index + 1, inputLineStation);
+
+    }
+
+    private boolean isLastStation(LineStation preLineStation) {
+        return stations.indexOf(preLineStation) == stations.size() - 1;
+    }
+
+    public void addLineStationOnLast(LineStation lineStation) {
         stations.add(lineStation);
     }
 
