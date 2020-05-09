@@ -22,6 +22,9 @@ import wooteco.subway.admin.service.LineService;
 @RequestMapping("/lineStations")
 public class LineStationController {
 
+    public static final int DEFAULT_DISTANCE = 0;
+    public static final int DEFAULT_DURATION = 0;
+
     @Autowired
     private LineService lineService;
 
@@ -39,7 +42,7 @@ public class LineStationController {
         Long stationId = stationRepository.findIdByName(request.getStationName());
 
         LineStationRequest requestWithId = new LineStationRequest(request.getLineId(), preStationId,
-            stationId, 0, 0);
+            stationId, DEFAULT_DISTANCE, DEFAULT_DURATION);
         LineStationResponse lineStationResponse = lineService.addLineStation(requestWithId);
 
         return ResponseEntity.created(
