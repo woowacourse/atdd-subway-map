@@ -76,8 +76,8 @@ public class LineController {
 
     @PostMapping("/{id}/stations")
     public ResponseEntity createLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        lineService.addLineStation(id, lineStationCreateRequest);
-        return ResponseEntity.ok().build();
+        Line line = lineService.addLineStation(id, lineStationCreateRequest);
+        return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")

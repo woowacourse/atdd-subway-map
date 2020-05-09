@@ -1,6 +1,9 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -8,10 +11,6 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class LineService {
@@ -51,11 +50,11 @@ public class LineService {
             .anyMatch(line -> line.getName().equals(lineName));
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
+    public Line addLineStation(Long id, LineStationCreateRequest request) {
         LineStation lineStation = request.toLineStation();
         Line line = findById(id);
         line.addLineStation(lineStation);
-        save(line);
+        return save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
