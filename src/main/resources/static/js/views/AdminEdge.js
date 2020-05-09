@@ -18,7 +18,6 @@ function AdminEdge() {
             method: 'get'
         }).then(res => res.json())
             .then(data => {
-                console.log(data);
                 $subwayLinesSlider.innerHTML = data
                     .map(line => subwayLinesItemTemplate(line))
                     .join("");
