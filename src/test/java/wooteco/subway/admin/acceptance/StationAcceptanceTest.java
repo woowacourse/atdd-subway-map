@@ -22,13 +22,13 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     @DisplayName("지하철역을 관리한다")
@@ -56,9 +56,9 @@ public class StationAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/stations").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -66,18 +66,18 @@ public class StationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/stations").
+                get("/stations").
                 then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteStation(Long id) {
         given().
-        when().
+                when().
                 delete("/stations/" + id).
-        then().
+                then().
                 log().all();
     }
 }

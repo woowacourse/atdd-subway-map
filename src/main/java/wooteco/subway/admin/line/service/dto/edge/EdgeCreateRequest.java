@@ -2,11 +2,17 @@ package wooteco.subway.admin.line.service.dto.edge;
 
 import wooteco.subway.admin.line.domain.edge.Edge;
 
+import javax.validation.constraints.NotNull;
+
 public class EdgeCreateRequest {
+    @NotNull(message = "이전 역 값이 비어있습니다.")
     private Long preStationId;
+    @NotNull(message = "대상 역 값이 비어있습니다.")
     private Long stationId;
-    private int distance;
-    private int duration;
+    @NotNull(message = "구간 값이 비어있습니다.")
+    private Integer distance;
+    @NotNull(message = "기간 값이 비어있습니다.")
+    private Integer duration;
 
     public EdgeCreateRequest() {
     }
@@ -26,11 +32,11 @@ public class EdgeCreateRequest {
         return stationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 

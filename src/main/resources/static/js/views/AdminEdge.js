@@ -37,7 +37,10 @@ function AdminEdge() {
                     })
                     .catch(alert);
             })
-            .catch(alert);
+            .catch(error => {
+                const messages = collectMessages(error.body);
+                alert(messages.join("\n"));
+            });
     };
 
     const onRemoveStationHandler = event => {
@@ -59,7 +62,7 @@ function AdminEdge() {
     };
 
     const initSubwayLinesSlider = () => {
-        api.line.get()
+        api.edge.getLineEdge()
             .then(response => {
                 $subwayLinesSlider.innerHTML = response.body
                     .map(line => subwayLinesItemTemplate(line))
@@ -119,6 +122,14 @@ function AdminEdge() {
                     subwayStationOptionTemplate
                 );
             })
+    };
+
+    const collectMessages = (errorDtos) => {
+        const messages = [];
+        for (let errorDto of errorDtos) {
+            messages.push(errorDto.message);
+        }
+        return messages;
     };
 
     const initEventListeners = () => {

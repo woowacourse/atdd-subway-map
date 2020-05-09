@@ -26,15 +26,14 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
-
     public static RequestSpecification given() {
         return RestAssured.given().log().all();
     }
 
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -75,7 +74,7 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                get("/lines/" + id).
+                get("/line/" + id).
                 then().
                 log().all().
                 extract().as(LineResponse.class);
@@ -94,7 +93,7 @@ public class LineAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
+                post("/line").
                 then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -111,7 +110,7 @@ public class LineAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                put("/lines/" + id).
+                put("/line/" + id).
                 then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
@@ -121,7 +120,7 @@ public class LineAcceptanceTest {
         return
                 given().
                         when().
-                        get("/lines").
+                        get("/line").
                         then().
                         log().all().
                         extract().
@@ -131,7 +130,7 @@ public class LineAcceptanceTest {
     private void deleteLine(Long id) {
         given().
                 when().
-                delete("/lines/" + id).
+                delete("/line/" + id).
                 then().
                 log().all();
     }

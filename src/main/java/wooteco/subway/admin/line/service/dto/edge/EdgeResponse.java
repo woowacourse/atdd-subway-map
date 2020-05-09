@@ -1,10 +1,9 @@
 package wooteco.subway.admin.line.service.dto.edge;
 
 import wooteco.subway.admin.line.domain.edge.Edge;
-import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.domain.Stations;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EdgeResponse {
@@ -21,20 +20,16 @@ public class EdgeResponse {
         this.stationName = stationName;
     }
 
-    public static List<EdgeResponse> listOf(final List<Edge> edges, final Set<Station> stations) {
+    public static List<EdgeResponse> listOf(final List<Edge> edges, final Stations stations) {
         return edges.stream()
                 .map(edge -> EdgeResponse.of(edge, stations))
                 .collect(Collectors.toList());
     }
 
-    public static EdgeResponse of(final Edge edge, final Set<Station> stations) {
+    public static EdgeResponse of(final Edge edge, final Stations stations) {
         Long preStationId = edge.getPreStationId();
         Long stationId = edge.getStationId();
-        String stationName = stations.stream()
-                .filter(station -> station.isSameId(stationId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new)
-                .getName();
+        String stationName = stations.findNameById(stationId);
         return new EdgeResponse(preStationId, stationId, stationName);
     }
 

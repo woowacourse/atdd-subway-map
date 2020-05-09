@@ -3,17 +3,18 @@ package wooteco.subway.admin.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.line.domain.Line;
-import wooteco.subway.admin.line.domain.edge.Edge;
+import wooteco.subway.admin.line.domain.edge.Edges;
 import wooteco.subway.admin.line.domain.repository.LineRepository;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
+import wooteco.subway.admin.line.service.dto.line.LineEdgeResponse;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
-import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.domain.Stations;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +45,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line, stationRepository.findAllById(line.getLineStationsId())))
+                .map(line -> LineResponse.of(line, stationRepository.findAllById(line.getEdgesStationIds())))
                 .collect(Collectors.toList());
     }
 
@@ -61,14 +62,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<EdgeResponse> findEdgeResponseByLineId(Long lineId) {
+    public List<EdgeResponse> findEdgesByLineId(Long lineId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
 
-        List<Edge> edges = line.getEdges();
-        Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        Stations stations = new Stations(stationRepository.findAllById(line.getEdgesStationIds()));
 
-        return EdgeResponse.listOf(edges, stations);
+        Edges edges = line.getEdges();
+        return EdgeResponse.listOf(edges.getEdges(), stations);
     }
 
     @Transactional
@@ -91,6 +92,20 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        return LineResponse.of(line, stationRepository.findAllById(line.getLineStationsId()));
+        return LineResponse.of(line, stationRepository.findAllById(line.getEdgesStationIds()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineEdgeResponse> getAllLineEdge() {
+        List<Line> lines = lineRepository.findAll();
+
+        List<LineEdgeResponse> lineEdgeResponses = new ArrayList<>();
+        for (Line line : lines) {
+            Edges edges = line.getEdges();
+            Stations stations = new Stations(stationRepository.findAllById(edges.getStationsId()));
+            List<EdgeResponse> edgeResponses = EdgeResponse.listOf(edges.getEdges(), stations);
+            lineEdgeResponses.add(new LineEdgeResponse(line, edgeResponses));
+        }
+        return lineEdgeResponses;
     }
 }

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.line.domain.edge.Edge;
+import wooteco.subway.admin.line.domain.edge.Edges;
 import wooteco.subway.admin.line.domain.repository.LineRepository;
 import wooteco.subway.admin.line.service.LineService;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
@@ -27,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceTest {
+public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
@@ -54,11 +55,13 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getEdges()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(4);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(4L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(1L);
+        assertThat(edges.getEdges().get(2).getStationId()).isEqualTo(2L);
+        assertThat(edges.getEdges().get(3).getStationId()).isEqualTo(3L);
     }
 
     @DisplayName("중간에 역 끼워넣기")
@@ -69,11 +72,13 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getEdges()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(4);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(1L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(4L);
+        assertThat(edges.getEdges().get(2).getStationId()).isEqualTo(2L);
+        assertThat(edges.getEdges().get(3).getStationId()).isEqualTo(3L);
     }
 
     @DisplayName("마지막에 역 추가하기")
@@ -84,11 +89,13 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getEdges()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(3L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(4L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(4);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(1L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(2L);
+        assertThat(edges.getEdges().get(2).getStationId()).isEqualTo(3L);
+        assertThat(edges.getEdges().get(3).getStationId()).isEqualTo(4L);
     }
 
     @DisplayName("출발역 제거하기")
@@ -97,9 +104,11 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(1L));
 
-        assertThat(line.getEdges()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(2);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(2L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(3L);
     }
 
     @DisplayName("중간역 제거하기")
@@ -108,9 +117,11 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(2L));
 
-        assertThat(line.getEdges()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(2);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(1L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(3L);
     }
 
     @DisplayName("마지막 역 제거하기")
@@ -119,9 +130,11 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(3L));
 
-        assertThat(line.getEdges()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
+        Edges edges = line.getEdges();
+
+        assertThat(edges.getEdges()).hasSize(2);
+        assertThat(edges.getEdges().get(0).getStationId()).isEqualTo(1L);
+        assertThat(edges.getEdges().get(1).getStationId()).isEqualTo(2L);
     }
 
     @DisplayName("해당 노선에 존재하는 구간 정보 전체 조회하기")

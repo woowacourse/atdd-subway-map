@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.line.domain.edge.Edge;
+import wooteco.subway.admin.line.domain.edge.Edges;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -24,7 +25,9 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getLineStationsId();
+        Edges edges = line.getEdges();
+
+        List<Long> stationIds = edges.getStationsId();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -36,6 +39,7 @@ public class LineTest {
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getEdges()).hasSize(2);
+        Edges edges = line.getEdges();
+        assertThat(edges.getEdges()).hasSize(2);
     }
 }

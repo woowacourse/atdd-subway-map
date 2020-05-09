@@ -67,7 +67,7 @@ public class Line {
         edges.removeByStationId(stationId);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> getEdgesStationIds() {
         return edges.getStationsId();
     }
 
@@ -91,8 +91,8 @@ public class Line {
         return intervalTime;
     }
 
-    public List<Edge> getEdges() {
-        return edges.getEdges();
+    public Edges getEdges() {
+        return this.edges;
     }
 
     public LocalDateTime getCreatedAt() {

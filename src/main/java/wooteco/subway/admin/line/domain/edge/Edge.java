@@ -7,14 +7,11 @@ import java.util.Objects;
 public class Edge {
     @Id
     private Long id;
+    private Long lineKey;
     private Long stationId;
     private Long preStationId;
     private Integer distance;
     private Integer duration;
-
-    public static Edge startEdge(Edge edge) {
-        return new Edge(null, edge.preStationId, 0, 0);
-    }
 
     public Edge() {
     }
@@ -24,6 +21,10 @@ public class Edge {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public static Edge startEdge(Edge edge) {
+        return new Edge(null, edge.preStationId, 0, 0);
     }
 
     public boolean isStartStation() {
@@ -39,6 +40,7 @@ public class Edge {
     }
 
     public void changePreStationToStationOf(final Edge edge) {
+        this.lineKey = edge.lineKey;
         this.preStationId = edge.stationId;
     }
 

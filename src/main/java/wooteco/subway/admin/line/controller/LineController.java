@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.admin.line.service.LineService;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
 import wooteco.subway.admin.line.service.dto.line.LineCreateRequest;
+import wooteco.subway.admin.line.service.dto.line.LineEdgeResponse;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
 import wooteco.subway.admin.line.service.dto.line.LineUpdateRequest;
-import wooteco.subway.admin.line.service.LineService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("lines")
+@RequestMapping("line")
 public class LineController {
 
     private final LineService lineService;
@@ -36,7 +37,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<Long> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
         Long id = lineService.save(lineCreateRequest.toLine());
-        return ResponseEntity.created(URI.create("/lines/" + id)).body(id);
+        return ResponseEntity.created(URI.create("/line/" + id)).body(id);
     }
 
     @GetMapping
@@ -45,7 +46,7 @@ public class LineController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long lineId) {
+    public ResponseEntity<LineResponse> findByLineId(@PathVariable("id") Long lineId) {
         return ResponseEntity.ok(lineService.findLineWithStationsById(lineId));
     }
 
@@ -63,12 +64,12 @@ public class LineController {
     }
 
     @GetMapping("{id}/edge")
-    public ResponseEntity<List<EdgeResponse>> getEdgesByLineId(@PathVariable(name = "id") final Long lineId) {
-        return ResponseEntity.ok(lineService.findEdgeResponseByLineId(lineId));
+    public ResponseEntity<List<EdgeResponse>> findEdgesByLineId(@PathVariable(name = "id") final Long lineId) {
+        return ResponseEntity.ok(lineService.findEdgesByLineId(lineId));
     }
 
     @PostMapping("{id}/edge")
-    public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody final EdgeCreateRequest edgeCreateRequest) {
+    public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
         lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
@@ -77,5 +78,10 @@ public class LineController {
     public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
         lineService.removeEdge(lineId, edgeDeleteRequest);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("edge")
+    public ResponseEntity<List<LineEdgeResponse>> getAllLineAndEdges() {
+        return ResponseEntity.ok(lineService.getAllLineEdge());
     }
 }

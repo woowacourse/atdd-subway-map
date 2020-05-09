@@ -30,13 +30,13 @@ public class EdgeAcceptanceTest {
     @LocalServerPort
     int port;
 
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
@@ -61,7 +61,7 @@ public class EdgeAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/{id}/edge", lineId)
+                .post("/line/{id}/edge", lineId)
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.CREATED.value());
@@ -71,7 +71,7 @@ public class EdgeAcceptanceTest {
         //새로 추가한 지하철역을 목록에서 찾는다.
         JsonPath edgeJsonPathByLineId = given()
                 .when()
-                .get("/lines/" + lineId + "/edge")
+                .get("/line/" + lineId + "/edge")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -91,7 +91,7 @@ public class EdgeAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(edgeDeleteRequest)
                 .when()
-                .delete("/lines/" + lineId + "/edge")
+                .delete("/line/" + lineId + "/edge")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -101,7 +101,7 @@ public class EdgeAcceptanceTest {
         // 제외한 지하철역이 목록에 존재하지 않는다.
         List<EdgeResponse> edgeResponses = given()
                 .when()
-                .get("/lines/" + lineId + "/edge")
+                .get("/line/" + lineId + "/edge")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -126,7 +126,7 @@ public class EdgeAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines").
+                post("/line").
                 then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
