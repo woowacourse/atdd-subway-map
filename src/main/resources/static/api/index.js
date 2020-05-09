@@ -25,16 +25,19 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(response => {
-        if (!response.ok) {
-            throw Error("메서드 호출에 실패했습니다.");
-        }
-        return response.json();
-    });
     const noContentRequest = (uri, config) => fetch(uri, config).then(response => {
         if (!response.ok) {
             throw Error("메서드 호출에 실패했습니다.");
         }
+    });
+    const request = (uri, config) => fetch(uri, config).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return response.json()
+            .then(error => {
+                throw Error(error.errorType);
+            });
     });
 
     const station = {
