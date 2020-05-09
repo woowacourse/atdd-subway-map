@@ -14,10 +14,11 @@ function AdminEdge() {
     const createSubwayEdgeModal = new Modal();
 
     async function initSubwayLinesSlider() {
+        $subwayLinesSlider.innerHTML = "";
         let subwayLineInfos = await api.edge.get()
             .then(data => data);
         $subwayLinesSlider.innerHTML = subwayLineInfos
-            .map(subwayLineInfo => subwayLinesItemTemplate(subwayLineInfo)) // line id 뿌려주기
+            .map(subwayLineInfo => subwayLinesItemTemplate(subwayLineInfo))
             .join("");
 
         tns({
@@ -51,8 +52,6 @@ function AdminEdge() {
     };
 
     const onCreateEdgeHandler = event => {
-        const $target = event.target;
-
         const selectedIndex = $selectedLine.selectedIndex;
         const lineId = $selectedLine.options[selectedIndex].getAttribute("data-line-id");
 
@@ -65,6 +64,7 @@ function AdminEdge() {
 
         api.edge.post(newEdge, lineId);
         createSubwayEdgeModal.toggle();
+        initSubwayLinesSlider();
     };
 
     const onRemoveStationHandler = event => {
@@ -77,6 +77,7 @@ function AdminEdge() {
             api.edge.delete(selectedLineId, selectedStationId);
             $target.closest(".list-item").remove();
         }
+        initSubwayLinesSlider();
     };
 
     const initEventListeners = () => {
