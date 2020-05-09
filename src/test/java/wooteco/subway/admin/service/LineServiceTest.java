@@ -119,17 +119,6 @@ public class LineServiceTest {
     }
 
     @Test
-    void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
-
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
-
-        assertThat(lineResponse.getStations()).hasSize(3);
-    }
-
-    @Test
     void updateLineStation(){
         line.updatePreStationWhenAdd(new LineStation(null,5L,10,10));
     }

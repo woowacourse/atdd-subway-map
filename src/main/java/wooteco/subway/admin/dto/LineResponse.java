@@ -87,7 +87,10 @@ public class LineResponse {
         return bgColor;
     }
 
-    public void setStations(List<Station> stations) {
-        this.stations = Sets.newLinkedHashSet(stations);
+    public void setStations(Iterable<Station> stations) {
+//        this.stations = Sets.newLinkedHashSet(stations);
+        for (Station station : stations) {
+            this.stations.add(station);
+        }
     }
 }

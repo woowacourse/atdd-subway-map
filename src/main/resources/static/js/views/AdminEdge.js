@@ -60,9 +60,19 @@ function AdminEdge() {
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
+        const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
+        const $selectedStationId = $target.closest(".list-item").dataset.stationId
         const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+
+        if (isDeleteButton && confirm("삭제하시겠습니까?")) {
+            const url = "lines/station/" + $selectedLineId + "/" + $selectedStationId;
+            fetch(url, {
+                method: 'delete'
+            }).then(res => {
+                if (res.ok){
+                    $target.closest(".list-item").remove()
+                }
+            })
         }
     };
 
@@ -79,10 +89,10 @@ function AdminEdge() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                preStationName : $preStationName,
-                stationName : $stationName,
-                distance : $distance,
-                duration : $duration,
+                preStationName: $preStationName,
+                stationName: $stationName,
+                distance: $distance,
+                duration: $duration,
             })
         })
     }
