@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +24,15 @@ public class MockController {
 
     private static Map<Long, Station> lineStationList = new HashMap<>();
     private static Map<Long, List<Long>> lineStation = new HashMap<>();
-    //lineID / station의 ids
+
+    static {
+        lineStationList.put(1L, new Station("일원역"));
+        lineStationList.put(2L, new Station("이대역"));
+    }
 
     @PostMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity addLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
-        lineStationList.put(stationId, new Station("오목교역"));
+        lineStationList.put(stationId, lineStationList.get(stationId));
         final List<Long> orDefault = lineStation.getOrDefault(lineId, new ArrayList<>());
         orDefault.add(stationId);
         lineStation.put(lineId, orDefault);
@@ -45,5 +50,13 @@ public class MockController {
         return ResponseEntity
             .ok()
             .body(collect);
+    }
+
+    @DeleteMapping("/{lineId}/stations/{stationId}")
+    public ResponseEntity removeStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineStation.get(lineId).remove(stationId);
+        return ResponseEntity
+            .noContent()
+            .build();
     }
 }
