@@ -57,8 +57,21 @@ const api = (() => {
       return fetch(`/lines/${id}`, METHOD.DELETE());
     }
   };
+  const lineStation = {
+    get(lineId) {
+      return request(`/lines/${lineId}/stations`);
+    },
+    create(data, lineId) {
+      return fetch(`/lines/${lineId}/stations`, METHOD.POST(data));
+    },
+    delete(lineId, stationId) {
+      return fetch(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+    }
+  };
   return {
-    station, line
+    station,
+    line,
+    lineStation
   };
 })();
 export default api;
