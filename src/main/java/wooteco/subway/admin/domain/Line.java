@@ -146,8 +146,4 @@ public class Line {
         }
         return linesStationsId;
     }
-
-    public boolean isInitialStation() {
-        return stations.isEmpty();
-    }
 }

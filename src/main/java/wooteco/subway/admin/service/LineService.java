@@ -67,15 +67,19 @@ public class LineService {
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
-        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
-            request.getDistance(), request.getDuration());
-        if (line.isInitialStation()) {
+        if (line.getStations().isEmpty() && request.getPreStationId() != null) {
             LineStation initialLineStation = new LineStation(null, request.getPreStationId(), 0, 0);
             line.addLineStation(initialLineStation);
         }
+        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
+            request.getDistance(), request.getDuration());
+
         line.addLineStation(lineStation);
-        Line savedLine = lineRepository.save(line);
-        return findLineWithStationsById(savedLine.getId());
+        Line persistLine = lineRepository.save(line);
+        if (line.getId() == null) {
+            return LineResponse.of(line);
+        }
+        return findLineWithStationsById(persistLine.getId());
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
