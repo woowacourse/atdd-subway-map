@@ -138,3 +138,69 @@ Scenario: 지하철 노선에 역을 추가하고 제거한다.
      Then 지하철역 목록을 응답 받는다.
      And 제외한 지하철역이 목록에 존재하지 않는다.
 ```
+
+## 4단계 - 노선별 지하철역 / 로직
+
+**노선별 지하철역 관리 기능 구현하기**
+
+### 요구사항
+
+**LineServiceTest 테스트 성공 시키기**
+
+```
+@ExtendWith(MockitoExtension.class)
+public class LineServiceTest {
+    ...
+
+    @Test
+    void addLineStationAtTheFirstOfLine() {
+        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        lineService.addLineStation(line.getId(), request);
+
+        assertThat(line.getStations()).hasSize(4);
+        assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
+        assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
+        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+    }
+    
+    ...
+
+```
+
+**LineTest 테스트 성공 시키기**
+
+```
+public class LineTest {
+    private Line line;
+
+    @Test
+    void getLineStations() {
+        List<Long> stationIds = line.getLineStationsId();
+
+        assertThat(stationIds.size()).isEqualTo(3);
+        assertThat(stationIds.get(0)).isEqualTo(1L);
+        assertThat(stationIds.get(2)).isEqualTo(3L);
+    }
+    ...
+}
+
+```
+
+### 기능목록
+
+> 기능 제약조건한 노선의 출발역은 하나만 존재하고 단방향으로 관리함실재 운행 시 양쪽 두 종점이 출발역이 되겠지만 관리의 편의를 위해 단방향으로 관리추후 경로 검색이나 시간 측정 시 양방향을 고려 할 예정한 노선에서 두 갈래로 갈라지는 경우는 없음이전역이 없는 경우 출발역으로 간주
+
+### 지하철 노선에 역 추가
+
+- 마지막 역이 아닌 뒷 따르는 역이 있는경우 재배치를 함
+    - 노선에 A - B - C 역이 연결되어 있을 때 B 다음으로 D라는 역을 추가할 경우 A - B - D - C로 재배치 됨
+
+
+### 지하철 노선에 역 제거
+
+- 출발역이 제거될 경우 출발역 다음으로 오던 역이 출발역으로 됨
+- 중간역이 제거될 경우 재배치를 함
+    - 노선에 A - B - D - C 역이 연결되어 있을 때 B역을 제거할 경우 A - B - C로 재배치 됨
