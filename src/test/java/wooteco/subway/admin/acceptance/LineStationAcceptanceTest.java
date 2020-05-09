@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,7 +74,7 @@ public class LineStationAcceptanceTest {
         //when 노선의 지하철역 조회
         List<StationsAtLineResponse> allLineStations = findAllLineStations();
         //then
-        Set<Station> savedStations = allLineStations.get(0).getStations();
+        List<Station> savedStations = allLineStations.get(0).getStations();
         List<String> savedStationNames = savedStations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
@@ -87,7 +86,7 @@ public class LineStationAcceptanceTest {
 
         //then
         List<StationsAtLineResponse> deletedLineStations = findAllLineStations();
-        Set<Station> deletedStations = deletedLineStations.get(0).getStations();
+        List<Station> deletedStations = deletedLineStations.get(0).getStations();
         assertThat(deletedStations.size()).isEqualTo(2);
 
     }
