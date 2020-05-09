@@ -8,7 +8,7 @@ create table if not exists STATION
 
 -- 1호선
 insert into STATION (name) values ('수원');
-insert into STATION (name) values ('화서');
+insert into STATION (name) values ('화성');
 insert into STATION (name) values ('성균관대');
 
 -- 2호선
@@ -34,15 +34,11 @@ create table if not exists LINE
    primary key(id)
 );
 
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('1호선', '06:00:00', '22:00:00', '10', 'bg-blue-700');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('2호선', '06:00:00', '22:00:00', '10', 'bg-green-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('3호선', '06:00:00', '22:00:00', '10', 'bg-orange-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('4호선', '06:00:00', '22:00:00', '10', 'bg-blue-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('5호선', '06:00:00', '22:00:00', '10', 'bg-purple-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('6호선', '06:00:00', '22:00:00', '10', 'bg-yellow-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('7호선', '06:00:00', '22:00:00', '10', 'bg-green-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('8호선', '06:00:00', '22:00:00', '10', 'bg-pink-500');
-insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('신분당선', '06:00:00', '22:00:00', '10', 'bg-red-500');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('1호선', '06:00:00', '18:00:00', '1', 'bg-blue-700');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('2호선', '07:00:00', '19:00:00', '2', 'bg-green-500');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('3호선', '08:00:00', '20:00:00', '3', 'bg-orange-500');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('4호선', '09:00:00', '21:00:00', '4', 'bg-blue-500');
+insert into LINE (name, start_time, end_time, interval_time, bg_color) values ('5호선', '10:00:00', '22:00:00', '5', 'bg-purple-500');
 
 create table if not exists LINE_STATION
 (

@@ -1,9 +1,8 @@
 import Modal from "../../ui/Modal.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import api from "../../api/index.js";
-import {subwayLinesTemplate} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
-import {colorSelectOptionTemplate} from "../../utils/templates.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
@@ -113,10 +112,13 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.update(lineId, data).then((line) => {
+        api.line.update(lineId, data).then(() => {
             subwayLineModal.toggle();
-            let activeSubwayLineItem = $activeSubwayLineItem.querySelector('.subway-line-title');
-            activeSubwayLineItem.innerText = line.title;
+            const subwayLineList = document.querySelector("#subway-line-list");
+            while (subwayLineList.hasChildNodes()) {
+                subwayLineList.removeChild(subwayLineList.firstChild);
+            }
+            initDefaultSubwayLines();
         });
     };
     const initDefaultSubwayLines = () => {
