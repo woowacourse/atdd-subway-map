@@ -21,6 +21,7 @@ import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
+@Sql({"/truncate.sql", "/schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
 public class LineStationAcceptanceTest {
