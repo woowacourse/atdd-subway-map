@@ -25,20 +25,7 @@ public class Line {
 	public Line() {
 	}
 
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this.name = name;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.intervalTime = intervalTime;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
-	}
-
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this(null, name, startTime, endTime, intervalTime);
-	}
-
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -97,6 +84,9 @@ public class Line {
 		if (line.getIntervalTime() != 0) {
 			this.intervalTime = line.getIntervalTime();
 		}
+		if (line.getBgColor() != null) {
+			this.bgColor = line.getBgColor();
+		}
 
 		this.updatedAt = LocalDateTime.now();
 	}
@@ -109,7 +99,7 @@ public class Line {
 
 		if (lineStation.getPreStationId() == null) {
 			LineStation firstLineStation = stations.get(0);
-			firstLineStation.modifyPreStationId(lineStation.getStationId());
+			firstLineStation.updatePreLineStation(lineStation.getStationId());
 			stations.add(0, lineStation);
 			return;
 		}
@@ -122,7 +112,7 @@ public class Line {
 
 		if (nextLineStationIndex < stations.size() - 1) {
 			LineStation nextLineStation = stations.get(nextLineStationIndex);
-			nextLineStation.modifyPreStationId(lineStation.getStationId());
+			nextLineStation.updatePreLineStation(lineStation.getStationId());
 			stations.add(nextLineStationIndex, lineStation);
 			stations.set(nextLineStationIndex + 1, nextLineStation);
 			return;
@@ -149,7 +139,7 @@ public class Line {
 
 		if (targetLineStation.getPreStationId() == null) {
 			LineStation nextLineStation = stations.get(nextLineStationIndex);
-			nextLineStation.modifyPreStationId(null);
+			nextLineStation.updatePreLineStation(null);
 			stations.set(nextLineStationIndex, nextLineStation);
 			stations.remove(targetLineStation);
 			return;
@@ -158,7 +148,7 @@ public class Line {
 		if (nextLineStationIndex <= stations.size() - 1) {
 			LineStation nextLineStation = stations.get(nextLineStationIndex);
 			LineStation preLineStation = stations.get(nextLineStationIndex - 1);
-			nextLineStation.modifyPreStationId(preLineStation.getStationId());
+			nextLineStation.updatePreLineStation(preLineStation.getStationId());
 			stations.set(nextLineStationIndex, nextLineStation);
 			stations.remove(targetLineStation);
 			return;

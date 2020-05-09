@@ -31,8 +31,11 @@ public class LineService {
 		return lineRepository.save(line);
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public List<LineResponse> showLines() {
+		List<Line> lines = lineRepository.findAll();
+		return lines.stream()
+			.map(line -> LineResponse.of(line, stationRepository.findAllById(line.findLineStationsId())))
+			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 	public void updateLine(Long id, Line line) {
@@ -52,16 +55,16 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long id, LineStationCreateRequest request) {
-		// TODO: 구현
+	public LineStationResponse addLineStation(Long id, LineStationCreateRequest request) {
 		Line line = lineRepository.findById(id).orElseThrow(() ->
 			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
-		line.addLineStation(request.toLineStationRequest());
+		LineStation lineStation = request.toLineStation();
+		line.addLineStation(lineStation);
 		lineRepository.save(line);
+		return LineStationResponse.of(id, lineStation);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
-		// TODO: 구현
 		Line line = lineRepository.findById(lineId).orElseThrow(() ->
 			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
 		line.removeLineStationById(stationId);
@@ -69,8 +72,8 @@ public class LineService {
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {
-		// TODO: 구현
-		Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		Line line = lineRepository.findById(id).orElseThrow(() ->
+			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
 		List<Long> lineStationsId = line.findLineStationsId();
 		Set<Station> stations = stationRepository.findAllById(lineStationsId);
 
@@ -83,7 +86,7 @@ public class LineService {
 		List<LineStation> lineStations = line.getStations();
 
 		return Collections.unmodifiableList(lineStations.stream()
-			.map(LineStationResponse::of)
+			.map(lineStation -> LineStationResponse.of(id, lineStation))
 			.collect(Collectors.toList()));
 	}
 }

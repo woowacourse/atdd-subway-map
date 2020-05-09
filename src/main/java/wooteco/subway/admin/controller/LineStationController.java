@@ -27,24 +27,24 @@ public class LineStationController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLineStation(@PathVariable Long lineId,
+	public ResponseEntity<LineStationResponse> createLineStation(@PathVariable Long lineId,
 		@RequestBody Request<LineStationCreateRequest> lineStationRequest) {
 		LineStationCreateRequest lineStationCreateRequest = lineStationRequest.getContent();
-		lineService.addLineStation(lineId, lineStationCreateRequest);
+		LineStationResponse lineStationResponse = lineService.addLineStation(lineId, lineStationCreateRequest);
 
 		return ResponseEntity
 			.created(URI.create("/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-			.body(LineStationResponse.of(lineStationCreateRequest));
+			.body(lineStationResponse);
 	}
 
 	@GetMapping
-	public ResponseEntity getLineStations(@PathVariable Long lineId) {
+	public ResponseEntity<List<LineStationResponse>> getLineStations(@PathVariable Long lineId) {
 		List<LineStationResponse> lineStations = lineService.findLineStations(lineId);
 		return ResponseEntity.ok().body(lineStations);
 	}
 
 	@DeleteMapping("/{stationId}")
-	public ResponseEntity deleteLine(@PathVariable Long lineId, @PathVariable Long stationId) {
+	public ResponseEntity<Void> deleteLine(@PathVariable Long lineId, @PathVariable Long stationId) {
 		lineService.removeLineStation(lineId, stationId);
 		return ResponseEntity.noContent().build();
 	}
