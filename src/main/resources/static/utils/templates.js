@@ -20,6 +20,7 @@ export const subwayLinesTemplate = line =>
 
 export const lineOptionTemplate = line => `<option data-line-id="${line.id}">${line.name}</option>`;
 export const stationOptionTemplate = station => `<option data-station-id="${station.id}">${station.name}</option>`;
+export const emptyStationOptionTemplate = () => `<option data-station-id="">역 없음</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">

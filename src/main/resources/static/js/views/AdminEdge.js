@@ -1,7 +1,8 @@
 import {
   lineOptionTemplate,
   subwayLinesItemTemplate,
-  stationOptionTemplate
+  stationOptionTemplate,
+  emptyStationOptionTemplate
 } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
@@ -43,13 +44,14 @@ function AdminEdge() {
   };
 
   const initStationOptions = stations => {
-    const stationOptions = stations
+    let stationOptions = stations
       .map(station => stationOptionTemplate(station))
       .join("");
     const $departStationOptions = document.querySelector("#depart-station-name-options");
     const $arrivalStationOptions = document.querySelector("#arrival-station-name-options");
-    $departStationOptions.insertAdjacentHTML("afterbegin", stationOptions);
     $arrivalStationOptions.insertAdjacentHTML("afterbegin", stationOptions);
+    stationOptions += emptyStationOptionTemplate();
+    $departStationOptions.insertAdjacentHTML("afterbegin", stationOptions);
   };
 
   const onRemoveStationHandler = async event => {
