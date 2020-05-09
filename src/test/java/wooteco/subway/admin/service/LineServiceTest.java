@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +14,9 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -35,7 +35,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "5");
+        line = new Line(1L, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "5");
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -117,7 +117,7 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 

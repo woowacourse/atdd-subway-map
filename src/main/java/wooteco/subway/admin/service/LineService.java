@@ -10,7 +10,6 @@ import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 public class LineService {
@@ -47,20 +46,23 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
         line.addLineStation(request.toLineStation());
         lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
         return LineResponse.of(line, stations);
     }
 }
