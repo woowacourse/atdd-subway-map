@@ -1,6 +1,6 @@
-export const listItemTemplate = value =>
+export const listItemTemplate = ({id, name}) =>
   `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
-    ${value}
+    ${name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
     </button>
@@ -58,7 +58,7 @@ export const subwayLinesItemTemplate = line => {
     .join("");
   return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
+              <div class="border ${line.color} lint-title px-4 py-1">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>

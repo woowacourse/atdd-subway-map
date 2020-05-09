@@ -57,9 +57,16 @@ const api = (() => {
     }
   };
 
+  const edge = {
+    get(id) {
+      return !id ? request(`/lines/stations`) : request(`/lines/${id}/stations`);
+    }
+  };
+
   return {
     station,
-    line
+    line,
+    edge
   };
 })();
 

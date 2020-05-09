@@ -1,18 +1,18 @@
-import {
-  optionTemplate,
-  subwayLinesItemTemplate
-} from "../../utils/templates.js";
+import { subwayLinesItemTemplate } from "../../utils/templates.js";
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
-import Modal from "../../ui/Modal.js";
+import CreateSubWayEdgeModal from "../../ui/CreateSubwayEdgeModal.js"
+import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const createSubwayEdgeModal = new Modal();
+  const subwayEdgeModal = new CreateSubWayEdgeModal();
+
+  let subwayLines = [];
 
   const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
+    $subwayLinesSlider.innerHTML = subwayLines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
     tns({
@@ -27,19 +27,6 @@ function AdminEdge() {
       items: 1,
       edgePadding: 25
     });
-  };
-
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line.title))
-      .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#station-select-options"
-    );
-    $stationSelectOptions.insertAdjacentHTML(
-      "afterbegin",
-      subwayLineOptionTemplate
-    );
   };
 
   const onRemoveStationHandler = event => {
@@ -57,9 +44,15 @@ function AdminEdge() {
     );
   };
 
-  this.init = () => {
+  const initState = async () => {
+    subwayLines = await api.edge.get();
+  };
+
+  this.init = async () => {
+    await initState();
+    console.log(subwayLines);
     initSubwayLinesSlider();
-    initSubwayLineOptions();
+    subwayEdgeModal.init(subwayLines);
     initEventListeners();
   };
 }
