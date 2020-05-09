@@ -12,7 +12,7 @@ function AdminStation() {
       return;
     }
     onAddStationHandler(event);
-  }
+  };
 
   const onAddStationHandler = event => {
     event.preventDefault();
@@ -25,7 +25,7 @@ function AdminStation() {
     $stationNameInput.value = "";
     let data = {
       name: stationName
-    }
+    };
     api.station.create(data)
     $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
   };
