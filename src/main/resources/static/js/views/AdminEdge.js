@@ -26,7 +26,7 @@ function AdminEdge() {
       lazyload: true,
       controlsContainer: "#slider-controls",
       items: 1,
-      edgePadding: 25
+      edgePadding: 0
     });
   };
 
@@ -57,6 +57,8 @@ function AdminEdge() {
         duration: 10
       };
       await api.edge.create(convertData, data.lineId);
+      await initState();
+      initSubwayLinesSlider();
       subwayEdgeModal.toggle();
     } catch (e) {
       alert(e);
