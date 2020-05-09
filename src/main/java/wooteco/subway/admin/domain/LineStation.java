@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.util.Objects;
 
 public class LineStation {
+    private static final long START_STATION = -1L;
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -19,7 +20,7 @@ public class LineStation {
             this.preStationId = preStationId;
             return;
         }
-        this.preStationId = 0L;
+        this.preStationId = START_STATION;
     }
 
     public Long getPreStationId() {
@@ -40,5 +41,15 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.getStationId());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((LineStation)obj).getStationId().equals(this.stationId);
     }
 }

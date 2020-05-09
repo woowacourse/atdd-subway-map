@@ -15,6 +15,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
+    private static final int EMPTY = 0;
     private LineRepository lineRepository;
     private LineStationRepository lineStationRepository;
     private StationRepository stationRepository;
@@ -46,14 +47,19 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+        LineStation InputLineStation = new LineStation(
+            request.getPreStationId(),
+            request.getStationId(),
+            request.getDistance(),
+            request.getDuration()
+        );
 
-        LineStation toInput = new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(),
-            request.getDuration());
-        Long preStationIdOfToInput = toInput.getPreStationId();
-        lineStationRepository.findByPreStationId(preStationIdOfToInput).ifPresent(lineStation -> {
-            lineStation.updatePreLineStation(toInput.getStationId());
-        });
-        line.addLineStation(toInput);
+        if (line.isPresentLineStationGettingPreStationId(InputLineStation.getPreStationId())) {
+            LineStation nextLineStationOfInputLineStation = line.findByPreStationId(InputLineStation.getPreStationId());
+            nextLineStationOfInputLineStation.updatePreLineStation(InputLineStation.getStationId());
+            line.updateLineStation(nextLineStationOfInputLineStation);
+        }
+        line.addLineStation(InputLineStation);
         lineRepository.save(line);
     }
 
@@ -88,13 +94,5 @@ public class LineService {
             return;
         }
         validateTitle(lineRequest);
-    }
-
-    public Line findById(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(IllegalAccessError::new);
-    }
-
-    public Line findByTitle(String lineName) {
-        return lineRepository.findByTitle(lineName).orElseThrow(IllegalArgumentException::new);
     }
 }

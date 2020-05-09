@@ -60,13 +60,23 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //    Given 지하철역이 여러 개 추가되어있다.
+        //  And 지하철 노선이 추가되어있다.
         createLine("8호선");
         createLine("2호선");
+        System.out.println("<<<<<1");
+        // 지하철 노선에 지하철역을 등록하는 요청을 한다.
+        //     Then 지하철역이 노선에 추가 되었다
+
         createStation("몽촌토성");
         createStation("잠실역");
         createStation("석촌");
         createStation("잠실나루");
+        System.out.println("<<<<<2");
 
+        //       When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        //    Then 지하철역 목록을 응답 받는다.
+        //     And 새로 추가한 지하철역을 목록에서 찾는다.
         List<LineResponse> lines = getLines();
         LineResponse lineEight = lines.get(0);
 
@@ -75,17 +85,21 @@ public class LineStationAcceptanceTest {
         StationResponse station1 = stations.get(0);
         StationResponse station2 = stations.get(1);
         StationResponse station3 = stations.get(2);
+        System.out.println("<<<<<3");
 
         addStation(lineEight.getId(), station1.getId(), station2.getId());
         addStation(lineEight.getId(), station2.getId(), station3.getId());
 
         List<LineStation> lineStations = getLineStations(lineEight.getId());
 
+        //     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다
+        //     Then 지하철역이 노선에서 제거 되었다.
         assertThat(lineStations.stream()
             .map(LineStation::getStationId)
             .anyMatch(id -> id.equals(station2.getId()))).isTrue();
 
         removeStation(lineEight.getId(), station2.getId());
+        System.out.println("<<<<<4");
 
         List<LineStation> lineStationsAfterDelete = getLineStations(lineEight.getId());
         assertThat(lineStationsAfterDelete.stream()

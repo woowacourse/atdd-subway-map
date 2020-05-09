@@ -3,16 +3,17 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
 public class Line {
+    private static final long START_STATION = -1L;
+    private static final LineStation NOT_EXIST_NEXT_STATION = null;
+
     @Id
     private Long id;
     private String title;
@@ -98,8 +99,58 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        this.stations.add(lineStation);
+    public List<Long> generateLineStationId() {
+        List<Long> lineStationIds = new ArrayList<>();
+        generateLinkedLIst(lineStationIds);
+
+        return lineStationIds;
+    }
+
+    private void generateLinkedLIst(List<Long> lineStationIds) {
+        LineStation nextStation;
+        LineStation startStation = findByPreStationId(START_STATION);
+        lineStationIds.add(startStation.getStationId());
+
+        nextStation = getNextStation(startStation);
+
+        while (Objects.nonNull(nextStation)) {
+            if (stations.contains(nextStation)) {
+                lineStationIds.add(nextStation.getStationId());
+            }
+            nextStation = getNextStation(nextStation);
+        }
+    }
+
+    public void updateLineStation(LineStation updatedLineStation) {
+        LineStation existingLineStation = stations.stream()
+            .filter(lineStation -> lineStation.equals(updatedLineStation))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("해당 Station 이 없습니다."));
+
+        removeLineStationById(existingLineStation.getStationId());
+        addLineStation(updatedLineStation);
+    }
+
+    private LineStation getNextStation(LineStation station) {
+        LineStation nextStation;
+        try {
+            nextStation = findByPreStationId(station.getStationId());
+        } catch (IllegalArgumentException e) {
+            nextStation = NOT_EXIST_NEXT_STATION;
+        }
+        return nextStation;
+    }
+
+    public LineStation findByPreStationId(Long stationId) {
+        return stations.stream()
+            .filter(lineStation -> lineStation.getPreStationId().equals(stationId))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("해당 preStationId 를 갖는 역을 찾지 못헀습니다."));
+    }
+
+    public boolean isPresentLineStationGettingPreStationId(Long stationId) {
+        return stations.stream()
+            .anyMatch(lineStation -> lineStation.getPreStationId().equals(stationId));
     }
 
     public void removeLineStationById(Long stationId) {
@@ -109,17 +160,27 @@ public class Line {
         });
     }
 
-    public List<Long> getLineStationsId() {
-        List<Long> result = new ArrayList<>();
+    public void addLineStation(LineStation lineStation) {
+        this.stations.add(lineStation);
+    }
 
-        Map<Boolean, List<LineStation>> group = stations.stream()
-            .collect(Collectors.partitioningBy(lineStation -> lineStation.getPreStationId() == 0));
+    // TODO: 2020/05/09  
+    public Set<Station> generateLinkedStation() {
+        return null;
+    }
 
-        result.add(group.get(true).get(0).getStationId());
-        result.addAll(group.get(false).stream()
-            .sorted(Comparator.comparing(LineStation::getPreStationId))
-            .map(LineStation::getStationId).collect(Collectors.toList()));
-        System.out.println(result);
-        return result;
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", intervalTime=" + intervalTime +
+            ", stations=" + stations +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            ", bgColor='" + bgColor + '\'' +
+            '}';
     }
 }
