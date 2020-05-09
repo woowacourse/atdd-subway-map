@@ -19,16 +19,9 @@ public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
-    Map<Long, Set<LineStation>> mockLineStations = new HashMap<>();
-
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-
-        this.mockLineStations.put(1L, new HashSet<>());
-        this.mockLineStations.put(2L, new HashSet<>());
-        this.mockLineStations.put(3L, new HashSet<>());
-        this.mockLineStations.put(4L, new HashSet<>());
     }
 
     public Line save(Line line) {
