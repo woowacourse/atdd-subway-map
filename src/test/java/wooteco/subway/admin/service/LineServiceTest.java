@@ -1,15 +1,20 @@
 package wooteco.subway.admin.service;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -50,7 +55,8 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
 
-		assertThat(line.findLineStationsId()).containsExactly(4L, 1L, 2L, 3L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 4L), entry(4L, 1L), entry(1L, 2L), entry(2L, 3L));
 	}
 
 	@Test
@@ -60,7 +66,8 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
 
-		assertThat(line.findLineStationsId()).containsExactly(1L, 4L, 2L, 3L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 1L), entry(1L, 4L), entry(4L, 2L), entry(2L, 3L));
 	}
 
 	@Test
@@ -70,15 +77,16 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
 
-		assertThat(line.findLineStationsId()).containsExactly(1L, 2L, 3L, 4L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 1L), entry(1L, 2L), entry(2L, 3L), entry(3L, 4L));
 	}
-
 	@Test
 	void removeLineStationAtTheFirstOfLine() {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.removeLineStation(line.getId(), 1L);
 
-		assertThat(line.findLineStationsId()).containsExactly(2L, 3L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 2L), entry(2L, 3L));
 	}
 
 	@Test
@@ -86,7 +94,8 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.removeLineStation(line.getId(), 2L);
 
-		assertThat(line.findLineStationsId()).containsExactly(1L, 3L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 1L), entry(1L, 3L));
 	}
 
 	@Test
@@ -94,7 +103,8 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.removeLineStation(line.getId(), 3L);
 
-		assertThat(line.findLineStationsId()).containsExactly(1L, 2L);
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+			.containsExactly(entry(null, 1L), entry(1L, 2L));
 	}
 
 	@Test
@@ -104,7 +114,7 @@ public class LineServiceTest {
 		lineService.removeLineStation(line.getId(), 1L);
 		lineService.removeLineStation(line.getId(), 2L);
 
-		assertThat(line.findLineStationsId()).hasSize(0);
+		assertThat(line.getStations()).hasSize(0);
 	}
 
 	@Test
@@ -116,5 +126,66 @@ public class LineServiceTest {
 		LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
 		assertThat(lineResponse.getStations()).hasSize(3);
+	}
+
+	@Test
+	void saveNewLineWithExistingName() {
+		Line newLine = new Line(null, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
+		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
+		assertThatThrownBy(() -> lineService.save(newLine))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void saveNewLineWithNewName() {
+		Line newLine = new Line(null, "3호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
+		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
+		assertThatCode(() -> lineService.save(newLine))
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	void updateLineWithSameName() {
+		Line newLine = new Line(1L, "2호선", LocalTime.of(7, 50), LocalTime.of(16, 5), 9, "");
+
+		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+
+		assertThatCode(() -> lineService.updateLine(newLine.getId(), newLine))
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	void updateLineWithExistName() {
+		Line newLine = new Line(1L, "1호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
+
+		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(lineRepository.existsByName(newLine.getName())).thenReturn(true);
+		assertThatThrownBy(() -> lineService.updateLine(newLine.getId(), newLine))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void updateLineWithNewName() {
+		Line newLine = new Line(1L, "6호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
+
+		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
+		assertThatCode(() -> lineService.updateLine(newLine.getId(), newLine))
+			.doesNotThrowAnyException();
+	}
+
+	private Map<Long, Long> generatePairWith(List<Long> preStationIds, List<Long> stationIds) {
+		Map<Long, Long> result = new LinkedHashMap<>();
+		int size = preStationIds.size();
+		for (int i = 0; i < size; i++) {
+			result.put(preStationIds.get(i), stationIds.get(i));
+		}
+		return result;
+	}
+
+	private List<Long> findPreStationsId() {
+		return line.getStations().stream()
+			.map(LineStation::getPreStationId)
+			.collect(toList());
 	}
 }

@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
@@ -30,13 +31,13 @@ public class LineStationAcceptanceTest {
 	@LocalServerPort
 	int port;
 
+	public static RequestSpecification given() {
+		return RestAssured.given().log().all();
+	}
+
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = port;
-	}
-
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
 	}
 
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
@@ -48,7 +49,8 @@ public class LineStationAcceptanceTest {
 		createStation("잠실");
 		createLine("2호선");
 		List<StationResponse> stations = getStations();
-		LineResponse line = getLine(stations.get(0).getId());
+		List<LineResponse> lines = getLines();
+		LineResponse line = getLine(lines.get(0).getId());
 
 		//when
 		createLineStation(null, stations.get(0).getId(), line.getId());
@@ -123,6 +125,16 @@ public class LineStationAcceptanceTest {
 			statusCode(HttpStatus.CREATED.value());
 	}
 
+	private List<LineResponse> getLines() {
+		return given().
+			when().
+			get("/lines").
+			then().
+			log().all().
+			extract().
+			jsonPath().getList(".", LineResponse.class);
+	}
+
 	private List<StationResponse> getStations() {
 		return given().
 			when().
@@ -142,20 +154,13 @@ public class LineStationAcceptanceTest {
 	}
 
 	private void createLineStation(Long preStationId, Long stationId, Long lineId) {
-		Map<String, String> lineStation = new HashMap<>();
-		lineStation.put("lineId", Long.toString(lineId));
-		if (preStationId == null) {
-			lineStation.put("preStationId", null);
-		} else {
-			lineStation.put("preStationId", Long.toString(preStationId));
-		}
-		lineStation.put("stationId", Long.toString(stationId));
-		lineStation.put("distance", "10");
-		lineStation.put("duration", "2");
-		Request<Map<String, String>> param = new Request<>(lineStation);
+		int distance = 10;
+		int duration = 2;
+		LineStationCreateRequest lineStationRequest = new LineStationCreateRequest(preStationId, stationId, distance,
+			duration);
 
 		given().
-			body(param).
+			body(new Request<>(lineStationRequest)).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().

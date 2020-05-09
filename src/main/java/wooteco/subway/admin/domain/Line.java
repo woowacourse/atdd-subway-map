@@ -165,4 +165,8 @@ public class Line {
 			.map(LineStation::getStationId)
 			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
+
+	public boolean isNotSameName(Line otherLine) {
+		return !name.equals(otherLine.name);
+	}
 }

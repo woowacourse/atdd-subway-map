@@ -18,8 +18,8 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
-	private LineRepository lineRepository;
-	private StationRepository stationRepository;
+	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
 	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
@@ -27,7 +27,9 @@ public class LineService {
 	}
 
 	public Line save(Line line) {
-		validateNameDuplicate(line);
+		if (lineRepository.existsByName(line.getName())) {
+			throw new IllegalArgumentException("노선 이름이 중복됩니다.");
+		}
 		return lineRepository.save(line);
 	}
 
@@ -38,42 +40,38 @@ public class LineService {
 			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
-	public void updateLine(Long id, Line line) {
-		validateNameDuplicate(line);
+	public void updateLine(Long id, Line updatedLine) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.update(line);
+		if (persistLine.isNotSameName(updatedLine) && lineRepository.existsByName(updatedLine.getName())) {
+			throw new IllegalArgumentException("노선 이름이 중복됩니다.");
+		}
+		persistLine.update(updatedLine);
 		lineRepository.save(persistLine);
 	}
 
-	private void validateNameDuplicate(Line line) {
-		if (lineRepository.existsByName(line.getName())) {
-			throw new IllegalArgumentException("노선 이름이 중복됩니다.");
-		}
-	}
-
 	public void deleteLineById(Long id) {
+		if (!lineRepository.existsById(id)) {
+			throw new IllegalArgumentException("존재하지 않는 리소스를 이용할 수 없습니다.");
+		}
 		lineRepository.deleteById(id);
 	}
 
-	public LineStationResponse addLineStation(Long id, LineStationCreateRequest request) {
-		Line line = lineRepository.findById(id).orElseThrow(() ->
-			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+	public LineStationResponse addLineStation(Long lineId, LineStationCreateRequest request) {
+		Line line = findLineById(lineId);
 		LineStation lineStation = request.toLineStation();
 		line.addLineStation(lineStation);
 		lineRepository.save(line);
-		return LineStationResponse.of(id, lineStation);
+		return LineStationResponse.of(lineId, lineStation);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId).orElseThrow(() ->
-			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+		Line line = findLineById(lineId);
 		line.removeLineStationById(stationId);
 		lineRepository.save(line);
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(() ->
-			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+		Line line = findLineById(id);
 		List<Long> lineStationsId = line.findLineStationsId();
 		Set<Station> stations = stationRepository.findAllById(lineStationsId);
 
@@ -81,12 +79,16 @@ public class LineService {
 	}
 
 	public List<LineStationResponse> findLineStations(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(() ->
-			new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+		Line line = findLineById(id);
 		List<LineStation> lineStations = line.getStations();
 
 		return Collections.unmodifiableList(lineStations.stream()
 			.map(lineStation -> LineStationResponse.of(id, lineStation))
 			.collect(Collectors.toList()));
+	}
+
+	private Line findLineById(Long lineId) {
+		return lineRepository.findById(lineId).orElseThrow(() ->
+			new IllegalArgumentException("존재하지 않는 노선입니다."));
 	}
 }

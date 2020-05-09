@@ -30,7 +30,11 @@ public class StationController {
 	@PostMapping
 	public ResponseEntity<StationResponse> createStation(@RequestBody Request<StationCreateRequest> view) {
 		StationCreateRequest content = view.getContent();
-		Station persistStation = stationRepository.save(content.toStation());
+		Station entity = content.toStation();
+		if (stationRepository.existsByName(entity.getName())) {
+			throw new IllegalArgumentException("이미 저장되어있는 역이름입니다.");
+		}
+		Station persistStation = stationRepository.save(entity);
 
 		return ResponseEntity
 			.created(URI.create("/stations/" + persistStation.getId()))
@@ -44,6 +48,9 @@ public class StationController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+		if (!stationRepository.existsById(id)) {
+			throw new IllegalArgumentException("존재하지 않는 리소스는 이용할 수 없습니다.");
+		}
 		stationRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
