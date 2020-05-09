@@ -35,12 +35,11 @@ public class LineService {
 	}
 
 	public LineResponse updateLine(Long id, Line line) {
-		if (lineRepository.existsByName(line.getName())) {
+		if (!lineRepository.existsByName(line.getName())) {
 			throw new RuntimeException();
 		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.update(line);
-		return LineResponse.of(lineRepository.save(persistLine));
+		return LineResponse.of(lineRepository.save(persistLine.update(line)));
 	}
 
 	public void deleteLineById(Long id) {

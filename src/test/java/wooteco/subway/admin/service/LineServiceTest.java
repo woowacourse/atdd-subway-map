@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,7 +38,9 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "2호선", "blue", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		line = Line.of("2호선", "blue", LocalTime.of(5, 30), LocalTime.of(22, 30)
+			, 5, new HashSet<>());
+		line = line.withId(1L);
 		lineService = new LineService(lineRepository, stationRepository);
 
 		line.addLineStation(new LineStation(null, 1L, 10, 10));

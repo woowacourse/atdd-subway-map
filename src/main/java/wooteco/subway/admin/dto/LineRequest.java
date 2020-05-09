@@ -1,6 +1,7 @@
 package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
+import java.util.HashSet;
 
 import wooteco.subway.admin.domain.Line;
 
@@ -11,11 +12,8 @@ public class LineRequest {
 	private LocalTime endTime;
 	private int intervalTime;
 
-	public LineRequest() {
-	}
-
 	public Line toLine() {
-		return new Line(name, color, startTime, endTime, intervalTime);
+		return Line.of(name, color, startTime, endTime, intervalTime, new HashSet<>());
 	}
 
 	public String getName() {

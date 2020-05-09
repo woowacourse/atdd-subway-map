@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,9 @@ public class LineTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "2호선", "blue", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		line = Line.of("2호선", "blue", LocalTime.of(5, 30), LocalTime.of(22, 30)
+			, 5, new HashSet<>());
+		line = line.withId(1L);
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
 		line.addLineStation(new LineStation(1L, 2L, 10, 10));
 		line.addLineStation(new LineStation(2L, 3L, 10, 10));
