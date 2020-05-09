@@ -1,5 +1,5 @@
 import {
-  optionTemplate,
+  lineOptionTemplate,
   subwayLinesItemTemplate
 } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
@@ -32,22 +32,27 @@ function AdminEdge() {
 
   const initSubwayLineOptions = (linesWithStations) => {
     const subwayLineOptionTemplate = linesWithStations
-      .map(line => optionTemplate(line.name))
+      .map(line => lineOptionTemplate(line))
       .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#station-select-options"
+    const $lineSelectOptions = document.querySelector(
+      "#line-select-options"
     );
-    $stationSelectOptions.insertAdjacentHTML(
+    $lineSelectOptions.insertAdjacentHTML(
       "afterbegin",
       subwayLineOptionTemplate
     );
   };
 
-  const onRemoveStationHandler = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
+  const onRemoveStationHandler = async event => {
+    const $eventTarget = event.target;
+    const isDeleteButton = $eventTarget.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      const $deleteTarget = $eventTarget.closest(".list-item");
+      $deleteTarget.remove();
+      console.log($deleteTarget.dataset.lineId);
+      console.log($deleteTarget.dataset.stationId);
+      await api.edge.delete(
+        $deleteTarget.dataset.lineId, $deleteTarget.dataset.stationId);
     }
   };
 
@@ -63,7 +68,7 @@ function AdminEdge() {
   };
 
   this.init = async () => {
-    const linesWithStations = await api.edge.getLinesWithStations();
+    let linesWithStations = await api.edge.getLinesWithStations();
     initSubwayLinesSlider(linesWithStations);
     initSubwayLineOptions(linesWithStations);
     initEventListeners();

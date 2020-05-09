@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const lineOptionTemplate = line => `<option data-line-id="${line.id}">${line.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -46,7 +46,7 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 
 export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.orderedStations
-  .map(station => listItemTemplate(station.name))
+  .map(station => lineStationsItemTemplate(line.id, station))
   .join("");
   return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
@@ -57,6 +57,15 @@ export const subwayLinesItemTemplate = line => {
             </div>
           </div>`;
 };
+
+export const lineStationsItemTemplate = (lineId, station) =>
+  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800"
+        data-line-id="${lineId}" data-station-id="${station.id}">
+    ${station.name}
+    <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
+       <span class="mdi mdi-delete"></span>
+    </button>
+  </div>`;
 
 export const initNavigation = () => {
   document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
