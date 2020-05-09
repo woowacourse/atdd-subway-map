@@ -54,6 +54,12 @@ public class LineResponse {
 			.collect(Collectors.toList());
 	}
 
+	public static List<LineResponse> listOf(final List<Line> lines, final List<Set<Station>> stations) {
+		return lines.stream()
+			.map(line -> of(line, stations.remove(0)))
+			.collect(Collectors.toList());
+	}
+
 	public Long getId() {
 		return id;
 	}
