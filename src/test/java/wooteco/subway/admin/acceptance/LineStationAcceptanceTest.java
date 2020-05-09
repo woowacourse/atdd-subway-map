@@ -1,7 +1,13 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,18 +16,13 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
-
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -38,56 +39,46 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    /**
-     * Given 지하철역이 여러 개 추가되어있다.
-     * And 지하철 노선이 추가되어있다.
-     * <p>
-     * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     * Then 지하철역이 노선에 추가 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 새로 추가한 지하철역을 목록에서 찾는다.
-     * <p>
-     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     * Then 지하철역이 노선에서 제거 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //given
         createStation("강변");
         createStation("잠실나루");
         createStation("잠실");
-
         createLine("2호선");
-
         List<StationResponse> stations = getStations();
-        LineResponse line = getLine(1L);
+        LineResponse line = getLine(stations.get(0).getId());
 
+        //when
         createLineStation(null, stations.get(0).getId(), line.getId());
         createLineStation(stations.get(0).getId(), stations.get(1).getId(), line.getId());
         createLineStation(stations.get(1).getId(), stations.get(2).getId(), line.getId());
-
+        //then
         List<LineStationResponse> lineStations = getLineStations(line.getId());
         assertThat(lineStations.size()).isEqualTo(3);
 
+        //when
         LineStationResponse lineStationResponse = lineStations.get(0);
+        //then
         assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
         assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(0).getId());
-        assertThat(lineStationResponse.getPreStationId()).isNull();
 
+        //when
         deleteLineStation(line.getId(), stations.get(0).getId());
+        //then
         List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());
         assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
+        //and
+        boolean isExistLineStation = isExistLineStation(lineStationResponse, lineStationsAfterDelete);
+        assertThat(isExistLineStation).isFalse();
+    }
 
-        boolean isExistLineStation = lineStationsAfterDelete.stream()
+    private boolean isExistLineStation(LineStationResponse lineStationResponse,
+        List<LineStationResponse> lineStationsAfterDelete) {
+        return lineStationsAfterDelete.stream()
             .filter(response -> response.getLineId().equals(lineStationResponse.getLineId()))
             .anyMatch(response -> response.getStationId().equals(lineStationResponse.getStationId()));
-        assertThat(isExistLineStation).isFalse();
     }
 
     private void deleteLineStation(Long lineId, Long stationId) {

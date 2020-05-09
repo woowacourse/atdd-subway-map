@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,8 @@ class LineRepositoryTest {
         lines.add(new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10));
         lines.add(new Line("2호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10));
         lineRepository.saveAll(lines);
-        assertThatCode(() -> {
-            List<Line> all = lineRepository.findAll();
-
-        }).doesNotThrowAnyException();
+        assertThatCode(() -> lineRepository.findAll())
+            .doesNotThrowAnyException();
     }
     
     @DisplayName("중복된 노선 이름이 있는지 테스트")
@@ -42,7 +39,7 @@ class LineRepositoryTest {
         lines.add(new Line("2호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10));
         lineRepository.saveAll(lines);
 
-        Assertions.assertThat(lineRepository.existsByName("신분당선")).isTrue();
-        Assertions.assertThat(lineRepository.existsByName("3호선")).isFalse();
+        assertThat(lineRepository.existsByName("신분당선")).isTrue();
+        assertThat(lineRepository.existsByName("3호선")).isFalse();
     }
 }

@@ -103,7 +103,6 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
         if (stations.isEmpty()) {
             stations.add(lineStation);
             return;
@@ -134,7 +133,15 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        if (stations.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        if (stations.size() == 1) {
+            stations.clear();
+            return;
+        }
+
         LineStation targetLineStation = stations.stream()
                 .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
@@ -162,7 +169,6 @@ public class Line {
     }
 
     public List<Long> findLineStationsId() {
-        // TODO: 구현
         return stations.stream()
                 .map(LineStation::getStationId)
                 .collect(collectingAndThen(toList(), Collections::unmodifiableList));
