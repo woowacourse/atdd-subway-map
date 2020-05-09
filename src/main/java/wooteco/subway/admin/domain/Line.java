@@ -1,15 +1,18 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
     @Id
     private Long id;
-
     private String name;
     private String color;
     private LocalTime startTime;
@@ -18,6 +21,7 @@ public class Line {
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
     public Line() {
     }
 
@@ -96,8 +100,13 @@ public class Line {
         stations.add(lineStation);
     }
 
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+    public LineStation removeLineStationById(Long stationId) {
+        LineStation lineStation = stations.stream()
+                .filter(station -> station.getStationId() == stationId)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+        stations.remove(lineStation);
+        return lineStation;
     }
 
     public List<Long> getLineStationsId() {

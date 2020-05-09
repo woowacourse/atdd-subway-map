@@ -34,7 +34,6 @@ public class LineStationService {
 
         LineStation lineStation = new LineStation(line.getId(), preStation.getId(), station.getId(),
                 distance, duration);
-        System.out.println(lineStation);
 
         line.addLineStation(lineStation);
         lineRepository.save(line);
@@ -46,5 +45,11 @@ public class LineStationService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
         return line.getStations();
+    }
+
+    public LineStation removeLineStation(long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(NoSuchElementException::new);
+        return line.removeLineStationById(stationId);
     }
 }
