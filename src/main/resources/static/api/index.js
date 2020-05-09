@@ -38,7 +38,7 @@ const api = (() => {
 		create(data) {
 			return request(`/stations`, METHOD.POST(data));
 		},
-		update(data, id) {
+		update(id, data) {
 			return request(`/stations/${id}`, METHOD.PUT(data));
 		},
 		delete(id) {
@@ -59,7 +59,7 @@ const api = (() => {
 		create(data) {
 			return request(`/lines`, METHOD.POST(data));
 		},
-		update(data, id) {
+		update(id, data) {
 			return request(`/lines/${id}`, METHOD.PUT(data));
 		},
 		delete(id) {
@@ -67,11 +67,11 @@ const api = (() => {
 		}
 	};
 
-	const lineStation = {
+	const edge = {
 		get(id) {
 			return request(`/lines/${id}/stations`);
 		},
-		update(data, id) {
+		update(id, data) {
 			return request(`/lines/${id}/stations`, METHOD.PUT(data));
 		},
 		delete(lineId, stationId) {
@@ -82,7 +82,7 @@ const api = (() => {
 	return {
 		station,
 		line,
-		lineStation,
+		edge,
 	};
 })();
 

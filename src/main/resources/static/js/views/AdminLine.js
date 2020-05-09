@@ -61,7 +61,7 @@ function AdminLine() {
 		}
 		const updateSubwayLine = initSubwayLine();
 		subwayLineModal.toggle();
-		await api.line.update(updateSubwayLine, $activeSubwayLineItem.dataset.lineId);
+		await api.line.update($activeSubwayLineItem.dataset.lineId, updateSubwayLine);
 	};
 
 	const onDeleteSubwayLine = async event => {
@@ -103,7 +103,7 @@ function AdminLine() {
 
 	const initSubwayLines = async () => {
 		const lines = await api.line.get();
-		lines.map(line => {
+		lines.forEach(line => {
 			$subwayLineList.insertAdjacentHTML(
 				"beforeend",
 				subwayLinesTemplate(line)

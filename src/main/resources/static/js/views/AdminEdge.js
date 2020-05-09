@@ -1,16 +1,21 @@
 import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import { CLICK_TYPE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminEdge() {
 	const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
 	const $subwayLineStationSubmitButton = document.querySelector("#submit-button");
-	const $subwayLineSelection = document.querySelector("#station-select-options");
-	const $subwayDepartStation = document.querySelector("#depart-station-name");
-	const $subwayArrivalStation = document.querySelector("#arrival-station-name");
+	const $subwayLineSelectionInput = document.querySelector("#station-select-options");
+	const $subwayDepartStationInput = document.querySelector("#depart-station-name");
+	const $subwayArrivalStationInput = document.querySelector("#arrival-station-name");
 	const createSubwayEdgeModal = new Modal();
+
+	const clearSubwayEdgeForm = event => {
+		$subwayDepartStationInput.value = "";
+		$subwayArrivalStationInput.value = "";
+	};
 
 	const initSubwayLinesSlider = async () => {
 		const lines = await api.line.get();
@@ -36,50 +41,55 @@ function AdminEdge() {
 		const subwayLineOptionTemplate = lines
 			.map(line => optionTemplate(line))
 			.join("");
-		const $stationSelectOptions = document.querySelector(
-			"#station-select-options"
-		);
-		$stationSelectOptions.insertAdjacentHTML(
+		$subwayLineSelectionInput.insertAdjacentHTML(
 			"afterbegin",
 			subwayLineOptionTemplate
 		);
 	};
 
-	const onCreateSubwayLineStation = async event => {
-		const lineStation = {
-			preStationName: $subwayDepartStation.value,
-			stationName: $subwayArrivalStation.value,
+	const onCreateSubwayEdge = async event => {
+		if (isInvalidKey(event)) {
+			return;
+		}
+		const edge = {
+			preStationName: $subwayDepartStationInput.value,
+			stationName: $subwayArrivalStationInput.value,
 			distance: 1000,
 			duration: 5
 		}
-		const selectedIndex = $subwayLineSelection.selectedIndex;
-		const selectedLineId = $subwayLineSelection.options[selectedIndex].dataset.lineId;
-		await api.lineStation.update(lineStation, selectedLineId);
+		const selectedLineIndex = $subwayLineSelectionInput.selectedIndex;
+		const selectedLineId = $subwayLineSelectionInput.options[selectedLineIndex].dataset.lineId;
+		if (event.key === KEY_TYPE.ENTER) {
+			window.location.reload();
+		}
+		await api.edge.update(selectedLineId, edge);
 	}
 
-	const onRemoveStationHandler = async event => {
+	const isInvalidKey = event => {
+		return (event.key !== KEY_TYPE.ENTER) && (event.button !== CLICK_TYPE.LEFT_CLICK);
+	}
+
+	const onDeleteSubwayEdge = async event => {
 		const $target = event.target;
 		const isDeleteButton = $target.classList.contains("mdi-delete");
 		if (isDeleteButton) {
 			const selectedLineId = $target.closest("#line-name").dataset.lineId;
 			const selectedStationId = $target.closest(".list-item").dataset.stationId;
 			$target.closest(".list-item").remove();
-			await api.lineStation.delete(selectedLineId, selectedStationId);
+			await api.edge.delete(selectedLineId, selectedStationId);
 		}
 	};
 
 	const initEventListeners = () => {
-		$subwayLinesSlider.addEventListener(
-			EVENT_TYPE.CLICK,
-			onRemoveStationHandler
-		);
-		$subwayLineStationSubmitButton.addEventListener(EVENT_TYPE.CLICK,
-			onCreateSubwayLineStation);
+		$subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayEdge);
+		$subwayLineStationSubmitButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayEdge);
+		$subwayArrivalStationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onCreateSubwayEdge);
+		createSubwayEdgeModal.$closeModalButton.addEventListener(EVENT_TYPE.CLICK, clearSubwayEdgeForm);
 	};
 
 	this.init = () => {
-		initSubwayLinesSlider();
-		initSubwayLineOptions();
+		initSubwayLinesSlider().then();
+		initSubwayLineOptions().then();
 		initEventListeners();
 	};
 }
