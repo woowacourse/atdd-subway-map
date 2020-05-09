@@ -34,10 +34,10 @@ const api = (() => {
       return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/stations/${id}`, METHOD.PUT(data));
+      return fetch(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/stations/${id}`, METHOD.DELETE());
+      return fetch(`/stations/${id}`, METHOD.DELETE());
     }
   };
   const line = {

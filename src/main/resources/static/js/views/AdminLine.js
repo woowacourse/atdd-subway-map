@@ -133,7 +133,6 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-pencil");
   };
   const initEventListeners = () => {
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, changModeToUpdate);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineAddButton.addEventListener(EVENT_TYPE.CLICK, changeModeToCreate);
