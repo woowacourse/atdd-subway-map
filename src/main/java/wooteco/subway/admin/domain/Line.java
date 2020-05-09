@@ -134,6 +134,9 @@ public class Line {
 
     public List<Long> getSortedStationsId() {
         List<Long> sortedStationsId = new ArrayList<>();
+        if (stations.isEmpty()) {
+            return sortedStationsId;
+        }
 
         LineStation preNode = stations.stream()
             .filter(LineStation::isFirstNode)

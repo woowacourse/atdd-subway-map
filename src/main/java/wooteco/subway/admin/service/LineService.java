@@ -27,11 +27,11 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
+    public LineResponse save(Line line) {
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
-        return lineRepository.save(line);
+        return LineResponse.of(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLineWithStations() {
@@ -51,13 +51,13 @@ public class LineService {
         return result;
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void deleteLineById(Long id) {
