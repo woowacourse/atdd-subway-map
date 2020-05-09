@@ -11,9 +11,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +68,7 @@ public class LineService {
         line.addLineStation(lineStation);
 
         Line savedLine = lineRepository.save(line);
-        Set<Station> stations = getStationsAtLine(savedLine);
+        List<Station> stations = findStationsAtLine(savedLine);
         return new StationsAtLineResponse(savedLine, stations);
     }
 
@@ -80,15 +78,11 @@ public class LineService {
         return new LineStation(preStationId, stationId, request.getDistance(), request.getDuration());
     }
 
-    private Set<Station> getStationsAtLine(Line savedLine) {
+    public List<Station> findStationsAtLine(Line savedLine) {
         List<LineStation> lineStations = savedLine.getStations();
-        Set<Station> stations = new LinkedHashSet<>();
+        List<Station> stations = new ArrayList<>();
 
         for (LineStation ls : lineStations) {
-            if (ls.getPreStationId() != null) {
-                stations.add(stationRepository.findById(ls.getPreStationId())
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
-            }
             stations.add(stationRepository.findById(ls.getStationId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
         }
@@ -103,17 +97,12 @@ public class LineService {
         stationRepository.deleteById(stationId);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
-    }
-
     public List<StationsAtLineResponse> findAllLineStations() {
         List<StationsAtLineResponse> response = new ArrayList<>();
 
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
-            Set<Station> stations = getStationsAtLine(line);
+            List<Station> stations = findStationsAtLine(line);
             response.add(new StationsAtLineResponse(line.getId(), line.getName(), stations));
         }
         return response;
