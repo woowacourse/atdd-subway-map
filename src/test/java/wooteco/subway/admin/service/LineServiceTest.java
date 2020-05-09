@@ -35,17 +35,17 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "bg-red-500", "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "bg-red-500", "1호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addLineStation(new LineStation(1L, null, 1L, 10, 10));
+        line.addLineStation(new LineStation(1L, 1L, 2L, 10, 10));
+        line.addLineStation(new LineStation(1L, 2L, 3L, 10, 10));
     }
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -59,7 +59,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, 1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -73,7 +73,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, 3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);

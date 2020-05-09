@@ -31,7 +31,7 @@ public class LineStationController {
             @RequestBody LineStationCreateRequest request
     ) throws URISyntaxException {
 
-        final Long lineName = request.getLineId();
+        final Long lineName = request.getLine();
         final Long preStationName = request.getPreStationId();
         final Long stationName = request.getStationId();
         final int distance = request.getDistance();

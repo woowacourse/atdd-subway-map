@@ -1,14 +1,11 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import org.springframework.data.annotation.Id;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -18,9 +15,10 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Set<LineStation> stations = new LinkedHashSet<>();
 
     public Line() {
     }
@@ -96,13 +94,49 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
+    public void addLineStation(final LineStation lineStation) {
+        List<LineStation> listStations = new ArrayList<>(stations);
+
+        LineStation right = listStations.stream()
+                .filter(station -> station.getPreStationId() == null)
+                .findFirst()
+                .orElse(null);
+
+        if (lineStation.getPreStationId() == null) {
+            if (right != null) {
+                right.updatePreLineStation(lineStation.getStationId());
+            }
+            listStations.add(0, lineStation);
+        } else {
+            if (listStations.isEmpty()) {
+                listStations.add(lineStation);
+                stations = new LinkedHashSet<>(listStations);
+                return;
+            }
+            LineStation left = listStations.stream()
+                    .filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
+                    .findFirst()
+                    .orElseThrow(NoSuchElementException::new);
+
+            right = listStations.stream()
+                    .filter(station -> station.getPreStationId() != null
+                            && station.getPreStationId().equals(left.getStationId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (right != null) {
+                right.updatePreLineStation(lineStation.getStationId());
+                listStations.add(listStations.indexOf(right), lineStation);
+            } else {
+                listStations.add(lineStation);
+            }
+        }
+        stations = new LinkedHashSet<>(listStations);
     }
 
     public LineStation removeLineStationById(Long stationId) {
         LineStation lineStation = stations.stream()
-                .filter(station -> station.getStationId() == stationId)
+                .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
         stations.remove(lineStation);
@@ -110,12 +144,9 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
-    }
-
-    public void setLineStations(final HashSet<LineStation> stations) {
-        this.stations = stations;
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 
     @Override
