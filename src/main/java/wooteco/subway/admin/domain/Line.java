@@ -100,8 +100,9 @@ public class Line {
         this.stations.add(lineStation);
     }
 
-    public void removeLineStationById(Long stationId) {
-        this.stations.stream().filter(x -> x.isStationIdEquals(stationId))
+    public void removeLineStationById(Long id) {
+        this.stations.stream()
+                .filter(x -> x.isStationIdEquals(id))
                 .findAny()
                 .ifPresent(target -> {
                     this.stations.remove(target);
@@ -111,7 +112,7 @@ public class Line {
     public List<Long> getLineStationsId() {
         List<LineStation> result = new ArrayList<>();
         stations.stream()
-                .filter(x -> x.isPreStationIdEquals(0L))
+                .filter(x -> x.isPreStationIdEquals(LineStation.NULL_PRE_STATION_VALUE))
                 .findAny()
                 .ifPresent(result::add);
 
@@ -147,5 +148,9 @@ public class Line {
                 .findAny().ifPresent(lineStation -> {
             lineStation.updatePreLineStation(removeStation.getPreStationId());
         });
+    }
+
+    public boolean isTitleEquals(final String title) {
+        return this.title.equals(title);
     }
 }

@@ -21,7 +21,8 @@ public class LineService {
     private StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository,
-                       LineStationRepository lineStationRepository, StationRepository stationRepository) {
+                       LineStationRepository lineStationRepository,
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.lineStationRepository = lineStationRepository;
         this.stationRepository = stationRepository;
@@ -87,16 +88,21 @@ public class LineService {
     }
 
     public void validateTitle(LineRequest lineRequest) {
-        lineRepository.findByTitle(lineRequest.getTitle()).ifPresent(line -> {
-            throw new IllegalArgumentException("존재하는 이름입니다");
-        });
+        lineRepository.findByTitle(lineRequest.getTitle())
+                .ifPresent(line -> {
+                    throw new IllegalArgumentException("존재하는 이름입니다");
+                });
     }
 
-    public void validateTitleWhenUpdate(Long id, LineRequest lineRequest) throws Exception {
-        Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        if (lineById.getTitle().equals(lineRequest.getTitle())) {
+    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) throws Exception {
+        if (isNotChangeTitle(id, lineRequest)) {
             return;
         }
         validateTitle(lineRequest);
+    }
+
+    private boolean isNotChangeTitle(final Long id, final LineRequest lineRequest) {
+        Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        return lineById.isTitleEquals(lineRequest.getTitle());
     }
 }

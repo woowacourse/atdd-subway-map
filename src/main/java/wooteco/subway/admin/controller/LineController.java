@@ -63,7 +63,7 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         try {
-            lineService.validateTitleWhenUpdate(id, lineRequest);
+            lineService.validateTitleWhenUpdateInfo(id, lineRequest);
             Line line = new Line(
                     lineRequest.getTitle(),
                     lineRequest.getStartTime(),

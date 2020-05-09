@@ -3,6 +3,8 @@ package wooteco.subway.admin.domain;
 import java.util.Objects;
 
 public class LineStation {
+    public static final long NULL_PRE_STATION_VALUE = 0L;
+
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -16,7 +18,7 @@ public class LineStation {
         this.distance = distance;
         this.duration = duration;
         if (preStationId == null){
-            this.preStationId = 0L;
+            this.preStationId = NULL_PRE_STATION_VALUE;
             return;
         }
         this.preStationId = preStationId;
