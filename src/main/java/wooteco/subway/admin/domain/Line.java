@@ -1,12 +1,13 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -16,7 +17,8 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String lineColor;
-    private Set<LineStation> stations;
+    @MappedCollection
+    private List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -61,7 +63,7 @@ public class Line {
         return lineColor;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -93,8 +95,18 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void addStationOnFirst(LineStation inputLineStation) {
+        LineStation lineStation = stations.stream()
+                .filter(LineStation::isFirstLineStation)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
+        lineStation.setPreStationId(inputLineStation.getStationId());
+
+        stations.add(0, inputLineStation);
+    }
+
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
@@ -102,7 +114,8 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }
