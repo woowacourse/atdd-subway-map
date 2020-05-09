@@ -93,10 +93,7 @@ function AdminEdge() {
       distance,
       duration,
     };
-
-    const line = await api.edge.create(lineId, newSubwayLineStation);
-    console.log(line);
-    $subwayLinesItemTemplate.innerHTML = subwayLinesItemTemplate(line);
+    await api.edge.create(lineId, newSubwayLineStation);
   };
 
   const initEventListeners = () => {

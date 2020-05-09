@@ -32,8 +32,11 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         List<LineResponse> lineResponses = new ArrayList<>();
         for (Line line : lines) {
-            List<Station> station = stationRepository.findAllById(line.getLineStationsId());
-            lineResponses.add(LineResponse.of(line, station));
+            List<Station> stations = new ArrayList<>();
+            for (Long stationId : line.getLineStationsId()) {
+                stations.add(stationRepository.findById(stationId).get());
+            }
+            lineResponses.add(LineResponse.of(line, stations));
         }
         return lineResponses;
     }
