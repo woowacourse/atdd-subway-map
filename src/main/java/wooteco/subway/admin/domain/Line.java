@@ -97,7 +97,7 @@ public class Line {
             stations.stream()
                 .filter(LineStation::isFirstNode)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("으아아아 "))
+                .orElseThrow(AssertionError::new)
                 .updatePreLineStation(lineStation.getStationId());
         } else {
             LineStation preNodeOfInput = stations.stream()
