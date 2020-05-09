@@ -8,6 +8,7 @@ import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.net.URI;
+import java.util.NoSuchElementException;
 
 @RestController
 public class StationController {
@@ -15,6 +16,20 @@ public class StationController {
 
     public StationController(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
+    }
+
+    @GetMapping("/stations")
+    public ResponseEntity showStations() {
+        return ResponseEntity.ok().body(StationResponse.of(stationRepository.findAll()));
+    }
+
+    @GetMapping("/stations/{name}")
+    public ResponseEntity showStationByName(@PathVariable String name) {
+        if (name.isEmpty()) {
+            return ResponseEntity.ok().body(null);
+        }
+        Station station = stationRepository.findByName(name).orElseThrow(NoSuchElementException::new);
+        return ResponseEntity.ok().body(StationResponse.of(station));
     }
 
     @PostMapping("/stations")
@@ -25,11 +40,6 @@ public class StationController {
         return ResponseEntity
                 .created(URI.create("/stations/" + persistStation.getId()))
                 .body(StationResponse.of(persistStation));
-    }
-
-    @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
     }
 
     @DeleteMapping("/stations/{id}")

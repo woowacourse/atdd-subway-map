@@ -3,6 +3,7 @@ package wooteco.subway.admin.controller;
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
@@ -44,12 +46,20 @@ public class LineController {
 
 	@GetMapping("/lines")
 	public ResponseEntity showLines() {
-		return ResponseEntity.ok().body(LineResponse.listOf(service.showLines()));
+		return ResponseEntity.ok().body(service.showLines());
 	}
 
 	@GetMapping("/lines/{id}")
 	public ResponseEntity showLine(@PathVariable Long id) {
-		return ResponseEntity.ok().body(LineResponse.of(service.showLine(id)));
+
+		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
+	}
+
+	@GetMapping("/lines/name/{name}")
+	public ResponseEntity showLineByName(@PathVariable String name) {
+		LineResponse lineResponse = LineResponse.of(service.showLine(name));
+		System.err.println(lineResponse.getId() + " ,  " +  lineResponse.getTitle());
+		return ResponseEntity.ok().body(lineResponse);
 	}
 
 	@PutMapping("/lines/{id}")
@@ -67,10 +77,8 @@ public class LineController {
 	}
 
 	@PutMapping("/lines/{id}/stations")
-	public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest view) {
-		Line persistLine = service.showLine(id);
-		persistLine.addLineStation(view.toLineStation());
-
+	public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
+		service.addLineStation(id, view);
 		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
 	}
 

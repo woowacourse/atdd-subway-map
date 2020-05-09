@@ -147,12 +147,15 @@ public class Line {
 	}
 
 	public List<Long> getLineStationsId() {
-		LineStation headStation = stations.stream()
-			.filter(value -> value.getPreStationId() == null)
-			.findFirst()
-			.orElseThrow(NoSuchElementException::new);
+		List<Long> newStations = new ArrayList<>();
 
-		List<Long> newStations = new ArrayList<>(Arrays.asList(headStation.getStationId()));
+		if (!stations.isEmpty())	{
+			LineStation headStation = stations.stream()
+				.filter(value -> value.getPreStationId() == null)
+				.findFirst()
+				.orElseThrow(NoSuchElementException::new);
+			newStations.add(headStation.getStationId());
+		}
 
 		while (newStations.size() != stations.size()) {
 			newStations.add(stations.stream()

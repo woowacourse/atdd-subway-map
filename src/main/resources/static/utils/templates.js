@@ -27,7 +27,7 @@ export const subwayLineInfoTemplate = line =>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
         <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = value => `<option data-line-id="${value.id}">${value.title}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -58,7 +58,7 @@ export const subwayLinesItemTemplate = line => {
         .map(station => listItemTemplate(station))
         .join("");
     return `<div class="inline-block w-1/2 px-2">
-            <div class="rounded-sm w-full slider-list">
+            <div class="rounded-sm w-full slider-list" id="line-name" data-line-id="${line.id}">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}

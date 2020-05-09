@@ -12,6 +12,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -33,8 +34,15 @@ public class LineService {
 		return lineRepository.findById(id).orElseThrow(RuntimeException::new);
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public Line showLine(String name) {
+		return lineRepository.findByName(name).orElseThrow(RuntimeException::new);
+	}
+
+	public List<LineResponse> showLines() {
+		return lineRepository.findAll()
+			.stream()
+			.map(x -> findLineWithStationsById(x.getId()))
+			.collect(Collectors.toList());
 	}
 
 	public void updateLine(Long id, Line line) {
@@ -47,9 +55,17 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long id, LineStationCreateRequest request) {
+	public void addLineStation(Long id, LineStationRequest request) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.addLineStation(request.toLineStation());
+		if(request.getPreStationName().isEmpty()) {
+			Station station = stationRepository.findByName(request.getStationName()).orElseThrow(RuntimeException::new);
+			persistLine.addLineStation(new LineStation(null, station.getId(), request.getDistance(), request.getDuration()));
+			lineRepository.save(persistLine);
+			return;
+		}
+		Station preStation = stationRepository.findByName(request.getPreStationName()).orElseThrow(RuntimeException::new);
+		Station station = stationRepository.findByName(request.getStationName()).orElseThrow(RuntimeException::new);
+		persistLine.addLineStation(new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration()));
 		lineRepository.save(persistLine);
 	}
 
