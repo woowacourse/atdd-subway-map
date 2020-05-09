@@ -33,33 +33,32 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    /**
-     *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     *     Then 지하철역이 노선에 추가 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *
-     *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     *     Then 지하철역이 노선에서 제거 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
-        //when //then
+        //when
         addStationToLine(1L, null, 1L);
         addStationToLine(1L, 1L, 2L);
+        //then
+        assertThat(getStationsOfLine(1L).size()).isEqualTo(2);
 
         //when
         List<StationResponse> stations = getStationsOfLine(1L);
         //then
         assertThat(stations.get(0).getName()).isEqualTo("강남역");
         assertThat(stations.get(1).getName()).isEqualTo("역삼역");
+
+        //when
+        removeLineStation(1L, 2L);
+        //then
+        assertThat(getStationsOfLine(1L).size()).isEqualTo(1);
+    }
+
+    private void removeLineStation(Long lineId, Long stationId) {
+        given().when()
+                .delete("/lines/" + lineId + "/stations/" + stationId)
+                .then()
+                .log().all().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private void addStationToLine(Long lineId, Long preStationId, Long stationId) {

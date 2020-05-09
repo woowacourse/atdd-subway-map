@@ -49,4 +49,14 @@ public class MockController {
                 .ok()
                 .body(response);
     }
+
+    @DeleteMapping("/{lineId}/stations/{stationId}")
+    public ResponseEntity removeLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        LineStation lineStationToRemove = lineStations.get(lineId).stream()
+                .filter(lineStation -> lineStation.getStationId().equals(stationId))
+                .findFirst()
+                .get();
+        lineStations.get(lineId).remove(lineStationToRemove);
+        return ResponseEntity.noContent().build();
+    }
 }
