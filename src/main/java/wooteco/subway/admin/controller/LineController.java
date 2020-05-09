@@ -1,7 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,8 +37,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity showLines() {
-        List<Line> lines = lineService.findLines();
-        return ResponseEntity.ok(LineResponse.listOf(lines));
+        return ResponseEntity.ok(lineService.findAllLinesWithStationsById());
     }
 
     @GetMapping("/{id}")
