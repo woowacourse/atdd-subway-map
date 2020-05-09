@@ -48,24 +48,18 @@ public class LineController {
             LineResponse lineResponse = lineService.findLineWithStationsById(line.getId());
             lineResponses.add(lineResponse);
         }
-//        Set<Station> stations = (Set<Station>) stationRepository.findAllById(stationIds);
-
-//        return LineResponse.withStations(line, stations);
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
-//        LineResponse lineWithStationsById = lineService.findLineWithStationsById(id);
-//        return ResponseEntity.ok().body(lineWithStationsById);
-
-        if (id.equals(3L)) {
+        try {
+            LineResponse lineResponse = lineService.findLineWithStationsById(id);
+            return ResponseEntity.ok().body(lineResponse);
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-        Line line = new Line("2호선", LocalTime.now(), LocalTime.now(), 3, "red");
-        line.addLineStation(new LineStation());
 
-        return ResponseEntity.ok().body(LineResponse.of(line));
     }
 
     @GetMapping("/lines/{id}/stations")
@@ -83,7 +77,8 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+        Line line = lineService.findById(id);
+        lineService.delete(line);
         return ResponseEntity.noContent().build();
     }
 
@@ -91,7 +86,7 @@ public class LineController {
     public ResponseEntity registerStation(@PathVariable Long id, @RequestBody StationCreateRequest stationCreateRequest) {
         Line line = new Line("2호선", LocalTime.now(), LocalTime.now(), 3, "red");
 
-        LineStation lineStation = new LineStation(1L, 1L,1, 1);
+        LineStation lineStation = new LineStation(1L, 1L, 1, 1);
         line.addLineStation(lineStation);
 
         return ResponseEntity

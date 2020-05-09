@@ -10,7 +10,8 @@ import wooteco.subway.admin.dto.LineStationDto;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +38,6 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
-
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         LineStation lineStation = request.toLineStation();
@@ -65,8 +62,7 @@ public class LineService {
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
 
-        Set<Station> stations = new HashSet<>((List<Station>) stationRepository.findAllById(stationIds));
-
+        Set<Station> stations = stationRepository.findAllById(stationIds);
 
         return LineResponse.withStations(line, stations);
     }
@@ -75,7 +71,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
-        // TODO: 구현
     }
 
     public LineResponse findLineWithStationsById(Long id) {
@@ -88,6 +83,13 @@ public class LineService {
 
         Set<Station> stations = stationRepository.findAllById(stationIds);
         return LineResponse.withStations(line, stations);
+    }
 
+    public Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void delete(Line line) {
+        lineRepository.delete(line);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -56,17 +57,17 @@ public class LineStationAcceptanceTest {
         createStation("잠실역");
         createStation("잠실새내역");
         createStation("종합운동장역");
-        createLine("2호선");
+        LineResponse line = createLine("2호선");
         // when
-        registerStation(1L);
+        registerStation(line.getId());
         // then
-        getLine(1L);
+        getLine(line.getId());
         //when & then
-        getStationsOfLine(1L);
+        getStationsOfLine(line.getId());
         //when & then
-        deleteStationOfLine(1L);
+        deleteStationOfLine(line.getId());
         //when & then
-        getStationsOfLineButCanNotFind(3L);
+        getStationsOfLineButCanNotFind(line.getId());
     }
 
     private void getStationsOfLineButCanNotFind(long lineId) {
@@ -113,14 +114,15 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void createLine(String name) {
+    private LineResponse createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("bgColor","red");
 
-        given().
+        return given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
@@ -128,7 +130,8 @@ public class LineStationAcceptanceTest {
                 post("/lines").
         then().
                 log().all().
-                statusCode(HttpStatus.CREATED.value());
+                statusCode(HttpStatus.CREATED.value())
+                .extract().as(LineResponse.class);
     }
 
     private void registerStation(Long id) {

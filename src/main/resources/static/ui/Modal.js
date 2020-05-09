@@ -18,6 +18,11 @@ export default function Modal() {
         if (hasSubwayLineAddButton) {
             $submitButton.classList.remove('subway-line-add-button');
         }
+
+        const hasClass = $submitButton.classList.contains('update-submit-button')
+        if (hasClass) {
+            $submitButton.classList.remove('update-submit-button')
+        }
     };
 
     $openModalButton.addEventListener(EVENT_TYPE.CLICK, toggle);

@@ -49,7 +49,7 @@ public class LineAcceptanceTest {
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+            LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getTitle()).isNotNull();
@@ -87,6 +87,7 @@ public class LineAcceptanceTest {
         params.put("startTime", "12:00");
         params.put("endTime", "13:00");
         params.put("intervalTime", "10");
+        params.put("bgColor", "red");
 
         given().
                 body(params).

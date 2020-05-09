@@ -8,12 +8,6 @@ public class LineStationDto {
     public LineStationDto() {
     }
 
-//    public LineStationDto(String name, String preStationName, String arrivalStationName) {
-//        this.name = name;
-//        this.preStationName = preStationName;
-//        this.arrivalStationName = arrivalStationName;
-//    }
-
     public String getName() {
         return name;
     }
