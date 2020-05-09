@@ -1,10 +1,7 @@
 package wooteco.subway.admin.service;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -52,34 +49,30 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+    public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        LineStation lineStation = lineStationCreateRequest.toLineStation();
+        line.addLineStation(lineStation);
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
     //
     // public LineResponse findLineWithStationsById(Long id) {
-    //     // TODO: 구현
+    //     // TODO: Service의 반환타입이 Line? LineReponse?
     //     return new LineResponse();
     // }
 
-    public Set<Station> toStations(Set<LineStation> lineStations) {
-        Map<Long, Long> idMap = new HashMap<>();
-        Iterator iterator = lineStations.iterator();
-        while (iterator.hasNext()) {
-            LineStation lineStation = (LineStation)iterator.next();
-            idMap.put(lineStation.getPreStationId(), lineStation.getStationId());
-        }
+    public Set<Station> toStations(List<Long> lineStationsId) {
         Set<Station> stations = new LinkedHashSet<>();
-        Long preStationId = 0L;
-        while (idMap.containsKey(preStationId)) {
-            Long stationId = idMap.get(preStationId);
-            Station station = stationRepository.findById(stationId)
+        for (Long id : lineStationsId) {
+            Station station = stationRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
             stations.add(station);
-            preStationId = stationId;
         }
         return stations;
     }

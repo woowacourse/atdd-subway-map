@@ -37,6 +37,14 @@ public class LineStation {
         return duration;
     }
 
+    public void setPreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public void setStationId(Long stationId) {
+        this.stationId = stationId;
+    }
+
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }

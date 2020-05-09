@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -44,7 +43,7 @@ public class LineController {
         }
 
         Line persistLine = lineService.save(line);
-        Set<Station> stations = lineService.toStations(persistLine.getLineStations());
+        Set<Station> stations = lineService.toStations(persistLine.findLineStationsId());
 
         return ResponseEntity
             .created(URI.create("/lines/" + persistLine.getId()))
@@ -56,7 +55,7 @@ public class LineController {
         List<Line> persistLines = lineService.showLines();
         Map<Line, Set<Station>> lineWithStations = persistLines.stream()
             .collect(Collectors.toMap(Function.identity(),
-                persistLine -> lineService.toStations(persistLine.getLineStations())));
+                persistLine -> lineService.toStations(persistLine.findLineStationsId())));
 
         return ResponseEntity
             .ok()
@@ -66,7 +65,7 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
         Line persistLine = lineService.showLine(id);
-        Set<Station> stations = lineService.toStations(persistLine.getLineStations());
+        Set<Station> stations = lineService.toStations(persistLine.findLineStationsId());
 
         return ResponseEntity
             .ok()
@@ -78,7 +77,7 @@ public class LineController {
         Line line = lineService.showLine(id);
         line.update(lineRequest.toLine());
         lineService.updateLine(id, line);
-        Set<Station> stations = lineService.toStations(line.getLineStations());
+        Set<Station> stations = lineService.toStations(line.findLineStationsId());
 
 
         return ResponseEntity
@@ -95,11 +94,17 @@ public class LineController {
     @PostMapping("/line-station/{id}") // TODO: 2020-05-08 http 요청 메서드과 uri가 적절한지
     public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody
         LineStationCreateRequest lineStationCreateRequest) {
-        // TODO: 2020-05-08 원래는 서비스에서 호출해야 함
-        LineStation lineStation = lineStationCreateRequest.toLineStation();
+        lineService.addLineStation(id, lineStationCreateRequest);
 
         return ResponseEntity
             .ok()
-            .body(LineStationResponse.of(lineStation));
+            .body(LineStationResponse.of(lineStationCreateRequest.toLineStation()));
+    }
+
+    @DeleteMapping("/line/{lineId}/station/{stationId}")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 }

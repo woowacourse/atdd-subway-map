@@ -122,14 +122,4 @@ public class LineHandler {
             log().all().
             statusCode(HttpStatus.OK.value());
     }
-
-    public LineResponse findLineWithStations(Long id) {
-        return
-            given()
-                .when().
-                get("/lines/" + id).
-                then().
-                log().all().
-                extract().as(LineResponse.class);
-    }
 }
