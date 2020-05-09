@@ -4,10 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Line {
     @Id
@@ -98,33 +95,36 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        LineStation beforeLineStation;
-
-        if (stations.isEmpty()) {
+        int addIndex = findAddIndex(lineStation);
+        if (addIndex >= stations.size()) {
             stations.add(lineStation);
             return;
         }
-        if (lineStation.getPreStationId() == null) {
-            beforeLineStation = stations.get(0);
-            stations.remove(0);
-            stations.add(0, new LineStation(lineStation.getStationId(), beforeLineStation.getStationId()));
-            stations.add(0, lineStation);
-            return;
-        }
-        for (int i = 0; i < stations.size(); i++) {
-            LineStation lastLineStation = stations.get(stations.size() - 1);
+        LineStation originLineStation = stations.get(addIndex);
+        LineStation modifiedLineStation = new LineStation(lineStation.getStationId(), originLineStation.getPreStationId());
 
-            if (lineStation.getPreStationId().equals(stations.get(i).getStationId())) {
-                if (lastLineStation.equals(stations.get(i))) {
-                    stations.add(lineStation);
-                    return;
-                }
-                LineStation nextLineStation = stations.get(i + 1);
-                stations.add(i + 1, lineStation);
-                stations.remove(nextLineStation);
-                stations.add(i + 2, new LineStation(lineStation.getStationId(), nextLineStation.getStationId()));
+        stations.remove(originLineStation);
+        stations.addAll(addIndex, Arrays.asList(lineStation, modifiedLineStation));
+    }
+
+    public int findAddIndex(LineStation addLineStation) {
+        if (stations.isEmpty() && !addLineStation.isFirstLineStation()) {
+            throw new IllegalArgumentException("첫 역을 먼저 입력해주세요.");
+        }
+
+        if (addLineStation.isFirstLineStation()) {
+            return 0;
+        }
+
+        Long addStationId = addLineStation.getStationId();
+
+        for (int i = 1; i < stations.size(); i++) {
+            Long preStationId = stations.get(i).getPreStationId();
+            if (preStationId.equals(addStationId)) {
+                return i;
             }
         }
+        return stations.size();
     }
 
     public void removeLineStationById(Long stationId) {
@@ -199,5 +199,4 @@ public class Line {
         }
         return stationsIds;
     }
-
 }

@@ -42,4 +42,8 @@ public class LineStation {
     public int getDuration() {
         return duration;
     }
+
+    public boolean isFirstLineStation() {
+        return preStationId == null;
+    }
 }
