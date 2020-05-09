@@ -4,8 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Objects;
-
 @Table("LineStation")
 public class LineStation {
     @Id
@@ -38,12 +36,16 @@ public class LineStation {
         this.preStationId = newPreStationId;
     }
 
+    public boolean isNotExistPreStation() {
+        return this.preStationId == null;
+    }
+
     public boolean isStationId(Long stationId) {
         return this.stationId.equals(stationId);
     }
 
     public boolean isPreStationId(Long preStationId) {
-        if (this.preStationId == null && preStationId == null) {
+        if (this.isNotExistPreStation() && preStationId == null) {
             return true;
         }
         if (preStationId == null) {

@@ -72,7 +72,7 @@ public class LineService {
     }
 
     private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
-        List<Long> orderedStationIds = line.getStationsId();
+        List<Long> orderedStationIds = line.getSortedStationIDs();
         List<Station> orderedStations = orderedStationIds.stream()
             .map(stationId ->
                 stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))

@@ -7,11 +7,10 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Table("Line")
 public class Line {
-    public static final long PRE_ID_OF_FIRST_STATION = -1L;
+    private static final long PRE_ID_OF_FIRST_STATION = -1L;
 
     @Id
     private Long id;
@@ -102,10 +101,8 @@ public class Line {
         Optional<LineStation> lineStationWithSamePreStation = this.lineStations.stream()
                 .filter(anyLineStation -> anyLineStation.isPreStationId(lineStation.getPreStationId()))
                 .findFirst();
-        if (lineStationWithSamePreStation.isPresent()) {
-            updatePreOfLineStation(lineStationWithSamePreStation.get().getStationId(),
-                    lineStation.getStationId());
-        }
+        lineStationWithSamePreStation.ifPresent(station ->
+            updatePreOfLineStation(station.getStationId(), lineStation.getStationId()));
         this.lineStations.add(lineStation);
     }
 
@@ -128,9 +125,35 @@ public class Line {
                 .forEach(lineStation -> lineStation.updatePreStationId(newPreStationId));
     }
 
-    public List<Long> getStationsId() {
-        Map<Long, Long> stationIdOrder = new HashMap<>();    // key: 전 역 ID, value: 현재 역 ID
+    public List<Long> getSortedStationIDs() {
         List<Long> orderedStations = new ArrayList<>();
+
+        if (lineStations.isEmpty()) {
+            return orderedStations;
+        }
+        if (!isExistStartStation()) {
+            throw new IllegalStateException("구간이 존재하는데 시작역이 존재하지 않을 수 없습니다.");
+        }
+        return getSortedStationIDsWhenStartStationExist();
+    }
+
+    private List<Long> getSortedStationIDsWhenStartStationExist() {
+        List<Long> orderedStations = new ArrayList<>();
+        Map<Long, Long> stationIdsPerPreId = createStationIdsPerPreId();
+
+        Long now = PRE_ID_OF_FIRST_STATION;
+        for (int i = 0; i < stationIdsPerPreId.size(); i++) {
+            now = stationIdsPerPreId.get(now);
+            orderedStations.add(now);
+        }
+        return Collections.unmodifiableList(orderedStations);
+    }
+
+    /**
+     * @return key: 전 역 ID, value: 현재 역 ID
+     * 단, 시작역의 preStationId 는 -1L (constant : PRE_ID_OF_FIRST_STATION) 로 대체함 */
+    private Map<Long, Long> createStationIdsPerPreId() {
+        Map<Long, Long> stationIdOrder = new HashMap<>();
 
         lineStations.forEach(lineStation -> {
             if (Objects.isNull(lineStation.getPreStationId())) {
@@ -139,16 +162,11 @@ public class Line {
                 stationIdOrder.put(lineStation.getPreStationId(), lineStation.getStationId());
             }
         });
+        return Collections.unmodifiableMap(stationIdOrder);
+    }
 
-        Long now = PRE_ID_OF_FIRST_STATION;
-        if(!stationIdOrder.containsKey(PRE_ID_OF_FIRST_STATION)) {
-            throw new IllegalArgumentException("순환 발생 했거나 시작 역이 없다 - 향후 수정");
-        }
-        for (int i = 0; i < stationIdOrder.size(); i++) {
-            now = stationIdOrder.get(now);
-            orderedStations.add(now);
-        }
-        return Collections.unmodifiableList(orderedStations);
+    private boolean isExistStartStation() {
+        return lineStations.stream().anyMatch(LineStation::isNotExistPreStation);
     }
 
     public String getColor() {

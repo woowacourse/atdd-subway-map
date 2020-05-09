@@ -22,7 +22,7 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getStationsId();
+        List<Long> stationIds = line.getSortedStationIDs();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
