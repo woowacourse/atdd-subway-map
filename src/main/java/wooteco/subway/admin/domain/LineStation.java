@@ -1,7 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.relational.core.mapping.Column;
-
 public class LineStation {
     private Long preStationId;
     private Long stationId;

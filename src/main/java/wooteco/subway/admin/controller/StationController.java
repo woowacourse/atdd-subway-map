@@ -10,6 +10,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private final StationRepository stationRepository;
 
@@ -17,7 +18,12 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    @PostMapping("/stations")
+    @GetMapping()
+    public ResponseEntity showStations() {
+        return ResponseEntity.ok().body(stationRepository.findAll());
+    }
+
+    @PostMapping()
     public ResponseEntity createStation(@RequestBody StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
         Station persistStation = stationRepository.save(station);
@@ -27,25 +33,15 @@ public class StationController {
                 .body(StationResponse.of(persistStation));
     }
 
-    @GetMapping("/stations/{name}")
-    public ResponseEntity getStation(@PathVariable String name) {
-        System.out.println(name);
-
-        Station station = stationRepository.findByName(name);
-
-        System.out.println(station.getName() + " : " + station.getId());
-
-        return ResponseEntity.ok().body(station.getId());
-    }
-
-    @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
-    }
-
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity getStation(@PathVariable String name) {
+        Station station = stationRepository.findByName(name);
+        return ResponseEntity.ok().body(station.getId());
     }
 }

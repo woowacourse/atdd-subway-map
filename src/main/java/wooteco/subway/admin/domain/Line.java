@@ -105,14 +105,15 @@ public class Line {
                 }
             }
             stations.add(lineStation);
+            return;
         }
         if (stations.size() == 0) {
             if (lineStation.getPreStationId() != null) {
                 stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
             }
             stations.add(lineStation);
+            return;
         }
-
     }
 
     public void removeLineStationById(Long stationId) {
@@ -120,19 +121,40 @@ public class Line {
                 .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 station 정보가 없습니다."));
+
         stations.remove(lineStation);
 
+        updateAfterRemove();
+    }
+
+    private void updateAfterRemove() {
         for (int i = 0; i < stations.size() - 1; i++){
-            if (i == 0) {
-                if (stations.get(i).getPreStationId() != null) {
-                    stations.get(i).updatePreLineStation(null);
-                }
-            }
-            if (i != 0) {
-                if (stations.get(i).getStationId() != stations.get(i+1).getPreStationId()) {
-                    stations.get(i+1).updatePreLineStation(stations.get(i).getStationId());
-                }
-            }
+            beFirstIndex(i);
+            beNotFirstIndex(i);
+        }
+    }
+
+    private void beFirstIndex(int index) {
+        if (index == 0) {
+            updateFirstIndex(index);
+        }
+    }
+
+    private void updateFirstIndex(int index) {
+        if (stations.get(index).getPreStationId() != null) {
+            stations.get(index).updatePreLineStation(null);
+        }
+    }
+
+    private void beNotFirstIndex(int index) {
+        if (index != 0) {
+            updateNotFirstIndex(index);
+        }
+    }
+
+    private void updateNotFirstIndex(int index) {
+        if (stations.get(index).getStationId() != stations.get(index+1).getPreStationId()) {
+            stations.get(index+1).updatePreLineStation(stations.get(index).getStationId());
         }
     }
 
