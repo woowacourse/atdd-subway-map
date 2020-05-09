@@ -37,13 +37,13 @@ const api = (() => {
       return request(`/stations/${id}`);
     },
     create(stationRequest) {
-      return request(`/station`, METHOD.POST(stationRequest));
+      return request(`/stations`, METHOD.POST(stationRequest));
     },
     update(stationRequest, id) {
-      return request(`/station/${id}`, METHOD.PUT(stationRequest));
+      return request(`/stations/${id}`, METHOD.PUT(stationRequest));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+      return request(`/stations/${id}`, METHOD.DELETE);
     }
   };
 
@@ -65,9 +65,22 @@ const api = (() => {
     }
   };
 
+  const lineStation = {
+    getById(lineId) {
+      return request(`/line-stations/${lineId}`);
+    },
+    create(lineId, lineStationRequest) {
+      return request(`/line-stations/${lineId}`, METHOD.POST(lineStationRequest));
+    },
+    delete(lineId, stationId) {
+      return request(`/line-stations/${lineId}/${stationId}`, METHOD.DELETE());
+    }
+  }
+
   return {
     station,
     line,
+    lineStation,
   };
 })();
 
