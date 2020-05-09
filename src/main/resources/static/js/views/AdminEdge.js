@@ -55,9 +55,9 @@ function AdminEdge() {
           distance: 2,
           duration: 2
         }
-        console.log(request);
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
-          console.log(data);
+            createSubwayEdgeModal.toggle();
+            initSubwayLinesSlider();
         })
     };
 
@@ -65,7 +65,13 @@ function AdminEdge() {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+            const lineId = $target.closest(".slider-list").dataset.id;
+            const stationId = $target.closest(".list-item").dataset.id;
+            console.log(lineId);
+            console.log(stationId);
+            api.lineStation.delete(lineId, stationId).then(() => {
+                $target.closest(".list-item").remove();
+            })
         }
     };
 

@@ -13,6 +13,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -60,6 +61,12 @@ public class LineService {
         Line line = findById(lineId);
         line.removeLineStationById(stationId);
         updateLine(lineId, line);
+    }
+
+    public List<LineResponse> findAllLineWithStations(List<Line> lines) {
+        return lines.stream()
+                .map(line -> findLineWithStationsById(line.getId()))
+                .collect(Collectors.toList());
     }
 
     public LineResponse findLineWithStationsById(Long id) {

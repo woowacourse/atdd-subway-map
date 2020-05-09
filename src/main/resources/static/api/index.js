@@ -62,6 +62,9 @@ const api = (() => {
     const lineStation = {
         create(id, data) {
             return request(`${BASE_URL}/lines/${id}/stations`, METHOD.PUT(data)).then(data => data.json());
+        },
+        delete(lineId, stationId) {
+            return request(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     }
 
