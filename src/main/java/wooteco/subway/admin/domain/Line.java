@@ -115,10 +115,7 @@ public class Line {
             }
             newStations.add(station);
         }
-        if (updated == 0) {
-            newStations.add(lineStation);
-        }
-        if (stations.size() == 0) {
+        if (updated == 0 || stations.size() == 0) {
             newStations.add(lineStation);
         }
         stations = newStations;

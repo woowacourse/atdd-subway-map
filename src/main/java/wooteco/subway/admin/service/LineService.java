@@ -62,7 +62,6 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-
         return LineResponse.of(line, findStationsByLineId(id));
     }
 

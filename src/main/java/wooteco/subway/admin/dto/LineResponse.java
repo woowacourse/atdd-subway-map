@@ -17,7 +17,6 @@ public class LineResponse {
     private String createdAt;
     private String updatedAt;
     private String bgColor;
-
     private String[] stations;
 
     public LineResponse() {
