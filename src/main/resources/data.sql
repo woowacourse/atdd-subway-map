@@ -11,7 +11,20 @@ INSERT INTO STATION (name, created_at)
 VALUES ('계양역', NOW());
 
 INSERT INTO STATION (name, created_at)
+VALUES ('김포공항역', NOW());
+
+INSERT INTO STATION (name, created_at)
+VALUES ('마곡나루역', NOW());
+
+INSERT INTO STATION (name, created_at)
 VALUES ('서울역', NOW());
 
 INSERT INTO STATION (name, created_at)
 VALUES ('용산역', NOW());
+
+INSERT INTO EDGE (line_id, line_key, station_id, pre_station_id, distance, duration)
+VALUES (1, 1, 1, 2, 10, 10);
+INSERT INTO EDGE (line_id, line_key, station_id, pre_station_id, distance, duration)
+VALUES (1, 2, 2, 3, 10, 10);
+INSERT INTO EDGE (line_id, line_key, station_id, pre_station_id, distance, duration)
+VALUES (1, 3, 3, 4, 10, 10);
