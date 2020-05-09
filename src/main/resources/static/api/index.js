@@ -10,9 +10,15 @@ const METHOD = {
             )
         };
     },
-    DELETE() {
+    DELETE(data) {
         return {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8"
+            },
+            body: JSON.stringify(
+                data
+            )
         };
     },
     POST(data) {
@@ -76,8 +82,20 @@ const api = (() => {
         }
     };
 
+    const edge = {
+        findByLineId(lineId) {
+            return request(`/lines/${lineId}/edge`);
+        },
+        create(lineId, data) {
+            return request(`/lines/${lineId}/edge`, METHOD.POST(data));
+        },
+        delete(lineId, data) {
+            return request(`/lines/${lineId}/edge`, METHOD.DELETE(data));
+        }
+    };
+
     return {
-        station, line
+        station, line, edge
     };
 })();
 

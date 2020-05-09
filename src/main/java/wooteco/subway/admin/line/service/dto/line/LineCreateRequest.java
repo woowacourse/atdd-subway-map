@@ -1,7 +1,7 @@
 package wooteco.subway.admin.line.service.dto.line;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import wooteco.subway.admin.line.domain.line.Line;
+import wooteco.subway.admin.line.domain.Line;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

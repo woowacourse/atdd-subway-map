@@ -38,11 +38,9 @@ public class EdgeResponse {
         return new EdgeResponse(preStationId, stationId, stationName);
     }
 
-
     public Long getPreStationId() {
         return preStationId;
     }
-
 
     public Long getStationId() {
         return stationId;

@@ -2,14 +2,14 @@ package wooteco.subway.admin.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.line.domain.edge.Edge;
-import wooteco.subway.admin.line.domain.line.Line;
-import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.line.domain.repository.LineRepository;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
-import wooteco.subway.admin.line.domain.line.repository.LineRepository;
+import wooteco.subway.admin.station.domain.Station;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
 import java.util.List;

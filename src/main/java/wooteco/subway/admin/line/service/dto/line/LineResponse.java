@@ -1,6 +1,6 @@
 package wooteco.subway.admin.line.service.dto.line;
 
-import wooteco.subway.admin.line.domain.line.Line;
+import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.station.domain.Station;
 
 import java.time.LocalDateTime;

@@ -1,8 +1,8 @@
-export const listItemTemplate = (id, name) =>
+export const listItemTemplate = (id, name, lineId) =>
     `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
     ${name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
-       <span class="mdi mdi-delete" data-id=${id}></span>
+       <span class="mdi mdi-delete" data-id=${id} data-line-id=${lineId}></span>
     </button>
   </div>`;
 
@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = (title, id) => `<option data-id=${id} data-title=${title}>${title}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -46,16 +46,22 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 
 export const subwayLinesItemTemplate = line => {
     const stationsTemplate = line.stations
-        .map(station => listItemTemplate(station.id, station.name))
+        .map(station => listItemTemplate(station.id, station.name, line.id))
         .join("");
     return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
-              <div class="overflow-y-auto height-90">
+              <div id="line-list-id-${line.id}" class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>
             </div>
           </div>`;
+};
+
+export const subwayEdgeItemTemplate = edges => {
+    return edges
+        .map(edge => listItemTemplate(edge.stationId, edge.stationName, edge.lineId))
+        .join("");
 };
 
 export const initNavigation = () => {

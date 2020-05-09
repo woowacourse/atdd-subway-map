@@ -1,4 +1,4 @@
-package wooteco.subway.admin.line.domain.line;
+package wooteco.subway.admin.line.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
