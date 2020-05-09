@@ -110,7 +110,7 @@ public class Line {
 			.orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
 		int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
 
-		if (nextLineStationIndex < stations.size() - 1) {
+		if (nextLineStationIndex < stations.size()) {
 			LineStation nextLineStation = stations.get(nextLineStationIndex);
 			nextLineStation.updatePreLineStation(lineStation.getStationId());
 			stations.add(nextLineStationIndex, lineStation);
@@ -148,7 +148,7 @@ public class Line {
 		if (nextLineStationIndex <= stations.size() - 1) {
 			LineStation nextLineStation = stations.get(nextLineStationIndex);
 			LineStation preLineStation = stations.get(nextLineStationIndex - 1);
-			nextLineStation.updatePreLineStation(preLineStation.getStationId());
+			nextLineStation.updatePreLineStation(preLineStation.getPreStationId());
 			stations.set(nextLineStationIndex, nextLineStation);
 			stations.remove(targetLineStation);
 			return;

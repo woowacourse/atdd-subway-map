@@ -62,8 +62,23 @@ const api = (() => {
       return requestWithEmptyResponse(`/lines/${id}`, METHOD.DELETE());
     }
   };
+
+  const edge = {
+    get(lineId) {
+      return request(`/lines/${lineId}/stations`);
+    },
+    create(lineId, data) {
+      return request(`/lines/${lineId}/stations`, METHOD.POST(data));
+    },
+    update(lineId, data) {
+      return requestWithEmptyResponse(`/lines/${lineId}/stations`, METHOD.PUT(data));
+    },
+    delete(lineId, stationId) {
+      return requestWithEmptyResponse(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+    }
+  };
   return {
-    station, line
+    station, line, edge
   };
 })();
 export default api;
