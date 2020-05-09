@@ -1,10 +1,11 @@
-export const listItemTemplate = value =>
-  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-station-id='${value.id}'>
+export const listItemTemplate = (value, lineId) =>
+  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-station-id='${value.id}' data-line-id='${lineId}'>
     ${value.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
     </button>
   </div>`;
+
 
 export const subwayLinesTemplate = line =>
   `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
@@ -30,7 +31,7 @@ export const innerSubwayLinesTemplate = line =>
          <span class="mdi mdi-pencil"></span>
       </button>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = value => `<option value="${value.id}">${value.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -58,17 +59,18 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 
 export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
-    .map(station => listItemTemplate(station))
+    .map(station => listItemTemplate(station, line.id))
     .join("");
   return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
+              <div class="border ${line.bgColor} line-info lint-title px-4 py-1 data-line-id='${line.id}'">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>
             </div>
           </div>`;
 };
+
 
 export const initNavigation = () => {
   document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
