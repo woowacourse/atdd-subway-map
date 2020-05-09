@@ -11,7 +11,4 @@ import wooteco.subway.admin.domain.Line;
 public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
-
-    @Query("select * from line where name = :name")
-    String findByName(@Param("name") String name);
 }

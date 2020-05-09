@@ -27,12 +27,7 @@ public class StationController {
 
     @GetMapping("/{name}")
     public ResponseEntity getStation(@PathVariable String name) {
-        System.out.println(name);
-
         Station station = stationRepository.findByName(name);
-
-        System.out.println(station.getName() + " : " + station.getId());
-
         return ResponseEntity.ok().body(station.getId());
     }
 
