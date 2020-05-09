@@ -30,10 +30,3 @@ create table if not exists LINE_STATION
     updated_at datetime,
     index int
 );
-
-INSERT INTO line values (1, '1호선','bg-yellow-600', '05:30:00', '23:00:00', 10, '2020-05-09 14:38:44.901', '2020-05-09 14:38:44.901');
-INSERT INTO line values (2, '2호선','bg-green-600', '05:20:00', '22:00:00', 4, '2020-05-09 14:38:55.394', '2020-05-09 14:38:55.394');
-
-INSERT INTO station VALUES(1, '삼성역', '2020-05-09 14:38:44.901');
-INSERT INTO station VALUES(2, '잠실역', '2020-05-09 14:38:46.901');
-INSERT INTO station VALUES(3, '선릉역', '2020-05-09 14:50:44.901');

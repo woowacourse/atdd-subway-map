@@ -74,7 +74,21 @@ function AdminEdge() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      const $stationContainer = $target.closest(".station-container");
+      const $item = $target.closest(".list-item")
+      const lineId = $stationContainer.dataset.lineId;
+      const stationId = $item.dataset.stationId;
+      api.lineStation.delete(lineId, stationId)
+      .then(response => {
+        if (response.status !== 204) {
+          throw new Error("잘못된 요청입니다.");
+        }
+        const line = lines.find(line => line.id === parseInt(lineId));
+        line.stations = line.stations.filter(station => station.id !== parseInt(stationId))
+        lines = [...lines];
+        console.log(lines);
+        $item.remove();
+      }).catch(error => alert(error.message));
     }
   };
 
@@ -113,7 +127,7 @@ function AdminEdge() {
         line.stations = [...line.stations, station];
         lines = [...lines];
         createSubwayEdgeModal.toggle();
-      })
+      }).catch(error => alert(error.message));
     }
   }
 
