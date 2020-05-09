@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import wooteco.subway.admin.domain.Line;
 
 public interface LineRepository extends CrudRepository<Line, Long> {
-    @Override
-    List<Line> findAll();
+	@Override
+	List<Line> findAll();
 
-    @Query("SELECT EXISTS (SELECT * FROM line WHERE name = :name) AS SUCCESS")
-    boolean existsByName(@Param("name") String name);
+	@Query("SELECT EXISTS (SELECT * FROM line WHERE name = :name) AS SUCCESS")
+	boolean existsByName(@Param("name") String name);
 }

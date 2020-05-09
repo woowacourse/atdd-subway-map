@@ -1,6 +1,6 @@
 package wooteco.subway.admin.dto;
 
-public class Request <T>{
+public class Request<T> {
 	private T content;
 
 	public Request() {

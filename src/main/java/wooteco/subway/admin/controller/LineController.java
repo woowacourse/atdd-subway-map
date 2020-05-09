@@ -22,39 +22,39 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private LineService lineService;
+	private LineService lineService;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
-    }
+	public LineController(LineService lineService) {
+		this.lineService = lineService;
+	}
 
-    @PostMapping
-    public ResponseEntity createLines(@RequestBody Request<LineRequest> view) {
-        Line line = view.getContent().toLine();
-        Line persistLine = lineService.save(line);
+	@PostMapping
+	public ResponseEntity createLines(@RequestBody Request<LineRequest> view) {
+		Line line = view.getContent().toLine();
+		Line persistLine = lineService.save(line);
 
-        return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
-    }
+		return ResponseEntity
+			.created(URI.create("/lines/" + persistLine.getId()))
+			.body(LineResponse.of(persistLine));
+	}
 
-    @GetMapping
-    public ResponseEntity showLines() {
-        List<Line> lines = lineService.showLines();
-        return ResponseEntity.ok().body(lines);
-    }
+	@GetMapping
+	public ResponseEntity showLines() {
+		List<Line> lines = lineService.showLines();
+		return ResponseEntity.ok().body(lines);
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findLineWithStationsById(id);
-        return ResponseEntity.ok().body(lineResponse);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity getLine(@PathVariable Long id) {
+		LineResponse lineResponse = lineService.findLineWithStationsById(id);
+		return ResponseEntity.ok().body(lineResponse);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody Request<LineRequest> lineRequest) {
-        lineService.updateLine(id, lineRequest.getContent().toLine());
-        return ResponseEntity.ok().build();
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody Request<LineRequest> lineRequest) {
+		lineService.updateLine(id, lineRequest.getContent().toLine());
+		return ResponseEntity.ok().build();
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity deleteLine(@PathVariable Long id) {
