@@ -36,6 +36,22 @@ public class LineStation {
         return duration;
     }
 
+    public void setStationId(Long stationId) {
+        this.stationId = stationId;
+    }
+
+    public void setPreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }

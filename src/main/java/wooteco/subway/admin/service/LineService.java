@@ -6,22 +6,20 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationAddRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
-import wooteco.subway.admin.dto.response.LineStationResponse;
+import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    private final Map<Long, Station> stationMockTable = new HashMap<>();
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -44,7 +42,7 @@ public class LineService {
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
         return LineResponse.of(line);
     }
 
@@ -65,32 +63,44 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public LineStationResponse addLineStation(Long id, LineStationAddRequest request) {
-        // TODO: 구현
-        //request의 lineName을 받아서 line을 찾고,
-        //station 두 개가 존재하는지 찾고 -> 없으면 에러
-        //한개의 lineStation 생성
-        //그걸 line에 add하고 line을 save
+    public StationsAtLineResponse addLineStation(Long id, LineStationAddRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        Station station1 = new Station(request.getPreStationName());
-        Station station2 = new Station(request.getStationName());
-
-        stationMockTable.put(1L, station1);
-        stationMockTable.put(2L, station2);
-        LineStation lineStation = new LineStation(1L, 2L, 10, 10);
-
+        LineStation lineStation = createLineStation(request);
         line.addLineStation(lineStation);
 
         Line savedLine = lineRepository.save(line);
-        return new LineStationResponse(savedLine, new HashSet<>(stationMockTable.values()));
+        Set<Station> stations = getStationsAtLine(savedLine);
+        return new StationsAtLineResponse(savedLine, stations);
+    }
+
+    private LineStation createLineStation(LineStationAddRequest request) {
+        Long preStationId = stationRepository.findIdByName(request.getPreStationName());
+        Long stationId = stationRepository.findIdByName(request.getStationName());
+        return new LineStation(preStationId, stationId, request.getDistance(), request.getDuration());
+    }
+
+    private Set<Station> getStationsAtLine(Line savedLine) {
+        Set<LineStation> lineStations = savedLine.getStations();
+        Set<Station> stations = new LinkedHashSet<>();
+
+        for (LineStation ls : lineStations) {
+            if (ls.getPreStationId() != null) {
+                stations.add(stationRepository.findById(ls.getPreStationId())
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
+            }
+            stations.add(stationRepository.findById(ls.getStationId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
+        }
+        return stations;
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(IllegalArgumentException::new);
         line.removeLineStationById(stationId);
-        stationMockTable.remove(stationId);
+        lineRepository.save(line);
+        stationRepository.deleteById(stationId);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
@@ -98,8 +108,14 @@ public class LineService {
         return new LineResponse();
     }
 
-    public List<LineStationResponse> findAllLineStations() {
-        LineStationResponse lineStationResponse = new LineStationResponse(1L, "2호선", new HashSet<>(stationMockTable.values()));
-        return Arrays.asList(lineStationResponse);
+    public List<StationsAtLineResponse> findAllLineStations() {
+        List<StationsAtLineResponse> response = new ArrayList<>();
+
+        List<Line> lines = lineRepository.findAll();
+        for (Line line : lines) {
+            Set<Station> stations = getStationsAtLine(line);
+            response.add(new StationsAtLineResponse(line.getId(), line.getName(), stations));
+        }
+        return response;
     }
 }
