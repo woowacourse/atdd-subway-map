@@ -42,10 +42,10 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long lineId, LineStationCreateRequest request) {
+    public Line addLineStation(Long lineId, LineStationCreateRequest request) {
         Line persistLine = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         persistLine.addLineStation(request.toLineStation());
-        lineRepository.save(persistLine);
+        return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

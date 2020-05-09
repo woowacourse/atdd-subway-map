@@ -13,6 +13,7 @@ function AdminLine() {
     const $subwayLineBgColorInput = document.querySelector("#subway-line-color");
     const $subwayLineAddButton = document.querySelector("#subway-line-add-btn");
     const $subwayLineConfirmButton = document.querySelector("#subway-line-create-form #submit-button");
+    const $closeModalButton = document.querySelector(".modal-close");
     const subwayLineModal = new Modal();
 
     let $selectedLine = null;
@@ -120,12 +121,21 @@ function AdminLine() {
             );
     };
 
+    const clear = () => {
+        $subwayLineNameInput.value = "";
+        $subwayStartTimeInput.value = "";
+        $subwayEndTimeInput.value = "";
+        $subwayIntervalTimeInput.value = "";
+        $subwayLineBgColorInput.value = "";
+    };
+
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onLoadSubwayLine);
         $subwayLineAddButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
         $subwayLineConfirmButton.addEventListener(EVENT_TYPE.CLICK, onClickConfirm);
+        $closeModalButton.addEventListener(EVENT_TYPE.CLICK, clear);
     };
 
     const onSelectColorHandler = event => {
