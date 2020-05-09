@@ -57,6 +57,7 @@ function AdminLine() {
     });
   };
   const onDeleteSubwayLine = event => {
+    event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
@@ -86,6 +87,7 @@ function AdminLine() {
     }
   };
   const changModeToUpdate = event => {
+    event.preventDefault();
     const $target = event.target;
     const isUpdateButton = $target.classList.contains("mdi-pencil");
     if (!isUpdateButton) {

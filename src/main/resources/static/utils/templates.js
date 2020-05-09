@@ -16,7 +16,7 @@ export const subwayLinesTemplate = line =>
          <span class="mdi mdi-pencil"></span>
       </button>
     </div>`;
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = line => `<option data-line-id=${line.id}>${line.name}</option>`;
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
       <a href="/" class="mr-2">

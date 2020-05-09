@@ -10,6 +10,12 @@ import api from "../../api/index.js";
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const createSubwayEdgeModal = new Modal();
+  const $subwayEdgeSummitButton = document.querySelector("#submit-button");
+  const $subwayEdgeLineInput = document.querySelector("#station-select-options");
+  const $subwayEdgeStationDepartName = document.querySelector("#depart-station-name");
+  const $subwayEdgeArrivalName = document.querySelector("#arrival-station-name");
+  const $subwayEdgeDistance = document.querySelector("#station-distance");
+  const $subwayEdgeDuration = document.querySelector("#arrival-time");
 
   const initSubwayLinesSlider = () => {
     api.line.get()
@@ -33,7 +39,7 @@ function AdminEdge() {
   const initSubwayLineOptions = () => {
     api.line.get()
       .then(data => {
-        const subwayLineOptionTemplate = data.map(line => optionTemplate(line.name));
+        const subwayLineOptionTemplate = data.map(line => optionTemplate(line));
         const $stationSelectOptions = document.querySelector(
           "#station-select-options"
         );
@@ -42,6 +48,23 @@ function AdminEdge() {
           subwayLineOptionTemplate
         );
       });
+  };
+
+  const onCreateStationHandler = event => {
+    const $target = event.target;
+    const isSummitButton = $target.id === "submit-button";
+    if (!isSummitButton) {
+      return;
+    }
+    const lineId = $subwayEdgeLineInput.dataset.lineId;
+    const newSubwayLineStationData = {
+      preStationId: $subwayEdgeStationDepartName.value,
+      stationId: $subwayEdgeArrivalName.value,
+      distance: $subwayEdgeDistance.value,
+      duration: $subwayEdgeDuration.value
+    };
+    api.lineStation.create(newSubwayLineStationData, lineId)
+      .then();
   };
 
   const onRemoveStationHandler = event => {
@@ -59,6 +82,10 @@ function AdminEdge() {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
+    );
+    $subwayEdgeSummitButton.addEventListener(
+      EVENT_TYPE.CLICK,
+      onCreateStationHandler
     );
   };
 
