@@ -34,9 +34,9 @@ function AdminLine() {
             const $id = $target.dataset.lineId;
             api.line.getLineById($id).then(data => {
                     const $subwayLineFirstTime = document.querySelector("#start-subway-time");
-                    $subwayLineFirstTime.innerText = data.startTime;
+                    $subwayLineFirstTime.innerText = data.startTime.substring(0, 5);
                     const $subwayLineLastTime = document.querySelector("#last-subway-time");
-                    $subwayLineLastTime.innerText = data.endTime;
+                $subwayLineLastTime.innerText = data.endTime.substring(0, 5);
                     const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
                     $subwayLineIntervalTime.innerText = data.intervalTime + "분";
                 }
@@ -74,8 +74,12 @@ function AdminLine() {
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
-        if (checkDuplication()) {
+        if (isDuplicatedLine()) {
             alert("이미 등록되어 있는 노선입니다!");
+            return;
+        }
+        if (isInvalidIntervalTime()) {
+            alert("간격은 음수나 0이 될 수가 없습니다!");
             return;
         }
 
@@ -120,6 +124,11 @@ function AdminLine() {
     };
 
     const onUpdateSubwayLine = () => {
+        if (isInvalidIntervalTime()) {
+            alert("간격은 음수나 0이 될 수가 없습니다!");
+            return;
+        }
+
         let lineId = $activeSubwayLineItem.dataset.lineId;
         const data = {
             name: $subwayLineNameInput.value,
@@ -143,13 +152,18 @@ function AdminLine() {
         $subwayLineIntervalTimeInput.value = "";
     };
 
-    const checkDuplication = () => {
+    const isDuplicatedLine = () => {
         const names = document.getElementsByClassName("subway-line-title");
         const name = $subwayLineNameInput.value;
         return Array.from(names)
             .map(nameElement => nameElement.innerText)
             .some(nameText => nameText === name);
     };
+
+    const isInvalidIntervalTime = () => {
+        const intervalTime = $subwayLineIntervalTimeInput.value;
+        return intervalTime <= 0;
+    }
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(subwayLines => subwayLines.forEach(
