@@ -20,8 +20,8 @@ public class LineStationResponse {
         this.duration = duration;
     }
 
-    public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getLineId(), lineStation.getStationId(),
+    public static LineStationResponse of(Long lineId, LineStation lineStation) {
+        return new LineStationResponse(lineId, lineStation.getStationId(),
                 lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDuration());
     }
 

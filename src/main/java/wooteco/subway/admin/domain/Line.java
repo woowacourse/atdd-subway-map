@@ -103,13 +103,12 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
         if (stations.isEmpty()) {
             stations.add(lineStation);
             return;
         }
 
-        if (lineStation.getPreStationId() == null) {
+        if (isFirstLineStation(lineStation)) {
             LineStation firstLineStation = stations.get(0);
             firstLineStation.modifyPreStationId(lineStation.getStationId());
             stations.add(0, lineStation);
@@ -120,9 +119,9 @@ public class Line {
                 .filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-        int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
 
-        if (nextLineStationIndex < stations.size() - 1) {
+        if (isInclude(nextLineStationIndex)) {
             LineStation nextLineStation = stations.get(nextLineStationIndex);
             nextLineStation.modifyPreStationId(lineStation.getStationId());
             stations.add(nextLineStationIndex, lineStation);
@@ -133,15 +132,26 @@ public class Line {
         stations.add(lineStation);
     }
 
+    private boolean isInclude(int nextLineStationIndex) {
+        return nextLineStationIndex <= stations.size() - 1;
+    }
+
+    private boolean isFirstLineStation(LineStation lineStation) {
+        return lineStation.getPreStationId() == null;
+    }
+
+    private int getNextLineStationIndex(LineStation targetLineStation) {
+        return stations.indexOf(targetLineStation) + 1;
+    }
+
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
         LineStation targetLineStation = stations.stream()
                 .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-        int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
 
-        if (targetLineStation.getPreStationId() == null) {
+        if (isFirstLineStation(targetLineStation)) {
             LineStation nextLineStation = stations.get(nextLineStationIndex);
             nextLineStation.modifyPreStationId(null);
             stations.set(nextLineStationIndex, nextLineStation);
@@ -149,7 +159,7 @@ public class Line {
             return;
         }
 
-        if (nextLineStationIndex <= stations.size() - 1) {
+        if (isInclude(nextLineStationIndex)) {
             LineStation nextLineStation = stations.get(nextLineStationIndex);
             LineStation preLineStation = stations.get(nextLineStationIndex - 1);
             nextLineStation.modifyPreStationId(preLineStation.getStationId());
@@ -162,7 +172,6 @@ public class Line {
     }
 
     public List<Long> findLineStationsId() {
-        // TODO: 구현
         return stations.stream()
                 .map(LineStation::getStationId)
                 .collect(collectingAndThen(toList(), Collections::unmodifiableList));
