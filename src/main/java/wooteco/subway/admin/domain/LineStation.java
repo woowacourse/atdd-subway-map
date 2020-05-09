@@ -1,7 +1,8 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -35,5 +36,24 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    public boolean samePreStationId(LineStation lineStation) {
+        if (Objects.isNull(preStationId)) {
+            return Objects.isNull(lineStation.preStationId);
+        }
+        return preStationId.equals(lineStation.preStationId);
+    }
+
+    public boolean isFirstNode() {
+        return Objects.isNull(preStationId);
+    }
+
+    public boolean isPreNodeOf(LineStation lineStation) {
+        return stationId.equals(lineStation.preStationId);
+    }
+
+    public boolean sameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
     }
 }

@@ -1,10 +1,12 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
     @Id
@@ -13,24 +15,22 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String bgColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
-    }
-
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor, Set<LineStation> stations) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
+        this.stations = stations;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
     }
 
     public Long getId() {
@@ -51,6 +51,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public String getBgColor() {
+        return bgColor;
     }
 
     public Set<LineStation> getStations() {
@@ -78,20 +82,74 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        if (stations.isEmpty() && lineStation.isFirstNode()) {
+            stations.add(lineStation);
+            return;
+        }
+        if (lineStation.isFirstNode()) {
+            stations.stream()
+                .filter(LineStation::isFirstNode)
+                .findFirst()
+                .orElseThrow(AssertionError::new)
+                .updatePreLineStation(lineStation.getStationId());
+        } else {
+            LineStation preNodeOfInput = stations.stream()
+                .filter(station -> station.isPreNodeOf(lineStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "ID = " + lineStation.getPreStationId() + "인 역이 존재하지 않습니다.")
+                );
+
+            stations.stream()
+                .filter(preNodeOfInput::isPreNodeOf)
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        }
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation nodeToRemove = stations.stream()
+            .filter(lineStation -> lineStation.sameStationId(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "ID = " + stationId + "인 역이 존재하지 않습니다.")
+            );
+
+        stations.stream()
+            .filter(nodeToRemove::isPreNodeOf)
+            .findFirst()
+            .ifPresent(lineStation -> lineStation.updatePreLineStation(nodeToRemove.getPreStationId()));
+
+        stations.remove(nodeToRemove);
     }
 
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public List<Long> getSortedStationsId() {
+        List<Long> sortedStationsId = new ArrayList<>();
+
+        LineStation preNode = stations.stream()
+            .filter(LineStation::isFirstNode)
+            .findFirst()
+            .orElseThrow(AssertionError::new);
+        sortedStationsId.add(preNode.getStationId());
+
+        while (sortedStationsId.size() < stations.size()) {
+            LineStation currentNode = stations.stream()
+                .filter(preNode::isPreNodeOf)
+                .findFirst()
+                .orElseThrow(AssertionError::new);
+            sortedStationsId.add(currentNode.getStationId());
+            preNode = currentNode;
+        }
+
+        return sortedStationsId;
     }
 }
