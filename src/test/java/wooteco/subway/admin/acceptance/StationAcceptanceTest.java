@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -59,9 +58,9 @@ public class StationAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/stations").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -69,18 +68,18 @@ public class StationAcceptanceTest {
     static List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/stations").
+                get("/stations").
                 then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteStation(Long id) {
         given().
-        when().
+                when().
                 delete("/stations/" + id).
-        then().
+                then().
                 log().all();
     }
 }

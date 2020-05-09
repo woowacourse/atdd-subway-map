@@ -1,6 +1,5 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
