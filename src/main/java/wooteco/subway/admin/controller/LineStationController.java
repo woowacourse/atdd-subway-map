@@ -18,7 +18,7 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/edges")
 public class LineStationController {
-    private LineService lineService;
+    private final LineService lineService;
 
     public LineStationController(LineService lineService) {
         this.lineService = lineService;
@@ -28,7 +28,8 @@ public class LineStationController {
     public ResponseEntity create(@PathVariable Long lineId,
         @RequestBody LineStationCreateRequest request) {
         LineResponse lineResponse = lineService.addLineStation(lineId, request);
-        return ResponseEntity.created(URI.create("/edges/" + lineId))
+        return ResponseEntity
+            .created(URI.create("/edges/" + lineId))
             .body(lineResponse);
     }
 
