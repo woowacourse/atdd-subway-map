@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -103,8 +104,8 @@ public class Line {
         }
 
         stations.stream()
-            .filter(existLineStation -> existLineStation.getPreStationId()
-                == lineStation.getPreStationId())
+            .filter(existLineStation -> Objects.equals(existLineStation.getPreStationId()
+                , lineStation.getPreStationId()))
             .findFirst()
             .ifPresent(existLineStation -> existLineStation.updatePreLineStation(
                 lineStation.getStationId()));
@@ -113,11 +114,11 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         LineStation deleteTarget = stations.stream()
-            .filter(station -> station.getStationId() == stationId)
+            .filter(station -> station.getStationId().equals(stationId))
             .findFirst()
             .orElseThrow(NoSuchElementException::new);
         stations.stream()
-            .filter(station -> station.getPreStationId() == stationId)
+            .filter(station -> stationId.equals(station.getPreStationId()))
             .findFirst()
             .ifPresent(station -> station.updatePreLineStation(deleteTarget.getPreStationId()));
         stations.remove(deleteTarget);
@@ -128,14 +129,14 @@ public class Line {
         LineStation startStation = stations.stream()
             .filter(station -> station.getPreStationId() == null)
             .findFirst()
-            .orElseThrow(() -> new RuntimeException());
+            .orElseThrow(RuntimeException::new);
 
         linesStationsId.add(startStation.getStationId());
 
         while (linesStationsId.size() != stations.size()) {
             linesStationsId.add(stations.stream()
-                .filter(station -> station.getPreStationId() == linesStationsId.get(
-                    linesStationsId.size() - 1))
+                .filter(station -> linesStationsId.get(
+                    linesStationsId.size() - 1).equals(station.getPreStationId()))
                 .findFirst()
                 .map(LineStation::getStationId)
                 .orElseThrow(NoSuchElementException::new));
