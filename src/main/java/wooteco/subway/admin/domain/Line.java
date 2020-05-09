@@ -155,8 +155,6 @@ public class Line {
         }
 
         stations.remove(targetLineStation);
-
-
     }
 
     public List<Long> getLineStationsId() {
