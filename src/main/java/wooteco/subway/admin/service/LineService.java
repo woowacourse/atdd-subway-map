@@ -75,6 +75,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + lineId));
         line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {

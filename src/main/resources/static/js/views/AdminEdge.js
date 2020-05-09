@@ -7,6 +7,7 @@ import api from '../../api/index.js';
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $createButton = document.querySelector("#submit-button");
+  const $stationListContainer = document.querySelector(".line-station-list-container");
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
@@ -46,7 +47,15 @@ function AdminEdge() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      const $listItem = $target.closest(".list-item");
+      const lineId = $listItem.closest(".line-info-container").dataset.lineId;
+      api.line.deleteLineStation(lineId, $listItem.dataset.stationId).then(response => {
+        if (response.ok) {
+          $listItem.remove();
+        } else {
+          alert(response);
+        }
+      })
     }
   };
 
@@ -58,12 +67,12 @@ function AdminEdge() {
     const depart = stations.filter(value => value.name === $departStation.value)[0];
     const arrival = stations.filter(value => value.name === $arrivalStation.value)[0];
 
-    if (!depart || !arrival) {
+    if (!arrival) {
       alert("존재하지 않는 지하철 역입니다! 등록후 이용하세요. 😊");
     }
 
     const createRequest = {
-      preStationId: depart.id,
+      preStationId: depart ? depart.id : null,
       stationId: arrival.id,
       distance: 3,
       duration: 3
@@ -92,7 +101,10 @@ function AdminEdge() {
       EVENT_TYPE.CLICK,
       onCreateEdgeHandler
     )
-
+    $stationListContainer.addEventListener(
+      EVENT_TYPE.CLICK,
+      onRemoveStationHandler
+    );
   };
 
   this.init = () => {

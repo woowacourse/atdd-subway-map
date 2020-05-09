@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,12 +26,5 @@ public class MockLineController {
             .map(StationResponse::of)
             .collect(toList());
         return ResponseEntity.ok(stationResponses);
-    }
-
-    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
-    public ResponseEntity excludeStationFromLine(@PathVariable Long lineId,
-        @PathVariable Long stationId) {
-        stations.removeIf(station -> station.getName().equals("석촌역"));
-        return ResponseEntity.noContent().build();
     }
 }

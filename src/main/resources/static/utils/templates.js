@@ -48,10 +48,10 @@ export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
     .map(station => listItemTemplate(station))
     .join("");
-  return `<div class="inline-block w-1/2 px-2">
+  return `<div class="line-info-container inline-block w-1/2 px-2" data-line-id="${line.id}">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
-              <div class="overflow-y-auto height-90">
+              <div class="line-station-list-container overflow-y-auto height-90">
               ${stationsTemplate}
               </div>
             </div>
