@@ -26,11 +26,29 @@ function AdminLine() {
       lastTime: $subwayLineLastTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
     };
-    console.log("#1" + data);
-    const $id = document.querySelector('#modal-update-condition').getAttribute("value");
+    let $id = document.querySelector('#modal-update-condition').getAttribute("value");
     if ($id !== "") {
-      console.log("#2" + data);
-      api.line.update(data, $id).then();
+      fetch(`/api/lines/${$id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          name: $subwayLineNameInput.value,
+          bgColor: $subwayLineColorInput.value,
+          firstTime: $subwayLineFirstTimeInput.value + ":00",
+          lastTime: $subwayLineLastTimeInput.value + ":00",
+          intervalTime: $subwayLineIntervalTimeInput.value
+        }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(data => {
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayLineFirstTimeInput.value = "";
+        $subwayLineLastTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
+        document.querySelector('#modal-update-condition').value = "";
+      })
+
     } else {
       api.line.create(data).then(data => {
         $subwayLineList.insertAdjacentHTML(
@@ -45,8 +63,6 @@ function AdminLine() {
         $subwayLineIntervalTimeInput.value = "";
       });
     }
-    const v = document.querySelector(".mdi mdi-pencil");
-    v.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
   };
 
   const onDeleteSubwayLine = event => {
@@ -63,7 +79,6 @@ function AdminLine() {
 
   const onUpdateSubwayLine = event => {
     event.stopPropagation();
-    alert("");
     const $target = event.target;
     const $id = $target.closest('.subway-line-item').getAttribute("value");
 
@@ -80,6 +95,11 @@ function AdminLine() {
         document.querySelector('#subway-line-color').value = data.bgColor;
       });
       subwayLineModal.toggle();
+      document.querySelector('#subway-line-name').value = "";
+      document.querySelector('#first-time').value = "";
+      document.querySelector('#last-time').value = "";
+      document.querySelector('#interval-time').value = data.intervalTime;
+      document.querySelector('#subway-line-color').value = data.bgColor;
     }
   };
 
@@ -103,6 +123,9 @@ function AdminLine() {
     event.stopPropagation();
     event.preventDefault();
     const $id = event.target.getAttribute("value");
+    if ($id === null) {
+      return;
+    }
     api.line.getOneLine($id).then(data => {
       document.querySelector('#start-time').textContent = data.startTime.substring(0, 5);
       document.querySelector('#end-time').textContent = data.endTime.substring(0, 5);
@@ -112,8 +135,8 @@ function AdminLine() {
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadDetailedInfo);
-    // $aaa.addEventListener(EVENT_TYPE.CLICK, onReadDetailedInfo);
     $createSubwayLineButton.addEventListener(
       EVENT_TYPE.CLICK,
       onCreateSubwayLine
