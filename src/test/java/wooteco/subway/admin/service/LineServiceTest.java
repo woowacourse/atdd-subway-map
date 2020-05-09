@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,6 @@ public class LineServiceTest {
     void setUp() {
         line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository, stationRepository);
-
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
@@ -117,7 +116,7 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"),
+        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"),
             new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);

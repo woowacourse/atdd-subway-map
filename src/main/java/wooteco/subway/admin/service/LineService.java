@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
@@ -73,9 +74,8 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponses(List<Long> stationsId) {
-        return stationsId.stream()
-            .map(stationId -> stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException()))
+        List<Station> stations = stationRepository.findAllById(stationsId);
+        return stations.stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
     }

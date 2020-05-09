@@ -1,14 +1,18 @@
 const BASE_URL = "localhost:8080";
 
 const METHOD = {
-  PUT() {
+  PUT(data) {
     return {
-      method: "PUT"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     };
   },
   DELETE() {
     return {
-      method: "DELETE"
+      method: "DELETE",
     };
   },
   POST(data) {
@@ -17,33 +21,53 @@ const METHOD = {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        content: data
-      })
+      body: JSON.stringify(data),
     };
   }
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config);
 
   const station = {
-    get() {
-      request(`${BASE_URL}/stations`);
+    getAll() {
+      return request(`/stations`);
     },
-    create(data) {
-      request(`${BASE_URL}/station`, METHOD.POST(data));
+    getById(id) {
+      return request(`/stations/${id}`);
     },
-    update(data) {
-      request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+    create(stationRequest) {
+      return request(`/station`, METHOD.POST(stationRequest));
+    },
+    update(stationRequest, id) {
+      return request(`/station/${id}`, METHOD.PUT(stationRequest));
     },
     delete(id) {
-      request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+      return request(`/station/${id}`, METHOD.DELETE);
+    }
+  };
+
+  const line = {
+    getAll() {
+      return request(`/lines`);
+    },
+    getById(id) {
+      return request(`/lines/${id}`);
+    },
+    create(lineRequest) {
+      return request(`/lines`, METHOD.POST(lineRequest));
+    },
+    update(lineRequest, id) {
+      return request(`/lines/${id}`, METHOD.PUT(lineRequest));
+    },
+    delete(id) {
+      return request(`/lines/${id}`, METHOD.DELETE());
     }
   };
 
   return {
-    station
+    station,
+    line,
   };
 })();
 

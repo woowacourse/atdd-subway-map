@@ -5,9 +5,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
     @Id
@@ -17,7 +18,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    @MappedCollection(idColumn = "line", keyColumn = "index")
+    private List<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,6 +33,7 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.stations = new LinkedList<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -64,7 +67,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -97,40 +100,46 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
+        if (Objects.isNull(lineStation.getPreStationId())) {
+            stations.add(0, lineStation);
+            if (stations.size() != 1) {
+                LineStation firstLineStation = stations.get(1);
+                firstLineStation.updatePreLineStation(lineStation.getStationId());
+            }
+            return;
+        }
+        int insertIndex = findPreStationIndex(lineStation.getPreStationId()) + 1;
+        if (stations.size() != insertIndex) {
+            LineStation existing = stations.get(insertIndex);
+            existing.updatePreLineStation(lineStation.getStationId());
+        }
+        stations.add(insertIndex, lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        Long preStation = null;
-        for (LineStation lineStation : stations) {
-            if (lineStation.isBaseStation(stationId)) {
-                preStation = lineStation.getPreStationId();
-                stations.remove(lineStation);
-            }
+        int index = findPreStationIndex(stationId);
+        if (stations.size() != index + 1) {
+            LineStation lineStation = stations.get(index);
+            stations.get(index + 1).updatePreLineStation(lineStation.getPreStationId());
         }
-        for (LineStation lineStation : stations) {
-            if (lineStation.isPreStation(stationId)) {
-                if (preStation == null) {
-                    stations.remove(lineStation);
-                } else {
-                    lineStation.updatePreLineStation(preStation);
-                }
-                break;
-            }
-        }
+        stations.remove(index);
     }
 
     public List<Long> getLineStationsId() {
         LinkedList<Long> stations = new LinkedList<>();
         for (LineStation lineStation : this.stations) {
-            Long preStationId = lineStation.getPreStationId();
-            Long stationId = lineStation.getStationId();
-            if (!stations.contains(preStationId)) {
-                stations.add(preStationId);
-            }
-            int index = stations.indexOf(preStationId);
-            stations.add(index + 1, stationId);
+            stations.add(lineStation.getStationId());
         }
         return new ArrayList<>(stations);
     }
+
+    private int findPreStationIndex(Long stationId) {
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i).isBaseStation(stationId)) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("존재하지 않는 이전역입니다.");
+    }
+
 }

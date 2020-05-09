@@ -51,11 +51,7 @@ public class LineStation {
     }
 
     public boolean isBaseStation(Long stationId) {
-        return this.stationId == stationId;
-    }
-
-    public boolean isPreStation(Long preStationId) {
-        return this.preStationId == preStationId;
+        return this.stationId.equals(stationId);
     }
 
     public void updatePreLineStation(Long preStationId) {

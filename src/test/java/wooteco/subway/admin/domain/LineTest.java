@@ -16,6 +16,7 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
@@ -29,11 +30,25 @@ public class LineTest {
         assertThat(stationIds.get(2)).isEqualTo(3L);
     }
 
+    @Test
+    void addLineStation() {
+        line.addLineStation(new LineStation(null, 4L, 10, 10));
+        List<Long> stationIds = line.getLineStationsId();
+        assertThat(stationIds).size().isEqualTo(4);
+    }
+
+    @Test
+    void addLineStationBetweenTwo() {
+        line.addLineStation(new LineStation(1L, 4L, 10, 10));
+        List<Long> stationIds = line.getLineStationsId();
+        assertThat(stationIds).size().isEqualTo(4);
+    }
+
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getStations()).hasSize(2);
     }
 }
