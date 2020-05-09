@@ -1,4 +1,4 @@
-const BASE_URL = "localhost:8080";
+const BASE_URL = "http://localhost:8080";
 
 const METHOD = {
     PUT(data) {
@@ -47,16 +47,13 @@ const api = (() => {
 
     const station = {
         get() {
-            request(`${BASE_URL}/stations`);
+            return request(`/api/stations`);
         },
         create(data) {
-            request(`${BASE_URL}/station`, METHOD.POST(data));
-        },
-        update(data) {
-            request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+            return fetch(`/api/stations`, METHOD.POST(data));
         },
         delete(id) {
-            request(`${BASE_URL}/station/${id}`, METHOD.DELETE);
+            return fetch(`/api/stations/${id}`, METHOD.DELETE());
         }
     };
 
