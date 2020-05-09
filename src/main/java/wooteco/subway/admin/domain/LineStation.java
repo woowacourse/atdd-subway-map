@@ -20,6 +20,14 @@ public class LineStation {
         this.duration = duration;
     }
 
+    public boolean isFirstLineStation() {
+        return preStationId == null;
+    }
+
+    public void setPreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }

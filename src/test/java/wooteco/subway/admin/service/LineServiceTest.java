@@ -123,6 +123,6 @@ public class LineServiceTest {
 
         LineResponse lineResponse = lineService.findLineWithStationsBy(1L);
 
-        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getLineStations()).hasSize(3);
     }
 }

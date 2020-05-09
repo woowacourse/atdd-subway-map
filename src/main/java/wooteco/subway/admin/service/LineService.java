@@ -11,46 +11,51 @@ import java.util.List;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+	private LineRepository lineRepository;
+	private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-    }
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+	}
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
-    }
+	public Line save(Line line) {
+		return lineRepository.save(line);
+	}
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
-    }
+	public List<Line> showLines() {
+		return lineRepository.findAll();
+	}
 
-    public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+	public Line updateLine(Long id, Line line) {
+		Line persistLine = lineRepository.findById(id)
+				.orElseThrow(RuntimeException::new);
 
-        persistLine.update(line);
-        return lineRepository.save(persistLine);
-    }
+		persistLine.update(line);
+		return lineRepository.save(persistLine);
+	}
 
-    public void deleteLineBy(Long id) {
-        lineRepository.deleteById(id);
-    }
+	public void deleteLineBy(Long id) {
+		lineRepository.deleteById(id);
+	}
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
-    }
+	public void addLineStation(Long id, LineStationCreateRequest request) {
+		if (request.getPreStationId() == null) {
+			Line persistLine = lineRepository.findById(id)
+					.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-    }
+			persistLine.addStationOnFirst(request.toLineStation());
+		}
+	}
 
-    public LineResponse findLineWithStationsBy(Long id) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+	public void removeLineStation(Long lineId, Long stationId) {
+		// TODO: 구현
+	}
 
-        return LineResponse.of(persistLine);
-    }
+	public LineResponse findLineWithStationsBy(Long id) {
+		Line persistLine = lineRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+
+		return LineResponse.of(persistLine);
+	}
 }
