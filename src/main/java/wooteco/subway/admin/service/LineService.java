@@ -37,8 +37,9 @@ public class LineService {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public List<LineResponse> showLines() {
+		List<Line> lines = lineRepository.findAll();
+		return LineResponse.listOf(lines);
 	}
 
 	public LineResponse updateLine(Long id, Line line) {
@@ -75,6 +76,18 @@ public class LineService {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
 
+		return createLineResponse(line);
+	}
+
+	public List<LineResponse> showLinesWithStations() {
+		List<Line> lines = lineRepository.findAll();
+
+		return lines.stream()
+			.map(this::createLineResponse)
+			.collect(Collectors.toList());
+	}
+
+	private LineResponse createLineResponse(Line line) {
 		List<Long> stationIds = line.getStations().stream()
 			.map(LineStation::getStationId)
 			.collect(Collectors.toList());
