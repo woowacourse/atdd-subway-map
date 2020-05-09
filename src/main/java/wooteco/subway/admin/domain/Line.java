@@ -2,13 +2,14 @@ package wooteco.subway.admin.domain;
 
 import static java.util.stream.Collectors.*;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
-import org.springframework.lang.Nullable;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
     @Id
@@ -18,14 +19,15 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<LineStation> stations = new ArrayList<>();
+    private final List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -35,7 +37,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -130,7 +133,7 @@ public class Line {
     //입력한 lineStation의 이전 노드 위치를 반환
     private LineStation prev(LineStation lineStation) {
         return stations.stream()
-            .filter(station-> station.getStationId()
+            .filter(station -> station.getStationId()
                 .equals(lineStation.getPreStationId()))
             .findAny()
             .orElse(null);
@@ -139,8 +142,8 @@ public class Line {
     //입력한 lineStation의 다음 노드 위치를 반환
     private Optional<LineStation> next(LineStation lineStation) {
         return stations.stream()
-            .filter(station-> Objects.nonNull(station.getPreStationId()))
-            .filter(station-> station.getPreStationId()
+            .filter(station -> Objects.nonNull(station.getPreStationId()))
+            .filter(station -> station.getPreStationId()
                 .equals(lineStation.getPreStationId()))
             .findAny();
     }

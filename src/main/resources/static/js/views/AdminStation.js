@@ -71,11 +71,11 @@ function AdminStation() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const deleteId = $target.closest(".list-item").dataset.stationId;
-      fetch('/stations/'+deleteId, {
+      fetch('/stations/' + deleteId, {
         method: 'DELETE'
-      }).then(()=>{
+      }).then(() => {
         $target.closest(".list-item").remove();
-      }).catch(error =>{
+      }).catch(error => {
         alert(error);
         throw new Error();
       });

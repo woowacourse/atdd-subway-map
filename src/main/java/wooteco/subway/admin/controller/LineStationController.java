@@ -1,8 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
@@ -46,12 +42,14 @@ public class LineStationController {
             stationId, 0, 0);
         LineStationResponse lineStationResponse = lineService.addLineStation(requestWithId);
 
-        return ResponseEntity.created(URI.create("/lineStations/" + request.getLineId() + "/" + stationId))
+        return ResponseEntity.created(
+            URI.create("/lineStations/" + request.getLineId() + "/" + stationId))
             .body(lineStationResponse);
     }
 
     @DeleteMapping("/delete/{lineId}/{stationId}")
-    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }

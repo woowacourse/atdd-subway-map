@@ -1,13 +1,11 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
+import { ERROR_MESSAGE, EVENT_TYPE } from "../../utils/constants.js";
 import {
-  subwayLinesTemplate,
+  colorSelectOptionTemplate,
   innerSubwayLinesTemplate,
-  colorSelectOptionTemplate
+  subwayLinesTemplate
 } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
-import { ERROR_MESSAGE } from '../../utils/constants.js';
 
 
 function AdminLine() {
@@ -76,7 +74,7 @@ function AdminLine() {
 
     validate(data);
 
-    if(updateId){
+    if (updateId) {
       updateLine(data);
     } else {
       createLine(data);
@@ -128,12 +126,12 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const id = $target.parentElement.parentElement.firstElementChild.innerHTML;
-      fetch("/lines/"+id, {
+      fetch("/lines/" + id, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(()=>{
+      }).then(() => {
         $target.closest(".subway-line-item").remove();
       });
     }
@@ -143,18 +141,20 @@ function AdminLine() {
     const $target = event.target;
     const isSubwayLineItem = $target.classList.contains("subway-line-item");
     if (isSubwayLineItem) {
-      const subwayLine ={
+      const subwayLine = {
         id: $target.firstElementChild.innerHTML.trim()
       };
-      fetch("/lines/"+subwayLine.id, {
-        method:'GET',
-        headers:{
-          'Content-Type' : 'application/json; charset=utf-8'
+      fetch("/lines/" + subwayLine.id, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
         }
-      }).then(response=>response.json())
-      .then(jsonResponse=>{
-        document.querySelector("#first-time-display").innerText = jsonResponse.startTime.toString().substr(0, 5);
-        document.querySelector("#last-time-display").innerText = jsonResponse.endTime.toString().substr(0, 5);
+      }).then(response => response.json())
+      .then(jsonResponse => {
+        document.querySelector("#first-time-display").innerText = jsonResponse.startTime.toString()
+        .substr(0, 5);
+        document.querySelector("#last-time-display").innerText = jsonResponse.endTime.toString()
+        .substr(0, 5);
         document.querySelector("#interval-time-display").innerText = jsonResponse.intervalTime + "분";
       });
     }
@@ -182,11 +182,11 @@ function AdminLine() {
         'Content-type': 'application/json'
       }
     }).then(response => response.json())
-    .then(jsonResponse=>{
+    .then(jsonResponse => {
       for (const line of jsonResponse) {
         $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
       }
-    }).catch(error=>{
+    }).catch(error => {
       alert(error);
     });
 
@@ -216,8 +216,8 @@ function AdminLine() {
       "#subway-line-color-select-container"
     );
     const colorSelectTemplate = subwayLineColorOptions
-      .map((option, index) => colorSelectOptionTemplate(option, index))
-      .join("");
+    .map((option, index) => colorSelectOptionTemplate(option, index))
+    .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
     $colorSelectContainer.addEventListener(
       EVENT_TYPE.CLICK,

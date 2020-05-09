@@ -7,11 +7,11 @@
  * https://github.com/polonel/Snackbar/blob/master/LICENSE
  */
 
-(function(root, factory) {
+(function (root, factory) {
   "use strict";
 
   if (typeof define === "function" && define.amd) {
-    define([], function() {
+    define([], function () {
       return (root.Snackbar = factory());
     });
   } else if (typeof module === "object" && module.exports) {
@@ -19,7 +19,7 @@
   } else {
     root.Snackbar = factory();
   }
-})(this, function() {
+})(this, function () {
   var Snackbar = {};
 
   Snackbar.current = null;
@@ -37,20 +37,22 @@
     pos: "bottom-left",
     duration: 5000,
     customClass: "",
-    onActionClick: function(element) {
+    onActionClick: function (element) {
       element.style.opacity = 0;
     },
-    onSecondButtonClick: function(element) {},
-    onClose: function(element) {}
+    onSecondButtonClick: function (element) {
+    },
+    onClose: function (element) {
+    }
   };
 
-  Snackbar.show = function($options) {
+  Snackbar.show = function ($options) {
     var options = Extend(true, $defaults, $options);
 
     if (Snackbar.current) {
       Snackbar.current.style.opacity = 0;
       setTimeout(
-        function() {
+        function () {
           var $parent = this.parentElement;
           if ($parent)
             // possible null if too many/fast Snackbars
@@ -79,7 +81,7 @@
       secondButton.className = "action";
       secondButton.innerHTML = options.secondButtonText;
       secondButton.style.color = options.secondButtonTextColor;
-      secondButton.addEventListener("click", function() {
+      secondButton.addEventListener("click", function () {
         options.onSecondButtonClick(Snackbar.snackbar);
       });
       Snackbar.snackbar.appendChild(secondButton);
@@ -90,7 +92,7 @@
       actionButton.className = "action";
       actionButton.innerHTML = options.actionText;
       actionButton.style.color = options.actionTextColor;
-      actionButton.addEventListener("click", function() {
+      actionButton.addEventListener("click", function () {
         options.onActionClick(Snackbar.snackbar);
       });
       Snackbar.snackbar.appendChild(actionButton);
@@ -98,7 +100,7 @@
 
     if (options.duration) {
       setTimeout(
-        function() {
+        function () {
           if (Snackbar.current === this) {
             Snackbar.current.style.opacity = 0;
             // When natural remove event occurs let's move the snackbar to its origins
@@ -112,7 +114,7 @@
 
     Snackbar.snackbar.addEventListener(
       "transitionend",
-      function(event, elapsed) {
+      function (event, elapsed) {
         if (event.propertyName === "opacity" && this.style.opacity === "0") {
           if (typeof options.onClose === "function") options.onClose(this);
 
@@ -137,7 +139,7 @@
       options.pos;
   };
 
-  Snackbar.close = function() {
+  Snackbar.close = function () {
     if (Snackbar.current) {
       Snackbar.current.style.opacity = 0;
     }
@@ -145,7 +147,7 @@
 
   // Pure JS Extend
   // http://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
-  var Extend = function() {
+  var Extend = function () {
     var extended = {};
     var deep = false;
     var i = 0;
@@ -156,7 +158,7 @@
       i++;
     }
 
-    var merge = function(obj) {
+    var merge = function (obj) {
       for (var prop in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, prop)) {
           if (

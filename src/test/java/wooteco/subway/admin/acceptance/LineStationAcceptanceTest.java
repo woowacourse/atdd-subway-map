@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.print.attribute.standard.Media;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,13 +30,13 @@ public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     /**
@@ -68,8 +66,10 @@ public class LineStationAcceptanceTest {
         StationResponse stationResponse2 = createStation("디디역");
 
         //when
-        LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null, stationResponse1.getName());
-        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(), stationResponse1.getName(), stationResponse2.getName());
+        LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null,
+            stationResponse1.getName());
+        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(),
+            stationResponse1.getName(), stationResponse2.getName());
 
         //then
         List<LineResponse> lines = getLineStations();
@@ -108,25 +108,26 @@ public class LineStationAcceptanceTest {
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+            when().
             delete("lineStations/delete/" + lineId + "/" + stationId).
-        then().
+            then().
             log().all().
             statusCode(HttpStatus.OK.value());
     }
 
     private List<LineResponse> getLineStations() {
         return given().
-        when().
+            when().
             get("/lineStations").
-        then().
+            then().
             log().all().
             statusCode(HttpStatus.OK.value()).
             extract().jsonPath().getList(".", LineResponse.class);
 
     }
 
-    private LineStationResponse createLineStation(Long lineId, String preStationName, String stationName) {
+    private LineStationResponse createLineStation(Long lineId, String preStationName,
+        String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("lineId", String.valueOf(lineId));
         params.put("preStationName", preStationName);
@@ -138,9 +139,9 @@ public class LineStationAcceptanceTest {
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+            when().
             post("/lineStations").
-        then().
+            then().
             log().all().
             statusCode(HttpStatus.CREATED.value())
             .extract().as(LineStationResponse.class);

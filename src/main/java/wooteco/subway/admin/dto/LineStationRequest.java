@@ -12,7 +12,8 @@ public class LineStationRequest {
     public LineStationRequest() {
     }
 
-    public LineStationRequest(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
+    public LineStationRequest(Long lineId, Long preStationId, Long stationId, int distance,
+        int duration) {
         this.lineId = lineId;
         this.preStationId = preStationId;
         this.stationId = stationId;
@@ -20,7 +21,7 @@ public class LineStationRequest {
         this.duration = duration;
     }
 
-    public LineStation toEntity(){
+    public LineStation toEntity() {
         return new LineStation(this.preStationId, this.stationId);
     }
 

@@ -59,8 +59,8 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 
 export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
-    .map(station => listItemTemplate(station, line.id))
-    .join("");
+  .map(station => listItemTemplate(station, line.id))
+  .join("");
   return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} line-info lint-title px-4 py-1 data-line-id='${line.id}'">${line.name}</div>

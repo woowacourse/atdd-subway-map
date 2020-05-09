@@ -1,15 +1,13 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -26,7 +24,9 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+        int intervalTime, String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt,
+        List<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -44,7 +44,7 @@ public class LineResponse {
             line.getUpdatedAt(), new ArrayList<>());
     }
 
-    public static LineResponse of(Line line, List<Station> stations){
+    public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
             line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(),
             line.getUpdatedAt(), stations);
@@ -52,8 +52,8 @@ public class LineResponse {
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
