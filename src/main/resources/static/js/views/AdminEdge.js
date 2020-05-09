@@ -12,7 +12,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
   const $subwayEdgeSummitButton = document.querySelector("#submit-button");
   const $subwayEdgeLineInput = document.querySelector("#station-select-options");
-  const $subwayEdgeStationDepartName = document.querySelector("#depart-station-name");
+  const $subwayEdgeDepartName = document.querySelector("#depart-station-name");
   const $subwayEdgeArrivalName = document.querySelector("#arrival-station-name");
   const $subwayEdgeDistance = document.querySelector("#station-distance");
   const $subwayEdgeDuration = document.querySelector("#arrival-time");
@@ -20,20 +20,22 @@ function AdminEdge() {
   const initSubwayLinesSlider = () => {
     api.line.get()
       .then(data => {
-        data.map(line => subwayLinesItemTemplate(line)).join("");
+        $subwayLinesSlider.innerHTML= data.map(line => subwayLinesItemTemplate(line)).join("");
+      })
+      .then(() => {
+        tns({
+          container: ".subway-lines-slider",
+          loop: true,
+          slideBy: "page",
+          speed: 400,
+          autoplayButtonOutput: false,
+          mouseDrag: true,
+          lazyload: true,
+          controlsContainer: "#slider-controls",
+          items: 1,
+          edgePadding: 25
+        });
       });
-    tns({
-      container: ".subway-lines-slider",
-      loop: true,
-      slideBy: "page",
-      speed: 400,
-      autoplayButtonOutput: false,
-      mouseDrag: true,
-      lazyload: true,
-      controlsContainer: "#slider-controls",
-      items: 1,
-      edgePadding: 25
-    });
   };
 
   const initSubwayLineOptions = () => {
@@ -51,30 +53,52 @@ function AdminEdge() {
   };
 
   const onCreateStationHandler = event => {
+    event.preventDefault();
     const $target = event.target;
     const isSummitButton = $target.id === "submit-button";
     if (!isSummitButton) {
       return;
     }
-    const lineId = $subwayEdgeLineInput.dataset.lineId;
+    api.station.get()
+      .then(stations => {
+        const preStation = stations.find(station => station.name === $subwayEdgeDepartName.value);
+        const station = stations.find(station => station.name === $subwayEdgeArrivalName.value);
+        if (!station || !preStation) {
+          alert("해당되는 역이 존재하지 않습니다.");
+          return;
+        }
+        createStation(preStation.id, station.id);
+      })
+  };
+
+  const createStation = (preStationId, stationId) => {
+    const lineId = $subwayEdgeLineInput.value;
     const newSubwayLineStationData = {
-      preStationId: $subwayEdgeStationDepartName.value,
-      stationId: $subwayEdgeArrivalName.value,
+      preStationId: preStationId,
+      stationId: stationId,
       distance: $subwayEdgeDistance.value,
       duration: $subwayEdgeDuration.value
     };
     api.lineStation.create(newSubwayLineStationData, lineId)
-      .then();
+      .then(() => {
+        $subwayEdgeDepartName.value = "";
+        $subwayEdgeArrivalName.value = "";
+        $subwayEdgeDistance.value = "";
+        $subwayEdgeDuration.value = "";
+        initSubwayLinesSlider();
+        createSubwayEdgeModal.toggle();
+      });
   };
 
   const onRemoveStationHandler = event => {
+    event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const lineId = $target.closest(".tns-item").dataset.lineId;
       const stationId = $target.closest(".list-item").dataset.stationId;
       api.lineStation.delete(lineId, stationId)
-        .then(() => $target.closest(".list-item").remove());
+        .then(() => initSubwayLinesSlider());
     }
   };
 
