@@ -1,20 +1,19 @@
 package wooteco.subway.admin.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -36,7 +35,7 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "초록이", "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+		line = new Line(1L, "초록이", "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
 		lineService = new LineService(lineRepository, stationRepository);
 
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -125,6 +124,6 @@ public class LineServiceTest {
 
 		LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
-		assertThat(lineResponse.getStation()).hasSize(3);
+		assertThat(lineResponse.getStations()).hasSize(3);
 	}
 }

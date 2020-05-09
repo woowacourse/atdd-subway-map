@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.admin.domain.Line;
 
 public class LineResponse {
+
 	private Long id;
 	private String name;
 	private String color;
@@ -18,14 +19,14 @@ public class LineResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private List<StationResponse> station;
+	private List<StationResponse> stations;
 
 	public LineResponse() {
 	}
 
 	public LineResponse(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
 		int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
-		List<StationResponse> station) {
+		List<StationResponse> stations) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
@@ -34,7 +35,7 @@ public class LineResponse {
 		this.intervalTime = intervalTime;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.station = new ArrayList<>(station);
+		this.stations = new ArrayList<>(stations);
 	}
 
 	public static LineResponse of(Line line) {
@@ -79,8 +80,8 @@ public class LineResponse {
 		return intervalTime;
 	}
 
-	public List<StationResponse> getStation() {
-		return station;
+	public List<StationResponse> getStations() {
+		return stations;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -108,14 +109,14 @@ public class LineResponse {
 			Objects.equals(endTime, that.endTime) &&
 			Objects.equals(createdAt, that.createdAt) &&
 			Objects.equals(updatedAt, that.updatedAt) &&
-			Objects.equals(station, that.station);
+			Objects.equals(stations, that.stations);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects
 			.hash(id, name, color, startTime, endTime, intervalTime, createdAt, updatedAt,
-				station);
+				stations);
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class LineResponse {
 			", intervalTime=" + intervalTime +
 			", createdAt=" + createdAt +
 			", updatedAt=" + updatedAt +
-			", stations=" + station +
+			", stations=" + stations +
 			'}';
 	}
 }

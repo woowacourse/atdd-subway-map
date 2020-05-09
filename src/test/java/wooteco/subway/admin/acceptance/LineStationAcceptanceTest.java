@@ -50,10 +50,10 @@ public class LineStationAcceptanceTest {
 		addStationToLine(line.getId(), station.getId());
 		// Then
 		LineResponse lineResponse = findStationsByLineId(line.getId());
-		assertThat(lineResponse.getStation()).isNotNull();
+		assertThat(lineResponse.getStations()).isNotNull();
 
 		// When
-		List<StationResponse> stations = findStationsByLineId(line.getId()).getStation();
+		List<StationResponse> stations = findStationsByLineId(line.getId()).getStations();
 		// Then
 		assertThat(stations.size()).isNotEqualTo(0);
 		assertThat(stations).contains(station);
@@ -61,11 +61,11 @@ public class LineStationAcceptanceTest {
 		// When
 		deleteStation(line.getId(), station.getId());
 		// Then
-		stations = findStationsByLineId(line.getId()).getStation();
+		stations = findStationsByLineId(line.getId()).getStations();
 		assertThat(stations).doesNotContain(station);
 
 		// When
-		stations = findStationsByLineId(line.getId()).getStation();
+		stations = findStationsByLineId(line.getId()).getStations();
 		// Then
 		assertThat(stations).isNotNull();
 		assertThat(stations).doesNotContain(station);
