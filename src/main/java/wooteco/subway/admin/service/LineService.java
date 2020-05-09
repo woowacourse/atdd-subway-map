@@ -1,8 +1,10 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -36,7 +38,11 @@ public class LineService {
 	}
 
 	public void addLineStation(Long id, LineStationCreateRequest request) {
-		// TODO: 구현
+		Line line = lineRepository.findById(id)
+				.orElseThrow(NoSuchElementException::new);
+		LineStation lineStation = new LineStation(id, request.getPreStationId(),
+				request.getStationId(), request.getDistance(), request.getDuration());
+		line.addLineStation(lineStation);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {

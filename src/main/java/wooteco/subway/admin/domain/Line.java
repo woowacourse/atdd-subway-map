@@ -3,9 +3,12 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
@@ -32,6 +35,7 @@ public class Line {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
+		this.stations = new HashSet<>();
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 	}
@@ -57,11 +61,14 @@ public class Line {
 		if (line.getIntervalTime() != 0) {
 			this.intervalTime = line.getIntervalTime();
 		}
-
 		this.updatedAt = LocalDateTime.now();
 	}
 
 	public void addLineStation(LineStation lineStation) {
+		stations.stream()
+				.filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
+				.findAny()
+				.ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
 		stations.add(lineStation);
 	}
 
@@ -75,8 +82,26 @@ public class Line {
 	}
 
 	public List<Long> getLineStationsId() {
-		// TODO: 구현
-		return new ArrayList<>();
+		List<LineStation> list = new ArrayList<>();
+		stations.stream()
+				.filter(lineStation -> lineStation.getPreStationId() == null)
+				.findFirst()
+				.ifPresent(list::add);
+
+		for (int i = 0; i < stations.size() - 1; i++) {
+			list.add(findNext(list.get(i)));
+		}
+		return list.stream()
+				.map(LineStation::getStationId)
+				.collect(Collectors.toList());
+	}
+
+	private LineStation findNext(LineStation nextStation) {
+		return stations.stream()
+				.filter(lineStation -> Objects.equals(
+						lineStation.getPreStationId(), nextStation.getStationId()))
+				.findFirst()
+				.orElse(nextStation);
 	}
 
 	public Long getId() {
@@ -113,10 +138,6 @@ public class Line {
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
-	}
-
-	public void setLineStations(Set<LineStation> stations) {
-		this.stations = stations;
 	}
 
 	@Override

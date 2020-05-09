@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,7 +37,6 @@ public class LineStationAcceptanceTest {
 	void setUp() {
 		lineStationService = new LineStationService(lineRepository, stationRepository);
 		line = new Line(1L, "1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
-		line.setLineStations(new HashSet<>());
 		preStation = new Station(2L, "사당역");
 		station = new Station(3L, "강남역");
 	}
