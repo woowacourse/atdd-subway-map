@@ -68,7 +68,7 @@ const api = (() => {
       noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
     },
     deleteLineStation(lineId, stationId) {
-      noDataRequest(`${BASE_URL}/lines/${id}/stations/${stationId}`, METHOD.DELETE());
+      noDataRequest(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   };
 

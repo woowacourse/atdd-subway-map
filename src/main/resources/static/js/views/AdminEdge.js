@@ -84,10 +84,10 @@ function AdminEdge() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
-      let lineId = $target.closest(".line-edge").dataset.lineEdgeId;
+      let lineId = $target.closest(".line-templates").dataset.lineEdgeId;
       let stationId = $target.closest(".list-item").dataset.stationId;
 
+      $target.closest(".list-item").remove();
       api.lines.deleteLineStation(lineId, stationId);
     }
   };
