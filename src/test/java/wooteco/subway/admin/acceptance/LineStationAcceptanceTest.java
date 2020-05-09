@@ -24,7 +24,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
 public class LineStationAcceptanceTest {
@@ -58,6 +57,7 @@ public class LineStationAcceptanceTest {
      * Then 지하철역 목록을 응답 받는다.
      * And 제외한 지하철역이 목록에 존재하지 않는다.
      */
+    @Transactional
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
