@@ -4,7 +4,9 @@ import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.exception.WrongIdException;
+import wooteco.subway.admin.exception.WrongNameException;
 import wooteco.subway.admin.repository.StationRepository;
 import wooteco.subway.admin.service.LineService;
 
@@ -55,5 +59,10 @@ public class LineStationController {
         @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({WrongIdException.class, WrongNameException.class})
+    public ResponseEntity exceptionHandler(Errors errors){
+        return ResponseEntity.badRequest().body(errors);
     }
 }
