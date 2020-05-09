@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -9,6 +10,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +46,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId())))
+                .map(line -> LineResponse.of(line, stationRepository.findAllById(line.getEdgesId())))
                 .collect(Collectors.toList());
     }
 
@@ -61,19 +63,25 @@ public class LineService {
     }
 
     @Transactional
-    public void addLineStation(Long id, EdgeCreateRequest request) {
-        // TODO: 구현
+    public void addEdge(Long id, EdgeCreateRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Edge edge = new Edge(request.getPreStationId(), request.getStationId(),
+                request.getDistance(), request.getDuration());
+        line.addEdge(edge);
+        lineRepository.save(line);
     }
 
     @Transactional
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+    public void removeEdge(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        line.removeEdgeById(stationId);
+        lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        return LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId()));
+        return LineResponse.of(line, stationRepository.findAllById(line.getEdgesId()));
     }
 }
