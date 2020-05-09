@@ -26,11 +26,19 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
+        validateName(station.getName());
         Station persistStation = stationRepository.save(station);
 
         return ResponseEntity
             .created(URI.create("/stations/" + persistStation.getId()))
             .body(StationResponse.of(persistStation));
+    }
+
+    private void validateName(final String stationName) {
+        stationRepository.findByName(stationName)
+                .ifPresent(station -> {
+                    throw new IllegalArgumentException("존재하는 역 이름입니다");
+                });
     }
 
     @GetMapping("/stations")

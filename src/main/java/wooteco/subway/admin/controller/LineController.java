@@ -34,7 +34,7 @@ public class LineController {
     private StationService stationService;
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity create(@RequestBody LineRequest lineRequest) {
         lineService.validateTitle(lineRequest);
         Line line = new Line(
                 lineRequest.getTitle(),
@@ -43,35 +43,39 @@ public class LineController {
                 lineRequest.getIntervalTime(),
                 lineRequest.getBgColor()
         );
-	    Line savedLine = lineService.save(line);
-        return ResponseEntity.created(URI.create("/lines/"+savedLine.getId())).body(savedLine);
+        Line savedLine = lineService.save(line);
+        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
     }
 
     @GetMapping
-    public ResponseEntity getLines() {
-        List<LineResponse> lineResponses = lineService.showLines().stream()
+    public ResponseEntity findAllLine() {
+        List<LineResponse> lineResponses = lineService.findAll().stream()
                 .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getLine(@PathVariable Long id) {
+    public ResponseEntity findLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findLineWithStationsById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.validateTitleWhenUpdate(id, lineRequest);
-        Line line = new Line(
-                lineRequest.getTitle(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime(),
-                lineRequest.getBgColor()
-        );
-        lineService.updateLine(id, line);
-        return ResponseEntity.ok().build();
+        try {
+            lineService.validateTitleWhenUpdate(id, lineRequest);
+            Line line = new Line(
+                    lineRequest.getTitle(),
+                    lineRequest.getStartTime(),
+                    lineRequest.getEndTime(),
+                    lineRequest.getIntervalTime(),
+                    lineRequest.getBgColor()
+            );
+            lineService.updateLine(id, line);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id:\\d+}")
@@ -82,7 +86,7 @@ public class LineController {
 
     @PostMapping("/addStation/{id}")
     public ResponseEntity addStation(@PathVariable Long id,
-                                     @RequestBody HashMap<String,String> map) {
+                                     @RequestBody HashMap<String, String> map) {
         Long preStationId = stationService.findStationId(map.get("preStationName"));
         Station inputStation = stationService.save(map.get("stationName"));
 
@@ -95,11 +99,6 @@ public class LineController {
 
         lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/lineStations/{id}")
-    public ResponseEntity lineStations(@PathVariable Long id) {
-        return ResponseEntity.ok(lineService.getLineStations(id));
     }
 
     @DeleteMapping("/station/{lineId}/{stationId}")

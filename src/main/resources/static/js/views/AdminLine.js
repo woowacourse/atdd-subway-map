@@ -49,7 +49,7 @@ function AdminLine() {
                             )
                         })
                     } else {
-                        alert("중복된 이름입니다.");
+                        alert("중복된 이름입니다");
                     }
                 }
             );

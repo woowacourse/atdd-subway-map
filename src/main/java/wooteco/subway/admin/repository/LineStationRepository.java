@@ -11,5 +11,5 @@ import wooteco.subway.admin.domain.LineStation;
 
 public interface LineStationRepository extends CrudRepository<LineStation, Long> {
     @Query("SELECT * FROM LINE_STATION WHERE line = :id")
-    List<LineStation> findAllByLine(@Param("id") Long id);
+    List<LineStation> findAllByLineId(@Param("id") Long id);
 }

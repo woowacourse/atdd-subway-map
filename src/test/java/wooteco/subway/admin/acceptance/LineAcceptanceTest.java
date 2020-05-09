@@ -64,21 +64,12 @@ public class LineAcceptanceTest {
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
-        System.out.println(">>>update");
 
         // when
         deleteLine(line.getId());
         // then
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
-    }
-
-    private LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
@@ -90,14 +81,33 @@ public class LineAcceptanceTest {
         params.put("bgColor", "white");
 
         given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines").
+                then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<LineResponse> getLines() {
+        return
+                given().
+                        when().
+                        get("/lines").
+                        then().
+                        log().all().
+                        extract().
+                        jsonPath().getList(".", LineResponse.class);
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+            get("/lines/" + id).
             then().
             log().all().
-            statusCode(HttpStatus.CREATED.value());
+            extract().as(LineResponse.class);
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -115,17 +125,6 @@ public class LineAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.OK.value());
-    }
-
-    private List<LineResponse> getLines() {
-        return
-            given().
-                when().
-                get("/lines").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {

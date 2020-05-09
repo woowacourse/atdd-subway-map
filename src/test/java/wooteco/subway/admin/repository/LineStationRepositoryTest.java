@@ -27,6 +27,6 @@ class LineStationRepositoryTest {
         line.addLineStation(lineStation);
         lineRepository.save(line);
 
-        assertThat(lineStationRepository.findAllByLine(1L).size()).isEqualTo(1);
+        assertThat(lineStationRepository.findAllByLineId(1L).size()).isEqualTo(1);
     }
 }

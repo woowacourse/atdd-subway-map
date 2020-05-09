@@ -32,7 +32,7 @@ public class LineService {
 		return lineRepository.save(line);
 	}
 
-	public List<Line> showLines() {
+	public List<Line> findAll() {
 		return lineRepository.findAll();
 	}
 
@@ -56,8 +56,8 @@ public class LineService {
 		lineRepository.save(line);
 	}
 
-	public List<LineStation> getLineStations(Long id) {
-		return lineStationRepository.findAllByLine(id);
+	public List<LineStation> findLineStationByLineId(Long lineId) {
+		return lineStationRepository.findAllByLineId(lineId);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
@@ -87,7 +87,7 @@ public class LineService {
 		});
 	}
 
-	public void validateTitleWhenUpdate(Long id, LineRequest lineRequest) {
+	public void validateTitleWhenUpdate(Long id, LineRequest lineRequest) throws Exception {
 		Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		if (lineById.getTitle().equals(lineRequest.getTitle())) {
 			return;
