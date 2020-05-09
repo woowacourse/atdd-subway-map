@@ -97,8 +97,8 @@ function AdminLine() {
       throw new Error();
     }
     //myCode
-    if (duplicatedName(line.name)) {
-      alert(ERROR_MESSAGE.DUPLICATE_NAME);
+    if (duplicatedName(line.name) || duplicatedColor(line.bgColor)) {
+      alert(ERROR_MESSAGE.DUPLICATED);
       throw new Error();
     }
 
@@ -109,6 +109,14 @@ function AdminLine() {
     const namesArr = Array.from(names);
     return namesArr.some(element => {
       return element.innerText.trim() === input;
+    });
+  }
+
+  function duplicatedColor(input) {
+    const names = document.querySelectorAll(".subway-line-item");
+    const namesArr = Array.from(names);
+    return namesArr.some(element => {
+      return element.firstElementChild.nextElementSibling.classList[0] === input;
     });
   }
 

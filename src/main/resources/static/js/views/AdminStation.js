@@ -53,7 +53,7 @@ function AdminStation() {
     }
     //myCode
     if (duplicatedName(stationName)) {
-      alert(ERROR_MESSAGE.DUPLICATE_NAME);
+      alert(ERROR_MESSAGE.DUPLICATED);
       throw new Error();
     }
   }
