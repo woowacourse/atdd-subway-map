@@ -38,7 +38,11 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+        return LineResponse.of(line, new HashSet<>());
+    }
+
+    public static LineResponse of(Line line, Set<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {

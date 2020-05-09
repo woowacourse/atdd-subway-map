@@ -1,11 +1,9 @@
 package wooteco.subway.admin.service;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.DuplicatedLineException;
@@ -13,59 +11,79 @@ import wooteco.subway.admin.exception.NotFoundLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class LineService {
-	private LineRepository lineRepository;
-	private StationRepository stationRepository;
+    private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
-	}
+    Map<Long, Set<LineStation>> mockLineStations = new HashMap<>();
 
-	public Line save(Line line) {
-		checkExistLine(line);
-		return lineRepository.save(line);
-	}
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+        this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
-	}
+        this.mockLineStations.put(1L, new HashSet<>());
+        this.mockLineStations.put(2L, new HashSet<>());
+        this.mockLineStations.put(3L, new HashSet<>());
+        this.mockLineStations.put(4L, new HashSet<>());
+    }
+
+    public Line save(Line line) {
+        checkExistLine(line);
+        return lineRepository.save(line);
+    }
+
+    public List<Line> showLines() {
+        return lineRepository.findAll();
+    }
 
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(NotFoundLineException::new);
     }
 
-	public void updateLine(Long id, Line line) {
-		Line persistLine = findLineById(id);
-		if (!Objects.equals(persistLine.getName(), line.getName())) {
-			checkExistLine(line);
-		}
-		persistLine.update(line);
-		lineRepository.save(persistLine);
-	}
+    public void updateLine(Long id, Line line) {
+        Line persistLine = findLineById(id);
+        if (!Objects.equals(persistLine.getName(), line.getName())) {
+            checkExistLine(line);
+        }
+        persistLine.update(line);
+        lineRepository.save(persistLine);
+    }
 
-	public void deleteLineById(Long id) {
-		lineRepository.deleteById(id);
-	}
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 
-	private void checkExistLine(Line line) {
-		if (lineRepository.existsByName(line.getName())) {
-			throw new DuplicatedLineException(line.getName());
-		}
-	}
+    private void checkExistLine(Line line) {
+        if (lineRepository.existsByName(line.getName())) {
+            throw new DuplicatedLineException(line.getName());
+        }
+    }
 
-	public void addLineStation(Long id, LineStationCreateRequest request) {
-		// TODO: 구현
-	}
+    public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
+        mockLineStations.get(id).add(lineStationCreateRequest.toLineStation());
+    }
 
-	public void removeLineStation(Long lineId, Long stationId) {
-		// TODO: 구현
-	}
+    public void removeLineStation(Long lineId, Long stationId) {
+        LineStation lineStation = mockLineStations.get(lineId)
+                .stream()
+                .filter(lineStation1 -> Objects.equals(lineStation1.getStationId(), stationId))
+                .findFirst()
+                .get();
+        mockLineStations.get(lineId).remove(lineStation);
+    }
 
-	public LineResponse findLineWithStationsById(Long id) {
-		// TODO: 구현
-		return new LineResponse();
-	}
+    public LineResponse findLineWithStationsById(Long id) {
+        Line line = findLineById(id);
+        Set<Long> ids = mockLineStations.get(id)
+                .stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toSet());
+        Set<Station> stations = stationRepository.findAllById(ids);
+        return LineResponse.of(line, stations);
+    }
 }

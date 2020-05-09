@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -20,6 +22,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -79,7 +82,7 @@ public class LineAcceptanceTest {
                         extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    static void createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-red-300");
