@@ -30,6 +30,7 @@ function AdminEdge() {
         });
     };
 
+
     const initSubwayLineOptions = () => {
         api.line.get().then(data => {
             const subwayLineOptionTemplate = data.map(line => optionTemplate(line))
@@ -54,10 +55,11 @@ function AdminEdge() {
           stationId: station ? station.id : null,
           distance: 2,
           duration: 2
+            //TODO: distance, duration에 실제 값을 입력할 수 있도록 하기
         }
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
             createSubwayEdgeModal.toggle();
-            initSubwayLinesSlider();
+            location.reload();
         })
     };
 
@@ -67,8 +69,6 @@ function AdminEdge() {
         if (isDeleteButton) {
             const lineId = $target.closest(".slider-list").dataset.id;
             const stationId = $target.closest(".list-item").dataset.id;
-            console.log(lineId);
-            console.log(stationId);
             api.lineStation.delete(lineId, stationId).then(() => {
                 $target.closest(".list-item").remove();
             })
