@@ -1,17 +1,17 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.req.LineStationCreateRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LineService {
@@ -62,9 +62,13 @@ public class LineService {
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+
         line.addLineStation(request.toEntity());
         lineRepository.save(line);
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        List<Station> stations = new ArrayList<>();
+        for (Long stationId : line.getLineStationsId()) {
+            stations.add(stationRepository.findById(stationId).get());
+        }
         return LineResponse.of(line, stations);
     }
 

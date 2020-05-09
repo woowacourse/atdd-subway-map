@@ -30,7 +30,6 @@ public class LineController {
     @PostMapping
     public ResponseEntity create(@RequestBody LineRequest lineRequest) {
         LineResponse response = lineService.save(Line.of(lineRequest));
-
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response);

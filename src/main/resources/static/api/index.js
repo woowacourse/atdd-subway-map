@@ -56,13 +56,22 @@ const api = (() => {
     update(id, data) {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
-    delete() {
+    delete(id) {
       return deleteRequest(`/lines/${id}`, METHOD.DELETE());
     }
-  }
+  };
+
+  const edge = {
+    create(id, data) {
+      return request(`/edges/${id}`, METHOD.POST(data));
+    },
+    delete(lineId, stationId) {
+      return request(`/edges/${lineId}/${stationId}`, METHOD.DELETE());
+    }
+  };
 
   return {
-    station, line
+    station, line, edge
   };
 })();
 

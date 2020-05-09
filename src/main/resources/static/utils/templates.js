@@ -26,7 +26,10 @@ export const subwayStationsTemplate = station =>
     </button>
   </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = line => `<option data-line-id="${line.id}">${line.title}</option>`;
+
+export const preStationOptionTemplate = station => `<option data-pre-station-id="${station.id}">${station.name}</option>`;
+export const currentStationOptionTemplate = station => `<option data-current-station-id="${station.id}">${station.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -56,7 +59,7 @@ export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
   .map(station => listItemTemplate(station))
   .join("");
-  return `<div class="inline-block w-1/2 px-2">
+  return `<div id="subway-lines-item-template" class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
               <div class="overflow-y-auto height-90">
