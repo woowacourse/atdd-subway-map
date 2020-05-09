@@ -1,11 +1,11 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import { EVENT_TYPE } from "../../utils/constants.js";
 import {
   colorSelectOptionTemplate,
   subwayLineDetailTemplate,
   subwayLinesInnerTemplate,
   subwayLinesTemplate
 } from "../../utils/templates.js";
-import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
+import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
@@ -25,7 +25,7 @@ function AdminLine() {
 
   const validate = (name, startTime, endTime, intervalTime, bgColor) => {
     if (name === null || name.length === 0) {
-      alert("호선명은 빈 칸이 될 수 없습니다.")
+      alert("호선명은 빈 칸이 될 수 없습니다.");
       return false;
     }
 
@@ -47,7 +47,7 @@ function AdminLine() {
       return false;
     }
     return true;
-  }
+  };
 
   const onCreateSubwayLine = event => {
     event.preventDefault();
@@ -63,11 +63,11 @@ function AdminLine() {
     }
 
     const updateLine = () => {
-      api.line.update({name, startTime, endTime, intervalTime, bgColor}, modifyingLineId)
+      api.line.update({ name, startTime, endTime, intervalTime, bgColor }, modifyingLineId)
         .then(response => {
           lines = lines.map(line => line.id === modifyingLineId ? response : line);
           const selected = document.querySelector(`#line-${modifyingLineId}`);
-          selected.innerHTML = subwayLinesInnerTemplate({title: response.name, bgColor: response.bgColor});
+          selected.innerHTML = subwayLinesInnerTemplate({ title: response.name, bgColor: response.bgColor });
         })
         .catch(error => {
           console.log(error);
@@ -75,17 +75,17 @@ function AdminLine() {
         .finally(() => {
           modifyingLineId = null;
         });
-    }
+    };
 
     const createLine = () => {
-      api.line.create({name, bgColor, startTime, endTime, intervalTime})
+      api.line.create({ name, bgColor, startTime, endTime, intervalTime })
         .then(response => {
           lines = [...lines, response];
           id = response.id;
         });
 
-      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate({title: name, bgColor, id}));
-    }
+      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate({ title: name, bgColor, id }));
+    };
 
     if (lines.some(line => line.id === modifyingLineId)) {
       updateLine();
@@ -106,11 +106,11 @@ function AdminLine() {
           lines = lines.filter(line => line.id !== modifyingLineId);
         })
         .catch(err => {
-          console.log(err)
+          console.log(err);
         })
         .finally(() => {
           modifyingLineId = null;
-        })
+        });
       $target.closest(".subway-line-item").remove();
     }
   };
@@ -128,7 +128,7 @@ function AdminLine() {
           $subwayLineEndTimeInput.value = data.endTime;
           $subwayLineIntervalTimeInput.value = data.intervalTime;
           $subwayLineColorInput.value = data.bgColor;
-        })
+        });
     }
   };
 
@@ -139,18 +139,18 @@ function AdminLine() {
       const line = lines.find(line => line.id === lineId);
       $subwayLinesInfo.innerHTML = subwayLineDetailTemplate(line);
     }
-  }
+  };
 
   const initDefaultSubwayLines = () => {
     api.line.getAll()
       .then(data => {
         lines = data;
         lines
-          .map(({name, bgColor, id}) => ({title: name, bgColor, id}))
+          .map(({ name, bgColor, id }) => ({ title: name, bgColor, id }))
           .map(line => {
             $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
           });
-      })
+      });
   };
 
   const initEventListeners = () => {

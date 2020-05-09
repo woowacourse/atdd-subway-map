@@ -1,6 +1,6 @@
-export const listItemTemplate = value =>
-  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
-    ${value}
+export const listItemTemplate = station =>
+  `<div data-station-id="${station.id}" id="station-${station.id}" class="list-item border border-gray-200 py-2 px-4 text-gray-800">
+    ${station.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
     </button>
@@ -75,8 +75,8 @@ export const subwayLineDetailTemplate = line => {
           <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.endTime.slice(0, 5)}</div>
           <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
           <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>
-  `
-}
+  `;
+};
 export const initNavigation = () => {
   document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
 };

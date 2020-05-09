@@ -28,17 +28,17 @@ const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
   const station = {
-    get() {
+    getAll() {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/station/${id}`, METHOD.PUT(data));
+      return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE());
+      return request(`/stations/${id}`, METHOD.DELETE());
     }
   };
 
@@ -47,7 +47,7 @@ const api = (() => {
       return request(`/lines`);
     },
     get(id) {
-      return request(`/lines/${id}`)
+      return request(`/lines/${id}`);
     },
     create(data) {
       return request(`/lines`, METHOD.POST(data));
