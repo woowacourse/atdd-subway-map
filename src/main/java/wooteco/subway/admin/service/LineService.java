@@ -20,31 +20,34 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse save(Line line) {
+        Line saveLine = lineRepository.save(line);
+        return LineResponse.of(saveLine);
     }
 
     public Station save(Station station) {
         return stationRepository.save(station);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> showLines() {
+        List<Line> lines =  lineRepository.findAll();
+        return LineResponse.listOf(lines);
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
+    public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
+        return LineResponse.of(line);
     }
 
     public void deleteStationById(Long id) {

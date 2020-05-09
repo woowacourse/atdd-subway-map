@@ -83,6 +83,7 @@ function AdminLine() {
     api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) =>{
       subwayLineModal.toggle();
       subwayLinesTemplate(line);
+      window.location.reload();
     })
   };
 
