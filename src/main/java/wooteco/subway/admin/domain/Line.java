@@ -1,168 +1,176 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
-    @Id
-    private Long id;
-    private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
-    private String color;
-    private Set<LineStation> stations;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+	@Id
+	private Long id;
+	private String name;
+	private LocalTime startTime;
+	private LocalTime endTime;
+	private int intervalTime;
+	private String color;
+	private Set<LineStation> stations;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
-    public Line() {
-    }
+	public Line() {
+	}
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
-        this.color = color;
-        this.stations = new LinkedHashSet<>();
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
+		this.name = name;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.intervalTime = intervalTime;
+		this.color = color;
+		this.stations = new LinkedHashSet<>();
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
-        this(null, name, startTime, endTime, intervalTime, color);
-    }
+	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
+		this(null, name, startTime, endTime, intervalTime, color);
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+	public LocalTime getStartTime() {
+		return startTime;
+	}
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
+	public LocalTime getEndTime() {
+		return endTime;
+	}
 
-    public int getIntervalTime() {
-        return intervalTime;
-    }
+	public int getIntervalTime() {
+		return intervalTime;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getColor() {
+		return color;
+	}
 
-    public Set<LineStation> getStations() {
-        return stations;
-    }
+	public Set<LineStation> getStations() {
+		return stations;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-        if (!line.getStations().isEmpty()) {
-            this.stations = line.getStations();
-        }
-        if (line.getColor() != null) {
-            this.color = line.getColor();
-        }
+	public void update(Line line) {
+		if (line.getName() != null) {
+			this.name = line.getName();
+		}
+		if (line.getStartTime() != null) {
+			this.startTime = line.getStartTime();
+		}
+		if (line.getEndTime() != null) {
+			this.endTime = line.getEndTime();
+		}
+		if (line.getIntervalTime() != 0) {
+			this.intervalTime = line.getIntervalTime();
+		}
+		if (!line.getStations().isEmpty()) {
+			this.stations = line.getStations();
+		}
+		if (line.getColor() != null) {
+			this.color = line.getColor();
+		}
 
-        this.updatedAt = LocalDateTime.now();
-    }
+		this.updatedAt = LocalDateTime.now();
+	}
 
-    public void addLineStation(LineStation lineStation) {
-        if(!stations.isEmpty() && lineStation.getPreStationId() == null){
-            LineStation firstStation = stations.stream()
-                    .filter(eachLineStation -> eachLineStation.getPreStationId() == null)
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
-            firstStation.updatePreLineStation(lineStation.getStationId());
-        }else if(!stations.isEmpty() && stations.stream()
-                .filter(eachLineStation -> eachLineStation.getPreStationId() != null)
-                .anyMatch(eachLineStation -> eachLineStation.getPreStationId()
-                        .equals(lineStation.getPreStationId()))){
-            LineStation previousLineStation = stations.stream()
-                    .filter(eachLineStation -> eachLineStation.getPreStationId() != null)
-                    .filter(eachLineStation -> lineStation.getPreStationId().equals(eachLineStation.getPreStationId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
-            previousLineStation.updatePreLineStation(lineStation.getStationId());
-        }
-        stations.add(lineStation);
-    }
+	public void addLineStation(LineStation lineStation) {
+		if (!stations.isEmpty() && lineStation.getPreStationId() == null) {
+			LineStation firstStation = stations.stream()
+				.filter(eachLineStation -> eachLineStation.getPreStationId() == null)
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
 
-    public void removeLineStationById(Long stationId) {
-        LineStation previousLineStation = null;
-        LineStation nextLineStation = null;
+			firstStation.updatePreLineStation(lineStation.getStationId());
+		} else if (!stations.isEmpty() && stations.stream()
+			.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
+			.anyMatch(eachLineStation -> eachLineStation.getPreStationId()
+				.equals(lineStation.getPreStationId()))) {
+			LineStation previousLineStation = stations.stream()
+				.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
+				.filter(eachLineStation -> lineStation.getPreStationId()
+					.equals(eachLineStation.getPreStationId()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
 
-        for (LineStation lineStation : stations){
-            if(stationId.equals(lineStation.getStationId())) {
-                previousLineStation = lineStation;
-            } else if(stationId.equals(lineStation.getPreStationId())){
-                nextLineStation = lineStation;
-            }
-        }
+			previousLineStation.updatePreLineStation(lineStation.getStationId());
+		}
 
-        if(nextLineStation != null) {
-            nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
-        }
-        stations.remove(previousLineStation);
-    }
+		stations.add(lineStation);
+	}
 
-    public List<Long> getLineStationsId() {
-        if(stations.isEmpty()) {
-            return new ArrayList<>();
-        }
+	public void removeLineStationById(Long stationId) {
+		LineStation previousLineStation = null;
+		LineStation nextLineStation = null;
 
-        LineStation firstLineStation = stations.stream()
-                .filter(lineStation -> lineStation.getPreStationId() == null)
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+		for (LineStation lineStation : stations) {
+			if (stationId.equals(lineStation.getStationId())) {
+				previousLineStation = lineStation;
+			} else if (stationId.equals(lineStation.getPreStationId())) {
+				nextLineStation = lineStation;
+			}
+		}
 
-        List<Long> stationIds = new ArrayList<>();
+		if (nextLineStation != null) {
+			nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
+		}
 
-        stationIds.add(firstLineStation.getStationId());
+		stations.remove(previousLineStation);
+	}
 
-        while(true) {
-            Long lastStationId = stationIds.get(stationIds.size() - 1);
-            Optional<LineStation> nextLineStation = stations.stream()
-                    .filter(lineStation -> Objects.equals(lineStation.getPreStationId(), lastStationId))
-                    .findFirst();
+	public List<Long> getLineStationsId() {
+		if (stations.isEmpty()) {
+			return new ArrayList<>();
+		}
 
-            if(!nextLineStation.isPresent()) {
-                break;
-            }
+		LineStation firstLineStation = stations.stream()
+			.filter(lineStation -> lineStation.getPreStationId() == null)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("노선 역 경로를 찾을수 없습니다."));
 
-            stationIds.add(nextLineStation.get().getStationId());
-        }
+		List<Long> stationIds = new ArrayList<>();
 
-        return stationIds;
-    }
+		stationIds.add(firstLineStation.getStationId());
+
+		while (true) {
+			Long lastStationId = stationIds.get(stationIds.size() - 1);
+			Optional<LineStation> nextLineStation = stations.stream()
+				.filter(lineStation -> Objects.equals(lineStation.getPreStationId(), lastStationId))
+				.findFirst();
+
+			if (!nextLineStation.isPresent()) {
+				break;
+			}
+
+			stationIds.add(nextLineStation.get().getStationId());
+		}
+
+		return stationIds;
+	}
 }

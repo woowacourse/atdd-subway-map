@@ -33,7 +33,7 @@ function AdminEdge() {
     const initSubwayLineOptions = () => {
         api.line.get().then(data => {
             const subwayLineOptionTemplate = data.map(line => optionTemplate(line))
-                .join("")
+                .join("");
             const $stationSelectOptions = document.querySelector(
                 "#station-select-options"
             );
@@ -41,7 +41,7 @@ function AdminEdge() {
                 "afterbegin",
                 subwayLineOptionTemplate
             );
-    });
+        });
     };
 
     const onCreateLineStationHandler = async event => {
@@ -50,11 +50,12 @@ function AdminEdge() {
         const preStation = stations.find(station => station.name === document.querySelector("#depart-station-name").value);
         const station = stations.find(station => station.name === document.querySelector("#arrival-station-name").value);
         const request = {
-          preStationId: preStation ? preStation.id : null,
-          stationId: station ? station.id : null,
-          distance: 2,
-          duration: 2
-        }
+            preStationId: preStation ? preStation.id : null,
+            stationId: station ? station.id : null,
+            distance: 2,
+            duration: 2
+        };
+
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
             createSubwayEdgeModal.toggle();
             initSubwayLinesSlider();
@@ -67,11 +68,10 @@ function AdminEdge() {
         if (isDeleteButton) {
             const lineId = $target.closest(".slider-list").dataset.id;
             const stationId = $target.closest(".list-item").dataset.id;
-            console.log(lineId);
-            console.log(stationId);
+
             api.lineStation.delete(lineId, stationId).then(() => {
                 $target.closest(".list-item").remove();
-            })
+            });
         }
     };
 

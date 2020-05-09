@@ -26,20 +26,24 @@ function AdminLine() {
         const formData = {
             id: lineId,
             name: $subwayLineNameInput.value,
-            startTime: document.querySelector("#first-time").value,
-            endTime: document.querySelector("#last-time").value,
-            intervalTime: document.querySelector("#interval-time").value,
+            startTime: $subwayLineStartTimeInput,
+            endTime: $subwayLineEndTimeInput,
+            intervalTime: $subwayLineIntervalTimeInput,
             color: $subwayLineColorInput.value
         };
 
         lineId ? updateLineColumn(formData) : insertLineColumn(formData);
 
         subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineStartTimeInput.value = "";
-        $subwayLineEndTimeInput.value = "";
-        $subwayLineIntervalTimeInput.value = "";
-        $subwayLineColorInput.value = "";
+        insertFormData("", "", "", "", "");
+    };
+
+    const insertFormData = (lineName, lineStartTime, lineEndTime, lineIntervalTime, lineColor) =>{
+        $subwayLineNameInput.value = lineName;
+        $subwayLineStartTimeInput.value = lineStartTime;
+        $subwayLineEndTimeInput.value = lineEndTime;
+        $subwayLineIntervalTimeInput.value = lineIntervalTime;
+        $subwayLineColorInput.value = lineColor;
     };
 
     const insertLineColumn = formData => {
@@ -87,18 +91,10 @@ function AdminLine() {
         if (isUpdateButton) {
             subwayLineModal.toggle();
             api.line.find(lineId).then(data => {
-                $subwayLineNameInput.value = data.name;
-                $subwayLineStartTimeInput.value = data.startTime.substring(0,5);
-                $subwayLineEndTimeInput.value = data.endTime.substring(0,5);
-                $subwayLineIntervalTimeInput.value = data.intervalTime;
-                $subwayLineColorInput.value = data.color;
+                insertFormData(data.name, data.startTime.substring(0,5), data.endTime.substring(0,5),
+                    data.intervalTime, data.color);
             });
         }
-    };
-
-    const onEditSubwayLine = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-pencil");
     };
 
     const onSelectSubwayLine = event => {
@@ -111,7 +107,6 @@ function AdminLine() {
                 $subwayLineEndTimeView.innerHTML = data.endTime.substring(0,5);
                 $subwayLineIntervalTimeView.innerHTML = data.intervalTime.toString()+"분";
             })
-
         }
     };
 
@@ -129,18 +124,14 @@ function AdminLine() {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
-        $createSubwayLineButton.addEventListener(
-            EVENT_TYPE.CLICK,
-            onCreateSubwayLine
-        );
+        $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
     };
 
     const onSelectColorHandler = event => {
         event.preventDefault();
         const $target = event.target;
         if ($target.classList.contains("color-select-option")) {
-            document.querySelector("#subway-line-color").value =
-                $target.dataset.color;
+            document.querySelector("#subway-line-color").value = $target.dataset.color;
         }
     };
 
@@ -151,11 +142,9 @@ function AdminLine() {
         const colorSelectTemplate = subwayLineColorOptions
             .map((option, index) => colorSelectOptionTemplate(option, index))
             .join("");
+
         $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
-        $colorSelectContainer.addEventListener(
-            EVENT_TYPE.CLICK,
-            onSelectColorHandler
-        );
+        $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
     };
 
     this.init = () => {

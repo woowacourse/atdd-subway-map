@@ -39,9 +39,10 @@ function AdminStation() {
         };
 
         $stationNameInput.value = "";
+
         api.station.create(station).then(data => {
             $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
-        })
+        });
     };
 
     function validateReduplication(stationName) {

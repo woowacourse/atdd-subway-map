@@ -66,7 +66,7 @@ const api = (() => {
         delete(lineId, stationId) {
             return request(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
-    }
+    };
 
     return {
         station, line, lineStation

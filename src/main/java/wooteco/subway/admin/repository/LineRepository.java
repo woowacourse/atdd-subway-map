@@ -10,6 +10,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
 
-    @Query("SELECT name FROM LINE")
+    @Query("SELECT name FROM line")
     List<String> findAllName();
 }
