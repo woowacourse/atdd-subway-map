@@ -25,22 +25,32 @@ public class LineStations {
         lineStations.stream()
                 .filter(station -> station.isSameStationId(stationId))
                 .findAny()
-                .ifPresent(station -> lineStations.remove(station));
+                .ifPresent(removedStation -> {
+                    updateByRemove(stationId, removedStation);
+                    lineStations.remove(removedStation);
+                });
+    }
+
+    private void updateByRemove(Long stationId, LineStation station) {
+        lineStations.stream()
+                .filter(nextStation -> nextStation.isSamePreStationId(stationId))
+                .findAny()
+                .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
     }
 
     public List<Long> getLineStationsId() {
         List<Long> lineStationsId = new ArrayList<>();
-        sort(lineStationsId, INIT_PRE_STATION_ID);
+        addStationId(lineStationsId, INIT_PRE_STATION_ID);
         return lineStationsId;
     }
 
-    private void sort(List<Long> ids, Long preStationId) {
+    private void addStationId(List<Long> ids, Long preStationId) {
         lineStations.stream()
                 .filter(station -> station.isSamePreStationId(preStationId))
                 .findAny()
                 .ifPresent(station -> {
                     ids.add(station.getStationId());
-                    sort(ids, station.getStationId());
+                    addStationId(ids, station.getStationId());
                 });
     }
 
