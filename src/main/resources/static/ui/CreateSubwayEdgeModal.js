@@ -41,10 +41,10 @@ function CreateSubwayEdgeModal() {
     };
   };
 
-  const toggle = () => subwayLineModal.toggle();
+  const toggle = () => subwayEdgeModal.toggle();
 
   const initSubwayLineOptions = lines => {
-    const subwayLineOptionTemplate = lines.map(line => optionTemplate(line.name)).join("");
+    const subwayLineOptionTemplate = lines.map(line => optionTemplate(line)).join("");
     const $stationSelectOptions = document.querySelector("#station-select-options");
     $stationSelectOptions.insertAdjacentHTML(
         "afterbegin",

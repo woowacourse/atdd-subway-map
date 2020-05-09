@@ -1,7 +1,7 @@
 import { subwayLinesItemTemplate } from "../../utils/templates.js";
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import { EVENT_TYPE, ERROR_MESSAGE } from "../../utils/constants.js";
 import CreateSubWayEdgeModal from "../../ui/CreateSubwayEdgeModal.js"
 import api from "../../api/index.js";
 
@@ -10,6 +10,7 @@ function AdminEdge() {
   const subwayEdgeModal = new CreateSubWayEdgeModal();
 
   let subwayLines = [];
+  let stations = []
 
   const initSubwayLinesSlider = () => {
     $subwayLinesSlider.innerHTML = subwayLines
@@ -37,20 +38,44 @@ function AdminEdge() {
     }
   };
 
+  const convertToId = async stationName => {
+    const station = stations.find(station => station.name === stationName);
+    if (station) {
+      return station.id;
+    }
+    throw ERROR_MESSAGE.NOT_FOUND;
+  }
+
+  const onCreateEdge = async data => {
+    try {
+      const convertData = {
+        preStationId: await convertToId(data.preStation),
+        stationId: await convertToId(data.station),
+        distance: 10,
+        duration: 10
+      };
+      await api.edge.create(convertData, data.lineId);
+      subwayEdgeModal.toggle();
+    } catch (e) {
+      alert(e);
+    }
+  };
+
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
+    subwayEdgeModal.on("submit", onCreateEdge);
   };
 
   const initState = async () => {
     subwayLines = await api.edge.get();
+    stations = await api.station.get();
   };
 
   this.init = async () => {
     await initState();
-    console.log(subwayLines);
     initSubwayLinesSlider();
     subwayEdgeModal.init(subwayLines);
     initEventListeners();

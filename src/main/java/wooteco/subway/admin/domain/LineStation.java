@@ -2,6 +2,8 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.time.LocalDateTime;
+
 public class LineStation {
     @Column("station")
     private Long stationId;
@@ -9,6 +11,8 @@ public class LineStation {
     private Long preStationId;
     private int distance;
     private int duration;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public LineStation() {
     }
@@ -18,6 +22,8 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getPreStationId() {
@@ -38,5 +44,6 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+        this.updatedAt = LocalDateTime.now();
     }
 }

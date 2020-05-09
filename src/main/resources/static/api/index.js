@@ -60,6 +60,9 @@ const api = (() => {
   const edge = {
     get(id) {
       return !id ? request(`/lines/stations`) : request(`/lines/${id}/stations`);
+    },
+    create(data, id) {
+      return fetch(`/lines/${id}/stations`, METHOD.POST(data));
     }
   };
 
