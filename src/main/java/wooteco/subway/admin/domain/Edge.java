@@ -1,10 +1,16 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 public class Edge {
     private Long stationId;
     private Long preStationId;
     private Integer distance;
     private Integer duration;
+
+    public static Edge startEdge(Edge edge) {
+        return new Edge(null, edge.preStationId, 0, 0);
+    }
 
     public Edge() {
     }
@@ -16,8 +22,28 @@ public class Edge {
         this.duration = duration;
     }
 
-    public boolean hasStartStation() {
+    public boolean isStartStation() {
         return preStationId == null;
+    }
+
+    public boolean hasSamePreStation(final Edge edge) {
+        return Objects.equals(this.preStationId, edge.preStationId);
+    }
+
+    public void changePreStationToStationId(final Edge edge) {
+        this.preStationId = edge.stationId;
+    }
+
+    public boolean isSameStationId(final Long stationId) {
+        return Objects.equals(this.stationId, stationId);
+    }
+
+    public boolean isSamePreStationId(final Long stationId) {
+        return Objects.equals(this.preStationId, stationId);
+    }
+
+    public void replacePreStation(final Edge edge) {
+        this.preStationId = edge.preStationId;
     }
 
     public Long getStationId() {
@@ -34,9 +60,5 @@ public class Edge {
 
     public Integer getDuration() {
         return duration;
-    }
-
-    public boolean isPreStationOf(final Edge edge) {
-        return this.stationId.equals(edge.preStationId);
     }
 }

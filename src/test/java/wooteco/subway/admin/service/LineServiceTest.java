@@ -127,7 +127,7 @@ public class LineServiceTest {
     void findLineWithStationsById() {
         Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllByIdIsIn(anyList())).thenReturn(stations);
+        when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 

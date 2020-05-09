@@ -44,7 +44,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId())))
+                .map(line -> LineResponse.of(line, stationRepository.findAllById(line.getLineStationsId())))
                 .collect(Collectors.toList());
     }
 
@@ -78,6 +78,6 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        return LineResponse.of(line, stationRepository.findAllByIdIsIn(line.getLineStationsId()));
+        return LineResponse.of(line, stationRepository.findAllById(line.getLineStationsId()));
     }
 }

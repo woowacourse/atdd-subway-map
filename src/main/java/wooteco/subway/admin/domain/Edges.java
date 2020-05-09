@@ -5,6 +5,8 @@ import org.springframework.data.relational.core.mapping.MappedCollection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Edges {
@@ -26,28 +28,37 @@ public class Edges {
     }
 
     public void add(final Edge edge) {
-        if (edge.hasStartStation()) {
-            List<Edge> updatedEdges = new ArrayList<>();
-            updatedEdges.add(edge);
-            updatedEdges.addAll(this.edges);
-            this.edges = updatedEdges;
-            return;
+        if (this.edges.isEmpty() && !edge.isStartStation()) {
+            this.edges.add(Edge.startEdge(edge));
         }
-        List<Edge> updatedEdges = new ArrayList<>();
+
+        List<Edge> updateEdges = new ArrayList<>();
         for (Edge aEdge : this.edges) {
-            updatedEdges.add(aEdge);
-            if (aEdge.isPreStationOf(edge)) {
-                updatedEdges.add(edge);
+            if (aEdge.hasSamePreStation(edge)) {
+                aEdge.changePreStationToStationId(edge);
+                updateEdges.add(edge);
             }
+            updateEdges.add(aEdge);
         }
-        this.edges = updatedEdges;
+        if (!updateEdges.contains(edge)) {
+            updateEdges.add(edge);
+        }
+
+        this.edges = updateEdges;
     }
 
     public void removeByStationId(final Long stationId) {
-        this.edges.stream()
-                .filter(edge -> edge.getStationId().equals(stationId))
-                .findFirst()
-                .ifPresent(this.edges::remove);
+        Edge beforeEdge = findByStationId(edge -> edge.isSameStationId(stationId))
+                .orElseThrow(() -> new IllegalArgumentException(stationId + " : 지우려는 역이 존재하지 않습니다."));
+        findByStationId(edge -> edge.isSamePreStationId(stationId))
+                .ifPresent(edge -> edge.replacePreStation(beforeEdge));
+        this.edges.remove(beforeEdge);
+    }
+
+    private Optional<Edge> findByStationId(Predicate<Edge> edgePredicate) {
+        return this.edges.stream()
+                .filter(edgePredicate)
+                .findFirst();
     }
 
     public List<Edge> getEdges() {
