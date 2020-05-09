@@ -39,6 +39,15 @@ function AdminEdge() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      const lineId = parseInt($target.closest(".slider-list").dataset.lineId);
+      const stationId = parseInt($target.closest(".list-item").dataset.stationId);
+      api.line.deleteStation(lineId, stationId)
+      .then(() => {
+        subwayLines = subwayLines.filter(line => line.station.id !== stationId);
+      })
+      .catch(error => {
+        console.log(error);
+      });
       $target.closest(".list-item").remove();
     }
   };

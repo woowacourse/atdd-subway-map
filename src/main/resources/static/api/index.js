@@ -57,6 +57,9 @@ const api = (() => {
     },
     delete(id) {
       return request(`/lines/${id}`, METHOD.DELETE());
+    },
+    deleteStation(lineId, stationId) {
+      return request(`/lines/${lineId}/${stationId}`, METHOD.DELETE())
     }
   };
 
