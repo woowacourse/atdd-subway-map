@@ -94,7 +94,7 @@ public class LineService {
                 });
     }
 
-    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) throws Exception {
+    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) {
         if (isNotChangeTitle(id, lineRequest)) {
             return;
         }

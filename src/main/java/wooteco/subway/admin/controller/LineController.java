@@ -62,20 +62,16 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            lineService.validateTitleWhenUpdateInfo(id, lineRequest);
-            Line line = new Line(
-                    lineRequest.getTitle(),
-                    lineRequest.getStartTime(),
-                    lineRequest.getEndTime(),
-                    lineRequest.getIntervalTime(),
-                    lineRequest.getBgColor()
-            );
-            lineService.updateLine(id, line);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        lineService.validateTitleWhenUpdateInfo(id, lineRequest);
+        Line line = new Line(
+                lineRequest.getTitle(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(),
+                lineRequest.getBgColor()
+        );
+        lineService.updateLine(id, line);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id:\\d+}")
