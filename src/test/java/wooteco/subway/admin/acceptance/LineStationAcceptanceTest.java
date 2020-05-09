@@ -9,12 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.Set;
 
@@ -79,11 +77,11 @@ public class LineStationAcceptanceTest {
         assertThat(lineResponse.getStations().size()).isEqualTo(4);
 
         // When Then
-        Set<Station> stations = lineResponse.getStations();
+        Set<StationResponse> stations = lineResponse.getStations();
         // And
         assertThat(lineResponse.getStations()
                 .stream()
-                .map(Station::getName)).contains("잠실역", "종합운동장역", "선릉역", "강남역");
+                .map(StationResponse::getName)).contains("잠실역", "종합운동장역", "선릉역", "강남역");
 
         // When
         deleteLineStation(3L, 1L);
@@ -91,11 +89,11 @@ public class LineStationAcceptanceTest {
         assertThat(getLineWithStations(3L).getStations().size()).isEqualTo(3);
 
         // When Then
-        Set<Station> stations2 = getLineWithStations(3L).getStations();
+        Set<StationResponse> stations2 = getLineWithStations(3L).getStations();
         // And
         assertThat(stations2
                 .stream()
-                .map(Station::getName)).doesNotContain("잠실역");
+                .map(StationResponse::getName)).doesNotContain("잠실역");
     }
 
     private void createLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
