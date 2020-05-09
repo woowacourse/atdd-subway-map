@@ -20,6 +20,7 @@ function AdminEdge() {
             method: 'get'
         }).then(res => res.json())
             .then(data => {
+                console.log(data);
                 $subwayLinesSlider.innerHTML = data
                     .map(line => subwayLinesItemTemplate(line))
                     .join("");
@@ -66,7 +67,6 @@ function AdminEdge() {
     };
 
     const createEdge = event => {
-        event.preventDefault();
         const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
         const $preStationName = document.querySelector("#depart-station-name").value;
         const $stationName = document.querySelector("#arrival-station-name").value;
@@ -85,8 +85,6 @@ function AdminEdge() {
                 duration : $duration,
             })
         })
-
-        createSubwayEdgeModal.toggle();
     }
 
     const initEventListeners = () => {

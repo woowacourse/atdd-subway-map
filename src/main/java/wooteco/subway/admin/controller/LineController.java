@@ -50,7 +50,7 @@ public class LineController {
     @GetMapping
     public ResponseEntity getLines() {
         List<LineResponse> lineResponses = lineService.showLines().stream()
-                .map(LineResponse::of)
+                .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
@@ -93,7 +93,6 @@ public class LineController {
                         Integer.parseInt(map.get("distance")),
                         Integer.parseInt(map.get("duration")));
 
-        System.out.println(lineStationCreateRequest);
         lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.ok().build();
     }

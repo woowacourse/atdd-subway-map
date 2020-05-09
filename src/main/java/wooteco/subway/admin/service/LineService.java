@@ -1,11 +1,13 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -68,9 +70,14 @@ public class LineService {
 
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = lineRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+				.orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
+
 		LineResponse lineResponse = LineResponse.of(line);
-		lineResponse.setStations(stationRepository.findAllById(line.getLineStationsId()));
+		List<Station> stations = line.getLineStationsId().stream()
+				.map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new))
+				.collect(Collectors.toList());
+		lineResponse.setStations(stations);
+		System.out.println(">>> "+ lineResponse.getStations());
 		return lineResponse;
 	}
 

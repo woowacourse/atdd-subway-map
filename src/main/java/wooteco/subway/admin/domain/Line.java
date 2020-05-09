@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
-        this.stations = new HashSet<>();
+        this.stations = new LinkedHashSet<>();
     }
 
     public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {

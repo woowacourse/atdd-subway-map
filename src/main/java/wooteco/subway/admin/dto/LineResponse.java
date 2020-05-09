@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 
@@ -36,7 +37,7 @@ public class LineResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.bgColor = bgColor;
-        this.stations = stations;
+        this.stations = Sets.newLinkedHashSet(stations);
     }
 
     public static LineResponse of(Line line) {
@@ -71,7 +72,7 @@ public class LineResponse {
     }
 
     public Set<Station> getStations() {
-        return stations;
+        return Sets.newLinkedHashSet(stations);
     }
 
     public LocalDateTime getCreatedAt() {
@@ -86,7 +87,7 @@ public class LineResponse {
         return bgColor;
     }
 
-    public void setStations(final Iterable<Station> allById) {
-        allById.forEach(station -> stations.add(station));
+    public void setStations(List<Station> stations) {
+        this.stations = Sets.newLinkedHashSet(stations);
     }
 }
