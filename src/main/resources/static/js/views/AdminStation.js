@@ -42,7 +42,7 @@ function AdminStation() {
         if (response.status !== 204) {
           throw new Error("삭제 실패");
         }
-        stations = stations.filter(station => station.id !== id);
+        stations = stations.filter(station => station.id !== parseInt(id));
         stationItem.remove();
       }).catch(error => alert(error.message));
     }
