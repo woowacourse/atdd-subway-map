@@ -65,7 +65,9 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
-        mockLineStations.get(id).add(lineStationCreateRequest.toLineStation());
+        Line persistLine = findLineById(id);
+        persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+        lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.exception.NotFoundLineStationException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,6 +28,7 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.stations = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -92,7 +94,11 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.stream()
+                .filter(station -> Objects.equals(station.getPreStationId(), lineStation.getPreStationId()))
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
@@ -100,7 +106,30 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> lineStationsId = new ArrayList<>();
+
+        if (stations.isEmpty()) {
+            return lineStationsId;
+        }
+
+        LineStation startLineStation = stations.stream()
+                .filter(station -> Objects.isNull(station.getPreStationId()))
+                .findFirst()
+                .orElseThrow(NotFoundLineStationException::new);
+        LineStation currentLineStation = startLineStation;
+
+        while (true) {
+            Long currentLineStationId = currentLineStation.getStationId();
+            lineStationsId.add(currentLineStationId);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(station -> Objects.equals(station.getPreStationId(), currentLineStationId))
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            currentLineStation = nextLineStation.get();
+        }
+
+        return lineStationsId;
     }
 }
