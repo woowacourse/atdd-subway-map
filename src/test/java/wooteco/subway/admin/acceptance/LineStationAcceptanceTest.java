@@ -1,8 +1,10 @@
 package wooteco.subway.admin.acceptance;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,8 @@ import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.acceptance.handler.LineHandler;
 import wooteco.subway.admin.acceptance.handler.StationHandler;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -76,9 +80,33 @@ public class LineStationAcceptanceTest {
 
         //when
         lineHandler.addLineStation(1L, 0L, 1L);
+        lineHandler.addLineStation(1L, 1L, 2L);
+        //then
+        Assertions.assertThat(lineHandler.findLineWithStations(1L).getStations().size())
+            .isEqualTo(2);
+
+        //when
+        LineResponse lineResponse = lineHandler.getLine(1L);
+        //then
+        Set<Station> stations = lineResponse.getStations();
+        //and
+        Iterator iterator = stations.iterator();
+        Assertions.assertThat(((Station)iterator.next()).getName()).isEqualTo("잠실역");
+        Assertions.assertThat(((Station)iterator.next()).getName()).isEqualTo("종합운동장역");
+
+        //when
+        deleteLineStation(1L, 2L);
+        //then
         Assertions.assertThat(lineHandler.findLineWithStations(1L).getStations().size())
             .isEqualTo(1);
+
+        //when
+        lineResponse = lineHandler.getLine(1L);
         //then
+        stations = lineResponse.getStations();
+        //and
+        iterator = stations.iterator();
+        Assertions.assertThat(((Station)iterator.next()).getName()).isNotEqualTo("종합운동장역");
     }
 
     private List<LineStationResponse> getLineStations() {
@@ -120,10 +148,10 @@ public class LineStationAcceptanceTest {
             statusCode(HttpStatus.CREATED.value());
     }
 
-    private void deleteLineStation(Long id) {
+    private void deleteLineStation(Long lineId, Long stationId) {
         given().
             when().
-            delete("/line-stations/" + id).
+            delete("/line/" + lineId + "/station/" + stationId).
             then().
             log().all();
     }

@@ -102,19 +102,4 @@ public class LineController {
             .ok()
             .body(LineStationResponse.of(lineStation));
     }
-
-    // @GetMapping("/line-station/{id}")
-    // public ResponseEntity findLineWithStations(@PathVariable Long id) {
-    //     // TODO: 2020-05-08 showLine으로 대체가능한지 확인하자!!
-    //
-    //     Line line = new Line("잠실역", LocalTime.of(5, 30),
-    //         LocalTime.of(5, 30), 10, "WHITE");
-    //     LineStation lineStation = new LineStation(1L, 1L, 1, 1);
-    //     line.addLineStation(lineStation);
-    //     Set<Station> stations = lineService.toStations(line.getLineStations());
-    //
-    //     return ResponseEntity
-    //         .ok()
-    //         .body(LineResponse.of(line, stations));
-    // }
 }

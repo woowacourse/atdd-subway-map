@@ -1,15 +1,17 @@
 package wooteco.subway.admin.service;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -57,16 +59,28 @@ public class LineService {
     public void removeLineStation(Long lineId, Long stationId) {
         // TODO: 구현
     }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
-    }
+    //
+    // public LineResponse findLineWithStationsById(Long id) {
+    //     // TODO: 구현
+    //     return new LineResponse();
+    // }
 
     public Set<Station> toStations(Set<LineStation> lineStations) {
-        return lineStations.stream()
-            .map(lineStation -> stationRepository.findById(lineStation.getStationId())
-                .orElseThrow(RuntimeException::new))
-            .collect(Collectors.toSet());
+        Map<Long, Long> idMap = new HashMap<>();
+        Iterator iterator = lineStations.iterator();
+        while (iterator.hasNext()) {
+            LineStation lineStation = (LineStation)iterator.next();
+            idMap.put(lineStation.getPreStationId(), lineStation.getStationId());
+        }
+        Set<Station> stations = new LinkedHashSet<>();
+        Long preStationId = 0L;
+        while (idMap.containsKey(preStationId)) {
+            Long stationId = idMap.get(preStationId);
+            Station station = stationRepository.findById(stationId)
+                .orElseThrow(RuntimeException::new);
+            stations.add(station);
+            preStationId = stationId;
+        }
+        return stations;
     }
 }
