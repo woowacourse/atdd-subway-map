@@ -14,6 +14,15 @@ public class LineRequest {
     public LineRequest() {
     }
 
+    public LineRequest(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
+    }
+
     public String getName() {
         return name;
     }

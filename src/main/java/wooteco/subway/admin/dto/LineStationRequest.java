@@ -21,7 +21,7 @@ public class LineStationRequest {
         this.duration = duration;
     }
 
-    public LineStation toEntity() {
+    public LineStation toLineStation() {
         return new LineStation(this.preStationId, this.stationId);
     }
 
@@ -44,5 +44,4 @@ public class LineStationRequest {
     public int getDuration() {
         return duration;
     }
-
 }

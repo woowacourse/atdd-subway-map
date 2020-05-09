@@ -49,12 +49,6 @@ public class LineResponse {
             line.getUpdatedAt(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
-    }
-
     public Long getId() {
         return id;
     }

@@ -13,6 +13,7 @@ import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.exception.WrongIdException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -48,24 +49,25 @@ public class LineService {
 
     public LineStationResponse addLineStation(LineStationRequest request) {
         Line line = lineRepository.findById(request.getLineId())
-            .orElseThrow(IllegalArgumentException::new);
-        LineStation lineStation = request.toEntity();
+            .orElseThrow(WrongIdException::new);
+        LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
-        Line persistLine = lineRepository.save(line);
+        lineRepository.save(line);
+
         return new LineStationResponse(request.getLineId(), lineStation.getPreStationId(),
             lineStation.getStationId(), lineStation.getDistance(), lineStation.getDuration());
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(WrongIdException::new);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("잘못된 id입니다"));
+            .orElseThrow(WrongIdException::new);
 
         List<Long> stationsId = line.getStations().stream()
             .map(LineStation::getStationId)
@@ -74,17 +76,10 @@ public class LineService {
         return LineResponse.of(line, (ArrayList<Station>)stationRepository.findAllById(stationsId));
     }
 
-    public LineResponse findByName(String name) {
-        Line line = lineRepository.findByName(name)
-            .orElseThrow(() -> new IllegalArgumentException("잘못된 이름입니다."));
-
-        return LineResponse.of(line);
-    }
-
     public List<Station> mapLineStationsToStations(List<LineStation> lineStations) {
         return lineStations.stream()
             .map(lineStation -> stationRepository.findById(lineStation.getStationId())
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 id입니다.")))
+                .orElseThrow(WrongIdException::new))
             .collect(Collectors.toList());
     }
 }

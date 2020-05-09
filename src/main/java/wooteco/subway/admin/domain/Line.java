@@ -11,7 +11,10 @@ import java.util.Optional;
 
 import org.springframework.data.annotation.Id;
 
+import wooteco.subway.admin.exception.WrongIdException;
+
 public class Line {
+    public static final int FIRST = 0;
     @Id
     private Long id;
     private String name;
@@ -101,11 +104,11 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         if (Objects.isNull(lineStation.getPreStationId())) {
-            stations.add(0, lineStation);
+            stations.add(FIRST, lineStation);
             return;
         }
 
-        Optional<LineStation> next = next(lineStation);
+        Optional<LineStation> next = nextLineStation(lineStation);
         if (next.isPresent()) {
             LineStation realNext = next.get();
             realNext.updatePreLineStation(lineStation.getStationId());
@@ -117,20 +120,21 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        Optional<LineStation> station = stations.stream()
-            .filter(lineStation -> lineStation.getStationId().equals(stationId))
-            .findAny();
+        LineStation lineStation = stations.stream()
+            .filter(station -> station.getStationId().equals(stationId))
+            .findAny()
+            .orElseThrow(WrongIdException::new);
 
-        station.ifPresent(lineStation -> stations.remove(lineStation));
+        stations.remove(lineStation);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> getStationsIds() {
         return stations.stream()
             .map(LineStation::getStationId)
             .collect(toList());
     }
 
-    private Optional<LineStation> next(LineStation lineStation) {
+    private Optional<LineStation> nextLineStation(LineStation lineStation) {
         return stations.stream()
             .filter(station -> Objects.nonNull(station.getPreStationId()))
             .filter(station -> station.getPreStationId()
