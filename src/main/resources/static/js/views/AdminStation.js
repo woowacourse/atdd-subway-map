@@ -68,7 +68,15 @@ function AdminStation() {
     $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
   };
 
+  const initDefaultStations = async () => {
+    const initStations = await api.station.get();
+    initStations.map(station =>
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station))
+    );
+  }
+
   const init = () => {
+    initDefaultStations();
     initEventListeners();
   };
 

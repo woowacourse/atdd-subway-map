@@ -36,6 +36,15 @@ const api = (() => {
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
+    createLineStation(id, data) {
+      return fetch(`/lines/${id}/stations/`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+    },
     update(id, data) {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
@@ -48,7 +57,7 @@ const api = (() => {
 
   const station = {
     get() {
-      request(`/stations`);
+      return request(`/stations`);
     },
     create(data) {
       return request(`/stations`, METHOD.POST(data));

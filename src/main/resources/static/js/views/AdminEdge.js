@@ -1,5 +1,4 @@
 import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -7,11 +6,11 @@ import api from '../../api/index.js';
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $createButton = document.querySelector("#submit-button");
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
     const subwayLines = await api.line.get();
-    console.log(subwayLines);
     $subwayLinesSlider.innerHTML = subwayLines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
@@ -29,9 +28,10 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line.title))
+  const initSubwayLineOptions = async () => {
+    const subwayLines = await api.line.get();
+    const subwayLineOptionTemplate = subwayLines
+      .map(line => optionTemplate(line))
       .join("");
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
@@ -50,11 +50,49 @@ function AdminEdge() {
     }
   };
 
+  async function onCreateEdgeHandler(event) {
+    event.preventDefault();
+    const $departStation = document.querySelector('#depart-station-name');
+    const $arrivalStation = document.querySelector('#arrival-station-name');
+    const stations = await api.station.get();
+    const depart = stations.filter(value => value.name === $departStation.value)[0];
+    const arrival = stations.filter(value => value.name === $arrivalStation.value)[0];
+
+    if (!depart || !arrival) {
+      alert("존재하지 않는 지하철 역입니다! 등록후 이용하세요. 😊");
+    }
+
+    const createRequest = {
+      preStationId: depart.id,
+      stationId: arrival.id,
+      distance: 3,
+      duration: 3
+    };
+
+    const $stationSelect = document.querySelector("#station-select-options");
+
+    const lineId = $stationSelect.options[$stationSelect.selectedIndex].dataset.lineId;
+
+    api.line.createLineStation(lineId, createRequest).then(response => {
+      if (response.ok) {
+        createSubwayEdgeModal.toggle();
+        window.location.href = window.location.href;
+      } else {
+        alert(response);
+      }
+    });
+  }
+
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
+    $createButton.addEventListener(
+      EVENT_TYPE.CLICK,
+      onCreateEdgeHandler
+    )
+
   };
 
   this.init = () => {
