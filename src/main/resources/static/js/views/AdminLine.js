@@ -3,7 +3,7 @@ import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} 
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
-import {replaceEventListener} from "../../utils/util";
+import {replaceEventListener} from "../../utils/util.js";
 
 function AdminLine() {
     const $subwayLineInfo = document.querySelector(".lines-info");
@@ -16,9 +16,18 @@ function AdminLine() {
     const $submitSubwayLineButton = document.querySelector(
         "#subway-line-create-form #submit-button"
     );
+    const $cancelSubmitBtn = document.querySelector(".modal-close");
     const subwayLineModal = new Modal();
 
     let $updateLineItem = null;
+
+    const resetModalInputValue = () => {
+        $subwayLineNameInput.value = "";
+        $firstTimeInput.value = "";
+        $lastTimeInput.value = "";
+        $intervalTimeInput.value = "";
+        $subwayLineColorInput.value = "";
+    }
 
     const renderSubwayLineInfo = line => {
         $subwayLineInfo.innerHTML = "";
@@ -57,6 +66,7 @@ function AdminLine() {
             .catch(error => console.log(error));
 
         subwayLineModal.toggle();
+        resetModalInputValue();
     };
 
     const onDeleteSubwayLine = event => {
@@ -121,12 +131,18 @@ function AdminLine() {
             });
 
         subwayLineModal.toggle();
+        resetModalInputValue();
         replaceEventListener(
             $submitSubwayLineButton,
             onUpdateSubwayLine,
             onCreateSubwayLine
         );
     };
+
+    const onCancelSubmit = event => {
+        event.preventDefault();
+        resetModalInputValue();
+    }
 
     const initDefaultSubwayLines = () => {
         api.line.get()
@@ -148,6 +164,7 @@ function AdminLine() {
             EVENT_TYPE.CLICK,
             onCreateSubwayLine
         );
+        $cancelSubmitBtn.addEventListener(EVENT_TYPE.CLICK, onCancelSubmit);
     };
 
     const onSelectColorHandler = event => {
