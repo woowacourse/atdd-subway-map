@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -37,8 +38,10 @@ public class LineService {
     }
 
 	public void updateLine(Long id, Line line) {
-		checkExistLine(line);
 		Line persistLine = findLineById(id);
+		if (!Objects.equals(persistLine.getName(), line.getName())) {
+			checkExistLine(line);
+		}
 		persistLine.update(line);
 		lineRepository.save(persistLine);
 	}
