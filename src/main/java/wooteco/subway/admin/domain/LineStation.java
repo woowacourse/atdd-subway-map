@@ -20,6 +20,14 @@ public class LineStation {
         this.duration = duration;
     }
 
+    public boolean isSameStation(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean isFirstStation() {
+        return preStationId == null;
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }

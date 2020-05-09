@@ -47,12 +47,13 @@ public class LineService {
     public Line addLineStation(Long lineId, LineStationCreateRequest request) {
         Line persistLine = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         persistLine.addLineStation(request.toLineStation());
+
         return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line persistLine = lineRepository.findById(lineId)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
         persistLine.removeLineStationById(stationId);
         lineRepository.save(persistLine);
     }
@@ -65,29 +66,30 @@ public class LineService {
 
     public List<LineStationsResponse> findAllLineStations() {
         return lineRepository.findAll()
-                .stream()
-                .map(line -> findLineStationsById(line.getId()))
-                .collect(Collectors.toList());
+            .stream()
+            .map(line -> findLineStationsById(line.getId()))
+            .collect(Collectors.toList());
     }
 
     public LineStationsResponse findLineStationsById(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         List<Long> lineStations = line.getStations()
-                .stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+            .stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
 
         Map<Long, Station> stations = stationRepository.findAllById(lineStations)
-                .stream()
-                .collect(Collectors.toMap(
-                        Station::getId,
-                        station -> station));
+            .stream()
+            .collect(Collectors.toMap(
+                Station::getId,
+                station -> station));
 
         return LineStationsResponse.of(line, stations);
     }
 
     public Station createStation(StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
+       
         return stationRepository.save(station);
     }
 

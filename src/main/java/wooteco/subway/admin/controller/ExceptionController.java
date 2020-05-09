@@ -12,7 +12,6 @@ import wooteco.subway.admin.dto.ErrorResponse;
 @ControllerAdvice
 @RestController
 public class ExceptionController {
-
     @ExceptionHandler(value = {DbActionExecutionException.class})
     public ResponseEntity handleDbActionExecutionException() {
         return new ResponseEntity(new ErrorResponse("DUPLICATED"),

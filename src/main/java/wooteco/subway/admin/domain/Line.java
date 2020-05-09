@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
+    public static final int START_INDEX = 0;
     @Id
     private Long id;
     private String name;
@@ -25,7 +26,8 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -35,7 +37,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -95,62 +98,64 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.getPreStationId() == null) {
+        if (lineStation.isFirstStation()) {
             addLineStationAtFirst(lineStation);
-        } else {
-            for (int index = 0; index < stations.size(); index++) {
-                LineStation currentLineStation = stations.get(index);
-                int nextIndex = index + 1;
-                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
-                        && nextIndex < stations.size()) {
-                    LineStation target = stations.get(nextIndex);
-                    target.updatePreLineStation(lineStation.getStationId());
-                    stations.add(nextIndex, lineStation);
-                    break;
-                }
-                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
-                        && nextIndex == stations.size()) {
-                    stations.add(lineStation);
-                    break;
-                }
-            }
+            return;
         }
+
+        int index = START_INDEX;
+        while (!findLineStationAt(index).isSameStation(lineStation.getPreStationId())) {
+            index++;
+        }
+
+        int nextIndex = index + 1;
+        if (nextIndex < stations.size()) {
+            LineStation target = findLineStationAt(nextIndex);
+            target.updatePreLineStation(lineStation.getStationId());
+        }
+        stations.add(nextIndex, lineStation);
     }
 
     private void addLineStationAtFirst(LineStation lineStation) {
-        stations.add(0, lineStation);
+        stations.add(START_INDEX, lineStation);
         if (stations.size() > 1) {
-            stations.get(1).updatePreLineStation(lineStation.getStationId());
+            findLineStationAt(1).updatePreLineStation(lineStation.getStationId());
         }
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        LineStation lineStation = findLineStationById(stationId);
+        int targetIndex = searchLineStationIndex(stationId);
 
-        int targetIndex = findLineStationIndex(stationId);
         if (targetIndex != stations.size() - 1) {
-            LineStation nextLineStation = stations.get(targetIndex + 1);
-            nextLineStation.updatePreLineStation(stations.get(targetIndex).getPreStationId());
+            LineStation nextLineStation = findLineStationAt(targetIndex + 1);
+            nextLineStation.updatePreLineStation(findLineStationAt(targetIndex).getPreStationId());
         }
         stations.remove(lineStation);
     }
 
-    private int findLineStationIndex(Long stationId) {
-        for (int index = 0; index < stations.size(); index++) {
-            LineStation currentLineStation = stations.get(index);
-            if (currentLineStation.getStationId().equals(stationId)) {
-                return index;
-            }
+    private LineStation findLineStationById(Long stationId) {
+        return stations.stream()
+            .filter(lineStation -> lineStation.isSameStation(stationId))
+            .findFirst()
+            .orElseThrow(RuntimeException::new);
+    }
+
+    private int searchLineStationIndex(Long stationId) {
+        int index = START_INDEX;
+        while (!findLineStationAt(index).isSameStation(stationId)) {
+            index++;
         }
-        return 0;
+        return index;
+    }
+
+    private LineStation findLineStationAt(int index) {
+        return stations.get(index);
     }
 
     public List<Long> getLineStationsId() {
         return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }
