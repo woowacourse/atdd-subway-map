@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
@@ -41,11 +42,11 @@ public class LineController {
 	@GetMapping("/lines/{id}")
 	public ResponseEntity findLineWithStationsBy(@PathVariable(name = "id") Long id) {
 		try {
-			LineResponse lineResponse = lineService.findLineWithStationsBy(id);
+			LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
 
 			return ResponseEntity
 					.ok()
-					.body(lineResponse);
+					.body(lineWithStationsResponse);
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity
 					.badRequest()
