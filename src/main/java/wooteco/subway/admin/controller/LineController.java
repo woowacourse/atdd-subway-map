@@ -1,11 +1,5 @@
 package wooteco.subway.admin.controller;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
@@ -24,17 +17,24 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+    private final LineService lineService;
+    private final StationService stationService;
 
-    @Autowired
-    private LineService lineService;
-    @Autowired
-    private StationService stationService;
+    public LineController(final LineService lineService, final StationService stationService) {
+        this.lineService = lineService;
+        this.stationService = stationService;
+    }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         lineService.validateTitle(lineRequest);
         Line line = new Line(
                 lineRequest.getTitle(),

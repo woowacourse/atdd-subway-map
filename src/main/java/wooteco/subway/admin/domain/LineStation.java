@@ -1,7 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.util.Objects;
 
 public class LineStation {
@@ -42,6 +40,14 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    public boolean isStationIdEquals(final Long id) {
+        return this.stationId.equals(id);
+    }
+
+    public boolean isPreStationIdEquals(final Long id) {
+        return this.preStationId.equals(id);
     }
 
     @Override

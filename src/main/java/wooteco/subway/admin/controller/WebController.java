@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class WebController {
-
     @GetMapping("/")
     public String index() {
         return "index";
@@ -19,5 +18,10 @@ public class WebController {
     @GetMapping("/admin-edge")
     public String adminEdge() {
         return "admin-edge";
+    }
+
+    @GetMapping("/admin-station")
+    public String adminStation() {
+        return "admin-station";
     }
 }

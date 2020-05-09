@@ -5,10 +5,8 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -103,16 +101,19 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        this.stations.stream().filter(x -> x.getStationId().equals(stationId))
-                .findAny().ifPresent(target -> {
-            this.stations.remove(target);
-        });
+        this.stations.stream().filter(x -> x.isStationIdEquals(stationId))
+                .findAny()
+                .ifPresent(target -> {
+                    this.stations.remove(target);
+                });
     }
 
     public List<Long> getLineStationsId() {
         List<LineStation> result = new ArrayList<>();
-        Optional<LineStation> first = stations.stream().filter(x -> x.getPreStationId() == 0).findAny();
-        first.ifPresent(result::add);
+        stations.stream()
+                .filter(x -> x.isPreStationIdEquals(0L))
+                .findAny()
+                .ifPresent(result::add);
 
         for (int i = 0; i < stations.size() - 1; i++) {
             result.add(findNextLineStation(result.get(i)));
@@ -123,14 +124,14 @@ public class Line {
     }
 
     private LineStation findNextLineStation(final LineStation preStation) {
-        return stations.stream().filter(x -> x.getPreStationId().equals(preStation.getStationId()))
+        return stations.stream()
+                .filter(x -> x.isPreStationIdEquals(preStation.getStationId()))
                 .findAny().orElseThrow(IllegalArgumentException::new);
     }
 
     public void updatePreStationWhenAdd(final LineStation toInput) {
         stations.stream()
-                .filter(x -> x.getPreStationId()
-                        .equals(toInput.getPreStationId()))
+                .filter(x -> x.isPreStationIdEquals(toInput.getPreStationId()))
                 .findAny().ifPresent(lineStation -> {
             lineStation.updatePreLineStation(toInput.getStationId());
         });
@@ -138,12 +139,11 @@ public class Line {
 
     public void updatePreStationWhenRemove(final Long toRemoveId) {
         LineStation removeStation =
-                stations.stream().filter(x -> x.getStationId().equals(toRemoveId))
+                stations.stream().filter(x -> x.isStationIdEquals(toRemoveId))
                         .findAny().orElseThrow(IllegalArgumentException::new);
 
         stations.stream()
-                .filter(x -> x.getPreStationId()
-                        .equals(toRemoveId))
+                .filter(x -> x.isPreStationIdEquals(toRemoveId))
                 .findAny().ifPresent(lineStation -> {
             lineStation.updatePreLineStation(removeStation.getPreStationId());
         });
