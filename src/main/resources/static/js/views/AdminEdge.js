@@ -2,9 +2,9 @@ import {
   optionTemplate,
   subwayLinesItemTemplate
 } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
+import {api} from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
@@ -12,8 +12,8 @@ function AdminEdge() {
   const $openModalButton = document.querySelector(".modal-open");
   const createSubwayEdgeModal = new Modal();
 
-  const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
+  const initSubwayLinesSlider = (linesWithStations) => {
+    $subwayLinesSlider.innerHTML = linesWithStations
       .map(line => subwayLinesItemTemplate(line))
       .join("");
     tns({
@@ -30,9 +30,9 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-      .map(line => optionTemplate(line.title))
+  const initSubwayLineOptions = (linesWithStations) => {
+    const subwayLineOptionTemplate = linesWithStations
+      .map(line => optionTemplate(line.name))
       .join("");
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
@@ -59,13 +59,13 @@ function AdminEdge() {
     $openModalButton.addEventListener(
       EVENT_TYPE.CLICK,
       createSubwayEdgeModal.toggle
-    )
-    ;
+    );
   };
 
-  this.init = () => {
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
+  this.init = async () => {
+    const linesWithStations = await api.edge.getLinesWithStations();
+    initSubwayLinesSlider(linesWithStations);
+    initSubwayLineOptions(linesWithStations);
     initEventListeners();
   };
 }
