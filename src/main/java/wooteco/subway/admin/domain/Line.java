@@ -122,8 +122,12 @@ public class Line {
         stations.add(index + 1, inputLineStation);
     }
 
-    private boolean isLastStation(LineStation preLineStation) {
-        return stations.indexOf(preLineStation) == stations.size() - 1;
+    private boolean isLastStation(LineStation lineStation) {
+        return stations.indexOf(lineStation) == stations.size() - 1;
+    }
+
+    private boolean isNotLastStation(LineStation lineStation) {
+        return !isLastStation(lineStation);
     }
 
     public void addLineStationOnLast(LineStation lineStation) {
@@ -139,7 +143,20 @@ public class Line {
         if (targetLineStation.isFirstLineStation()) {
             stations.remove(0);
             stations.get(0).updatePreStationId(null);
+            return;
         }
+
+        targetLineStation.getPreStationId();
+
+        if (isNotLastStation(targetLineStation)) {
+            int index = stations.indexOf(targetLineStation);
+            LineStation nextByTargetStation = stations.get(index + 1);
+            nextByTargetStation.updatePreStationId(targetLineStation.getPreStationId());
+        }
+
+        stations.remove(targetLineStation);
+
+
     }
 
     public List<Long> getLineStationsId() {
