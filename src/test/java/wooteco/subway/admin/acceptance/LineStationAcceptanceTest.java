@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.request.LineStationAddRequest;
 import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 
 import java.time.LocalTime;
@@ -65,11 +66,17 @@ public class LineStationAcceptanceTest {
         Line line = createLine("2호선");
 
         //when 노선 추가
+        LineStationAddRequest lineStationAddRequest1 = new LineStationAddRequest(null, "잠실역", 10, 10);
+        LineStationAddRequest lineStationAddRequest2 = new LineStationAddRequest("잠실역", "삼성역", 10, 10);
+        LineStationAddRequest lineStationAddRequest3 = new LineStationAddRequest("삼성역", "강변역", 10, 10);
 
-        StationsAtLineResponse response = addLineStation(line.getId());
+        addLineStation(line.getId(), lineStationAddRequest1);
+        addLineStation(line.getId(), lineStationAddRequest2);
+        StationsAtLineResponse response = addLineStation(line.getId(), lineStationAddRequest3);
+
         //then
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getStations().size()).isEqualTo(2);
+        assertThat(response.getId()).isEqualTo(line.getId());
+        assertThat(response.getStations().size()).isEqualTo(3);
 
         //when 노선의 지하철역 조회
         List<StationsAtLineResponse> allLineStations = findAllLineStations();
@@ -143,18 +150,14 @@ public class LineStationAcceptanceTest {
                 extract().as(Line.class);
     }
 
-    private StationsAtLineResponse addLineStation(Long id) {
+    private StationsAtLineResponse addLineStation(Long lineId, LineStationAddRequest request) {
         Map<String, Object> params = new HashMap<>();
-        params.put("preStationName", "잠실역");
-        params.put("stationName", "삼성역");
-        params.put("duration", 10);
-        params.put("distance", 10);
 
-        return given().body(params)
+        return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lineStations/" + id)
+                .post("/lineStations/" + lineId)
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .log().all()

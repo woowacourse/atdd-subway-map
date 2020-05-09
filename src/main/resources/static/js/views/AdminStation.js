@@ -57,6 +57,7 @@ function AdminStation() {
                 $stationList.insertAdjacentHTML("beforeend", listItemTemplate(response));
             })
     }
+
     const onRemoveStationHandler = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -89,5 +90,6 @@ function AdminStation() {
         init
     };
 }
+
 const adminStation = new AdminStation();
 adminStation.init();
