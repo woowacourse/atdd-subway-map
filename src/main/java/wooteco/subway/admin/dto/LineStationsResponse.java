@@ -1,6 +1,7 @@
 package wooteco.subway.admin.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -22,7 +23,7 @@ public class LineStationsResponse {
         this.stations = stations;
     }
 
-    public static LineStationsResponse of(Line line, List<Station> stations) {
+    public static LineStationsResponse of(Line line, Map<Long, Station> stations) {
         return new LineStationsResponse(line.getId(), line.getName(), line.getBgColor(),
                 LineStationResponse.listOf(line.getStations(), stations));
     }

@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -74,7 +75,12 @@ public class LineService {
                 .stream()
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
-        List<Station> stations = stationRepository.findAllById(lineStations);
+
+        Map<Long, Station> stations = stationRepository.findAllById(lineStations)
+                .stream()
+                .collect(Collectors.toMap(
+                        Station::getId,
+                        station -> station));
 
         return LineStationsResponse.of(line, stations);
     }
