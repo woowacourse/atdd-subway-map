@@ -87,7 +87,7 @@ public class LineStationAcceptanceTest {
 	private void deleteStationBy(Long lineId, Long stationId) {
 		given().
 				when().
-				delete("/line-stations/" + "?lineId=" + lineId + "&stationId=" + stationId).
+				delete("/lines/" + lineId + "/stations/" + stationId).
 				then().
 				log().all();
 	}
@@ -112,7 +112,7 @@ public class LineStationAcceptanceTest {
 				contentType(MediaType.APPLICATION_JSON_VALUE).
 				accept(MediaType.APPLICATION_JSON_VALUE).
 		when()
-				.post("/line-stations").
+				.post("/lines/stations").
 		then().
 				log().all();
 	}
