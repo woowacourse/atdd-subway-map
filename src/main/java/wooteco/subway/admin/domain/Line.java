@@ -100,7 +100,7 @@ public class Line {
                 .filter(LineStation::isFirstLineStation)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-        lineStation.setPreStationId(inputLineStation.getStationId());
+        lineStation.updatePreStationId(inputLineStation.getStationId());
 
         stations.add(0, inputLineStation);
     }
@@ -118,9 +118,8 @@ public class Line {
 
         int index = stations.indexOf(preLineStation);
         LineStation nextByInputLineStation = stations.get(index + 1);
-        nextByInputLineStation.setPreStationId(inputLineStation.getStationId());
+        nextByInputLineStation.updatePreStationId(inputLineStation.getStationId());
         stations.add(index + 1, inputLineStation);
-
     }
 
     private boolean isLastStation(LineStation preLineStation) {
@@ -132,7 +131,15 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation targetLineStation = stations.stream()
+                .filter(station -> station.is(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
+
+        if (targetLineStation.isFirstLineStation()) {
+            stations.remove(0);
+            stations.get(0).updatePreStationId(null);
+        }
     }
 
     public List<Long> getLineStationsId() {

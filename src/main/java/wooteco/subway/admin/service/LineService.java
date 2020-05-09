@@ -39,8 +39,8 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long id, LineStationCreateRequest request) {
-		Line persistLine = lineRepository.findById(id)
+	public void addLineStation(Long lineId, LineStationCreateRequest request) {
+		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		if (request.getPreStationId() == null) {
@@ -52,11 +52,14 @@ public class LineService {
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
-		// TODO: 구현
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+
+		persistLine.removeLineStationById(stationId);
 	}
 
-	public LineResponse findLineWithStationsBy(Long id) {
-		Line persistLine = lineRepository.findById(id)
+	public LineResponse findLineWithStationsBy(Long lineId) {
+		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		return LineResponse.of(persistLine);

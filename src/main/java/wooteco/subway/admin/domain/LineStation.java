@@ -28,10 +28,6 @@ public class LineStation {
         return this.stationId.equals(lineStation.getPreStationId());
     }
 
-    public void setPreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
     public Long getPreStationId() {
         return preStationId;
     }
@@ -48,7 +44,11 @@ public class LineStation {
         return duration;
     }
 
-    public void updatePreLineStation(Long preStationId) {
+    public void updatePreStationId(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    public boolean is(Long stationId) {
+        return this.stationId.equals(stationId);
     }
 }
