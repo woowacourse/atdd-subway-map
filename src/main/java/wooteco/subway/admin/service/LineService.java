@@ -76,6 +76,7 @@ public class LineService {
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		persistLine.removeLineStationById(stationId);
+		lineRepository.save(persistLine);
 	}
 
 	public LineWithStationsResponse findLineWithStationsBy(Long lineId) {

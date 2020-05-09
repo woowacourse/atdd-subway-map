@@ -54,8 +54,15 @@ function AdminEdge() {
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
+
     if (isDeleteButton) {
+      const lineId = $target.closest(".line").getAttribute("data-line-id");
+      const targetId = $target.closest("div").dataset.stationId;
+
+      api.lineStation.delete(lineId, targetId);
+
       $target.closest(".list-item").remove();
+
     }
   };
 

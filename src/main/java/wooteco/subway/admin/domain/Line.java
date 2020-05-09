@@ -145,6 +145,11 @@ public class Line {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
 
+        if (stations.size() == 1) {
+            stations.remove(0);
+            return;
+        }
+
         if (targetLineStation.isFirstLineStation()) {
             stations.remove(0);
             stations.get(0).updatePreStationId(null);
