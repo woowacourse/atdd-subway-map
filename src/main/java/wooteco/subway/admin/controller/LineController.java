@@ -54,7 +54,7 @@ public class LineController {
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId,
-                                           @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
+                                           @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(lineId, lineUpdateRequest.toLine());
         return ResponseEntity.ok(lineId);
     }

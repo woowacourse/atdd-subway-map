@@ -3,8 +3,8 @@ package wooteco.subway.admin.domain;
 public class Edge {
     private Long stationId;
     private Long preStationId;
-    private int distance;
-    private int duration;
+    private Integer distance;
+    private Integer duration;
 
     public Edge() {
     }
@@ -16,6 +16,10 @@ public class Edge {
         this.duration = duration;
     }
 
+    public boolean hasStartStation() {
+        return preStationId == null;
+    }
+
     public Long getStationId() {
         return stationId;
     }
@@ -24,11 +28,15 @@ public class Edge {
         return preStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
+    }
+
+    public boolean isPreStationOf(final Edge edge) {
+        return this.stationId.equals(edge.preStationId);
     }
 }

@@ -1,14 +1,11 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -18,8 +15,8 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String color;
-    @MappedCollection(idColumn = "line_id")
-    private Set<Edge> stations = new HashSet<>();
+    @Embedded.Empty
+    private Edges edges = Edges.empty();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -61,17 +58,15 @@ public class Line {
     }
 
     public void addLineStation(Edge edge) {
-        // TODO: 구현
+        edges.add(edge);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        edges.removeByStationId(stationId);
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(Edge::getStationId)
-                .collect(Collectors.toList());
+        return edges.getStationsId();
     }
 
     public Long getId() {
@@ -94,8 +89,8 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<Edge> getStations() {
-        return stations;
+    public List<Edge> getEdges() {
+        return edges.getEdges();
     }
 
     public LocalDateTime getCreatedAt() {

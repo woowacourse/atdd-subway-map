@@ -61,13 +61,17 @@ public class LineService {
     }
 
     @Transactional
-    public void addLineStation(Long id, EdgeCreateRequest request) {
-        // TODO: 구현
+    public void addLineStation(Long lineId, EdgeCreateRequest request) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        line.addLineStation(request.toEdge());
     }
 
     @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        line.removeLineStationById(stationId);
     }
 
     @Transactional(readOnly = true)

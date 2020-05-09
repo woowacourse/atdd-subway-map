@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS EDGE
 (
     id             bigint auto_increment not null,
     line_id        bigint                not null,
+    line_key       bigint                not null,
     station_id     bigint                not null,
     pre_station_id bigint                not null,
     distance       int                   not null,

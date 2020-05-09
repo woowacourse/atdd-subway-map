@@ -1,5 +1,7 @@
 package wooteco.subway.admin.dto;
 
+import wooteco.subway.admin.domain.Edge;
+
 public class EdgeCreateRequest {
     private Long preStationId;
     private Long stationId;
@@ -30,5 +32,9 @@ public class EdgeCreateRequest {
 
     public int getDuration() {
         return duration;
+    }
+
+    public Edge toEdge() {
+        return new Edge(this.preStationId, this.stationId, this.distance, this.duration);
     }
 }
