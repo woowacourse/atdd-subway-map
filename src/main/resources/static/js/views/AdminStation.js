@@ -36,7 +36,6 @@ function AdminStation() {
             api.station.delete(id)
                 .then(response => $target.closest(".list-item").remove())
                 .catch(alert)
-
         }
     };
 
@@ -45,7 +44,22 @@ function AdminStation() {
         $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     };
 
+    const initSavedStations = () => {
+        api.station.get()
+            .then(response => {
+                response.body.map(station => {
+                    $stationList.insertAdjacentHTML(
+                        "beforeend",
+                        listItemTemplate(station.id, station.name)
+                    );
+                })
+
+            })
+            .catch(alert);
+    };
+
     const init = () => {
+        initSavedStations();
         initEventListeners();
     };
 
