@@ -31,4 +31,14 @@ public class LineStationCreateRequest {
     public int getDuration() {
         return duration;
     }
+
+    @Override
+    public String toString() {
+        return "LineStationCreateRequest{" +
+                "preStationId=" + preStationId +
+                ", stationId=" + stationId +
+                ", distance=" + distance +
+                ", duration=" + duration +
+                '}';
+    }
 }

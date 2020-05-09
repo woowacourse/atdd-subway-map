@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
+import wooteco.subway.admin.service.StationService;
 
 @RestController
 @RequestMapping("/lines")
@@ -27,6 +30,8 @@ public class LineController {
 
     @Autowired
     private LineService lineService;
+    @Autowired
+    private StationService stationService;
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
@@ -43,10 +48,11 @@ public class LineController {
     }
 
     @GetMapping
-    public List<LineResponse> getLines() {
-        return lineService.showLines().stream()
+    public ResponseEntity getLines() {
+        List<LineResponse> lineResponses = lineService.showLines().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
@@ -76,8 +82,19 @@ public class LineController {
 
     @PostMapping("/addStation/{id}")
     public ResponseEntity addStation(@PathVariable Long id,
-                                     @RequestBody LineStationCreateRequest LineStationCreateRequest) {
-        lineService.addLineStation(id, LineStationCreateRequest);
+                                     @RequestBody HashMap<String,String> map) {
+        Long preStationId = stationService.findStationId(map.get("preStationName"));
+        Station inputStation = stationService.save(map.get("stationName"));
+
+        LineStationCreateRequest lineStationCreateRequest =
+                new LineStationCreateRequest(
+                        preStationId,
+                        inputStation.getId(),
+                        Integer.parseInt(map.get("distance")),
+                        Integer.parseInt(map.get("duration")));
+
+        System.out.println(lineStationCreateRequest);
+        lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.ok().build();
     }
 

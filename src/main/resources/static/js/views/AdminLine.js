@@ -64,7 +64,8 @@ function AdminLine() {
 
     const onDeleteSubwayLine = event => {
         const $target = event.target;
-        const $id = $target.closest(".subway-line-item").id;
+        const $id = $target.closest(".subway-line-item").dataset.lineId;
+        console.log($id);
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton && confirm("지우시겠습니까?")) {
             fetch("/lines/" + $id, {
@@ -82,7 +83,7 @@ function AdminLine() {
         $isEdit = true;
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
-        const $id = $target.closest(".subway-line-item").id;
+        const $id = $target.closest(".subway-line-item").dataset.lineId;
         $editId = $id;
         if (isUpdateButton) {
             fetch(/lines/ + $id, {
@@ -130,7 +131,7 @@ function AdminLine() {
 
     const onInfoSubwayLine = event => {
         const $target = event.target;
-        const $id = $target.closest(".subway-line-item").id;
+        const $id = $target.closest(".subway-line-item").dataset.lineId;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         const isDeleteButton = $target.classList.contains("mdi-delete");
 

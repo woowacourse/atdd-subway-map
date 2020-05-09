@@ -29,15 +29,4 @@ class LineStationRepositoryTest {
 
         assertThat(lineStationRepository.findAllByLine(1L).size()).isEqualTo(1);
     }
-
-    @Test
-    void findByPreStationId() {
-        Line line = new Line("1호선", LocalTime.of(5, 30), LocalTime.of(23, 30), 10, "bg-gray-300");
-        LineStation lineStation = new LineStation(1L, 2L, 3, 4);
-        System.out.println(lineStation);
-        line.addLineStation(lineStation);
-        lineRepository.save(line);
-
-        assertThat(lineStationRepository.findByPreStationId(1L).isPresent()).isTrue();
-    }
 }

@@ -3,40 +3,58 @@ import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import {subwayLinesTemplate} from "../../utils/templates.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+    const $createEdgeButton = document.querySelector(
+        "#submit-button"
+    );
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = () => {
-        $subwayLinesSlider.innerHTML = defaultSubwayLines
-            .map(line => subwayLinesItemTemplate(line))
-            .join("");
-        tns({
-            container: ".subway-lines-slider",
-            loop: true,
-            slideBy: "page",
-            speed: 400,
-            autoplayButtonOutput: false,
-            mouseDrag: true,
-            lazyload: true,
-            controlsContainer: "#slider-controls",
-            items: 1,
-            edgePadding: 25
-        });
+        fetch("/lines", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'get'
+        }).then(res => res.json())
+            .then(data => {
+                $subwayLinesSlider.innerHTML = data
+                    .map(line => subwayLinesItemTemplate(line))
+                    .join("");
+                tns({
+                    container: ".subway-lines-slider",
+                    loop: true,
+                    slideBy: "page",
+                    speed: 400,
+                    autoplayButtonOutput: false,
+                    mouseDrag: true,
+                    lazyload: true,
+                    controlsContainer: "#slider-controls",
+                    items: 1,
+                    edgePadding: 25
+                });
+            })
     };
 
     const initSubwayLineOptions = () => {
-        const subwayLineOptionTemplate = defaultSubwayLines
-            .map(line => optionTemplate(line.title))
-            .join("");
-        const $stationSelectOptions = document.querySelector(
-            "#station-select-options"
-        );
-        $stationSelectOptions.insertAdjacentHTML(
-            "afterbegin",
-            subwayLineOptionTemplate
-        );
+        fetch("/lines", {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'get'
+        }).then(res => res.json())
+            .then(data => {
+                const subwayLineOptionTemplate =
+                    data.map(line => optionTemplate(line)).join("");
+                const $stationSelectOptions = document.querySelector(
+                    "#station-select-options"
+                );
+                $stationSelectOptions.insertAdjacentHTML(
+                    "afterbegin",
+                    subwayLineOptionTemplate);
+            })
     };
 
     const onRemoveStationHandler = event => {
@@ -47,11 +65,36 @@ function AdminEdge() {
         }
     };
 
+    const createEdge = event => {
+        event.preventDefault();
+        const $selectedLineId = document.querySelector("#optionTitle").dataset.lineId
+        const $preStationName = document.querySelector("#depart-station-name").value;
+        const $stationName = document.querySelector("#arrival-station-name").value;
+        const $distance = document.querySelector("#distance").value;
+        const $duration = document.querySelector("#duration").value;
+
+        fetch("lines/addStation/" + $selectedLineId, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                preStationName : $preStationName,
+                stationName : $stationName,
+                distance : $distance,
+                duration : $duration,
+            })
+        })
+
+        createSubwayEdgeModal.toggle();
+    }
+
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(
             EVENT_TYPE.CLICK,
             onRemoveStationHandler
         );
+        $createEdgeButton.addEventListener(EVENT_TYPE.CLICK, createEdge)
     };
 
     this.init = () => {
