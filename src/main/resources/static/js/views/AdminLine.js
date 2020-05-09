@@ -31,18 +31,18 @@ function AdminLine() {
 
     if (!isUpdate) {
       let newLine = await api.line.create(newSubwayLine);
-
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
         subwayLinesTemplate(newLine)
       );
-      $subwayLineNameInput.value = "";
-      $subwayLineColorInput.value = "";
     } else {
       const id = document.querySelector(".modal").dataset.sourceId;
       await api.line.update(id, newSubwayLine);
       await initDefaultSubwayLines();
     }
+
+    $subwayLineNameInput.value = "";
+    $subwayLineColorInput.value = "";
     isUpdate = false;
     subwayLineModal.toggle();
   };

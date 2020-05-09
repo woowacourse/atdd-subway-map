@@ -24,6 +24,10 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
+        }
+
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
@@ -52,6 +56,9 @@ public class LineService {
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
+        }
         line.update(lineRequest.toLine());
         lineRepository.save(line);
         List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
