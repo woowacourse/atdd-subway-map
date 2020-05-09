@@ -99,7 +99,7 @@ public class Line {
         Set<LineStation> newStations = new LinkedHashSet<>();
         int updated = 0;
         for (LineStation station : stations) {
-            if (lineStation.getPreStationId() == null) {
+            if (lineStation.getPreStationId() == 0) {
                 updated = 1;
                 newStations.add(lineStation);
                 newStations.add(station);
@@ -129,18 +129,14 @@ public class Line {
         int flag = 0;
         Long preLineStationId = null;
         for (LineStation station : stations) {
-            System.out.println("a");
             if (station.getStationId().equals(stationId)) {
-                System.out.println("b");
                 flag = 1;
                 continue;
             }
             if (flag == 1) {
-                System.out.println("c");
                 station.updatePreLineStation(preLineStationId);
                 flag = 0;
             }
-            System.out.println("d");
             newStations.add(station);
             preLineStationId = station.getStationId();
         }

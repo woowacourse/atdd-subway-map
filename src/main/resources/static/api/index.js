@@ -30,6 +30,9 @@ const api = (() => {
     get() {
       return request(`/stations`);
     },
+    getByName(name) {
+      return request(`/stations/id/${name}`);
+    },
     create(data) {
       return request(`/stations`, METHOD.POST(data));
     },
@@ -57,8 +60,13 @@ const api = (() => {
       return request(`/lines/${id}`, METHOD.DELETE());
     }
   };
+  const lineStation = {
+    create(data, id) {
+      return request(`/lines/${id}/stations`, METHOD.POST(data));
+    }
+  };
   return {
-    station, line
+    station, line, lineStation
   };
 })();
 export default api;

@@ -53,7 +53,7 @@ public class LineResponse {
         Iterator<Station> stationsIterator = stations.iterator();
         int i = 0;
         while (stationsIterator.hasNext()) {
-            stationArray[i++] = stationsIterator.next().toJsonString();
+            stationArray[i++] = stationsIterator.next().getName();
         }
         return new LineResponse(line.getId(), line.getName(), line.getStartTime().toString(), line.getEndTime().toString(), line.getIntervalTime(), line.getCreatedAt().toString(), line.getUpdatedAt().toString(), stationArray, line.getBgColor());
     }

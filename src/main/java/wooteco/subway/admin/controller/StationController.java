@@ -32,6 +32,16 @@ public class StationController {
         return ResponseEntity.ok().body(stationRepository.findAll());
     }
 
+    @GetMapping("/stations/id/")
+    public ResponseEntity findIdByNull() {
+        return ResponseEntity.ok().body(0L);
+    }
+
+    @GetMapping("/stations/id/{name}")
+    public ResponseEntity findIdByName(@PathVariable String name) {
+        return ResponseEntity.ok().body(stationRepository.findIdByName(name));
+    }
+
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.deleteById(id);

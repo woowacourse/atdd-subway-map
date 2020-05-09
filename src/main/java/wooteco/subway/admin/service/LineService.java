@@ -42,10 +42,10 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
+    public Line addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
         line.addLineStation(request.toLineStation());
-        lineRepository.save(line);
+        return lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

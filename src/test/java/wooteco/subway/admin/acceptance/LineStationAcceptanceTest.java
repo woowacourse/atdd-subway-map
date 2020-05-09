@@ -91,8 +91,8 @@ public class LineStationAcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("preStationId", String.valueOf(preStationId));
         params.put("stationId", String.valueOf(stationId));
-        params.put("distance", String.valueOf(30));
-        params.put("duration", String.valueOf(40));
+        params.put("distance", String.valueOf(10));
+        params.put("duration", String.valueOf(10));
 
         given().
                 body(params).
