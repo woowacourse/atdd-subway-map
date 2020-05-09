@@ -9,6 +9,7 @@ import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $openModalButton = document.querySelector(".modal-open");
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = () => {
@@ -55,6 +56,11 @@ function AdminEdge() {
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
+    $openModalButton.addEventListener(
+      EVENT_TYPE.CLICK,
+      createSubwayEdgeModal.toggle
+    )
+    ;
   };
 
   this.init = () => {

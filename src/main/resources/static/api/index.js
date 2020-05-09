@@ -47,7 +47,6 @@ export const api = (() => {
         }
     };
 
-
     const line = {
         getLines() {
             return request(`${BASE_URL}/line`);
@@ -67,8 +66,23 @@ export const api = (() => {
                 `${BASE_URL}/line/${lineId}`, METHOD.DELETE());
         }
     };
+
+    const edge = {
+        getLinesWithStations() {
+            return request(`${BASE_URL}/lineStation`);
+        },
+        create(lineId, data) {
+            return request(`${BASE_URL}/lineStation/${lineId}`, METHOD.POST(data));
+        },
+        delete(lineId, stationId) {
+            return requestWithoutResponseBody(
+                `${BASE_URL}/lineStation/${lineId}/${stationId}`, METHOD.DELETE());
+        }
+    };
+
     return {
         station,
-        line
+        line,
+        edge
     };
 })();

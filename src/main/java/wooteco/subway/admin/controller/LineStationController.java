@@ -15,8 +15,14 @@ public class LineStationController {
         this.lineService = lineService;
     }
 
+    @GetMapping
+    public ResponseEntity showLinesWithStation() {
+        return ResponseEntity.ok().body(lineService.showLinesWithStations());
+    }
+
     @PostMapping("/{lineId}")
-    public ResponseEntity create(@PathVariable Long lineId, @RequestBody LineStationCreateRequest request) {
+    public ResponseEntity create(@PathVariable Long lineId,
+            @RequestBody LineStationCreateRequest request) {
         lineService.addLineStation(lineId, request);
         return ResponseEntity.ok().build();
     }

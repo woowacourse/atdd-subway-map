@@ -30,7 +30,7 @@ function AdminLine() {
     $createSubwayLineButton.classList.remove("update")
     $createSubwayLineButton.classList.add("create")
     subwayLineModal.toggle()
-  }
+  };
 
   const onToggleModalForUpdate = event => {
     const $target = event.target;
@@ -38,7 +38,7 @@ function AdminLine() {
     $createSubwayLineButton.dataset.lineId = $target.closest(".subway-line-item").dataset.lineId
     $createSubwayLineButton.classList.remove("create")
     $createSubwayLineButton.classList.add("update")
-  }
+  };
 
   const onSubmitButton = event => {
     event.preventDefault();
@@ -49,7 +49,7 @@ function AdminLine() {
     if ($createSubwayLineButton.classList.contains("update")) {
       onUpdateSubwayLine(event)
     }
-  }
+  };
 
   const onCreateSubwayLine = async event => {
     let data = {
@@ -58,7 +58,7 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalTimeInput.value,
       color: $subwayLineColorInput.value
-    }
+    };
     const response = await api.line.create(data);
     console.log(response);
     $subwayLineList.insertAdjacentHTML(
@@ -78,15 +78,15 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalTimeInput.value,
       color: $subwayLineColorInput.value
-    }
-    const id = $createSubwayLineButton.dataset.lineId
+    };
+    const id = $createSubwayLineButton.dataset.lineId;
     api.line.update(id, data);
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
     $subwayLineColorInput.value = "";
-    const lines = Array.from($subwayLineList.childNodes)
+    const lines = Array.from($subwayLineList.childNodes);
     data.id = id;
-    lines.find(line => line.dataset.lineId === id).remove()
+    lines.find(line => line.dataset.lineId === id).remove();
     $subwayLineList.insertAdjacentHTML(
         "beforeend",
         subwayLinesTemplate(data)
@@ -95,24 +95,24 @@ function AdminLine() {
   };
 
   const onDeleteSubwayLine = event => {
-    const $target = event.target
-    api.line.delete($target.parentElement.parentElement.dataset.lineId)
+    const $target = event.target;
+    api.line.delete($target.parentElement.parentElement.dataset.lineId);
     $target.closest(".subway-line-item").remove();
     initDetail()
   };
 
   const showDetailLine = async event => {
-    const line = await api.line.getLine(event.target.dataset.lineId)
-    $subwayLineStartTimeInfo.innerHTML = line.startTime
-    $subwayLineEndTimeInfo.innerHTML = line.endTime
+    const line = await api.line.getLine(event.target.dataset.lineId);
+    $subwayLineStartTimeInfo.innerHTML = line.startTime;
+    $subwayLineEndTimeInfo.innerHTML = line.endTime;
     $subwayLineIntervalTimeInfo.innerHTML = line.intervalTime
-  }
+  };
 
   const initDetail = () => {
-    $subwayLineStartTimeInfo.innerHTML = ""
-    $subwayLineEndTimeInfo.innerHTML = ""
-    $subwayLineIntervalTimeInfo.innerHTML = ""
-  }
+    $subwayLineStartTimeInfo.innerHTML = "";
+    $subwayLineEndTimeInfo.innerHTML = "";
+    $subwayLineIntervalTimeInfo.innerHTML = "";
+  };
 
   const onEditSubwayLine = event => {
     const $target = event.target;
@@ -131,11 +131,11 @@ function AdminLine() {
   const onSubwayLineListClicked = (event) => {
     const $target = event.target;
     if ($target.classList.contains("mdi-delete")) {  // is delete button
-      onDeleteSubwayLine(event)
+      onDeleteSubwayLine(event);
       return
     }
     if ($target.classList.contains("mdi-pencil")) {
-      onToggleModalForUpdate(event)
+      onToggleModalForUpdate(event);
       return;
     }
     showDetailLine(event)
@@ -175,14 +175,12 @@ function AdminLine() {
 
   const initLine = async () => {
     const lines =  await api.line.getLines();
-    console.log(lines)
     lines.forEach(line => {
       $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line))
     });
   };
 
   this.init = () => {
-    // initDefaultSubwayLines();
     initLine();
     initEventListeners();
     initCreateSubwayLineForm();

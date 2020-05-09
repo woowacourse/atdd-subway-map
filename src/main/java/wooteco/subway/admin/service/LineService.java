@@ -1,5 +1,6 @@
 package wooteco.subway.admin.service;
 
+import java.util.Collections;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -59,13 +60,23 @@ public class LineService {
 
     public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return findLineWithOrderedStations(line);
+    }
+
+    public List<LineWithOrderedStationsResponse> showLinesWithStations() {
+        List<Line> lines = lineRepository.findAll();
+        return Collections.unmodifiableList(
+            lines.stream()
+                .map(this::findLineWithOrderedStations)
+                .collect(Collectors.toList()));
+    }
+
+    private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
         List<Long> orderedStationIds = line.getStationsId();
-        orderedStationIds.forEach(test -> {
-            System.out.println("##"+test);
-        });
         List<Station> orderedStations = orderedStationIds.stream()
-                .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
-                .collect(Collectors.toList());
+            .map(stationId ->
+                stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
+            .collect(Collectors.toList());
         return LineWithOrderedStationsResponse.of(line, orderedStations);
     }
 }
