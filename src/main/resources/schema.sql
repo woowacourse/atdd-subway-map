@@ -15,5 +15,15 @@ create table if not exists LINE
    interval_time int not null,
    created_at datetime,
    updated_at datetime,
+   bg_color varchar(255),
    primary key(id)
+);
+
+create table if not exists line_station (
+    line bigint,
+    line_key int,
+    station_id bigint,
+    pre_station_id bigint,
+    distance int,
+    duration int
 );

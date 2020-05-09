@@ -1,15 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.Request;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -32,7 +34,6 @@ public class LineAcceptanceTest {
     public static RequestSpecification given() {
         return RestAssured.given().log().all();
     }
-
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -73,10 +74,10 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
+                get("/lines/" + id).
                 then().
-                        log().all().
-                        extract().as(LineResponse.class);
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
@@ -85,14 +86,15 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        Request<Map<String, String>> param = new Request<>(params);
 
         given().
-                body(params).
+                body(param).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -102,14 +104,15 @@ public class LineAcceptanceTest {
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        Request<Map<String, String>> param = new Request<>(params);
 
         given().
-                body(params).
+                body(param).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
@@ -117,9 +120,9 @@ public class LineAcceptanceTest {
     private List<LineResponse> getLines() {
         return
                 given().
-                when().
+                        when().
                         get("/lines").
-                then().
+                        then().
                         log().all().
                         extract().
                         jsonPath().getList(".", LineResponse.class);

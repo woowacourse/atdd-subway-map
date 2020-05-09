@@ -4,7 +4,12 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class Line {
     @Id
@@ -13,7 +18,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private String bgColor;
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,6 +37,16 @@ public class Line {
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this(null, name, startTime, endTime, intervalTime);
+    }
+
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -53,7 +69,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -63,6 +79,10 @@ public class Line {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getBgColor() {
+        return bgColor;
     }
 
     public void update(Line line) {
@@ -84,14 +104,67 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
+        if (stations.isEmpty()) {
+            stations.add(lineStation);
+            return;
+        }
+
+        if (lineStation.getPreStationId() == null) {
+            LineStation firstLineStation = stations.get(0);
+            firstLineStation.modifyPreStationId(lineStation.getStationId());
+            stations.add(0, lineStation);
+            return;
+        }
+
+        LineStation targetLineStation = stations.stream()
+                .filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
+        int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+
+        if (nextLineStationIndex < stations.size() - 1) {
+            LineStation nextLineStation = stations.get(nextLineStationIndex);
+            nextLineStation.modifyPreStationId(lineStation.getStationId());
+            stations.add(nextLineStationIndex, lineStation);
+            stations.set(nextLineStationIndex + 1, nextLineStation);
+            return;
+        }
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
         // TODO: 구현
+        LineStation targetLineStation = stations.stream()
+                .filter(station -> station.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
+        int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+
+        if (targetLineStation.getPreStationId() == null) {
+            LineStation nextLineStation = stations.get(nextLineStationIndex);
+            nextLineStation.modifyPreStationId(null);
+            stations.set(nextLineStationIndex, nextLineStation);
+            stations.remove(targetLineStation);
+            return;
+        }
+
+        if (nextLineStationIndex <= stations.size() - 1) {
+            LineStation nextLineStation = stations.get(nextLineStationIndex);
+            LineStation preLineStation = stations.get(nextLineStationIndex - 1);
+            nextLineStation.modifyPreStationId(preLineStation.getStationId());
+            stations.set(nextLineStationIndex, nextLineStation);
+            stations.remove(targetLineStation);
+            return;
+        }
+
+        stations.remove(targetLineStation);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> findLineStationsId() {
         // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 }
