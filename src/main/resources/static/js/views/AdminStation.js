@@ -1,5 +1,6 @@
 import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
+import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
@@ -32,8 +33,16 @@ function AdminStation() {
     if (!isValidStationName(stationName)) {
       return;
     }
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+
+    api.station.create({"name": stationName})
+        .then(data => data.json())
+        .then(station => {
+          $stationList.insertAdjacentHTML(
+              "beforeend",
+              listItemTemplate(station));
+          $stationNameInput.value = "";
+        })
+        .catch(error => console.log(error));
   };
 
   const onRemoveStationHandler = event => {
@@ -41,7 +50,11 @@ function AdminStation() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     const isYes = confirm("정말 삭제하시겠습니까?")
     if (isDeleteButton && isYes) {
-      $target.closest(".list-item").remove();
+      const $deleteStationItem = $target.closest(".list-item");
+      const stationId = $deleteStationItem.dataset.stationId;
+      api.station.delete(stationId)
+          .then(() => $deleteStationItem.remove())
+          .catch(error => console.log(error));
     }
   };
 
