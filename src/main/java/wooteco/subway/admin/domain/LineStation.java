@@ -35,4 +35,8 @@ public class LineStation {
 	public void updatePreLineStation(Long preStationId) {
 		this.preStationId = preStationId;
 	}
+
+	public boolean hasSameStationId(LineStation lineStation) {
+		return this.stationId.equals(lineStation.stationId);
+	}
 }

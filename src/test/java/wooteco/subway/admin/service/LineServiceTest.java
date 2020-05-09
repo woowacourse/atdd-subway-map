@@ -50,11 +50,7 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
 
-		assertThat(line.getStations()).hasSize(4);
-		assertThat(line.findLineStationsId().get(0)).isEqualTo(4L);
-		assertThat(line.findLineStationsId().get(1)).isEqualTo(1L);
-		assertThat(line.findLineStationsId().get(2)).isEqualTo(2L);
-		assertThat(line.findLineStationsId().get(3)).isEqualTo(3L);
+		assertThat(line.findLineStationsId()).containsExactly(4L, 1L, 2L, 3L);
 	}
 
 	@Test
@@ -64,7 +60,6 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
 
-		assertThat(line.getStations()).hasSize(4);
 		assertThat(line.findLineStationsId()).containsExactly(1L, 4L, 2L, 3L);
 	}
 

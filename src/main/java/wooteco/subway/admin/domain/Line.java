@@ -87,74 +87,77 @@ public class Line {
 		if (line.getBgColor() != null) {
 			this.bgColor = line.getBgColor();
 		}
-
 		this.updatedAt = LocalDateTime.now();
 	}
 
 	public void addLineStation(LineStation lineStation) {
+		validateDuplicateLineStationId(lineStation);
 		if (stations.isEmpty()) {
 			stations.add(lineStation);
 			return;
 		}
-
 		if (lineStation.getPreStationId() == null) {
-			LineStation firstLineStation = stations.get(0);
-			firstLineStation.updatePreLineStation(lineStation.getStationId());
-			stations.add(0, lineStation);
+			updateNextAndInsertNode(0, lineStation);
 			return;
 		}
+		addIfStationIsNotDepart(lineStation);
+	}
 
-		LineStation targetLineStation = stations.stream()
-			.filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
-			.findFirst()
-			.orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-		int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+	private void validateDuplicateLineStationId(LineStation lineStation) {
+		boolean isAlreadyExistStationId = stations.stream()
+			.anyMatch(station -> station.hasSameStationId(lineStation));
+		if (isAlreadyExistStationId) {
+			throw new IllegalArgumentException("이미 해당 구간에 포함된 역입니다.");
+		}
+	}
 
-		if (nextLineStationIndex < stations.size()) {
-			LineStation nextLineStation = stations.get(nextLineStationIndex);
-			nextLineStation.updatePreLineStation(lineStation.getStationId());
-			stations.add(nextLineStationIndex, lineStation);
-			stations.set(nextLineStationIndex + 1, nextLineStation);
+	private void updateNextAndInsertNode(int index, LineStation lineStation) {
+		LineStation newLineStation = stations.get(index);
+		newLineStation.updatePreLineStation(lineStation.getStationId());
+		stations.add(index, lineStation);
+	}
+
+	private void addIfStationIsNotDepart(LineStation lineStation) {
+		if (stations.isEmpty() || lineStation.getPreStationId() == null) {
 			return;
 		}
-
+		LineStation prevLineStation = findPrevLineStationFrom(lineStation);
+		int newIndex = stations.indexOf(prevLineStation) + 1;
+		if (newIndex < stations.size()) {
+			updateNextAndInsertNode(newIndex, lineStation);
+			return;
+		}
 		stations.add(lineStation);
 	}
 
-	public void removeLineStationById(Long stationId) {
-		if (stations.isEmpty()) {
-			throw new IllegalStateException();
-		}
-
-		if (stations.size() == 1) {
-			stations.clear();
-			return;
-		}
-
-		LineStation targetLineStation = stations.stream()
-			.filter(station -> station.getStationId().equals(stationId))
+	private LineStation findPrevLineStationFrom(LineStation lineStation) {
+		return stations.stream()
+			.filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
 			.findFirst()
 			.orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-		int nextLineStationIndex = stations.indexOf(targetLineStation) + 1;
+	}
 
-		if (targetLineStation.getPreStationId() == null) {
-			LineStation nextLineStation = stations.get(nextLineStationIndex);
-			nextLineStation.updatePreLineStation(null);
-			stations.set(nextLineStationIndex, nextLineStation);
-			stations.remove(targetLineStation);
+	public void removeLineStationById(Long targetStationId) {
+		LineStation target = findLineStationWithStationId(targetStationId);
+		int targetIndex = stations.indexOf(target);
+		if (isStationLastIndex(targetIndex)) {
+			stations.remove(target);
 			return;
 		}
+		LineStation nextNode = stations.get(targetIndex + 1);
+		nextNode.updatePreLineStation(target.getPreStationId());
+		stations.remove(target);
+	}
 
-		if (nextLineStationIndex <= stations.size() - 1) {
-			LineStation nextLineStation = stations.get(nextLineStationIndex);
-			LineStation preLineStation = stations.get(nextLineStationIndex - 1);
-			nextLineStation.updatePreLineStation(preLineStation.getPreStationId());
-			stations.set(nextLineStationIndex, nextLineStation);
-			stations.remove(targetLineStation);
-			return;
-		}
+	private LineStation findLineStationWithStationId(Long stationId) {
+		return stations.stream()
+			.filter(station -> station.getStationId().equals(stationId))
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("해당 역이 없습니다."));
+	}
 
-		stations.remove(targetLineStation);
+	private boolean isStationLastIndex(int index) {
+		return index == stations.size() - 1;
 	}
 
 	public List<Long> findLineStationsId() {
