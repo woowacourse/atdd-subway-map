@@ -2,10 +2,12 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -52,13 +54,16 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + lineId));
+        line.removeLineStationById(stationId);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
 
-        return LineResponse.of(line);
+        Set<Station> stations = stationRepository.findAllById(line.getStationsId());
+        return LineResponse.of(line, stations);
     }
 }

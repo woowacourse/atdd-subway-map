@@ -71,7 +71,7 @@ public class LineServiceTest {
             .hasMessage("중복된 지하철 역입니다. name = " + updated.getName());
     }
 
-    @DisplayName("노선의 시작역을 추가")
+    @DisplayName("노선의 시작역을 맨 앞에 추가")
     @Test
     void addLineStationAtTheFirstOfLine() {
         // given
@@ -83,12 +83,13 @@ public class LineServiceTest {
 
         // then
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(4L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(1L);
+        assertThat(line.getStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.getStationsId().get(3)).isEqualTo(3L);
     }
 
+    @DisplayName("노선의 시작역을 중간에 추가")
     @Test
     void addLineStationBetweenTwo() {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
@@ -97,12 +98,13 @@ public class LineServiceTest {
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(4L);
+        assertThat(line.getStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.getStationsId().get(3)).isEqualTo(3L);
     }
 
+    @DisplayName("노선의 시작역을 마지막에 추가")
     @Test
     void addLineStationAtTheEndOfLine() {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
@@ -111,42 +113,46 @@ public class LineServiceTest {
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(3L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(4L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.getStationsId().get(2)).isEqualTo(3L);
+        assertThat(line.getStationsId().get(3)).isEqualTo(4L);
     }
 
+    @DisplayName("노선의 시작역을 노선에서 제외")
     @Test
     void removeLineStationAtTheFirstOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 1L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(2L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(3L);
     }
 
+    @DisplayName("노선의 중간역을 노선에서 제외")
     @Test
     void removeLineStationBetweenTwo() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 2L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(3L);
     }
 
+    @DisplayName("노선의 마지막 역을 노선에서 제외")
     @Test
     void removeLineStationAtTheEndOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 3L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.getStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.getStationsId().get(1)).isEqualTo(2L);
     }
 
+    @DisplayName("노선과 노선의 지하철역을 조회")
     @Test
     void findLineWithStationsById() {
         Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));

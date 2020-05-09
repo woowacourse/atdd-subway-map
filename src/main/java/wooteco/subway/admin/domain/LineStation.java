@@ -52,4 +52,8 @@ public class LineStation {
     public boolean isPreNodeOf(LineStation lineStation) {
         return stationId.equals(lineStation.preStationId);
     }
+
+    public boolean sameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
 }

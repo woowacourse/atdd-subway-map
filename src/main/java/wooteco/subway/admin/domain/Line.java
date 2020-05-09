@@ -117,10 +117,22 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation nodeToRemove = stations.stream()
+            .filter(lineStation -> lineStation.sameStationId(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "ID = " + stationId + "인 역이 존재하지 않습니다.")
+            );
+
+        stations.stream()
+            .filter(nodeToRemove::isPreNodeOf)
+            .findFirst()
+            .ifPresent(lineStation -> lineStation.updatePreLineStation(nodeToRemove.getPreStationId()));
+
+        stations.remove(nodeToRemove);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> getStationsId() {
         List<Long> sortedStationsId = new ArrayList<>();
 
         LineStation preNode = stations.stream()
