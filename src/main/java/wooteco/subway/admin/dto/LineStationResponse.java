@@ -52,7 +52,6 @@ public class LineStationResponse {
 
         for (int index = 1; index < lineStations.size(); index++) {
             LineStation lineStation = lineStations.get(index);
-            System.err.println(lineStation.getStationId());
             lineStationResponses.add(LineStationResponse.of(
                     lineStation,
                     stations.get(lineStation.getStationId()),
