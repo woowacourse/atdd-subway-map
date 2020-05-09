@@ -61,6 +61,13 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public List<LineStationsResponse> findAllLineStations() {
+        return lineRepository.findAll()
+                .stream()
+                .map(line -> findLineStationsById(line.getId()))
+                .collect(Collectors.toList());
+    }
+
     public LineStationsResponse findLineStationsById(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         List<Long> lineStations = line.getStations()
