@@ -106,7 +106,7 @@ public class Line {
             throw new NoSuchElementException("이전 역이 등록되지 않았습니다.");
         }
 
-        Optional<LineStation> nextStation = findStationByPreStation(lineStation.getPreStationId());
+        Optional<LineStation> nextStation = findNextStationBy(lineStation.getPreStationId());
         if (nextStation.isPresent()) {
             addBetweenTwo(lineStation, nextStation.get());
             return;
@@ -134,18 +134,24 @@ public class Line {
                 .noneMatch(id -> lineStation.getPreStationId().equals(id));
     }
 
-    private Optional<LineStation> findStationByPreStation(Long preStationId) {
+    private Optional<LineStation> findNextStationBy(Long stationId) {
         return stations.stream()
-                .filter(station -> preStationId.equals(station.getPreStationId()))
+                .filter(station -> stationId.equals(station.getPreStationId()))
                 .findFirst();
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStationToRemove = stations.stream()
-                .filter(linestation -> linestation.getStationId().equals(stationId))
+        LineStation station = findStationBy(stationId);
+        findNextStationBy(stationId)
+                .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
+        stations.remove(station);
+    }
+
+    private LineStation findStationBy(Long stationId) {
+        return stations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
-        stations.remove(lineStationToRemove);
     }
 
     public List<Long> getLineStationsId() {

@@ -48,7 +48,10 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
