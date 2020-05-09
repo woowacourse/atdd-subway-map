@@ -64,8 +64,6 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request.toLineStation());
 
-        line.getStations().forEach(System.out::println);
-
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);

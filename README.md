@@ -62,8 +62,10 @@
 ## 4단계 - 노선별 지하철역 / 기능구현
 
  - [x] LineTest 통과
- - [ ] LineServiceTest 통과
-    - [ ] LineStation 기능 구현
+ - [x] LineServiceTest 통과
+    - [x] LineStation 기능 구현
         - [x] 역 추가
         - [x] 역 제거
-        - [ ] 역 조회
+        - [x] 역 조회
+ - [ ] LineStationAcceptanceTest Mock 대체
+    - [ ] LineController 기능 구

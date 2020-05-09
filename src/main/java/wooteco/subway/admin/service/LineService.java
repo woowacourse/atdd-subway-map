@@ -3,12 +3,15 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class LineService {
@@ -57,6 +60,14 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
-        return LineResponse.of(line);
+        return LineResponse.of(line, findStationsOf(line));
+    }
+
+    private Set<Station> findStationsOf(Line line) {
+        Set<Station> stations = new HashSet<>();
+        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
+            stations.add(station);
+        }
+        return stations;
     }
 }
