@@ -34,8 +34,15 @@ public class LineService {
         return lineRepository.countDistinctByName(name) == 0;
     }
 
-    public List<Line> showLines() {
+    public List<Line> findLines() {
         return lineRepository.findAll();
+    }
+
+    public LineResponse findLineWithStationsById(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(id));
+        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        return LineResponse.of(line, stations);
     }
 
     public Line updateLine(Long id, Line line) {
@@ -46,9 +53,8 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        Line persistLine = lineRepository.findById(id)
-            .orElseThrow(() -> new LineNotFoundException(id));
-        lineRepository.deleteById(persistLine.getId());
+        lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
+        lineRepository.deleteById(id);
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
@@ -63,12 +69,5 @@ public class LineService {
             .orElseThrow(() -> new LineNotFoundException(lineId));
         persistLine.removeLineStationById(stationId);
         lineRepository.save(persistLine);
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new LineNotFoundException(id));
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-        return LineResponse.of(line, stations);
     }
 }

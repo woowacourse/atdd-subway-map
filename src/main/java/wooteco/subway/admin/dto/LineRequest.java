@@ -14,6 +14,10 @@ public class LineRequest {
     public LineRequest() {
     }
 
+    public Line toLine() {
+        return new Line(name, startTime, endTime, intervalTime, bgColor);
+    }
+
     public String getName() {
         return name;
     }
@@ -32,9 +36,5 @@ public class LineRequest {
 
     public String getBgColor() {
         return bgColor;
-    }
-
-    public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime, bgColor);
     }
 }

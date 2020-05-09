@@ -16,15 +16,15 @@ public class LineResponse {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
+    private List<Station> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    private List<Station> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+        int intervalTime,
         String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
         this.id = id;
         this.name = name;
@@ -38,13 +38,15 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
+            line.getEndTime(),
             line.getIntervalTime(),
             line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new ArrayList<>());
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
+            line.getEndTime(),
             line.getIntervalTime(),
             line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
