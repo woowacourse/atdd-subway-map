@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
@@ -25,8 +26,8 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse save(Line line) {
+        return LineResponse.of(lineRepository.save(line));
     }
 
     public List<LineResponse> showLines() {
@@ -35,10 +36,10 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public void updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(line);
-        lineRepository.save(persistLine);
+        persistLine.update(lineRequest.toLine());
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void deleteLineById(Long id) {
@@ -46,7 +47,6 @@ public class LineService {
     }
 
     public LineStationResponse addLineStation(LineStationRequest request) {
-        // TODO: 구현
         Line line = lineRepository.findById(request.getLineId())
             .orElseThrow(IllegalArgumentException::new);
         LineStation lineStation = request.toEntity();

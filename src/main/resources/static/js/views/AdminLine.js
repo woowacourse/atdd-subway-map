@@ -23,22 +23,23 @@ function AdminLine() {
   const subwayLineModal = new Modal();
 
   function updateLine(data) {
-    fetch("lines/" + updateId, {
+    fetch("/lines/" + updateId, {
       method: "PUT",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).then(() => {
+    }).then(response => response.json())
+    .then(jsonResponse => {
       let lines = document.querySelectorAll(".line-id");
       for (let line of lines) {
         if (line.innerText.trim() === updateId) {
-          line.parentNode.innerHTML = innerSubwayLinesTemplate(data);
+          line.parentNode.innerHTML = innerSubwayLinesTemplate(jsonResponse);
         }
       }
       updateId = null;
     });
-  }
+  };
 
   function createLine(data) {
     fetch("/lines", {
@@ -72,11 +73,13 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value
     }
 
-    validate(data);
+
 
     if (updateId) {
+      validate(data, true);
       updateLine(data);
     } else {
+      validate(data, false);
       createLine(data);
     }
 
@@ -88,7 +91,7 @@ function AdminLine() {
     $subwayLineColorInput.value = "";
   };
 
-  function validate(line) {
+  function validate(line, isUpdate) {
     if (!line.name || !line.startTime || !line.endTime || !line.intervalTime || !line.bgColor) {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       throw new Error();
@@ -97,12 +100,12 @@ function AdminLine() {
       alert(ERROR_MESSAGE.NOT_BLANK);
       throw new Error();
     }
-    //myCode
-    if (duplicatedName(line.name) || duplicatedColor(line.bgColor)) {
-      alert(ERROR_MESSAGE.DUPLICATED);
-      throw new Error();
+    if(!isUpdate) {
+      if (duplicatedName(line.name) || duplicatedColor(line.bgColor)) {
+        alert(ERROR_MESSAGE.DUPLICATED);
+        throw new Error();
+      }
     }
-
   }
 
   function duplicatedName(input) {

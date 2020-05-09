@@ -18,7 +18,6 @@ public class LineResponse {
     private String bgColor;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private List<Station> stations;
 
     public LineResponse() {
