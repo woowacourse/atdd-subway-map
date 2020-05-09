@@ -1,5 +1,6 @@
 import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
+import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
@@ -16,8 +17,12 @@ function AdminStation() {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       return;
     }
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    api.station.create({name: stationName})
+      .then(data => {
+        $stationNameInput.value = "";
+        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+      })
+
   };
 
   const onRemoveStationHandler = event => {
