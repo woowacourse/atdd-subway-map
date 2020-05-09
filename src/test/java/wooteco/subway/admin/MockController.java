@@ -2,14 +2,12 @@ package wooteco.subway.admin;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 
 import java.net.URI;
 import java.time.LocalTime;
@@ -17,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/lines")
@@ -37,5 +36,17 @@ public class MockController {
         LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
         lineStations.get(id).add(lineStation);
         return ResponseEntity.created(URI.create("")).build();
+    }
+
+    @GetMapping("/{id}/stations")
+    public ResponseEntity getStationsOfLine(@PathVariable Long id) {
+        List<StationResponse> response = lineStations.get(id)
+                .stream()
+                .map(lineStation -> stations.get(lineStation.getStationId()))
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .body(response);
     }
 }

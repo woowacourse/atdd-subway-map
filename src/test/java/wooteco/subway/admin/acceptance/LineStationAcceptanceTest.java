@@ -10,9 +10,13 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -47,13 +51,18 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
-        //when
-        //then
+        //when //then
+        addStationToLine(1L, null, 1L);
         addStationToLine(1L, 1L, 2L);
 
+        //when
+        List<StationResponse> stations = getStationsOfLine(1L);
+        //then
+        assertThat(stations.get(0).getName()).isEqualTo("강남역");
+        assertThat(stations.get(1).getName()).isEqualTo("역삼역");
     }
 
-    private void addStationToLine(long lineId, long preStationId, long stationId) {
+    private void addStationToLine(Long lineId, Long preStationId, Long stationId) {
         Map<String, String> params = new HashMap<>();
         params.put("preStationId", String.valueOf(preStationId));
         params.put("stationId", String.valueOf(stationId));
@@ -69,5 +78,15 @@ public class LineStationAcceptanceTest {
                 then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
+    }
+
+    private List<StationResponse> getStationsOfLine(Long lineId) {
+        return given().
+                when().
+                get("/lines/" + lineId + "/stations").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 }
