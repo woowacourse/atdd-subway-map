@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,11 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStationToRemove = stations.stream()
+                .filter(linestation -> linestation.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
+        stations.remove(lineStationToRemove);
     }
 
     public List<Long> getLineStationsId() {

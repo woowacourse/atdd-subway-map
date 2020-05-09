@@ -62,7 +62,7 @@
 ## 4단계 - 노선별 지하철역 / 기능구현
 
  - [ ] LineServiceTest 통과
- - [ ] LineTest 통과
+ - [x] LineTest 통과
  - [ ] LineStation 기능 구현
     - [ ] 역 추가
     - [ ] 역 제거
