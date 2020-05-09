@@ -83,8 +83,9 @@ function AdminEdge() {
       distance: 10,
       duration: 10
     };
-    await api.edge.create(lineId, data).catch().finally(() =>
-      createSubwayEdgeModal.toggle());
+    await api.edge.create(lineId, data);
+
+    createSubwayEdgeModal.toggle();
   };
 
   const initEventListeners =  () => {

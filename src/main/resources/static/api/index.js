@@ -70,7 +70,7 @@ export const api = (() => {
       return request(`${BASE_URL}/lineStation`);
     },
     create(lineId, data) {
-      return request(`${BASE_URL}/lineStation/${lineId}`, METHOD.POST(data));
+      return requestWithoutResponseBody(`${BASE_URL}/lineStation/${lineId}`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
       return requestWithoutResponseBody(
