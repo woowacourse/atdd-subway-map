@@ -28,4 +28,5 @@ public class Station {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
 }

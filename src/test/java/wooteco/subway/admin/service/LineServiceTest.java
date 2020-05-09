@@ -35,7 +35,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "red", "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "2호선", "red", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -47,7 +47,8 @@ public class LineServiceTest {
     void addLineStationAtTheFirstOfLine() {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.findById(line.getId()))
+            .thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -61,7 +62,8 @@ public class LineServiceTest {
     void addLineStationBetweenTwo() {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.findById(line.getId()))
+            .thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -122,6 +124,7 @@ public class LineServiceTest {
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        System.out.println(lineResponse);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }

@@ -40,13 +40,18 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getBgColor(), line.getStartTime(), line.getEndTime(),
+        return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
+            line.getStartTime(), line.getEndTime(),
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+    }
+
+    public void setStations(Set<Station> stations) {
+        this.stations = stations;
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(it -> LineResponse.of(it))
+            .map(it -> LineResponse.of(it))
             .collect(Collectors.toList());
     }
 

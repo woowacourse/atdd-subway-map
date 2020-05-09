@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,14 +19,15 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private Set<LineStation> stations = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
+        int intervalTime) {
         this.name = name;
         this.bgColor = bgColor;
         this.startTime = startTime;
@@ -35,7 +37,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
+        int intervalTime) {
         this(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
@@ -97,19 +100,58 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
-        stations.add(lineStation);
+        List<Long> ids = this.findLineStationsId();
+        if (lineStation.getPreStationId() == null || ids.get(ids.size() - 1)
+            .equals(lineStation.getPreStationId())) {
+            stations.add(lineStation);
+            return;
+        }
+        for (LineStation station : stations) {
+            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
+                stations.add(lineStation);
+                stations.add(new LineStation(lineStation.getStationId(), station.getStationId(),
+                    station.getDistance(), station.getDuration()));
+                stations.remove(station);
+                break;
+            }
+        }
     }
 
     public void removeLineStationById(Long stationId) {
         // TODO: 구현
-        stations.remove(stationId);
+        Long previousId = null;
+        for (LineStation station : stations) {
+            if (stationId.equals(station.getStationId())) {
+                previousId = station.getPreStationId();
+                stations.remove(station);
+                break;
+            }
+        }
+        for (LineStation station : stations) {
+            if (stationId.equals(station.getPreStationId())) {
+                stations.add(
+                    new LineStation(previousId, station.getStationId(), station.getDistance(),
+                        station.getDuration()));
+                stations.remove(station);
+                break;
+            }
+        }
     }
 
     public List<Long> findLineStationsId() {
         // TODO: 구현
         List<Long> ids = new ArrayList<>();
         for (LineStation station : stations) {
-            ids.add(station.getStationId());
+            if (station.getPreStationId() == null) {
+                ids.add(station.getStationId());
+            }
+        }
+        for (int i = 0; i < stations.size() - 1; i++) {
+            for (LineStation lineStation : stations) {
+                if (ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
+                    ids.add(lineStation.getStationId());
+                }
+            }
         }
         return ids;
     }
