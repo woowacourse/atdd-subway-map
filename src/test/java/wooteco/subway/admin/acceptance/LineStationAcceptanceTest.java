@@ -24,65 +24,61 @@ import wooteco.subway.admin.service.LineStationService;
 
 @ExtendWith(MockitoExtension.class)
 public class LineStationAcceptanceTest {
+	@Mock
+	private LineRepository lineRepository;
+	@Mock
+	private StationRepository stationRepository;
 
-    @Mock
-    private LineRepository lineRepository;
+	private LineStationService lineStationService;
+	private Line line;
+	private Station preStation;
+	private Station station;
 
-    @Mock
-    private StationRepository stationRepository;
+	@BeforeEach
+	void setUp() {
+		lineStationService = new LineStationService(lineRepository, stationRepository);
+		line = new Line(1L, "1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+		line.setLineStations(new HashSet<>());
+		preStation = new Station(2L, "사당역");
+		station = new Station(3L, "강남역");
+	}
 
-    private Line line;
-    private Station preStation;
-    private Station station;
-    private LineStation lineStation;
+	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
+	@Test
+	void manageLineStation() {
+		// When 지하철 노선에 지하철 역을 등록하는 요청을 한다.
+		// Then 지하철역이 노선에 추가 되었다.
+		when(lineRepository.findByName("1호선")).thenReturn(Optional.of(line));
+		when(stationRepository.findByName("사당역")).thenReturn(Optional.of(preStation));
+		when(stationRepository.findByName("강남역")).thenReturn(Optional.of(station));
 
-    private LineStationService lineStationService;
+		LineStation lineStation = lineStationService.createLineStation("1호선", "사당역", "강남역", 1, 1);
+		assertThat(lineStation.getLine()).isEqualTo(1L);
+		assertThat(lineStation.getPreStationId()).isEqualTo(2L);
+		assertThat(lineStation.getStationId()).isEqualTo(3L);
 
-    @BeforeEach
-    void setUp() {
-        lineStationService = new LineStationService(lineRepository, stationRepository);
-        line = new Line(1L,"1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
-        line.setLineStations(new HashSet<>());
-        preStation = new Station(2L, "사당역");
-        station = new Station(3L, "강남역");
-    }
+		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+		// Then 지하철역 목록을 응답 받는다.
+		// And 새로 추가한 지하철역을 목록에서 찾는다.
+		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-    @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
-    @Test
-    void manageLineStation() {
-        // When 지하철 노선에 지하철 역을 등록하는 요청을 한다.
-        // Then 지하철역이 노선에 추가 되었다.
-        when(lineRepository.findByName("1호선")).thenReturn(Optional.of(line));
-        when(stationRepository.findByName("사당역")).thenReturn(Optional.of(preStation));
-        when(stationRepository.findByName("강남역")).thenReturn(Optional.of(station));
+		Set<LineStation> lineStations = lineStationService.findLineStation(line.getId());
+		assertThat(lineStations.contains(lineStation)).isTrue();
 
-        lineStation = lineStationService.createLineStation("1호선", "사당역", "강남역", 1, 1);
-        assertThat(lineStation.getLine()).isEqualTo(1L);
-        assertThat(lineStation.getPreStationId()).isEqualTo(2L);
-        assertThat(lineStation.getStationId()).isEqualTo(3L);
+		// When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+		// Then 지하철역이 노선에서 제거 되었다.
 
-        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        // Then 지하철역 목록을 응답 받는다.
-        // And 새로 추가한 지하철역을 목록에서 찾는다.
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-        Set<LineStation> lineStations = lineStationService.findLineStation(line.getId());
-        assertThat(lineStations.contains(lineStation)).isTrue();
+		LineStation removedLineStation = lineStationService.removeLineStation(line.getId(),
+				station.getId());
+		assertThat(lineStation).isEqualTo(removedLineStation);
 
-        // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-        // Then 지하철역이 노선에서 제거 되었다.
+		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+		// Then 지하철역 목록을 응답 받는다.
+		// And 제외한 지하철역이 목록에 존재하지 않는다.
+		lineStations = lineStationService.findLineStation(line.getId());
 
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
-
-        LineStation removedLineStation = lineStationService.removeLineStation(line.getId(),
-                station.getId());
-        assertThat(lineStation).isEqualTo(removedLineStation);
-
-        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        // Then 지하철역 목록을 응답 받는다.
-        // And 제외한 지하철역이 목록에 존재하지 않는다.
-        lineStations = lineStationService.findLineStation(line.getId());
-
-        assertThat(lineStations.contains(removedLineStation)).isFalse();
-    }
+		assertThat(lineStations.contains(removedLineStation)).isFalse();
+	}
 }
