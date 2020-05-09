@@ -10,6 +10,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.HashMap;
@@ -33,6 +35,7 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
+    @Transactional
     @DisplayName("지하철역을 관리한다")
     @Test
     void manageStation() {
@@ -55,14 +58,14 @@ public class StationAcceptanceTest {
         params.put("name", name);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/stations").
+            post("/stations").
         then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private List<StationResponse> getStations() {
@@ -78,8 +81,8 @@ public class StationAcceptanceTest {
     private void deleteStation(Long id) {
         given().
         when().
-                delete("/stations/" + id).
+            delete("/stations/" + id).
         then().
-                log().all();
+            log().all();
     }
 }

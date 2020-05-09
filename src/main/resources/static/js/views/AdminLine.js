@@ -26,9 +26,9 @@ function AdminLine() {
         const formData = {
             id: lineId,
             name: $subwayLineNameInput.value,
-            startTime: $subwayLineStartTimeInput,
-            endTime: $subwayLineEndTimeInput,
-            intervalTime: $subwayLineIntervalTimeInput,
+            startTime: $subwayLineStartTimeInput.value,
+            endTime: $subwayLineEndTimeInput.value,
+            intervalTime: $subwayLineIntervalTimeInput.value,
             color: $subwayLineColorInput.value
         };
 
