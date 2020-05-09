@@ -72,7 +72,7 @@ function AdminEdge() {
     };
     api.lineStation.create(request)
       .then(data => console.log(data));
-  }
+  };
 
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(

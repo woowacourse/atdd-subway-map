@@ -107,6 +107,7 @@ public class Line {
         lineStation.updatePreStationId(inputLineStation.getStationId());
 
         stations.add(0, inputLineStation);
+
     }
 
     public void addLineStation(LineStation inputLineStation) {

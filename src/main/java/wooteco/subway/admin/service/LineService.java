@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -64,10 +63,12 @@ public class LineService {
 
 		if (lineStationCreateRequest.getPreStationId() == null) {
 			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
+			lineRepository.save(persistLine);
 			return;
 		}
 
 		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+		lineRepository.save(persistLine);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
