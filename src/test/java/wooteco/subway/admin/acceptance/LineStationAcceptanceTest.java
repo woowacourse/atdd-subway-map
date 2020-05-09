@@ -10,13 +10,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,35 +57,34 @@ public class LineStationAcceptanceTest {
         //When 지하철 노선에 지하철역을 등록하는 요청을 한다.
         List<LineResponse> lines = getLines();
         List<StationResponse> stations = getStations();
+        addLineStation(lines.get(0).getId(), null, stations.get(0).getId());
         addLineStation(lines.get(0).getId(), stations.get(0).getId(), stations.get(1).getId());
+        addLineStation(lines.get(0).getId(), stations.get(1).getId(), stations.get(2).getId());
         //Then 지하철역이 노선에 추가 되었다.
-        LineStation mockLineStation = new LineStation(1L, 2L, 3, 4);
-        Line mockLine = new Line("아무거나", LocalTime.of(5, 30), LocalTime.of(23, 30), 10, "5");
-        mockLine.getStations().add(mockLineStation);
-        assertThat(mockLine.getStations().size()).isEqualTo(1);
+        assertThat(getLineWithStations(lines.get(0).getId()).getStations().size()).isEqualTo(3);
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        List<LineStationResponse> mocklineStations = getLineStations(lines.get(0).getId());
+        List<StationResponse> foundStations = getLineWithStations(lines.get(0).getId()).getStations();
         //Then 지하철역 목록을 응답 받는다.
-        assertThat(mocklineStations.size()).isEqualTo(1);
+        assertThat(foundStations.size()).isEqualTo(3);
         //And 새로 추가한 지하철역을 목록에서 찾는다.
-        assertThat(mocklineStations.get(0).getPreStationId()).isEqualTo(1L);
-        assertThat(mocklineStations.get(0).getStationId()).isEqualTo(2L);
-        assertThat(mocklineStations.get(0).getDistance()).isEqualTo(3);
-        assertThat(mocklineStations.get(0).getDuration()).isEqualTo(4);
+        assertThat(foundStations.get(0).getName()).isEqualTo(stations.get(0).getName());
+        assertThat(foundStations.get(1).getName()).isEqualTo(stations.get(1).getName());
+        assertThat(foundStations.get(2).getName()).isEqualTo(stations.get(2).getName());
 
         //When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-        mocklineStations = new ArrayList<>();
-        deleteLine(lines.get(0).getId(), stations.get(0).getId());
+        deleteLineStation(lines.get(0).getId(), stations.get(0).getId());
         //Then 지하철역이 노선에서 제거 되었다.
-        assertThat(mocklineStations.size()).isEqualTo(0);
+        assertThat(getLineWithStations(lines.get(0).getId()).getStations().size()).isEqualTo(2);
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
         //Then 지하철역 목록을 응답 받는다.
+        foundStations = getLineWithStations(lines.get(0).getId()).getStations();
         //And 제외한 지하철역이 목록에 존재하지 않는다.
+        assertThat(foundStations).extracting("name").doesNotContain(stations.get(0).getName());
     }
 
-    private void addLineStation(Long lineId, Long stationId, Long preStationId) {
+    private void addLineStation(Long lineId, Long preStationId, Long stationId) {
         Map<String, String> params = new HashMap<>();
         params.put("preStationId", String.valueOf(preStationId));
         params.put("stationId", String.valueOf(stationId));
@@ -107,17 +102,15 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private List<LineStationResponse> getLineStations(Long lineId) {
-        return given().
-                when().
+    private LineResponse getLineWithStations(Long lineId) {
+        return given().when().
                 get("/lines/" + lineId + "/stations").
                 then().
                 log().all().
-                extract().
-                jsonPath().getList(".", LineStationResponse.class);
+                extract().as(LineResponse.class);
     }
 
-    private void deleteLine(Long lineId, Long stationId) {
+    private void deleteLineStation(Long lineId, Long stationId) {
         given().
                 when().
                 delete("/lines/" + lineId + "/stations/" + stationId).
