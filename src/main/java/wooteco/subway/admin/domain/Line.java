@@ -102,7 +102,16 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = stations.stream()
+                .filter(station -> Objects.equals(station.getStationId(), stationId))
+                .findFirst()
+                .orElseThrow(NotFoundLineStationException::new);
+
+        stations.stream()
+                .filter(station -> Objects.equals(station.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getPreStationId()));
+        stations.remove(lineStation);
     }
 
     public List<Long> getLineStationsId() {

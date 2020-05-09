@@ -71,12 +71,9 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        LineStation lineStation = mockLineStations.get(lineId)
-                .stream()
-                .filter(lineStation1 -> Objects.equals(lineStation1.getStationId(), stationId))
-                .findFirst()
-                .get();
-        mockLineStations.get(lineId).remove(lineStation);
+        Line persistLine = findLineById(lineId);
+        persistLine.removeLineStationById(stationId);
+        lineRepository.save(persistLine);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
