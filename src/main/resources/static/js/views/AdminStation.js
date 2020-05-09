@@ -1,88 +1,126 @@
-import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE, CLICK_TYPE } from "../../utils/constants.js";
+import {
+	CLICK_TYPE,
+	CONFIRM_MESSAGE,
+	ERROR_MESSAGE,
+	EVENT_TYPE,
+	KEY_TYPE
+} from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
 import api from "../../api/index.js";
 
 function AdminStation() {
-  const $stationInput = document.querySelector("#station-name");
-  const $stationList = document.querySelector("#station-list");
-  const $stationAddButton = document.querySelector(("#station-add-btn"));
+	const $stationInput = document.querySelector("#station-name");
+	const $stationList = document.querySelector("#station-list");
+	const $stationAddButton = document.querySelector("#station-add-btn");
 
-  const onAddStationHandler = async event => {
-    if (event.key !== KEY_TYPE.ENTER && event.button !== CLICK_TYPE.LEFT_CLICK) {
-      return;
-    }
-    event.preventDefault();
-    const $stationNameInput = document.querySelector("#station-name");
-    const stationName = {
-      name: $stationNameInput.value
-    }
-    if (!stationName.name) {
-      alert(ERROR_MESSAGE.NOT_EMPTY);
-      return;
-    }
-    if(stationName.name.includes(" ")) {
-      alert(ERROR_MESSAGE.NO_BLANK);
-      $stationNameInput.value = "";
-      return;
-    }
-    if(/\d/.test(stationName.name)) {
-      alert(ERROR_MESSAGE.NO_NUMERIC);
-      $stationNameInput.value = "";
-      return;
-    }
-    if(getStationNames().includes(stationName.name)) {
-      alert(ERROR_MESSAGE.NO_DUPLICATED);
-      $stationNameInput.value = "";
-      return;
-    }
-    $stationNameInput.value = "";
-    api.station.create(stationName).then(() => {
-          api.station.get().then(value => {
-            const createdStation = value.find(x => x.name === stationName.name);
-            $stationList.insertAdjacentHTML("beforeend", listItemTemplate(createdStation));
-          })
-        }
-    );
+	const onCreateSubwayStation = async event => {
+		if (isInvalidKey(event)) {
+			return;
+		}
+		event.preventDefault();
+		const $stationNameInput = document.querySelector("#station-name");
+		const stationName = $stationNameInput.value;
+		$stationNameInput.value = "";
+		if (isInvalid(stationName) || isDuplicate(stationName)) {
+			return;
+		}
+		const station = {
+			name: stationName
+		}
+		await api.station.create(station);
+		const createdStation = await api.station.getByName(stationName);
+		$stationList.insertAdjacentHTML(
+			"beforeend",
+			listItemTemplate(createdStation)
+		);
+	};
 
-  };
+	const isInvalidKey = event => {
+		return (event.key !== KEY_TYPE.ENTER) && (event.button !== CLICK_TYPE.LEFT_CLICK);
+	}
 
-  const onRemoveStationHandler = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton && confirm("삭제?")) {
-      const $targetLine = $target.parentNode.parentNode; //TODO 더 좋은 방법이..
-      $target.closest(".list-item").remove();
-      api.station.delete($targetLine.dataset.stationId).then();
-    }
-  };
+	const isInvalid = name => {
+		return isEmpty(name) || hasSpace(name) || hasNumber(name);
+	};
 
-  const initEventListeners = () => {
-    $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
-    $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
-    $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
-  };
+	const isEmpty = name => {
+		if (!name) {
+			alert(ERROR_MESSAGE.NOT_EMPTY);
+			return true;
+		}
+		return false;
+	};
 
-  const getStationNames = () => {
-    return Array.from($stationList.childNodes)
-        .map(x => x.textContent)
-        .map(x => x.trim());
-  }
+	const hasSpace = name => {
+		const pattern = /\s/g;
 
-  const initStationNames = async () => {
-    const stations = await api.station.get();
-    stations.forEach(station => {
-      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
-    })
-  }
+		if (pattern.test(name)) {
+			alert(ERROR_MESSAGE.NOT_CONTAIN_SPACE);
+			return true;
+		}
+		return false;
+	};
 
-  const init = () => {
-    initEventListeners();
-    initStationNames();
-  };
+	const hasNumber = name => {
+		const pattern = /\d/g;
 
-  return {
-    init
-  };
+		if (pattern.test(name)) {
+			alert(ERROR_MESSAGE.NOT_CONTAIN_NUMBER);
+			return true;
+		}
+		return false;
+	};
+
+	const isDuplicate = name => {
+		if (getStationNames().includes(name)) {
+			alert(ERROR_MESSAGE.NOT_DUPLICATE);
+			return true;
+		}
+		return false;
+	};
+
+	const getStationNames = () => {
+		return Array.from($stationList.childNodes)
+		            .map(x => x.textContent)
+		            .map(x => x.trim());
+	}
+
+	const onDeleteSubwayStation = async event => {
+		const $target = event.target;
+		const $station = $target.closest(".list-item");
+		const isDeleteButton = $target.classList.contains("mdi-delete");
+		if (isDeleteButton && isDeleteConfirmed()) {
+			$station.remove();
+			await api.station.delete($station.dataset.stationId);
+		}
+	};
+
+	const isDeleteConfirmed = () => confirm(CONFIRM_MESSAGE.DELETE);
+
+	const initEventListeners = () => {
+		$stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onCreateSubwayStation);
+		$stationAddButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayStation);
+		$stationList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayStation);
+	};
+
+	const initStationNames = async () => {
+		const stations = await api.station.get();
+		stations.forEach(station => {
+			$stationList.insertAdjacentHTML(
+				"beforeend",
+				listItemTemplate(station)
+			);
+		})
+	}
+
+	const init = () => {
+		initEventListeners();
+		initStationNames().then();
+	};
+
+	return {
+		init
+	};
 }
 
 const adminStation = new AdminStation();
