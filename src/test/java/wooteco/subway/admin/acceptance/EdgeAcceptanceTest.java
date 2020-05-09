@@ -11,9 +11,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.dto.EdgeCreateRequest;
-import wooteco.subway.admin.dto.EdgeDeleteRequest;
-import wooteco.subway.admin.dto.EdgeResponse;
+import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
+import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
+import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

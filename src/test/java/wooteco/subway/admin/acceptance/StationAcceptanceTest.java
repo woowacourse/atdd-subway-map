@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.station.service.dto.StationResponse;
 
 import java.util.HashMap;
 import java.util.List;

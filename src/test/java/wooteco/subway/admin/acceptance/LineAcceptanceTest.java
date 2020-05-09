@@ -10,7 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
