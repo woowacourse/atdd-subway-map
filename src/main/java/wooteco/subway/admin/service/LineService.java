@@ -35,7 +35,6 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        validateNameDuplicate(line);
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
         lineRepository.save(persistLine);

@@ -71,7 +71,7 @@ function AdminLine() {
     await api.line.update(updatedLine, selectedSubwayId);
     const index = subwayLines.map(subway => subway["id"])
         .indexOf(selectedSubwayId);
-    subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
+    subwayLines.splice(index, 1, updatedLine);
     subwayLineModal.toggle();
     componentClear();
     changeEvent();

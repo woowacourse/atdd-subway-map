@@ -6,10 +6,14 @@ import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $createLineStationButton = document.querySelector("#submit-button");
   const createSubwayEdgeModal = new Modal();
 
   let subwayLines = [];
-  let stations = [];
+  let stations = [{
+    id: null,
+    name: "출발역"
+  }];
 
   async function initSubwayLines() {
     const lines = await api.line.get();
@@ -29,7 +33,6 @@ function AdminEdge() {
       }
       subwayLines = [...subwayLines, subwayLine];
     }
-    console.log(subwayLines);
   }
 
   const initSubwayLinesSlider = () => {
@@ -85,18 +88,42 @@ function AdminEdge() {
     }
   };
 
-  const initEventListeners = () => {
+  const onCreateLineStation = async event => {
+    event.preventDefault();
+    const select = document.querySelector("#line-select-options");
+    const lineName = select.options[select.selectedIndex].value;
+    const lineId = subwayLines.find(subwayLine => subwayLine["title"] === lineName)["lineId"];
+    const preStationName = document.querySelector("#depart-station-name").value;
+    const preStationId = stations.find(station => station["name"] === preStationName)["id"];
+    const targetStationName = document.querySelector("#arrival-station-name").value;
+    const targetStationId = stations.find(station => station["name"] === targetStationName)["id"];
+
+    const newLineStation = {
+      lineId,
+      preStationId,
+      stationId: targetStationId,
+      distance: 10,
+      duration: 2
+    };
+    await api.lineStation.create(lineId, newLineStation);
+    await initSubwayLines();
+    createSubwayEdgeModal.toggle();
+    location.reload();
+  };
+
+  const initEventListeners = async () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
+    $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, await onCreateLineStation);
   };
 
   this.init = async () => {
     await initSubwayLines();
     initSubwayLinesSlider();
     initSubwayLineOptions();
-    initEventListeners();
+    await initEventListeners();
   };
 }
 
