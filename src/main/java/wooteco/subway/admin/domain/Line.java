@@ -66,7 +66,7 @@ public class Line {
 		return color;
 	}
 
-	public List<LineStation> getStations() {
+	public List<LineStation> getLineStations() {
 		return lineStations;
 	}
 
@@ -94,8 +94,8 @@ public class Line {
 		if (line.getColor() != null) {
 			this.color = line.getColor();
 		}
-		if (line.getStations() != null) {
-			this.lineStations = new ArrayList<>(line.getStations());
+		if (line.getLineStations() != null) {
+			this.lineStations = new ArrayList<>(line.getLineStations());
 		}
 		this.updatedAt = LocalDateTime.now();
 	}
