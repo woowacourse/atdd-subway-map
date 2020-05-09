@@ -1,35 +1,30 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 import wooteco.subway.admin.service.LineStationService;
+
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineStationAcceptanceTest {
 
     @Mock
     private LineRepository lineRepository;
-
-    @Mock
-    private StationRepository stationRepository;
 
     private Line line;
     private Station preStation;
@@ -40,7 +35,7 @@ public class LineStationAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        lineStationService = new LineStationService(lineRepository, stationRepository);
+        lineStationService = new LineStationService(lineRepository);
         line = new Line(1L,"1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
         line.setLineStations(new HashSet<>());
         preStation = new Station(2L, "사당역");
@@ -52,11 +47,9 @@ public class LineStationAcceptanceTest {
     void manageLineStation() {
         // When 지하철 노선에 지하철 역을 등록하는 요청을 한다.
         // Then 지하철역이 노선에 추가 되었다.
-        when(lineRepository.findByName("1호선")).thenReturn(Optional.of(line));
-        when(stationRepository.findByName("사당역")).thenReturn(Optional.of(preStation));
-        when(stationRepository.findByName("강남역")).thenReturn(Optional.of(station));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-        lineStation = lineStationService.createLineStation("1호선", "사당역", "강남역", 1, 1);
+        lineStation = lineStationService.createLineStation(1L, 2L, 3L, 1, 1);
         assertThat(lineStation.getLine()).isEqualTo(1L);
         assertThat(lineStation.getPreStationId()).isEqualTo(2L);
         assertThat(lineStation.getStationId()).isEqualTo(3L);

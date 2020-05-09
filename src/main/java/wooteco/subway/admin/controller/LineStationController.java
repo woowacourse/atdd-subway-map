@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.dto.LineStationRequest;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineStationService;
 
 import java.net.URI;
@@ -28,12 +28,12 @@ public class LineStationController {
 
     @PostMapping("/lineStation")
     public ResponseEntity<?> create(
-            @RequestBody LineStationRequest request
+            @RequestBody LineStationCreateRequest request
     ) throws URISyntaxException {
 
-        final String lineName = request.getLineName();
-        final String preStationName = request.getPreStationName();
-        final String stationName = request.getStationName();
+        final Long lineName = request.getLineId();
+        final Long preStationName = request.getPreStationId();
+        final Long stationName = request.getStationId();
         final int distance = request.getDistance();
         final int duration = request.getDuration();
 

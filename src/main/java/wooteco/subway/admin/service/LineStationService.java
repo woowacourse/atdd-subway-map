@@ -1,39 +1,29 @@
 package wooteco.subway.admin.service;
 
-import java.util.NoSuchElementException;
-import java.util.Set;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class LineStationService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
 
-    public LineStationService(LineRepository lineRepository, StationRepository stationRepository) {
+    @Autowired
+    public LineStationService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
-    public LineStation createLineStation(final String lineName, final String preStationName,
-                                         final String stationName, final int distance, final int duration) {
+    public LineStation createLineStation(final Long lineId, final Long preStationId,
+                                         final Long stationId, final int distance, final int duration) {
 
-        final Line line = lineRepository.findByName(lineName)
-                .orElseThrow(NoSuchElementException::new);
-        final Station preStation = stationRepository.findByName(preStationName)
-                .orElseThrow(NoSuchElementException::new);
-        final Station station = stationRepository.findByName(stationName)
-                .orElseThrow(NoSuchElementException::new);
-
-        LineStation lineStation = new LineStation(line.getId(), preStation.getId(), station.getId(),
-                distance, duration);
+        final Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        final LineStation lineStation = new LineStation(lineId, preStationId, stationId, distance, duration);
 
         line.addLineStation(lineStation);
         lineRepository.save(line);
