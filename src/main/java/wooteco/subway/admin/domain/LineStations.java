@@ -1,11 +1,12 @@
 package wooteco.subway.admin.domain;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LineStations {
+    public static final Long INIT_PRE_STATION_ID = null;
     private Set<LineStation> lineStations;
 
     public LineStations(Set<LineStation> lineStations) {
@@ -13,46 +14,34 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation lineStation) {
-        Set<LineStation> newStations = new LinkedHashSet<>();
-        int updated = 0;
-        for (LineStation station : lineStations) {
-            if (lineStation.getPreStationId() == null) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            newStations.add(station);
-        }
-        if (updated == 0) {
-            newStations.add(lineStation);
-        }
-        if (lineStations.size() == 0) {
-            newStations.add(lineStation);
-        }
-        lineStations = newStations;
+        lineStations.stream()
+                .filter(station -> Objects.equals(station.getPreStationId(), lineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        lineStations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = lineStations.stream()
-                .filter(station -> station.isSameId(stationId))
+        lineStations.stream()
+                .filter(station -> station.isSameStationId(stationId))
                 .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-        lineStations.remove(lineStation);
+                .ifPresent(station -> lineStations.remove(station));
     }
 
     public List<Long> getLineStationsId() {
-        return lineStations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        List<Long> lineStationsId = new ArrayList<>();
+        sort(lineStationsId, INIT_PRE_STATION_ID);
+        return lineStationsId;
+    }
+
+    private void sort(List<Long> ids, Long preStationId) {
+        lineStations.stream()
+                .filter(station -> station.isSamePreStationId(preStationId))
+                .findAny()
+                .ifPresent(station -> {
+                    ids.add(station.getStationId());
+                    sort(ids, station.getStationId());
+                });
     }
 
     public int size() {

@@ -39,6 +39,38 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        stations.addLineStation(lineStation);
+    }
+
+    public void removeLineStationById(Long stationId) {
+        stations.removeLineStationById(stationId);
+    }
+
+    public List<Long> getLineStationsId() {
+        return stations.getLineStationsId();
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,37 +105,5 @@ public class Line {
 
     public String getBgColor() {
         return bgColor;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        stations.addLineStation(lineStation);
-    }
-
-    public void removeLineStationById(Long stationId) {
-        stations.removeLineStationById(stationId);
-    }
-
-    public List<Long> getLineStationsId() {
-        return stations.getLineStationsId();
     }
 }
