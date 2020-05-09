@@ -101,12 +101,7 @@ public class Line {
 
     public List<Long> generateLineStationId() {
         List<Long> lineStationIds = new ArrayList<>();
-        generateLinkedLIst(lineStationIds);
 
-        return lineStationIds;
-    }
-
-    private void generateLinkedLIst(List<Long> lineStationIds) {
         LineStation nextStation;
         LineStation startStation = findByPreStationId(START_STATION);
         lineStationIds.add(startStation.getStationId());
@@ -119,6 +114,7 @@ public class Line {
             }
             nextStation = getNextStation(nextStation);
         }
+        return lineStationIds;
     }
 
     public void updateLineStation(LineStation updatedLineStation) {
@@ -148,25 +144,37 @@ public class Line {
             .orElseThrow(() -> new IllegalArgumentException("해당 preStationId 를 갖는 역을 찾지 못헀습니다."));
     }
 
+    public LineStation findById(Long stationId) {
+        return stations.stream()
+            .filter(lineStation -> lineStation.getStationId().equals(stationId))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("해당 preStationId 를 갖는 역을 찾지 못헀습니다."));
+    }
+
     public boolean isPresentLineStationGettingPreStationId(Long stationId) {
         return stations.stream()
             .anyMatch(lineStation -> lineStation.getPreStationId().equals(stationId));
     }
 
     public void removeLineStationById(Long stationId) {
-        this.stations.stream().filter(x -> x.getStationId().equals(stationId))
-            .findAny().ifPresent(target -> {
-            this.stations.remove(target);
-        });
+        LineStation targetLineStation = findById(stationId);
+
+        if (isPresentLineStationGettingPreStationId(stationId) && stations.size() != 1) {
+            LineStation nextLineStationOfTargetLineStation = findByPreStationId(targetLineStation.getStationId());
+            this.stations.remove(nextLineStationOfTargetLineStation);
+            nextLineStationOfTargetLineStation.updatePreLineStation(targetLineStation.getPreStationId());
+            this.stations.add(nextLineStationOfTargetLineStation);
+        }
+        this.stations.remove(targetLineStation);
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (isPresentLineStationGettingPreStationId(lineStation.getPreStationId())) {
+            LineStation nextLineStationOfInputLineStation = findByPreStationId(lineStation.getPreStationId());
+            nextLineStationOfInputLineStation.updatePreLineStation(lineStation.getStationId());
+            updateLineStation(nextLineStationOfInputLineStation);
+        }
         this.stations.add(lineStation);
-    }
-
-    // TODO: 2020/05/09  
-    public Set<Station> generateLinkedStation() {
-        return null;
     }
 
     @Override
