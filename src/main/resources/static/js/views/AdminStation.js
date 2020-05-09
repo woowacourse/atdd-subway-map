@@ -20,15 +20,17 @@ function AdminStation() {
     api.station.create({name: stationName})
       .then(data => {
         $stationNameInput.value = "";
-        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
       })
-
   };
 
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      const stationId = $target.closest("div").dataset.stationId;
+      api.station
+        .delete(stationId);
       $target.closest(".list-item").remove();
     }
   };
