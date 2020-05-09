@@ -28,6 +28,7 @@ public class Line {
 
 	public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
 		int intervalTime) {
+		this.id = id;
 		this.name = name;
 		this.color = color;
 		this.startTime = startTime;
@@ -114,8 +115,9 @@ public class Line {
 		if (isExcessIndex(nextLineStationIndex)) {
 			return;
 		}
+
 		LineStation nextStation = lineStations.get(nextLineStationIndex);
-		nextStation.updatePreStationId(requestLineStation.getPreStationId());
+		nextStation.updatePreStationId(lineStations.get(index).getStationId());
 	}
 
 	private void checkPreStation(LineStation requestLineStation) {
@@ -142,7 +144,7 @@ public class Line {
 			.orElseThrow(() -> new IllegalArgumentException("해당 지하철이 없습니다."));
 
 		lineStations.remove(index);
-
+		System.out.println("index :" + index);
 		if (isExcessIndex(index)) {
 			return;
 		}

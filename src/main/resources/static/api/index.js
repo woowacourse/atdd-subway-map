@@ -34,7 +34,7 @@ const api = (() => {
         get(path = "") {
             return request('/api/lines' + path);
         },
-        create(path = "", data) {
+        create(data, path = "",) {
             return fetch(`/api/lines${path}`, METHOD.POST(data));
         },
         delete(path = "") {

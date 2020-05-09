@@ -1,7 +1,4 @@
-import {
-    optionTemplate,
-    subwayLinesItemTemplate
-} from "../../utils/templates.js";
+import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -14,8 +11,8 @@ function AdminEdge() {
 
     const initSubwayLinesSlider = res => {
         $subwayLinesSlider.innerHTML = res
-        .map(line => subwayLinesItemTemplate(line))
-        .join("");
+            .map(line => subwayLinesItemTemplate(line))
+            .join("");
         tns({
             container: ".subway-lines-slider",
             loop: true,
@@ -32,8 +29,8 @@ function AdminEdge() {
 
     const initSubwayLineOptions = res => {
         const subwayLineOptionTemplate = res
-        .map(line => optionTemplate(line))
-        .join("");
+            .map(line => optionTemplate(line))
+            .join("");
         const $stationSelectOptions = document.querySelector(
             "#station-select-options"
         );
@@ -54,9 +51,9 @@ function AdminEdge() {
         const stationId = $target.closest(".list-item").dataset.stationId;
 
         api.line.delete(`/${lineId}/stations/${stationId}`)
-        .then(() =>
-            $target.closest(".list-item").remove()
-        ).catch(err => alert(err));
+            .then(() =>
+                $target.closest(".list-item").remove()
+            ).catch(err => alert(err));
     };
 
     const onAddLineStationHandler = event => {
@@ -76,7 +73,7 @@ function AdminEdge() {
             duration: 0,
         };
         console.log(lineStationInfo);
-        api.line.create(`/${lineId}/stations`, lineStationInfo).then(res => {
+        api.line.create(lineStationInfo, `/${lineId}/stations`).then(res => {
             if (res.status === 201) {
                 window.location.reload();
             }

@@ -60,4 +60,8 @@ public class StationResponse {
 	public int hashCode() {
 		return Objects.hash(name);
 	}
+
+	public Station toStation() {
+		return new Station(name);
+	}
 }

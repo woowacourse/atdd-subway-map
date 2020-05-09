@@ -1,14 +1,13 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -53,22 +56,22 @@ public class LineStationAcceptanceTest {
 		assertThat(lineResponse.getStations()).isNotNull();
 
 		// When
-		List<StationResponse> stations = findStationsByLineId(line.getId()).getStations();
+		List<Station> stations = findStationsByLineId(line.getId()).getStations();
 		// Then
 		assertThat(stations.size()).isNotEqualTo(0);
-		assertThat(stations).contains(station);
+		assertThat(stations).contains(station.toStation());
 
 		// When
 		deleteStation(line.getId(), station.getId());
 		// Then
 		stations = findStationsByLineId(line.getId()).getStations();
-		assertThat(stations).doesNotContain(station);
+		assertThat(stations).doesNotContain(station.toStation());
 
 		// When
 		stations = findStationsByLineId(line.getId()).getStations();
 		// Then
 		assertThat(stations).isNotNull();
-		assertThat(stations).doesNotContain(station);
+		assertThat(stations).doesNotContain(station.toStation());
 	}
 
 	private void addStationToLine(Long lineId, Long stationId) {
@@ -142,7 +145,7 @@ public class LineStationAcceptanceTest {
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
-			post("/stations").
+			post("/api/stations").
 			then().
 			log().all().
 			statusCode(HttpStatus.CREATED.value());
@@ -151,7 +154,7 @@ public class LineStationAcceptanceTest {
 	private List<StationResponse> getStations() {
 		return given().
 			when().
-			get("/stations").
+			get("/api/stations").
 			then().
 			log().all().
 			extract().

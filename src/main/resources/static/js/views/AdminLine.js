@@ -1,8 +1,5 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {
-    colorSelectOptionTemplate,
-    subwayLinesTemplate
-} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
@@ -132,6 +129,7 @@ function AdminLine() {
 
     const onCreateSubwayLine = () => {
         let newSubwayLine = subwayLineModal.makeFrom();
+        console.log(newSubwayLine);
         api.line.create(newSubwayLine).then(
             res => settingLineList(201, res));
         subwayLineModal.toggle();
@@ -159,8 +157,8 @@ function AdminLine() {
             "#subway-line-color-select-container"
         );
         const colorSelectTemplate = subwayLineColorOptions
-        .map((option, index) => colorSelectOptionTemplate(option, index))
-        .join("");
+            .map((option, index) => colorSelectOptionTemplate(option, index))
+            .join("");
         $colorSelectContainer.insertAdjacentHTML("beforeend",
             colorSelectTemplate);
         $colorSelectContainer.addEventListener(
