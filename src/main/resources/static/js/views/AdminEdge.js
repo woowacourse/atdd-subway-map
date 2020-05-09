@@ -64,9 +64,9 @@ function AdminEdge() {
     const onRemoveStationHandler = async event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
-        const selectedLineId = $target.closest("#line-name").dataset.lineId;
-        const selectedStationId = $target.closest(".list-item").dataset.stationId;
         if (isDeleteButton) {
+            const selectedLineId = $target.closest("#line-name").dataset.lineId;
+            const selectedStationId = $target.closest(".list-item").dataset.stationId;
             $target.closest(".list-item").remove();
             await api.lineStation.delete(selectedLineId, selectedStationId);
         }

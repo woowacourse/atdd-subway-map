@@ -1,20 +1,12 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.admin.acceptance.Request.*;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.StationResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +16,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -61,63 +58,69 @@ public class LineStationAcceptanceTest {
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
 	void manageLineStation() {
-		addLineStation(1L, null, 0L);
-		addLineStation(1L, 0L, 1L);
-		LineResponse line = getLine(1L);
+		StationResponse 신촌 = createStation("신촌");
+		StationResponse 잠실 = createStation("잠실");
+
+		LineResponse 호선1 = createLine("1호선");
+		LineResponse 호선2 = createLine("2호선");
+
+		addLineStation(호선1.getId(), null, "신촌");
+		addLineStation(호선1.getId(), "신촌", "잠실");
+		LineResponse line = getLine(호선1.getId());
 		assertThat(line.getStations()).hasSize(2);
 
 		List<String> stationIds = getStations(line.getId()).stream()
 			.map(StationResponse::getName)
 			.collect(Collectors.toList());
-		assertThat(stationIds).contains("잠실", "잠실나루");
+		assertThat(stationIds).contains("잠실", "신촌");
 
-		deleteLineStation(1L, 0L);
-		line = getLine(1L);
+		deleteLineStation(호선1.getId(), 신촌.getId());
+		line = getLine(호선1.getId());
 		assertThat(line.getStations()).hasSize(1);
 	}
 
-	private LineResponse getLine(Long id) {
-		return given()
-			.when()
-			.get("/lines/" + id)
-			.then()
-			.log().all()
-			.extract().as(LineResponse.class);
-
-	}
-
-	private List<StationResponse> getStations(Long id) {
-		return given()
-			.when()
-			.get("/lines/" + id + "/stations")
-			.then()
-			.log().all()
-			.extract()
-			.jsonPath().getList(".", StationResponse.class);
-	}
-
-	private void addLineStation(Long lineId, Long preStationId, Long stationId) {
-		Map<String, String> params = new HashMap<>();
-		params.put("preStationId", String.valueOf(preStationId));
-		params.put("stationId", String.valueOf(stationId));
-		params.put("distance", "1000");
-		params.put("duration", "5");
-
-		given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			put("/lines/" + lineId + "/stations").
-			then().
-			log().all().statusCode(HttpStatus.OK.value());
-	}
-
-	private void deleteLineStation(Long lineId, Long stationId) {
-		given()
-			.when()
-			.delete("/lines/" + lineId + "/stations/" + stationId)
-			.then()
-			.log().all();
-	}
+	// public LineResponse getLine(Long id) {
+	// 	return given()
+	// 		.when()
+	// 		.get("/lines/" + id)
+	// 		.then()
+	// 		.log().all()
+	// 		.extract().as(LineResponse.class);
+	//
+	// }
+	//
+	// public List<StationResponse> getStations(Long id) {
+	// 	return given()
+	// 		.when()
+	// 		.get("/lines/" + id + "/stations")
+	// 		.then()
+	// 		.log().all()
+	// 		.extract()
+	// 		.jsonPath().getList(".", StationResponse.class);
+	// }
+	//
+	// public void addLineStation(Long lineId, Long preStationId, Long stationId) {
+	// 	Map<String, String> params = new HashMap<>();
+	// 	params.put("preStationId", String.valueOf(preStationId));
+	// 	params.put("stationId", String.valueOf(stationId));
+	// 	params.put("distance", "1000");
+	// 	params.put("duration", "5");
+	//
+	// 	given().
+	// 		body(params).
+	// 		contentType(MediaType.APPLICATION_JSON_VALUE).
+	// 		accept(MediaType.APPLICATION_JSON_VALUE).
+	// 		when().
+	// 		put("/lines/" + lineId + "/stations").
+	// 		then().
+	// 		log().all().statusCode(HttpStatus.OK.value());
+	// }
+	//
+	// public void deleteLineStation(Long lineId, Long stationId) {
+	// 	given()
+	// 		.when()
+	// 		.delete("/lines/" + lineId + "/stations/" + stationId)
+	// 		.then()
+	// 		.log().all();
+	// }
 }

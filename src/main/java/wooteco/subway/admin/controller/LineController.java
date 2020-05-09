@@ -1,14 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
@@ -34,7 +25,6 @@ public class LineController {
 	public LineController(LineService service) {
 		this.service = service;
 	}
-
 
 	@PostMapping("/lines")
 	public ResponseEntity createLine(@RequestBody LineRequest view) {
@@ -58,7 +48,7 @@ public class LineController {
 	@GetMapping("/lines/name/{name}")
 	public ResponseEntity showLineByName(@PathVariable String name) {
 		LineResponse lineResponse = LineResponse.of(service.showLine(name));
-		System.err.println(lineResponse.getId() + " ,  " +  lineResponse.getTitle());
+		System.err.println(lineResponse.getId() + " ,  " + lineResponse.getTitle());
 		return ResponseEntity.ok().body(lineResponse);
 	}
 

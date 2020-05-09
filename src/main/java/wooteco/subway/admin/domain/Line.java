@@ -3,11 +3,9 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -129,7 +127,7 @@ public class Line {
 			.findFirst()
 			.orElseThrow(NoSuchElementException::new);
 
-		if(headStation.getStationId() == stationId) {
+		if (headStation.getStationId() == stationId) {
 			stations.remove(removeStation);
 			LineStation newHeadStation = stations.stream()
 				.filter(value -> stationId.equals(value.getPreStationId()))
@@ -149,7 +147,7 @@ public class Line {
 	public List<Long> getLineStationsId() {
 		List<Long> newStations = new ArrayList<>();
 
-		if (!stations.isEmpty())	{
+		if (!stations.isEmpty()) {
 			LineStation headStation = stations.stream()
 				.filter(value -> value.getPreStationId() == null)
 				.findFirst()

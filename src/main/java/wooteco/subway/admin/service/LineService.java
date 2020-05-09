@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -57,15 +55,18 @@ public class LineService {
 
 	public void addLineStation(Long id, LineStationRequest request) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		if(request.getPreStationName().isEmpty()) {
+		if (request.getPreStationName() == null || request.getPreStationName().isEmpty()) {
 			Station station = stationRepository.findByName(request.getStationName()).orElseThrow(RuntimeException::new);
-			persistLine.addLineStation(new LineStation(null, station.getId(), request.getDistance(), request.getDuration()));
+			persistLine.addLineStation(
+				new LineStation(null, station.getId(), request.getDistance(), request.getDuration()));
 			lineRepository.save(persistLine);
 			return;
 		}
-		Station preStation = stationRepository.findByName(request.getPreStationName()).orElseThrow(RuntimeException::new);
+		Station preStation = stationRepository.findByName(request.getPreStationName())
+			.orElseThrow(RuntimeException::new);
 		Station station = stationRepository.findByName(request.getStationName()).orElseThrow(RuntimeException::new);
-		persistLine.addLineStation(new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration()));
+		persistLine.addLineStation(
+			new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration()));
 		lineRepository.save(persistLine);
 	}
 

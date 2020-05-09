@@ -27,12 +27,12 @@ create table if not exists LINE_STATION
     distance int,
     duration int
 );
-
-INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('1호선', '15:00', '16:00', 10, 'bg-yellow-800');
-INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('2호선', '07:00', '23:00', 10, 'bg-yellow-800');
-
-INSERT INTO STATION(name) VALUES ('서울');
-INSERT INTO STATION(name) VALUES ('용산');
-INSERT INTO STATION(name) VALUES ('신촌');
-INSERT INTO STATION(name) VALUES ('잠실');
-INSERT INTO STATION(name) VALUES ('잠실나루');
+--
+-- INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('1호선', '15:00', '16:00', 10, 'bg-teal-400');
+-- INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('2호선', '07:00', '23:00', 10, 'bg-red-400');
+--
+-- INSERT INTO STATION(name) VALUES ('서울');
+-- INSERT INTO STATION(name) VALUES ('용산');
+-- INSERT INTO STATION(name) VALUES ('신촌');
+-- INSERT INTO STATION(name) VALUES ('잠실');
+-- INSERT INTO STATION(name) VALUES ('잠실나루');
