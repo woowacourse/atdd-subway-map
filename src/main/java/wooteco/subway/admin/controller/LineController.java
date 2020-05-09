@@ -34,6 +34,7 @@ public class LineController {
         return ResponseEntity
             .created(URI.create("/api/lines/" + persistLine.getId()))
             .body(LineResponse.of(persistLine));
+
     }
 
     @GetMapping("")

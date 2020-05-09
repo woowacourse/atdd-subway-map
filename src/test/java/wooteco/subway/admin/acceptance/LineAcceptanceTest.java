@@ -76,12 +76,13 @@ public class LineAcceptanceTest {
         return given().when().
             get("/api/lines/" + id).
             then().
-                        log().all().
-                        extract().as(LineResponse.class);
+            log().all().
+            extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
         Map<String, String> params = new HashMap<>();
+        params.put("bgColor", "red");
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -94,8 +95,9 @@ public class LineAcceptanceTest {
             when().
             post("/api/lines").
             then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            log().all().
+
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
