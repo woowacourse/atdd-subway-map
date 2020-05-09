@@ -69,8 +69,17 @@ const api = (() => {
     }
   };
 
+  const lineStation = {
+    get(lineId) {
+      return request(`/lines/${lineId}/stations`);
+    },
+    delete(lineId, stationId) {
+      return request(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+    }
+  }
+
   return {
-    station, line
+    station, line, lineStation
   };
 })();
 export default api;
