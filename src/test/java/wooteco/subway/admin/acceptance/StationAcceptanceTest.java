@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,9 +55,10 @@ public class StationAcceptanceTest {
     private void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
+        Request<Map<String, String>> param = new Request<>(params);
 
         given().
-                body(params).
+                body(param).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().

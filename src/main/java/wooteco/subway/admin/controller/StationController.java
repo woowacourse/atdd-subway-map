@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
@@ -20,8 +21,8 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
-        Station station = view.toStation();
+    public ResponseEntity createStation(@RequestBody Request<StationCreateRequest> view) {
+        Station station = view.getContent().toStation();
         Station persistStation = stationRepository.save(station);
 
         return ResponseEntity

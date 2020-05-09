@@ -101,9 +101,10 @@ public class LineStationAcceptanceTest {
     private void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
+        Request<Map<String, String>> param = new Request<>(params);
 
         given().
-                body(params).
+                body(param).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
