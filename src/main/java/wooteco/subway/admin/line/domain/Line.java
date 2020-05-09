@@ -60,6 +60,9 @@ public class Line {
     }
 
     public void addLineStation(Edge edge) {
+        if (edges.contain(edge)) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
         edges.add(edge);
     }
 

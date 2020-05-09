@@ -70,4 +70,9 @@ public class Edges {
     public List<Edge> getEdges() {
         return Collections.unmodifiableList(edges);
     }
+
+    public boolean contain(final Edge edge) {
+        return edges.stream()
+                .anyMatch(aEdge -> aEdge.isSame(edge));
+    }
 }

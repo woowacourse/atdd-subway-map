@@ -17,7 +17,6 @@ public class ValidationExceptionAdvice {
         List<MethodArgumentExceptionDto> exceptionDtos = e.getBindingResult().getAllErrors().stream()
                 .map(MethodArgumentExceptionDto::of)
                 .collect(Collectors.toList());
-
         return ResponseEntity.badRequest().body(exceptionDtos);
     }
 }

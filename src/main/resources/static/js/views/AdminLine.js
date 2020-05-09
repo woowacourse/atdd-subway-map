@@ -51,8 +51,12 @@ function AdminLine() {
                 )
             })
             .catch(error => {
-                const messages = collectMessages(error.body);
-                alert(messages.join("\n"));
+                if (error.status === 400) {
+                    const messages = collectMessages(error.body);
+                    alert(messages.join("\n"));
+                    return;
+                }
+                alert(error.body.message)
             })
             .finally(() => {
                 subwayLineModal.toggle();
@@ -138,8 +142,12 @@ function AdminLine() {
                 subwayLineModal.toggle();
             })
             .catch(error => {
-                const messages = collectMessages(error.body);
-                alert(messages.join("\n"));
+                if (error.status === 400) {
+                    const messages = collectMessages(error.body);
+                    alert(messages.join("\n"));
+                    return;
+                }
+                alert(error.body.message)
             });
     };
 

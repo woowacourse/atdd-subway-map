@@ -63,6 +63,11 @@ public class Edge {
         this.preStationId = edge.preStationId;
     }
 
+    public boolean isSame(final Edge edge) {
+        return Objects.equals(this.preStationId, edge.preStationId) &&
+                Objects.equals(this.stationId, edge.stationId);
+    }
+
     public Long getStationId() {
         return stationId;
     }

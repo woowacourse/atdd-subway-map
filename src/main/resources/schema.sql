@@ -30,3 +30,11 @@ CREATE TABLE IF NOT EXISTS EDGE
     duration       int                   not null,
     primary key (id)
 );
+
+ALTER TABLE EDGE
+    ADD FOREIGN KEY (line_id)
+        REFERENCES LINE (id);
+
+ALTER TABLE EDGE
+    ADD FOREIGN KEY (station_id)
+        REFERENCES STATION (id);

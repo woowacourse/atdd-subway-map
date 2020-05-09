@@ -38,8 +38,12 @@ function AdminEdge() {
                     .catch(alert);
             })
             .catch(error => {
-                const messages = collectMessages(error.body);
-                alert(messages.join("\n"));
+                if (error.status === 400) {
+                    const messages = collectMessages(error.body);
+                    alert(messages.join("\n"));
+                    return;
+                }
+                alert(error.body.message)
             });
     };
 
