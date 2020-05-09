@@ -91,4 +91,9 @@ public class LineController {
         stations.add(StationResponse.of(new Station("석촌역")));
         return ResponseEntity.ok(stations);
     }
+
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    public ResponseEntity excludeStationFromLine(@PathVariable Long lineId, @PathVariable Long stationId) {
+        return ResponseEntity.noContent().build();
+    }
 }
