@@ -15,7 +15,6 @@ function AdminEdge() {
     const $lineInput = document.querySelector("#line-select-options");
     const $preStationInput = document.querySelector("#pre-station-name");
     const $stationInput = document.querySelector("#station-name");
-    const $closeModalButton = document.querySelector(".modal-close");
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = (lines) => {
@@ -86,7 +85,7 @@ function AdminEdge() {
         api.lineStation
             .create($lineInput.selectedOptions[0].dataset.lineId, data)
             .then(res => {
-                console.log(res);
+                window.location.href = "/admin-edge";
             });
         createSubwayEdgeModal.toggle();
     };
@@ -94,8 +93,12 @@ function AdminEdge() {
     const onRemoveStationHandler = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
+        const $line = $target.closest(".line");
+        const $station = $target.closest(".list-item");
         if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+            api.lineStation
+                .delete($line.dataset.lineId, $station.dataset.stationId);
+            $station.remove();
         }
     };
 

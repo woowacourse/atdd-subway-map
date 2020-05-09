@@ -110,7 +110,7 @@ public class Line {
                 }
                 if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
                         && nextIndex == stations.size()) {
-                    stations.add(nextIndex, lineStation);
+                    stations.add(lineStation);
                     break;
                 }
             }

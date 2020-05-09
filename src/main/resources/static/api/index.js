@@ -80,7 +80,7 @@ const api = (() => {
         create(lineId, data) {
             return request(`/lines/${lineId}/stations`, METHOD.POST(data));
         },
-        update(lineId, stationId) {
+        delete(lineId, stationId) {
             return noContentRequest(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
