@@ -47,11 +47,11 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity getLines() {
-        List<Line> lines = lineService.showLines();
+        List<LineResponse> lines = lineService.showLines();
         return ResponseEntity
             .ok()
             .location(URI.create("/lines"))
-            .body(LineResponse.listOf(lines));
+            .body(lines);
     }
 
     @GetMapping("/{id}")

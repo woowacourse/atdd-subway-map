@@ -1,42 +1,28 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.LineStation;
-
 public class LineStationCreateRequest {
-    private Long preStationId;
-    private Long stationId;
-    private int distance;
-    private int duration;
+    private Long lineId;
+    private String preStationName;
+    private String stationName;
 
     public LineStationCreateRequest() {
     }
 
-    public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
+    public LineStationCreateRequest(Long lineId, String preStationName, String stationName) {
+        this.lineId = lineId;
+        this.preStationName = preStationName;
+        this.stationName = stationName;
     }
 
-
-    public LineStation toEntity(){
-        return new LineStation(this.preStationId, this.stationId);
+    public Long getLineId() {
+        return lineId;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public String getPreStationName() {
+        return preStationName;
     }
 
-    public Long getStationId() {
-        return stationId;
+    public String getStationName() {
+        return stationName;
     }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
 }

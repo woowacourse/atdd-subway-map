@@ -2,10 +2,9 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,35 +14,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
 @RequestMapping("/lineStations")
 public class LineStationController {
 
-    private static List<LineStationResponse> mockResponses = new ArrayList<>();
-    private static int id = 1;
+    @Autowired
+    private LineService lineService;
+
+    @Autowired
+    private StationRepository stationRepository;
 
     @GetMapping
     public ResponseEntity getLineStations() {
-        return ResponseEntity.ok(mockResponses);
+        return ResponseEntity.ok(lineService.showLines());
     }
 
     @PostMapping
     public ResponseEntity createLineStation(@RequestBody LineStationCreateRequest request) {
+        Long preStationId = stationRepository.findIdByName(request.getPreStationName());
+        Long stationId = stationRepository.findIdByName(request.getStationName());
 
-        LineStationResponse lineStationResponse = new LineStationResponse(1L, request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
-        mockResponses.add(lineStationResponse);
+        LineStationRequest requestWithId = new LineStationRequest(request.getLineId(), preStationId,
+            stationId, 0, 0);
+        LineStationResponse lineStationResponse = lineService.addLineStation(requestWithId);
 
-        return ResponseEntity.created(URI.create("/lineStation/"+(id++)))
+        return ResponseEntity.created(URI.create("/lineStations/" + request.getLineId() + "/" + stationId))
             .body(lineStationResponse);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteLineStation(@PathVariable Long id) {
-        mockResponses.remove(0);
+    @DeleteMapping("/delete/{lineId}/{stationId}")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

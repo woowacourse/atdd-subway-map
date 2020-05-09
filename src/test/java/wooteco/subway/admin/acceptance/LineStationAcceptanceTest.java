@@ -21,6 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
@@ -67,58 +68,69 @@ public class LineStationAcceptanceTest {
         StationResponse stationResponse2 = createStation("디디역");
 
         //when
-        LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null, stationResponse1.getId());
-        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(), stationResponse1.getId(), stationResponse2.getId());
+        LineStationResponse lineStationResponse1 = createLineStation(lineResponse1.getId(), null, stationResponse1.getName());
+        LineStationResponse lineStationResponse2 = createLineStation(lineResponse1.getId(), stationResponse1.getName(), stationResponse2.getName());
 
         //then
-        List<LineStationResponse> lineStations = getLineStations(lineResponse1.getId());
-        assertThat(lineStations.size()).isEqualTo(2);
-        assertThat(lineStations).contains(lineStationResponse1);
+        List<LineResponse> lines = getLineStations();
+        LineResponse lineResponse = getLineResponseById(lineResponse1, lines);
+        List<Station> stations = lineResponse.getStations();
 
-        // deleteLineStation(lineStationResponse1.getId());
-        List<LineStationResponse> lineStations2 = getLineStations(lineResponse1.getId());
-        assertThat(lineStations2.size()).isEqualTo(1);
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations.stream()
+            .anyMatch(station -> station.getId().equals(lineStationResponse1.getStationId())))
+            .isTrue();
 
-        assertThat(lineStations2).doesNotContain(lineStationResponse1);
+        deleteLineStation(lineResponse1.getId(), lineStationResponse1.getStationId());
+        List<LineResponse> linesAfterDelete = getLineStations();
+        LineResponse lineResponseAfterDelete = getLineResponseById(lineResponse1, linesAfterDelete);
+        List<Station> stationsAfterDelete = lineResponseAfterDelete.getStations();
+        assertThat(stationsAfterDelete.size()).isEqualTo(1);
+
+        assertThat(stationsAfterDelete.stream()
+            .anyMatch(station -> station.getId().equals(lineStationResponse1.getStationId())))
+            .isFalse();
     }
 
-    private void deleteLineStation(Long lineStationId) {
+    private LineResponse getLineResponseById(LineResponse lineResponse1, List<LineResponse> lines) {
+        return lines.stream()
+            .filter(line -> line.getId().equals(lineResponse1.getId()))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("잘못된 id입니다."));
+    }
+
+    private void deleteLineStation(Long lineId, Long stationId) {
         Map<String, String> params = new HashMap<>();
-        params.put("lineStationId", String.valueOf(lineStationId));
+        params.put("lineId", String.valueOf(lineId));
+        params.put("stationId", String.valueOf(stationId));
 
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-            delete("lineStations/" + lineStationId).
+            delete("lineStations/delete/" + lineId + "/" + stationId).
         then().
             log().all().
             statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineStationResponse> getLineStations(Long lineId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("lineId", String.valueOf(lineId));
-
+    private List<LineResponse> getLineStations() {
         return given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
         when().
             get("/lineStations").
         then().
             log().all().
             statusCode(HttpStatus.OK.value()).
-            extract().jsonPath().getList(".", LineStationResponse.class);
+            extract().jsonPath().getList(".", LineResponse.class);
 
     }
 
-    private LineStationResponse createLineStation(Long lineId, Long preStationId, Long stationId) {
+    private LineStationResponse createLineStation(Long lineId, String preStationName, String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("lineId", String.valueOf(lineId));
-        params.put("preStationId", String.valueOf(preStationId));
-        params.put("stationId", String.valueOf(stationId));
+        params.put("preStationName", preStationName);
+        params.put("stationName", stationName);
         params.put("duration", "10");
         params.put("distance", "10");
 
