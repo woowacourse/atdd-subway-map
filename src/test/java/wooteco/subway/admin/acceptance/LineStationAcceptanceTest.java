@@ -34,12 +34,6 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    /**
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
-
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
@@ -55,11 +49,19 @@ public class LineStationAcceptanceTest {
         List<StationResponse> responses = getStations();
         assertThat(responses.size()).isEqualTo(5);
         // And 새로 추가한 지하철역을 목록에서 찾는다.
-        assertThat(responses.get(4).getName()).isEqualTo("석촌역");
+        int newStationIndex = 4;
+        assertThat(responses.get(newStationIndex).getName()).isEqualTo("석촌역");
 
         // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
         // Then 지하철역이 노선에서 제거 되었다.
         excludeStationFromLine();
+
+        // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        // Then 지하철역 목록을 응답 받는다.
+        List<StationResponse> responsesAfterExcluded = getStations();
+        // And 제외한 지하철역이 목록에 존재하지 않는다.
+        assertThatThrownBy(() -> responsesAfterExcluded.get(newStationIndex)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThat(responsesAfterExcluded.size()).isEqualTo(4);
     }
 
     private void appendStationToLine() {
