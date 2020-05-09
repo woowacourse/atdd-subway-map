@@ -66,18 +66,23 @@ public class Line {
 
 	public void addLineStation(LineStation lineStation) {
 		stations.stream()
-				.filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
-				.findAny()
-				.ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
+				.filter(st -> Objects.equals(st.getPreStationId(), lineStation.getPreStationId()))
+				.findFirst()
+				.ifPresent(st -> st.updatePreLineStation(lineStation.getStationId()));
 		stations.add(lineStation);
 	}
 
 	public LineStation removeLineStationById(Long stationId) {
 		LineStation lineStation = stations.stream()
-				.filter(station -> station.getStationId() == stationId)
+				.filter(st -> st.getStationId().equals(stationId))
 				.findFirst()
 				.orElseThrow(NoSuchElementException::new);
 		stations.remove(lineStation);
+
+		stations.stream()
+				.filter(st -> Objects.equals(st.getPreStationId(), stationId))
+				.findFirst()
+				.ifPresent(st -> st.updatePreLineStation(lineStation.getPreStationId()));
 		return lineStation;
 	}
 
