@@ -100,6 +100,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        validateHavingSame(lineStation);
         if (Objects.isNull(lineStation.getPreStationId())) {
             stations.add(0, lineStation);
             if (stations.size() != 1) {
@@ -108,12 +109,19 @@ public class Line {
             }
             return;
         }
+        validateLineStation(lineStation);
         int insertIndex = findPreStationIndex(lineStation.getPreStationId()) + 1;
         if (stations.size() != insertIndex) {
             LineStation existing = stations.get(insertIndex);
             existing.updatePreLineStation(lineStation.getStationId());
         }
         stations.add(insertIndex, lineStation);
+    }
+
+    private void validateLineStation(LineStation lineStation) {
+        if (lineStation.getPreStationId().equals(lineStation.getStationId())) {
+            throw new IllegalArgumentException("같은 역을 출발지점과 도착지점으로 정할 수 없습니다.");
+        }
     }
 
     public void removeLineStationById(Long stationId) {
@@ -131,6 +139,17 @@ public class Line {
             stations.add(lineStation.getStationId());
         }
         return new ArrayList<>(stations);
+    }
+
+    private void validateHavingSame(LineStation lineStation) {
+        for (LineStation station : stations) {
+            if (Objects.isNull(station.getPreStationId())) {
+                continue;
+            }
+            if (station.isSameStation(lineStation)) {
+                throw new IllegalArgumentException("이미 등록된 구간입니다.");
+            }
+        }
     }
 
     private int findPreStationIndex(Long stationId) {
