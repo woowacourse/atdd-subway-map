@@ -46,7 +46,9 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + id));
+        line.addLineStation(request.toLineStation());
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

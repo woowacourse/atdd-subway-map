@@ -71,13 +71,17 @@ public class LineServiceTest {
             .hasMessage("중복된 지하철 역입니다. name = " + updated.getName());
     }
 
+    @DisplayName("노선의 시작역을 추가")
     @Test
     void addLineStationAtTheFirstOfLine() {
+        // given
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
-
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+
+        // when
         lineService.addLineStation(line.getId(), request);
 
+        // then
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);

@@ -89,7 +89,31 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        if (stations.isEmpty() && lineStation.isFirstNode()) {
+            stations.add(lineStation);
+            return;
+        }
+        if (lineStation.isFirstNode()) {
+            stations.stream()
+                .filter(LineStation::isFirstNode)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("으아아아 "))
+                .updatePreLineStation(lineStation.getStationId());
+        } else {
+            LineStation preNodeOfInput = stations.stream()
+                .filter(station -> station.isPreNodeOf(lineStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "ID = " + lineStation.getPreStationId() + "인 역이 존재하지 않습니다.")
+                );
+
+            stations.stream()
+                .filter(preNodeOfInput::isPreNodeOf)
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        }
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
@@ -97,7 +121,23 @@ public class Line {
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> sortedStationsId = new ArrayList<>();
+
+        LineStation preNode = stations.stream()
+            .filter(LineStation::isFirstNode)
+            .findFirst()
+            .orElseThrow(AssertionError::new);
+        sortedStationsId.add(preNode.getStationId());
+
+        while (sortedStationsId.size() < stations.size()) {
+            LineStation currentNode = stations.stream()
+                .filter(preNode::isPreNodeOf)
+                .findFirst()
+                .orElseThrow(AssertionError::new);
+            sortedStationsId.add(currentNode.getStationId());
+            preNode = currentNode;
+        }
+
+        return sortedStationsId;
     }
 }
