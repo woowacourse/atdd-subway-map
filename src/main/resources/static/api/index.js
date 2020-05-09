@@ -75,6 +75,9 @@ const api = (() => {
     },
     create(id, data) {
       return request(`/lines/${id}/stations`, METHOD.POST(data)).then(data => data.json());
+    },
+    delete(lineId, stationId) {
+      return request(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   };
 
