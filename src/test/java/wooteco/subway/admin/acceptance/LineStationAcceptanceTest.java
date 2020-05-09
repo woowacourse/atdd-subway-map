@@ -14,7 +14,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.util.Set;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.admin.acceptance.LineAcceptanceTest.createLine;
@@ -77,7 +77,7 @@ public class LineStationAcceptanceTest {
         assertThat(lineResponse.getStations().size()).isEqualTo(4);
 
         // When Then
-        Set<StationResponse> stations = lineResponse.getStations();
+        List<StationResponse> stations = lineResponse.getStations();
         // And
         assertThat(lineResponse.getStations()
                 .stream()
@@ -89,7 +89,7 @@ public class LineStationAcceptanceTest {
         assertThat(getLineWithStations(3L).getStations().size()).isEqualTo(3);
 
         // When Then
-        Set<StationResponse> stations2 = getLineWithStations(3L).getStations();
+        List<StationResponse> stations2 = getLineWithStations(3L).getStations();
         // And
         assertThat(stations2
                 .stream()

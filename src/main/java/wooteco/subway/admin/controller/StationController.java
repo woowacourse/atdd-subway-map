@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationIdResponse;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -24,12 +25,12 @@ public class StationController {
 
         return ResponseEntity
                 .created(URI.create("/stations/" + persistStation.getId()))
-                .body(StationResponse.of(persistStation));
+                .body(new StationIdResponse(persistStation.getId()));
     }
 
     @GetMapping("/stations")
     public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
+        return ResponseEntity.ok().body(StationResponse.listOf(stationRepository.findAll()));
     }
 
     @DeleteMapping("/stations/{id}")

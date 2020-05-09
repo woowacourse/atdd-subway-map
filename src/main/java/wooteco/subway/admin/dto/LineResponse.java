@@ -20,7 +20,7 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<StationResponse> stations;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -75,7 +75,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<StationResponse> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 
