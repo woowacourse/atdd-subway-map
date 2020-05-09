@@ -29,8 +29,6 @@ public class LineController {
 
     private final LineService lineService;
 
-    private boolean isFirst = true;
-
     public LineController(final LineService lineService) {
         this.lineService = lineService;
     }

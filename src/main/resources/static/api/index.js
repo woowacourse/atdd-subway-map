@@ -32,6 +32,7 @@ const resolver = (response) => {
     return new Promise((resolve, reject) => {
         let func;
         response.status < 400 ? func = resolve : func = reject;
+
         response.json().then(data => func({'status': response.status, 'body': data}));
     });
 }
@@ -44,7 +45,7 @@ const api = (() => {
             return request(`/stations`);
         },
         create(data) {
-            return request(`/station`, METHOD.POST(data));
+            return request(`/stations`, METHOD.POST(data));
         },
         update(data, id) {
             return request(`/station/${id}`, METHOD.PUT(data));

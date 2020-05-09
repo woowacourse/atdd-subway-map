@@ -16,8 +16,8 @@ public class StationService {
 	}
 
 	@Transactional
-	public Station save(final Station station) {
-		return stationRepository.save(station);
+	public Long save(final Station station) {
+		return stationRepository.save(station).getId();
 	}
 
 	@Transactional(readOnly = true)
