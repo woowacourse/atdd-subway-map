@@ -51,7 +51,11 @@ const api = (() => {
     delete(id) {
       return fetch(`lines/${id}`, {
         method: 'DELETE'
-      });
+      })},
+    deleteLineStation(lindId, stationId) {
+      return fetch(`/lines/${lindId}/stations/${stationId}`, {
+        method: 'DELETE'
+      })
     }
   }
 

@@ -66,4 +66,11 @@ public class LineController {
         lineService.addLineStation(id, request);
         return ResponseEntity.created(URI.create("/lines/" + id + "/stations/" + request.getStationId())).build();
     }
+
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    public ResponseEntity excludeStationFromLine(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
+        lineService.removeLineStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 }
