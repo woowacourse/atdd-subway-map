@@ -1,23 +1,24 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Line {
+    private static final int FIRST = 0;
+
     @Id
     private Long id;
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations = new LinkedHashSet<>();
+    @MappedCollection
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String bgColor;
@@ -59,7 +60,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -96,7 +97,47 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (Objects.isNull(lineStation.getPreStationId())) {
+            addFirst(lineStation);
+            return;
+        }
+
+        if (hasNoSuchPreStation(lineStation)) {
+            throw new NoSuchElementException("이전 역이 등록되지 않았습니다.");
+        }
+
+        Optional<LineStation> nextStation = findStationByPreStation(lineStation.getPreStationId());
+        if (nextStation.isPresent()) {
+            addBetweenTwo(lineStation, nextStation.get());
+            return;
+        }
+
         stations.add(lineStation);
+    }
+
+    private void addFirst(LineStation lineStation) {
+        stations.stream()
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        stations.add(FIRST, lineStation);
+    }
+
+    private void addBetweenTwo(LineStation lineStation, LineStation nextStation) {
+        nextStation.updatePreLineStation(lineStation.getStationId());
+        int position = stations.indexOf(nextStation);
+        stations.add(position, lineStation);
+    }
+
+    private boolean hasNoSuchPreStation(LineStation lineStation) {
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .noneMatch(id -> lineStation.getPreStationId().equals(id));
+    }
+
+    private Optional<LineStation> findStationByPreStation(Long preStationId) {
+        return stations.stream()
+                .filter(station -> preStationId.equals(station.getPreStationId()))
+                .findFirst();
     }
 
     public void removeLineStationById(Long stationId) {

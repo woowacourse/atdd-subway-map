@@ -48,7 +48,7 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addLineStation(line.getId(), request.toLineStation());
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
@@ -62,7 +62,9 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addLineStation(line.getId(), request.toLineStation());
+
+        line.getStations().forEach(System.out::println);
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -76,7 +78,7 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addLineStation(line.getId(), request.toLineStation());
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);

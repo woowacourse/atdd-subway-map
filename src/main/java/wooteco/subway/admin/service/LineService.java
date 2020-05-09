@@ -2,8 +2,8 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -12,6 +12,8 @@ import java.util.NoSuchElementException;
 
 @Service
 public class LineService {
+    private static final String NO_SUCH_LINE = "해당 ID의 노선이 없습니다.";
+
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -38,8 +40,11 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+    public void addLineStation(Long id, LineStation lineStation) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+        line.addLineStation(lineStation);
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -48,7 +53,7 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 ID의 노선이 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         return LineResponse.of(line);
     }
 }
