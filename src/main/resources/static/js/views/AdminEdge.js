@@ -63,11 +63,11 @@ function AdminEdge() {
       .then(stations => {
         const preStation = stations.find(station => station.name === $subwayEdgeDepartName.value);
         const station = stations.find(station => station.name === $subwayEdgeArrivalName.value);
-        if (!station || !preStation) {
+        if (!station || (!preStation && $subwayEdgeDepartName.value)) {
           alert("해당되는 역이 존재하지 않습니다.");
           return;
         }
-        createStation(preStation.id, station.id);
+        createStation(preStation ? preStation.id : null, station.id);
       })
   };
 
