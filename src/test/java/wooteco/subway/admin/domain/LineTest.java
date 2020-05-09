@@ -34,6 +34,6 @@ public class LineTest {
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations().size()).isEqualTo(2);
     }
 }

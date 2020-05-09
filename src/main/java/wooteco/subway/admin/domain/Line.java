@@ -1,13 +1,12 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -16,7 +15,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    @Embedded.Empty
+    private LineStations stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String bgColor;
@@ -32,7 +32,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
-        this.stations = new LinkedHashSet<>();
+        this.stations = new LineStations(new LinkedHashSet<>());
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
@@ -59,7 +59,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public LineStations getStations() {
         return stations;
     }
 
@@ -96,45 +96,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        Set<LineStation> newStations = new LinkedHashSet<>();
-        int updated = 0;
-        for (LineStation station : stations) {
-            if (lineStation.getPreStationId() == null) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            newStations.add(station);
-        }
-        if (updated == 0) {
-            newStations.add(lineStation);
-        }
-        if (stations.size() == 0) {
-            newStations.add(lineStation);
-        }
-        stations = newStations;
+        stations.addLineStation(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> station.isSameId(stationId))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-        stations.remove(lineStation);
+        stations.removeLineStationById(stationId);
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        return stations.getLineStationsId();
     }
 }
