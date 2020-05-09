@@ -3,6 +3,7 @@ package wooteco.subway.admin.line.service.dto.line;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import wooteco.subway.admin.line.domain.Line;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
@@ -15,7 +16,7 @@ public class LineCreateRequest {
     private LocalTime startTime;
     @NotNull(message = "막차 시간이 비어있습니다.")
     private LocalTime endTime;
-    @NotNull(message = "배차 시간이 비어있습니다.")
+    @Min(value = 1, message = "배차 시간은 1이상 입력해 주십시오.")
     private Integer intervalTime;
     @NotNull(message = "노선 색상값이 비어있습니다.")
     private String bgColor;

@@ -2,6 +2,7 @@ package wooteco.subway.admin.line.service.dto.edge;
 
 import wooteco.subway.admin.line.domain.edge.Edge;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class EdgeCreateRequest {
@@ -9,9 +10,9 @@ public class EdgeCreateRequest {
     private Long preStationId;
     @NotNull(message = "대상 역 값이 비어있습니다.")
     private Long stationId;
-    @NotNull(message = "구간 값이 비어있습니다.")
+    @Min(value = 1, message = "구간 값을 0이상 입력해 주십시오.")
     private Integer distance;
-    @NotNull(message = "기간 값이 비어있습니다.")
+    @Min(value = 1, message = "기간 값을 1이상 입력해 주십시오.")
     private Integer duration;
 
     public EdgeCreateRequest() {

@@ -10,6 +10,9 @@ public class MethodArgumentExceptionDto {
     private String field;
     private String message;
 
+    protected MethodArgumentExceptionDto() {
+    }
+
     public MethodArgumentExceptionDto(final String field, final String message) {
         this.field = field;
         this.message = message;

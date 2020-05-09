@@ -17,10 +17,17 @@ public class Edge {
     }
 
     public Edge(Long preStationId, Long stationId, int distance, int duration) {
+        validate(preStationId, stationId);
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    private void validate(final Long preStationId, final Long stationId) {
+        if (Objects.equals(preStationId, stationId)) {
+            throw new IllegalArgumentException(stationId + " : 이전역 값과 대상역 값이 같습니다.");
+        }
     }
 
     public static Edge startEdge(Edge edge) {

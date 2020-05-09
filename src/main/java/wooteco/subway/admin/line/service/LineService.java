@@ -63,8 +63,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<EdgeResponse> findEdgesByLineId(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        Line line = findLineById(lineId);
 
         Stations stations = new Stations(stationRepository.findAllById(line.getEdgesStationIds()));
 
@@ -72,18 +71,21 @@ public class LineService {
         return EdgeResponse.listOf(edges.getEdges(), stations);
     }
 
+    private Line findLineById(final Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+    }
+
     @Transactional
     public void addEdge(Long lineId, EdgeCreateRequest request) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        Line line = findLineById(lineId);
         line.addLineStation(request.toEdge());
         lineRepository.save(line);
     }
 
     @Transactional
     public void removeEdge(Long lineId, EdgeDeleteRequest edgeDeleteRequest) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        Line line = findLineById(lineId);
         line.removeLineStationById(edgeDeleteRequest.getStationId());
         lineRepository.save(line);
     }
