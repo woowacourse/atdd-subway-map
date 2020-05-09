@@ -161,7 +161,7 @@ function AdminLine() {
   };
 
   this.init = () => {
-    initDefaultSubwayLines();
+    initDefaultSubwayLines().then();
     initEventListeners();
     initCreateSubwayLineForm();
   };

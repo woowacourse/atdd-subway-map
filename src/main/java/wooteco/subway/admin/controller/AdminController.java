@@ -11,8 +11,18 @@ public class AdminController {
 		return "index";
 	}
 
+	@GetMapping("/admin-station")
+	public String getAdminStation() {
+		return "admin-station";
+	}
+
 	@GetMapping("/admin-line")
 	public String getAdminLine() {
 		return "admin-line";
+	}
+
+	@GetMapping("/admin-edge")
+	public String getAdminEdge() {
+		return "admin-edge";
 	}
 }
