@@ -36,7 +36,9 @@ export default function Modal() {
         $modal.classList.toggle("pointer-events-none");
         onOpenModalButtonClick(event);
         for (let key in $forms) {
-            $forms[key].value = "";
+            if ($forms[key]) {
+                $forms[key].value = "";
+            }
         }
     };
 
