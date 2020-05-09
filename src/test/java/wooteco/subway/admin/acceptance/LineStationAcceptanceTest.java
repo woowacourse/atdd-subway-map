@@ -7,7 +7,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -25,9 +30,6 @@ public class LineStationAcceptanceTest {
     }
 
     /**
-     *     Given 지하철역이 여러 개 추가되어있다.
-     *     And 지하철 노선이 추가되어있다.
-     *
      *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
      *     Then 지하철역이 노선에 추가 되었다.
      *
@@ -45,6 +47,27 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //when
+        //then
+        addStationToLine(1L, 1L, 2L);
 
+    }
+
+    private void addStationToLine(long lineId, long preStationId, long stationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("preStationId", String.valueOf(preStationId));
+        params.put("stationId", String.valueOf(stationId));
+        params.put("distance", "1");
+        params.put("duration", "1");
+
+        given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines/" + lineId + "/stations").
+                then().
+                log().all().
+                statusCode(HttpStatus.CREATED.value());
     }
 }
