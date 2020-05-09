@@ -13,6 +13,9 @@ function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $openModalButton = document.querySelector(".modal-open");
   const $lineSelectBox = document.querySelector("#line-select-options");
+  const $preStationSelectBox = document.querySelector("#depart-station-name-options");
+  const $arrivalStationSelectBox = document.querySelector("#arrival-station-name-options");
+  const $addStationSubmitButton = document.querySelector("#submit-button");
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = (linesWithStations) => {
@@ -65,9 +68,29 @@ function AdminEdge() {
     }
   };
 
+  const onAddStationHandler = async event => {
+    event.preventDefault();
+    const lineId = $lineSelectBox
+      .options[$lineSelectBox.selectedIndex].dataset.lineId;
+    const preStationId = $preStationSelectBox
+      .options[$preStationSelectBox.selectedIndex].dataset.stationId;
+    const stationId = $arrivalStationSelectBox
+      .options[$arrivalStationSelectBox.selectedIndex].dataset.stationId;
+
+    const data = {
+      preStationId: preStationId,
+      stationId: stationId,
+      distance: 10,
+      duration: 10
+    };
+    await api.edge.create(lineId, data).catch().finally(() =>
+      createSubwayEdgeModal.toggle());
+  };
+
   const initEventListeners =  () => {
     $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     $openModalButton.addEventListener(EVENT_TYPE.CLICK, createSubwayEdgeModal.toggle);
+    $addStationSubmitButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
   };
 
   this.init = async () => {
