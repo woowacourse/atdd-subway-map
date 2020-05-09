@@ -1,12 +1,10 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.admin.acceptance.LineAcceptanceTest.*;
+import static wooteco.subway.admin.acceptance.StationAcceptanceTest.*;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -50,13 +49,15 @@ public class LineStationAcceptanceTest {
 
         // when
         // then
-        register(lineId, jamsil, jamsilSaenae);
-        register(lineId, jamsilSaenae, seoknam);
-        register(lineId, seoknam, sindorim);
-        register(lineId, sindorim, bupeyong);
+        register(lineId, null, jamsil.getId());
+        register(lineId, jamsil.getId(), jamsilSaenae.getId());
+        register(lineId, jamsilSaenae.getId(), seoknam.getId());
+        register(lineId, seoknam.getId(), sindorim.getId());
+        register(lineId, sindorim.getId(), bupeyong.getId());
 
         // when
-        List<StationResponse> stations = getStationsByLineId(lineId);
+        LineResponse line = getLine(lineId);
+        List<StationResponse> stations = line.getStations();
 
         // then
         assertThat(stations).contains(jamsil);
@@ -70,7 +71,8 @@ public class LineStationAcceptanceTest {
         deleteStationOnLine(lineId, jamsil);
 
         // when
-        List<StationResponse> deletedStations = getStationsByLineId(lineId);
+        LineResponse deletedLineResponse = getLine(lineId);
+        List<StationResponse> deletedStations = deletedLineResponse.getStations();
         assertThat(deletedStations).doesNotContain(jamsil);
     }
 
@@ -81,18 +83,9 @@ public class LineStationAcceptanceTest {
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    private List<StationResponse> getStationsByLineId(Long lineId) {
-        return given().when().
-            get("/line-stations/" + lineId).
-            then().
-            log().all().
-            extract().
-            jsonPath().getList(".", StationResponse.class);
-    }
-
-    private void register(Long lineId, StationResponse preStation, StationResponse station) {
+    private void register(Long lineId, Long preStationId, Long stationId) {
         LineStationCreateRequest lineStationCreateRequest =
-            new LineStationCreateRequest(preStation.getId(), station.getId(), 10, 10);
+            new LineStationCreateRequest(preStationId, stationId, 10, 10);
 
         given().
             body(lineStationCreateRequest).
@@ -103,44 +96,5 @@ public class LineStationAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
-    }
-
-    private StationResponse createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/stations").
-            then().
-            log().all().
-            statusCode(HttpStatus.CREATED.value()).
-            extract().
-            jsonPath().getObject(".", StationResponse.class);
-    }
-
-    private Long createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", "bg-green-700");
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-
-        return given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.CREATED.value()).
-            extract()
-            .body()
-            .as(Long.class);
     }
 }

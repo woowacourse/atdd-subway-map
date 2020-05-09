@@ -15,12 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -71,7 +73,7 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
+    static LineResponse getLine(Long id) {
         return given().when().
             get("/lines/" + id).
             then().
@@ -79,7 +81,7 @@ public class LineAcceptanceTest {
             extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    static Long createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-green-700");
@@ -87,7 +89,7 @@ public class LineAcceptanceTest {
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
 
-        given().
+        return given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
@@ -95,7 +97,10 @@ public class LineAcceptanceTest {
             post("/lines").
             then().
             log().all().
-            statusCode(HttpStatus.CREATED.value());
+            statusCode(HttpStatus.CREATED.value()).
+            extract()
+            .body()
+            .as(Long.class);
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {

@@ -13,12 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -49,11 +51,11 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
-    private void createStation(String name) {
+    static StationResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        given().
+        return given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
@@ -61,7 +63,9 @@ public class StationAcceptanceTest {
             post("/stations").
             then().
             log().all().
-            statusCode(HttpStatus.CREATED.value());
+            statusCode(HttpStatus.CREATED.value()).
+            extract().
+            jsonPath().getObject(".", StationResponse.class);
     }
 
     private List<StationResponse> getStations() {
