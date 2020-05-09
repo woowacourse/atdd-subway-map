@@ -16,9 +16,11 @@ import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
