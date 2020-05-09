@@ -16,9 +16,5 @@ public class ExceptionController {
     @ExceptionHandler(value = {DbActionExecutionException.class})
     public ResponseEntity handleDbActionExecutionException() {
         return new ResponseEntity(new ErrorResponse("DUPLICATED"), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        // return ResponseEntity
-        //         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        //         .body(new ErrorResponse("DUPLICATED"));
     }
 }
