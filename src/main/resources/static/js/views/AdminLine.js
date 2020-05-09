@@ -13,13 +13,20 @@ function AdminLine() {
     const $subwayLineColorInput = document.querySelector("#subway-line-color");
     const $subwayLineFormSubmitButton = document.querySelector("#submit-button");
     let $activeSubwayLineItem = null;
+
     const subwayLineModal = new Modal();
+
     const onSubmitHandler = (event) => {
         event.preventDefault();
-        const $target = event.target;
-        const isUpdateSubmit = $target.classList.contains("update-submit-button");
-        isUpdateSubmit ? onUpdateSubwayLine(event) : onCreateSubwayLine(event)
+        if ($subwayLineNameInput.value && $subwayLineFirstTimeInput.value && $subwayLineLastTimeInput.value && $subwayLineIntervalTimeInput.value && $subwayLineColorInput.value) {
+            const $target = event.target;
+            const isUpdateSubmit = $target.classList.contains("update-submit-button");
+            isUpdateSubmit ? onUpdateSubwayLine() : onCreateSubwayLine(event);
+            return;
+        }
+        alert("노선 정보를 모두 기입해 주시기 바랍니다!");
     };
+
     const onViewSubwayInfo = event => {
         const $target = event.target;
         const isSubwayTitle = $target.classList.contains("subway-line-title");
@@ -36,6 +43,7 @@ function AdminLine() {
             );
         }
     };
+
     const onPencilClicked = event => {
         const $target = event.target;
         const $subwayLineItem = $target.closest(".subway-line-item");
@@ -63,8 +71,14 @@ function AdminLine() {
             alert("데이터를 불러올 수 없습니다.");
         });
     };
+
     const onCreateSubwayLine = event => {
         event.preventDefault();
+        if (checkDuplication()) {
+            alert("이미 등록되어 있는 노선입니다!");
+            return;
+        }
+
         const data = {
             name: $subwayLineNameInput.value,
             startTime: $subwayLineFirstTimeInput.value,
@@ -88,6 +102,7 @@ function AdminLine() {
         $subwayLineLastTimeInput.value = "";
         $subwayLineIntervalTimeInput.value = "";
     };
+
     const onDeleteSubwayLine = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -103,7 +118,8 @@ function AdminLine() {
             $subwayLineIntervalTime.innerText = "";
         }
     };
-    const onUpdateSubwayLine = event => {
+
+    const onUpdateSubwayLine = () => {
         let lineId = $activeSubwayLineItem.dataset.lineId;
         const data = {
             name: $subwayLineNameInput.value,
@@ -120,7 +136,21 @@ function AdminLine() {
             }
             initDefaultSubwayLines();
         });
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayLineFirstTimeInput.value = "";
+        $subwayLineLastTimeInput.value = "";
+        $subwayLineIntervalTimeInput.value = "";
     };
+
+    const checkDuplication = () => {
+        const names = document.getElementsByClassName("subway-line-title");
+        const name = $subwayLineNameInput.value;
+        return Array.from(names)
+            .map(nameElement => nameElement.innerText)
+            .some(nameText => nameText === name);
+    };
+
     const initDefaultSubwayLines = () => {
         api.line.get().then(subwayLines => subwayLines.forEach(
             subwayLine => {
@@ -131,12 +161,14 @@ function AdminLine() {
             }
         ));
     };
+
     const initEventListeners = () => {
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onPencilClicked);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onViewSubwayInfo);
         $subwayLineFormSubmitButton.addEventListener(EVENT_TYPE.CLICK, onSubmitHandler);
     };
+
     const onSelectColorHandler = event => {
         event.preventDefault();
         const $target = event.target;
@@ -145,6 +177,7 @@ function AdminLine() {
                 $target.dataset.color;
         }
     };
+
     const initCreateSubwayLineForm = () => {
         const $colorSelectContainer = document.querySelector(
             "#subway-line-color-select-container"
@@ -158,11 +191,13 @@ function AdminLine() {
             onSelectColorHandler
         );
     };
+
     this.init = () => {
         initDefaultSubwayLines();
         initCreateSubwayLineForm();
         initEventListeners();
     };
 }
+
 const adminLine = new AdminLine();
 adminLine.init();

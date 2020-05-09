@@ -59,13 +59,11 @@ public class LineController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity showStationsOfLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(LineResponse.of(new Line()));
-
     }
 
     @PutMapping("/lines/{id}")
@@ -85,7 +83,6 @@ public class LineController {
     @PostMapping("/lines/{id}/register")
     public ResponseEntity registerStation(@PathVariable Long id, @RequestBody StationCreateRequest stationCreateRequest) {
         Line line = new Line("2호선", LocalTime.now(), LocalTime.now(), 3, "red");
-
         LineStation lineStation = new LineStation(1L, 1L, 1, 1);
         line.addLineStation(lineStation);
 
