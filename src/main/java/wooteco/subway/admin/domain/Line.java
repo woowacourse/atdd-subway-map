@@ -92,6 +92,9 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }

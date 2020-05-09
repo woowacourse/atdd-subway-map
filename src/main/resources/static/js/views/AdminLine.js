@@ -64,6 +64,7 @@ function AdminLine() {
       $subwayLineFirstTimeInput.value = line.startTime
       $subwayLineLastTImeInput.value = line.endTime
       $subwayLineIntervalTimeInput.value = line.intervalTime
+      $subwayLineColorInput.value = line.bgColor
       subwayLineModal.toggle();
       $submitButton.classList.add('update-submit-button')
     }).catch(() => {
@@ -76,13 +77,12 @@ function AdminLine() {
       title: $subwayLineNameInput.value,
       startTime: $subwayLineFirstTimeInput.value,
       endTime: $subwayLineLastTImeInput.value,
-      intervalTime: $subwayLineIntervalTimeInput.value
+      intervalTime: $subwayLineIntervalTimeInput.value,
+      bgColor: $subwayLineColorInput.value
     };
     api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) =>{
       subwayLineModal.toggle();
-      $activeSubwayLineItem.querySelector('.line-name').innerText = line.name;
-    }).catch(()=> {
-      alert("업데이트에 실패 하였습니다.");
+      subwayLinesTemplate(line);
     })
   };
 
