@@ -1,8 +1,12 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Objects;
 
 public class Edge {
+    @Id
+    private Long id;
     private Long stationId;
     private Long preStationId;
     private Integer distance;

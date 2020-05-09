@@ -1,16 +1,16 @@
 package wooteco.subway.admin.dto;
 
-public class EdgeDeleteRequest {
-    private final Long preStationId;
-    private final Long stationId;
+import javax.validation.constraints.NotNull;
 
-    public EdgeDeleteRequest(final Long preStationId, final Long stationId) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
+public class EdgeDeleteRequest {
+    @NotNull(message = "지우려는 역의 값이 비어있습니다.")
+    private Long stationId;
+
+    public EdgeDeleteRequest() {
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public EdgeDeleteRequest(final Long stationId) {
+        this.stationId = stationId;
     }
 
     public Long getStationId() {

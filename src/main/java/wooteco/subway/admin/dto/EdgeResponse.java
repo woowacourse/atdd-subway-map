@@ -1,40 +1,48 @@
 package wooteco.subway.admin.dto;
 
+import wooteco.subway.admin.domain.Edge;
+import wooteco.subway.admin.domain.Station;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class EdgeResponse {
-    private Long lineId;
-    private String lineName;
     private Long preStationId;
-    private String preStationName;
     private Long stationId;
     private String stationName;
 
     protected EdgeResponse() {
     }
 
-    public EdgeResponse(final Long lineId, final String lineName, final Long preStationId, final String preStationName, final Long stationId, final String stationName) {
-        this.lineId = lineId;
-        this.lineName = lineName;
+    public EdgeResponse(final Long preStationId, final Long stationId, final String stationName) {
         this.preStationId = preStationId;
-        this.preStationName = preStationName;
         this.stationId = stationId;
         this.stationName = stationName;
     }
 
-    public Long getLineId() {
-        return lineId;
+    public static List<EdgeResponse> listOf(final List<Edge> edges, final Set<Station> stations) {
+        return edges.stream()
+                .map(edge -> EdgeResponse.of(edge, stations))
+                .collect(Collectors.toList());
     }
 
-    public String getLineName() {
-        return lineName;
+    public static EdgeResponse of(final Edge edge, final Set<Station> stations) {
+        Long preStationId = edge.getPreStationId();
+        Long stationId = edge.getStationId();
+        String stationName = stations.stream()
+                .filter(station -> station.isSameId(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .getName();
+        return new EdgeResponse(preStationId, stationId, stationName);
     }
+
 
     public Long getPreStationId() {
         return preStationId;
     }
 
-    public String getPreStationName() {
-        return preStationName;
-    }
 
     public Long getStationId() {
         return stationId;

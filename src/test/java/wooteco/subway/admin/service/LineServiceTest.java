@@ -11,6 +11,7 @@ import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.EdgeCreateRequest;
+import wooteco.subway.admin.dto.EdgeDeleteRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -50,7 +51,7 @@ public class LineServiceTest {
         EdgeCreateRequest request = new EdgeCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
         assertThat(line.getEdges()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
@@ -65,7 +66,7 @@ public class LineServiceTest {
         EdgeCreateRequest request = new EdgeCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
         assertThat(line.getEdges()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -80,7 +81,7 @@ public class LineServiceTest {
         EdgeCreateRequest request = new EdgeCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
         assertThat(line.getEdges()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -93,7 +94,7 @@ public class LineServiceTest {
     @Test
     void removeLineStationAtTheFirstOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 1L);
+        lineService.removeEdge(line.getId(), new EdgeDeleteRequest(1L));
 
         assertThat(line.getEdges()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
@@ -104,7 +105,7 @@ public class LineServiceTest {
     @Test
     void removeLineStationBetweenTwo() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 2L);
+        lineService.removeEdge(line.getId(), new EdgeDeleteRequest(2L));
 
         assertThat(line.getEdges()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -115,7 +116,7 @@ public class LineServiceTest {
     @Test
     void removeLineStationAtTheEndOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 3L);
+        lineService.removeEdge(line.getId(), new EdgeDeleteRequest(3L));
 
         assertThat(line.getEdges()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);

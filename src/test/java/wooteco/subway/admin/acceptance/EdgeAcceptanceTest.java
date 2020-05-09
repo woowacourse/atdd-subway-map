@@ -39,38 +39,22 @@ public class EdgeAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    /**
-     * Given 지하철역이 여러 개 추가되어있다.
-     * And 지하철 노선이 추가되어있다.
-     * <p>
-     * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     * Then 지하철역이 노선에 추가 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 새로 추가한 지하철역을 목록에서 찾는다.
-     * <p>
-     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     * Then 지하철역이 노선에서 제거 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //Given 지하철역이 여러 개 추가되어있다.
+        //And 지하철 노선이 추가되어있다.
         createStation("선릉역");
         createStation("강남역");
 
         createLine("2호선");
 
+        //When 지하철 노선에 지하철역을 등록하는 요청을 한다.
+        //Then 지하철역이 노선에 추가 되었다.
         Long lineId = 1L;
         Long preStationId = 1L;
         Long stationId = 2L;
         EdgeCreateRequest edgeCreateRequest = new EdgeCreateRequest(preStationId, stationId, 10, 10);
-
-        Long edgeId = 1L;
 
         given()
                 .body(edgeCreateRequest)
@@ -82,6 +66,9 @@ public class EdgeAcceptanceTest {
                 .log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
+        // 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        // 지하철역 목록을 응답 받는다.
+        //새로 추가한 지하철역을 목록에서 찾는다.
         JsonPath edgeJsonPathByLineId = given()
                 .when()
                 .get("/lines/" + lineId + "/edge")
@@ -91,12 +78,14 @@ public class EdgeAcceptanceTest {
                 .extract()
                 .jsonPath();
 
-        assertThat((Object) edgeJsonPathByLineId.get("[0].preStationId")).isEqualTo(1);
-        assertThat((Object) edgeJsonPathByLineId.get("[0].stationId")).isEqualTo(2);
+        assertThat((Object) edgeJsonPathByLineId.get("[1].preStationId")).isEqualTo(1);
+        assertThat((Object) edgeJsonPathByLineId.get("[1].stationId")).isEqualTo(2);
 
 
-        EdgeDeleteRequest edgeDeleteRequest = new EdgeDeleteRequest(preStationId, stationId);
+        EdgeDeleteRequest edgeDeleteRequest = new EdgeDeleteRequest(stationId);
 
+        //지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+        //지하철역이 노선에서 제거 되었다.
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -107,6 +96,9 @@ public class EdgeAcceptanceTest {
                 .log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
+        // 지하철 노선의 지하철역 목록 조회 요청을 한다.
+        // 지하철역 목록을 응답 받는다.
+        // 제외한 지하철역이 목록에 존재하지 않는다.
         List<EdgeResponse> edgeResponses = given()
                 .when()
                 .get("/lines/" + lineId + "/edge")
@@ -117,7 +109,8 @@ public class EdgeAcceptanceTest {
                 .jsonPath()
                 .getList(".", EdgeResponse.class);
 
-        assertThat(edgeResponses).isEmpty();
+        assertThat(edgeResponses).hasSize(1);
+        assertThat(edgeResponses.get(0).getStationId()).isEqualTo(1);
     }
 
     private void createLine(String name) {

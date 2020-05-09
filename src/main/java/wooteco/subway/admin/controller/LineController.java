@@ -21,7 +21,6 @@ import wooteco.subway.admin.service.LineService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -67,20 +66,18 @@ public class LineController {
 
     @GetMapping("{id}/edge")
     public ResponseEntity<List<EdgeResponse>> getEdgesByLineId(@PathVariable(name = "id") final Long lineId) {
-        if (isFirst) {
-            isFirst = false;
-            return ResponseEntity.ok(Arrays.asList(new EdgeResponse(lineId, "2호선", 1L, "선릉", 2L, "강남")));
-        }
-        return ResponseEntity.ok(Arrays.asList());
+        return ResponseEntity.ok(lineService.findEdgeResponseByLineId(lineId));
     }
 
     @PostMapping("{id}/edge")
     public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody final EdgeCreateRequest edgeCreateRequest) {
+        lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}/edge")
-    public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, final EdgeDeleteRequest edgeDeleteRequest) {
+    public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
+        lineService.removeEdge(lineId, edgeDeleteRequest);
         return ResponseEntity.noContent().build();
     }
 }

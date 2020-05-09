@@ -2,13 +2,18 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.EdgeCreateRequest;
+import wooteco.subway.admin.dto.EdgeDeleteRequest;
+import wooteco.subway.admin.dto.EdgeResponse;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,18 +65,31 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
-    public void addLineStation(Long lineId, EdgeCreateRequest request) {
+    @Transactional(readOnly = true)
+    public List<EdgeResponse> findEdgeResponseByLineId(Long lineId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
-        line.addLineStation(request.toEdge());
+
+        List<Edge> edges = line.getEdges();
+        Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+
+        return EdgeResponse.listOf(edges, stations);
     }
 
     @Transactional
-    public void removeLineStation(Long lineId, Long stationId) {
+    public void addEdge(Long lineId, EdgeCreateRequest request) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
-        line.removeLineStationById(stationId);
+        line.addLineStation(request.toEdge());
+        lineRepository.save(line);
+    }
+
+    @Transactional
+    public void removeEdge(Long lineId, EdgeDeleteRequest edgeDeleteRequest) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+        line.removeLineStationById(edgeDeleteRequest.getStationId());
+        lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
