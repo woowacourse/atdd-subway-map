@@ -1,4 +1,4 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, SYS_MESSAGE, ERROR_MESSAGE} from "../../utils/constants.js";
 import {
   colorSelectOptionTemplate,
   subwayLinesTemplate
@@ -25,21 +25,65 @@ function AdminLine() {
       return;
     }
     const id = event.target.dataset.subwayId;
-    api.line.getBy(id).
-      then(data => {
-        const $firstTime = document.querySelector("#selected-first-time");
-        const $lastTime = document.querySelector("#selected-last-time");
-        const $intervalTime = document.querySelector("#selected-interval-time");
-        $firstTime.innerText = data.startTime;
-        $lastTime.innerText = data.endTime;
-        $intervalTime.innerText = data.intervalTime + "분";
+    api.line.getBy(id).then(data => {
+      const $firstTime = document.querySelector("#selected-first-time");
+      const $lastTime = document.querySelector("#selected-last-time");
+      const $intervalTime = document.querySelector("#selected-interval-time");
+      $firstTime.innerText = data.startTime;
+      $lastTime.innerText = data.endTime;
+      $intervalTime.innerText = data.intervalTime + "분";
     });
   };
   const initDefaultSubwayLines = () => {
-    api.line.get().
-      then(data => data.map(line => {
-        $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
+    api.line.get().then(data => data.map(line => {
+      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
     }))
+  };
+  const isNotValid = o => {
+    const isEmpty = o => {
+      if (!o.name || !o.startTime || !o.endTime || !o.intervalTime || !o.bgColor) {
+        alert(ERROR_MESSAGE.NOT_EMPTY);
+        return true;
+      }
+      return false;
+    };
+    const isWhiteSpaceName = o => {
+      if (o.name.match(/\s/)) {
+        alert(ERROR_MESSAGE.NOT_SPACE);
+        return true;
+      }
+      return false
+    };
+    const isNotTime = o => {
+      if (!o.startTime.match(/\d{2}:\d{2}/) || !o.startTime.match(/\d{2}:\d{2}/)) {
+        alert(ERROR_MESSAGE.NOT_TIME);
+        return true;
+      }
+      return false;
+    };
+    const isNotNumeric = o => {
+      if (!o.intervalTime.match(/\d/)) {
+        alert(ERROR_MESSAGE.NOT_NUMERIC);
+        return true;
+      }
+      return false;
+    };
+    const isDuplicate = o => {
+      const $lines = document.querySelectorAll(".subway-line-item");
+      const lineNames = Array.from($lines).map(station => station.innerText.trim());
+      const linesClass = Array.from($lines).map(station => station.getElementsByTagName("span").item(0).classList);
+      if (lineNames.includes(o.name)) {
+        alert(ERROR_MESSAGE.NOT_DUPLICATION_NAME);
+        return true;
+      }
+      if (linesClass.some(lineClass => lineClass.contains(o.bgColor))) {
+        alert(ERROR_MESSAGE.NOT_DUPLICATION_COLOR);
+        return true;
+      }
+      return false;
+    };
+    return isEmpty(o) || isWhiteSpaceName(o) || isNotTime(o) || isNotNumeric(o) || isDuplicate(o);
+
   };
   const onCreateSubwayLine = event => {
     event.preventDefault();
@@ -50,6 +94,9 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTime.value,
       bgColor: $subwayLineColorInput.value
     };
+    if (isNotValid(newSubwayLineData)) {
+      return;
+    }
     api.line.create(newSubwayLineData).then(() => {
       $subwayLineList.innerHTML = "";
       initDefaultSubwayLines();
@@ -60,13 +107,12 @@ function AdminLine() {
     event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
+    if (isDeleteButton && confirm(SYS_MESSAGE.CONFIRM_REMOVE)) {
       const $targetParent = $target.closest(".subway-line-item");
       const id = $targetParent.dataset.subwayId;
-      api.line.delete(id).
-        then(() => {
-          $subwayLineList.innerHTML = "";
-          initDefaultSubwayLines();
+      api.line.delete(id).then(() => {
+        $subwayLineList.innerHTML = "";
+        initDefaultSubwayLines();
       });
     }
   };
@@ -162,5 +208,6 @@ function AdminLine() {
     initCreateSubwayLineForm();
   };
 }
+
 const adminLine = new AdminLine();
 adminLine.init();

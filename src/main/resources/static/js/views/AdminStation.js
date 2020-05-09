@@ -31,7 +31,7 @@ function AdminStation() {
     const $stations = document.querySelectorAll(".list-item");
     const stationNames = Array.from($stations).map(station => station.innerText);
     if (stationNames.includes(stationName)) {
-      alert(ERROR_MESSAGE.NOT_DUPLICATION);
+      alert(ERROR_MESSAGE.NOT_DUPLICATION_NAME);
       $stationNameInput.value = "";
       return;
     }
