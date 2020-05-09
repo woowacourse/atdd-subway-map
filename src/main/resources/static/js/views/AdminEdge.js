@@ -30,10 +30,15 @@ function AdminEdge() {
     });
   };
 
-  const onRemoveStationHandler = event => {
+  const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      const $stationItem = $target.closest(".list-item");
+      const $lineItem = $target.closest("[data-line-id");
+      const { stationId } = $stationItem.dataset;
+      const { lineId } = $lineItem.dataset;
+      await api.edge.delete(lineId, stationId);
       $target.closest(".list-item").remove();
     }
   };
