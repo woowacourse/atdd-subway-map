@@ -51,13 +51,15 @@ const api = (() => {
       request(`/stations`);
     },
     create(data) {
-      request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
     update(data) {
       request(`/station/${data.id}`, METHOD.PUT(data));
     },
     delete(id) {
-      request(`/station/${id}`, METHOD.DELETE);
+      return fetch(`stations/${id}`, {
+        method: 'DELETE'
+      });
     }
   };
 

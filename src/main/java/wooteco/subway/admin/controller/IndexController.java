@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class IndexController {
     @GetMapping("/")
     public String adminLine() {
-        return "admin-line";
+        return "index";
     }
 }
