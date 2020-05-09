@@ -31,12 +31,13 @@ public class LineController {
 
 	@GetMapping("/lines")
 	public ResponseEntity showLines() {
-		List<Line> persistLines = lineService.showLines();
-		List<LineResponse> linesResponse = LineResponse.listOf(persistLines);
+		List<LineWithStationsResponse> lineWithStationsResponses = lineService.showLines();
+
+		System.out.println(lineWithStationsResponses.toString());
 
 		return ResponseEntity
 				.ok()
-				.body(linesResponse);
+				.body(lineWithStationsResponses);
 	}
 
 	@GetMapping("/lines/{id}")

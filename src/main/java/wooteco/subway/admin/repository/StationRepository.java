@@ -6,6 +6,7 @@ import wooteco.subway.admin.domain.Station;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO : 과연 Repository에서 LineStation을 Station으로 변환해주는 로직이 맞을까 ?
 public interface StationRepository extends CrudRepository<Station, Long> {
 	@Override
 	default List<Station> findAllById(Iterable<Long> lineStationIds) {
