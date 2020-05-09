@@ -69,8 +69,10 @@ const api = (() => {
 
     const edge = {
         get() {
-            console.log("api - edge get");
-            return request(`/edge`);
+            return request(`/lineStations`);
+        },
+        post(data, lineId) {
+            return request(`/lineStations/${lineId}`, METHOD.POST(data));
         }
     };
 
