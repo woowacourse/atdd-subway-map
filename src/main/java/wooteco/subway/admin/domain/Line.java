@@ -41,42 +41,6 @@ public class Line {
         this(null, name, color, startTime, endTime, intervalTime);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<LineStation> getStations() {
-        return lineStations;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void update(Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
@@ -93,8 +57,8 @@ public class Line {
         if (line.getColor() != null) {
             this.color = line.getColor();
         }
-        if (line.getStations() != null) {
-            this.lineStations = new ArrayList<>(line.getStations());
+        if (line.getLineStations() != null) {
+            this.lineStations = new ArrayList<>(line.getLineStations());
         }
         this.updatedAt = LocalDateTime.now();
     }
@@ -156,6 +120,42 @@ public class Line {
             preStationId = (long) (index - 1);
         }
         return preStationId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<LineStation> getLineStations() {
+        return lineStations;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public List<Long> getLineStationsId() {
