@@ -103,7 +103,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
             List<Station> stations = findStationsAtLine(line);
-            response.add(new StationsAtLineResponse(line.getId(), line.getName(), stations));
+            response.add(new StationsAtLineResponse(line.getId(), line.getName(), line.getBgColor(), stations));
         }
         return response;
     }
