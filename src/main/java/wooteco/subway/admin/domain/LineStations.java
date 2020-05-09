@@ -38,6 +38,21 @@ public class LineStations {
                 .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
     }
 
+    public List<Station> createSortedStations(List<Station> stations) {
+        List<Station> newStations = new ArrayList<>();
+        for (Long id : getLineStationsId()) {
+            addByLineStationID(stations, newStations, id);
+        }
+        return newStations;
+    }
+
+    private void addByLineStationID(List<Station> stations, List<Station> newStations, Long id) {
+        stations.stream()
+                .filter(station -> Objects.equals(station.getId(), id))
+                .findAny()
+                .ifPresent(newStations::add);
+    }
+
     public List<Long> getLineStationsId() {
         List<Long> lineStationsId = new ArrayList<>();
         addStationId(lineStationsId, INIT_PRE_STATION_ID);

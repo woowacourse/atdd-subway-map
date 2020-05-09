@@ -73,19 +73,8 @@ public class Line {
         return stations.getLineStationsId();
     }
 
-    public List<Station> createSortedStations(List<Station> stations) {
-        List<Station> newStations = new ArrayList<>();
-        for (Long id : getLineStationsId()) {
-            addByLineStationID(stations, newStations, id);
-        }
-        return newStations;
-    }
-
-    private void addByLineStationID(List<Station> stations, List<Station> newStations, Long id) {
-        stations.stream()
-                .filter(station -> Objects.equals(station.getId(), id))
-                .findAny()
-                .ifPresent(newStations::add);
+    public List<Station> createSortedStations(List<Station> unsortedStations) {
+        return stations.createSortedStations(unsortedStations);
     }
 
     public Long getId() {
