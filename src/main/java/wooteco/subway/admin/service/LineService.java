@@ -12,6 +12,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
+import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -83,5 +84,18 @@ public class LineService {
                         station -> station));
 
         return LineStationsResponse.of(line, stations);
+    }
+
+    public Station createStation(StationCreateRequest stationCreateRequest) {
+        Station station = stationCreateRequest.toStation();
+        return stationRepository.save(station);
+    }
+
+    public List<Station> findAllStations() {
+        return stationRepository.findAll();
+    }
+
+    public void deleteStationById(Long stationId) {
+        stationRepository.deleteById(stationId);
     }
 }
