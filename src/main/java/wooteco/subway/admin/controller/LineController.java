@@ -44,8 +44,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
+    @GetMapping("/lines-response")
+    public ResponseEntity showLineResponses() {
+        return ResponseEntity.ok().body(lineService.showLineResponses());
+    }
+
     @GetMapping("/lines/{id}")
-    public ResponseEntity showLine(@PathVariable Long id) {
+    public ResponseEntity findLineById(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.showLine(id));
     }
 
@@ -64,9 +69,9 @@ public class LineController {
     @PostMapping("/lines/{id}/stations")
     public ResponseEntity addLineStation(@PathVariable Long id,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        lineService.addLineStation(id, lineStationCreateRequest);
+        LineResponse lineResponse = lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
-            .build();
+            .body(lineResponse);
     }
 
     @GetMapping("/lines/{id}/stations")

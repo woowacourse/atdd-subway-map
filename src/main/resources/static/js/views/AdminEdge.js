@@ -1,15 +1,25 @@
 import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $lineInput = document.querySelector("#station-select-options");
+  const $departStationInput = document.querySelector("#depart-station-name");
+  const $arrivalStationInput = document.querySelector("#arrival-station-name");
   const createSubwayEdgeModal = new Modal();
 
-  const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
+  let subwayLines = [];
+  let subwayStations = [];
+
+  const $createLineStationButton = document.querySelector(
+    ".mb-4 #submit-button"
+  );
+
+  const initSubwayLinesSlider = async () => {
+    $subwayLinesSlider.innerHTML = subwayLines
     .map(line => subwayLinesItemTemplate(line))
     .join("");
     tns({
@@ -27,8 +37,8 @@ function AdminEdge() {
   };
 
   const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-    .map(line => optionTemplate(line.title))
+    const subwayLineOptionTemplate = subwayLines
+    .map(line => optionTemplate(line.name))
     .join("");
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
@@ -37,6 +47,20 @@ function AdminEdge() {
       "afterbegin",
       subwayLineOptionTemplate
     );
+  };
+
+  const onCreateSubwayLine = async event => {
+    event.preventDefault();
+    const lineId = subwayLines.find(line => line.name === $lineInput.value).id;
+    const newLineStation = {
+      preStationId: subwayStations.find(station => station.name === $departStationInput.value).id,
+      stationId: subwayStations.find(station => station.name === $arrivalStationInput.value).id,
+    };
+    const newLine = await api.lineStation.create(lineId, newLineStation);
+    subwayLines = subwayLines.filter(subwayLine => subwayLine.id !== newLine.id);
+    subwayLines.push(newLine);
+    await initSubwayLinesSlider();
+    createSubwayEdgeModal.toggle();
   };
 
   const onRemoveStationHandler = event => {
@@ -48,15 +72,22 @@ function AdminEdge() {
   };
 
   const initEventListeners = () => {
+    $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
   };
 
-  this.init = () => {
+  const initSubwayInfo = async () => {
+    subwayLines = [...await api.lineStation.get()];
+    subwayStations = [...await api.station.get()];
     initSubwayLinesSlider();
     initSubwayLineOptions();
+  };
+
+  this.init = () => {
+    initSubwayInfo();
     initEventListeners();
   };
 }

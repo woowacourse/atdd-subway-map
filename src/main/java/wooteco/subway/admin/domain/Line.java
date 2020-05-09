@@ -126,6 +126,9 @@ public class Line {
 
     public List<Long> findLineStationsId() {
         List<Long> linesStationsId = new ArrayList<>();
+        if (stations.isEmpty()) {
+            return linesStationsId;
+        }
         LineStation startStation = stations.stream()
             .filter(station -> station.getPreStationId() == null)
             .findFirst()
@@ -135,12 +138,16 @@ public class Line {
 
         while (linesStationsId.size() != stations.size()) {
             linesStationsId.add(stations.stream()
-                .filter(station -> linesStationsId.get(
-                    linesStationsId.size() - 1).equals(station.getPreStationId()))
+                .filter(station -> Objects.equals(linesStationsId.get(linesStationsId.size() - 1),
+                    station.getPreStationId()))
                 .findFirst()
                 .map(LineStation::getStationId)
                 .orElseThrow(NoSuchElementException::new));
         }
         return linesStationsId;
+    }
+
+    public boolean isInitialStation() {
+        return stations.isEmpty();
     }
 }
