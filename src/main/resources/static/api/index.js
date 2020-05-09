@@ -66,7 +66,7 @@ const api = (() => {
       return request(`/edges/${id}`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
-      return request(`/edges/${lineId}/${stationId}`, METHOD.DELETE());
+      return deleteRequest(`/edges/${lineId}/${stationId}`, METHOD.DELETE());
     }
   };
 

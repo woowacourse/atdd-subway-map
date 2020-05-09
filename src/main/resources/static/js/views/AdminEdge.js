@@ -51,8 +51,13 @@ function AdminEdge() {
 
   const initSubwayStationOptions = async () => {
     const stations = await api.station.get();
-    const preSubwayStationOptionTemplate = stations
-        .map(station => preStationOptionTemplate(station))
+    const firstNullStation = {
+      id: null,
+      name: "없음",
+    };
+    const preSubwayStationOptionTemplate =
+        preStationOptionTemplate(firstNullStation) +
+        stations.map(station => preStationOptionTemplate(station))
         .join("");
     const currentSubwayStationOptionTemplate = stations
         .map(station => currentStationOptionTemplate(station))
@@ -77,6 +82,10 @@ function AdminEdge() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      const $button = $target.closest("button");
+      const lineId = $button.dataset.lineId;
+      const stationId = $button.dataset.stationId;
+      api.edge.delete(lineId, stationId);
       $target.closest(".list-item").remove();
     }
   };
