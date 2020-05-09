@@ -17,7 +17,7 @@ public class LineWithStationsResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private List<Station> Stations;
+	private List<Station> stations;
 
 	public LineWithStationsResponse() {
 	}
@@ -31,7 +31,7 @@ public class LineWithStationsResponse {
 		this.lineColor = lineColor;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		Stations = stations;
+		this.stations = stations;
 	}
 
 	public static LineWithStationsResponse of(Line line, List<Station> stations) {
@@ -71,6 +71,6 @@ public class LineWithStationsResponse {
 	}
 
 	public List<Station> getStations() {
-		return Stations;
+		return stations;
 	}
 }

@@ -10,8 +10,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.time.LocalTime;
@@ -29,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LineStationAcceptanceTest {
 	@LocalServerPort
 	int port;
-	private List<LineStationResponse> lineResponses = new ArrayList<>();
 
 	public static RequestSpecification given() {
 		return RestAssured.given().log().all();
@@ -53,33 +54,34 @@ public class LineStationAcceptanceTest {
 		// And 지하철 노선이 추가되어있다.
 		LineResponse lineResponse = createLine("2호선");
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-		lineResponses.add(addStationOnLine(null, String.valueOf(stationResponse1.getId()), "10", "10"));
-		lineResponses.add(addStationOnLine(String.valueOf(stationResponse1.getId()), String.valueOf(stationResponse2.getId()), "10", "10"));
-		lineResponses.add(addStationOnLine(String.valueOf(stationResponse2.getId()), String.valueOf(stationResponse3.getId()), "10", "10"));
-		lineResponses.add(addStationOnLine(String.valueOf(stationResponse3.getId()), String.valueOf(stationResponse4.getId()), "10", "10"));
+		addStationOnLine("1", "", "신림");
+		addStationOnLine("1", "신림", "설입");
+		addStationOnLine("1", "설입", "사당");
+		addStationOnLine("1", "사당", "서초");
 		// Then 지하철역이 노선에 추가 되었다.
-		LineResponse persistLine  = getLineBy(lineResponse.getId());
-		assertEquals(lineResponses.size(), 4);
+		LineWithStationsResponse persistLine  = getLineBy(lineResponse.getId());
+		assertEquals(persistLine.getStations().size(), 4);
 
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.
-		List<LineStation> lineStationResponses = new ArrayList(persistLine.getLineStations());
+		List<Station> lineStations = persistLine.getStations();
 		// And 새로 추가한 지하철역을 목록에서 찾는다.
-		assertEquals(lineResponses.get(0).getStationId(), stationResponse1.getId());
-		assertEquals(lineResponses.get(1).getStationId(), stationResponse2.getId());
-		assertEquals(lineResponses.get(2).getStationId(), stationResponse3.getId());
-		assertEquals(lineResponses.get(3).getStationId(), stationResponse4.getId());
+		assertEquals(lineStations.get(0).getId(), stationResponse1.getId());
+		assertEquals(lineStations.get(1).getId(), stationResponse2.getId());
+		assertEquals(lineStations.get(2).getId(), stationResponse3.getId());
+		assertEquals(lineStations.get(3).getId(), stationResponse4.getId());
 
 		// When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-		deleteStationBy(lineResponse.getId(), stationResponse4.getId());
+		deleteStationBy(persistLine.getId(), stationResponse4.getId());
 		// Then 지하철역이 노선에서 제거 되었다.
-		persistLine = getLineBy(lineResponse.getId());
-		lineResponses.remove(3);
-		assertEquals(lineResponses.size(), 3);
+		LineWithStationsResponse oneStationDeletedLine = getLineBy(lineResponse.getId());
+		assertEquals(oneStationDeletedLine.getStations().size(), 3);
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.
 		// And 제외한 지하철역이 목록에 존재하지 않는다.
-		assertThat(lineResponses.get(0).getStationId()).isNotEqualTo(stationResponse4.getId());
+		assertThat(oneStationDeletedLine.getStations().get(0)).isNotEqualTo(stationResponse4);
+		assertThat(oneStationDeletedLine.getStations().get(1)).isNotEqualTo(stationResponse4);
+		assertThat(oneStationDeletedLine.getStations().get(2)).isNotEqualTo(stationResponse4);
 	}
 
 	private void deleteStationBy(Long lineId, Long stationId) {
@@ -90,31 +92,29 @@ public class LineStationAcceptanceTest {
 				log().all();
 	}
 
-	private LineResponse getLineBy(Long lineId) {
+	private LineWithStationsResponse getLineBy(Long lineId) {
 		return given()
 				.when().
 					get("/lines/" + lineId).
 				then().
 					log().all().
-					extract().as(LineResponse.class);
+					extract().as(LineWithStationsResponse.class);
 	}
 
-	private LineStationResponse addStationOnLine(String preStationId, String stationId, String distance, String duration) {
+	private void addStationOnLine(String lineId, String preStationName, String stationName) {
 		Map<String, String> params = new HashMap<>();
-		params.put("preStationId" ,preStationId);
-		params.put("stationId" ,stationId);
-		params.put("distance", distance);
-		params.put("duration", duration);
+		params.put("lineId", lineId);
+		params.put("preStationName" ,preStationName);
+		params.put("stationName" ,stationName);
 
-		return given().
-					body(params).
-					contentType(MediaType.APPLICATION_JSON_VALUE).
-					accept(MediaType.APPLICATION_JSON_VALUE).
-				when()
-					.post("/line-stations").
-				then().
-					log().all().
-					extract().as(LineStationResponse.class);
+		given().
+				body(params).
+				contentType(MediaType.APPLICATION_JSON_VALUE).
+				accept(MediaType.APPLICATION_JSON_VALUE).
+		when()
+				.post("/line-stations").
+		then().
+				log().all();
 	}
 
 	private LineResponse createLine(String name) {
