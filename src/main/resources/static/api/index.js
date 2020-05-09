@@ -34,7 +34,7 @@ const api = (() => {
       return request(`/station/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+        return fetch(`/stations/${id}`, METHOD.DELETE()).then();
     }
   };
 

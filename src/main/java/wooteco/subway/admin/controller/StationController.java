@@ -20,8 +20,6 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
-//        Station persistStation = stationRepository.save(station);
-
         return ResponseEntity
                 .created(URI.create("/stations/" + 1))
                 .body(StationResponse.of(station));
@@ -34,7 +32,8 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
+        Station station = stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        stationRepository.delete(station);
         return ResponseEntity.noContent().build();
     }
 }

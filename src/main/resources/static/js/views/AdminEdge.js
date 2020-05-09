@@ -17,15 +17,17 @@ function AdminEdge() {
     const initSubwayLinesSlider = () => {
 
         api.line.get().then(subwayLines => {
-                subwayLines.forEach(subwayLine => {
-                    let stations = subwayLine.stations;
-                    subwayLine.stations = stations.map(station => station.name);
-                });
+                // subwayLines.forEach(subwayLine => {
+                //     let stations = subwayLine.stations;
+                //     // subwayLine.stations = stations.map(station => station.name);
+                // });
 
 
                 $subwayLinesSlider.innerHTML = subwayLines
                     .map(line => {
-                            const subwayLine = {title: line.title, bgColor: line.bgColor, stations: line.stations}
+                            console.log("쿨쿨");
+                            console.log(line);
+                            const subwayLine = {title: line.title, bgColor: line.bgColor, stations: line.stations,}
                             return subwayLinesItemTemplate(subwayLine);
                         }
                     )
@@ -102,7 +104,10 @@ function AdminEdge() {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
+
+            const $id = $target.dataset.stationId;
             $target.closest(".list-item").remove();
+            api.station.delete($id).then();
         }
     };
 
