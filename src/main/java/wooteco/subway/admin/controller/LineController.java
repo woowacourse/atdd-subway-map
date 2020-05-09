@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
@@ -77,5 +79,16 @@ public class LineController {
         stations.add(request.toStation());
 
         return ResponseEntity.created(URI.create("/lines/" + id + "/stations")).body(LineResponse.of(line, stations));
+    }
+
+    @GetMapping("/lines/{id}/stations")
+    public ResponseEntity<List<StationResponse>> getStations(@PathVariable Long id){
+        List<StationResponse> stations = new ArrayList<>();
+        stations.add(StationResponse.of(new Station("암사역")));
+        stations.add(StationResponse.of(new Station("천호역")));
+        stations.add(StationResponse.of(new Station("몽촌토성역")));
+        stations.add(StationResponse.of(new Station("잠실역")));
+        stations.add(StationResponse.of(new Station("석촌역")));
+        return ResponseEntity.ok(stations);
     }
 }
