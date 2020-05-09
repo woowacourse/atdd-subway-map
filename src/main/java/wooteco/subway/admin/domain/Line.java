@@ -9,6 +9,7 @@ import java.util.*;
 public class Line {
     @Id
     private Long id;
+
     private String name;
     private String color;
     private LocalTime startTime;
@@ -17,11 +18,11 @@ public class Line {
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     public Line() {
     }
 
     public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.startTime = startTime;
@@ -102,5 +103,24 @@ public class Line {
     public List<Long> getLineStationsId() {
         // TODO: 구현
         return new ArrayList<>();
+    }
+
+    public void setLineStations(final HashSet<LineStation> stations) {
+        this.stations = stations;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", intervalTime=" + intervalTime +
+                ", stations=" + stations +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

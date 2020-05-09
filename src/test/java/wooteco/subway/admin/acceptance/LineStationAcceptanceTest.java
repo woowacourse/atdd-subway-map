@@ -1,30 +1,54 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineStationRequest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.LineStationService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 //@Sql("/truncate.sql")
+@ExtendWith(MockitoExtension.class)
 public class LineStationAcceptanceTest {
-    @LocalServerPort
-    int port;
+
+    @Mock
+    private LineRepository lineRepository;
+
+    @Mock
+    private StationRepository stationRepository;
+
+    private Line line;
+    private Station preStation;
+    private Station station;
+    private LineStation lineStation;
+
+    private LineStationService lineStationService;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        lineStationService = new LineStationService(lineRepository, stationRepository);
+        line = new Line(1L,"1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
+        line.setLineStations(new HashSet<>());
+        preStation = new Station(2L, "사당역");
+        station = new Station(3L, "강남역");
     }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
+//
+//    public static RequestSpecification given() {
+//        return RestAssured.given().log().all();
+//    }
     /**
      * Given 지하철역이 여러 개 추가되어있다.
      * And 지하철 노선이 추가되어있다.
@@ -46,29 +70,15 @@ public class LineStationAcceptanceTest {
     void manageLineStation() {
         // 인수 테스트
         // When 지하철 노선에 지하철 역을 등록하는 요청을 한다.
-        createLineStation("1호선", "사당역", "강남역", 2, 5);
-        createLineStation("2호선", "강남역", "사당역", 3, 6);
-        createLineStation("3호선", "삼성역", "사당역", 4, 7);
-        createLineStation("4호선", "삼성역", "강남역", 5, 8);
-    }
+        // Then 지하철역이 노선에 추가 되었다.
+        when(lineRepository.findByName("1호선")).thenReturn(Optional.of(line));
+        when(stationRepository.findByName("사당역")).thenReturn(Optional.of(preStation));
+        when(stationRepository.findByName("강남역")).thenReturn(Optional.of(station));
 
-    private void createLineStation(final String line, final String preStation, final String station,
-                                   final int distance, final int duration) {
-        LineStationRequest request = new LineStationRequest(
-                line,
-                preStation,
-                station,
-                distance,
-                duration
-        );
-        given().
-                body(request).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lineStation").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+        lineStation = lineStationService.createLineStation("1호선", "사당역", "강남역", 1, 1);
+        assertThat(lineStation.getLine()).isEqualTo(1L);
+        assertThat(lineStation.getPreStationId()).isEqualTo(2L);
+        assertThat(lineStation.getStationId()).isEqualTo(3L);
+
     }
 }

@@ -42,4 +42,19 @@ public class LineStation {
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }
+
+    public String getCustomId() {
+        return "" + getLine() + getPreStationId() + getStationId();
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+                "line=" + line +
+                ", preStationId=" + preStationId +
+                ", stationId=" + stationId +
+                ", distance=" + distance +
+                ", duration=" + duration +
+                '}';
+    }
 }
