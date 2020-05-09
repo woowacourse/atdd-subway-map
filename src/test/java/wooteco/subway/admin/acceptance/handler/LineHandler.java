@@ -127,7 +127,7 @@ public class LineHandler {
         return
             given()
                 .when().
-                get("/line-station/" + id).
+                get("/lines/" + id).
                 then().
                 log().all().
                 extract().as(LineResponse.class);

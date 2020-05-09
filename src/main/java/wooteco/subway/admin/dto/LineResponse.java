@@ -3,6 +3,7 @@ package wooteco.subway.admin.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,17 +39,16 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
             line.getEndTime(), line.getIntervalTime(), line.getColor(), line.getCreatedAt(),
-            line.getUpdatedAt(),
-            line.getLineStations());// TODO: 2020-05-08 LineStation을 Station으로 변경하도록 수정함.
+            line.getUpdatedAt(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-            .map(LineResponse::of)
-                .collect(Collectors.toList());
+    public static List<LineResponse> listOf(Map<Line, Set<Station>> lineWithStations) {
+        return lineWithStations.entrySet().stream()
+            .map(lineSetEntry -> LineResponse.of(lineSetEntry.getKey(), lineSetEntry.getValue()))
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

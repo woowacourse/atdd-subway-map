@@ -1,8 +1,11 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -40,28 +44,33 @@ public class LineController {
         }
 
         Line persistLine = lineService.save(line);
+        Set<Station> stations = lineService.toStations(persistLine.getLineStations());
 
         return ResponseEntity
             .created(URI.create("/lines/" + persistLine.getId()))
-            .body(LineResponse.of(persistLine));
+            .body(LineResponse.of(persistLine, stations));
     }
 
     @GetMapping("/lines")
     public ResponseEntity showLines() {
         List<Line> persistLines = lineService.showLines();
+        Map<Line, Set<Station>> lineWithStations = persistLines.stream()
+            .collect(Collectors.toMap(Function.identity(),
+                persistLine -> lineService.toStations(persistLine.getLineStations())));
 
         return ResponseEntity
             .ok()
-            .body(LineResponse.listOf(persistLines));
+            .body(LineResponse.listOf(lineWithStations));
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
         Line persistLine = lineService.showLine(id);
+        Set<Station> stations = lineService.toStations(persistLine.getLineStations());
 
         return ResponseEntity
             .ok()
-            .body(LineResponse.of(persistLine));
+            .body(LineResponse.of(persistLine, stations));
     }
 
     @PutMapping("/lines/{id}")
@@ -69,10 +78,12 @@ public class LineController {
         Line line = lineService.showLine(id);
         line.update(lineRequest.toLine());
         lineService.updateLine(id, line);
+        Set<Station> stations = lineService.toStations(line.getLineStations());
+
 
         return ResponseEntity
             .ok()
-            .body(LineResponse.of(line));
+            .body(LineResponse.of(line, stations));
     }
 
     @DeleteMapping("/lines/{id}")
@@ -92,17 +103,18 @@ public class LineController {
             .body(LineStationResponse.of(lineStation));
     }
 
-    @GetMapping("/line-station/{id}")
-    public ResponseEntity findLineWithStations(@PathVariable Long id) {
-        // TODO: 2020-05-08 showLine으로 대체가능한지 확인하자!!
-
-        Line line = new Line("잠실역", LocalTime.of(5, 30),
-            LocalTime.of(5, 30), 10, "WHITE");
-        LineStation lineStation = new LineStation(1L, 1L, 1, 1);
-        line.addLineStation(lineStation);
-
-        return ResponseEntity
-            .ok()
-            .body(LineResponse.of(line));
-    }
+    // @GetMapping("/line-station/{id}")
+    // public ResponseEntity findLineWithStations(@PathVariable Long id) {
+    //     // TODO: 2020-05-08 showLine으로 대체가능한지 확인하자!!
+    //
+    //     Line line = new Line("잠실역", LocalTime.of(5, 30),
+    //         LocalTime.of(5, 30), 10, "WHITE");
+    //     LineStation lineStation = new LineStation(1L, 1L, 1, 1);
+    //     line.addLineStation(lineStation);
+    //     Set<Station> stations = lineService.toStations(line.getLineStations());
+    //
+    //     return ResponseEntity
+    //         .ok()
+    //         .body(LineResponse.of(line, stations));
+    // }
 }
