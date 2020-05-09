@@ -62,9 +62,25 @@ const api = (() => {
     }
   };
 
+  const lineStation = {
+    get() {
+      return request(`/line-stations`);
+    },
+    create(data) {
+      return request(`/line-stations`, METHOD.POST(data));
+    },
+    update(id, data) {
+      return request(`/line-stations/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      return request(`/line-stations/${id}`, METHOD.DELETE());
+    }
+  };
+
   return {
     station,
-    line
+    line,
+    lineStation
   };
 })();
 

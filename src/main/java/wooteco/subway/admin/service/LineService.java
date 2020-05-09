@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -57,16 +58,16 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long lineId, LineStationCreateRequest request) {
+	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		if (request.getPreStationId() == null) {
-			persistLine.addLineStationOnFirst(request.toLineStation());
+		if (lineStationCreateRequest.getPreStationId() == null) {
+			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
 			return;
 		}
 
-		persistLine.addLineStation(request.toLineStation());
+		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
