@@ -53,9 +53,8 @@ function AdminEdge() {
         const request = {
           preStationId: preStation ? preStation.id : null,
           stationId: station ? station.id : null,
-          distance: 2,
-          duration: 2
-            //TODO: distance, duration에 실제 값을 입력할 수 있도록 하기
+          distance: document.querySelector("#distance").value,
+          duration: document.querySelector("#duration").value
         }
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
             createSubwayEdgeModal.toggle();
