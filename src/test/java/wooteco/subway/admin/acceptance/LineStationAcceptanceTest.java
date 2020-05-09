@@ -74,11 +74,11 @@ public class LineStationAcceptanceTest {
 
         // Then 지하철역 목록을 응답 받는다.
         assertThat(lineStations.size()).isEqualTo(1);
-        assertThat(lineStations.get(0).getLineStations().size()).isEqualTo(4);
+        assertThat(lineStations.get(0).getStations().size()).isEqualTo(4);
 
         // And 새로 추가한 지하철역을 목록에서 찾는다
         LineStationsResponse lineStationsResponse = lineStations.get(0);
-        List<LineStationResponse> lineStationResponses = lineStationsResponse.getLineStations();
+        List<LineStationResponse> lineStationResponses = lineStationsResponse.getStations();
         List<Long> lineStationIds = convertToStationIds(lineStationResponses);
         assertThat(lineStationIds).contains((stations.get(0).getId()));
         assertThat(lineStationIds).contains((stations.get(1).getId()));
@@ -89,20 +89,20 @@ public class LineStationAcceptanceTest {
         // Then 지하철역이 노선에서 제거 되었다
         // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
         LineStationResponse lineStationResponse = lineStationResponses.get(0);
-        deleteLineStation(String.valueOf(line.getId()), String.valueOf(lineStationResponse.getStationId()));
+        deleteLineStation(String.valueOf(line.getId()), String.valueOf(lineStationResponse.getId()));
         List<LineStationsResponse> lineStationsResponse2 = getLineStations();
-        List<LineStationResponse> lineStations2 = lineStationsResponse2.get(0).getLineStations();
+        List<LineStationResponse> lineStations2 = lineStationsResponse2.get(0).getStations();
         assertThat(lineStations2.size()).isEqualTo(3);
 
         // Then 지하철역 목록을 응답 받는다.
         // And 제외한 지하철역이 목록에 존재하지 않는다.
         List<Long> lineStationIds2 = convertToStationIds(lineStations2);
-        assertThat(lineStationIds2).doesNotContain(lineStationResponse.getStationId());
+        assertThat(lineStationIds2).doesNotContain(lineStationResponse.getId());
     }
 
     private List<Long> convertToStationIds(List<LineStationResponse> lineStationResponses) {
         return lineStationResponses.stream()
-                .map(LineStationResponse::getStationId)
+                .map(LineStationResponse::getId)
                 .collect(Collectors.toList());
     }
 

@@ -124,6 +124,6 @@ public class LineServiceTest {
 
         LineStationsResponse lineStationsResponse = lineService.findLineStationsById(1L);
 
-        assertThat(lineStationsResponse.getLineStations()).hasSize(3);
+        assertThat(lineStationsResponse.getStations()).hasSize(3);
     }
 }

@@ -6,34 +6,40 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 
 public class LineStationsResponse {
-    private Long lineId;
-    private String lineName;
-    private List<LineStationResponse> lineStations;
+    private Long id;
+    private String name;
+    private String bgColor;
+    private List<LineStationResponse> stations;
 
     public LineStationsResponse() {
     }
 
-    public LineStationsResponse(Long lineId, String lineName,
-            List<LineStationResponse> lineStations) {
-        this.lineId = lineId;
-        this.lineName = lineName;
-        this.lineStations = lineStations;
+    public LineStationsResponse(Long id, String name, String bgColor,
+            List<LineStationResponse> stations) {
+        this.id = id;
+        this.name = name;
+        this.bgColor = bgColor;
+        this.stations = stations;
     }
 
     public static LineStationsResponse of(Line line, List<Station> stations) {
-        return new LineStationsResponse(line.getId(), line.getName(),
+        return new LineStationsResponse(line.getId(), line.getName(), line.getBgColor(),
                 LineStationResponse.listOf(line.getStations(), stations));
     }
 
-    public Long getLineId() {
-        return lineId;
+    public Long getId() {
+        return id;
     }
 
-    public String getLineName() {
-        return lineName;
+    public String getName() {
+        return name;
     }
 
-    public List<LineStationResponse> getLineStations() {
-        return lineStations;
+    public String getBgColor() {
+        return bgColor;
+    }
+
+    public List<LineStationResponse> getStations() {
+        return stations;
     }
 }

@@ -84,7 +84,7 @@
           <div class="relative">
             <select
                     class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                    id="station-select-options"
+                    id="line-select-options"
             >
             </select>
             <div
@@ -107,13 +107,11 @@
             <label class="block text-gray-700 text-sm font-bold mb-2">
               이전역
             </label>
-            <input
-                    class="appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
+            <select
+                    class="station-select-options appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
                     id="depart-station-name"
-                    placeholder="선릉역"
-                    type="text"
-                    value="선릉역"
-            />
+            >
+            </select>
           </div>
           <div
                   class="w-1/3 h-12 text-center text-gray-800 flex justify-center items-center relative top-28px"
@@ -127,13 +125,11 @@
             <label class="block text-gray-700 text-sm font-bold mb-2">
               대상역
             </label>
-            <input
-                    class="appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
+            <select
+                    class="station-select-options appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
                     id="arrival-station-name"
-                    placeholder="삼성역"
-                    type="text"
-                    value="삼성역"
-            />
+            >
+            </select>
           </div>
         </div>
 

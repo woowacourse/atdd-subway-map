@@ -17,7 +17,9 @@ export const subwayLinesTemplate = line => `<div class="subway-line-item border 
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const lineOptionTemplate = line => `<option data-line-id="${line.id}">${line.name}</option>`;
+export const stationOptionTemplate = station => `<option data-station-id="${station.id}">${station.name}</option>`;
+export const emptyOptionTemplate = () => `<option data-station-id="null"></option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -49,7 +51,7 @@ export const subwayLinesItemTemplate = line => {
         .join("");
     return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
+              <div class="border ${line.bgColor} lint-title px-4 py-1" data-line-id="${line.id}">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>
