@@ -75,4 +75,9 @@ public class LineController {
     public ResponseEntity findLineWithStationsById(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
     }
+
+    @GetMapping("/lines/stations")
+    public ResponseEntity findAllLineWithStations() {
+        return ResponseEntity.ok().body(lineService.findAllLineWithStations());
+    }
 }

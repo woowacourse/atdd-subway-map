@@ -78,8 +78,20 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = findLineById(id);
+        Set<Station> stations = findStationsByLine(line);
+        return LineResponse.of(line, stations);
+    }
+
+    public List<LineResponse> findAllLineWithStations() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+                .map(line -> LineResponse.of(line, findStationsByLine(line)))
+                .collect(Collectors.toList());
+    }
+
+    private Set<Station> findStationsByLine(Line line) {
         List<Long> ids = line.getLineStationsId();
         Set<Station> stations = stationRepository.findAllById(ids);
-        return LineResponse.of(line, stations);
+        return stations;
     }
 }
