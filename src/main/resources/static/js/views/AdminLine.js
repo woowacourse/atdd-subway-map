@@ -31,14 +31,22 @@ function AdminLine() {
 
     if (!isUpdate) {
       let newLine = await api.line.create(newSubwayLine);
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(newLine)
-      );
+      if (!newLine.status) {
+        $subwayLineList.insertAdjacentHTML(
+          "beforeend",
+          subwayLinesTemplate(newLine)
+        );
+      } else {
+        alert(newLine.message);
+      }
     } else {
       const id = document.querySelector(".modal").dataset.sourceId;
-      await api.line.update(id, newSubwayLine);
-      await initDefaultSubwayLines();
+      const updateLine = await api.line.update(id, newSubwayLine);
+      if (!updateLine.status) {
+        await initDefaultSubwayLines();
+      } else {
+        alert(updateLine.message);
+      }
     }
 
     $subwayLineNameInput.value = "";

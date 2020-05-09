@@ -9,7 +9,7 @@ create table if not exists STATION
 create table if not exists LINE
 (
     id            bigint auto_increment not null,
-    name          varchar(255)          not null,
+    name          varchar(255)          not null unique,
     bg_color      varchar(255),
     start_time    time                  not null,
     end_time      time                  not null,

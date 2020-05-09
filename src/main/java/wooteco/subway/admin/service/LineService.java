@@ -24,14 +24,9 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
-        validateSameLine(line);
-
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
-    }
-
-    private void validateSameLine(Line line) {
-        if (lineRepository.findByName(line.getName()).isPresent()) {
+        try {
+            return LineResponse.of(lineRepository.save(line));
+        } catch (Exception e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
     }
@@ -60,9 +55,13 @@ public class LineService {
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         line.update(lineRequest.toLine());
-        lineRepository.save(line);
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-        return LineResponse.of(line, stations);
+        try {
+            lineRepository.save(line);
+            List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+            return LineResponse.of(line, stations);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
+        }
     }
 
     public void deleteLineById(Long id) {
