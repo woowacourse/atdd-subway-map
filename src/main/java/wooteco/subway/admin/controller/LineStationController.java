@@ -4,9 +4,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class LineStationController {
@@ -26,10 +28,10 @@ public class LineStationController {
 
     @GetMapping("/lines/{lineId}/stations")
     public ResponseEntity showLineStations(@PathVariable Long lineId) {
-        LineResponse lineWithStationsById = lineService.findLineWithStationsById(lineId);
+        List<StationResponse> stations = lineService.findLineWithStationsById(lineId).getStations();
         return ResponseEntity
                 .ok()
-                .body(lineWithStationsById);
+                .body(stations);
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")

@@ -61,10 +61,10 @@ public class LineStationAcceptanceTest {
         addLineStation(lines.get(0).getId(), stations.get(0).getId(), stations.get(1).getId());
         addLineStation(lines.get(0).getId(), stations.get(1).getId(), stations.get(2).getId());
         //Then 지하철역이 노선에 추가 되었다.
-        assertThat(getLineWithStations(lines.get(0).getId()).getStations().size()).isEqualTo(3);
+        assertThat(getLineWithStations(lines.get(0).getId()).size()).isEqualTo(3);
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        List<StationResponse> foundStations = getLineWithStations(lines.get(0).getId()).getStations();
+        List<StationResponse> foundStations = getLineWithStations(lines.get(0).getId());
         //Then 지하철역 목록을 응답 받는다.
         assertThat(foundStations.size()).isEqualTo(3);
         //And 새로 추가한 지하철역을 목록에서 찾는다.
@@ -75,11 +75,11 @@ public class LineStationAcceptanceTest {
         //When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
         deleteLineStation(lines.get(0).getId(), stations.get(0).getId());
         //Then 지하철역이 노선에서 제거 되었다.
-        assertThat(getLineWithStations(lines.get(0).getId()).getStations().size()).isEqualTo(2);
+        assertThat(getLineWithStations(lines.get(0).getId()).size()).isEqualTo(2);
 
         //When 지하철 노선의 지하철역 목록 조회 요청을 한다.
         //Then 지하철역 목록을 응답 받는다.
-        foundStations = getLineWithStations(lines.get(0).getId()).getStations();
+        foundStations = getLineWithStations(lines.get(0).getId());
         //And 제외한 지하철역이 목록에 존재하지 않는다.
         assertThat(foundStations).extracting("name").doesNotContain(stations.get(0).getName());
     }
@@ -102,12 +102,13 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private LineResponse getLineWithStations(Long lineId) {
+    private List<StationResponse> getLineWithStations(Long lineId) {
         return given().when().
                 get("/lines/" + lineId + "/stations").
                 then().
                 log().all().
-                extract().as(LineResponse.class);
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteLineStation(Long lineId, Long stationId) {
