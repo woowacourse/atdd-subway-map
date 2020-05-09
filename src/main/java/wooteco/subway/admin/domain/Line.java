@@ -49,17 +49,24 @@ public class Line {
 
 	public void addLineStation(LineStation lineStation) {
 		if (lineStation.isStartStation() && stations.size() != 0) {
-			LineStation startLineStation = stations.stream()
+			stations.stream()
 				.filter(LineStation::isStartStation)
 				.findFirst()
-				.orElseThrow(RuntimeException::new);
-			startLineStation.updatePreLineStation(lineStation.getStationId());
+				.ifPresent(station -> {
+					LineStation newStation = station.updatePreLineStation(lineStation.getStationId());
+					stations.remove(station);
+					stations.add(newStation);
+				});
 		}
 		stations.stream()
 			.filter(station -> Objects.nonNull(lineStation.getPreStationId()) && lineStation.getPreStationId()
 				.equals(station.getPreStationId()))
 			.findFirst()
-			.ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+			.ifPresent(station -> {
+				LineStation newStation = station.updatePreLineStation(lineStation.getStationId());
+				stations.remove(station);
+				stations.add(newStation);
+			});
 		stations.add(lineStation);
 	}
 
@@ -72,7 +79,11 @@ public class Line {
 			.filter(
 				station -> Objects.nonNull(station.getPreStationId()) && station.getPreStationId().equals(stationId))
 			.findFirst()
-			.ifPresent(nextLineStation -> nextLineStation.updatePreLineStation(lineStation.getPreStationId()));
+			.ifPresent(nextLineStation -> {
+				LineStation newLineStation = nextLineStation.updatePreLineStation(lineStation.getPreStationId());
+				stations.add(newLineStation);
+				stations.remove(nextLineStation);
+			});
 		stations.remove(lineStation);
 	}
 

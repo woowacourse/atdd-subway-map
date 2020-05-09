@@ -43,9 +43,9 @@ public class LineServiceTest {
 		line = line.withId(1L);
 		lineService = new LineService(lineRepository, stationRepository);
 
-		line.addLineStation(new LineStation(null, 1L, 10, 10));
-		line.addLineStation(new LineStation(1L, 2L, 10, 10));
-		line.addLineStation(new LineStation(2L, 3L, 10, 10));
+		line.addLineStation(LineStation.of(null, 1L, 10, 10));
+		line.addLineStation(LineStation.of(1L, 2L, 10, 10));
+		line.addLineStation(LineStation.of(2L, 3L, 10, 10));
 	}
 
 	@Test

@@ -19,7 +19,7 @@ public class LineStationCreateRequest {
 	}
 
 	public LineStation toLineStation() {
-		return new LineStation(preStationId, stationId, distance, duration);
+		return LineStation.of(preStationId, stationId, distance, duration);
 	}
 
 	public Long getPreStationId() {

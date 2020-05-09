@@ -7,25 +7,32 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table
 public class LineStation {
-	@Column("station")
-	private Long stationId;
 	@Column("pre_station")
-	private Long preStationId;
-	private int distance;
-	private int duration;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private final Long preStationId;
+	@Column("station")
+	private final Long stationId;
+	private final int distance;
+	private final int duration;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime updatedAt;
 
-	public LineStation() {
-	}
-
-	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+	LineStation(Long preStationId, Long stationId, int distance, int duration, LocalDateTime createdAt,
+		LocalDateTime updatedAt) {
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	public static LineStation of(Long preStationId, Long stationId, int distance, int duration) {
+		return new LineStation(preStationId, stationId, distance, duration, LocalDateTime.now(), LocalDateTime.now());
+	}
+
+	public LineStation updatePreLineStation(Long preStationId) {
+		return new LineStation(preStationId, this.stationId, this.distance, this.duration, this.createdAt,
+			LocalDateTime.now());
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -50,10 +57,6 @@ public class LineStation {
 
 	public int getDuration() {
 		return duration;
-	}
-
-	public void updatePreLineStation(Long preStationId) {
-		this.preStationId = preStationId;
 	}
 
 	public boolean isStartStation() {

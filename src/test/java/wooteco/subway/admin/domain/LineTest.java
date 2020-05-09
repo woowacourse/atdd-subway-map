@@ -19,9 +19,9 @@ public class LineTest {
 		line = Line.of("2호선", "blue", LocalTime.of(5, 30), LocalTime.of(22, 30)
 			, 5, new HashSet<>());
 		line = line.withId(1L);
-		line.addLineStation(new LineStation(null, 1L, 10, 10));
-		line.addLineStation(new LineStation(1L, 2L, 10, 10));
-		line.addLineStation(new LineStation(2L, 3L, 10, 10));
+		line.addLineStation(LineStation.of(null, 1L, 10, 10));
+		line.addLineStation(LineStation.of(1L, 2L, 10, 10));
+		line.addLineStation(LineStation.of(2L, 3L, 10, 10));
 	}
 
 	@Test
@@ -37,7 +37,9 @@ public class LineTest {
 	@ValueSource(longs = {1L, 2L, 3L})
 	void removeLineStation(Long stationId) {
 		line.removeLineStationById(stationId);
-
+		for (LineStation lineStation : line.getStations()) {
+			System.out.println(lineStation.getPreStationId() + " " + lineStation.getStationId());
+		}
 		assertThat(line.getStations()).hasSize(2);
 	}
 }
