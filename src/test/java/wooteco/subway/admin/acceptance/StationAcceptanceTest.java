@@ -66,11 +66,11 @@ public class StationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/stations").
+                get("/stations").
                 then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteStation(Long id) {

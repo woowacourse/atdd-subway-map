@@ -13,7 +13,6 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.service.LineStationService;
 
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,7 +36,6 @@ public class LineStationAcceptanceTest {
     void setUp() {
         lineStationService = new LineStationService(lineRepository);
         line = new Line(1L,"1호선", "bg-red-500", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
-        line.setLineStations(new HashSet<>());
         preStation = new Station(2L, "사당역");
         station = new Station(3L, "강남역");
     }
