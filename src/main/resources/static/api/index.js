@@ -32,18 +32,19 @@ const METHOD = {
 
 const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const requestWithEmptyResponse = (uri, config) => fetch(uri, config).then();
   const station = {
     get() {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/station/${id}`, METHOD.PUT(data));
+      return requestWithEmptyResponse(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE);
+      return requestWithEmptyResponse(`/stations/${id}`, METHOD.DELETE());
     }
   };
 
@@ -55,10 +56,10 @@ const api = (() => {
       return request(`/lines`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/lines/${id}`, METHOD.PUT(data));
+      return requestWithEmptyResponse(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/lines/${id}`, METHOD.DELETE());
+      return requestWithEmptyResponse(`/lines/${id}`, METHOD.DELETE());
     }
   };
   return {

@@ -61,6 +61,7 @@ function AdminLine() {
   };
 
   const onUpdateSubwayLine = async event => {
+    event.preventDefault();
     const updatedLine = {
       name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value,

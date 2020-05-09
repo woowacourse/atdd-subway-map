@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -56,7 +57,7 @@ public class StationAcceptanceTest {
 		params.put("name", name);
 
 		given().
-			body(params).
+			body(new Request<>(params)).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().

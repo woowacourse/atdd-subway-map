@@ -94,7 +94,7 @@ public class LineStationAcceptanceTest {
 		params.put("name", name);
 
 		given().
-			body(params).
+			body(new Request<>(params)).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().

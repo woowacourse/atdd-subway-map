@@ -1,5 +1,4 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -11,7 +10,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
-    const subwayLines = await api.line;
+    const subwayLines = await api.line.get();
     $subwayLinesSlider.innerHTML = subwayLines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
