@@ -114,6 +114,7 @@ public class Line {
                     this.stations.add(lineStationGot);
                 } else {
                     this.stations.add(lineStation);
+                    lineStationGot.setPreStationId(lineStation.getStationId());
                     this.stations.add(lineStationGot);
                 }
             }

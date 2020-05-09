@@ -54,12 +54,12 @@ function AdminLine() {
   };
 
   const initDefaultSubwayLines = () => {
-    defaultSubwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
+    // defaultSubwayLines.map(line => {
+    //   $subwayLineList.insertAdjacentHTML(
+    //     "beforeend",
+    //     subwayLinesTemplate(line)
+    //   );
+    // });
   };
 
   const initEventListeners = () => {

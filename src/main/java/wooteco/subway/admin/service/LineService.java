@@ -6,6 +6,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationDto;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -45,6 +46,29 @@ public class LineService {
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
+    }
+
+    public LineResponse registerLineStation(LineStationDto lineStationDto) {
+        String name = lineStationDto.getName();
+        Line line = lineRepository.findByName(name);
+
+        String preStationName = lineStationDto.getPreStationName();
+        Station preStation = stationRepository.findByName(preStationName);
+
+        String arrivalStationName = lineStationDto.getArrivalStationName();
+        Station arrivalStation = stationRepository.save(new Station(arrivalStationName));
+
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
+        addLineStation(line.getId(), lineStationCreateRequest);
+
+        List<Long> stationIds = line.getStations().stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+
+        Set<Station> stations = new HashSet<>((List<Station>) stationRepository.findAllById(stationIds));
+
+
+        return LineResponse.withStations(line, stations);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

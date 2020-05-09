@@ -4,18 +4,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationDto;
 import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 public class LineController {
@@ -38,6 +36,14 @@ public class LineController {
         return ResponseEntity
                 .created(URI.create("/lines/" + 1L))
                 .body(LineResponse.of(line));
+    }
+
+    @PostMapping("/lines/registerLineStation")
+    public ResponseEntity registerLineStation(@RequestBody LineStationDto lineStationDto) {
+        LineResponse lineResponse = lineService.registerLineStation(lineStationDto);
+        return ResponseEntity
+                .created(URI.create("/lines/" + lineResponse.getId()))
+                .body(lineResponse);
     }
 
     @GetMapping("/lines")

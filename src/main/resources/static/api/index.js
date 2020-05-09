@@ -15,9 +15,7 @@ const METHOD = {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        content: data
-      })
+      body: JSON.stringify(data)
     };
   }
 };
@@ -55,6 +53,9 @@ const api = (() => {
         },
         delete(id) {
             return fetch(`/lines/${id}`, METHOD.DELETE()).then();
+        },
+        registerLineStation(data) {
+            return request(`/lines/registerLineStation`, METHOD.POST(data));
         }
     };
 
