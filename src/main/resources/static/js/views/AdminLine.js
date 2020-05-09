@@ -84,6 +84,9 @@ function AdminLine() {
 
     subwayLineModal.toggle();
     $subwayLineNameInput.value = "";
+    $subwayLineFirstTimeInput.value = "";
+    $subwayLineLastTimeInput.value = "";
+    $subwayLineIntervalTimeInput.value = "";
     $subwayLineColorInput.value = "";
   };
 
