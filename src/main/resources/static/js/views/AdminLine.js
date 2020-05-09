@@ -49,11 +49,16 @@ function AdminLine() {
     subwayLineModal.toggle();
   };
 
-  const onDeleteSubwayLine = event => {
+  const onDeleteSubwayLine = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
+      const $subwayLineItem = $target.closest(".subway-line-item");
+      const { ok } = await api.line.delete($subwayLineItem.dataset.lineId);
+      if (!ok) {
+        alert(ERROR_MESSAGE.FAIL);
+      }
+      $subwayLineItem.remove();
     }
   };
 

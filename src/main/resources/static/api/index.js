@@ -51,6 +51,9 @@ const api = (() => {
     },
     update(data, id) {
       return fetch(`/lines/${id}`, METHOD.PUT(data));
+    },
+    delete(id) {
+      return fetch(`/lines/${id}`, METHOD.DELETE());
     }
   };
 
