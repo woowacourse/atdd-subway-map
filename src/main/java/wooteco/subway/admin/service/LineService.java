@@ -86,7 +86,7 @@ public class LineService {
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
 
-        Set<Station> stations = new HashSet<>((List<Station>) stationRepository.findAllById(stationIds));
+        Set<Station> stations = stationRepository.findAllById(stationIds);
         return LineResponse.withStations(line, stations);
 
     }
