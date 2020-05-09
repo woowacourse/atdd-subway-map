@@ -2,6 +2,8 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.util.Objects;
+
 public class LineStation {
     @Column("station")
     private Long stationId;
@@ -50,5 +52,19 @@ public class LineStation {
 
     public boolean is(Long stationId) {
         return this.stationId.equals(stationId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineStation that = (LineStation) o;
+        return Objects.equals(stationId, that.stationId) &&
+                Objects.equals(preStationId, that.preStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stationId, preStationId);
     }
 }

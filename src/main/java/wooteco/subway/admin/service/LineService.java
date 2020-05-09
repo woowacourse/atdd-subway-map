@@ -57,16 +57,18 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long lineId, LineStationCreateRequest request) {
+	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		if (request.getPreStationId() == null) {
-			persistLine.addLineStationOnFirst(request.toLineStation());
+		if (lineStationCreateRequest.getPreStationId() == null) {
+			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
+			lineRepository.save(persistLine);
 			return;
 		}
 
-		persistLine.addLineStation(request.toLineStation());
+		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+		lineRepository.save(persistLine);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {

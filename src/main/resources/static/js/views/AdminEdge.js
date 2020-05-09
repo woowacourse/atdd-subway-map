@@ -7,6 +7,11 @@ import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $createStationToLineButton = document.querySelector("#submit-button");
+  const $lineIdInput = document.querySelector("#station-select-options");
+  const $preStationInput = document.querySelector("#depart-station-name");
+  const $stationInput = document.querySelector("#arrival-station-name");
+
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
@@ -54,11 +59,27 @@ function AdminEdge() {
     }
   };
 
+  const onCreateStationToLine = event => {
+    event.preventDefault();
+    const lindId = $lineIdInput.options[$lineIdInput.selectedIndex].dataset.id;
+    const preStationName = $preStationInput.value;
+    const stationName = $stationInput.value;
+
+    const request = {
+      lineId: lindId,
+      preStationName: preStationName,
+      stationName: stationName
+    };
+    api.lineStation.create(request)
+      .then(data => console.log(data));
+  };
+
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
+    $createStationToLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateStationToLine);
   };
 
   this.init = () => {

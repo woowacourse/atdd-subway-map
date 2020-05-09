@@ -96,6 +96,10 @@ public class Line {
     }
 
     public void addLineStationOnFirst(LineStation inputLineStation) {
+        if (stations.isEmpty()) {
+            stations.add(0, inputLineStation);
+            return;
+        }
         LineStation lineStation = stations.stream()
                 .filter(LineStation::isFirstLineStation)
                 .findFirst()
@@ -103,6 +107,7 @@ public class Line {
         lineStation.updatePreStationId(inputLineStation.getStationId());
 
         stations.add(0, inputLineStation);
+
     }
 
     public void addLineStation(LineStation inputLineStation) {
