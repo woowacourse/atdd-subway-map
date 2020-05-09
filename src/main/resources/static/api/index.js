@@ -60,6 +60,9 @@ const api = (() => {
     },
     deleteStation(lineId, stationId) {
       return request(`/lines/${lineId}/${stationId}`, METHOD.DELETE())
+    },
+    addStation(id, data) {
+      return request(`/lines/${id}`, METHOD.POST(data));
     }
   };
 

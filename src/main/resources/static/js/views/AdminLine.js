@@ -64,27 +64,31 @@ function AdminLine() {
 
     const updateLine = () => {
       api.line.update({ name, startTime, endTime, intervalTime, bgColor }, modifyingLineId)
-        .then(response => {
-          lines = lines.map(line => line.id === modifyingLineId ? response : line);
-          const selected = document.querySelector(`#line-${modifyingLineId}`);
-          selected.innerHTML = subwayLinesInnerTemplate({ title: response.name, bgColor: response.bgColor });
-        })
-        .catch(error => {
-          console.log(error);
-        })
-        .finally(() => {
-          modifyingLineId = null;
+      .then(response => {
+        lines = lines.map(line => line.id === modifyingLineId ? response : line);
+        const selected = document.querySelector(`#line-${modifyingLineId}`);
+        selected.innerHTML = subwayLinesInnerTemplate({
+          title: response.name,
+          bgColor: response.bgColor
         });
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => {
+        modifyingLineId = null;
+      });
     };
 
     const createLine = () => {
       api.line.create({ name, bgColor, startTime, endTime, intervalTime })
-        .then(response => {
-          lines = [...lines, response];
-          id = response.id;
-        });
+      .then(response => {
+        lines = [...lines, response];
+        id = response.id;
+      });
 
-      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate({ title: name, bgColor, id }));
+      $subwayLineList.insertAdjacentHTML("beforeend",
+        subwayLinesTemplate({ title: name, bgColor, id }));
     };
 
     if (lines.some(line => line.id === modifyingLineId)) {
@@ -102,15 +106,15 @@ function AdminLine() {
     if (isDeleteButton) {
       modifyingLineId = parseInt($target.closest(".subway-line-item").dataset.lineId);
       api.line.delete(modifyingLineId)
-        .then(() => {
-          lines = lines.filter(line => line.id !== modifyingLineId);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-        .finally(() => {
-          modifyingLineId = null;
-        });
+      .then(() => {
+        lines = lines.filter(line => line.id !== modifyingLineId);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        modifyingLineId = null;
+      });
       $target.closest(".subway-line-item").remove();
     }
   };
@@ -122,13 +126,13 @@ function AdminLine() {
       modifyingLineId = parseInt(event.target.closest(".subway-line-item").dataset.lineId);
       subwayLineModal.toggle();
       api.line.get(modifyingLineId)
-        .then(data => {
-          $subwayLineNameInput.value = data.name;
-          $subwayLineStartTimeInput.value = data.startTime;
-          $subwayLineEndTimeInput.value = data.endTime;
-          $subwayLineIntervalTimeInput.value = data.intervalTime;
-          $subwayLineColorInput.value = data.bgColor;
-        });
+      .then(data => {
+        $subwayLineNameInput.value = data.name;
+        $subwayLineStartTimeInput.value = data.startTime;
+        $subwayLineEndTimeInput.value = data.endTime;
+        $subwayLineIntervalTimeInput.value = data.intervalTime;
+        $subwayLineColorInput.value = data.bgColor;
+      });
     }
   };
 
@@ -143,24 +147,21 @@ function AdminLine() {
 
   const initDefaultSubwayLines = () => {
     api.line.getAll()
-      .then(data => {
-        lines = data;
-        lines
-          .map(({ name, bgColor, id }) => ({ title: name, bgColor, id }))
-          .map(line => {
-            $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
-          });
+    .then(data => {
+      lines = data;
+      lines
+      .map(({ name, bgColor, id }) => ({ title: name, bgColor, id }))
+      .map(line => {
+        $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
       });
+    });
   };
 
   const initEventListeners = () => {
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
     $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onReadSubwayLine);
-    $createSubwayLineButton.addEventListener(
-      EVENT_TYPE.CLICK,
-      onCreateSubwayLine
-    );
+    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
   };
 
   const onSelectColorHandler = event => {
@@ -176,8 +177,8 @@ function AdminLine() {
       "#subway-line-color-select-container"
     );
     const colorSelectTemplate = subwayLineColorOptions
-      .map((option, index) => colorSelectOptionTemplate(option, index))
-      .join("");
+    .map((option, index) => colorSelectOptionTemplate(option, index))
+    .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
     $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
   };
