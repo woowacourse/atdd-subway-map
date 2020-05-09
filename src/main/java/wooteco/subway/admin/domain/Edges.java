@@ -28,23 +28,29 @@ public class Edges {
     }
 
     public void add(final Edge edge) {
-        if (this.edges.isEmpty() && !edge.isStartStation()) {
+        if (this.edges.isEmpty() && edge.isNotStartStation()) {
             this.edges.add(Edge.startEdge(edge));
         }
 
         List<Edge> updateEdges = new ArrayList<>();
+
         for (Edge aEdge : this.edges) {
-            if (aEdge.hasSamePreStation(edge)) {
-                aEdge.changePreStationToStationId(edge);
-                updateEdges.add(edge);
-            }
-            updateEdges.add(aEdge);
+            insertEdge(updateEdges, aEdge, edge);
         }
+
         if (!updateEdges.contains(edge)) {
             updateEdges.add(edge);
         }
 
         this.edges = updateEdges;
+    }
+
+    private void insertEdge(final List<Edge> updateEdges, final Edge aEdge, final Edge edge) {
+        if (aEdge.hasSamePreStation(edge)) {
+            aEdge.changePreStationToStationOf(edge);
+            updateEdges.add(edge);
+        }
+        updateEdges.add(aEdge);
     }
 
     public void removeByStationId(final Long stationId) {

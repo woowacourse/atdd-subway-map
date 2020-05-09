@@ -26,11 +26,15 @@ public class Edge {
         return preStationId == null;
     }
 
+    public boolean isNotStartStation() {
+        return !isStartStation();
+    }
+
     public boolean hasSamePreStation(final Edge edge) {
         return Objects.equals(this.preStationId, edge.preStationId);
     }
 
-    public void changePreStationToStationId(final Edge edge) {
+    public void changePreStationToStationOf(final Edge edge) {
         this.preStationId = edge.stationId;
     }
 
