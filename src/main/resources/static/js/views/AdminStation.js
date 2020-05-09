@@ -32,12 +32,11 @@ function AdminStation() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
             const span = $target.closest(".mdi-delete");
-            console.log(span)
-            console.log(span.dataset)
             const id = span.dataset.id;
-            console.log(id)
-            api.station.delete(isDeleteButton.dataSet.id)
-            $target.closest(".list-item").remove();
+            api.station.delete(id)
+                .then(response => $target.closest(".list-item").remove())
+                .catch(alert)
+
         }
     };
 
