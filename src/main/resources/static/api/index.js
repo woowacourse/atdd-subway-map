@@ -67,8 +67,15 @@ const api = (() => {
         }
     };
 
+    const edge = {
+        get() {
+            console.log("api - edge get");
+            return request(`/edge`);
+        }
+    };
+
     return {
-        station, line
+        station, line, edge
     };
 })();
 
