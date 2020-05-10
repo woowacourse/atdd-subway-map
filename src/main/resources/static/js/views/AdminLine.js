@@ -92,10 +92,11 @@ function AdminLine() {
 
   const onDeleteSubwayLine = event => {
     if (event.target && event.target.classList.contains("mdi-delete")) {
-      event.target.closest(".subway-line-item").remove();
-      const id = event.target.closest("div").querySelector('input').value;
+      let $subwayLineItem = event.target.closest(".subway-line-item");
+      $subwayLineItem.remove();
+      const lineId = $subwayLineItem.dataset.lineId;
 
-      fetch(`lines/${id}`, {
+      fetch(`lines/${lineId}`, {
         method: "DELETE"
       });
     }
@@ -106,9 +107,8 @@ function AdminLine() {
     if (event.target && event.target.classList.contains("mdi-pencil")) {
       isEdit = true;
       $currentSubwayLineItem = event.target.closest("div");
-      const $id = $currentSubwayLineItem.querySelector('input');
-      //const $id = $currentSubwayLineItem.dataset.lineId;
-      const line = await getLine($id.value);
+      const lineId = $currentSubwayLineItem.dataset.lineId;
+      const line = await getLine(lineId);
       $subwayLineUpdateId.value = line.id;
       $subwayLineNameInput.value = line.name;
       $subwayLineColorInput.value = line.color;
@@ -122,8 +122,8 @@ function AdminLine() {
   const onDetailSubwayLine = async event => {
     event.preventDefault();
     if (event.target && event.target.classList.contains("subway-line-item")) {
-      const $id = event.target.querySelector('input');
-      const line = await getLine($id.value);
+      const lineId = event.target.dataset.lineId;
+      const line = await getLine(lineId);
       $subwayLineFirstTimeInfo.innerText = line.startTime;
       $subwayLineLastTimeInfo.innerText = line.endTime;
       $subwayLineIntervalTimeInfo.innerText = line.intervalTime;

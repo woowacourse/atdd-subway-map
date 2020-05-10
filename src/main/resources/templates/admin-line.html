@@ -37,8 +37,8 @@
     <div class="mt-5 flex subway-lines-container relative overflow-y-auto">
       <div id="subway-line-list" class="w-full">
         {{#each lines}}
-        <div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
-          <input type="hidden" value="{{id}}"/>
+        <div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800"
+             data-line-id="{{id}}">
           <span class="{{color}} w-3 h-3 rounded-full inline-block mr-1"></span>
           {{name}}
           <button
