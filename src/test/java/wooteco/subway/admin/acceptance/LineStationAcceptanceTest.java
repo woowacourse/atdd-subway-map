@@ -73,11 +73,17 @@ public class LineStationAcceptanceTest {
         //then
         assertThat(station.getName()).isEqualTo("강남");
         //when
-        final int statusCode = deleteEdge(line.getId(), line.getStations().get(0).getId());
+
+        int statusCode = deleteEdge(line.getId(), line.getStations().get(0).getId());
         //then
+
         assertThat(statusCode).isEqualTo(204);
+
         //then
-        final LineResponse edgesAfterDelete = getLine(1L);
+        LineResponse edgesAfterDelete = getLine(1L);
+        assertThat(edgesAfterDelete.getStations().stream()
+            .anyMatch(value -> value.getName().equals("강남"))
+        ).isFalse();
         assertThat(edgesAfterDelete.getStations().size()).isEqualTo(2);
     }
 
