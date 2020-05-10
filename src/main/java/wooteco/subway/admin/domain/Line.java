@@ -103,16 +103,13 @@ public class Line {
             return;
         }
 
-        int index = START_INDEX;
-        while (!findLineStationAt(index).isSameStation(lineStation.getPreStationId())) {
-            index++;
-        }
-
+        int index = searchLineStationIndex(lineStation.getPreStationId());
         int nextIndex = index + 1;
         if (nextIndex < stations.size()) {
             LineStation target = findLineStationAt(nextIndex);
             target.updatePreLineStation(lineStation.getStationId());
         }
+
         stations.add(nextIndex, lineStation);
     }
 

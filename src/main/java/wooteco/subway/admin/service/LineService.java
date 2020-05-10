@@ -37,6 +37,7 @@ public class LineService {
     public Line updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
+
         return lineRepository.save(persistLine);
     }
 
@@ -89,7 +90,7 @@ public class LineService {
 
     public Station createStation(StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
-       
+
         return stationRepository.save(station);
     }
 
