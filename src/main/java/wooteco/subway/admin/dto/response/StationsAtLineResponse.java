@@ -11,9 +11,6 @@ public class StationsAtLineResponse {
     private String bgColor;
     private List<Station> stations;
 
-    private StationsAtLineResponse() {
-    }
-
     public StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {
         this.id = id;
         this.name = name;

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String DUPLICATED_STATION_EXCEPTION_MESSAGE = "중복되는 역이 존재합니다.";
+    private static final String DUPLICATED_STATION_EXCEPTION_MESSAGE = "이미 동일한 역이 존재합니다.";
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "존재하지 않는 노선입니다.";
     private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
     private static final String REQUIRE_LINE_NAME_EXCEPTION_MESSAGE = "노선의 이름을 입력해주세요.";
@@ -38,15 +38,14 @@ public class LineService {
     }
 
     private void validateLine(Line line) {
-        List<Line> savedLines = lineRepository.findAll();
         if (line.getName() == null) {
             throw new IllegalArgumentException(REQUIRE_LINE_NAME_EXCEPTION_MESSAGE);
         }
-        for (Line savedLine : savedLines) {
-            if (savedLine.getName().equals(line.getName())) {
-                throw new IllegalArgumentException(DUPLICATED_STATION_EXCEPTION_MESSAGE);
-            }
-        }
+
+        lineRepository.findByName(line.getName())
+                .ifPresent(value -> {
+                    throw new IllegalArgumentException(DUPLICATED_STATION_EXCEPTION_MESSAGE);
+                });
     }
 
     public LineResponse showLine(Long id) {

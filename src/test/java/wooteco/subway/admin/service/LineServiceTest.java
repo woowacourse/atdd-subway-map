@@ -77,10 +77,10 @@ public class LineServiceTest {
         lineService.addEdge(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(4L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(1L);
-        assertThat(line.findEdgesId().get(2)).isEqualTo(2L);
-        assertThat(line.findEdgesId().get(3)).isEqualTo(3L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(4L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(1L);
+        assertThat(line.findStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.findStationsId().get(3)).isEqualTo(3L);
     }
 
     @Test
@@ -91,10 +91,10 @@ public class LineServiceTest {
         lineService.addEdge(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(1L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(4L);
-        assertThat(line.findEdgesId().get(2)).isEqualTo(2L);
-        assertThat(line.findEdgesId().get(3)).isEqualTo(3L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(4L);
+        assertThat(line.findStationsId().get(2)).isEqualTo(2L);
+        assertThat(line.findStationsId().get(3)).isEqualTo(3L);
     }
 
     @Test
@@ -105,10 +105,10 @@ public class LineServiceTest {
         lineService.addEdge(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(1L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(2L);
-        assertThat(line.findEdgesId().get(2)).isEqualTo(3L);
-        assertThat(line.findEdgesId().get(3)).isEqualTo(4L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.findStationsId().get(2)).isEqualTo(3L);
+        assertThat(line.findStationsId().get(3)).isEqualTo(4L);
     }
 
     @Test
@@ -117,8 +117,8 @@ public class LineServiceTest {
         lineService.removeEdge(line.getId(), 1L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(2L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(3L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(2L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(3L);
     }
 
     @Test
@@ -127,8 +127,8 @@ public class LineServiceTest {
         lineService.removeEdge(line.getId(), 2L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(1L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(3L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(3L);
     }
 
     @Test
@@ -137,8 +137,8 @@ public class LineServiceTest {
         lineService.removeEdge(line.getId(), 3L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.findEdgesId().get(0)).isEqualTo(1L);
-        assertThat(line.findEdgesId().get(1)).isEqualTo(2L);
+        assertThat(line.findStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.findStationsId().get(1)).isEqualTo(2L);
     }
 
     @Test

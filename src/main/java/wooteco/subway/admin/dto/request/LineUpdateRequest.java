@@ -25,6 +25,6 @@ public class LineUpdateRequest {
     }
 
     public Line toLine() {
-        return new Line(startTime, endTime, intervalTime);
+        return Line.updateLine(startTime, endTime, intervalTime);
     }
 }

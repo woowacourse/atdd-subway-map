@@ -35,12 +35,12 @@ public class Line {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, bgColor, startTime, endTime, intervalTime);
+    public static Line toLine(String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        return new Line(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
-    public Line(LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, null, null, startTime, endTime, intervalTime);
+    public static Line updateLine(LocalTime startTime, LocalTime endTime, int intervalTime) {
+        return new Line(null, null, null, startTime, endTime, intervalTime);
     }
 
     public Long getId() {
@@ -200,7 +200,7 @@ public class Line {
         throw new IllegalArgumentException("해당 호선에 존재하지 않는 역입니다.");
     }
 
-    public List<Long> findEdgesId() {
+    public List<Long> findStationsId() {
         List<Long> stationsIds = new ArrayList<>();
         for (Edge edge : stations) {
             stationsIds.add(edge.getStationId());

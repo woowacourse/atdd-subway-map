@@ -25,7 +25,7 @@ public class LineTest {
 
     @Test
     void getEdges() {
-        List<Long> stationIds = line.findEdgesId();
+        List<Long> stationIds = line.findStationsId();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);

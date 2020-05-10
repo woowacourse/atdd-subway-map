@@ -9,7 +9,6 @@ public class EdgeAddRequest {
     private EdgeAddRequest() {
     }
 
-
     public EdgeAddRequest(String preStationName, String stationName, int distance, int duration) {
         this.preStationName = preStationName;
         this.stationName = stationName;

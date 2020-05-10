@@ -35,6 +35,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, bgColor, startTime, endTime, intervalTime);
+        return Line.toLine(name, bgColor, startTime, endTime, intervalTime);
     }
 }

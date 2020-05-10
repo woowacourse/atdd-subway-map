@@ -19,9 +19,6 @@ public class LineResponse {
     private LocalDateTime updatedAt;
     private List<Station> stations;
 
-    public LineResponse() {
-    }
-
     public LineResponse(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
         this.id = id;
         this.name = name;
