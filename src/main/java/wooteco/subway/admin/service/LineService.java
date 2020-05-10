@@ -8,9 +8,9 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -50,9 +50,9 @@ public class LineService {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	public void save(Long id, LineStationCreateRequest request) {
+	public void save(Long id, LineStation lineStation) {
 		final Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.addLineStation(request.toLineStation());
+		persistLine.addLineStation(lineStation);
 		lineRepository.save(persistLine);
 	}
 
