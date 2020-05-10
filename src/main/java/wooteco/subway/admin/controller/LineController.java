@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,67 +21,67 @@ import wooteco.subway.admin.service.LineService;
 
 @RestController
 public class LineController {
-	private LineService service;
+	private final LineService service;
 
 	public LineController(LineService service) {
 		this.service = service;
 	}
 
 	@PostMapping("/lines")
-	public ResponseEntity createLine(@RequestBody LineRequest view) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
 		Line persistLine = service.save(view.toLine());
 
-		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
-			.body(LineResponse.of(persistLine));
+		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId())).build();
 	}
 
 	@GetMapping("/lines")
-	public ResponseEntity showLines() {
+	public ResponseEntity<List<LineResponse>> showLines() {
 		return ResponseEntity.ok().body(service.showLines());
 	}
 
 	@GetMapping("/lines/{id}")
-	public ResponseEntity showLine(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 
 		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
 	}
 
 	@GetMapping("/lines/name/{name}")
-	public ResponseEntity showLineByName(@PathVariable String name) {
+	public ResponseEntity<LineResponse> showLineByName(@PathVariable String name) {
 		LineResponse lineResponse = LineResponse.of(service.showLine(name));
 		System.err.println(lineResponse.getId() + " ,  " + lineResponse.getTitle());
 		return ResponseEntity.ok().body(lineResponse);
 	}
 
 	@PutMapping("/lines/{id}")
-	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+	public ResponseEntity<Object> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
 		Line line = view.toLine();
 		service.updateLine(id, line);
 
-		return ResponseEntity.ok().body(LineResponse.of(line));
+		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/lines/{id}")
-	public ResponseEntity deleteLine(@PathVariable Long id) {
+	public ResponseEntity<Object> deleteLine(@PathVariable Long id) {
 		service.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/lines/{id}/stations")
-	public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
+	public ResponseEntity<Object> addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
 		service.addLineStation(id, view);
-		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
+
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/lines/{id}/stations")
-	public ResponseEntity showLineStations(@PathVariable Long id) {
+	public ResponseEntity<List<StationResponse>> showLineStations(@PathVariable Long id) {
 		LineResponse response = service.findLineWithStationsById(id);
 
 		return ResponseEntity.ok().body(StationResponse.of(response.getStations()));
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")
-	public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+	public ResponseEntity<Object> deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
 		service.removeLineStation(lineId, stationId);
 
 		return ResponseEntity.noContent().build();

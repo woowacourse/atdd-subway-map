@@ -58,15 +58,15 @@ public class LineStationAcceptanceTest {
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
 	void manageLineStation() {
-		StationResponse 신촌 = createStation("신촌");
-		StationResponse 잠실 = createStation("잠실");
+		createStation("신촌");
+		createStation("잠실");
 
-		LineResponse 호선1 = createLine("1호선");
-		LineResponse 호선2 = createLine("2호선");
+		createLine("1호선");
+		createLine("2호선");
 
-		addLineStation(호선1.getId(), null, "신촌");
-		addLineStation(호선1.getId(), "신촌", "잠실");
-		LineResponse line = getLine(호선1.getId());
+		addLineStation(1L, null, "신촌");
+		addLineStation(1L, "신촌", "잠실");
+		LineResponse line = getLine(1L);
 		assertThat(line.getStations()).hasSize(2);
 
 		List<String> stationIds = getStations(line.getId()).stream()
@@ -74,53 +74,8 @@ public class LineStationAcceptanceTest {
 			.collect(Collectors.toList());
 		assertThat(stationIds).contains("잠실", "신촌");
 
-		deleteLineStation(호선1.getId(), 신촌.getId());
-		line = getLine(호선1.getId());
+		deleteLineStation(1L, 1L);
+		line = getLine(1L);
 		assertThat(line.getStations()).hasSize(1);
 	}
-
-	// public LineResponse getLine(Long id) {
-	// 	return given()
-	// 		.when()
-	// 		.get("/lines/" + id)
-	// 		.then()
-	// 		.log().all()
-	// 		.extract().as(LineResponse.class);
-	//
-	// }
-	//
-	// public List<StationResponse> getStations(Long id) {
-	// 	return given()
-	// 		.when()
-	// 		.get("/lines/" + id + "/stations")
-	// 		.then()
-	// 		.log().all()
-	// 		.extract()
-	// 		.jsonPath().getList(".", StationResponse.class);
-	// }
-	//
-	// public void addLineStation(Long lineId, Long preStationId, Long stationId) {
-	// 	Map<String, String> params = new HashMap<>();
-	// 	params.put("preStationId", String.valueOf(preStationId));
-	// 	params.put("stationId", String.valueOf(stationId));
-	// 	params.put("distance", "1000");
-	// 	params.put("duration", "5");
-	//
-	// 	given().
-	// 		body(params).
-	// 		contentType(MediaType.APPLICATION_JSON_VALUE).
-	// 		accept(MediaType.APPLICATION_JSON_VALUE).
-	// 		when().
-	// 		put("/lines/" + lineId + "/stations").
-	// 		then().
-	// 		log().all().statusCode(HttpStatus.OK.value());
-	// }
-	//
-	// public void deleteLineStation(Long lineId, Long stationId) {
-	// 	given()
-	// 		.when()
-	// 		.delete("/lines/" + lineId + "/stations/" + stationId)
-	// 		.then()
-	// 		.log().all();
-	// }
 }

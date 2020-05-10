@@ -15,7 +15,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 public class Request {
-	public static LineResponse createLine(String name) {
+	public static void createLine(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("title", name);
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -23,14 +23,15 @@ public class Request {
 		params.put("bgColor", "bg-red-400");
 		params.put("intervalTime", "10");
 
-		return given().
+		given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
 			post("/lines").
 			then().
-			log().all().extract().as(LineResponse.class);
+			log().all().
+			statusCode(HttpStatus.CREATED.value());
 	}
 
 	public static void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -80,18 +81,19 @@ public class Request {
 
 	}
 
-	public static StationResponse createStation(String name) {
+	public static void createStation(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 
-		return given().
+		given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
 			post("/stations").
 			then().
-			log().all().extract().as(StationResponse.class);
+			log().all()
+			.statusCode(HttpStatus.CREATED.value());
 	}
 
 	public static List<StationResponse> getStations(Long id) {
