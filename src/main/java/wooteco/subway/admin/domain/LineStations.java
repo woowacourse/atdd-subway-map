@@ -23,11 +23,11 @@ public class LineStations {
     }
 
     void add(LineStation lineStation) {
-        int addIndex = findAddIndex(lineStation);
+        int addIndex = getNextIndex(lineStation);
         update(lineStation, addIndex);
     }
 
-    private int findAddIndex(LineStation lineStation) {
+    private int getNextIndex(LineStation lineStation) {
         if (lineStation.isFirstOnLine()) {
             return FIRST_INDEX;
         }
@@ -41,11 +41,7 @@ public class LineStations {
 
     private void update(LineStation lineStation, int targetIndex) {
         stations.add(targetIndex, lineStation);
-
-        if (isNotLast(targetIndex)) {
-            int shouldUpdateIndex = targetIndex + NEXT_STATION_INDEX;
-            stations.get(shouldUpdateIndex).updatePreLineStation(lineStation.getStationId());
-        }
+        changeNextStationInfo(targetIndex, lineStation.getStationId());
     }
 
     private boolean isNotLast(int index) {
@@ -54,13 +50,16 @@ public class LineStations {
 
     void remove(Long stationId) {
         int targetIndex = findRemoveIndex(stationId);
-
         LineStation station = stations.get(targetIndex);
+        changeNextStationInfo(targetIndex, station.getPreStationId());
+        stations.remove(targetIndex);
+    }
+
+    private void changeNextStationInfo(int targetIndex, Long id) {
         if (isNotLast(targetIndex)) {
             int shouldUpdateIndex = targetIndex + NEXT_STATION_INDEX;
-            stations.get(shouldUpdateIndex).updatePreLineStation(station.getPreStationId());
+            stations.get(shouldUpdateIndex).updatePreLineStation(id);
         }
-        stations.remove(targetIndex);
     }
 
     private int findRemoveIndex(Long stationId) {
@@ -70,7 +69,7 @@ public class LineStations {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
     }
 
-    List<Long> getLineStationsId() {
+    List<Long> getLineStationsIds() {
         return stations.stream()
             .map(LineStation::getStationId)
             .collect(Collectors.toList());

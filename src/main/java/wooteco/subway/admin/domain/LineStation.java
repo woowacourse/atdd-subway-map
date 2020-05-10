@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Column;
 public class LineStation {
 
     @Column("station")
-    private Long stationId;
+    private long stationId;
     private Long preStationId;
     private int distance;
     private int duration;
@@ -13,7 +13,7 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStation(long stationId, Long preStationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
@@ -25,11 +25,11 @@ public class LineStation {
     }
 
     public boolean isSameWithPreStationId(LineStation lineStation) {
-        return this.stationId.equals(lineStation.preStationId);
+        return this.stationId == lineStation.preStationId;
     }
 
     public boolean isSameId(Long id) {
-        return this.stationId.equals(id);
+        return this.stationId == id;
     }
 
     public void updatePreLineStation(Long preStationId) {
@@ -40,7 +40,7 @@ public class LineStation {
         return preStationId;
     }
 
-    public Long getStationId() {
+    public long getStationId() {
         return stationId;
     }
 

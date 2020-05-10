@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.service.LineService;
@@ -28,33 +27,34 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody LineRequest lineRequest) {
-        LineResponse response = lineService.save(Line.of(lineRequest));
+    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
+        LineResponse response = lineService.save(lineRequest);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response);
     }
 
     @GetMapping
-    public ResponseEntity readAll() {
+    public ResponseEntity<List<LineResponse>> readAll() {
         final List<LineResponse> lines = lineService.showLines();
         return ResponseEntity.ok(lines);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity readById(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> readById(@PathVariable Long id) {
         final LineResponse line = lineService.showLine(id);
         return ResponseEntity.ok(line);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> updateById(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok(lineResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.ok().build();
     }

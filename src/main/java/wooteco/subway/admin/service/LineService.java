@@ -1,9 +1,11 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -14,6 +16,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
+@Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -23,28 +26,27 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
+    public LineResponse save(LineRequest request) {
         try {
-            return LineResponse.of(lineRepository.save(line));
+            return LineResponse.of(lineRepository.save(request.toLine()));
         } catch (Exception e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Line line : lines) {
-            List<Station> stations = findStations(line);
-            lineResponses.add(LineResponse.of(line, stations));
-        }
-        return lineResponses;
+        return lines.stream()
+            .map(line -> showLine(line.getId()))
+            .collect(Collectors.toList());
     }
 
     private List<Station> findStations(Line line) {
         return stationRepository.findAllByLineId(line.getId());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         Line line = findById(id);
         List<Station> stations = findStations(line);
@@ -58,7 +60,7 @@ public class LineService {
             lineRepository.save(line);
             List<Station> stations = findStations(line);
             return LineResponse.of(line, stations);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
     }
@@ -69,7 +71,7 @@ public class LineService {
 
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = findById(id);
-        line.addLineStation(request.toEntity());
+        line.addLineStation(request.toLineStation());
         lineRepository.save(line);
         List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
@@ -86,6 +88,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long stationId) {
         Line line = findById(stationId);
         List<Station> stations = findStations(line);

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -12,7 +11,7 @@ import wooteco.subway.admin.domain.Station;
 public class LineResponse {
     private Long id;
     private String title;
-    private String bgColor;
+    private String backgroundColor;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -24,11 +23,11 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String title, String bgColor, LocalTime startTime,
+    public LineResponse(Long id, String title, String backgroundColor, LocalTime startTime,
         LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
         List<Station> stations) {
         this.id = id;
-        this.bgColor = bgColor;
+        this.backgroundColor = backgroundColor;
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -39,22 +38,15 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
+        return new LineResponse(line.getId(), line.getName(), line.getBackgroundColor(),
             line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
             line.getUpdatedAt(), new ArrayList<>());
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
+        return new LineResponse(line.getId(), line.getName(), line.getBackgroundColor(),
             line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
             line.getUpdatedAt(), stations);
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-
-        return lines.stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -65,8 +57,8 @@ public class LineResponse {
         return title;
     }
 
-    public String getBgColor() {
-        return bgColor;
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 
     public LocalTime getStartTime() {

@@ -13,7 +13,7 @@ public class Line {
     @Id
     private Long id;
     private String name;
-    private String bgColor;
+    private String backgroundColor;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -22,24 +22,19 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
+    private Line() {
     }
 
-    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
+    public Line(String name, String backgroundColor, LocalTime startTime, LocalTime endTime,
         int intervalTime) {
         this.name = name;
-        this.bgColor = bgColor;
+        this.backgroundColor = backgroundColor;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.lineStations = LineStations.createEmpty();
-    }
-
-    public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
-        this(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
     public static Line of(LineRequest lineRequest) {
@@ -59,11 +54,14 @@ public class Line {
         lineStations.remove(stationId);
     }
 
-    public List<Long> getLineStationsId() {
-        return lineStations.getLineStationsId();
+    public List<Long> getLineStationsIds() {
+        return lineStations.getLineStationsIds();
     }
 
     public void update(Line line) {
+        if (line == null) {
+            throw new AssertionError();
+        }
         if (line.getName() != null) {
             this.name = line.getName();
         }
@@ -111,7 +109,7 @@ public class Line {
         return updatedAt;
     }
 
-    public String getBgColor() {
-        return bgColor;
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 }

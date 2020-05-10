@@ -25,7 +25,7 @@ public class LineStationController {
     }
 
     @PostMapping("/{lineId}")
-    public ResponseEntity create(@PathVariable Long lineId,
+    public ResponseEntity<LineResponse> create(@PathVariable Long lineId,
         @RequestBody LineStationCreateRequest request) {
         LineResponse lineResponse = lineService.addLineStation(lineId, request);
         return ResponseEntity
@@ -34,7 +34,7 @@ public class LineStationController {
     }
 
     @DeleteMapping("/{lineId}/{stationId}")
-    public ResponseEntity deleteById(@PathVariable("lineId") Long lineId,
+    public ResponseEntity<Object> deleteById(@PathVariable("lineId") Long lineId,
         @PathVariable("stationId") Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
