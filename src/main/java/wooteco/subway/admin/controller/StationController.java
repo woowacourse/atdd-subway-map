@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,29 +19,30 @@ import wooteco.subway.admin.service.StationService;
 @RequestMapping("/api/stations")
 public class StationController {
 
-	private final StationService stationService;
+    private final StationService stationService;
 
-	public StationController(StationService stationService) {
-		this.stationService = stationService;
-	}
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
+    }
 
-	@PostMapping("")
-	public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
-		StationResponse stationResponse = stationService.save(view);
+    @PostMapping("")
+    public ResponseEntity<StationResponse> createStation(
+        @RequestBody @Valid StationCreateRequest stationCreateRequest) {
+        StationResponse stationResponse = stationService.save(stationCreateRequest);
 
-		return ResponseEntity
-			.created(URI.create("/stations/" + stationResponse.getId()))
-			.body(stationResponse);
-	}
+        return ResponseEntity
+            .created(URI.create("/stations/" + stationResponse.getId()))
+            .body(stationResponse);
+    }
 
-	@GetMapping("")
-	public ResponseEntity<List<StationResponse>> showStations() {
-		return ResponseEntity.ok().body(stationService.findAll());
-	}
+    @GetMapping("")
+    public ResponseEntity<List<StationResponse>> showStations() {
+        return ResponseEntity.ok().body(stationService.findAll());
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-		stationService.deleteById(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        stationService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

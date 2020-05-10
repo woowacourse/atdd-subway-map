@@ -1,10 +1,12 @@
 package wooteco.subway.admin.dto;
 
 
+import javax.validation.constraints.NotNull;
 import wooteco.subway.admin.domain.Station;
 
 public class StationCreateRequest {
 
+    @NotNull
     private String name;
 
     public StationCreateRequest() {

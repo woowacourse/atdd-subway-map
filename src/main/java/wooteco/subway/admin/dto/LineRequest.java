@@ -1,51 +1,53 @@
 package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
-
+import javax.validation.constraints.Min;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
-	private String name;
-	private String color;
-	private LocalTime startTime;
-	private LocalTime endTime;
-	private int intervalTime;
 
-	public LineRequest() {
-	}
+    private String name;
+    private String color;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    @Min(1)
+    private int intervalTime;
 
-	public String getName() {
-		return name;
-	}
+    public LineRequest() {
+    }
 
-	public LocalTime getStartTime() {
-		return startTime;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
+    public LocalTime getStartTime() {
+        return startTime;
+    }
 
-	public int getIntervalTime() {
-		return intervalTime;
-	}
+    public LocalTime getEndTime() {
+        return endTime;
+    }
 
-	public String getColor() {
-		return color;
-	}
+    public int getIntervalTime() {
+        return intervalTime;
+    }
 
-	public Line toLine() {
-		return new Line(name, color, startTime, endTime, intervalTime);
-	}
+    public String getColor() {
+        return color;
+    }
 
-	@Override
-	public String toString() {
-		return "LineRequest{" +
-			"name='" + name + '\'' +
-			", color='" + color + '\'' +
-			", startTime=" + startTime +
-			", endTime=" + endTime +
-			", intervalTime=" + intervalTime +
-			'}';
-	}
+    public Line toLine() {
+        return new Line(name, color, startTime, endTime, intervalTime);
+    }
+
+    @Override
+    public String toString() {
+        return "LineRequest{" +
+            "name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", startTime=" + startTime +
+            ", endTime=" + endTime +
+            ", intervalTime=" + intervalTime +
+            '}';
+    }
 }

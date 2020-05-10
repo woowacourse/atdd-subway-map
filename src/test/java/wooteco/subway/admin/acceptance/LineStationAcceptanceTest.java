@@ -75,6 +75,8 @@ public class LineStationAcceptanceTest {
 		Map<String, Object> params = new HashMap<>();
 		params.put("lineId", lineId);
 		params.put("stationId", stationId);
+		params.put("distance", 10);
+		params.put("duration", 10);
 
 		given().
 			body(params).
