@@ -54,6 +54,7 @@ public class LineStationAcceptanceTest {
      * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
      * Then 지하철역 목록을 응답 받는다.
      * And 제외한 지하철역이 목록에 존재하지 않는다.
+     *
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
@@ -74,7 +75,7 @@ public class LineStationAcceptanceTest {
         assertThat(station.getName()).isEqualTo("강남");
         //when
 
-        int statusCode = deleteEdge(line.getId(), line.getStations().get(0).getId());
+        int statusCode = deleteEdge(line.getId(), station.getId());
         //then
 
         assertThat(statusCode).isEqualTo(204);
