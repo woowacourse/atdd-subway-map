@@ -28,6 +28,10 @@ public class LineStationCreateRequest {
         return new LineStation(preStationId, stationId, distance, duration);
     }
 
+    public boolean hasNotAnyId() {
+        return preStationId == null && stationId == null;
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }
@@ -58,10 +62,6 @@ public class LineStationCreateRequest {
 
     public int getDuration() {
         return duration;
-    }
-
-    public boolean hasNotAnyId() {
-        return preStationId == null && stationId == null;
     }
 
     @Override

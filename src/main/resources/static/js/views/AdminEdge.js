@@ -75,7 +75,6 @@ function AdminEdge() {
             distance: 1,
             duration: 1,
         };
-        console.log(lineStationInfo);
         api.line.create(lineStationInfo, `/${lineId}/stations`).then(res => {
             if (res.status === 201) {
                 window.location.reload();

@@ -44,16 +44,17 @@ class StationServiceTest {
 
         stationService.save(request);
 
-        assertThat(stationService.findAll()).hasSize(4);
-        assertThat(stationService.findAll().get(3)).isEqualTo(StationResponse.of(expectedStation));
+        assertThat(stationService.showStations()).hasSize(4);
+        assertThat(stationService.showStations().get(3))
+            .isEqualTo(StationResponse.of(expectedStation));
     }
 
     @Test
     void findAll() {
         when(stationRepository.findAll()).thenReturn(stations);
 
-        assertThat(stationService.findAll()).hasSize(3);
-        assertThat(stationService.findAll()).isEqualTo(StationResponse.listOf(stations));
+        assertThat(stationService.showStations()).hasSize(3);
+        assertThat(stationService.showStations()).isEqualTo(StationResponse.listOf(stations));
     }
 
     @ParameterizedTest
@@ -65,7 +66,8 @@ class StationServiceTest {
 
         stationService.deleteById((long) id);
 
-        assertThat(stationService.findAll()).hasSize(2);
-        assertThat(stationService.findAll()).isEqualTo(StationResponse.listOf(expectedStations));
+        assertThat(stationService.showStations()).hasSize(2);
+        assertThat(stationService.showStations())
+            .isEqualTo(StationResponse.listOf(expectedStations));
     }
 }

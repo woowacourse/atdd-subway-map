@@ -11,6 +11,7 @@ public class Station {
     private LocalDateTime createdAt;
 
     public Station(String name) {
+        Objects.requireNonNull(name, "역명은 Null일 수 없습니다.");
         this.name = name;
         this.createdAt = LocalDateTime.now();
     }

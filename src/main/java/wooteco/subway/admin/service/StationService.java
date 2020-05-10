@@ -23,7 +23,7 @@ public class StationService {
         return StationResponse.of(station);
     }
 
-    public List<StationResponse> findAll() {
+    public List<StationResponse> showStations() {
         return StationResponse.listOf(stationRepository.findAll());
     }
 

@@ -77,20 +77,20 @@ public class Line {
 
     private void checkPreStation(LineStation requestLineStation) {
         Long preStationId = requestLineStation.getPreStationId();
-        if (preStationId != null && hasNotPreStation(preStationId)) {
+        if (preStationId != null && hasNotStation(preStationId)) {
             throw new IllegalArgumentException("이전역을 찾을 수 없습니다.");
         }
     }
 
-    private boolean hasNotPreStation(Long preStationId) {
+    private boolean hasNotStation(Long stationId) {
         return lineStations.stream()
-            .noneMatch(lineStation -> lineStation.getStationId().equals(preStationId));
+            .noneMatch(lineStation -> lineStation.getStationId().equals(stationId));
     }
 
-    private void adjustPreStationId(int nextLineStationIndex, Long stationId) {
-        if (nextLineStationIndex < lineStations.size()) {
-            LineStation nextStation = lineStations.get(nextLineStationIndex);
-            nextStation.updatePreStationId(stationId);
+    private void adjustPreStationId(int lineStationIndex, Long stationId) {
+        if (lineStationIndex < lineStations.size()) {
+            LineStation station = lineStations.get(lineStationIndex);
+            station.updatePreStationId(stationId);
         }
     }
 
@@ -103,6 +103,12 @@ public class Line {
 
         LineStation removeLineStation = lineStations.remove(index);
         adjustPreStationId(index, removeLineStation.getPreStationId());
+    }
+
+    public List<Long> findLineStationsId() {
+        return lineStations.stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -139,12 +145,6 @@ public class Line {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public List<Long> getLineStationsId() {
-        return lineStations.stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
     }
 
     @Override

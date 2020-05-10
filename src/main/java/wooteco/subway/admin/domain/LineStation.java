@@ -30,6 +30,18 @@ public class LineStation {
         }
     }
 
+    public boolean isPreStationBy(LineStation other) {
+        return this.stationId.equals(other.preStationId);
+    }
+
+    public void updatePreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public boolean isSameStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }
@@ -44,18 +56,6 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public boolean isPreStationBy(LineStation other) {
-        return this.stationId.equals(other.preStationId);
-    }
-
-    public void updatePreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
-    public boolean isSameStationId(Long stationId) {
-        return this.stationId.equals(stationId);
     }
 
     @Override

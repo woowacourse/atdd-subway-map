@@ -49,7 +49,7 @@ public class LineController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-		LineResponse lineResponse = lineService.findLineWithStationsById(id);
+		LineResponse lineResponse = lineService.findLineResponseById(id);
 		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
 	}
 
@@ -63,7 +63,7 @@ public class LineController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		lineService.deleteLineById(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("{lineId}/stations")
@@ -75,19 +75,15 @@ public class LineController {
 
 	@GetMapping("{lineId}/stations")
 	public ResponseEntity<LineResponse> findStationsByLineId(@PathVariable Long lineId) {
-		LineResponse lineResponse = lineService.findLineWithStationsById(lineId);
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.body(lineResponse);
+		LineResponse lineResponse = lineService.findLineResponseWithStationsById(lineId);
+		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
 	}
 
 	@DeleteMapping("{lineId}/stations/{stationsId}")
 	public ResponseEntity<Void> deleteStationByLineId(@PathVariable Long lineId,
 		@PathVariable Long stationsId) {
 		lineService.removeLineStation(lineId, stationsId);
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
