@@ -22,14 +22,14 @@ function AdminEdge() {
     for (let i = 0; i < lines.length; i++) {
       const targetLine = lines[i];
       const lineStations = targetLine["stations"];
-      const lineStationsIds = lineStations.map(lineStation => lineStation["stationId"]);
-      const targetLineStations = lineStationsIds.map(id => stations.filter(station => station["id"] === id)
-          .map(station => station["name"]));
+      const lineStationsIds = lineStations.map(lineStation => lineStation["id"]);
+      const targetLineStationNames = lineStationsIds.map(id => stations.find(station => station["id"] === id))
+          .map(station => station["name"]);
       const subwayLine = {
         lineId: targetLine["id"],
         title: targetLine["name"],
         bgColor: targetLine["bgColor"],
-        stations: targetLineStations
+        stations: targetLineStationNames
       }
       subwayLines = [...subwayLines, subwayLine];
     }

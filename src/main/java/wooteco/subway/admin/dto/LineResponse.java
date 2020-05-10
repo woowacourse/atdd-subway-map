@@ -49,12 +49,6 @@ public class LineResponse {
                 line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return Collections.unmodifiableList(lines.stream()
-                .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList()));
-    }
-
     public Long getId() {
         return id;
     }

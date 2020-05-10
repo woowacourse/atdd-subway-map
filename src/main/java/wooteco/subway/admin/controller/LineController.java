@@ -40,8 +40,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.showLines();
-        List<LineResponse> lineResponses = LineResponse.listOf(lines);
+        List<LineResponse> lineResponses = lineService.showLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
