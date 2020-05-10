@@ -5,7 +5,6 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminLine() {
-  let lines = [];
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayFirstTimeInput = document.querySelector("#first-time");
@@ -17,6 +16,7 @@ function AdminLine() {
   const $subwayInterval = document.querySelector("#display-interval-time");
   const $modalClose = document.querySelector(".modal-close");
 
+  let lines = [];
   let edit = null;
 
   const $createSubwayLineButton = document.querySelector(
@@ -41,40 +41,56 @@ function AdminLine() {
   };
 
   const createSubwayLine = async (newSubwayLine) => {
-    const line = await api.line.create(newSubwayLine);
-    lines = [...lines, line];
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(line)
-    );
-    subwayLineModal.toggle();
-    initInputValue();
+    try {
+      const line = await api.line.create(newSubwayLine);
+      lines = [...lines, line];
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(line)
+      );
+    }
+    catch (error) {
+      console.error(error);
+    } finally {
+      subwayLineModal.toggle();
+      initInputValue();
+    }
   };
 
   const updateSubwayLine = async newSubwayLine => {
-    const updatedLine = await api.line.update(edit, newSubwayLine);
-    const standardNode = document.querySelector(`div[data-id="${edit}"]`);
-    const divNode = document.createElement("div");
-    divNode.innerHTML = subwayLinesTemplate(updatedLine);
-    $subwayLineList.insertBefore(divNode.childNodes[0], standardNode);
-    standardNode.remove();
+    try {
+      const updatedLine = await api.line.update(edit, newSubwayLine);
+      const standardNode = document.querySelector(`div[data-id="${edit}"]`);
+      const divNode = document.createElement("div");
+      divNode.innerHTML = subwayLinesTemplate(updatedLine);
+      $subwayLineList.insertBefore(divNode.childNodes[0], standardNode);
+      standardNode.remove();
 
-    lines = lines.filter(line => line.name !== updatedLine.name);
-    lines = [...lines, updatedLine];
-
-    edit = null;
-    subwayLineModal.toggle();
+      lines = lines.filter(line => line.name !== updatedLine.name);
+      lines = [...lines, updatedLine];
+    }
+    catch (error) {
+      console.error(error)
+    } finally {
+      edit = null;
+      subwayLineModal.toggle();
+    }
   };
 
-  const onDeleteSubwayLine = event => {
+  const onDeleteSubwayLine = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     const lineName = $target.closest('.subway-line-item').innerText.trim();
     if (isDeleteButton) {
-      $target.closest(".subway-line-item").remove();
-      const deleteLine = findLineByName(lineName);
-      api.line.delete(deleteLine.id);
-      lines = lines.filter(line => line.name !== lineName);
+      try {
+        const deleteLine = findLineByName(lineName);
+        await api.line.delete(deleteLine.id);
+        lines = lines.filter(line => line.name !== lineName);
+        $target.closest(".subway-line-item").remove();
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
   };
 

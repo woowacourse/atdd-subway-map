@@ -56,23 +56,32 @@ function AdminEdge() {
       preStationId: subwayStations.find(station => station.name === $departStationInput.value).id,
       stationId: subwayStations.find(station => station.name === $arrivalStationInput.value).id,
     };
-    const newLine = await api.lineStation.create(lineId, newLineStation);
-    subwayLines = subwayLines.filter(subwayLine => subwayLine.id !== newLine.id);
-    subwayLines.push(newLine);
-    await initSubwayLinesSlider();
-    createSubwayEdgeModal.toggle();
+    try {
+      const newLine = await api.lineStation.create(lineId, newLineStation);
+      subwayLines = subwayLines.filter(subwayLine => subwayLine.id !== newLine.id);
+      subwayLines.push(newLine);
+      initSubwayLinesSlider();
+    }
+    catch (error) {
+      console.error(error)
+    } finally {
+      createSubwayEdgeModal.toggle();
+    }
   };
 
-  const onRemoveStationHandler = event => {
+  const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    const stationName = $target.closest('.list-item').textContent.trim();
-    const lineName = $target.closest('.line-name').dataset.lineName;
+    const lineId = $target.closest('.line-id').dataset.lineId;
+    const stationId = $target.closest('.list-item').dataset.stationId;
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
-      const deleteLine = subwayLines.find(line => line.name === lineName);
-      const deleteStation = subwayStations.find(station => station.name === stationName);
-      api.lineStation.delete(deleteLine.id, deleteStation.id);
+      try {
+        await api.lineStation.delete(lineId, stationId);
+        $target.closest(".list-item").remove();
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
   };
 

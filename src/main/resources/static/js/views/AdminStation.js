@@ -4,10 +4,11 @@ import api from "../../api/index.js";
 
 
 function AdminStation() {
-  let stations = [];
   const $stationInput = document.querySelector('#station-name');
   const $stationList = document.querySelector('#station-list');
   const $stationAddButton = document.querySelector('#station-add-btn');
+
+  let stations = [];
 
   const onAddStationHandler = async (event) => {
     if (event.key !== KEY_TYPE.ENTER && event.key !== KEY_TYPE.CLICK) {
@@ -30,10 +31,10 @@ function AdminStation() {
       return;
     }
 
-    $stationNameInput.value = '';
-    $stationList.insertAdjacentHTML('beforeend', listItemTemplate(stationName));
     const persistStation = await api.station.create({ name: stationName });
     stations = [...stations, persistStation];
+    $stationNameInput.value = '';
+    $stationList.insertAdjacentHTML('beforeend', listItemTemplate(persistStation));
   };
 
   const onRemoveStationHandler = (event) => {
@@ -52,7 +53,7 @@ function AdminStation() {
     const persistStations = await api.station.get();
     stations = [...persistStations];
     persistStations.forEach(station => {
-      $stationList.insertAdjacentHTML('beforeend', listItemTemplate(station.name));
+      $stationList.insertAdjacentHTML('beforeend', listItemTemplate(station));
     });
   };
 
