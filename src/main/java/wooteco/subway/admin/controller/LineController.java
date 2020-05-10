@@ -21,8 +21,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineIdResponse> save(@RequestBody LineRequest lineRequest) {
-        Long id = lineService.save(lineRequest.toLine())
-                .getId();
+        Long id = lineService.save(lineRequest.toLine()).getId();
         return ResponseEntity
                 .created(URI.create("/lines/" + id))
                 .body(new LineIdResponse(id));
@@ -54,7 +53,7 @@ public class LineController {
 
     @PostMapping("/lines/{id}/stations")
     public ResponseEntity<Void> addLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        lineService.addLineStation(id, lineStationCreateRequest);
+        lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
         return ResponseEntity
                 .created(URI.create("/lines/" + id + "/stations"))
                 .build();

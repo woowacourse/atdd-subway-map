@@ -2,9 +2,9 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.DuplicatedLineException;
 import wooteco.subway.admin.exception.NotFoundLineException;
 import wooteco.subway.admin.exception.NotFoundStationException;
@@ -60,9 +60,9 @@ public class LineService {
         }
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
+    public void addLineStation(Long id, LineStation lineStation) {
         Line persistLine = findLineById(id);
-        persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+        persistLine.addLineStation(lineStation);
         lineRepository.save(persistLine);
     }
 
