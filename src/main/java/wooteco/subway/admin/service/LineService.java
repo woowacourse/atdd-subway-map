@@ -36,6 +36,10 @@ public class LineService {
 		return lineRepository.save(line);
 	}
 
+	public Line findLine(Long id) {
+		return lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+	}
+
 	public List<LineResponse> showLines() {
 		return lineRepository.findAll()
 			.stream()
@@ -55,7 +59,6 @@ public class LineService {
 
 	public void addLineStation(Long id, LineStation request) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		System.err.println(request.getPreStationId());
 		if (request.getPreStationId() == null) {
 			Station station = stationRepository.findById(request.getStationId()).orElseThrow(RuntimeException::new);
 			persistLine.addLineStation(
