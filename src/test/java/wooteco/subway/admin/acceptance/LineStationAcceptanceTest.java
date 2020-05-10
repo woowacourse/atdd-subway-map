@@ -85,7 +85,7 @@ public class LineStationAcceptanceTest {
     private int deleteEdge(Long lineId, Long stationId) {
         return given()
             .when()
-            .delete("/edges/" + lineId + "/" + stationId)
+            .delete("/edges/" + lineId + "/stations/" + stationId)
             .then()
             .log()
             .all()
