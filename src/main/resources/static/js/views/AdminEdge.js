@@ -20,17 +20,16 @@ function AdminEdge() {
 
   const initSubwayLinesSlider = () => {
 
-    let hello = [];
-    // $subwayLinesSlider.innerHTML = api.line.get()
-    // .then(data => data.map(line => console.log(subwayLinesItemTemplate(line))));
-    api.line.get().then(data => data.json().map(line => hello.push(subwayLinesItemTemplate(line))));
-    console.log(hello);
-    console.log("###");
-    console.log(hello[0]);
-    console.log(hello.length);
-    console.log(hello.join(""));
+    // let hello = [];
+    // api.line.get().then(data => data.map(line => hello.push(subwayLinesItemTemplate(line))));
+    //
+    // console.log(hello);
+    // console.log("###");
+    // console.log(hello[0]);
+    // console.log(hello.length);
+    // console.log(hello.join(""));
 
-    $subwayLinesSlider.innerHTML = hello.join("");
+    $subwayLinesSlider.innerHTML = subwayLines.map(line => subwayLinesItemTemplate(line)).join("");
 
     tns({
       container: ".subway-lines-slider",
@@ -93,8 +92,12 @@ function AdminEdge() {
     );
   };
 
-  this.init = () => {
-    subwayLines = api.line.get();
+  const initState = async () => {
+    subwayLines = await api.line.get();
+  };
+
+  this.init = async () => {
+    await initState();
     initEventListeners();
     initSubwayLinesSlider();
     initSubwayLineOptions();

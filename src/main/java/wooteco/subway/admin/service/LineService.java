@@ -1,11 +1,16 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -26,7 +31,12 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return LineResponse.listOf(lineRepository.findAll());
+        List<LineResponse> lineResponses = new ArrayList<>();
+        final List<Line> lines = lineRepository.findAll();
+        for (Line line : lines) {
+            lineResponses.add(LineResponse.convert(line, findStationsByLineId(line.getId())));
+        }
+        return lineResponses;
     }
 
     public void updateLine(Long id, Line line) {
@@ -58,8 +68,15 @@ public class LineService {
         final Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
         LineResponse lineResponse = LineResponse.of(line);
-        final List<Long> lineStationsId = line.findLineStationsId();
-        lineResponse.setStations(Sets.newHashSet(stationRepository.findAllById(lineStationsId)));
+        final List<Long> lineStationIds = line.findLineStationsId();
+        lineResponse.setStations(Sets.newHashSet(stationRepository.findAllById(lineStationIds)));
         return lineResponse;
+    }
+
+    public Set<Station> findStationsByLineId(Long lineId) {
+        final Optional<Station> byId = stationRepository.findById(lineId);
+        if (byId.equals(Optional.empty()))
+            return Collections.EMPTY_SET;
+        return Sets.newHashSet(stationRepository.findById(lineId).get());
     }
 }
