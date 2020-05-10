@@ -4,7 +4,10 @@ export const EVENT_TYPE = {
 };
 
 export const ERROR_MESSAGE = {
-    NOT_EMPTY: "🤔 값을 입력해주세요"
+    NOT_EMPTY: "🤔 값을 입력해주세요",
+    NOT_NUMBER: "숫자를 입력 할 수 없습니다",
+    NOT_EMPTY_SPACE: "공백을 입력 할 수 없습니다",
+    NOT_SAME_STATATION: "같은 역을 입력 할 수 없습니다"
 };
 
 export const KEY_TYPE = {

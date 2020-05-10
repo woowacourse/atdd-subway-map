@@ -177,6 +177,10 @@ public class Line {
         this.stations.add(lineStation);
     }
 
+    public boolean isStationsEmpty() {
+        return stations.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "Line{" +

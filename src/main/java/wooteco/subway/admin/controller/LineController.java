@@ -1,8 +1,6 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
@@ -38,16 +35,14 @@ public class LineController {
             lineRequest.getIntervalTime(),
             lineRequest.getBgColor()
         );
-        return ResponseEntity.created(URI.create("/lines")).body(lineService.save(line));
+
+        Line responseLine = lineService.save(line);
+        return ResponseEntity.created(URI.create("/lines")).body(responseLine);
     }
 
     @GetMapping
-    public List<LineResponse> getLines() {
-        List<Line> lines = lineService.showLines();
-
-        return lineService.showLines().stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
+    public ResponseEntity getLines() {
+        return ResponseEntity.ok(lineService.findAllLine());
     }
 
     @GetMapping("/{id}")

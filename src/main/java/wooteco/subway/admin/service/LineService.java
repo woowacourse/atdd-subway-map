@@ -32,8 +32,12 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
+    private List<Line> showLines() {
         return lineRepository.findAll();
+    }
+
+    public List<LineResponse> findAllLine() {
+        return LineResponse.listOf(showLines());
     }
 
     public void updateLine(Long id, Line line) {
@@ -74,6 +78,9 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+        if (line.isStationsEmpty()) {
+            return LineResponse.of(line);
+        }
         return LineResponse.of(line, generateStations(line));
     }
 
