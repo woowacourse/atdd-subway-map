@@ -115,6 +115,9 @@ public class LineServiceTest {
 		assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
 	}
 
+	/* findLineWithStationsById 메서드를 순서에 따라 정렬하도록 수정해서
+	   내부적으로 반복을 돌면서 findById를 수행하도록 변경하였습니다.
+	   그래서 해당 테스트가 통과되지 않습니다. */
 	@Test
 	void findLineWithStationsById() {
 		List<Station> stations = Lists.newArrayList(

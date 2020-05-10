@@ -81,7 +81,7 @@ public class LineAcceptanceTest {
 
 	private void createLine(String name) {
 		Map<String, String> params = new HashMap<>();
-		params.put("title", name);
+		params.put("name", name);
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("bgColor", "bg-red-400");
@@ -113,7 +113,7 @@ public class LineAcceptanceTest {
 			       put("/lines/" + id).
 			       then().
 			       log().all().
-			       statusCode(HttpStatus.OK.value());
+			       statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	private List<LineResponse> getLines() {

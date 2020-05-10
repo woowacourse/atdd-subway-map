@@ -2,19 +2,10 @@ package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.StationResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +15,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -41,10 +37,10 @@ public class LineStationAcceptanceTest {
 	}
 
 	/**
-	 *     Given 지하철역이 여러 개 추가되어있다. - ok
-	 *     And 지하철 노선이 여러 개 추가되어있다. - ok
+	 *     Given 지하철역이 여러 개 추가되어있다.
+	 *     And 지하철 노선이 여러 개 추가되어있다.
 	 *
-	 *     When 지하철 노선에 두 지하철역을 통해 구간을 등록하는 요청을 한다. - ok
+	 *     When 지하철 노선에 두 지하철역을 통해 구간을 등록하는 요청을 한다.
 	 *     Then 지하철역이 추가 되었다.
 	 *
 	 *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
@@ -57,6 +53,10 @@ public class LineStationAcceptanceTest {
 	 *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 	 *     Then 지하철역 목록을 응답 받는다.
 	 *     And 제외한 지하철역이 목록에 존재하지 않는다.
+	 *
+	 *
+	 *     해당 테스트는 기존에 Mock 서버를 제거함으로 인해 현재
+	 *     통과되지 않습니다.
 	 */
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
@@ -67,8 +67,8 @@ public class LineStationAcceptanceTest {
 		assertThat(line.getStations()).hasSize(2);
 
 		List<String> stationIds = getStations(line.getId()).stream()
-			.map(StationResponse::getName)
-			.collect(Collectors.toList());
+		                                                   .map(StationResponse::getName)
+		                                                   .collect(Collectors.toList());
 		assertThat(stationIds).contains("잠실", "잠실나루");
 
 		deleteLineStation(1L, 0L);
@@ -103,14 +103,14 @@ public class LineStationAcceptanceTest {
 		params.put("distance", "1000");
 		params.put("duration", "5");
 
-		given().
-			body(params).
-			contentType(MediaType.APPLICATION_JSON_VALUE).
-			accept(MediaType.APPLICATION_JSON_VALUE).
-			when().
-			put("/lines/" + lineId + "/stations").
-			then().
-			log().all().statusCode(HttpStatus.OK.value());
+		given()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.put("/lines/" + lineId + "/stations")
+			.then()
+			.log().all().statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	private void deleteLineStation(Long lineId, Long stationId) {

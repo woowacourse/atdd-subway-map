@@ -39,7 +39,8 @@ public class LineService {
 		                                    .stream()
 		                                    .map(stationId -> stationRepository
 			                                    .findById(stationId)
-			                                    .orElseThrow(NoSuchElementException::new))
+			                                    .orElseThrow(
+				                                    NoSuchElementException::new))
 		                                    .collect(toList());
 
 		return LineResponse.of(persistLine, stations);
