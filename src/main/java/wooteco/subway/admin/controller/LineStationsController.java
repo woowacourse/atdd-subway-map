@@ -6,12 +6,12 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
-@RequestMapping("/lineStation")
-public class LineStationController {
+@RequestMapping("/lineStations")
+public class LineStationsController {
 
     private LineService lineService;
 
-    public LineStationController(LineService lineService) {
+    public LineStationsController(LineService lineService) {
         this.lineService = lineService;
     }
 

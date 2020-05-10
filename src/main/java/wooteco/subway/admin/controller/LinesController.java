@@ -10,11 +10,11 @@ import wooteco.subway.admin.service.LineService;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/line")
-public class LineController {
+@RequestMapping("/lines")
+public class LinesController {
     private LineService lineService;
 
-    public LineController(LineService lineService) {
+    public LinesController(LineService lineService) {
         this.lineService = lineService;
     }
 

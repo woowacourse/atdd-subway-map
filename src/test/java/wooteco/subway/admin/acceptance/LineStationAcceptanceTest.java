@@ -54,21 +54,21 @@ public class LineStationAcceptanceTest {
         createLineStation(lines.get(0).getId(), stations.get(2).getId(), stations.get(1).getId());
         LineWithOrderedStationsResponse lineWithStations = getLineWithStations(lines.get(0).getId());
         //then
-        assertThat(lineWithStations.getOrderedStations().size()).isEqualTo(3);
+        assertThat(lineWithStations.getStations().size()).isEqualTo(3);
 
         //when
         createLineStation(lines.get(0).getId(), stations.get(3).getId(), stations.get(2).getId());
         //then
-        List<Station> orderedStations = getLineWithStations(lines.get(0).getId()).getOrderedStations();
+        List<Station> orderedStations = getLineWithStations(lines.get(0).getId()).getStations();
         Station station = orderedStations.get(orderedStations.size() - 1);
         assertThat(station.getName()).isEqualTo("몽촌토성역");
 
         //when
         deleteLineStation(lines.get(0).getId(),orderedStations.get(orderedStations.size() - 1).getId());
         //then
-        assertThat(lineWithStations.getOrderedStations().size()).isEqualTo(3);
+        assertThat(lineWithStations.getStations().size()).isEqualTo(3);
 
-        orderedStations = getLineWithStations(lines.get(0).getId()).getOrderedStations();
+        orderedStations = getLineWithStations(lines.get(0).getId()).getStations();
         assertThat(orderedStations.stream()
                 .anyMatch(orderedStation -> orderedStation.getName().equals("몽촌토성역"))
         ).isFalse();
