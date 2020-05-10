@@ -108,7 +108,6 @@ public class Line {
         }
     }
 
-
     private int findStationsIndex(LineStation lineStation) {
         int index = DEFAULT_INDEX;
         for (int i = 0; i < stations.size(); i++) {

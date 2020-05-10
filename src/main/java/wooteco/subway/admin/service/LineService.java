@@ -1,5 +1,6 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -67,7 +68,15 @@ public class LineService {
         Line line = findById(id);
         List<Long> lineStationsIds = line.getLineStationsId();
         List<Station> stations = stationRepository.findAllById(lineStationsIds);
+        List<Station> sortedStations = new ArrayList<>();
+        for (Long lineStationsId : lineStationsIds) {
+            Station station = stations.stream()
+                    .filter(station1 -> station1.getId().equals(lineStationsId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("해당 역을 찾을 수 없습니다."));
+            sortedStations.add(station);
+        }
 
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), sortedStations);
     }
 }

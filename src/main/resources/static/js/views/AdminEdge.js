@@ -20,9 +20,13 @@ function AdminEdge() {
         let preStationId;
         let currentStationId;
 
-        await api.station.getId($preStation.value).then(data => {
-            preStationId = data;
-        });
+        if ($preStation.value) {
+            await api.station.getId($preStation.value).then(data => {
+                preStationId = data;
+            })
+        } else {
+            preStationId = null;
+        }
         await api.station.getId($currentStation.value).then(data => {
             currentStationId = data;
         });
@@ -96,7 +100,6 @@ function AdminEdge() {
     };
 
     const onEmptyInput = () => {
-        $selectStation.value = "";
         $preStation.value = "";
         $currentStation.value = "";
     }
