@@ -5,7 +5,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.exception.DuplicatedStationException;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class StationService {
@@ -26,7 +26,7 @@ public class StationService {
         }
     }
 
-    public List<Station> findAll() {
+    public Set<Station> findAll() {
         return stationRepository.findAll();
     }
 
