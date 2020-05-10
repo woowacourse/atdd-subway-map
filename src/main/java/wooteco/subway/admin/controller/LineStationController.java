@@ -40,7 +40,6 @@ public class LineStationController {
 		return ResponseEntity
 				.ok()
 				.build();
-//				.body(LineStationResponse.of(view.toLineStation()));
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")

@@ -19,16 +19,6 @@ public class LineController {
 		this.lineService = lineService;
 	}
 
-	@PostMapping("/lines")
-	public ResponseEntity createLine(@RequestBody LineRequest view) {
-		Line line = view.toLine();
-		Line persistLine = lineService.save(line);
-
-		return ResponseEntity
-				.created(URI.create("/lines/" + persistLine.getId()))
-				.body(LineResponse.of(persistLine));
-	}
-
 	@GetMapping("/lines")
 	public ResponseEntity showLines() {
 		List<LineWithStationsResponse> lineWithStationsResponses = lineService.showLines();
@@ -42,22 +32,27 @@ public class LineController {
 
 	@GetMapping("/lines/{id}")
 	public ResponseEntity findLineWithStationsBy(@PathVariable(name = "id") Long id) {
-		try {
-			LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
+		LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
 
-			return ResponseEntity
-					.ok()
-					.body(lineWithStationsResponse);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity
-					.badRequest()
-					.body(e.getMessage());
-		}
+		return ResponseEntity
+				.ok()
+				.body(lineWithStationsResponse);
+	}
+
+	@PostMapping("/lines")
+	public ResponseEntity createLine(@RequestBody LineRequest view) {
+		Line line = view.toLine();
+		Line persistLine = lineService.save(line);
+
+		return ResponseEntity
+				.created(URI.create("/lines/" + persistLine.getId()))
+				.body(LineResponse.of(persistLine));
 	}
 
 	@PutMapping("/lines/{id}")
 	public ResponseEntity updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
 		Line persistLine = lineService.updateLine(id, view.toLine());
+
 		return ResponseEntity
 				.ok()
 				.body(LineResponse.of(persistLine));
