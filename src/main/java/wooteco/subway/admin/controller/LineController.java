@@ -29,7 +29,8 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity showLines() {
-        return ResponseEntity.ok(LineResponse.listOf(lineService.showLines()));
+        return ResponseEntity.ok()
+                .body(LineResponse.listOf(lineService.showLines()));
     }
 
     @GetMapping("/lines/{id}")
@@ -66,11 +67,13 @@ public class LineController {
 
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity findLineWithStationsById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
+        return ResponseEntity.ok()
+                .body(lineService.findLineWithStationsById(id));
     }
 
     @GetMapping("/lines/stations")
     public ResponseEntity findAllLineWithSortedStations() {
-        return ResponseEntity.ok().body(lineService.findAllLineWithSortedStations());
+        return ResponseEntity.ok()
+                .body(lineService.findAllLineWithSortedStations());
     }
 }

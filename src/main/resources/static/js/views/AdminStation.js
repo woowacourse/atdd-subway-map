@@ -11,18 +11,18 @@ function AdminStation() {
     stations: []
   };
 
-  const validate = station => {
-    if (!station) {
+  const validate = stationName => {
+    if (!stationName) {
       throw ERROR_MESSAGE.NOT_EMPTY;
     }
-    if (station.includes(" ")) {
+    if (stationName.includes(" ")) {
       throw ERROR_MESSAGE.NOT_BLANK;
     }
-    if (station.match(/[0-9]/)) {
+    if (stationName.match(/[0-9]/)) {
       throw ERROR_MESSAGE.NOT_NUMBER;
     }
-    if (state.stations.includes(station)) {
-      throw ERROR_MESSAGE.NOT_EXISTS;
+    if (state.stations.some(({name}) => name === stationName)) {
+      throw ERROR_MESSAGE.NOT_EXIST;
     }
   };
 
