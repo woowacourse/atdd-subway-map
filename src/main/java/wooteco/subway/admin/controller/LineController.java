@@ -72,8 +72,8 @@ public class LineController {
     }
 
     @GetMapping("/lines/stations")
-    public ResponseEntity<List<LineResponse>> findAllLineWithSortedStations() {
+    public ResponseEntity<List<LineResponse>> findAllLineWithStations() {
         return ResponseEntity.ok()
-                .body(lineService.findAllLineWithSortedStations());
+                .body(lineService.findAllLineWithStations());
     }
 }
