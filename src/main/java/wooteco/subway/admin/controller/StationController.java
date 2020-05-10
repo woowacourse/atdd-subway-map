@@ -8,6 +8,7 @@ import wooteco.subway.admin.service.StationService;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/stations")
@@ -19,7 +20,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity createStation(@RequestBody @Valid StationCreateRequest view) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationCreateRequest view) {
         StationResponse savedStation = stationService.addStation(view);
         return ResponseEntity
                 .created(URI.create("/stations/" + savedStation.getId()))
@@ -27,12 +28,12 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity showStations() {
+    public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAll());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<String> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

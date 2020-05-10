@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
 public class LineStationCreateRequest {
-    @NotNull
     private Long preStationId;
     @NotNull
     private Long stationId;
