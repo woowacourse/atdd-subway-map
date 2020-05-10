@@ -19,7 +19,7 @@ public class LineStations {
         lineStations.stream()
                 .filter(station -> station.isDuplicatedPreStation(lineStation))
                 .findAny()
-                .ifPresent(station -> station.updatePreLineStation(lineStation));
+                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
         lineStations.add(lineStation);
     }
 
@@ -56,7 +56,7 @@ public class LineStations {
         lineStations.stream()
                 .filter(nextStation -> nextStation.isSamePreStationId(stationId))
                 .findAny()
-                .ifPresent(nextStation -> nextStation.updatePreLineStation(station));
+                .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
     }
 
     public List<Station> createSortedStations(List<Station> stations) {

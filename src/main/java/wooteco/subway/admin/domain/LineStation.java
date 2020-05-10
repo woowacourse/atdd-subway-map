@@ -54,10 +54,6 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
-    public void updatePreLineStation(LineStation lineStation) {
-        updatePreLineStation(lineStation.stationId);
-    }
-
     public Long getPreStationId() {
         return preStationId;
     }
