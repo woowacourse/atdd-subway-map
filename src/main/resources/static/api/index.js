@@ -60,7 +60,10 @@ const api = (() => {
             return fetch(`/lines/${id}`, METHOD.DELETE()).then();
         },
         registerLineStation(data) {
-            return request(`/lines/registerLineStation`, METHOD.POST(data));
+            return request(`/lines/line-stations`, METHOD.POST(data));
+        },
+        deleteLineStation(lineId, stationId) {
+            return fetch(`/lines/${lineId}/line-stations/${stationId}`, METHOD.DELETE()).then();
         }
     };
 

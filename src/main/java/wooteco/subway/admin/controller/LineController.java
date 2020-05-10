@@ -81,7 +81,8 @@ public class LineController {
     }
 
     @PostMapping("/lines/{id}/register")
-    public ResponseEntity registerStation(@PathVariable Long id, @RequestBody StationCreateRequest stationCreateRequest) {
+    public ResponseEntity registerStation(@PathVariable Long id,
+                                          @RequestBody StationCreateRequest stationCreateRequest) {
         Line line = new Line("2호선", LocalTime.now(), LocalTime.now(), 3, "red");
         LineStation lineStation = new LineStation(1L, 1L, 1, 1);
         line.addLineStation(lineStation);
@@ -89,5 +90,13 @@ public class LineController {
         return ResponseEntity
                 .created(URI.create("/lines/" + id))
                 .body(LineResponse.of(line));
+    }
+
+    @DeleteMapping("/lines/{lineId}/line-stations/{stationId}")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        Line line = lineService.findById(lineId);
+        line.removeLineStationById(stationId);
+        lineService.save(line);
+        return ResponseEntity.noContent().build();
     }
 }
