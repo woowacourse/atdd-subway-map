@@ -75,13 +75,13 @@ public class LineController {
     }
 
     @PostMapping("{id}/edge")
-    public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody final EdgeCreateRequest edgeCreateRequest) {
+    public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
         lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}/edge")
-    public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, final EdgeDeleteRequest edgeDeleteRequest) {
+    public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
         return ResponseEntity.noContent().build();
     }
 }

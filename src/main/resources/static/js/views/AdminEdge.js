@@ -16,11 +16,12 @@ function AdminEdge() {
 
     const createSubwayEdgeModal = new Modal();
 
+    api.station.get().then(stations => {
+        stations.body.map(station => $stations[station.name] = station.id);
+    });
+
     const initSubwayLinesSlider = () => {
         api.line.get().then((subwayLines) => {
-            subwayLines.body.map(line =>
-                line.stations.map(station => $stations[station] = station.id));
-
             $subwayLinesSlider.innerHTML = subwayLines.body.map(line => subwayLinesItemTemplate(line))
                 .join("");
             tns({
@@ -63,7 +64,6 @@ function AdminEdge() {
     };
 
     const onCreateStationHandler = event => {
-        console.log($line.value);
         event.preventDefault();
         const edgeCreateRequest = {
             preStationId: $stations[$preStation.value],
@@ -72,7 +72,8 @@ function AdminEdge() {
 
         api.edge.create(edgeCreateRequest, $line.value)
             .then(() => {
-                alert(`추가되었습니당`);
+                alert(`추가되었습니다.`);
+                createSubwayEdgeModal.toggle();
             })
             .catch(error => {
                 console.error(error);

@@ -100,7 +100,7 @@ public class EdgeAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(edgeDeleteRequest)
                 .when()
-                .delete("/lines/" + lineId + "/edge")
+                .delete("/lines/{id}/edge", lineId)
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());

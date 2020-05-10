@@ -5,10 +5,11 @@
 --
 -- INSERT INTO STATION (name, created_at) VALUES ('공릉역', NOW());
 -- INSERT INTO STATION (name, created_at) VALUES ('하계역', NOW());
+-- INSERT INTO STATION (name, created_at) VALUES ('그니역', NOW());
 --
 -- INSERT INTO EDGE (line_id, station_id, pre_station_id, distance, duration)
--- VALUES (1, 1, 2, 0, 0);
+-- VALUES (1, 2, 1, 0, 0);
 -- INSERT INTO EDGE (line_id, station_id, pre_station_id, distance, duration)
--- VALUES (1, 2, NULL, 0, 0);
+-- VALUES (1, 1, NULL, 0, 0);
 
 select 1;

@@ -1,8 +1,11 @@
 package wooteco.subway.admin.dto;
 
 public class EdgeDeleteRequest {
-    private final Long preStationId;
-    private final Long stationId;
+    private Long preStationId;
+    private Long stationId;
+
+    public EdgeDeleteRequest() {
+    }
 
     public EdgeDeleteRequest(final Long preStationId, final Long stationId) {
         this.preStationId = preStationId;

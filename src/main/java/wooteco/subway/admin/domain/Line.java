@@ -61,27 +61,57 @@ public class Line {
 	public void addEdge(Edge edge) {
 		if (edges.isEmpty() && edge.isNotStartEdge()) {
 			edges.add(new Edge(null, edge.getPreStationId(), 0, 0));
+			edges.add(edge);
+			return;
 		}
 
-		UpdateOriginStartEdge(edge);
+		if (isFinalEdge(edge)) {
+			edges.add(edge);
+			return;
+		}
+
+		if (isFirstEdge(edge)) {
+			edges.stream()
+					.filter(item -> item.getPreStationId() == null)
+					.findFirst()
+					.ifPresent(item -> item.update(new Edge(null, edge.getPreStationId(),
+							0, 0)));
+			edges.add(edge);
+			return;
+		}
+
+		edges.stream()
+				.filter(item -> Objects.equals(item.getPreStationId(), edge.getPreStationId()))
+				.findFirst()
+				.ifPresent(item -> item.update(new Edge(edge.getStationId(), item.getStationId(),
+						item.getDistance(), item.getDuration())));
+
+		edges.stream()
+				.filter(item -> Objects.equals(item.getStationId(), edge.getStationId()))
+				.findFirst()
+				.ifPresent(item -> item.update(new Edge(item.getPreStationId(), edge.getPreStationId(),
+						item.getDistance(), item.getDuration())));
+
 		edges.add(edge);
 	}
 
-	private void UpdateOriginStartEdge(final Edge edge) {
+	private boolean isFinalEdge(final Edge edge) {
 		try {
-			Edge originStart = findEdgeByPreStationId(edge.getPreStationId());
-			Edge changed = new Edge(edge.getStationId(), originStart.getStationId(),
-					originStart.getDistance(), originStart.getDuration());
-			originStart.update(changed);
-		} catch (NoSuchElementException ignored) {
+			Edge previous = edges.stream()
+					.filter(item -> item.isStationId(edge.getPreStationId()))
+					.findFirst()
+					.orElseThrow(NoSuchElementException::new);
+			return edges.stream()
+					.noneMatch(item -> item.isPreStationId(previous.getStationId()));
+		} catch (NoSuchElementException e) {
+			return false;
 		}
 	}
 
-	private Edge findEdgeByPreStationId(Long preStationId) {
+	private boolean isFirstEdge(final Edge edge) {
 		return edges.stream()
-				.filter(item -> item.isPreStationId(preStationId))
-				.findFirst()
-				.orElseThrow(NoSuchElementException::new);
+				.filter(item -> item.getPreStationId() == null)
+				.anyMatch(item -> Objects.equals(item.getStationId(), edge.getStationId()));
 	}
 
 	public void removeEdgeById(Long stationId) {
