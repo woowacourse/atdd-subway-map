@@ -109,10 +109,10 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            delete("lineStations/delete/" + lineId + "/" + stationId).
+            delete("lineStations/lines/" + lineId + "/stations/" + stationId).
             then().
             log().all().
-            statusCode(HttpStatus.OK.value());
+            statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private List<LineResponse> getLineStations() {

@@ -16,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
@@ -23,6 +24,7 @@ import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
+@Transactional
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -40,10 +42,10 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        createLine("신분당선", "color1");
+        createLine("1호선", "color2");
+        createLine("2호선", "color3");
+        createLine("3호선", "color4");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -81,13 +83,13 @@ public class LineAcceptanceTest {
             extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    private void createLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("startTime", LocalTime.of(8, 00).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(22, 00).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("bgColor", "myColor");
+        params.put("bgColor", color);
 
         given().
             body(params).

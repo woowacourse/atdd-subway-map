@@ -2,13 +2,27 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
+
+    @NotEmpty(message = "이름은 필수입력 항목입니다.")
     private String name;
+
+    @NotNull(message = "첫차시간은 필수입력 항목입니다.")
     private LocalTime startTime;
+
+    @NotNull(message = "막차시간은 필수입력 항목입니다.")
     private LocalTime endTime;
+
+    @Min(value = 1, message = "배차간격은 필수입력 항목입니다.")
     private int intervalTime;
+
+    @NotEmpty(message = "노선색깔은 필수입력 항목입니다.")
     private String bgColor;
 
     public LineRequest() {

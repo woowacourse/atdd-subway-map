@@ -12,17 +12,17 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/adminStation")
+    @GetMapping("/admin-station")
     public String adminStation(){
         return "admin-station";
     }
 
-    @GetMapping("/adminLine")
+    @GetMapping("/admin-line")
     public String adminLine(){
         return "admin-line";
     }
 
-    @GetMapping("/adminEdge")
+    @GetMapping("/admin-edge")
     public String adminEdge(){
         return "admin-edge";
     }

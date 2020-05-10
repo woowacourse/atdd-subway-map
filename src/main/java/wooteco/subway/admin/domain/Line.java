@@ -14,7 +14,9 @@ import org.springframework.data.annotation.Id;
 import wooteco.subway.admin.exception.WrongIdException;
 
 public class Line {
+
     public static final int FIRST = 0;
+
     @Id
     private Long id;
     private String name;
@@ -22,7 +24,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<LineStation> stations = new ArrayList<>();
+    private final List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

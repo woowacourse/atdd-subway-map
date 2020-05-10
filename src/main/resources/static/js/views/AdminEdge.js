@@ -135,7 +135,7 @@ function AdminEdge() {
 
       const lineId = $target.closest(".list-item").dataset.lineId;
       const stationId = $target.closest(".list-item").dataset.stationId;
-      fetch("lineStations/delete/" + lineId + "/" + stationId, {
+      fetch("lineStations/lines/" + lineId + "/stations/" + stationId, {
         method: 'DELETE'
       }).catch(alert);
     }
