@@ -69,8 +69,7 @@ public class LineController {
 	@GetMapping("/lines/{id}/stations")
 	public ResponseEntity<List<StationResponse>> showLineStations(@PathVariable Long id) {
 		LineResponse response = service.findLineWithStationsById(id);
-
-		return ResponseEntity.ok().body(StationResponse.of(response.getStations()));
+		return ResponseEntity.ok().body(response.getStations());
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")

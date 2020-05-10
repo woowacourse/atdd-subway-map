@@ -1,6 +1,8 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -78,8 +81,12 @@ public class LineService {
 
 	public LineResponse findLineWithStationsById(Long id) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		Set<Station> stations = stationRepository.findAllById(persistLine.getLineStationsId());
+		List<Station> stations = persistLine.getLineStationsId()
+			.stream()
+			.map(stationId -> stationRepository.findById(stationId))
+			.map(station -> station.orElseThrow(NoSuchElementException::new))
+			.collect(Collectors.toList());
 
-		return LineResponse.of(persistLine, stations);
+		return LineResponse.of(persistLine, StationResponse.of(stations));
 	}
 }

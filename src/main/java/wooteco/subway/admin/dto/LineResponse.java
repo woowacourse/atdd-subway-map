@@ -2,6 +2,7 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,14 +21,14 @@ public class LineResponse {
 	private String bgColor;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private Set<Station> stations = new LinkedHashSet<>();
+	private List<StationResponse> stations = new ArrayList<>();
 
 	public LineResponse() {
 	}
 
 	public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
 		String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt,
-		Set<Station> stations) {
+		List<StationResponse> stations) {
 		this.id = id;
 		this.title = title;
 		this.startTime = startTime;
@@ -41,10 +42,10 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
-			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new ArrayList<>());
 	}
 
-	public static LineResponse of(Line line, Set<Station> stations) {
+	public static LineResponse of(Line line, List<StationResponse> stations) {
 		return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
 			line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
 	}
@@ -79,7 +80,7 @@ public class LineResponse {
 		return bgColor;
 	}
 
-	public Set<Station> getStations() {
+	public List<StationResponse> getStations() {
 		return stations;
 	}
 

@@ -15,7 +15,7 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 	Set<Station> findAll();
 
 	@Override
-	Set<Station> findAllById(Iterable<Long> longs);
+	List<Station> findAllById(Iterable<Long> longs);
 
 	@Query("SELECT * FROM station WHERE name=:name")
 	Optional<Station> findByName(@Param("name")String name);
