@@ -2,6 +2,8 @@ package wooteco.subway.admin.dto;
 
 import org.springframework.data.relational.core.mapping.Column;
 
+import wooteco.subway.admin.domain.LineStation;
+
 public class LineStationCreateRequest {
     @Column("pre_station")
     private Long preStationId;
@@ -34,5 +36,9 @@ public class LineStationCreateRequest {
 
     public int getDuration() {
         return duration;
+    }
+
+    public LineStation toLineStation() {
+        return new LineStation(preStationId, stationId, distance, duration);
     }
 }

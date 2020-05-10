@@ -70,15 +70,13 @@ public class LineController {
     public ResponseEntity addLineStation(@PathVariable Long id,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         LineResponse lineResponse = lineService.addLineStation(id, lineStationCreateRequest);
-        return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
-            .body(lineResponse);
+        return ResponseEntity.created(URI.create("/line/" + id + "/stations")).body(lineResponse);
     }
 
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity findLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.findLineWithStationsById(id);
-        return ResponseEntity.ok()
-            .body(lineResponse);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")

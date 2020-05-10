@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,8 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        List<Line> lines = lineRepository.findAll();
-        boolean hasDuplicateName = lines.stream()
+        List<Line> persistLines = lineRepository.findAll();
+        boolean hasDuplicateName = persistLines.stream()
             .anyMatch(persistLine -> persistLine.getName().equals(line.getName()));
         if (hasDuplicateName) {
             throw new IllegalArgumentException("중복된 노선 이름은 등록할 수 없습니다.");
@@ -40,16 +41,12 @@ public class LineService {
     }
 
     public List<Line> showLines() {
-        List<Line> lines = lineRepository.findAll();
-        lines.stream()
-            .map(line -> findLineWithStationsById(line.getId()))
-            .collect(Collectors.toList());
         return lineRepository.findAll();
     }
 
     public List<LineResponse> showLineResponses() {
-        List<Line> lines = lineRepository.findAll();
-        return lines.stream()
+        List<Line> persistLines = lineRepository.findAll();
+        return persistLines.stream()
             .map(line -> findLineWithStationsById(line.getId()))
             .collect(Collectors.toList());
     }
@@ -67,18 +64,19 @@ public class LineService {
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+
         if (line.getStations().isEmpty() && request.getPreStationId() != null) {
             LineStation initialLineStation = new LineStation(null, request.getPreStationId(), 0, 0);
             line.addLineStation(initialLineStation);
         }
-        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
-            request.getDistance(), request.getDuration());
 
-        line.addLineStation(lineStation);
+        line.addLineStation(request.toLineStation());
         Line persistLine = lineRepository.save(line);
-        if (line.getId() == null) {
+
+        if (Objects.isNull(line.getId())) {
             return LineResponse.of(line);
         }
+
         return findLineWithStationsById(persistLine.getId());
     }
 

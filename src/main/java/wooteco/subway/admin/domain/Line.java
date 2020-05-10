@@ -109,6 +109,7 @@ public class Line {
             .findFirst()
             .ifPresent(existLineStation -> existLineStation.updatePreLineStation(
                 lineStation.getStationId()));
+
         stations.add(lineStation);
     }
 
@@ -117,20 +118,24 @@ public class Line {
             .filter(station -> station.getStationId().equals(stationId))
             .findFirst()
             .orElseThrow(NoSuchElementException::new);
+
         stations.stream()
-            .filter(station -> stationId.equals(station.getPreStationId()))
+            .filter(station -> Objects.equals(stationId, station.getPreStationId()))
             .findFirst()
             .ifPresent(station -> station.updatePreLineStation(deleteTarget.getPreStationId()));
+
         stations.remove(deleteTarget);
     }
 
     public List<Long> findLineStationsId() {
         List<Long> linesStationsId = new ArrayList<>();
+
         if (stations.isEmpty()) {
             return linesStationsId;
         }
+
         LineStation startStation = stations.stream()
-            .filter(station -> station.getPreStationId() == null)
+            .filter(station -> Objects.isNull(station.getPreStationId()))
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
