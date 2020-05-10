@@ -71,6 +71,8 @@ function AdminEdge() {
     };
 
     await api.edge.create(lineId, requestData);
+
+    initSubwayLinesSlider().then();
     createSubwayEdgeModal.toggle();
     cleanComponent();
   };
@@ -91,6 +93,10 @@ function AdminEdge() {
       const deleteStationId = stations.find(station => station.name === stationName)["id"];
       await api.edge.delete(lineId, deleteStationId);
       $target.closest(".list-item").remove();
+
+      const lineIndex = lines.findIndex(line => line.id === lineId);
+      const stationIndex = lines[lineIndex]["stations"].findIndex(station => station.id === deleteStationId);
+      lines[lineIndex]["stations"].splice(stationIndex, 1);
     }
   };
 
