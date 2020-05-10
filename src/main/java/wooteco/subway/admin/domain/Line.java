@@ -108,10 +108,7 @@ public class Line {
 				.orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
 
 			firstStation.updatePreLineStation(lineStation.getStationId());
-		} else if (!stations.isEmpty() && stations.stream()
-			.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
-			.anyMatch(eachLineStation -> eachLineStation.getPreStationId()
-				.equals(lineStation.getPreStationId()))) {
+		} else if (!stations.isEmpty() && isSamePreStation(lineStation)) {
 			LineStation previousLineStation = stations.stream()
 				.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
 				.filter(eachLineStation -> lineStation.getPreStationId()
@@ -125,17 +122,20 @@ public class Line {
 		stations.add(lineStation);
 	}
 
-	public void removeLineStationById(Long stationId) {
-		LineStation previousLineStation = null;
-		LineStation nextLineStation = null;
+	private boolean isSamePreStation(LineStation lineStation) {
+		return stations.stream()
+			.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
+			.anyMatch(eachLineStation -> eachLineStation.getPreStationId()
+				.equals(lineStation.getPreStationId()));
+	}
 
-		for (LineStation lineStation : stations) {
-			if (stationId.equals(lineStation.getStationId())) {
-				previousLineStation = lineStation;
-			} else if (stationId.equals(lineStation.getPreStationId())) {
-				nextLineStation = lineStation;
-			}
-		}
+	public void removeLineStationById(Long stationId) {
+		LineStation previousLineStation = stations.stream()
+			.filter(station -> stationId.equals(station.getStationId()))
+			.findFirst().orElse(null);
+		LineStation nextLineStation = stations.stream()
+			.filter(station -> stationId.equals(station.getPreStationId()))
+			.findFirst().orElse(null);
 
 		if (nextLineStation != null) {
 			nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
