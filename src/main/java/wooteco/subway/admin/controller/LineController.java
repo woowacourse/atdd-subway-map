@@ -46,7 +46,7 @@ public class LineController {
 	}
 
 	@PutMapping("/lines/{id}")
-	public ResponseEntity<Object> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
 		Line line = view.toLine();
 		service.updateLine(id, line);
 
@@ -54,13 +54,13 @@ public class LineController {
 	}
 
 	@DeleteMapping("/lines/{id}")
-	public ResponseEntity<Object> deleteLine(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
 		service.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/lines/{id}/stations")
-	public ResponseEntity<Object> addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
+	public ResponseEntity<Void> addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
 		service.addLineStation(id, view);
 
 		return ResponseEntity.ok().build();
@@ -74,7 +74,7 @@ public class LineController {
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")
-	public ResponseEntity<Object> deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+	public ResponseEntity<Void> deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
 		service.removeLineStation(lineId, stationId);
 
 		return ResponseEntity.noContent().build();

@@ -30,7 +30,7 @@ public class StationController {
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity<Object> createStation(@RequestBody StationCreateRequest view) {
+	public ResponseEntity<Void> createStation(@RequestBody StationCreateRequest view) {
 		Station station = view.toStation();
 		Station persistStation = stationRepository.save(station);
 
@@ -39,7 +39,7 @@ public class StationController {
 	}
 
 	@DeleteMapping("/stations/{id}")
-	public ResponseEntity<Object> deleteStation(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
 		stationRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
