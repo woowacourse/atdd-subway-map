@@ -18,7 +18,6 @@ function AdminLine() {
   const subwayLineModal = new Modal();
 
   const onCreateSubwayLine = event => {
-    console.log("oh no");
     event.preventDefault();
     const data = {
       name: $subwayLineNameInput.value,
@@ -28,7 +27,6 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTimeInput.value
     };
     let $id = document.querySelector('#modal-update-condition').getAttribute("value");
-    console.log("2");
     if ($id !== "") {
       fetch(`/api/lines/${$id}`, {
         method: "PUT",
@@ -52,7 +50,6 @@ function AdminLine() {
       })
 
     } else {
-      console.log("2");
       api.line.create(data).then(data => {
         $subwayLineList.insertAdjacentHTML(
           "beforeend",
@@ -173,8 +170,6 @@ function AdminLine() {
     initDefaultSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
-    console.log("admin-line");
-    alert("");
   };
 }
 

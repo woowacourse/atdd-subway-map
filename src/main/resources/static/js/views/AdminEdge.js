@@ -16,11 +16,22 @@ function AdminEdge() {
 
   const createSubwayEdgeModal = new Modal();
 
+  let subwayLines = [];
+
   const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML =
-      api.line.get()
-      .then(data => data.map(line => subwayLinesItemTemplate(line)))
-      .join("");
+
+    let hello = [];
+    // $subwayLinesSlider.innerHTML = api.line.get()
+    // .then(data => data.map(line => console.log(subwayLinesItemTemplate(line))));
+    api.line.get().then(data => data.json().map(line => hello.push(subwayLinesItemTemplate(line))));
+    console.log(hello);
+    console.log("###");
+    console.log(hello[0]);
+    console.log(hello.length);
+    console.log(hello.join(""));
+
+    $subwayLinesSlider.innerHTML = hello.join("");
+
     tns({
       container: ".subway-lines-slider",
       loop: true,
@@ -36,10 +47,11 @@ function AdminEdge() {
   };
 
   const initSubwayLineOptions = () => {
+    api.line.get().then(data => console.log(data));
     const subwayLineOptionTemplate =
       api.line.get()
       .then(data => data.map(line => optionTemplate(line)))
-      .join("");
+      .then(data => data.join(""));
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
     );
@@ -52,7 +64,6 @@ function AdminEdge() {
   /* 구간 추가 버튼 */
   const onAddLineStationHandler = event => {
     event.preventDefault();
-    console.log("##");
     const data = {
       lineSelection: $subwayLineSelection.value,
       departStation: $subwayDepartStation.value,
@@ -61,11 +72,9 @@ function AdminEdge() {
       duration: $subwayDuration.value
     };
     console.log(data);
-    // api.line.addLineStation()
     if ($submitLineStationButton) {
       alert("");
     }
-
   }
 
   const onRemoveStationHandler = event => {
@@ -77,7 +86,6 @@ function AdminEdge() {
   };
 
   const initEventListeners = () => {
-    alert('');
     $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, onAddLineStationHandler);
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
@@ -86,11 +94,10 @@ function AdminEdge() {
   };
 
   this.init = () => {
+    subwayLines = api.line.get();
     initEventListeners();
     initSubwayLinesSlider();
     initSubwayLineOptions();
-    console.log("admin-edge");
-    alert("");
   };
 }
 
