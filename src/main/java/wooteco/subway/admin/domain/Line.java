@@ -90,10 +90,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.stream()
-                .filter(station -> Objects.equals(station.getPreStationId(), lineStation.getPreStationId()))
-                .findFirst()
-                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+        updatePreLineStation(lineStation.getPreStationId(), lineStation.getStationId());
         stations.add(lineStation);
     }
 
@@ -103,11 +100,15 @@ public class Line {
                 .findFirst()
                 .orElseThrow(NotFoundLineStationException::new);
 
-        stations.stream()
-                .filter(station -> Objects.equals(station.getPreStationId(), stationId))
-                .findFirst()
-                .ifPresent(station -> station.updatePreLineStation(lineStation.getPreStationId()));
+        updatePreLineStation(stationId, lineStation.getPreStationId());
         stations.remove(lineStation);
+    }
+
+    private void updatePreLineStation(Long oldId, Long newId) {
+        stations.stream()
+                .filter(station -> Objects.equals(station.getPreStationId(), oldId))
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(newId));
     }
 
     public List<Long> getLineStationsId() {
