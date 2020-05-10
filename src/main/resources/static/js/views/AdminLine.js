@@ -1,5 +1,5 @@
 import Modal from "../../ui/Modal.js";
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, LINE_INPUT_ERROR_MESSAGE, TRANSFER_ERROR_MESSAGE} from "../../utils/constants.js";
 import api from "../../api/index.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
@@ -24,7 +24,7 @@ function AdminLine() {
             isUpdateSubmit ? onUpdateSubwayLine() : onCreateSubwayLine(event);
             return;
         }
-        alert("노선 정보를 모두 기입해 주시기 바랍니다!");
+        alert(LINE_INPUT_ERROR_MESSAGE.NOT_EMPTY);
     };
 
     const onViewSubwayInfo = event => {
@@ -68,18 +68,18 @@ function AdminLine() {
             subwayLineModal.toggle();
             $submitButton.classList.add('update-submit-button');
         }).catch(() => {
-            alert("데이터를 불러올 수 없습니다.");
+            alert(TRANSFER_ERROR_MESSAGE.WARN);
         });
     };
 
     const onCreateSubwayLine = event => {
         event.preventDefault();
         if (isDuplicatedLine()) {
-            alert("이미 등록되어 있는 노선입니다!");
+            alert(LINE_INPUT_ERROR_MESSAGE.DUPLICATION);
             return;
         }
         if (isInvalidIntervalTime()) {
-            alert("간격은 음수나 0이 될 수가 없습니다!");
+            alert(LINE_INPUT_ERROR_MESSAGE.INVALID_INTERVAL_VALUE);
             return;
         }
 
@@ -98,13 +98,9 @@ function AdminLine() {
                 );
                 subwayLineModal.toggle();
             }).catch(() => {
-            alert("에러가 발생하였습니다!");
+            alert(TRANSFER_ERROR_MESSAGE.WARN);
         });
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineFirstTimeInput.value = "";
-        $subwayLineLastTimeInput.value = "";
-        $subwayLineIntervalTimeInput.value = "";
+        removeLineDataInput();
     };
 
     const onDeleteSubwayLine = event => {
@@ -114,18 +110,13 @@ function AdminLine() {
             const $id = $target.dataset.lineId;
             api.line.delete($id).then();
             $target.closest(".subway-line-item").remove();
-            const $subwayLineFirstTime = document.querySelector("#start-subway-time");
-            $subwayLineFirstTime.innerText = "";
-            const $subwayLineLastTime = document.querySelector("#last-subway-time");
-            $subwayLineLastTime.innerText = "";
-            const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
-            $subwayLineIntervalTime.innerText = "";
+            removeTImeDataOnView();
         }
     };
 
     const onUpdateSubwayLine = () => {
         if (isInvalidIntervalTime()) {
-            alert("간격은 음수나 0이 될 수가 없습니다!");
+            alert(LINE_INPUT_ERROR_MESSAGE.INVALID_INTERVAL_VALUE);
             return;
         }
 
@@ -145,12 +136,25 @@ function AdminLine() {
             }
             initDefaultSubwayLines();
         });
+        removeLineDataInput();
+    };
+
+    const removeTImeDataOnView = () => {
+        const $subwayLineFirstTime = document.querySelector("#start-subway-time");
+        $subwayLineFirstTime.innerText = "";
+        const $subwayLineLastTime = document.querySelector("#last-subway-time");
+        $subwayLineLastTime.innerText = "";
+        const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
+        $subwayLineIntervalTime.innerText = "";
+    }
+
+    const removeLineDataInput = () => {
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
         $subwayLineFirstTimeInput.value = "";
         $subwayLineLastTimeInput.value = "";
         $subwayLineIntervalTimeInput.value = "";
-    };
+    }
 
     const isDuplicatedLine = () => {
         const names = document.getElementsByClassName("subway-line-title");
