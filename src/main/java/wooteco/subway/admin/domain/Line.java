@@ -1,10 +1,13 @@
 package wooteco.subway.admin.domain;
 
+import static java.util.stream.Collectors.*;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -140,12 +143,12 @@ public class Line {
 			newStations.add(headStation.getStationId());
 		}
 
+		Map<Long, Long> lineStations = stations.stream()
+			.collect(toMap(LineStation::getPreStationId, LineStation::getStationId));
+
 		while (newStations.size() != stations.size()) {
-			newStations.add(stations.stream()
-				.filter(value -> value.getPreStationId() == (newStations.get(newStations.size() - 1)))
-				.findFirst()
-				.map(LineStation::getStationId)
-				.orElseThrow(NoSuchElementException::new));
+			Long lastStationId = newStations.get(newStations.size() - 1);
+			newStations.add(lineStations.get(lastStationId));
 		}
 
 		return newStations;
