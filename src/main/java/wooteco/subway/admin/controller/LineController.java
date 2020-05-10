@@ -32,7 +32,7 @@ public class LineController {
                 .body(LineResponse.of(line));
     }
 
-    @PostMapping("/lines/registerLineStation")
+    @PostMapping("/lines/line-stations")
     public ResponseEntity registerLineStation(@RequestBody LineStationDto lineStationDto) {
         LineResponse lineResponse = lineService.registerLineStation(lineStationDto);
         return ResponseEntity

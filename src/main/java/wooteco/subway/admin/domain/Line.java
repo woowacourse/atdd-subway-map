@@ -1,7 +1,6 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -17,7 +16,6 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    @Column("bg_color")
     private String bgColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
@@ -32,6 +30,7 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.bgColor = bgColor;
+        this.stations = new LinkedHashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -96,36 +95,49 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        if (lineStation.getPreStationId() == null && this.stations != null) {
-            Set tmp = this.stations;
-            this.stations = new LinkedHashSet<>();
-            this.stations.add(lineStation);
-            this.stations.addAll(tmp);
+    public void addLineStation(LineStation newLineStation) {
+        if (isLineStationWithoutPreStation(newLineStation)) {
+            sortLineStations(newLineStation);
             return;
         }
 
-        if (lineStation.getPreStationId() != null && this.stations != null) {
-            Set<LineStation> tmp = this.stations;
+        if (isLineStationWithPreStation(newLineStation)) {
+            Set<LineStation> savedLineStations = this.stations;
             this.stations = new LinkedHashSet<>();
-            for (LineStation lineStationGot : tmp) {
-                if (lineStationGot.getPreStationId() == null) {
-                    this.stations.add(lineStationGot);
-                } else if (!lineStationGot.getPreStationId().equals(lineStation.getPreStationId())) {
-                    this.stations.add(lineStationGot);
-                } else {
+
+            for (LineStation lineStation : savedLineStations) {
+                if (isLineStationWithoutPreStation(lineStation)) {
                     this.stations.add(lineStation);
-                    lineStationGot.updatePreLineStation(lineStation.getStationId());
-                    this.stations.add(lineStationGot);
+                } else if (isNotSamePreStation(newLineStation, lineStation)) {
+                    this.stations.add(lineStation);
+                } else {
+                    this.stations.add(newLineStation);
+                    lineStation.updatePreLineStation(newLineStation.getStationId());
+                    this.stations.add(lineStation);
                 }
             }
         }
 
-        if (this.stations == null) {
-            this.stations = new LinkedHashSet<>();
-        }
+        this.stations.add(newLineStation);
+    }
 
-        this.stations.add(lineStation);
+    private boolean isLineStationWithoutPreStation(LineStation lineStation) {
+        return lineStation.getPreStationId() == null;
+    }
+
+    private boolean isLineStationWithPreStation(LineStation newLineStation) {
+        return newLineStation.getPreStationId() != null;
+    }
+
+    private boolean isNotSamePreStation(LineStation newLineStation, LineStation lineStation) {
+        return !lineStation.getPreStationId().equals(newLineStation.getPreStationId());
+    }
+
+    private void sortLineStations(LineStation newLineStation) {
+        Set<LineStation> savedLineStations = this.stations;
+        this.stations = new LinkedHashSet<>();
+        this.stations.add(newLineStation);
+        this.stations.addAll(savedLineStations);
     }
 
     public void removeLineStationById(Long stationId) {

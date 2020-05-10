@@ -7,15 +7,19 @@ import api from "../../api/index.js"
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $subwayLineAddButton = document.querySelector("#subway-line-add-btn");
+    const $submitButton = document.querySelector('#submit-button');
     const createSubwayEdgeModal = new Modal();
-    const $submitButton =  document.querySelector('#submit-button');
 
     const initSubwayLinesSlider = () => {
-
         api.line.get().then(subwayLines => {
                 $subwayLinesSlider.innerHTML = subwayLines
                     .map(line => {
-                            const subwayLine = {title: line.title, bgColor: line.bgColor, stations: line.stations,}
+                            const subwayLine = {
+                                id: line.id,
+                                title: line.title,
+                                bgColor: line.bgColor,
+                                stations: line.stations
+                            };
                             return subwayLinesItemTemplate(subwayLine);
                         }
                     )
@@ -69,13 +73,13 @@ function AdminEdge() {
             name: $selectOptions[$selectOptions.selectedIndex].value,
             preStationName: document.querySelector("#depart-station-name").value,
             arrivalStationName: document.querySelector("#arrival-station-name").value
-
         };
 
-        console.log(lineStationDto);
         api.line
             .registerLineStation(lineStationDto)
             .then(() => createSubwayEdgeModal.toggle());
+
+        initSubwayLineOptions();
     };
 
     const onRemoveStationHandler = event => {

@@ -49,8 +49,6 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 export const subwayLinesItemTemplate = line => {
     const stationsTemplate = line.stations
         .map(station => {
-            console.log("ppppp");
-            console.log(station);
             return listItemTemplate(station)}
             )
         .join("");

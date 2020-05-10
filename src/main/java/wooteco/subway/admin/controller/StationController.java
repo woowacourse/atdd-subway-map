@@ -28,8 +28,7 @@ public class StationController {
 
     @GetMapping("/stations")
     public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(
-                stationRepository.findAll());
+        return ResponseEntity.ok().body(stationRepository.findAll());
     }
 
     @DeleteMapping("/stations/{id}")
