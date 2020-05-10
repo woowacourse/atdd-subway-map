@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
@@ -16,6 +17,13 @@ public class StationController {
 
     public StationController(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
+    }
+
+    @GetMapping("/admin-station")
+    public ModelAndView adminStation() {
+        ModelAndView mv = new ModelAndView("admin-station");
+        mv.addObject("stations", StationResponse.listOf(stationRepository.findAll()));
+        return mv;
     }
 
     @PostMapping("/stations")
