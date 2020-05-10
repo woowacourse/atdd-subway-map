@@ -9,7 +9,7 @@ function AdminEdge() {
   let stations = [];
 
   const $openModalButton = document.querySelector(".modal-open");
-  const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  let $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const createSubwayEdgeModal = new Modal();
   const $addStationButton = document.querySelector("#submit-button");
   const $departStationInput = document.querySelector("#depart-station-name");
@@ -98,10 +98,17 @@ function AdminEdge() {
     const departStationId = stations.find(station => station.name === departStationName).id;
     const arrivalStationId = stations.find(station => station.name === arrivalStationName).id;
 
+    const resetSlider = () => {
+      document.querySelector(".w-full.h-full").innerHTML = `<div class="subway-lines-slider"></div>`;
+      $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+      initSubwayLinesSlider();
+      $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
+    };
+
     api.line.addStation(lineId, { preStationId: departStationId, stationId: arrivalStationId })
       .then(response => {
         subwayLines = subwayLines.map(line => line.id === response.id ? response : line);
-        initSubwayLinesSlider();
+        resetSlider();
       })
       .catch(error => console.log(error))
       .finally(() => {
