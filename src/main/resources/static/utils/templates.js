@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = value => `<option data-line-id="${value.id}">${value.name}</option>`;
 
 const navTemplate =
   `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">

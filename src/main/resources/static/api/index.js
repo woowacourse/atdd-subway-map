@@ -60,6 +60,15 @@ const api = (() => {
         },
         delete(id) {
             return deleteRequest(`/api/lines/${id}`, METHOD.DELETE());
+        },
+        getLineStations(lineId) {
+            return request(`/api/lines/${lineId}/stations`);
+        },
+        addLineStation(lineId, data) {
+            return request(`/api/lines/${lineId}/stations`, METHOD.POST(data));
+        },
+        deleteLineStation(lineId, stationId) {
+            return request(`/api/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
 
