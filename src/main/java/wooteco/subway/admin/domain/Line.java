@@ -140,6 +140,11 @@ public class Line {
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
 
+        if (listStations.size() == 1) {
+            stations = new LinkedHashSet<>();
+            return lineStation;
+        }
+
         LineStation nextStation;
         if (lineStation.isFirstStation()) {
             nextStation = listStations.get(1);

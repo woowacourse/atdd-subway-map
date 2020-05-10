@@ -39,6 +39,9 @@ public class LineStationService {
     public LineStation removeLineStation(long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
-        return line.removeLineStationById(stationId);
+        LineStation lineStation = line.removeLineStationById(stationId);
+        lineRepository.save(line);
+        return lineStation;
     }
+
 }

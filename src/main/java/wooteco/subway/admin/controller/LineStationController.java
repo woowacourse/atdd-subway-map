@@ -2,17 +2,15 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.LineStationService;
+import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,16 +26,23 @@ public class LineStationController {
     @Autowired
     private LineService lineService;
 
+    @Autowired
+    private StationService stationService;
+
     @GetMapping("/admin-edge")
     public ModelAndView adminEdge() {
         ModelAndView mv = new ModelAndView("admin-edge");
-        List<Line> lines = lineService.showLines();
 
-        List<LineResponse> lineResponses = lines.stream()
+        System.out.println(">>>>>>" + lineService.findLineById(1L).getStations());
+
+        List<LineResponse> lines = lineService.findAllLines().stream()
                 .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
 
-        mv.addObject("lines", lineResponses);
+        List<StationResponse> stations = stationService.findAllStations();
+
+        mv.addObject("lines", lines);
+        mv.addObject("stations", stations);
         return mv;
     }
 
@@ -58,5 +63,15 @@ public class LineStationController {
         final URI url = new URI("/lineStation/" + lineStation.getCustomId());
         return ResponseEntity.created(url)
                 .body(lineStation);
+    }
+
+    @DeleteMapping("/lineStation/{lineId}/rm/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable("lineId") Long lineId,
+            @PathVariable("id") Long id
+    ) {
+        lineStationService.removeLineStation(lineId, id);
+        return ResponseEntity.noContent().build();
+
     }
 }

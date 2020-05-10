@@ -31,8 +31,8 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> findAllLines() {
+        return LineResponse.listOf(lineRepository.findAll());
     }
 
     public Line findLineById(final Long id) {
@@ -70,10 +70,16 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
-        Set<Station> stations = new LinkedHashSet<>(line.getLineStationsId().stream()
-                .map(stationId -> stationRepository.findById(stationId)
-                        .orElseThrow(NoSuchElementException::new))
-                .collect(Collectors.toList()));
+        List<Station> listStations = stationRepository.findAllById(line.getLineStationsId());
+
+        Set<Station> stations = new LinkedHashSet<>(
+                line.getLineStationsId().stream()
+                        .map(stationId -> listStations.stream()
+                                .filter(station -> station.getId().equals(stationId))
+                                .findFirst()
+                                .orElseThrow(NoSuchElementException::new))
+                        .collect(Collectors.toList())
+        );
 
         LineResponse lineResponse = LineResponse.of(line);
         lineResponse.updateStations(stations);

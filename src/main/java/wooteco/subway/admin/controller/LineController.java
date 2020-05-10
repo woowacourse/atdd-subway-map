@@ -23,7 +23,7 @@ public class LineController {
     @GetMapping("/admin-line")
     public ModelAndView adminLine() {
         ModelAndView mv = new ModelAndView("admin-line");
-        mv.addObject("lines", LineResponse.listOf(lineService.showLines()));
+        mv.addObject("lines", lineService.findAllLines());
         return mv;
     }
 
@@ -46,7 +46,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public List<LineResponse> lines() {
-        return LineResponse.listOf(lineService.showLines());
+        return lineService.findAllLines();
     }
 
     @GetMapping("/lines/{id}")
