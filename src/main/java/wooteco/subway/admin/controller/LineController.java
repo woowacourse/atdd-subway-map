@@ -45,13 +45,6 @@ public class LineController {
 		return ResponseEntity.ok().body(service.findLineWithStationsById(id));
 	}
 
-	@GetMapping("/lines/name/{name}")
-	public ResponseEntity<LineResponse> showLineByName(@PathVariable String name) {
-		LineResponse lineResponse = LineResponse.of(service.showLine(name));
-		System.err.println(lineResponse.getId() + " ,  " + lineResponse.getTitle());
-		return ResponseEntity.ok().body(lineResponse);
-	}
-
 	@PutMapping("/lines/{id}")
 	public ResponseEntity<Object> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
 		Line line = view.toLine();

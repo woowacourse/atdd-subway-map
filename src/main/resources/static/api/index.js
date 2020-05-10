@@ -32,14 +32,11 @@ const api = (() => {
         get() {
             return request(`/stations`);
         },
-        getByName(name) {
-            return request(`/stations/${name}`);
-        },
         create(data) {
-            return request(`/stations`, METHOD.POST(data));
+            return nonRequest(`/stations`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/stations/${id}`, METHOD.PUT(data));
+            return nonRequest(`/stations/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             return nonRequest(`/stations/${id}`, METHOD.DELETE());
@@ -53,14 +50,11 @@ const api = (() => {
             }
             return request(`/lines/${id}`);
         },
-        getByName(name) {
-            return request(`/lines/name/${name}`);
-        },
         create(data) {
-            return request(`/lines`, METHOD.POST(data));
+            return nonRequest(`/lines`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/lines/${id}`, METHOD.PUT(data));
+            return nonRequest(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             return nonRequest(`/lines/${id}`, METHOD.DELETE());
@@ -72,7 +66,7 @@ const api = (() => {
           return request(`/lines/${id}/stations`);
         },
         update(data, id) {
-            return request(`/lines/${id}/stations`, METHOD.PUT(data));
+            return nonRequest(`/lines/${id}/stations`, METHOD.PUT(data));
         },
         delete(lineId, stationId) {
             return nonRequest(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
