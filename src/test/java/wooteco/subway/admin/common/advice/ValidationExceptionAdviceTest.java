@@ -56,7 +56,7 @@ class ValidationExceptionAdviceTest {
         String body = objectMapper.writeValueAsString(lineCreateRequest);
 
         //when
-        MvcResult mvcResult = mockMvc.perform(post("http://localhost:8080/line")
+        MvcResult mvcResult = mockMvc.perform(post("http://localhost:8080/lines")
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(CharEncoding.UTF_8))

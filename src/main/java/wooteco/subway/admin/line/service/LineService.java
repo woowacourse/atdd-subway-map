@@ -3,6 +3,7 @@ package wooteco.subway.admin.line.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.line.domain.Line;
+import wooteco.subway.admin.line.domain.Lines;
 import wooteco.subway.admin.line.domain.edge.Edges;
 import wooteco.subway.admin.line.domain.repository.LineRepository;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
@@ -99,12 +100,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineEdgeResponse> getAllLineEdge() {
-        List<Line> lines = lineRepository.findAll();
+        Lines lines = new Lines(lineRepository.findAll());
+        Stations stations = new Stations(stationRepository.findAllById(lines.getAllEdgeStationId()));
 
         List<LineEdgeResponse> lineEdgeResponses = new ArrayList<>();
         for (Line line : lines) {
             Edges edges = line.getEdges();
-            Stations stations = new Stations(stationRepository.findAllById(edges.getStationsId()));
             List<EdgeResponse> edgeResponses = EdgeResponse.listOf(edges.getEdges(), stations);
             lineEdgeResponses.add(new LineEdgeResponse(line, edgeResponses));
         }

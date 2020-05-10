@@ -61,7 +61,7 @@ public class EdgeAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/line/{id}/edge", lineId)
+                .post("/lines/{id}/edges", lineId)
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.CREATED.value());
@@ -71,7 +71,7 @@ public class EdgeAcceptanceTest {
         //새로 추가한 지하철역을 목록에서 찾는다.
         JsonPath edgeJsonPathByLineId = given()
                 .when()
-                .get("/line/" + lineId + "/edge")
+                .get("/lines/" + lineId + "/edges")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -91,7 +91,7 @@ public class EdgeAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(edgeDeleteRequest)
                 .when()
-                .delete("/line/" + lineId + "/edge")
+                .delete("/lines/" + lineId + "/edges")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -101,7 +101,7 @@ public class EdgeAcceptanceTest {
         // 제외한 지하철역이 목록에 존재하지 않는다.
         List<EdgeResponse> edgeResponses = given()
                 .when()
-                .get("/line/" + lineId + "/edge")
+                .get("/lines/" + lineId + "/edges")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -126,7 +126,7 @@ public class EdgeAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/line").
+                post("/lines").
                 then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
