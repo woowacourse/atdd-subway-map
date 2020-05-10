@@ -1,17 +1,14 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class LineWithOrderedStationsResponse {
+public class LineWithStationsResponse {
     private Long id;
     private String name;
     private LocalTime startTime;
@@ -21,14 +18,14 @@ public class LineWithOrderedStationsResponse {
     private LocalDateTime updatedAt;
     private String color;
 
-    private List<Station> orderedStations;
+    private List<Station> stations;
 
-    public LineWithOrderedStationsResponse() {
+    public LineWithStationsResponse() {
     }
 
-    public LineWithOrderedStationsResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
-                        int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        String color, List<Station> orderedStations) {
+    public LineWithStationsResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+                                    int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                    String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -37,11 +34,11 @@ public class LineWithOrderedStationsResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.color = color;
-        this.orderedStations = orderedStations;
+        this.stations = stations;
     }
 
-    public static LineWithOrderedStationsResponse of(Line line, List<Station> orderedStations) {
-        return new LineWithOrderedStationsResponse(line.getId(), line.getName(), line.getStartTime(),
+    public static LineWithStationsResponse of(Line line, List<Station> orderedStations) {
+        return new LineWithStationsResponse(line.getId(), line.getName(), line.getStartTime(),
                 line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
                 line.getUpdatedAt(), line.getColor(), orderedStations);
     }
@@ -70,8 +67,8 @@ public class LineWithOrderedStationsResponse {
         return color;
     }
 
-    public List<Station> getOrderedStations() {
-        return Collections.unmodifiableList(orderedStations);
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(stations);
     }
 
     public LocalDateTime getCreatedAt() {

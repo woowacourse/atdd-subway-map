@@ -28,7 +28,7 @@ public class LineStationsController {
 
     @GetMapping("/{lineId}")
     public ResponseEntity showStationsByLineId(@PathVariable Long lineId) {
-        return ResponseEntity.ok().body(lineService.findLineWithOrderedStationsById(lineId));
+        return ResponseEntity.ok().body(lineService.findLineWithStationsById(lineId));
     }
 
     @DeleteMapping("/{lineId}/{stationId}")

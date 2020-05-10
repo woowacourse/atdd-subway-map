@@ -5,7 +5,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -58,24 +58,23 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
+    public LineWithStationsResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return findLineWithOrderedStations(line);
+        return findLineWithStations(line);
     }
 
-    private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
+    private LineWithStationsResponse findLineWithStations(Line line) {
         List<Long> orderedStationIds = line.getStationsId();
-        List<Station> orderedStations = orderedStationIds.stream()
-                .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
-                .collect(Collectors.toList());
-        return LineWithOrderedStationsResponse.of(line, orderedStations);
+        List<Station> orderedStations = stationRepository.findByIds(orderedStationIds);
+        System.out.println("##"+orderedStations.size() + "#"+ orderedStationIds.size());
+        return LineWithStationsResponse.of(line, orderedStations);
     }
 
-    public List<LineWithOrderedStationsResponse> showLinesWithStations() {
+    public List<LineWithStationsResponse> showLinesWithStations() {
         List<Line> lines = lineRepository.findAll();
         return Collections.unmodifiableList(
                 lines.stream()
-                    .map(this::findLineWithOrderedStations)
+                    .map(this::findLineWithStations)
                     .collect(Collectors.toList()));
     }
 }

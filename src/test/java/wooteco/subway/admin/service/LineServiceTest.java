@@ -13,6 +13,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -116,16 +117,5 @@ public class LineServiceTest {
         assertThat(line.getLineStations()).hasSize(2);
         assertThat(line.getStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getStationsId().get(1)).isEqualTo(2L);
-    }
-
-    @Test
-    void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
-
-        LineResponse lineResponse = lineService.findLineById(1L);
-
-        assertThat(lineResponse.getLineStations()).hasSize(3);
     }
 }

@@ -20,14 +20,12 @@ public class LineResponse {
     private LocalDateTime updatedAt;
     private String color;
 
-    private Set<LineStation> lineStations;
-
     public LineResponse() {
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
                         int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        String color, Set<LineStation> lineStations) {
+                        String color) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -36,12 +34,11 @@ public class LineResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.color = color;
-        this.lineStations = lineStations;
     }
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
-                line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getColor(), line.getLineStations());
+                line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getColor());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
@@ -72,10 +69,6 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public Set<LineStation> getLineStations() {
-        return lineStations;
     }
 
     public LocalDateTime getCreatedAt() {

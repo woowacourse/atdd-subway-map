@@ -26,7 +26,7 @@ public class LineTest {
     void getLineStations() {
         List<Long> stationIds = line.getStationsId();
 
-        assertThat(stationIds.size()).isEqualTo(3);
+        assertThat(stationIds.size()).isEqualTo(4);
         assertThat(stationIds.get(0)).isEqualTo(1L);
         assertThat(stationIds.get(2)).isEqualTo(3L);
     }

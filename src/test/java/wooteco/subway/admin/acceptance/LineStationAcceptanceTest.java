@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.time.LocalTime;
@@ -52,7 +52,7 @@ public class LineStationAcceptanceTest {
         createLineStation(lines.get(0).getId(), stations.get(0).getId(), null);
         createLineStation(lines.get(0).getId(), stations.get(1).getId(), stations.get(0).getId());
         createLineStation(lines.get(0).getId(), stations.get(2).getId(), stations.get(1).getId());
-        LineWithOrderedStationsResponse lineWithStations = getLineWithStations(lines.get(0).getId());
+        LineWithStationsResponse lineWithStations = getLineWithStations(lines.get(0).getId());
         //then
         assertThat(lineWithStations.getStations().size()).isEqualTo(3);
 
@@ -155,7 +155,7 @@ public class LineStationAcceptanceTest {
                         jsonPath().getList(".", LineResponse.class);
     }
 
-    private LineWithOrderedStationsResponse getLineWithStations(Long lineId) {
+    private LineWithStationsResponse getLineWithStations(Long lineId) {
         return
                 given().
                 when().
@@ -163,6 +163,6 @@ public class LineStationAcceptanceTest {
                 then().
                         log().all().
                         extract().
-                        jsonPath().getObject(".", LineWithOrderedStationsResponse.class);
+                        jsonPath().getObject(".", LineWithStationsResponse.class);
     }
 }
