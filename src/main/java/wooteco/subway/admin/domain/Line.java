@@ -74,7 +74,7 @@ public class Line {
 			edges.stream()
 					.filter(item -> item.getPreStationId() == null)
 					.findFirst()
-					.ifPresent(item -> item.update(new Edge(null, edge.getPreStationId(),
+					.ifPresent(item -> item.update(new Edge(edge.getStationId(), item.getStationId(),
 							0, 0)));
 			edges.add(edge);
 			return;
@@ -84,12 +84,6 @@ public class Line {
 				.filter(item -> Objects.equals(item.getPreStationId(), edge.getPreStationId()))
 				.findFirst()
 				.ifPresent(item -> item.update(new Edge(edge.getStationId(), item.getStationId(),
-						item.getDistance(), item.getDuration())));
-
-		edges.stream()
-				.filter(item -> Objects.equals(item.getStationId(), edge.getStationId()))
-				.findFirst()
-				.ifPresent(item -> item.update(new Edge(item.getPreStationId(), edge.getPreStationId(),
 						item.getDistance(), item.getDuration())));
 
 		edges.add(edge);
@@ -109,9 +103,7 @@ public class Line {
 	}
 
 	private boolean isFirstEdge(final Edge edge) {
-		return edges.stream()
-				.filter(item -> item.getPreStationId() == null)
-				.anyMatch(item -> Objects.equals(item.getStationId(), edge.getStationId()));
+		return edge.getPreStationId() == null;
 	}
 
 	public void removeEdgeById(Long stationId) {

@@ -45,7 +45,7 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        EdgeCreateRequest request = new EdgeCreateRequest(4L, 1L, 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
