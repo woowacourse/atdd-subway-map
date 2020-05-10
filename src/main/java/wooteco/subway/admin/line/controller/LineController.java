@@ -80,7 +80,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("edge")
+    @GetMapping("edges")
     public ResponseEntity<List<LineEdgeResponse>> getAllLineAndEdges() {
         return ResponseEntity.ok(lineService.getAllLineEdge());
     }
