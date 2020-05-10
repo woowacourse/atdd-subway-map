@@ -31,7 +31,7 @@ public class LineService {
         }
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         List<LineResponse> lineResponses = new ArrayList<>();
         for (Line line : lines) {
@@ -45,7 +45,7 @@ public class LineService {
         return stationRepository.findAllByLineId(line.getId());
     }
 
-    public LineResponse showLine(Long id) {
+    public LineResponse getLine(Long id) {
         Line line = findById(id);
         List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
