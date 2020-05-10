@@ -50,7 +50,6 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("가짜 객체")));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -65,7 +64,6 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("가짜 객체")));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -80,7 +78,6 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("가짜 객체")));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -124,10 +121,10 @@ public class LineServiceTest {
     void findLineWithStationsById() {
         List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"),
             new Station("삼성역"));
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("가짜 객체")));
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(stationRepository.findAllByLineId(line.getId())).thenReturn(stations);
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        LineResponse lineResponse = lineService.findLineWithStationsById(line.getId());
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }

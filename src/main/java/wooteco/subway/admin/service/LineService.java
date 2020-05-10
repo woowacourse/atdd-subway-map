@@ -42,11 +42,7 @@ public class LineService {
     }
 
     private List<Station> findStations(Line line) {
-        List<Station> stations = new ArrayList<>();
-        for (Long id : line.getLineStationsId()) {
-            stations.add(stationRepository.findById(id).get());
-        }
-        return stations;
+        return stationRepository.findAllByLineId(line.getId());
     }
 
     public LineResponse showLine(Long id) {
