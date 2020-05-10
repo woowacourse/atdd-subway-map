@@ -32,12 +32,17 @@ public class LineController {
     }
 
     @GetMapping()
-    public List<LineResponse> getLines() {
-        List<Line> lines = lineService.showLines();
+    public ResponseEntity getLines() {
+        return ResponseEntity.ok().body(LineResponse.listOf(lineService.showLines()));
+    }
 
-        return lines.stream()
+    @GetMapping("/detail")
+    public ResponseEntity getLinesDetail() {
+        List<Line> lines = lineService.showLines();
+        List<LineResponse> linesDetail = lines.stream()
                 .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
+        return ResponseEntity.ok().body(linesDetail);
     }
 
     @PostMapping()
@@ -49,18 +54,18 @@ public class LineController {
         Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
-                .body(lineService.findLineWithStationsById(persistLine.getId()));
+                .body(LineResponse.of(persistLine));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
+        return ResponseEntity.ok().body(lineService.findById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineService.updateLine(id, lineRequest.toLine());
-        return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
+        Line persistLine = lineService.updateLine(id, lineRequest.toLine());
+        return ResponseEntity.ok().body(LineResponse.of(persistLine));
     }
 
     @DeleteMapping("/{id}")
@@ -77,8 +82,8 @@ public class LineController {
 
     @PostMapping("/{id}/stations")
     public ResponseEntity createLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        Line line = lineService.addLineStation(id, lineStationCreateRequest);
-        return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
+        Line persistLine = lineService.addLineStation(id, lineStationCreateRequest);
+        return ResponseEntity.ok().body(LineResponse.of(persistLine));
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")

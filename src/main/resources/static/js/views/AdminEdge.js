@@ -49,7 +49,7 @@ function AdminEdge() {
     }
 
     const initSubwayLinesSlider = async () => {
-        await api.lines.get().then(data => {
+        await api.lines.getDetail().then(data => {
             $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line)).join("");
         });
 

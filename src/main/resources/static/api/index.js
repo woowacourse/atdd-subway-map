@@ -52,6 +52,9 @@ const api = (() => {
     get() {
       return dataRequest(`${BASE_URL}/lines`);
     },
+    getDetail() {
+      return dataRequest(`${BASE_URL}/lines/detail`);
+    },
     create(data) {
       return dataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
     },

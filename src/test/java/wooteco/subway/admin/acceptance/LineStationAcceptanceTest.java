@@ -19,8 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -65,8 +65,8 @@ public class LineStationAcceptanceTest {
         createStation("강남역");
         createLine("1호선");
 
-        List<LineResponse> lines = getLines();
-        LineResponse line = getLine(lines.get(0).getId());
+        List<Line> lines = getLines();
+        Line line = getLine(lines.get(0).getId());
         Long lineId = line.getId();
 
         // when
@@ -123,15 +123,15 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private LineResponse getLine(Long id) {
+    private Line getLine(Long id) {
         return given().when().
             get("/lines/" + id).
             then().
                 log().all().
-                extract().as(LineResponse.class);
+                extract().as(Line.class);
     }
 
-    private List<LineResponse> getLines() {
+    private List<Line> getLines() {
         return
             given().
             when().
@@ -139,7 +139,7 @@ public class LineStationAcceptanceTest {
             then().
                 log().all().
                 extract().
-                jsonPath().getList(".", LineResponse.class);
+                jsonPath().getList(".", Line.class);
     }
 
     private List<LineStation> getLineStations(Long id) {

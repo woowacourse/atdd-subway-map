@@ -19,7 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.domain.Line;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -45,11 +45,11 @@ public class LineAcceptanceTest {
         createLine("2호선");
         createLine("3호선");
         // then
-        List<LineResponse> lines = getLines();
+        List<Line> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        Line line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -62,27 +62,27 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        Line updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
         // when
         deleteLine(line.getId());
         // then
-        List<LineResponse> linesAfterDelete = getLines();
+        List<Line> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
+    private Line getLine(Long id) {
         return given()
             .when().
                 get("/lines/" + id).
             then().
                 log().all().
-                extract().as(LineResponse.class);
+                extract().as(Line.class);
     }
 
-    private List<LineResponse> getLines() {
+    private List<Line> getLines() {
         return
             given().
             when().
@@ -90,7 +90,7 @@ public class LineAcceptanceTest {
             then().
                 log().all().
                 extract().
-                jsonPath().getList(".", LineResponse.class);
+                jsonPath().getList(".", Line.class);
     }
 
     private void createLine(String name) {

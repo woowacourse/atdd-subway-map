@@ -43,6 +43,11 @@ public class LineResponse {
         );
     }
 
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), stations
+        );
+    }
+
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
                 .map(LineResponse::of)
