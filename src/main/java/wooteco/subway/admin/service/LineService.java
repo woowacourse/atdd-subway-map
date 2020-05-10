@@ -13,8 +13,8 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 public class LineService {
-	private LineRepository lineRepository;
-	private StationRepository stationRepository;
+	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
 	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
@@ -56,7 +56,7 @@ public class LineService {
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = lineRepository.findById(id)
 				.orElseThrow(NoSuchElementException::new);
-		Set<Station> stations = stationRepository.findAllById(line.stationsId());
+		Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
 		return LineResponse.of(line, stations);
 	}
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -48,5 +51,15 @@ public class LineStationService {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(NoSuchElementException::new);
 		return line.removeLineStationById(stationId);
+	}
+
+	public List<LineResponse> findAll() {
+		List<LineResponse> lineResponses = new ArrayList<>();
+		List<Line> lines = lineRepository.findAll();
+		for (Line line : lines) {
+			Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+			lineResponses.add(LineResponse.of(line, stations));
+		}
+		return lineResponses;
 	}
 }

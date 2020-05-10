@@ -8,8 +8,30 @@ function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const createSubwayEdgeModal = new Modal();
 
-  const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
+  const convertLines = (lines) => {
+    const newLine = [];
+    for (let l of lines) {
+      let o = {};
+      o.title = l.name;
+      o.bgColor = l.color;
+      o.stations = [];
+      for (let s of l.stations) {
+        o.stations.push(s.name);
+      }
+      newLine.push(o);
+    }
+    return newLine;
+  }
+
+  const getLines = () => {
+    return fetch("/lineStations")
+    .then(res => res.json());
+  }
+
+  const initSubwayLinesSlider = async () => {
+    const persistLines = await getLines();
+    const lines = convertLines(persistLines);
+    $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
     .join("");
     tns({

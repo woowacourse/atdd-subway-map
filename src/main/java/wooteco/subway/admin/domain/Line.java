@@ -109,12 +109,6 @@ public class Line {
 				.orElse(nextStation);
 	}
 
-	public List<Long> stationsId() {
-		return stations.stream()
-				.map(LineStation::getStationId)
-				.collect(Collectors.toList());
-	}
-
 	public Long getId() {
 		return id;
 	}

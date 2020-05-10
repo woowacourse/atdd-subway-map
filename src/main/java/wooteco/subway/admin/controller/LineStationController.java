@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineStationRequest;
+import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.LineStationService;
 
 @RestController
@@ -25,6 +27,11 @@ public class LineStationController {
 	@GetMapping("/admin-edge")
 	public ModelAndView adminEdge() {
 		return new ModelAndView("admin-edge");
+	}
+
+	@GetMapping("/lineStations")
+	public ResponseEntity<List<?>> lineStations() {
+		return ResponseEntity.ok(lineStationService.findAll());
 	}
 
 	@PostMapping("/lineStation")

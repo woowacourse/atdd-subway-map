@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
@@ -21,6 +22,11 @@ public class StationController {
 
 	public StationController(StationRepository stationRepository) {
 		this.stationRepository = stationRepository;
+	}
+
+	@GetMapping("/admin-station")
+	public ModelAndView adminLine() {
+		return new ModelAndView("admin-station");
 	}
 
 	@PostMapping("/stations")
