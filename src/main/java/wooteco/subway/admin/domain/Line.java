@@ -4,12 +4,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
 public class Line {
+    private static final int DEFAULT_INDEX = -1;
+
     @Id
     private Long id;
     private String name;
@@ -97,22 +98,48 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         if (stations.size() != 0) {
-            for (int i = 0; i < stations.size(); i++) {
-                if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
-                    stations.get(i).updatePreLineStation(lineStation.getStationId());
-                    stations.add(i, lineStation);
-                    return;
-                }
-            }
-            stations.add(lineStation);
-            return;
+            int index = findStationsIndex(lineStation);
+            addAtIndexDefault(lineStation, index);
+            addAtIndexNotDefault(lineStation, index);
         }
         if (stations.size() == 0) {
-            if (lineStation.getPreStationId() != null) {
-                stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
-            }
+            executePreStationIdNotNull(lineStation);
             stations.add(lineStation);
-            return;
+        }
+    }
+
+
+    private int findStationsIndex(LineStation lineStation) {
+        int index = DEFAULT_INDEX;
+        for (int i = 0; i < stations.size(); i++) {
+            index = getIndex(lineStation, index, i);
+        }
+        return index;
+    }
+
+    private int getIndex(LineStation lineStation, int index, int i) {
+        if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
+            stations.get(i).updatePreLineStation(lineStation.getStationId());
+            index = i;
+        }
+        return index;
+    }
+
+    private void addAtIndexDefault(LineStation lineStation, int index) {
+        if (index == DEFAULT_INDEX) {
+            stations.add(lineStation);
+        }
+    }
+
+    private void addAtIndexNotDefault(LineStation lineStation, int index) {
+        if (index != DEFAULT_INDEX) {
+            stations.add(index, lineStation);
+        }
+    }
+
+    private void executePreStationIdNotNull(LineStation lineStation) {
+        if (lineStation.getPreStationId() != null) {
+            stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
         }
     }
 
