@@ -27,10 +27,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        List<Line> persistLines = lineRepository.findAll();
-        boolean hasDuplicateName = persistLines.stream()
-            .anyMatch(persistLine -> persistLine.getName().equals(line.getName()));
-        if (hasDuplicateName) {
+        if (lineRepository.existsByName(line.getName())) {
             throw new IllegalArgumentException("중복된 노선 이름은 등록할 수 없습니다.");
         }
         return lineRepository.save(line);
