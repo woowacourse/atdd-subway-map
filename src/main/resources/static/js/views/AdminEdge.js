@@ -6,6 +6,7 @@ import {
 } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
+import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
 function AdminEdge() {
@@ -16,6 +17,8 @@ function AdminEdge() {
   const $currentSubwayStation = document.querySelector("#current-station-select-options");
   const $duration = document.querySelector("#duration");
   const $distance = document.querySelector("#distance");
+  const $subwayLinesItemTemplate = document.querySelector("#subway-lines-item-template");
+  const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
     let lines = await api.line.get();
