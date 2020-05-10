@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +24,7 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest request) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest request) {
         StationResponse response = stationService.save(request);
         return ResponseEntity
             .created(URI.create("/stations/" + response.getId()))
@@ -31,12 +32,12 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
+    public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAll());
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<?> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
