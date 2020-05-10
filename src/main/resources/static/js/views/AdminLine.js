@@ -1,6 +1,5 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, ERROR_MESSAGE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
@@ -31,6 +30,11 @@ function AdminLine() {
         const $target = event.target;
         const isCreateButton = $target.classList.contains("create-btn");
         if (isCreateButton) {
+            if (getSubwayLines().includes($subwayLineNameInput.value)) {
+                alert(ERROR_MESSAGE.NO_DUPLICATED);
+                $subwayLineNameInput.value = "";
+                return;
+            }
             const newSubwayLine = {
                 title: $subwayLineNameInput.value,
                 startTime: $subwayLineStartTimeInput.value,
@@ -52,7 +56,7 @@ function AdminLine() {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            const $targetLine = $target.parentNode.parentNode; //TODO 더 좋은 방법이..
+            const $targetLine = $target.parentNode.parentNode;
             const targetLineTitle = $targetLine.textContent.trim();
             $target.closest(".subway-line-item").remove();
             const lineByTitle = await findSubwayLineByTitle(targetLineTitle);
@@ -67,7 +71,7 @@ function AdminLine() {
         const isEditButton = $target.classList.contains("mdi-pencil");
         if (isEditButton) {
             subwayLineModal.toggle();
-            const $targetLine = $target.parentNode.parentNode; //TODO 더 좋은 방법이..
+            const $targetLine = $target.parentNode.parentNode;
             const lines = await api.line.get();
             lines.map(line => {
                 if (line.title === $targetLine.textContent.trim()) {
@@ -84,8 +88,13 @@ function AdminLine() {
 
     const onEditSubwayLine = async event => {
         const $target = event.target;
-        const isEditButton = !$target.classList.contains("create-btn"); // 나중에 다른 class로 수정
+        const isEditButton = !$target.classList.contains("create-btn");
         if (isEditButton) {
+            if (getSubwayLines().includes($subwayLineNameInput.value)) {
+                alert(ERROR_MESSAGE.NO_DUPLICATED);
+                $subwayLineNameInput.value = "";
+                return;
+            }
             const editSubwayLine = {
                 title: $subwayLineNameInput.value,
                 startTime: $subwayLineStartTimeInput.value,
@@ -115,15 +124,6 @@ function AdminLine() {
         return lines.find(line => line.title === title);
     }
 
-    const initDefaultSubwayLines = () => {
-        defaultSubwayLines.map(line => {
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(line)
-            );
-        });
-    };
-
     const initSubwayLines = async () => {
         const lines = await api.line.get();
         lines.map(line => {
@@ -132,6 +132,12 @@ function AdminLine() {
                 subwayLinesTemplate(line)
             );
         })
+    }
+
+    const getSubwayLines = () => {
+        return Array.from($subwayLineList.childNodes)
+            .map(x => x.textContent)
+            .map(x => x.trim());
     }
 
     const initEventListeners = () => {

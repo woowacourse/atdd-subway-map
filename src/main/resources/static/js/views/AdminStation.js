@@ -50,7 +50,7 @@ function AdminStation() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton && confirm("삭제?")) {
-      const $targetLine = $target.parentNode.parentNode; //TODO 더 좋은 방법이..
+      const $targetLine = $target.parentNode.parentNode;
       $target.closest(".list-item").remove();
       api.station.delete($targetLine.dataset.stationId).then();
     }
