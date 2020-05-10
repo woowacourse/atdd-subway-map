@@ -19,12 +19,11 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
-        Line persistLine = lineService.save(line);
+        LineResponse lineResponse = lineService.addLine(lineRequest);
 
         return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+                .created(URI.create("/lines/" + lineResponse.getId()))
+                .body(lineResponse);
     }
 
     @GetMapping("/lines/{id}")

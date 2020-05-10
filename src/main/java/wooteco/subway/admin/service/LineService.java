@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -20,8 +21,17 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse addLine(LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
+        validateDuplicate(line);
+        Line persistLine = lineRepository.save(line);
+        return LineResponse.of(persistLine);
+    }
+
+    private void validateDuplicate(Line line) {
+        if (lineRepository.findByName(line.getName()).isPresent()) {
+            throw new IllegalArgumentException("중복된 이름이 존재합니다.");
+        }
     }
 
     public List<LineResponse> showLines() {
