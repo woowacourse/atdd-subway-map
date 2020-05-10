@@ -90,56 +90,56 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (lineStation.isNotStarting()) {
+            findLineStationByStationId(lineStation.getPreStationId())
+                    .orElseThrow(NotFoundLineStationException::new);
+        }
+
         updatePreLineStation(lineStation.getPreStationId(), lineStation.getStationId());
         stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> Objects.equals(station.getStationId(), stationId))
-                .findFirst()
-                .orElseThrow(NotFoundLineStationException::new);
+        LineStation lineStation = findLineStationByStationId(stationId)
+                        .orElseThrow(NotFoundLineStationException::new);
 
         updatePreLineStation(stationId, lineStation.getPreStationId());
         stations.remove(lineStation);
     }
 
     private void updatePreLineStation(Long oldId, Long newId) {
-        stations.stream()
-                .filter(station -> Objects.equals(station.getPreStationId(), oldId))
-                .findFirst()
+        findNextLineStationByStationId(oldId)
                 .ifPresent(station -> station.updatePreLineStation(newId));
+    }
+
+    private Optional<LineStation> findLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(station -> station.isEqualToStationId(stationId))
+                .findFirst();
     }
 
     public List<Long> getLineStationsId() {
         List<Long> lineStationsId = new ArrayList<>();
+        Optional<LineStation> maybeLineStation = findStartLineStation();
 
-        if (stations.isEmpty()) {
-            return lineStationsId;
-        }
-
-        LineStation currentLineStation = findStartLineStation();
-
-        while (Objects.nonNull(currentLineStation)) {
-            Long currentLineStationId = currentLineStation.getStationId();
-            lineStationsId.add(currentLineStationId);
-            currentLineStation = findNextLineStationByStationId(currentLineStationId);
+        while (maybeLineStation.isPresent()) {
+            Long stationId = maybeLineStation.get().getStationId();
+            lineStationsId.add(stationId);
+            maybeLineStation = findNextLineStationByStationId(stationId);
         }
 
         return lineStationsId;
     }
 
-    private LineStation findStartLineStation() {
+    private Optional<LineStation> findStartLineStation() {
         return stations.stream()
-                .filter(station -> Objects.isNull(station.getPreStationId()))
-                .findFirst()
-                .orElseThrow(NotFoundLineStationException::new);
+                .filter(LineStation::isStarting)
+                .findFirst();
     }
 
-    private LineStation findNextLineStationByStationId(Long stationId) {
+    private Optional<LineStation> findNextLineStationByStationId(Long stationId) {
         return stations.stream()
-                .filter(station -> Objects.equals(station.getPreStationId(), stationId))
-                .findFirst()
-                .orElse(null);
+                .filter(station -> station.isEqualToPreStationId(stationId))
+                .findFirst();
     }
 }
