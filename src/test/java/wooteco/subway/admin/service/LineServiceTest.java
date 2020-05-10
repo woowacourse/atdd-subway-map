@@ -36,17 +36,17 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(2L, "2호선", null, LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line("2호선", "bg-yellow-400", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addLineStation(new LineStation(1L, 1L, 10, 10));
+        line.addLineStation(new LineStation(2L, 1L, 10, 10));
+        line.addLineStation(new LineStation(3L, 2L, 10, 10));
     }
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(4L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
@@ -60,30 +60,30 @@ public class LineServiceTest {
 
     @Test
     void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(4L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsIds().get(1)).isEqualTo(4L);
+        assertThat(line.getLineStationsIds().get(0)).isEqualTo(4L);
+        assertThat(line.getLineStationsIds().get(1)).isEqualTo(1L);
         assertThat(line.getLineStationsIds().get(2)).isEqualTo(2L);
         assertThat(line.getLineStationsIds().get(3)).isEqualTo(3L);
     }
 
     @Test
     void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(4L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsIds().get(1)).isEqualTo(2L);
-        assertThat(line.getLineStationsIds().get(2)).isEqualTo(3L);
-        assertThat(line.getLineStationsIds().get(3)).isEqualTo(4L);
+        assertThat(line.getLineStationsIds().get(0)).isEqualTo(4L);
+        assertThat(line.getLineStationsIds().get(1)).isEqualTo(1L);
+        assertThat(line.getLineStationsIds().get(2)).isEqualTo(2L);
+        assertThat(line.getLineStationsIds().get(3)).isEqualTo(3L);
     }
 
     @Test

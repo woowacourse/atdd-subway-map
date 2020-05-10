@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.dto.res.StationResponse;
 
@@ -65,12 +64,12 @@ public class LineStationAcceptanceTest {
         createStation("구의");
         createLine("2호선");
         //when
-        register(getStations(), 2L);
-        LineResponse line = getLine(2L);
+        register(getStations(), 1L);
+        LineResponse line = getLine(1L);
         //then
         assertThat(line.getStations().size()).isEqualTo(3);
         //when
-        final Station station = line.getStations().get(0);
+        final StationResponse station = line.getStations().get(0);
         //then
         assertThat(station.getName()).isEqualTo("강남");
         //when
@@ -78,7 +77,7 @@ public class LineStationAcceptanceTest {
         //then
         assertThat(statusCode).isEqualTo(204);
         //then
-        final LineResponse edgesAfterDelete = getLine(2L);
+        final LineResponse edgesAfterDelete = getLine(1L);
         assertThat(edgesAfterDelete.getStations().size()).isEqualTo(2);
     }
 
@@ -98,10 +97,10 @@ public class LineStationAcceptanceTest {
             StationResponse station = stations.get(i);
             Map<String, String> params = new HashMap<>();
             String previousId;
-            try {
+            if (i == 0) {
+                previousId = String.valueOf(station.getId());
+            } else {
                 previousId = String.valueOf(stations.get(i - 1).getId());
-            } catch (IndexOutOfBoundsException e) {
-                previousId = null;
             }
             params.put("preStationId", previousId);
             params.put("stationId", String.valueOf(station.getId()));
