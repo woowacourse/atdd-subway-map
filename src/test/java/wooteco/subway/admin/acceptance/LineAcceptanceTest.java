@@ -115,10 +115,10 @@ public class LineAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.BAD_REQUEST.value());
+            post("/lines")
+            .then()
+            .log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {

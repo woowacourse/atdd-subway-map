@@ -13,6 +13,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exceptions.DuplicateLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -28,7 +29,7 @@ public class LineService {
 
     public Line save(Line line) {
         if (lineRepository.existsByName(line.getName())) {
-            throw new IllegalArgumentException("중복된 노선 이름은 등록할 수 없습니다.");
+            throw new DuplicateLineException(line.getName());
         }
         return lineRepository.save(line);
     }
