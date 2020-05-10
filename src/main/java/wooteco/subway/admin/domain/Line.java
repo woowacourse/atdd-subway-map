@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.exception.DuplicatedLineStationException;
 import wooteco.subway.admin.exception.NotFoundLineStationException;
 
 import java.time.LocalDateTime;
@@ -90,6 +91,8 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        checkExistLineStation(lineStation);
+
         if (lineStation.isNotStarting()) {
             findLineStationByStationId(lineStation.getPreStationId())
                     .orElseThrow(NotFoundLineStationException::new);
@@ -97,6 +100,15 @@ public class Line {
 
         updatePreLineStation(lineStation.getPreStationId(), lineStation.getStationId());
         stations.add(lineStation);
+    }
+
+    private void checkExistLineStation(LineStation lineStation) {
+        findLineStationByStationId(lineStation.getStationId())
+                .ifPresent(station -> {
+                    if (station.isEqualToPreStationId(lineStation.getPreStationId())) {
+                        throw new DuplicatedLineStationException(station);
+                    }
+                });
     }
 
     public void removeLineStationById(Long stationId) {
