@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -32,7 +33,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
     }
 
@@ -46,7 +47,7 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         if(lineService.contains(lineRequest.getName())) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -58,7 +59,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
     }
@@ -69,13 +70,13 @@ public class LineController {
     }
 
     @GetMapping("/{id}/stations")
-    public ResponseEntity showLineStations(@PathVariable Long id) {
+    public ResponseEntity<List<LineStation>> showLineStations(@PathVariable Long id) {
         Line line = lineService.findById(id);
         return ResponseEntity.ok().body(line.getStations());
     }
 
     @PostMapping("/{id}/stations")
-    public ResponseEntity createLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+    public ResponseEntity<LineResponse> createLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         Line line = lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.ok().body(lineService.findLineWithStationsById(line.getId()));
     }
