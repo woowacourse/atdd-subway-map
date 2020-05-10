@@ -9,16 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +61,12 @@ public class LineStationAcceptanceTest {
 
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.
-		List<Station> lineStations = persistLine.getStations();
+		List<Station> stations = persistLine.getStations();
 		// And 새로 추가한 지하철역을 목록에서 찾는다.
-		assertEquals(lineStations.get(0).getId(), stationResponse1.getId());
-		assertEquals(lineStations.get(1).getId(), stationResponse2.getId());
-		assertEquals(lineStations.get(2).getId(), stationResponse3.getId());
-		assertEquals(lineStations.get(3).getId(), stationResponse4.getId());
+		assertEquals(stations.get(0).getId(), stationResponse1.getId());
+		assertEquals(stations.get(1).getId(), stationResponse2.getId());
+		assertEquals(stations.get(2).getId(), stationResponse3.getId());
+		assertEquals(stations.get(3).getId(), stationResponse4.getId());
 
 		// When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
 		deleteStationBy(persistLine.getId(), stationResponse4.getId());
@@ -79,9 +76,9 @@ public class LineStationAcceptanceTest {
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.
 		// And 제외한 지하철역이 목록에 존재하지 않는다.
-		assertThat(oneStationDeletedLine.getStations().get(0)).isNotEqualTo(stationResponse4);
-		assertThat(oneStationDeletedLine.getStations().get(1)).isNotEqualTo(stationResponse4);
-		assertThat(oneStationDeletedLine.getStations().get(2)).isNotEqualTo(stationResponse4);
+		assertThat(oneStationDeletedLine.getStations().get(0).getId()).isNotEqualTo(stationResponse4.getId());
+		assertThat(oneStationDeletedLine.getStations().get(1).getId()).isNotEqualTo(stationResponse4.getId());
+		assertThat(oneStationDeletedLine.getStations().get(2).getId()).isNotEqualTo(stationResponse4.getId());
 	}
 
 	private void deleteStationBy(Long lineId, Long stationId) {
@@ -92,10 +89,10 @@ public class LineStationAcceptanceTest {
 				log().all();
 	}
 
-	private LineWithStationsResponse getLineBy(Long lineId) {
-		return given()
-				.when().
-					get("/lines/" + lineId).
+	private LineWithStationsResponse getLineBy(Long id) {
+		return given().
+				when().
+					get("/lines/" + id).
 				then().
 					log().all().
 					extract().as(LineWithStationsResponse.class);

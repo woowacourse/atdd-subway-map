@@ -10,6 +10,9 @@ public class Station {
     private String name;
     private LocalDateTime createdAt;
 
+    public Station() { // todo 왜 이게 있어야 LineStationAcceptanceTest가 통과할까?
+    }
+
     public Station(String name) {
         this.name = name;
         this.createdAt = LocalDateTime.now();
