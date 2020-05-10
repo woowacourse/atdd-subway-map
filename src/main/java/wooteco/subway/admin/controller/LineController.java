@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.service.LineService;
@@ -29,19 +28,19 @@ public class LineController {
 
     @PostMapping
     ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line persistLine = lineService.save(lineRequest.toLine());
+        LineResponse persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+            .created(URI.create("/lines/" + persistLine.getId()))
+            .body(persistLine);
     }
 
     @GetMapping
     ResponseEntity<List<LineResponse>> getLines() {
-        List<Line> lines = lineService.showLines();
+        List<LineResponse> lines = lineService.showLines();
 
         return ResponseEntity
-                .ok(LineResponse.listOf(lines));
+            .ok(lines);
     }
 
     @GetMapping("/{id}")
@@ -49,15 +48,16 @@ public class LineController {
         LineResponse lineResponse = lineService.findLineById(id);
 
         return ResponseEntity
-                .ok(lineResponse);
+            .ok(lineResponse);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineService.updateLine(id, lineRequest.toLine());
+    ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
+        LineResponse line = lineService.updateLine(id, lineRequest.toLine());
 
         return ResponseEntity
-                .ok(LineResponse.of(line));
+            .ok(line);
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +65,7 @@ public class LineController {
         lineService.deleteLineById(id);
 
         return ResponseEntity
-                .noContent()
-                .build();
+            .noContent()
+            .build();
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
@@ -28,29 +27,30 @@ public class LineStationController {
     }
 
     @PostMapping("/{lineId}/stations")
-    ResponseEntity addLineStation(@PathVariable Long lineId,
-            @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        Line line = lineService.addLineStation(lineId, lineStationCreateRequest);
+    ResponseEntity<LineResponse> addLineStation(@PathVariable Long lineId,
+        @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        LineResponse line = lineService.addLineStation(lineId, lineStationCreateRequest);
 
         return ResponseEntity
-                .created(URI.create("/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-                .body(LineResponse.of(line));
+            .created(URI.create(
+                "/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
+            .body(line);
     }
 
     @GetMapping("/{lineId}/stations")
-    ResponseEntity getLineStations(@PathVariable Long lineId) {
+    ResponseEntity<LineStationsResponse> getLineStations(@PathVariable Long lineId) {
         LineStationsResponse lineStationsResponse = lineService.findLineStationsById(lineId);
 
         return ResponseEntity
-                .ok(lineStationsResponse);
+            .ok(lineStationsResponse);
     }
 
     @GetMapping("/stations")
-    ResponseEntity getLinesStations() {
+    ResponseEntity<List<LineStationsResponse>> getLinesStations() {
         List<LineStationsResponse> linesStations = lineService.findAllLineStations();
 
         return ResponseEntity
-                .ok(linesStations);
+            .ok(linesStations);
     }
 
     @DeleteMapping("{lineId}/stations/{stationId}")
@@ -58,7 +58,7 @@ public class LineStationController {
         lineService.removeLineStation(lineId, stationId);
 
         return ResponseEntity
-                .noContent()
-                .build();
+            .noContent()
+            .build();
     }
 }

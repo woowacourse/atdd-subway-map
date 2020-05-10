@@ -13,6 +13,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
 import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -26,30 +27,33 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse save(Line line) {
+        return LineResponse.of(lineRepository.save(line));
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> showLines() {
+        return lineRepository.findAll()
+            .stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
 
-        return lineRepository.save(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public Line addLineStation(Long lineId, LineStationCreateRequest request) {
+    public LineResponse addLineStation(Long lineId, LineStationCreateRequest request) {
         Line persistLine = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         persistLine.addLineStation(request.toLineStation());
 
-        return lineRepository.save(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -88,14 +92,17 @@ public class LineService {
         return LineStationsResponse.of(line, stations);
     }
 
-    public Station createStation(StationCreateRequest stationCreateRequest) {
+    public StationResponse createStation(StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
 
-        return stationRepository.save(station);
+        return StationResponse.of(stationRepository.save(station));
     }
 
-    public List<Station> findAllStations() {
-        return stationRepository.findAll();
+    public List<StationResponse> findAllStations() {
+        return stationRepository.findAll()
+            .stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
     public void deleteStationById(Long stationId) {

@@ -42,61 +42,6 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public String getBgColor() {
-        return bgColor;
-    }
-
-    public List<LineStation> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public void addLineStation(LineStation lineStation) {
         if (lineStation.isFirstStation()) {
             addLineStationAtFirst(lineStation);
@@ -146,6 +91,18 @@ public class Line {
         return index;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
     private LineStation findLineStationAt(int index) {
         return stations.get(index);
     }
@@ -154,5 +111,48 @@ public class Line {
         return stations.stream()
             .map(LineStation::getStationId)
             .collect(Collectors.toList());
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public String getBgColor() {
+        return bgColor;
+    }
+
+    public List<LineStation> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+        this.updatedAt = LocalDateTime.now();
     }
 }
