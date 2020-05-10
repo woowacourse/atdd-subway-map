@@ -65,8 +65,8 @@ public class LineStationAcceptanceTest {
         createStation("구의");
         createLine("2호선");
         //when
-        register(getStations(), 1L);
-        LineResponse line = getLine(1L);
+        register(getStations(), 2L);
+        LineResponse line = getLine(2L);
         //then
         assertThat(line.getStations().size()).isEqualTo(3);
         //when
@@ -78,7 +78,7 @@ public class LineStationAcceptanceTest {
         //then
         assertThat(statusCode).isEqualTo(204);
         //then
-        final LineResponse edgesAfterDelete = getLine(1L);
+        final LineResponse edgesAfterDelete = getLine(2L);
         assertThat(edgesAfterDelete.getStations().size()).isEqualTo(2);
     }
 
