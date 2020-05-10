@@ -117,20 +117,28 @@ public class Line {
             return lineStationsId;
         }
 
-        LineStation currentLineStation = stations.stream()
-                .filter(station -> Objects.isNull(station.getPreStationId()))
-                .findFirst()
-                .orElseThrow(NotFoundLineStationException::new);
+        LineStation currentLineStation = findStartLineStation();
 
         while (Objects.nonNull(currentLineStation)) {
             Long currentLineStationId = currentLineStation.getStationId();
             lineStationsId.add(currentLineStationId);
-            currentLineStation = stations.stream()
-                    .filter(station -> Objects.equals(station.getPreStationId(), currentLineStationId))
-                    .findFirst()
-                    .orElse(null);
+            currentLineStation = findNextLineStationByStationId(currentLineStationId);
         }
 
         return lineStationsId;
+    }
+
+    private LineStation findStartLineStation() {
+        return stations.stream()
+                .filter(station -> Objects.isNull(station.getPreStationId()))
+                .findFirst()
+                .orElseThrow(NotFoundLineStationException::new);
+    }
+
+    private LineStation findNextLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(station -> Objects.equals(station.getPreStationId(), stationId))
+                .findFirst()
+                .orElse(null);
     }
 }
