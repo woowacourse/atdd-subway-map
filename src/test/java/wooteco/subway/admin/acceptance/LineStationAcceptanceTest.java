@@ -83,7 +83,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/station").
+                post("/stations").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -102,7 +102,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/line").
+                post("/lines").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -120,7 +120,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/lineStation/" + lineId).
+                post("/lineStations/" + lineId).
         then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
@@ -129,7 +129,7 @@ public class LineStationAcceptanceTest {
     private void deleteLineStation(Long lineId, Long stationId) {
         given().
         when().
-                delete("/lineStation/" + lineId + "/" + stationId).
+                delete("/lineStations/" + lineId + "/" + stationId).
         then().
                 log().all();
     }
@@ -137,7 +137,7 @@ public class LineStationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/station").
+                    get("/stations").
                 then().
                     log().all().
                     extract().
@@ -148,7 +148,7 @@ public class LineStationAcceptanceTest {
         return
                 given().
                 when().
-                        get("/line").
+                        get("/lines").
                 then().
                         log().all().
                         extract().
@@ -159,7 +159,7 @@ public class LineStationAcceptanceTest {
         return
                 given().
                 when().
-                       get("/lineStation/" + lineId).
+                       get("/lineStations/" + lineId).
                 then().
                         log().all().
                         extract().

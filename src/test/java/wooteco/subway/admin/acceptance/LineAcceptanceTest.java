@@ -73,7 +73,7 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/line/" + id).
+                        get("/lines/" + id).
                 then().
                         log().all().
                         extract().as(LineResponse.class);
@@ -92,7 +92,7 @@ public class LineAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/line").
+                post("/lines").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -109,7 +109,7 @@ public class LineAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                put("/line/" + id).
+                put("/lines/" + id).
         then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
@@ -119,7 +119,7 @@ public class LineAcceptanceTest {
         return
                 given().
                 when().
-                        get("/line").
+                        get("/lines").
                 then().
                         log().all().
                         extract().
@@ -129,7 +129,7 @@ public class LineAcceptanceTest {
     private void deleteLine(Long id) {
         given().
                 when().
-                delete("/line/" + id).
+                delete("/lines/" + id).
                 then().
                 log().all();
     }

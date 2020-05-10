@@ -57,7 +57,7 @@ public class StationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/station").
+                post("/stations").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
@@ -66,7 +66,7 @@ public class StationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/station").
+                    get("/stations").
                 then().
                     log().all().
                     extract().
@@ -76,7 +76,7 @@ public class StationAcceptanceTest {
     private void deleteStation(String name) {
         given().
         when().
-                delete("/station/" + name).
+                delete("/stations/" + name).
         then().
                 log().all();
     }
