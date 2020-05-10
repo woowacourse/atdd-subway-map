@@ -1,16 +1,15 @@
 package wooteco.subway.admin.dto;
 
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -28,7 +27,7 @@ public class LineResponse {
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-                        LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+                        LocalDateTime createdAt, LocalDateTime updatedAt, String bgColor, Set<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -36,23 +35,24 @@ public class LineResponse {
         this.intervalTime = intervalTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.bgColor = bgColor;
         this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), new HashSet<>());
     }
 
     public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), stations);
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
+        return Collections.unmodifiableList(lines.stream()
                 .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     public Long getId() {
