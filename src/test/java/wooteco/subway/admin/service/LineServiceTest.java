@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -15,6 +16,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@Sql("/truncate.sql")
 public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
@@ -117,11 +120,11 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        Set<Station> stations = Sets.newLinkedHashSet(new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "삼성역"));
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        when(stationRepository.findAllById(anyList())).thenReturn(new ArrayList<>(stations));
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
