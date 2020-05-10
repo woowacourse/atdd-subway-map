@@ -3,24 +3,23 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table
-public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
+public class Edge {
     private Long preStationId;
     private Long stationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    public Edge() {
     }
 
-    public LineStation(Long preStationId, Long stationId) {
+    public Edge(Long preStationId, Long stationId) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = 0;
         this.duration = 0;
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public Edge(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;

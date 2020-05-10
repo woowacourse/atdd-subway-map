@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -17,7 +18,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private List<LineStation> stations = new ArrayList<>();
+    private List<Edge> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,6 +32,7 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
@@ -65,7 +67,7 @@ public class Line {
         return intervalTime;
     }
 
-    public List<LineStation> getStations() {
+    public List<Edge> getStations() {
         return stations;
     }
 
@@ -93,88 +95,94 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        LineStation beforeLineStation;
+    public void addEdge2(Edge edge) {
+        List<Edge> relatedEdges = stations.stream()
+                .filter(value -> value.getPreStationId().equals(edge.getPreStationId())
+                        || value.getStationId().equals(edge.getPreStationId()))
+                .collect(Collectors.toList());
+    }
+
+    public void addEdge(Edge edge) {
+        Edge beforeEdge;
 
         if (stations.isEmpty()) {
-            stations.add(lineStation);
+            stations.add(edge);
             return;
         }
-        if (lineStation.getPreStationId() == null) {
-            beforeLineStation = stations.get(0);
+        if (edge.getPreStationId() == null) {
+            beforeEdge = stations.get(0);
             stations.remove(0);
-            stations.add(0, new LineStation(lineStation.getStationId(), beforeLineStation.getStationId()));
-            stations.add(0, lineStation);
+            stations.add(0, new Edge(edge.getStationId(), beforeEdge.getStationId()));
+            stations.add(0, edge);
             return;
         }
         for (int i = 0; i < stations.size(); i++) {
-            LineStation lastLineStation = stations.get(stations.size() - 1);
+            Edge lastEdge = stations.get(stations.size() - 1);
 
-            if (lineStation.getPreStationId().equals(stations.get(i).getStationId())) {
-                if (lastLineStation.equals(stations.get(i))) {
-                    stations.add(lineStation);
+            if (edge.getPreStationId().equals(stations.get(i).getStationId())) {
+                if (lastEdge.equals(stations.get(i))) {
+                    stations.add(edge);
                     return;
                 }
-                LineStation nextLineStation = stations.get(i + 1);
-                stations.add(i + 1, lineStation);
-                stations.remove(nextLineStation);
-                stations.add(i + 2, new LineStation(lineStation.getStationId(), nextLineStation.getStationId()));
+                Edge nextEdge = stations.get(i + 1);
+                stations.add(i + 1, edge);
+                stations.remove(nextEdge);
+                stations.add(i + 2, new Edge(edge.getStationId(), nextEdge.getStationId()));
             }
         }
     }
 
-    public void removeLineStationById(Long stationId) {
+    public void removeEdgeById(Long stationId) {
         if (stations.isEmpty()) {
             return;
         }
         // LS size == 1 -> 자기 자신만 있을 때 삭제 예외 처리
         // 첫번째 station (1) 삭제 ->  (null 1)
-        if (findFirstLineStation().getStationId().equals(stationId)) {
-            LineStation originSecondLineStation = stations.get(1);
-            LineStation newFirstLineStation = new LineStation(null, originSecondLineStation.getStationId());
+        if (findFirstEdge().getStationId().equals(stationId)) {
+            Edge originSecondEdge = stations.get(1);
+            Edge newFirstEdge = new Edge(null, originSecondEdge.getStationId());
             stations.remove(0);
             stations.remove(0);
-            stations.add(0, newFirstLineStation);
+            stations.add(0, newFirstEdge);
             return;
         }
         // 마지막 station 삭제
-        if (findLastLineStation().getStationId().equals(stationId)) {
+        if (findLastEdge().getStationId().equals(stationId)) {
             stations.remove(stations.size() - 1);
             return;
         }
         // 중간 station 삭제
-        Map<String, LineStation> betweenLineStations = findBetweenLineStationsById(id);
+        Map<String, Edge> betweenEdges = findBetweenEdgeById(id);
         int index = findIndexByStationId(id);
-        LineStation before = betweenLineStations.get("before");
-        LineStation after = betweenLineStations.get("after");
+        Edge before = betweenEdges.get("before");
+        Edge after = betweenEdges.get("after");
         stations.remove(before);
         stations.remove(after);
-        LineStation lineStation = new LineStation(before.getPreStationId(), after.getStationId());
-        stations.add(index, lineStation);
+        Edge edge = new Edge(before.getPreStationId(), after.getStationId());
+        stations.add(index, edge);
     }
 
-    private LineStation findFirstLineStation() {
+    private Edge findFirstEdge() {
         return stations.get(0);
     }
 
-    private LineStation findLastLineStation() {
+    private Edge findLastEdge() {
         if (stations.size() == 1) {
             return stations.get(0);
         }
         return stations.get(stations.size() - 1);
     }
 
-    private Map<String, LineStation> findBetweenLineStationsById(Long id) {
-        Map<String, LineStation> map = new HashMap<>();
-        LineStation before = stations.stream()
+    private Map<String, Edge> findBetweenEdgeById(Long id) {
+        Map<String, Edge> map = new HashMap<>();
+        Edge before = stations.stream()
                 .filter(value -> value.getPreStationId() != null && value.getPreStationId().equals(id))
                 .findFirst()
                 .get();
-        LineStation after = stations.stream()
+        Edge after = stations.stream()
                 .filter(value -> value.getStationId().equals(id))
                 .findFirst()
                 .get();
@@ -192,12 +200,11 @@ public class Line {
         throw new IllegalArgumentException("해당 호선에 존재하지 않는 역입니다.");
     }
 
-    public List<Long> findLineStationsId() {
+    public List<Long> findEdgesId() {
         List<Long> stationsIds = new ArrayList<>();
-        for (LineStation lineStation : stations) {
-            stationsIds.add(lineStation.getStationId());
+        for (Edge edge : stations) {
+            stationsIds.add(edge.getStationId());
         }
         return stationsIds;
     }
-
 }

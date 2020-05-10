@@ -1,16 +1,16 @@
 package wooteco.subway.admin.dto.request;
 
-public class LineStationAddRequest {
+public class EdgeAddRequest {
     private String preStationName;
     private String stationName;
     private int distance;
     private int duration;
 
-    protected LineStationAddRequest() {
+    protected EdgeAddRequest() {
     }
 
 
-    public LineStationAddRequest(String preStationName, String stationName, int distance, int duration) {
+    public EdgeAddRequest(String preStationName, String stationName, int distance, int duration) {
         this.preStationName = preStationName;
         this.stationName = stationName;
         this.distance = distance;

@@ -1,10 +1,11 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.LineStationAddRequest;
+import wooteco.subway.admin.dto.request.EdgeAddRequest;
+import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
 import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 import wooteco.subway.admin.repository.LineRepository;
@@ -16,6 +17,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final String DUPLICATED_STATION_EXCEPTION_MESSAGE = "중복되는 역이 존재합니다.";
+    private static final String NO_LINE_EXCEPTION_MESSAGE = "존재하지 않는 노선입니다.";
+    private static final String NO_STATION_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
+    private static final String REQUIRE_LINE_NAME_EXCEPTION_MESSAGE = "노선의 이름을 입력해주세요.";
+
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -24,23 +30,27 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
-        validate(line);
+    public LineResponse save(LineRequest response) {
+        Line line = response.toLine();
+        validateLine(line);
         return LineResponse.of(lineRepository.save(line));
     }
 
-    private void validate(Line line) {
+    private void validateLine(Line line) {
         List<Line> savedLines = lineRepository.findAll();
+        if (line.getName() == null) {
+            throw new IllegalArgumentException(REQUIRE_LINE_NAME_EXCEPTION_MESSAGE);
+        }
         for (Line savedLine : savedLines) {
             if (savedLine.getName().equals(line.getName())) {
-                throw new IllegalArgumentException("중복되는 역이 존재합니다.");
+                throw new IllegalArgumentException(DUPLICATED_STATION_EXCEPTION_MESSAGE);
             }
         }
     }
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION_MESSAGE));
         return LineResponse.of(line);
     }
 
@@ -61,43 +71,24 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public StationsAtLineResponse addLineStation(Long id, LineStationAddRequest request) {
+    public StationsAtLineResponse addEdge(Long id, EdgeAddRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        LineStation lineStation = createLineStation(request);
-        line.addLineStation(lineStation);
+        Edge edge = createEdge(request);
+        line.addEdge(edge);
 
         Line savedLine = lineRepository.save(line);
         List<Station> stations = findStationsAtLine(savedLine);
         return new StationsAtLineResponse(savedLine, stations);
     }
 
-    private LineStation createLineStation(LineStationAddRequest request) {
+    private Edge createEdge(EdgeAddRequest request) {
         Long preStationId = stationRepository.findIdByName(request.getPreStationName());
         Long stationId = stationRepository.findIdByName(request.getStationName());
-        return new LineStation(preStationId, stationId, request.getDistance(), request.getDuration());
+        return new Edge(preStationId, stationId, request.getDistance(), request.getDuration());
     }
 
-    public List<Station> findStationsAtLine(Line savedLine) {
-        List<LineStation> lineStations = savedLine.getStations();
-        List<Station> stations = new ArrayList<>();
-
-        for (LineStation ls : lineStations) {
-            stations.add(stationRepository.findById(ls.getStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
-        }
-        return stations;
-    }
-
-    public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(IllegalArgumentException::new);
-        line.removeLineStationById(stationId);
-        lineRepository.save(line);
-        stationRepository.deleteById(stationId);
-    }
-
-    public List<StationsAtLineResponse> findAllLineStations() {
+    public List<StationsAtLineResponse> findAllEdges() {
         List<StationsAtLineResponse> response = new ArrayList<>();
 
         List<Line> lines = lineRepository.findAll();
@@ -106,5 +97,24 @@ public class LineService {
             response.add(new StationsAtLineResponse(line.getId(), line.getName(), line.getBgColor(), stations));
         }
         return response;
+    }
+
+    public List<Station> findStationsAtLine(Line savedLine) {
+        List<Edge> edges = savedLine.getStations();
+        List<Station> stations = new ArrayList<>();
+
+        for (Edge ls : edges) {
+            stations.add(stationRepository.findById(ls.getStationId())
+                    .orElseThrow(() -> new IllegalArgumentException(NO_STATION_EXCEPTION_MESSAGE)));
+        }
+        return stations;
+    }
+
+    public void removeEdge(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(IllegalArgumentException::new);
+        line.removeEdgeById(stationId);
+        lineRepository.save(line);
+        stationRepository.deleteById(stationId);
     }
 }

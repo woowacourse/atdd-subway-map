@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.LineStationAddRequest;
+import wooteco.subway.admin.dto.request.EdgeAddRequest;
 import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 
 import java.time.LocalTime;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
-public class LineStationAcceptanceTest {
+public class EdgeAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -58,7 +58,7 @@ public class LineStationAcceptanceTest {
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
-    void manageLineStation() {
+    void manageEdge() {
         //given
         Station station1 = createStation("잠실역");
         Station station2 = createStation("삼성역");
@@ -66,22 +66,22 @@ public class LineStationAcceptanceTest {
         Line line = createLine("2호선");
 
         //when 노선 추가
-        LineStationAddRequest lineStationAddRequest1 = new LineStationAddRequest(null, "잠실역", 10, 10);
-        LineStationAddRequest lineStationAddRequest2 = new LineStationAddRequest("잠실역", "삼성역", 10, 10);
-        LineStationAddRequest lineStationAddRequest3 = new LineStationAddRequest("삼성역", "강변역", 10, 10);
+        EdgeAddRequest edgeAddRequest1 = new EdgeAddRequest(null, "잠실역", 10, 10);
+        EdgeAddRequest edgeAddRequest2 = new EdgeAddRequest("잠실역", "삼성역", 10, 10);
+        EdgeAddRequest edgeAddRequest3 = new EdgeAddRequest("삼성역", "강변역", 10, 10);
 
-        addLineStation(line.getId(), lineStationAddRequest1);
-        addLineStation(line.getId(), lineStationAddRequest2);
-        StationsAtLineResponse response = addLineStation(line.getId(), lineStationAddRequest3);
+        addEdge(line.getId(), edgeAddRequest1);
+        addEdge(line.getId(), edgeAddRequest2);
+        StationsAtLineResponse response = addEdge(line.getId(), edgeAddRequest3);
 
         //then
         assertThat(response.getId()).isEqualTo(line.getId());
         assertThat(response.getStations().size()).isEqualTo(3);
 
         //when 노선의 지하철역 조회
-        List<StationsAtLineResponse> allLineStations = findAllLineStations();
+        List<StationsAtLineResponse> allEdges = findAllEdges();
         //then
-        List<Station> savedStations = allLineStations.get(0).getStations();
+        List<Station> savedStations = allEdges.get(0).getStations();
         List<String> savedStationNames = savedStations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
@@ -89,27 +89,27 @@ public class LineStationAcceptanceTest {
         assertThat(savedStationNames).contains("삼성역");
 
         //when 노선의 특정 지하철역 제거
-        deleteLineStation(line.getId(), station3.getId());
+        deleteEdge(line.getId(), station3.getId());
 
         //then
-        List<StationsAtLineResponse> deletedLineStations = findAllLineStations();
-        List<Station> deletedStations = deletedLineStations.get(0).getStations();
+        List<StationsAtLineResponse> deletedEdges = findAllEdges();
+        List<Station> deletedStations = deletedEdges.get(0).getStations();
         assertThat(deletedStations.size()).isEqualTo(2);
 
     }
 
-    private void deleteLineStation(Long lineId, Long stationId) {
+    private void deleteEdge(Long lineId, Long stationId) {
         given().when()
-                .delete("/lineStations/" + lineId + "/" + stationId)
+                .delete("/Edges/" + lineId + "/" + stationId)
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
     }
 
-    private List<StationsAtLineResponse> findAllLineStations() {
+    private List<StationsAtLineResponse> findAllEdges() {
         return given().
                 when().
-                get("/lineStations").
+                get("/Edges").
                 then().
                 log().all().
                 extract().
@@ -150,14 +150,12 @@ public class LineStationAcceptanceTest {
                 extract().as(Line.class);
     }
 
-    private StationsAtLineResponse addLineStation(Long lineId, LineStationAddRequest request) {
-        Map<String, Object> params = new HashMap<>();
-
+    private StationsAtLineResponse addEdge(Long lineId, EdgeAddRequest request) {
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lineStations/" + lineId)
+                .post("/Edges/" + lineId)
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .log().all()

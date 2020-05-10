@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -45,12 +44,6 @@ public class LineResponse {
                 line.getCreatedAt(),
                 line.getUpdatedAt(),
                 new ArrayList<>());
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-                .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList());
     }
 
     public Long getId() {
