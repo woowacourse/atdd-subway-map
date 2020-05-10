@@ -1,8 +1,4 @@
-import {
-	optionLineTemplate,
-	optionStationTemplate,
-	subwayLinesItemTemplate
-} from "../../utils/templates.js";
+import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -18,21 +14,21 @@ function AdminEdge() {
 	let subwayStations = null;
 	let subwayLines = null;
 
-	const getDatasetBySelection = value => {
+	const getDatasetByOption = value => {
 		const selectedIndex = value.selectedIndex;
 		return value.options[selectedIndex].dataset;
 	}
 
 	const onCreateSubwayEdge = async event => {
-		const selectedDepartStationId = getDatasetBySelection($subwayDepartInput).stationId;
-		const selectedArrivalStationId = getDatasetBySelection($subwayArrivalInput).stationId;
+		const selectedDepartStationId = getDatasetByOption($subwayDepartInput).stationId;
+		const selectedArrivalStationId = getDatasetByOption($subwayArrivalInput).stationId;
 		const edge = {
 			preStationId: selectedDepartStationId,
 			stationId: selectedArrivalStationId,
 			distance: 1000,
 			duration: 5
 		}
-		const selectedLineId = getDatasetBySelection($subwayLineInput).lineId;
+		const selectedLineId = getDatasetByOption($subwayLineInput).lineId;
 		await api.edge.update(selectedLineId, edge);
 	}
 
@@ -54,7 +50,7 @@ function AdminEdge() {
 
 	const initSubwayArrivalOptions = () => {
 		const subwayStationOptionTemplate = subwayStations
-			.map(station => optionStationTemplate(station))
+			.map(station => optionTemplate(station))
 			.join("");
 		$subwayArrivalInput.insertAdjacentHTML(
 			"afterbegin",
@@ -65,7 +61,7 @@ function AdminEdge() {
 	const initSubwayDepartOptions = () => {
 		const nullDepartStationOptionTemplate = `<option data-line-id="null">없음</option>`;
 		const subwayStationOptionTemplate = subwayStations
-			.map(station => optionStationTemplate(station))
+			.map(station => optionTemplate(station))
 			.join("");
 		$subwayDepartInput.insertAdjacentHTML(
 			"afterbegin",
@@ -75,7 +71,7 @@ function AdminEdge() {
 
 	const initSubwayLineOptions = () => {
 		const subwayLineOptionTemplate = subwayLines
-			.map(line => optionLineTemplate(line))
+			.map(line => optionTemplate(line))
 			.join("");
 		$subwayLineInput.insertAdjacentHTML(
 			"afterbegin",

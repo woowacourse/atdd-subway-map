@@ -32,7 +32,7 @@ function AdminLine() {
 	}
 
 	const initSubwayLine = () => ({
-		title: $subwayLineNameInput.value,
+		name: $subwayLineNameInput.value,
 		startTime: $subwayLineStartTimeInput.value,
 		endTime: $subwayLineEndTimeInput.value,
 		intervalTime: $subwayLineIntervalTimeInput.value,
@@ -43,10 +43,10 @@ function AdminLine() {
 		return subwayLines.find(line => line.id === parseInt(id));
 	}
 
-	const isDuplicate = title => {
+	const isDuplicate = name => {
 		const isDuplicateName = subwayLines
-			.map(line => line.title)
-			.includes(title);
+			.map(line => line.name)
+			.includes(name);
 		if (isDuplicateName) {
 			return true;
 		}
@@ -60,7 +60,7 @@ function AdminLine() {
 			return;
 		}
 		const newSubwayLine = initSubwayLine();
-		if (isDuplicate(newSubwayLine.title)) {
+		if (isDuplicate(newSubwayLine.name)) {
 			alert(ERROR_MESSAGE.NOT_DUPLICATE);
 			return;
 		}
@@ -79,8 +79,8 @@ function AdminLine() {
 			return;
 		}
 		const updateSubwayLine = initSubwayLine();
-		const existingSubwayLineTitle = $activeSubwayLineItem.textContent.trim();
-		if (isDuplicate(updateSubwayLine.title) && (existingSubwayLineTitle !== updateSubwayLine.title)) {
+		const existingSubwayLineName = $activeSubwayLineItem.textContent.trim();
+		if (isDuplicate(updateSubwayLine.name) && (existingSubwayLineName !== updateSubwayLine.name)) {
 			alert(ERROR_MESSAGE.NOT_DUPLICATE);
 			return;
 		}
@@ -107,7 +107,7 @@ function AdminLine() {
 			return;
 		}
 		const line = getSubwayLineById($activeSubwayLineItem.dataset.lineId);
-		$subwayLineNameInput.value = line.title;
+		$subwayLineNameInput.value = line.name;
 		$subwayLineStartTimeInput.value = line.startTime.slice(0, -3);
 		$subwayLineEndTimeInput.value = line.endTime.slice(0, -3);
 		$subwayLineIntervalTimeInput.value = line.intervalTime;

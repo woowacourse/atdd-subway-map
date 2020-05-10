@@ -5,30 +5,51 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+
+import wooteco.subway.admin.exception.LineStationException;
 
 public class Line {
+
 	@Id
+	@Column("id")
 	private Long id;
-	private String title;
+
+	@Column("name")
+	private String name;
+
+	@Column("start_time")
 	private LocalTime startTime;
+
+	@Column("end_time")
 	private LocalTime endTime;
+
+	@Column("interval_time")
 	private int intervalTime;
+
+	@Column("bg_color")
 	private String bgColor;
-	private Set<LineStation> stations = new LinkedHashSet<>();
+
+	@Column("created_at")
 	private LocalDateTime createdAt;
+
+	@Column("updated_at")
 	private LocalDateTime updatedAt;
+
+	private Set<LineStation> stations = new LinkedHashSet<>();
 
 	public Line() {
 	}
 
-	public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
 		String bgColor) {
 		this.id = id;
-		this.title = title;
+		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
@@ -37,21 +58,17 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime) {
-		this(id, title, startTime, endTime, intervalTime, "bgColor");
-	}
-
-	public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime,
+	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
 		String bgColor) {
-		this(null, title, startTime, endTime, intervalTime, bgColor);
+		this(null, name, startTime, endTime, intervalTime, bgColor);
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getName() {
+		return name;
 	}
 
 	public LocalTime getStartTime() {
@@ -83,93 +100,104 @@ public class Line {
 	}
 
 	public void update(Line line) {
-		if (line.getTitle() != null) {
-			this.title = line.getTitle();
+		if (Objects.nonNull(line.getName())) {
+			this.name = line.getName();
 		}
-		if (line.getStartTime() != null) {
+		if (Objects.nonNull(line.getStartTime())) {
 			this.startTime = line.getStartTime();
 		}
-		if (line.getEndTime() != null) {
+		if (Objects.nonNull(line.getEndTime())) {
 			this.endTime = line.getEndTime();
 		}
 		if (line.getIntervalTime() != 0) {
 			this.intervalTime = line.getIntervalTime();
 		}
-		if (line.getBgColor() != null) {
+		if (Objects.nonNull(line.getBgColor())) {
 			this.bgColor = line.getBgColor();
 		}
-
 		this.updatedAt = LocalDateTime.now();
 	}
 
 	public void addLineStation(LineStation lineStation) {
-		if (lineStation.getPreStationId() == null && stations.size() != 0) {
-			LineStation prevFirstLineStation = stations.stream()
-			                                           .filter(
-				                                           value -> value.getPreStationId() == null)
-			                                           .findFirst()
-			                                           .orElseThrow(NoSuchElementException::new);
-			prevFirstLineStation.updatePreLineStation(lineStation.getStationId());
-		} else if (stations.size() != 0) {
-			stations.stream()
-			        .filter(value -> value.getPreStationId() == lineStation.getPreStationId())
-			        .findFirst()
-			        .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+		if (stations.isEmpty()) {
+			if (Objects.nonNull(lineStation.getPreStationId())) {
+				throw new LineStationException("출발역이 존재하지 않습니다.");
+			}
+			stations.add(lineStation);
+			return;
+		}
+		if (isHeadStation(lineStation)) {
+			final LineStation headLineStation = findHeadLineStation();
+			headLineStation.updatePreLineStation(lineStation.getStationId());
+			stations.add(lineStation);
+			return;
+		}
+		final Optional<LineStation> lineStationByPreStationId = findLineStationByPreStationId(
+			lineStation.getPreStationId());
+		if (lineStationByPreStationId.isPresent()) {
+			lineStationByPreStationId.get().updatePreLineStation(lineStation.getStationId());
+			stations.add(lineStation);
+			return;
 		}
 		stations.add(lineStation);
 	}
 
+	private boolean isHeadStation(LineStation lineStation) {
+		return Objects.isNull(lineStation.getPreStationId());
+	}
+
+	private LineStation findHeadLineStation() {
+		return stations.stream()
+		               .filter(lineStation -> Objects.isNull(lineStation.getPreStationId()))
+		               .findFirst()
+		               .orElseThrow(() -> new LineStationException("출발역이 존재하지 않습니다."));
+	}
+
+	private Optional<LineStation> findLineStationByPreStationId(Long preStationId) {
+		return stations.stream()
+		               .filter(lineStation -> preStationId.equals(lineStation.getPreStationId()))
+		               .findFirst();
+	}
+
 	public void removeLineStationById(Long stationId) {
-		LineStation removeStation = stations.stream()
-		                                    .filter(value -> stationId.equals(value.getStationId()))
-		                                    .findFirst()
-		                                    .orElseThrow(NoSuchElementException::new);
+		final LineStation removeLineStation = findLineStationByStationId(stationId)
+			.orElseThrow(() -> new LineStationException("삭제하려는 역이 존재하지 않습니다."));
 
-		LineStation headStation = stations.stream()
-		                                  .filter(value -> value.getPreStationId() == null)
-		                                  .findFirst()
-		                                  .orElseThrow(NoSuchElementException::new);
-
-		if (stationId.equals(headStation.getStationId())) {
-			stations.remove(removeStation);
-			LineStation newHeadStation = stations.stream()
-			                                     .filter(value -> stationId.equals(
-				                                     value.getPreStationId()))
-			                                     .findFirst()
-			                                     .orElseThrow(NoSuchElementException::new);
-			newHeadStation.updatePreLineStation(null);
+		if (isHeadStation(removeLineStation)) {
+			stations.remove(removeLineStation);
+			findLineStationByPreStationId(stationId)
+				.ifPresent(lineStation -> lineStation.updatePreLineStation(null));
 			return;
 		}
+		stations.remove(removeLineStation);
+		findLineStationByPreStationId(stationId)
+			.ifPresent(lineStation -> lineStation
+				.updatePreLineStation(removeLineStation.getPreStationId()));
+	}
 
-		stations.stream()
-		        .filter(value -> stationId.equals(value.getPreStationId()))
-		        .findFirst()
-		        .ifPresent(lineStation -> lineStation.updatePreLineStation(
-			        removeStation.getPreStationId()));
-		stations.remove(removeStation);
+	private Optional<LineStation> findLineStationByStationId(Long stationId) {
+		return stations.stream()
+		               .filter(lineStation -> stationId.equals(lineStation.getStationId()))
+		               .findFirst();
 	}
 
 	public List<Long> getLineStationsId() {
-		List<Long> newStations = new ArrayList<>();
+		final List<Long> stationIds = new ArrayList<>();
 
-		if (!stations.isEmpty()) {
-			LineStation headStation = stations.stream()
-			                                  .filter(value -> value.getPreStationId() == null)
-			                                  .findFirst()
-			                                  .orElseThrow(NoSuchElementException::new);
-			newStations.add(headStation.getStationId());
+		if (stations.isEmpty()) {
+			return stationIds;
 		}
 
-		while (newStations.size() != stations.size()) {
-			newStations.add(stations.stream()
-			                        .filter(
-				                        value -> (newStations.get(newStations.size() - 1))
-					                        .equals(value.getPreStationId()))
-			                        .findFirst()
-			                        .map(LineStation::getStationId)
-			                        .orElseThrow(NoSuchElementException::new));
-		}
+		final LineStation headLineStation = findHeadLineStation();
+		stationIds.add(headLineStation.getStationId());
 
-		return newStations;
+		while (stationIds.size() != stations.size()) {
+			final Long stationId =
+				findLineStationByPreStationId(stationIds.get(stationIds.size() - 1))
+					.map(LineStation::getStationId)
+					.orElseThrow(() -> new LineStationException("라인의 구간에 오류가 존재합니다."));
+			stationIds.add(stationId);
+		}
+		return stationIds;
 	}
 }
