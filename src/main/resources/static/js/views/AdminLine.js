@@ -3,6 +3,7 @@ import api from "../../api/index.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
+import {markingErrorField} from "../../utils/validate.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
@@ -42,28 +43,23 @@ function AdminLine() {
 
     const onCreateSubwayLine = (newSubwayLine) => {
         return api.lines.create(newSubwayLine).then(data => {
-            if (data.error) {
-                alert("입력값을 입력해주세요.");
-            } else {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(data)
-                );
-            }
+            markingErrorField(data);
+            $subwayLineList.insertAdjacentHTML(
+                "beforeend",
+                subwayLinesTemplate(data)
+            );
         });
     }
 
+
     const onUpdateSubwayLine = (newSubwayLine) => {
         return api.lines.update($subwayLineId.value, newSubwayLine).then(data => {
-            if (data.error) {
-                alert("입력값을 입력해주세요.")
-            } else {
-                let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
-                let divNode = document.createElement("div");
-                divNode.innerHTML = subwayLinesTemplate(data);
-                $subwayLineList.insertBefore(divNode.firstChild, standardNode);
-                standardNode.remove();
-            }
+            markingErrorField(data);
+            let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
+            let divNode = document.createElement("div");
+            divNode.innerHTML = subwayLinesTemplate(data);
+            $subwayLineList.insertBefore(divNode.firstChild, standardNode);
+            standardNode.remove();
         })
     }
 

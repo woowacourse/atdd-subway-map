@@ -3,6 +3,7 @@ import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
+import {markingErrorField} from "../../utils/validate.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -37,6 +38,7 @@ function AdminEdge() {
         }
 
         api.lines.createLineStation(lineId, newSubwayEdge).then(data => {
+            markingErrorField(data);
             let sameLines = document.querySelectorAll(`[data-line-edge-id="${data.id}"]`);
             sameLines.forEach(line => {
                     line.lastElementChild.innerHTML = data.stations.map(station => listItemTemplate(station)).join("");
