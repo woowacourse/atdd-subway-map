@@ -11,4 +11,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void configureViewResolvers(ViewResolverRegistry registry) {
         registry.viewResolver(new InternalResourceViewResolver("./", ".html"));
     }
+
 }
