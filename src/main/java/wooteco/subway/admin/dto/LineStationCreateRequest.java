@@ -7,11 +7,11 @@ import javax.validation.constraints.PositiveOrZero;
 
 public class LineStationCreateRequest {
     private Long preStationId;
-    @NotNull
+    @NotNull(message = "현재역을 입력해주세요.")
     private Long stationId;
-    @PositiveOrZero
+    @PositiveOrZero(message = "구간 거리를 정확히 입력해주세요.")
     private int distance;
-    @PositiveOrZero
+    @PositiveOrZero(message = "소요 시간을 정확히 입력해주세요.")
     private int duration;
 
     public LineStationCreateRequest() {

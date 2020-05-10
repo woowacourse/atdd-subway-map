@@ -25,7 +25,24 @@ const METHOD = {
   }
 };
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config)
+    .then(res => {
+      if (!res.ok) {
+        throw res.json();
+      }
+      return res;
+    })
+    .then(data => data.json())
+    .catch(e => e.then(data => alert(data.message)));
+  const requestNoResponse = (uri, config) => fetch(uri, config)
+    .then(res => {
+      if (!res.ok) {
+        throw res.json();
+      }
+      return res;
+    })
+    .catch(e => e.then(data => alert(data.message)));
+
   const station = {
     get() {
       return request(`/stations`);
@@ -34,10 +51,10 @@ const api = (() => {
       return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return fetch(`/stations/${id}`, METHOD.PUT(data));
+      return requestNoResponse(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`/stations/${id}`, METHOD.DELETE());
+      return requestNoResponse(`/stations/${id}`, METHOD.DELETE());
     }
   };
   const line = {
@@ -51,10 +68,10 @@ const api = (() => {
       return request(`/lines`, METHOD.POST(data));
     },
     update(data, id) {
-      return fetch(`/lines/${id}`, METHOD.PUT(data));
+      return requestNoResponse(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`/lines/${id}`, METHOD.DELETE());
+      return requestNoResponse(`/lines/${id}`, METHOD.DELETE());
     }
   };
   const lineStation = {
@@ -62,10 +79,10 @@ const api = (() => {
       return request(`/lines/${lineId}/stations`);
     },
     create(data, lineId) {
-      return fetch(`/lines/${lineId}/stations`, METHOD.POST(data));
+      return requestNoResponse(`/lines/${lineId}/stations`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
-      return fetch(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      return requestNoResponse(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   };
   return {

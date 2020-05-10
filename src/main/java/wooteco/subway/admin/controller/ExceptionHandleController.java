@@ -20,7 +20,7 @@ public class ExceptionHandleController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorMessage handleValid(MethodArgumentNotValidException e, HttpServletResponse httpServletResponse) {
         httpServletResponse.setStatus(400);
-        return new ErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+        return new ErrorMessage(HttpStatus.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     @ExceptionHandler(DataAccessException.class)

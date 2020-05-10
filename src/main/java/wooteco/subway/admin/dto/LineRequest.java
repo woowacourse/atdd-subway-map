@@ -8,15 +8,15 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalTime;
 
 public class LineRequest {
-    @NotBlank
+    @NotBlank(message = "이름은 빈 값이 될 수 없습니다.")
     private String name;
-    @NotNull
+    @NotNull(message = "첫차 시간을 입력해주세요.")
     private LocalTime startTime;
-    @NotNull
+    @NotNull(message = "막차 시간을 입력해주세요.")
     private LocalTime endTime;
-    @PositiveOrZero
+    @PositiveOrZero(message = "간격을 정확히 입력해주세요.")
     private int intervalTime;
-    @NotNull
+    @NotNull(message = "색을 선택해주세요.")
     private String bgColor;
 
     public LineRequest() {
