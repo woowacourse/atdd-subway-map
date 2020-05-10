@@ -47,11 +47,21 @@ public class LineServiceTest {
     }
 
     @Test
-    void addLineWithDuplicate() {
+    void addLineWithDuplicateException() {
         when(lineRepository.findByName(line.getName())).thenReturn(Optional.of(line));
         assertThatThrownBy(() -> lineService.addLine(new LineRequest("2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "5")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 이름이 존재합니다.");
+    }
+
+    @Test
+    void addLineStationWithException() {
+        LineStationCreateRequest request = new LineStationCreateRequest(4L, 5L, 10, 10);
+
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        assertThatThrownBy(() -> lineService.addLineStation(line.getId(), request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 선행역이 존재하지 않습니다.");
     }
 
     @Test

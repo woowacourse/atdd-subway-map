@@ -14,11 +14,23 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation lineStation) {
+        validatePreLineStation(lineStation);
         lineStations.stream()
                 .filter(station -> Objects.equals(station.getPreStationId(), lineStation.getPreStationId()))
                 .findAny()
                 .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
         lineStations.add(lineStation);
+    }
+
+    private void validatePreLineStation(LineStation lineStation) {
+        if (isNotConnectable(lineStation)) {
+            throw new IllegalArgumentException("노선에 선행역이 존재하지 않습니다.");
+        }
+    }
+
+    private boolean isNotConnectable(LineStation lineStation) {
+        return !Objects.equals(lineStation.getPreStationId(), INIT_PRE_STATION_ID) && lineStations.stream()
+                .noneMatch(station -> station.isSameStationId(lineStation.getPreStationId()));
     }
 
     public void removeLineStationById(Long stationId) {
