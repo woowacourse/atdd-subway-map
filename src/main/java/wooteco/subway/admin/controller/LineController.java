@@ -10,6 +10,7 @@ import wooteco.subway.admin.service.LineService;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
     private LineService lineService;
 
@@ -17,7 +18,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.addLine(lineRequest);
 
@@ -26,23 +27,23 @@ public class LineController {
                 .body(lineResponse);
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
     }
 
-    @GetMapping("/lines")
+    @GetMapping
     public ResponseEntity showLines() {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
-    @PutMapping("/lines/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();

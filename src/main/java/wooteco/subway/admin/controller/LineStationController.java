@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/lines/{lineId}/stations")
 public class LineStationController {
     private LineService lineService;
 
@@ -17,7 +18,7 @@ public class LineStationController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines/{lineId}/stations")
+    @PostMapping
     public ResponseEntity createLineStation(@RequestBody LineStationCreateRequest lineStationCreateRequest, @PathVariable Long lineId) {
         lineService.addLineStation(lineId, lineStationCreateRequest);
         return ResponseEntity
@@ -25,7 +26,7 @@ public class LineStationController {
                 .build();
     }
 
-    @GetMapping("/lines/{lineId}/stations")
+    @GetMapping
     public ResponseEntity showLineStations(@PathVariable Long lineId) {
         List<StationResponse> stations = lineService.findLineWithStationsById(lineId).getStations();
         return ResponseEntity
@@ -33,7 +34,7 @@ public class LineStationController {
                 .body(stations);
     }
 
-    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    @DeleteMapping("/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity
