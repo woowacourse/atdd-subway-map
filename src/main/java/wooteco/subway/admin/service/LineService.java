@@ -63,18 +63,17 @@ public class LineService {
         return findLineWithStations(line);
     }
 
-    private LineWithStationsResponse findLineWithStations(Line line) {
-        List<Long> orderedStationIds = line.getStationsId();
-        List<Station> orderedStations = stationRepository.findByIds(orderedStationIds);
-        System.out.println("##"+orderedStations.size() + "#"+ orderedStationIds.size());
-        return LineWithStationsResponse.of(line, orderedStations);
-    }
-
     public List<LineWithStationsResponse> showLinesWithStations() {
         List<Line> lines = lineRepository.findAll();
         return Collections.unmodifiableList(
                 lines.stream()
                     .map(this::findLineWithStations)
                     .collect(Collectors.toList()));
+    }
+
+    private LineWithStationsResponse findLineWithStations(Line line) {
+        List<Long> orderedStationIds = line.getStationsId();
+        List<Station> orderedStations = stationRepository.findByIds(orderedStationIds);
+        return LineWithStationsResponse.of(line, orderedStations);
     }
 }
