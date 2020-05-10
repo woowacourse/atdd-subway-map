@@ -12,36 +12,11 @@ function AdminStation() {
 	const $stationInput = document.querySelector("#station-name");
 	const $stationList = document.querySelector("#station-list");
 	const $stationAddButton = document.querySelector("#station-add-btn");
-
-	const onCreateSubwayStation = async event => {
-		if (isInvalidKey(event)) {
-			return;
-		}
-		event.preventDefault();
-		const $stationNameInput = document.querySelector("#station-name");
-		const stationName = $stationNameInput.value;
-		$stationNameInput.value = "";
-		if (isInvalid(stationName) || isDuplicate(stationName)) {
-			return;
-		}
-		const station = {
-			name: stationName
-		}
-		await api.station.create(station);
-		const createdStation = await api.station.getByName(stationName);
-		$stationList.insertAdjacentHTML(
-			"beforeend",
-			listItemTemplate(createdStation)
-		);
-	};
+	let subwayStations = null;
 
 	const isInvalidKey = event => {
 		return (event.key !== KEY_TYPE.ENTER) && (event.button !== CLICK_TYPE.LEFT_CLICK);
 	}
-
-	const isInvalid = name => {
-		return isEmpty(name) || hasSpace(name) || hasNumber(name);
-	};
 
 	const isEmpty = name => {
 		if (!name) {
@@ -71,19 +46,42 @@ function AdminStation() {
 		return false;
 	};
 
+	const isInvalid = name => {
+		return isEmpty(name) || hasSpace(name) || hasNumber(name);
+	};
+
 	const isDuplicate = name => {
-		if (getStationNames().includes(name)) {
+		const isDuplicateName = subwayStations
+			.map(station => station.name).includes(name);
+		if (isDuplicateName) {
 			alert(ERROR_MESSAGE.NOT_DUPLICATE);
 			return true;
 		}
 		return false;
 	};
 
-	const getStationNames = () => {
-		return Array.from($stationList.childNodes)
-		            .map(x => x.textContent)
-		            .map(x => x.trim());
-	}
+	const onCreateSubwayStation = async event => {
+		if (isInvalidKey(event)) {
+			return;
+		}
+		event.preventDefault();
+		const $stationNameInput = document.querySelector("#station-name");
+		const stationName = $stationNameInput.value;
+		$stationNameInput.value = "";
+		if (isInvalid(stationName) || isDuplicate(stationName)) {
+			return;
+		}
+		const station = {
+			name: stationName
+		}
+		const createdStation = await api.station.create(station);
+		$stationList.insertAdjacentHTML(
+			"beforeend",
+			listItemTemplate(createdStation)
+		);
+	};
+
+	const isDeleteConfirmed = () => confirm(CONFIRM_MESSAGE.DELETE);
 
 	const onDeleteSubwayStation = async event => {
 		const $target = event.target;
@@ -95,8 +93,6 @@ function AdminStation() {
 		}
 	};
 
-	const isDeleteConfirmed = () => confirm(CONFIRM_MESSAGE.DELETE);
-
 	const initEventListeners = () => {
 		$stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onCreateSubwayStation);
 		$stationAddButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayStation);
@@ -104,8 +100,8 @@ function AdminStation() {
 	};
 
 	const initStationNames = async () => {
-		const stations = await api.station.get();
-		stations.forEach(station => {
+		subwayStations = await api.station.get();
+		subwayStations.forEach(station => {
 			$stationList.insertAdjacentHTML(
 				"beforeend",
 				listItemTemplate(station)
@@ -115,7 +111,7 @@ function AdminStation() {
 
 	const init = () => {
 		initEventListeners();
-		initStationNames().then();
+		initStationNames();
 	};
 
 	return {

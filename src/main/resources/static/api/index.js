@@ -25,57 +25,54 @@ const METHOD = {
 };
 
 const api = (() => {
-	const request = (uri, config) => fetch(uri, config).then(data => data.json());
-	const nonRequest = (uri, config) => fetch(uri, config);
+	const request = async (uri, config) => {
+		const data = await fetch(uri, config);
+		return await data.json();
+	}
+	const noDataRequest = async (uri, config) => await fetch(uri, config);
 
 	const station = {
-		get() {
-			return request(`/stations`);
+		async get() {
+			return await request(`/stations`);
 		},
-		getByName(name) {
-			return request(`/stations/${name}`);
+		async create(data) {
+			return await request(`/stations`, METHOD.POST(data));
 		},
-		create(data) {
-			return request(`/stations`, METHOD.POST(data));
+		async update(id, data) {
+			return await request(`/stations/${id}`, METHOD.PUT(data));
 		},
-		update(id, data) {
-			return request(`/stations/${id}`, METHOD.PUT(data));
-		},
-		delete(id) {
-			return nonRequest(`/stations/${id}`, METHOD.DELETE());
+		async delete(id) {
+			return await noDataRequest(`/stations/${id}`, METHOD.DELETE());
 		}
 	};
 
 	const line = {
-		get(id) {
-			if (!id) {
-				return request(`/lines`);
-			}
-			return request(`/lines/${id}`);
+		async get() {
+			return await request(`/lines`);
 		},
-		getByName(name) {
-			return request(`/lines/name/${name}`);
+		async getById(id) {
+			return await request(`/lines/${id}`);
 		},
-		create(data) {
-			return request(`/lines`, METHOD.POST(data));
+		async create(data) {
+			return await request(`/lines`, METHOD.POST(data));
 		},
-		update(id, data) {
-			return request(`/lines/${id}`, METHOD.PUT(data));
+		async update(id, data) {
+			return await request(`/lines/${id}`, METHOD.PUT(data));
 		},
-		delete(id) {
-			return nonRequest(`/lines/${id}`, METHOD.DELETE());
+		async delete(id) {
+			return await noDataRequest(`/lines/${id}`, METHOD.DELETE());
 		}
 	};
 
 	const edge = {
-		get(id) {
-			return request(`/lines/${id}/stations`);
+		async get(lineId) {
+			return await request(`/lines/${lineId}/stations`);
 		},
-		update(id, data) {
-			return request(`/lines/${id}/stations`, METHOD.PUT(data));
+		async update(lindId, data) {
+			return await request(`/lines/${lindId}/stations`, METHOD.PUT(data));
 		},
-		delete(lineId, stationId) {
-			return nonRequest(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+		async delete(lineId, stationId) {
+			return await noDataRequest(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
 		}
 	}
 

@@ -19,6 +19,7 @@ function AdminLine() {
 		"#subway-line-create-form #submit-button");
 	const $subwayLinesInfo = document.querySelector(".lines-info");
 	let $activeSubwayLineItem = null;
+	let subwayLines = null;
 
 	const subwayLineModal = new LineModal();
 
@@ -37,6 +38,10 @@ function AdminLine() {
 		intervalTime: $subwayLineIntervalTimeInput.value,
 		bgColor: $subwayLineColorInput.value
 	});
+
+	const getSubwayLineById = (id) => {
+		return subwayLines.find(line => line.id === parseInt(id));
+	}
 
 	const onCreateSubwayLine = async event => {
 		const $target = event.target;
@@ -75,14 +80,14 @@ function AdminLine() {
 		await api.line.delete($activeSubwayLineItem.dataset.lineId);
 	};
 
-	const onShowUpdateSubwayLineForm = async event => {
+	const onShowUpdateSubwayLineForm = event => {
 		const $target = event.target;
 		$activeSubwayLineItem = $target.closest(".subway-line-item");
 		const isUpdateButton = $target.classList.contains("mdi-pencil");
 		if (!isUpdateButton) {
 			return;
 		}
-		const line = await api.line.get($activeSubwayLineItem.dataset.lineId);
+		const line = getSubwayLineById($activeSubwayLineItem.dataset.lineId);
 		$subwayLineNameInput.value = line.title;
 		$subwayLineStartTimeInput.value = line.startTime.slice(0, -3);
 		$subwayLineEndTimeInput.value = line.endTime.slice(0, -3);
@@ -90,11 +95,11 @@ function AdminLine() {
 		$subwayLineColorInput.value = line.bgColor;
 	};
 
-	const onShowSubwayLineInfo = async event => {
+	const onShowSubwayLineInfo = event => {
 		const $target = event.target;
 		const isShowButton = $target.classList.contains("subway-line-item");
 		if (isShowButton) {
-			const line = await api.line.get($target.dataset.lineId);
+			const line = getSubwayLineById($target.dataset.lineId);
 			if (line) {
 				$subwayLinesInfo.innerHTML = subwayLineInfoTemplate(line);
 			}
@@ -102,8 +107,8 @@ function AdminLine() {
 	};
 
 	const initSubwayLines = async () => {
-		const lines = await api.line.get();
-		lines.forEach(line => {
+		subwayLines = await api.line.get();
+		subwayLines.forEach(line => {
 			$subwayLineList.insertAdjacentHTML(
 				"beforeend",
 				subwayLinesTemplate(line)
@@ -124,8 +129,7 @@ function AdminLine() {
 		event.preventDefault();
 		const $target = event.target;
 		if ($target.classList.contains("color-select-option")) {
-			document.querySelector("#subway-line-color").value =
-				$target.dataset.color;
+			document.querySelector("#subway-line-color").value = $target.dataset.color;
 		}
 	};
 
@@ -144,7 +148,7 @@ function AdminLine() {
 	};
 
 	this.init = () => {
-		initSubwayLines().then();
+		initSubwayLines();
 		initEventListeners();
 		initCreateSubwayLineForm();
 	};
