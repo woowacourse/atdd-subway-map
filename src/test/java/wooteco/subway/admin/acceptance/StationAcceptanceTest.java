@@ -54,21 +54,21 @@ public class StationAcceptanceTest {
         params.put("name", name);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/stations").
-        then().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/api/stations").
+            then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
 
     private List<StationResponse> getStations() {
         return given().
-                when().
-                    get("/stations").
-                then().
+            when().
+            get("/api/stations").
+            then().
                     log().all().
                     extract().
                     jsonPath().getList(".", StationResponse.class);
@@ -76,9 +76,9 @@ public class StationAcceptanceTest {
 
     private void deleteStation(Long id) {
         given().
-        when().
-                delete("/stations/" + id).
-        then().
+            when().
+            delete("/api/stations/" + id).
+            then().
                 log().all();
     }
 }
