@@ -23,7 +23,7 @@ function AdminLine() {
     event.preventDefault();
     const newSubwayLine = {
       name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value,
+      backgroundColor: $subwayLineColorInput.value,
       startTime: $subwayLineFirstTimeInput.value + ":00",
       endTime: $subwayLineLastTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
@@ -75,7 +75,7 @@ function AdminLine() {
       document.querySelector("#first-time").value = line.startTime.substr(0, 5);
       document.querySelector("#last-time").value = line.endTime.substr(0, 5);
       document.querySelector("#interval-time").value = line.intervalTime;
-      document.querySelector("#subway-line-color").value = line.bgColor;
+      document.querySelector("#subway-line-color").value = line.backgroundColor;
 
       document.querySelector(".modal").dataset.sourceId = id;
 
