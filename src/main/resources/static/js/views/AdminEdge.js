@@ -1,9 +1,8 @@
-import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
+import {listItemTemplate, optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
-
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -62,7 +61,6 @@ function AdminEdge() {
       api.lineStation.delete(lineId, targetId);
 
       $target.closest(".list-item").remove();
-
     }
   };
 
@@ -78,7 +76,12 @@ function AdminEdge() {
       stationName: stationName
     };
     api.lineStation.create(request)
-      .then(data => console.log(data));
+      .then(data => {
+        const listItem = listItemTemplate(data);
+        $subwayLinesSlider.insertAdjacentHTML("beforeend", listItem);
+      });
+    createSubwayEdgeModal.toggle();
+    location.href = location.href;
   };
 
   const initEventListeners = () => {
