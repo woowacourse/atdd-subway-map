@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="ko-KR">
 <head>
 	<meta charset="UTF-8"/>
 	<title>subway admin</title>
 	<meta
-		name="viewport"
 		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+		name="viewport"
 	/>
 	<link href="./lib/slider/tiny-slider.css" rel="stylesheet"/>
 	<link
@@ -29,28 +29,28 @@
 			<div class="flex-1 text-center">구간 관리</div>
 			<div class="flex-1 flex justify-end">
 				<button
-					id="subway-line-add-btn"
 					class="modal-open bg-transparent bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 text-sm px-3 py-1 rounded"
+					id="subway-line-add-btn"
 				>
 					구간 추가
 				</button>
 			</div>
 		</div>
 		<div class="flex relative">
-			<div id="slider-controls" class="hidden lg:block xl:block">
+			<div class="hidden lg:block xl:block" id="slider-controls">
 				<button
-					data-controls="prev"
 					aria-controls="customize"
-					tabindex="-1"
 					class="prev prev-btn top-50 z-10 absolute top-0 left-10px bg-white rounded-full h-8 w-8 text-base text-gray-600 hover:text-gray-400 focus:text-gray-400 -ml-6 focus:outline-none focus:shadow-outline"
+					data-controls="prev"
+					tabindex="-1"
 				>
 					<span class="block" style="transform: scale(-1);">&#x279c;</span>
 				</button>
 				<button
 					aria-controls="customize"
-					tabindex="-1"
-					data-controls="next"
 					class="next next-btn top-50 z-10 absolute top-0 right-10px bg-white rounded-full h-8 w-8 text-base text-gray-600 hover:text-gray-400 focus:text-gray-400 -mr-6 focus:outline-none focus:shadow-outline"
+					data-controls="next"
+					tabindex="-1"
 				>
 					<span class="block" style="transform: scale(1);">&#x279c;</span>
 				</button>
@@ -83,8 +83,8 @@
 					</label>
 					<div class="relative">
 						<select
-							id="line-select-options"
 							class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+							id="line-select-options"
 						>
 						</select>
 						<div
@@ -92,8 +92,8 @@
 						>
 							<svg
 								class="fill-current h-4 w-4"
-								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
+								xmlns="http://www.w3.org/2000/svg"
 							>
 								<path
 									d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
@@ -108,8 +108,8 @@
 							이전역
 						</label>
 						<select
-							id="depart-select-options"
 							class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+							id="depart-select-options"
 						>
 						</select>
 					</div>
@@ -126,8 +126,8 @@
 							대상역
 						</label>
 						<select
-							id="arrival-select-options"
 							class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+							id="arrival-select-options"
 						>
 						</select>
 					</div>
@@ -140,9 +140,9 @@
 						취소
 					</button>
 					<button
-						type="submit"
-						id="submit-button"
 						class="px-4 bg-yellow-500 hover:bg-yellow-400 hover:text-gray-700 text-gray-800 rounded text-white text-sm"
+						id="submit-button"
+						type="submit"
 					>
 						확인
 					</button>
@@ -152,7 +152,7 @@
 	</div>
 </div>
 
-<script type="module" src="./js/AdminApp.js"></script>
-<script type="module" src="./js/views/AdminEdge.js"></script>
+<script src="./js/AdminApp.js" type="module"></script>
+<script src="./js/views/AdminEdge.js" type="module"></script>
 </body>
 </html>

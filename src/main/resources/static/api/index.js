@@ -62,9 +62,6 @@ const api = (() => {
 	};
 
 	const edge = {
-		async get(lineId) {
-			return await request(`/lines/${lineId}/stations`);
-		},
 		async update(lindId, data) {
 			return await request(`/lines/${lindId}/stations`, METHOD.PUT(data));
 		},
