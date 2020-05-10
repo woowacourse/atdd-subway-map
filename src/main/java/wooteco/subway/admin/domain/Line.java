@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.springframework.data.annotation.Id;
 
@@ -102,10 +103,7 @@ public class Line {
 
 	public void addLineStation(LineStation lineStation) {
 		if (lineStation.getPreStationId() == null && stations.size() != 0) {
-			LineStation prevFirstLineStation = stations.stream()
-				.filter(value -> value.getPreStationId() == null)
-				.findFirst()
-				.orElseThrow(NoSuchElementException::new);
+			LineStation prevFirstLineStation = findLineStationWith(value -> value.getPreStationId() == null);
 			prevFirstLineStation.updatePreLineStation(lineStation.getStationId());
 		} else if (stations.size() != 0) {
 			stations.stream()
@@ -117,22 +115,12 @@ public class Line {
 	}
 
 	public void removeLineStationById(Long stationId) {
-		LineStation removeStation = stations.stream()
-			.filter(value -> stationId.equals(value.getStationId()))
-			.findFirst()
-			.orElseThrow(NoSuchElementException::new);
-
-		LineStation headStation = stations.stream()
-			.filter(value -> value.getPreStationId() == null)
-			.findFirst()
-			.orElseThrow(NoSuchElementException::new);
+		LineStation removeStation = findLineStationWith(value -> stationId.equals(value.getStationId()));
+		LineStation headStation = findLineStationWith(value -> value.getPreStationId() == null);
 
 		if (headStation.getStationId() == stationId) {
 			stations.remove(removeStation);
-			LineStation newHeadStation = stations.stream()
-				.filter(value -> stationId.equals(value.getPreStationId()))
-				.findFirst()
-				.orElseThrow(NoSuchElementException::new);
+			LineStation newHeadStation = findLineStationWith(value -> stationId.equals(value.getPreStationId()));
 			newHeadStation.updatePreLineStation(null);
 			return;
 		}
@@ -148,10 +136,7 @@ public class Line {
 		List<Long> newStations = new ArrayList<>();
 
 		if (!stations.isEmpty()) {
-			LineStation headStation = stations.stream()
-				.filter(value -> value.getPreStationId() == null)
-				.findFirst()
-				.orElseThrow(NoSuchElementException::new);
+			LineStation headStation = findLineStationWith(value -> value.getPreStationId() == null);
 			newStations.add(headStation.getStationId());
 		}
 
@@ -164,5 +149,12 @@ public class Line {
 		}
 
 		return newStations;
+	}
+
+	private LineStation findLineStationWith(Predicate<LineStation> expression) {
+		return stations.stream()
+			.filter(expression)
+			.findFirst()
+			.orElseThrow(NoSuchElementException::new);
 	}
 }
