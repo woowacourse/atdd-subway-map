@@ -80,7 +80,7 @@ function AdminStation() {
         }).then(res => res.json())
             .then(data => data.map(
                 station => {
-                    $subwayLineList.insertAdjacentHTML(
+                    $stationList.insertAdjacentHTML(
                         "beforeend",
                         listItemTemplate(station)
                     )
@@ -101,7 +101,7 @@ function AdminStation() {
             return true;
         }
         const $lists = document.querySelectorAll(".list-item");
-        for (let i = 0; $lists.length; i++) {
+        for (let i = 0; i < $lists.length; i++) {
             if ($lists[i].dataset.stationName === stationName) {
                 alert(ERROR_MESSAGE.NOT_SAME_STATATION);
                 return true;
