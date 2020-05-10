@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -30,11 +31,14 @@ public class LineStationResponse {
     }
 
     public static LineStationResponse of(LineStation lineStation, Station station, Station preStation) {
+        if (Objects.isNull(preStation)) {
+            return of(lineStation, station);
+        }
         return new LineStationResponse(lineStation.getStationId(), station.getName(), lineStation.getPreStationId(),
                 preStation.getName(), lineStation.getDistance(), lineStation.getDuration());
     }
 
-    public static LineStationResponse of(LineStation lineStation, Station station) {
+    private static LineStationResponse of(LineStation lineStation, Station station) {
         return new LineStationResponse(lineStation.getStationId(), station.getName(), null,
                 null, lineStation.getDistance(), lineStation.getDuration());
     }
@@ -43,20 +47,20 @@ public class LineStationResponse {
         if (lineStations.isEmpty()) {
             return Collections.emptyList();
         }
+        return generateLineStations(lineStations, stations);
+    }
 
+    private static List<LineStationResponse> generateLineStations(List<LineStation> lineStations,
+            Map<Long, Station> stations) {
         List<LineStationResponse> lineStationResponses = new ArrayList<>();
-        LineStation first = lineStations.get(0);
-        lineStationResponses.add(LineStationResponse.of(
-                first, stations.get(first.getStationId()))
-        );
+        // LineStation firstStation = lineStations.get(0);
+        // lineStationResponses.add(LineStationResponse.of(firstStation, stations.get(firstStation.getStationId())));
 
-        for (int index = 1; index < lineStations.size(); index++) {
+        for (int index = 0; index < lineStations.size(); index++) {
             LineStation lineStation = lineStations.get(index);
-            lineStationResponses.add(LineStationResponse.of(
-                    lineStation,
-                    stations.get(lineStation.getStationId()),
-                    stations.get(lineStation.getPreStationId()))
-            );
+            Station station = stations.get(lineStation.getStationId());
+            Station preStation = stations.get(lineStation.getPreStationId());
+            lineStationResponses.add(LineStationResponse.of(lineStation, station, preStation));
         }
         return lineStationResponses;
     }

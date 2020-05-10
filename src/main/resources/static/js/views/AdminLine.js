@@ -1,4 +1,4 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import api from "../../api/index.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate, timeTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
@@ -35,6 +35,9 @@ function AdminLine() {
                     "beforeend",
                     subwayLinesTemplate(line)
                 );
+            })
+            .catch(error => {
+                alert(ERROR_MESSAGE[error.message]);
             });
     };
 

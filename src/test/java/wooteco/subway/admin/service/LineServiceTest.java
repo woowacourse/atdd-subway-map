@@ -1,7 +1,6 @@
 package wooteco.subway.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +20,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
+import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -38,6 +38,10 @@ public class LineServiceTest {
     void setUp() {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-700");
         lineService = new LineService(lineRepository, stationRepository);
+
+        lineService.createStation(new StationCreateRequest("강남역"));
+        lineService.createStation(new StationCreateRequest("역삼역"));
+        lineService.createStation(new StationCreateRequest("삼성역"));
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
@@ -118,9 +122,9 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        List<Station> stations = Arrays.asList(new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        when(stationRepository.findAll()).thenReturn(stations);
 
         LineStationsResponse lineStationsResponse = lineService.findLineStationsById(1L);
 

@@ -41,6 +41,7 @@ function AdminStation() {
         }
         api.station.create({"name": stationName})
             .then(station => {
+                console.log(station);
                 $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
             })
             .catch(error => {

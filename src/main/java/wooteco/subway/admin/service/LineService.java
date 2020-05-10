@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
 import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -64,26 +64,26 @@ public class LineService {
     }
 
     public List<LineStationsResponse> findAllLineStations() {
+        Map<Long, Station> stations = generateStationMapper();
         return lineRepository.findAll()
                 .stream()
-                .map(line -> findLineStationsById(line.getId()))
+                .map(line -> LineStationsResponse.of(line, stations))
                 .collect(Collectors.toList());
     }
 
     public LineStationsResponse findLineStationsById(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
-        List<Long> lineStations = line.getStations()
-                .stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(RuntimeException::new);
+        Map<Long, Station> stations = generateStationMapper();
+        return LineStationsResponse.of(line, stations);
+    }
 
-        Map<Long, Station> stations = stationRepository.findAllById(lineStations)
+    private Map<Long, Station> generateStationMapper() {
+        return stationRepository.findAll()
                 .stream()
                 .collect(Collectors.toMap(
                         Station::getId,
                         station -> station));
-
-        return LineStationsResponse.of(line, stations);
     }
 
     public Station createStation(StationCreateRequest stationCreateRequest) {
@@ -91,8 +91,9 @@ public class LineService {
         return stationRepository.save(station);
     }
 
-    public List<Station> findAllStations() {
-        return stationRepository.findAll();
+    public List<StationResponse> findAllStations() {
+        List<Station> persistStations = stationRepository.findAll();
+        return StationResponse.listOf(persistStations);
     }
 
     public void deleteStationById(Long stationId) {

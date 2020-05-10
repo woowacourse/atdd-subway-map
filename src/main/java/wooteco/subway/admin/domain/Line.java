@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+
+import wooteco.subway.admin.exception.DuplicateLineStationException;
 
 public class Line {
     @Id
@@ -26,6 +30,7 @@ public class Line {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -95,26 +100,54 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.getPreStationId() == null) {
+        validateDuplicateLineStation(lineStation);
+        if (Objects.isNull(lineStation.getPreStationId())) {
             addLineStationAtFirst(lineStation);
         } else {
-            for (int index = 0; index < stations.size(); index++) {
-                LineStation currentLineStation = stations.get(index);
-                int nextIndex = index + 1;
-                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
-                        && nextIndex < stations.size()) {
-                    LineStation target = stations.get(nextIndex);
-                    target.updatePreLineStation(lineStation.getStationId());
-                    stations.add(nextIndex, lineStation);
-                    break;
-                }
-                if (currentLineStation.getStationId().equals(lineStation.getPreStationId())
-                        && nextIndex == stations.size()) {
-                    stations.add(lineStation);
-                    break;
-                }
+            addLineStationAfterFirst(lineStation);
+        }
+    }
+
+    private void validateDuplicateLineStation(LineStation lineStation) {
+        if (hasDuplicateLineStation(lineStation)) {
+            throw new DuplicateLineStationException();
+        }
+    }
+
+    private boolean hasDuplicateLineStation(LineStation lineStation) {
+        return stations.stream()
+                .anyMatch(station -> station.isSameStation(lineStation));
+    }
+
+    private void addLineStationAfterFirst(LineStation lineStation) {
+        for (int index = 0; index < stations.size(); index++) {
+            LineStation currentLineStation = stations.get(index);
+            int nextIndex = index + 1;
+            if (containsPreStationInBetween(lineStation, currentLineStation, nextIndex)) {
+                addLineInBetween(lineStation, nextIndex);
+                break;
+            }
+            if (containsPreStationAtLast(lineStation, currentLineStation, nextIndex)) {
+                stations.add(lineStation);
+                break;
             }
         }
+    }
+
+    private boolean containsPreStationInBetween(LineStation lineStation, LineStation currentLineStation,
+            int nextIndex) {
+        return currentLineStation.getStationId().equals(lineStation.getPreStationId()) && nextIndex < stations.size();
+    }
+
+    private boolean containsPreStationAtLast(LineStation lineStation, LineStation currentLineStation, int nextIndex) {
+        return currentLineStation.getStationId().equals(lineStation.getPreStationId())
+                && nextIndex == stations.size();
+    }
+
+    private void addLineInBetween(LineStation lineStation, int nextIndex) {
+        LineStation target = stations.get(nextIndex);
+        target.updatePreLineStation(lineStation.getStationId());
+        stations.add(nextIndex, lineStation);
     }
 
     private void addLineStationAtFirst(LineStation lineStation) {
@@ -125,11 +158,7 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-
+        LineStation lineStation = findLineStationByStationId(stationId);
         int targetIndex = findLineStationIndex(stationId);
         if (targetIndex != stations.size() - 1) {
             LineStation nextLineStation = stations.get(targetIndex + 1);
@@ -138,14 +167,18 @@ public class Line {
         stations.remove(lineStation);
     }
 
+    private LineStation findLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(station -> station.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
     private int findLineStationIndex(Long stationId) {
-        for (int index = 0; index < stations.size(); index++) {
-            LineStation currentLineStation = stations.get(index);
-            if (currentLineStation.getStationId().equals(stationId)) {
-                return index;
-            }
-        }
-        return 0;
+        return IntStream.range(0, stations.size())
+                .filter(index -> stations.get(index).isSameStationId(stationId))
+                .findAny()
+                .orElse(0);
     }
 
     public List<Long> getLineStationsId() {
