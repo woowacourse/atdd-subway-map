@@ -1,5 +1,3 @@
-const BASE_URL = "http://localhost:8080";
-
 const METHOD = {
     PUT(data) {
         return {
@@ -34,7 +32,7 @@ const api = (() => {
         get(path = "") {
             return request('/api/lines' + path);
         },
-        create(path = "", data) {
+        create(data, path = "") {
             return fetch(`/api/lines${path}`, METHOD.POST(data));
         },
         delete(path = "") {
