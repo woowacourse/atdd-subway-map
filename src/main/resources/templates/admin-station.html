@@ -40,7 +40,16 @@
       </div>
     </form>
     <div class="mt-5 flex station-list-container relative overflow-y-auto">
-      <div id="station-list" class="w-full"></div>
+      <div class="w-full" id="station-list">
+        {{#each stations}}
+        <div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
+          {{name}}
+          <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
+            <span class="mdi mdi-delete"></span>
+          </button>
+        </div>
+        {{/each}}
+      </div>
     </div>
   </div>
 </div>
