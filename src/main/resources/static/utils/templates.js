@@ -26,7 +26,9 @@ export const subwayLineInfoTemplate = line =>
     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>`;
 
-export const optionTemplate = value => `<option data-line-id="${value.id}">${value.name}</option>`;
+export const optionLineTemplate = value => `<option data-line-id="${value.id}">${value.name}</option>`;
+
+export const optionStationTemplate = value => `<option data-station-id="${value.id}">${value.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
     <div class="flex items-center flex-shrink-0 text-gray-800 w-full">

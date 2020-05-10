@@ -1,4 +1,8 @@
-import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
+import {
+	optionLineTemplate,
+	optionStationTemplate,
+	subwayLinesItemTemplate
+} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -50,7 +54,7 @@ function AdminEdge() {
 
 	const initSubwayArrivalOptions = () => {
 		const subwayStationOptionTemplate = subwayStations
-			.map(station => optionTemplate(station))
+			.map(station => optionStationTemplate(station))
 			.join("");
 		$subwayArrivalInput.insertAdjacentHTML(
 			"afterbegin",
@@ -61,7 +65,7 @@ function AdminEdge() {
 	const initSubwayDepartOptions = () => {
 		const nullDepartStationOptionTemplate = `<option data-line-id="null">없음</option>`;
 		const subwayStationOptionTemplate = subwayStations
-			.map(station => optionTemplate(station))
+			.map(station => optionStationTemplate(station))
 			.join("");
 		$subwayDepartInput.insertAdjacentHTML(
 			"afterbegin",
@@ -71,7 +75,7 @@ function AdminEdge() {
 
 	const initSubwayLineOptions = () => {
 		const subwayLineOptionTemplate = subwayLines
-			.map(line => optionTemplate(line))
+			.map(line => optionLineTemplate(line))
 			.join("");
 		$subwayLineInput.insertAdjacentHTML(
 			"afterbegin",

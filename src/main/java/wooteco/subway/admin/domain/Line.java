@@ -132,6 +132,11 @@ public class Line {
 			stations.add(lineStation);
 			return;
 		}
+		final boolean isAlreadyExistStation = findLineStationByStationId(lineStation.getStationId())
+			.isPresent();
+		if (isAlreadyExistStation) {
+			throw new LineStationException("이미 존재하는 역입니다.");
+		}
 		final Optional<LineStation> lineStationByPreStationId = findLineStationByPreStationId(
 			lineStation.getPreStationId());
 		if (lineStationByPreStationId.isPresent()) {
