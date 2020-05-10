@@ -7,6 +7,15 @@ function AdminStation() {
   const $stationList = document.querySelector("#station-list");
   const $stationAddBtn = document.querySelector("#station-add-btn");
 
+  const initDefaultStations = () => {
+    api.station.get()
+      .then(data => {
+        data.forEach(station => {
+          $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
+        });
+      });
+  };
+
   const onAddStationHandler = event => {
     if (event.key !== KEY_TYPE.ENTER && event.type !== EVENT_TYPE.CLICK) {
       return;
@@ -44,6 +53,7 @@ function AdminStation() {
 
   const init = () => {
     initEventListeners();
+    initDefaultStations();
   };
 
   return {
