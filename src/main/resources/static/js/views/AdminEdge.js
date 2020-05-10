@@ -1,6 +1,6 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
@@ -8,8 +8,9 @@ function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $createLineStationButton = document.querySelector("#submit-button");
     const $stationSelectOptions = document.querySelector("#station-select-options");
-    const createSubwayEdgeModal = new Modal();
+    const $arrivalStationName = document.querySelector("#arrival-station-name");
 
+    const createSubwayEdgeModal = new Modal();
     const initSubwayLinesSlider = () => {
         api.line.get().then(data => {
             $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line))
@@ -45,6 +46,10 @@ function AdminEdge() {
     };
 
     const onCreateLineStationHandler = async event => {
+        if(event.type !== EVENT_TYPE.CLICK && event.key !== KEY_TYPE.ENTER){
+            return;
+        }
+
         event.preventDefault();
         const stations = await api.station.get();
         const preStation = stations.find(station => station.name === document.querySelector("#depart-station-name").value);
@@ -82,6 +87,10 @@ function AdminEdge() {
         );
         $createLineStationButton.addEventListener(
             EVENT_TYPE.CLICK,
+            onCreateLineStationHandler
+        );
+        $arrivalStationName.addEventListener(
+            EVENT_TYPE.KEY_PRESS,
             onCreateLineStationHandler
         );
     };
