@@ -43,7 +43,7 @@ public class LineStation {
     }
 
     public boolean isSameStation(LineStation lineStation) {
-        return Objects.equals(preStationId, lineStation.stationId);
+        return Objects.equals(stationId, lineStation.stationId);
     }
 
     public boolean isDuplicatedPreStation(LineStation lineStation) {

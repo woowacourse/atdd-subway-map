@@ -23,11 +23,6 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    private boolean isDuplicated(LineStation lineStation) {
-        return lineStations.stream()
-                .anyMatch(station -> station.isSameStation(lineStation));
-    }
-
     private void validateLineStation(LineStation lineStation) {
         if (isNotConnectable(lineStation)) {
             throw new IllegalArgumentException("노선에 선행역이 존재하지 않습니다.");
@@ -35,6 +30,11 @@ public class LineStations {
         if (isDuplicated(lineStation)) {
             throw new IllegalArgumentException("이미 노선에 역이 존재합니다.");
         }
+    }
+
+    private boolean isDuplicated(LineStation lineStation) {
+        return lineStations.stream()
+                .anyMatch(station -> station.isSameStation(lineStation));
     }
 
     private boolean isNotConnectable(LineStation lineStation) {
