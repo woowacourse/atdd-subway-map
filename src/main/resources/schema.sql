@@ -41,6 +41,12 @@ insert into STATION values(9, '종합운동장', CURRENT_TIMESTAMP());
 insert into STATION values(10, '잠실새내', CURRENT_TIMESTAMP());
 insert into STATION values(11, '잠실', CURRENT_TIMESTAMP());
 
+insert into STATION values(12, '당고개', CURRENT_TIMESTAMP());
+insert into STATION values(13, '상계', CURRENT_TIMESTAMP());
+insert into STATION values(14, '노원', CURRENT_TIMESTAMP());
+insert into STATION values(15, '창동', CURRENT_TIMESTAMP());
+insert into STATION values(16, '쌍문', CURRENT_TIMESTAMP());
+
 insert into LINE values(1, '1호선', '05:30', '23:30', 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-blue-700');
 insert into LINE values(2, '2호선', '05:30', '23:30', 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-green-500');
 insert into LINE values(3, '3호선', '05:30', '23:30', 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 'bg-orange-500');

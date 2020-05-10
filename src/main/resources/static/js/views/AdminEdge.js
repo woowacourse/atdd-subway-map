@@ -7,6 +7,7 @@ import api from "../../api/index.js";
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $createLineStationButton = document.querySelector("#submit-button");
+  const $stationSelectOptions = document.querySelector("#line-select-options");
   const createSubwayEdgeModal = new Modal();
 
   let subwayLines = [];
@@ -35,7 +36,7 @@ function AdminEdge() {
     }
   }
 
-  const initSubwayLinesSlider = () => {
+  const initSubwayLinesSlider = async () => {
     $subwayLinesSlider.innerHTML = subwayLines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
@@ -53,18 +54,27 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
+  const initSubwayLineOptions = async () => {
     const subwayLineOptionTemplate = subwayLines
       .map(line => optionTemplate(line.title))
       .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#line-select-options"
-    );
     $stationSelectOptions.insertAdjacentHTML(
       "afterbegin",
       subwayLineOptionTemplate
     );
   };
+
+  async function initDepartStations() {
+    const lineName = $stationSelectOptions.options[$stationSelectOptions.selectedIndex].value;
+    const line = subwayLines.find(subway => subway["title"] === lineName);
+    const lineStations = ["출발역", ...line["stations"]];
+    const departOptionTemplate = lineStations
+        .map(lineStation => optionTemplate(lineStation))
+        .join("");
+    const $departStationOptions = document.querySelector("#depart-station-name");
+    $departStationOptions.innerHTML = "";
+    $departStationOptions.insertAdjacentHTML("afterbegin", departOptionTemplate);
+  }
 
   const onRemoveStationHandler = async event => {
     const $target = event.target;
@@ -111,19 +121,25 @@ function AdminEdge() {
     location.reload();
   };
 
+  async function initStation() {
+    await initDepartStations();
+  }
+
   const initEventListeners = async () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
     $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, await onCreateLineStation);
+    $stationSelectOptions.addEventListener(EVENT_TYPE.CHANGE, await initStation)
   };
 
   this.init = async () => {
     await initSubwayLines();
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
+    await initSubwayLinesSlider();
+    await initSubwayLineOptions();
     await initEventListeners();
+    await initDepartStations();
   };
 }
 
