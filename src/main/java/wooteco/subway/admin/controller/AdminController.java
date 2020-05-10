@@ -10,17 +10,17 @@ public class AdminController {
         return "index";
     }
 
-    @GetMapping("/admin-edge")
+    @GetMapping("/admin-edge.html")
     public String adminEdge() {
         return "admin-edge";
     }
 
-    @GetMapping("/admin-line")
+    @GetMapping("/admin-line.html")
     public String adminLine() {
         return "admin-line";
     }
 
-    @GetMapping("/admin-station")
+    @GetMapping("/admin-station.html")
     public String adminStation() {
         return "admin-station";
     }
