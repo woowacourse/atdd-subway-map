@@ -76,6 +76,7 @@ public class LineController {
 
     @PostMapping("{id}/edge")
     public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody final EdgeCreateRequest edgeCreateRequest) {
+        lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
 

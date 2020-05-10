@@ -6,12 +6,21 @@ import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js"
 
 function AdminEdge() {
+    const $stations = {};
+
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+    const $subwayCreateButton = document.querySelector("#submit-button");
+    const $line = document.querySelector("#station-select-options");
+    const $preStation = document.querySelector("#depart-station-name");
+    const $station = document.querySelector("#arrival-station-name");
+
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = () => {
         api.line.get().then((subwayLines) => {
-            console.log(subwayLines.body);
+            subwayLines.body.map(line =>
+                line.stations.map(station => $stations[station] = station.id));
+
             $subwayLinesSlider.innerHTML = subwayLines.body.map(line => subwayLinesItemTemplate(line))
                 .join("");
             tns({
@@ -31,16 +40,18 @@ function AdminEdge() {
     };
 
     const initSubwayLineOptions = () => {
-        const subwayLineOptionTemplate = defaultSubwayLines
-            .map(line => optionTemplate(line.title))
-            .join("");
-        const $stationSelectOptions = document.querySelector(
-            "#station-select-options"
-        );
-        $stationSelectOptions.insertAdjacentHTML(
-            "afterbegin",
-            subwayLineOptionTemplate
-        );
+        api.line.get().then(subwayLines => {
+            const subwayLineOptionTemplate = subwayLines.body
+                .map(line => optionTemplate(line))
+                .join("");
+            const $stationSelectOptions = document.querySelector(
+                "#station-select-options"
+            );
+            $stationSelectOptions.insertAdjacentHTML(
+                "afterbegin",
+                subwayLineOptionTemplate
+            );
+        });
     };
 
     const onRemoveStationHandler = event => {
@@ -51,11 +62,32 @@ function AdminEdge() {
         }
     };
 
+    const onCreateStationHandler = event => {
+        console.log($line.value);
+        event.preventDefault();
+        const edgeCreateRequest = {
+            preStationId: $stations[$preStation.value],
+            stationId: $stations[$station.value],
+        };
+
+        api.edge.create(edgeCreateRequest, $line.value)
+            .then(() => {
+                alert(`추가되었습니당`);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(
             EVENT_TYPE.CLICK,
             onRemoveStationHandler
         );
+        $subwayCreateButton.addEventListener(
+            EVENT_TYPE.CLICK,
+            onCreateStationHandler
+        )
     };
 
     this.init = () => {

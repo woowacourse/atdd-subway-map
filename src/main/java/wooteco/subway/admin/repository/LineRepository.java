@@ -14,4 +14,8 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("SELECT * FROM line WHERE name = :name")
     Optional<Line> findByName(@Param("name") String name);
+
+    @Override
+    Optional<Line> findById(Long id);
+
 }

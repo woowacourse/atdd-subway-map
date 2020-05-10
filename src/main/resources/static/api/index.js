@@ -72,8 +72,14 @@ const api = (() => {
         }
     };
 
+    const edge = {
+        create(data, id) {
+            return request(`/lines/${id}/edge`, METHOD.POST(data));
+        }
+    };
+
     return {
-        station, line
+        station, line, edge
     };
 })();
 
