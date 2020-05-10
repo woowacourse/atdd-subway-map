@@ -50,14 +50,15 @@ function AdminLine() {
   };
 
   const onReadSubwayLine = event => {
-    const lineId = event.currentTarget.firstElementChild.id;
+    const target = event.target;
+    const targetId = target.firstElementChild.id;
 
     api.line
-      .getBy(lineId)
+      .getBy(targetId)
       .then(data => showLineDetail(data));
   };
 
-  const addClickListeners = () => {
+  const addClickListenersOnNewLine = () => {
     $subwayLineList.lastChild.addEventListener(
       EVENT_TYPE.CLICK,
       onReadSubwayLine
@@ -82,7 +83,7 @@ function AdminLine() {
       "beforeend",
       subwayLinesTemplate(newSubwayLine)
     );
-    addClickListeners();
+    addClickListenersOnNewLine();
     closeAndResetModalValue();
   };
 
@@ -229,17 +230,19 @@ function AdminLine() {
     $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
   };
 
-  const initDefaultSubwayLines = () => { // 이벤트 위임으로 처리하셨다.
+  const initDefaultSubwayLines = () => {
     api.line.get()
       .then(data => {
         if (data.length === 0) {
           return;
         }
-        data.forEach(line =>
-          $subwayLineList.insertAdjacentHTML(
-            "beforeend",
-            subwayLinesTemplate(line)
-          )
+        data.forEach(line => {
+            $subwayLineList.insertAdjacentHTML(
+              "beforeend",
+              subwayLinesTemplate(line)
+            );
+            $subwayLineList.lastChild.addEventListener(EVENT_TYPE.CLICK, onReadSubwayLine);
+          }
         )
         ;
       });
