@@ -42,12 +42,16 @@ public class LineService {
     }
 
     private List<Station> findStations(Line line) {
-        return stationRepository.findAllById(line.getLineStationsId());
+        List<Station> stations = new ArrayList<>();
+        for (Long id : line.getLineStationsId()) {
+            stations.add(stationRepository.findById(id).get());
+        }
+        return stations;
     }
 
     public LineResponse showLine(Long id) {
         Line line = findById(id);
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
     }
 
@@ -56,7 +60,7 @@ public class LineService {
             Line line = findById(id);
             line.update(lineRequest.toLine());
             lineRepository.save(line);
-            List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+            List<Station> stations = findStations(line);
             return LineResponse.of(line, stations);
         } catch (Exception e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
@@ -88,7 +92,7 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long stationId) {
         Line line = findById(stationId);
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
     }
 }
