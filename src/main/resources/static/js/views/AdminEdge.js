@@ -58,8 +58,15 @@ function AdminEdge() {
     const onRemoveStationHandler = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
+        const $removeItem = $target.closest(".list-item");
+        const $line = $target.closest(".line-box");
+        const edgeDeleteRequest = {
+            stationId: $removeItem.dataset.id,
+        };
         if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+            api.edge.delete(edgeDeleteRequest, $line.dataset.id)
+                .then(() => $removeItem.remove())
+                .catch(err => alert(err.body.message));
         }
     };
 
@@ -72,11 +79,10 @@ function AdminEdge() {
 
         api.edge.create(edgeCreateRequest, $line.value)
             .then(() => {
-                alert(`추가되었습니다.`);
                 createSubwayEdgeModal.toggle();
             })
             .catch(error => {
-                console.error(error);
+                alert(error.body.message);
             });
     };
 

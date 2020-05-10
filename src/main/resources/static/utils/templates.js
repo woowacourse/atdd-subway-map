@@ -50,8 +50,8 @@ export const subwayLinesItemTemplate = line => {
         .join("");
     return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1" data-id="${line.id}">${line.title}</div>
-              <div class="overflow-y-auto height-90">
+              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
+              <div class="overflow-y-auto height-90 line-box" data-id="${line.id}">
               ${stationsTemplate}
               </div>
             </div>

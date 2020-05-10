@@ -10,9 +10,15 @@ const METHOD = {
             )
         };
     },
-    DELETE() {
+    DELETE(data) {
         return {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8"
+            },
+            body: JSON.stringify(
+                data
+            )
         };
     },
     POST(data) {
@@ -32,9 +38,10 @@ const resolver = (response) => {
     return new Promise((resolve, reject) => {
         let func;
         response.status < 400 ? func = resolve : func = reject;
-        response.json().then(data => func({'status': response.status, 'body': data}));
+        response.status != 204 ? response.json().then(data => func({'status': response.status, 'body': data}))
+            : func({});
     });
-}
+};
 
 const api = (() => {
     const request = (uri, config) => fetch(uri, config).then(resolver);
@@ -75,6 +82,9 @@ const api = (() => {
     const edge = {
         create(data, id) {
             return request(`/lines/${id}/edge`, METHOD.POST(data));
+        },
+        delete(data, id) {
+            return request(`/lines/${id}/edge`, METHOD.DELETE(data));
         }
     };
 
