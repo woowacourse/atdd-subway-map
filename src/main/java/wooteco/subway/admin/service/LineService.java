@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -45,6 +46,7 @@ public class LineService {
 		return result;
 	}
 
+	@Transactional
 	public Line updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id)
 				.orElseThrow(RuntimeException::new);
@@ -57,6 +59,7 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
+	@Transactional
 	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
@@ -71,6 +74,7 @@ public class LineService {
 		lineRepository.save(persistLine);
 	}
 
+	@Transactional
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
