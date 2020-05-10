@@ -1,5 +1,6 @@
 import {
     optionTemplate,
+    stationOptionTemplate,
     subwayLinesItemTemplate
 } from "../../utils/templates.js";
 import {defaultSubwayLines} from "../../utils/subwayMockData.js";
@@ -11,9 +12,9 @@ import api from "../../api/index.js";
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $subwayLineStationSubmitButton = document.querySelector("#submit-button");
-    const $subwayLineSelection = document.querySelector("#station-select-options");
-    const $subwayDepartStation = document.querySelector("#depart-station-name");
-    const $subwayArrivalStation = document.querySelector("#arrival-station-name");
+    const $subwayLineSelection = document.querySelector("#line-select-options");
+    const $subwayDepartStation = document.querySelector("#pre-station-select-options");
+    const $subwayArrivalStation = document.querySelector("#destination-station-select-options");
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = async () => {
@@ -40,24 +41,48 @@ function AdminEdge() {
         const subwayLineOptionTemplate = lines
             .map(line => optionTemplate(line))
             .join("");
-        const $stationSelectOptions = document.querySelector(
-            "#station-select-options"
+        const $lineSelectOptions = document.querySelector(
+            "#line-select-options"
         );
-        $stationSelectOptions.insertAdjacentHTML(
+        $lineSelectOptions.insertAdjacentHTML(
             "afterbegin",
             subwayLineOptionTemplate
         );
     };
 
-    const onCreateSubwayLineStation = async event => {
+    const initSubwayStationsOptions = async () => {
+        const stations = await api.station.get()
+        const subwayLineOptionTemplate = stations
+            .map(station => stationOptionTemplate(station))
+            .join("");
+        const $preStationSelectOptions = document.querySelector(
+            "#pre-station-select-options"
+        );
+        const $destinationStationSelectOptions = document.querySelector(
+            "#destination-station-select-options"
+        );
+        $preStationSelectOptions.insertAdjacentHTML(
+            "afterbegin",
+            subwayLineOptionTemplate
+        );
+        $destinationStationSelectOptions.insertAdjacentHTML(
+            "afterbegin",
+            subwayLineOptionTemplate
+        );
+    };
+
+    const onCreateSubwayLineStation = async () => {
+        const selectedLineIndex = $subwayLineSelection.selectedIndex;
+        const selectedArrivalStationIndex = $subwayArrivalStation.selectedIndex;
+        const selectedDepartStationIndex = $subwayDepartStation.selectedIndex;
         const lineStation = {
-            preStationName: $subwayDepartStation.value,
-            stationName: $subwayArrivalStation.value,
+            preStationId: $subwayDepartStation.options[selectedDepartStationIndex].dataset.stationId,
+            stationId: $subwayArrivalStation.options[selectedArrivalStationIndex].dataset.stationId,
             distance: 1000,
             duration: 5
         }
-        const selectedIndex = $subwayLineSelection.selectedIndex;
-        const selectedLineId = $subwayLineSelection.options[selectedIndex].dataset.lineId;
+        const selectedLineId = $subwayLineSelection.options[selectedLineIndex].dataset.lineId;
+        console.log(lineStation);
         await api.lineStation.update(lineStation, selectedLineId);
     }
 
@@ -83,6 +108,7 @@ function AdminEdge() {
     this.init = () => {
         initSubwayLinesSlider();
         initSubwayLineOptions();
+        initSubwayStationsOptions();
         initEventListeners();
     };
 }

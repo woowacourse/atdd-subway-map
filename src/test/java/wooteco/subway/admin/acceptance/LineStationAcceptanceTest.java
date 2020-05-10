@@ -64,8 +64,8 @@ public class LineStationAcceptanceTest {
 		createLine("1호선");
 		createLine("2호선");
 
-		addLineStation(1L, null, "신촌");
-		addLineStation(1L, "신촌", "잠실");
+		addLineStation(1L, null, 1L);
+		addLineStation(1L, 1L, 2L);
 		LineResponse line = getLine(1L);
 		assertThat(line.getStations()).hasSize(2);
 

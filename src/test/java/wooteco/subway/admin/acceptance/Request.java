@@ -106,10 +106,10 @@ public class Request {
 			.jsonPath().getList(".", StationResponse.class);
 	}
 
-	public static void addLineStation(Long lineId, String preStationName, String stationName) {
+	public static void addLineStation(Long lineId, Long preStationId, Long stationId) {
 		Map<String, String> params = new HashMap<>();
-		params.put("preStationName", preStationName);
-		params.put("stationName", stationName);
+		params.put("preStationId", String.valueOf(preStationId));
+		params.put("stationId", String.valueOf(stationId));
 		params.put("distance", "1000");
 		params.put("duration", "5");
 

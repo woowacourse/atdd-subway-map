@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationRequest;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
@@ -60,8 +60,8 @@ public class LineController {
 	}
 
 	@PutMapping("/lines/{id}/stations")
-	public ResponseEntity<Void> addLineStation(@PathVariable Long id, @RequestBody LineStationRequest view) {
-		service.addLineStation(id, view);
+	public ResponseEntity<Void> addLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest view) {
+		service.addLineStation(id, view.toLineStation());
 
 		return ResponseEntity.ok().build();
 	}

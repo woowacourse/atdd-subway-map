@@ -27,7 +27,7 @@ create table if not exists LINE_STATION
     distance int,
     duration int
 );
---
+
 -- INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('1호선', '15:00', '16:00', 10, 'bg-teal-400');
 -- INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('2호선', '07:00', '23:00', 10, 'bg-red-400');
 --
