@@ -51,7 +51,6 @@ function AdminLine() {
     }).then(response => {
       if (response.status >= 400) {
         alert("에러가 발생했습니다.");
-        statusCode
       }
       return response.json();
     })

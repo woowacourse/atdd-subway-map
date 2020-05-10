@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineRepository.findAll().stream()
-            .map(line -> LineResponse.of(line, mapLineStationsToStations(line.getStations())))
+            .map(line -> LineResponse.of(line, mapLineStationsToStations(line.getId())))
             .collect(Collectors.toList());
     }
 
@@ -78,13 +77,10 @@ public class LineService {
             .map(LineStation::getStationId)
             .collect(Collectors.toList());
 
-        return LineResponse.of(line, (ArrayList<Station>)stationRepository.findAllById(stationsId));
+        return LineResponse.of(line, stationRepository.findAllById(stationsId));
     }
 
-    private List<Station> mapLineStationsToStations(List<LineStation> lineStations) {
-        return lineStations.stream()
-            .map(lineStation -> stationRepository.findById(lineStation.getStationId())
-                .orElseThrow(WrongIdException::new))
-            .collect(Collectors.toList());
+    private List<Station> mapLineStationsToStations(Long lineId) {
+        return stationRepository.findAllOrderByKey(lineId);
     }
 }

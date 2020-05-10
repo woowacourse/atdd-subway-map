@@ -16,4 +16,12 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     @Override
     List<Station> findAll();
+
+    @Query("SELECT station.id, station.name, station.created_at "
+        + "FROM station INNER JOIN line_station ON station.id = line_station.station_id "
+        + "WHERE line_station.line = :lineId ORDER BY line_station.line_key")
+    List<Station> findAllOrderByKey(@Param("lineId") Long lineId);
+
+    @Override
+    List<Station> findAllById(Iterable<Long> longs);
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.admin.service;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -51,10 +52,10 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(4L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(1L);
-        assertThat(line.getStationsIds().get(2)).isEqualTo(2L);
-        assertThat(line.getStationsIds().get(3)).isEqualTo(3L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(4L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(1L);
+        assertThat(getStationsIds(line).get(2)).isEqualTo(2L);
+        assertThat(getStationsIds(line).get(3)).isEqualTo(3L);
     }
 
     @Test
@@ -65,10 +66,10 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(4L);
-        assertThat(line.getStationsIds().get(2)).isEqualTo(2L);
-        assertThat(line.getStationsIds().get(3)).isEqualTo(3L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(4L);
+        assertThat(getStationsIds(line).get(2)).isEqualTo(2L);
+        assertThat(getStationsIds(line).get(3)).isEqualTo(3L);
     }
 
     @Test
@@ -79,10 +80,10 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(2L);
-        assertThat(line.getStationsIds().get(2)).isEqualTo(3L);
-        assertThat(line.getStationsIds().get(3)).isEqualTo(4L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(2L);
+        assertThat(getStationsIds(line).get(2)).isEqualTo(3L);
+        assertThat(getStationsIds(line).get(3)).isEqualTo(4L);
     }
 
     @Test
@@ -91,8 +92,8 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 1L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(2L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(3L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(2L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(3L);
     }
 
     @Test
@@ -101,8 +102,8 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 2L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(3L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(3L);
     }
 
     @Test
@@ -111,8 +112,8 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 3L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStationsIds().get(0)).isEqualTo(1L);
-        assertThat(line.getStationsIds().get(1)).isEqualTo(2L);
+        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
+        assertThat(getStationsIds(line).get(1)).isEqualTo(2L);
     }
 
     @Test
@@ -125,5 +126,11 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
         assertThat(lineResponse.getStations()).hasSize(3);
+    }
+
+    private List<Long> getStationsIds(Line line) {
+        return line.getStations().stream()
+            .map(LineStation::getStationId)
+            .collect(toList());
     }
 }

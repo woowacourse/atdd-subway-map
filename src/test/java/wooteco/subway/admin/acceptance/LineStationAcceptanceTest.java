@@ -109,7 +109,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            delete("lineStations/lines/" + lineId + "/stations/" + stationId).
+            delete("line-stations/lines/" + lineId + "/stations/" + stationId).
             then().
             log().all().
             statusCode(HttpStatus.NO_CONTENT.value());
@@ -118,7 +118,7 @@ public class LineStationAcceptanceTest {
     private List<LineResponse> getLineStations() {
         return given().
             when().
-            get("/lineStations").
+            get("/lines").
             then().
             log().all().
             statusCode(HttpStatus.OK.value()).
@@ -140,7 +140,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/lineStations").
+            post("/line-stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value())

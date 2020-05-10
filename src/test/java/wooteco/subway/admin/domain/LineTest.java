@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
@@ -23,7 +24,7 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getStationsIds();
+        List<Long> stationIds = getStationsIds(line);
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -36,5 +37,11 @@ public class LineTest {
         line.removeLineStationById(stationId);
 
         assertThat(line.getStations()).hasSize(2);
+    }
+
+    private List<Long> getStationsIds(Line line) {
+        return line.getStations().stream()
+            .map(LineStation::getStationId)
+            .collect(toList());
     }
 }

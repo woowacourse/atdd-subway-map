@@ -1,7 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import static java.util.stream.Collectors.*;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -145,12 +143,6 @@ public class Line {
         }
 
         stations.remove(lineStation);
-    }
-
-    public List<Long> getStationsIds() {
-        return stations.stream()
-            .map(LineStation::getStationId)
-            .collect(toList());
     }
 
     private Optional<LineStation> nextLineStation(LineStation lineStation) {

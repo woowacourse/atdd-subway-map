@@ -13,7 +13,7 @@ function AdminEdge() {
   const initSubwayLinesSlider = () => {
     let statusCode;
 
-    fetch('/lineStations', {
+    fetch('/lines', {
       method: 'GET',
     }).then(response => {
       if (!response.ok) {
@@ -45,7 +45,7 @@ function AdminEdge() {
 
   const initSubwayLineOptions = () => {
 
-    fetch('/lineStations', {
+    fetch('/lines', {
       method: 'GET',
     }).then(response => response.json())
     .then(jsonResponse => {
@@ -77,7 +77,7 @@ function AdminEdge() {
 
     validate(data);
 
-    fetch('/lineStations', {
+    fetch('/line-stations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -110,6 +110,8 @@ function AdminEdge() {
           items: 1,
           edgePadding: 25
         });
+      } else {
+        $errorMessage.innerText = jsonResponse.message.value();
       }
     }).catch(error => {
       throw new Error(error);
@@ -156,7 +158,7 @@ function AdminEdge() {
 
       const lineId = $target.closest(".list-item").dataset.lineId;
       const stationId = $target.closest(".list-item").dataset.stationId;
-      fetch("lineStations/lines/" + lineId + "/stations/" + stationId, {
+      fetch("line-stations/lines/" + lineId + "/stations/" + stationId, {
         method: 'DELETE'
       }).catch(alert);
     }
