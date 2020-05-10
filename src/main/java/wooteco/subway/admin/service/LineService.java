@@ -2,9 +2,11 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -52,7 +54,9 @@ public class LineService {
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {
-		// TODO: 구현
-		return new LineResponse();
+		Line line = lineRepository.findById(id)
+				.orElseThrow(NoSuchElementException::new);
+		Set<Station> stations = stationRepository.findAllById(line.stationsId());
+		return LineResponse.of(line, stations);
 	}
 }
