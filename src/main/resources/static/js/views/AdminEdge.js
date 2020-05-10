@@ -96,10 +96,13 @@ function AdminEdge() {
 
   const onCreateLineStationHandler = async event => {
     const lineId = $subwayLine.childNodes[$subwayLine.selectedIndex].dataset.lineId;
-    const preStationId = $preSubwayStation.childNodes[$preSubwayStation.selectedIndex].dataset.preStationId;
+    let preStationId = $preSubwayStation.childNodes[$preSubwayStation.selectedIndex].dataset.preStationId;
     const stationId = $currentSubwayStation.childNodes[$currentSubwayStation.selectedIndex].dataset.currentStationId;
     const distance = $distance.value;
     const duration = $duration.value;
+    if (preStationId) {
+      preStationId = stationId;
+    }
     const newSubwayLineStation = {
       preStationId,
       stationId,

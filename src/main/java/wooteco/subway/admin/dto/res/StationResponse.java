@@ -41,4 +41,11 @@ public class StationResponse {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public static List<StationResponse> toStation(List<Station> stations) {
+        return stations.stream()
+            .map(station -> new StationResponse(station.getId(), station.getName(),
+                station.getCreatedAt()))
+            .collect(Collectors.toList());
+    }
 }

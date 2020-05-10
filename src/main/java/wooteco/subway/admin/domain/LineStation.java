@@ -21,7 +21,7 @@ public class LineStation {
     }
 
     public boolean isFirstOnLine() {
-        return this.preStationId == null;
+        return this.stationId == this.preStationId;
     }
 
     public boolean isSameWithPreStationId(LineStation lineStation) {

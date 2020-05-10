@@ -42,10 +42,6 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    private List<Station> findStations(Line line) {
-        return stationRepository.findAllByLineId(line.getId());
-    }
-
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         Line line = findById(id);
@@ -77,11 +73,6 @@ public class LineService {
         return LineResponse.of(line, stations);
     }
 
-    private Line findById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
-    }
-
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = findById(lineId);
         line.removeLineStationById(stationId);
@@ -89,9 +80,18 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineWithStationsById(Long stationId) {
+    public LineResponse findLineByStationId(Long stationId) {
         Line line = findById(stationId);
         List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+    }
+
+    private List<Station> findStations(Line line) {
+        return stationRepository.findAllByLineId(line.getId());
     }
 }
