@@ -22,7 +22,7 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this.name = name;
         this.color = color;
         this.startTime = startTime;
@@ -31,10 +31,6 @@ public class Line {
         this.stations = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, color, startTime, endTime, intervalTime);
     }
 
     public Long getId() {
