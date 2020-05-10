@@ -36,7 +36,7 @@ function AdminLine() {
                     const $subwayLineFirstTime = document.querySelector("#start-subway-time");
                     $subwayLineFirstTime.innerText = data.startTime.substring(0, 5);
                     const $subwayLineLastTime = document.querySelector("#last-subway-time");
-                $subwayLineLastTime.innerText = data.endTime.substring(0, 5);
+                    $subwayLineLastTime.innerText = data.endTime.substring(0, 5);
                     const $subwayLineIntervalTime = document.querySelector("#subway-interval-time");
                     $subwayLineIntervalTime.innerText = data.intervalTime + "분";
                 }
@@ -48,7 +48,7 @@ function AdminLine() {
         const $target = event.target;
         const $subwayLineItem = $target.closest(".subway-line-item");
         $activeSubwayLineItem = $subwayLineItem;
-        const $submitButton =  document.querySelector('#submit-button');
+        const $submitButton = document.querySelector('#submit-button');
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (!isUpdateButton) {
             return

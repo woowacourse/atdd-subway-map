@@ -71,17 +71,17 @@ public class LineStationAcceptanceTest {
     }
 
     private void getStationsOfLineButCanNotFind(long lineId) {
-        given()
-                .when().
-                get("/lines/" + lineId)
-                .then()
-                .log().all().
+        given().
+                when().
+                get("/lines/" + lineId).
+                then().
+                log().all().
                 statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     private void deleteStationOfLine(long lineId) {
-        given()
-                .when().
+        given().
+                when().
                 delete("/lines/" + lineId).
                 then().
                 log().all().
@@ -90,8 +90,8 @@ public class LineStationAcceptanceTest {
     }
 
     private void getStationsOfLine(long lineId) {
-        given()
-                .when().
+        given().
+                when().
                 get("/lines/" + lineId + "/stations").
                 then().
                 log().all().
@@ -135,13 +135,12 @@ public class LineStationAcceptanceTest {
     }
 
     private void registerStation(Long id) {
-
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
+
         given().
                 body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
-
         when().
                 post("/lines/" + id + "/register").
         then().
@@ -150,8 +149,8 @@ public class LineStationAcceptanceTest {
     }
 
     private void getLine(Long id) {
-        given()
-                .when().
+        given().
+                when().
                 get("/lines/" + id).
                 then().
                 log().all().

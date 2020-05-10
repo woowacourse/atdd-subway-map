@@ -13,16 +13,8 @@ function AdminEdge() {
     const initSubwayLinesSlider = () => {
 
         api.line.get().then(subwayLines => {
-                // subwayLines.forEach(subwayLine => {
-                //     let stations = subwayLine.stations;
-                //     // subwayLine.stations = stations.map(station => station.name);
-                // });
-
-
                 $subwayLinesSlider.innerHTML = subwayLines
                     .map(line => {
-                            console.log("쿨쿨");
-                            console.log(line);
                             const subwayLine = {title: line.title, bgColor: line.bgColor, stations: line.stations,}
                             return subwayLinesItemTemplate(subwayLine);
                         }
@@ -43,8 +35,6 @@ function AdminEdge() {
                 });
             }
         );
-
-
     };
 
     const initSubwayLineOptions = () => {
@@ -65,7 +55,7 @@ function AdminEdge() {
         });
     };
 
-    const onSubwayLineAddBtnClicked = event => {
+    const onSubwayLineAddBtnClicked = () => {
         $submitButton.classList.add('subway-line-add-button');
     };
 
@@ -75,14 +65,6 @@ function AdminEdge() {
             return;
         }
         const $selectOptions = document.querySelector("#station-select-options");
-        let lineName = $selectOptions[$selectOptions.selectedIndex].value;
-        let departStationName = document.querySelector("#depart-station-name").value;
-        let arrivalStationName = document.querySelector("#arrival-station-name").value;
-
-        console.log("ㅗㅗㅗㅗ");
-        console.log(lineName);
-        console.log(departStationName);
-        console.log(arrivalStationName);
         const lineStationDto = {
             name: $selectOptions[$selectOptions.selectedIndex].value,
             preStationName: document.querySelector("#depart-station-name").value,
@@ -93,7 +75,7 @@ function AdminEdge() {
         console.log(lineStationDto);
         api.line
             .registerLineStation(lineStationDto)
-            .then(response => createSubwayEdgeModal.toggle());
+            .then(() => createSubwayEdgeModal.toggle());
     };
 
     const onRemoveStationHandler = event => {
@@ -112,7 +94,6 @@ function AdminEdge() {
             EVENT_TYPE.CLICK,
             onRemoveStationHandler
         );
-
         $subwayLineAddButton.addEventListener(
             EVENT_TYPE.CLICK,
             onSubwayLineAddBtnClicked
@@ -121,8 +102,6 @@ function AdminEdge() {
             EVENT_TYPE.CLICK,
             onSubmitClicked
         );
-
-
     };
 
     this.init = () => {

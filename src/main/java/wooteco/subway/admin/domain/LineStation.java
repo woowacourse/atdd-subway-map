@@ -7,11 +7,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public class LineStation {
     @Column("station")
     private Long stationId;
-
-    public void setPreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
     @Column("pre_station")
     private Long preStationId;
     private int distance;

@@ -1,5 +1,5 @@
-import { EVENT_TYPE, ERROR_MESSAGE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate } from "../../utils/templates.js";
+import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {listItemTemplate} from "../../utils/templates.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");

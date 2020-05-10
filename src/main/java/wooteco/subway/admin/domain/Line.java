@@ -103,7 +103,6 @@ public class Line {
             this.stations.add(lineStation);
             this.stations.addAll(tmp);
             return;
-
         }
 
         if (lineStation.getPreStationId() != null && this.stations != null) {
@@ -116,17 +115,15 @@ public class Line {
                     this.stations.add(lineStationGot);
                 } else {
                     this.stations.add(lineStation);
-                    lineStationGot.setPreStationId(lineStation.getStationId());
+                    lineStationGot.updatePreLineStation(lineStation.getStationId());
                     this.stations.add(lineStationGot);
                 }
             }
-
         }
 
         if (this.stations == null) {
             this.stations = new LinkedHashSet<>();
         }
-
 
         this.stations.add(lineStation);
     }
