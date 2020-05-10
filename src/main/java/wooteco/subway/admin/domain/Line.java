@@ -104,7 +104,6 @@ public class Line {
         }
 
         LineStation nextStation;
-
         if (lineStation.isFirstStation()) {
             nextStation = listStations.stream()
                     .filter(LineStation::isFirstStation)

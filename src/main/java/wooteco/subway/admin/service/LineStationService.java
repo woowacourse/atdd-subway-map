@@ -21,7 +21,6 @@ public class LineStationService {
 
     public LineStation createLineStation(final Long lineId, final Long preStationId,
                                          final Long stationId, final int distance, final int duration) {
-
         final Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
         final LineStation lineStation = new LineStation(lineId, preStationId, stationId, distance, duration);
 

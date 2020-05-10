@@ -10,9 +10,11 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -31,6 +33,11 @@ public class LineService {
 
     public List<Line> showLines() {
         return lineRepository.findAll();
+    }
+
+    public Line findLineById(final Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public void updateLine(Long id, Line line) {
@@ -59,14 +66,17 @@ public class LineService {
         line.removeLineStationById(stationId);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
+    public LineResponse findLineWithStationsById(final Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
-        LineResponse lineResponse = LineResponse.of(line);
-        Set<Station> stations = (Set<Station>) stationRepository.findAllById(line.getLineStationsId());
+        Set<Station> stations = new LinkedHashSet<>(line.getLineStationsId().stream()
+                .map(stationId -> stationRepository.findById(stationId)
+                        .orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList()));
 
-        lineResponse.updateLineStations(stations);
+        LineResponse lineResponse = LineResponse.of(line);
+        lineResponse.updateStations(stations);
         return lineResponse;
     }
 }

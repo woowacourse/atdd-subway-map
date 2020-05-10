@@ -1,10 +1,7 @@
-import {
-  optionTemplate,
-  subwayLinesItemTemplate
-} from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
+import {optionTemplate} from "../../utils/templates.js";
+import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
@@ -12,9 +9,6 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
-      .map(line => subwayLinesItemTemplate(line))
-      .join("");
     tns({
       container: ".subway-lines-slider",
       loop: true,
@@ -29,6 +23,7 @@ function AdminEdge() {
     });
   };
 
+  // title, bgColor, stations
   const initSubwayLineOptions = () => {
     const subwayLineOptionTemplate = defaultSubwayLines
       .map(line => optionTemplate(line.title))
