@@ -6,7 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class LineStations {
-    public static final Long INIT_PRE_STATION_ID = null;
+    private static final Long INIT_PRE_STATION_ID = null;
+
     private Set<LineStation> lineStations;
 
     public LineStations(Set<LineStation> lineStations) {
@@ -14,23 +15,31 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation lineStation) {
-        validatePreLineStation(lineStation);
+        validateLineStation(lineStation);
         lineStations.stream()
-                .filter(station -> Objects.equals(station.getPreStationId(), lineStation.getPreStationId()))
+                .filter(station -> station.isDuplicatedPreStation(lineStation))
                 .findAny()
-                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+                .ifPresent(station -> station.updatePreLineStation(lineStation));
         lineStations.add(lineStation);
     }
 
-    private void validatePreLineStation(LineStation lineStation) {
+    private boolean isDuplicated(LineStation lineStation) {
+        return lineStations.stream()
+                .anyMatch(station -> station.isSameStation(lineStation));
+    }
+
+    private void validateLineStation(LineStation lineStation) {
         if (isNotConnectable(lineStation)) {
             throw new IllegalArgumentException("노선에 선행역이 존재하지 않습니다.");
+        }
+        if (isDuplicated(lineStation)) {
+            throw new IllegalArgumentException("이미 노선에 역이 존재합니다.");
         }
     }
 
     private boolean isNotConnectable(LineStation lineStation) {
-        return !Objects.equals(lineStation.getPreStationId(), INIT_PRE_STATION_ID) && lineStations.stream()
-                .noneMatch(station -> station.isSameStationId(lineStation.getPreStationId()));
+        return lineStation.isNotFirstStation() && lineStations.stream()
+                .noneMatch(station -> station.isNextStation(lineStation));
     }
 
     public void removeLineStationById(Long stationId) {
@@ -47,7 +56,7 @@ public class LineStations {
         lineStations.stream()
                 .filter(nextStation -> nextStation.isSamePreStationId(stationId))
                 .findAny()
-                .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
+                .ifPresent(nextStation -> nextStation.updatePreLineStation(station));
     }
 
     public List<Station> createSortedStations(List<Station> stations) {
@@ -60,7 +69,7 @@ public class LineStations {
 
     private void addByLineStationID(List<Station> stations, List<Station> newStations, Long id) {
         stations.stream()
-                .filter(station -> Objects.equals(station.getId(), id))
+                .filter(station -> station.isSameStationId(id))
                 .findAny()
                 .ifPresent(newStations::add);
     }

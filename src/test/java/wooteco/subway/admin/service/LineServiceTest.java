@@ -55,6 +55,16 @@ public class LineServiceTest {
     }
 
     @Test
+    void addLineStationWithDuplicate() {
+        LineStationCreateRequest request = new LineStationCreateRequest(null, 1L, 10, 10);
+
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        assertThatThrownBy(() -> lineService.addLineStation(line.getId(), request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 노선에 역이 존재합니다.");
+    }
+
+    @Test
     void addLineStationWithException() {
         LineStationCreateRequest request = new LineStationCreateRequest(4L, 5L, 10, 10);
 
