@@ -20,16 +20,6 @@ function AdminStation() {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       return;
     }
-    if(stationName.name.includes(" ")) {
-      alert(ERROR_MESSAGE.NO_BLANK);
-      $stationNameInput.value = "";
-      return;
-    }
-    if(/\d/.test(stationName.name)) {
-      alert(ERROR_MESSAGE.NO_NUMERIC);
-      $stationNameInput.value = "";
-      return;
-    }
     if(getStationNames().includes(stationName.name)) {
       alert(ERROR_MESSAGE.NO_DUPLICATED);
       $stationNameInput.value = "";

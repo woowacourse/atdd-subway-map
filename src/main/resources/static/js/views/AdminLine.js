@@ -29,12 +29,7 @@ function AdminLine() {
     const onCreateSubwayLine = event => {
         const $target = event.target;
         const isCreateButton = $target.classList.contains("create-btn");
-        if (isCreateButton) {
-            if (getSubwayLines().includes($subwayLineNameInput.value)) {
-                alert(ERROR_MESSAGE.NO_DUPLICATED);
-                $subwayLineNameInput.value = "";
-                return;
-            }
+        if (isCreateButton && validateLineTitle()) {
             const newSubwayLine = {
                 title: $subwayLineNameInput.value,
                 startTime: $subwayLineStartTimeInput.value,
@@ -89,12 +84,7 @@ function AdminLine() {
     const onEditSubwayLine = async event => {
         const $target = event.target;
         const isEditButton = !$target.classList.contains("create-btn");
-        if (isEditButton) {
-            if (getSubwayLines().includes($subwayLineNameInput.value)) {
-                alert(ERROR_MESSAGE.NO_DUPLICATED);
-                $subwayLineNameInput.value = "";
-                return;
-            }
+        if (isEditButton && validateLineTitle()) {
             const editSubwayLine = {
                 title: $subwayLineNameInput.value,
                 startTime: $subwayLineStartTimeInput.value,
@@ -138,6 +128,19 @@ function AdminLine() {
         return Array.from($subwayLineList.childNodes)
             .map(x => x.textContent)
             .map(x => x.trim());
+    }
+
+    const validateLineTitle = () => {
+        if (getSubwayLines().includes($subwayLineNameInput.value)) {
+            alert(ERROR_MESSAGE.NO_DUPLICATED);
+            $subwayLineNameInput.value = "";
+            return false;
+        }
+        if (!$subwayLineNameInput.value) {
+            alert(ERROR_MESSAGE.NOT_EMPTY);
+            return false;
+        }
+        return true;
     }
 
     const initEventListeners = () => {

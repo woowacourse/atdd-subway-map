@@ -179,4 +179,8 @@ public class Line {
 	private boolean isOnlyOneStationInLine() {
 		return stations.size() == 1;
 	}
+
+	public boolean isSameTitle(Line that) {
+		return title.equals(that.title);
+	}
 }

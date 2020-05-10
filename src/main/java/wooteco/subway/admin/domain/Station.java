@@ -24,6 +24,10 @@ public class Station {
         this.createdAt = LocalDateTime.now();
     }
 
+    public boolean isSameName(Station that) {
+        return name.equals(that.name);
+    }
+
     public Long getId() {
         return id;
     }

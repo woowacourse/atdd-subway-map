@@ -11,6 +11,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.exception.DuplicatedValueException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -25,15 +26,14 @@ public class LineService {
 	}
 
 	public Line save(Line line) {
+		boolean isDuplicated = lineRepository.findAll()
+			.stream()
+			.anyMatch(existLine -> existLine.isSameTitle(line));
+		if (isDuplicated) {
+			throw new DuplicatedValueException(line.getTitle());
+		}
+
 		return lineRepository.save(line);
-	}
-
-	public Line showLine(Long id) {
-		return lineRepository.findById(id).orElseThrow(RuntimeException::new);
-	}
-
-	public Line showLine(String name) {
-		return lineRepository.findByName(name).orElseThrow(RuntimeException::new);
 	}
 
 	public List<LineResponse> showLines() {
