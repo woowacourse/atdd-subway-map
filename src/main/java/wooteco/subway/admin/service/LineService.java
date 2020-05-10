@@ -59,6 +59,8 @@ public class LineService {
 	public LineStationResponse addLineStation(Long lineId, LineStationCreateRequest request) {
 		Line line = findLineById(lineId);
 		LineStation lineStation = request.toLineStation();
+		validateStationId(lineStation.getPreStationId());
+		validateStationId(lineStation.getStationId());
 		line.addLineStation(lineStation);
 		lineRepository.save(line);
 		return LineStationResponse.of(lineId, lineStation);
@@ -66,8 +68,15 @@ public class LineService {
 
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line line = findLineById(lineId);
+		validateStationId(stationId);
 		line.removeLineStationById(stationId);
 		lineRepository.save(line);
+	}
+
+	private void validateStationId(Long stationId) {
+		if (stationId != null && !stationRepository.existsById(stationId)) {
+			throw new IllegalArgumentException("존재하지 않는 역입니다.");
+		}
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {

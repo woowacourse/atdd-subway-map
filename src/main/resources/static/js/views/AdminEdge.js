@@ -58,9 +58,12 @@ function AdminEdge() {
     const selectArriveStation = $arriveStationInput.value;
 
     const lineId = lines.find(line => line.name === selectLineName)["id"];
-    const arriveStationId = stations.find(station => station.name === selectArriveStation)["id"];
-    const departStationId = selectDepartStation === "" ? null : stations.find(station => station.name === selectDepartStation)["id"];
+    const arriveStation = stations.find(station => station.name === selectArriveStation);
+    const departStation = stations.find(station => station.name === selectDepartStation);
+    const arriveStationId = arriveStation ? arriveStation["id"] : undefined;
+    const departStationId = selectDepartStation === "" ? null : departStation ? departStation["id"] : undefined;
     if (!lineId || departStationId === undefined || !arriveStationId) {
+      alert('유효한 값을 입력해주세요');
       return;
     }
     const requestData = {

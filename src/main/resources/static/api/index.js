@@ -31,8 +31,8 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
-  const requestWithEmptyResponse = (uri, config) => fetch(uri, config).then();
+  const request = (uri, config) => fetch(uri, config).then(data => data.json()).catch(error => alert(error));
+  const requestWithEmptyResponse = (uri, config) => fetch(uri, config).then().catch(error => alert(error));
   const station = {
     get() {
       return request(`/stations`);
