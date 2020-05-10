@@ -1,33 +1,45 @@
 import { optionTemplate, subwayLinesItemTemplate, } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import { EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const createSubwayEdgeModal = new Modal();
   const $createSubmitButton = document.querySelector("#submit-button");
+  const $errorMessage = document.querySelector("#error-message");
+  const $createSubmit = document.querySelector("#line-station-input");
 
   const initSubwayLinesSlider = () => {
+    let statusCode;
+
     fetch('/lineStations', {
       method: 'GET',
-    }).then(response => response.json())
-    .then(jsonResponse => {
-      $subwayLinesSlider.innerHTML = jsonResponse
-      .map(line => subwayLinesItemTemplate(line))
-      .join("");
-      tns({
-        container: ".subway-lines-slider",
-        loop: true,
-        slideBy: "page",
-        speed: 400,
-        autoplayButtonOutput: false,
-        mouseDrag: true,
-        lazyLoad: true,
-        controlsContainer: "#slider-controls",
-        items: 1,
-        edgePadding: 25
-      });
+    }).then(response => {
+      if (!response.ok) {
+        statusCode = 500;
+      }
+      return response.json();
+    }).then(jsonResponse => {
+      if (statusCode !== 500) {
+        $subwayLinesSlider.innerHTML = jsonResponse
+        .map(line => subwayLinesItemTemplate(line))
+        .join("");
+        tns({
+          container: ".subway-lines-slider",
+          loop: true,
+          slideBy: "page",
+          speed: 400,
+          autoplayButtonOutput: false,
+          mouseDrag: true,
+          lazyLoad: true,
+          controlsContainer: "#slider-controls",
+          items: 1,
+          edgePadding: 25
+        });
+      } else {
+        alert(jsonResponse);
+      }
     });
   };
 
@@ -51,6 +63,10 @@ function AdminEdge() {
   };
 
   const onCreateStationHandler = event => {
+    if (event.key !== KEY_TYPE.ENTER && event.type !== EVENT_TYPE.CLICK) {
+      return;
+    }
+    let statusCode;
     const selectLines = document.querySelector("#station-select-options");
 
     const data = {
@@ -67,27 +83,34 @@ function AdminEdge() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).then(response => response.json())
-    .then(() => async function () {
-      const response = await fetch('/lineStations', {
-        method: 'GET'
-      });
-      const jsonResponse = await response.json();
-      $subwayLinesSlider.innerHTML = jsonResponse
-      .map(line => subwayLinesItemTemplate(line))
-      .join("");
-      tns({
-        container: ".subway-lines-slider",
-        loop: true,
-        slideBy: "page",
-        speed: 400,
-        autoplayButtonOutput: false,
-        mouseDrag: true,
-        lazyLoad: true,
-        controlsContainer: "#slider-controls",
-        items: 1,
-        edgePadding: 25
-      });
+    }).then(response => {
+      if (response.status >= 400) {
+        alert("에러가 발생했습니다.");
+        statusCode = 500;
+      }
+      return response.json();
+    }).then(jsonResponse => async function (jsonResponse) {
+      if (statusCode !== 500) {
+        const response = await fetch('/lineStations', {
+          method: 'GET'
+        });
+        const jsonResponse = await response.json();
+        $subwayLinesSlider.innerHTML = jsonResponse
+        .map(line => subwayLinesItemTemplate(line))
+        .join("");
+        tns({
+          container: ".subway-lines-slider",
+          loop: true,
+          slideBy: "page",
+          speed: 400,
+          autoplayButtonOutput: false,
+          mouseDrag: true,
+          lazyLoad: true,
+          controlsContainer: "#slider-controls",
+          items: 1,
+          edgePadding: 25
+        });
+      }
     }).catch(error => {
       throw new Error(error);
     });
@@ -121,10 +144,8 @@ function AdminEdge() {
         return false;
       }
     }
-    if (array.length === 0) {
-      return false;
-    }
-    return true;
+    return array.length !== 0;
+
   }
 
   const onRemoveStationHandler = event => {
@@ -148,6 +169,10 @@ function AdminEdge() {
     );
     $createSubmitButton.addEventListener(
       EVENT_TYPE.CLICK,
+      onCreateStationHandler
+    );
+    $createSubmit.addEventListener(
+      EVENT_TYPE.KEY_PRESS,
       onCreateStationHandler
     );
   };

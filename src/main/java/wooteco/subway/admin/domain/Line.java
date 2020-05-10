@@ -16,7 +16,6 @@ import wooteco.subway.admin.exception.WrongIdException;
 public class Line {
 
     public static final int FIRST = 0;
-
     @Id
     private Long id;
     private String name;
@@ -24,9 +23,10 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private final List<LineStation> stations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private List<LineStation> stations = new ArrayList<>();
 
     public Line() {
     }
@@ -106,6 +106,7 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         if (Objects.isNull(lineStation.getPreStationId())) {
+            addAtFirst(lineStation);
             stations.add(FIRST, lineStation);
             return;
         }
@@ -121,11 +122,27 @@ public class Line {
         stations.add(lineStation);
     }
 
+    private void addAtFirst(LineStation lineStation) {
+        if (stations.size() != 0) {
+            stations.get(0).updatePreLineStation(lineStation.getStationId());
+        }
+    }
+
     public void removeLineStationById(Long stationId) {
         LineStation lineStation = stations.stream()
             .filter(station -> station.getStationId().equals(stationId))
             .findAny()
             .orElseThrow(WrongIdException::new);
+
+        LineStation nextLineStation = stations.stream()
+            .filter(station -> Objects.nonNull(station.getPreStationId()))
+            .filter(station -> station.getPreStationId().equals(stationId))
+            .findAny()
+            .orElse(null);
+
+        if (Objects.nonNull(nextLineStation)) {
+            nextLineStation.updatePreLineStation(lineStation.getPreStationId());
+        }
 
         stations.remove(lineStation);
     }

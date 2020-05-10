@@ -39,7 +39,7 @@ function AdminLine() {
       }
       updateId = null;
     });
-  };
+  }
 
   function createLine(data) {
     fetch("/lines", {
@@ -48,8 +48,15 @@ function AdminLine() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).then(response => response.json())
+    }).then(response => {
+      if (response.status >= 400) {
+        alert("에러가 발생했습니다.");
+        statusCode
+      }
+      return response.json();
+    })
     .then(jsonResponse => {
+
       const newSubwayLine = {
         id: jsonResponse.id,
         name: jsonResponse.name,
@@ -72,7 +79,6 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTimeInput.value,
       bgColor: $subwayLineColorInput.value
     }
-
 
 
     if (updateId) {
@@ -100,7 +106,7 @@ function AdminLine() {
       alert(ERROR_MESSAGE.NOT_BLANK);
       throw new Error();
     }
-    if(!isUpdate) {
+    if (!isUpdate) {
       if (duplicatedName(line.name) || duplicatedColor(line.bgColor)) {
         alert(ERROR_MESSAGE.DUPLICATED);
         throw new Error();

@@ -5,6 +5,7 @@ function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationInputButton = document.querySelector("#station-add-btn");
   const $stationList = document.querySelector("#station-list");
+  const $errorMessage = document.querySelector("#error-message")
 
   const onAddStationHandler = event => {
     if (event.key !== KEY_TYPE.ENTER && event.type !== EVENT_TYPE.CLICK) {
@@ -19,6 +20,7 @@ function AdminStation() {
     let data = {
       name: stationName
     };
+    let statusCode;
 
     fetch("/stations", {
       method: "POST",
@@ -26,10 +28,20 @@ function AdminStation() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).then(response => response.json())
+    }).then(response => {
+      if (response.status >= 400) {
+        alert("에러가 발생했습니다.");
+        statusCode = 500;
+      }
+      return response.json();
+    })
     .then(response => {
-      $stationNameInput.value = "";
-      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(response));
+      if (statusCode !== 500) {
+        $stationNameInput.value = "";
+        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(response));
+      } else {
+        $errorMessage.innerText = response.message;
+      }
     }).catch(error => {
       alert(error);
     });
@@ -69,12 +81,20 @@ function AdminStation() {
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
+    let statusCode;
+
     if (isDeleteButton) {
       const deleteId = $target.closest(".list-item").dataset.stationId;
       fetch('/stations/' + deleteId, {
         method: 'DELETE'
-      }).then(() => {
+      }).then(response => {
+        if (response.status >= 400) {
+          statusCode = 500;
+          return response.json();
+        }
         $target.closest(".list-item").remove();
+      }).then(jsonResponse => {
+        $errorMessage.innerText = jsonResponse.message;
       }).catch(error => {
         alert(error);
         throw new Error();

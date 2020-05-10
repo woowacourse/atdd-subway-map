@@ -1,5 +1,6 @@
 package wooteco.subway.admin.controller;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,8 +20,8 @@ public class GlobalDefaultExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException e) {
+    @ExceptionHandler({BusinessException.class, DataAccessException.class})
+    protected ResponseEntity<ErrorResponse> handleBusinessException(final Exception e) {
         final ErrorResponse response = new ErrorResponse(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -30,5 +31,4 @@ public class GlobalDefaultExceptionHandler {
         final ErrorResponse response = new ErrorResponse(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }

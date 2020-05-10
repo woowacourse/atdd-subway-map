@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -18,6 +19,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
+@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -32,6 +34,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         return lineRepository.findAll().stream()
             .map(line -> LineResponse.of(line, mapLineStationsToStations(line.getStations())))
@@ -66,6 +69,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
             .orElseThrow(WrongIdException::new);
@@ -77,7 +81,7 @@ public class LineService {
         return LineResponse.of(line, (ArrayList<Station>)stationRepository.findAllById(stationsId));
     }
 
-    public List<Station> mapLineStationsToStations(List<LineStation> lineStations) {
+    private List<Station> mapLineStationsToStations(List<LineStation> lineStations) {
         return lineStations.stream()
             .map(lineStation -> stationRepository.findById(lineStation.getStationId())
                 .orElseThrow(WrongIdException::new))
