@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("line")
+@RequestMapping("lines")
 public class LineController {
 
     private final LineService lineService;
@@ -63,18 +63,18 @@ public class LineController {
         return ResponseEntity.ok(lineId);
     }
 
-    @GetMapping("{id}/edge")
+    @GetMapping("{id}/edges")
     public ResponseEntity<List<EdgeResponse>> findEdgesByLineId(@PathVariable(name = "id") final Long lineId) {
         return ResponseEntity.ok(lineService.findEdgesByLineId(lineId));
     }
 
-    @PostMapping("{id}/edge")
+    @PostMapping("{id}/edges")
     public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
         lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{id}/edge")
+    @DeleteMapping("{id}/edges")
     public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
         lineService.removeEdge(lineId, edgeDeleteRequest);
         return ResponseEntity.noContent().build();

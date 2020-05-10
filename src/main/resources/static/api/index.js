@@ -66,34 +66,34 @@ const api = (() => {
 
     const line = {
         get() {
-            return request(`/line`);
+            return request(`/lines`);
         },
         findById(id) {
-            return request(`/line/${id}`);
+            return request(`/lines/${id}`);
         },
         create(data) {
-            return request(`/line`, METHOD.POST(data));
+            return request(`/lines`, METHOD.POST(data));
         },
         update(id, data) {
-            return request(`/line/${id}`, METHOD.PUT(data));
+            return request(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return request(`/line/${id}`, METHOD.DELETE());
+            return request(`/lines/${id}`, METHOD.DELETE());
         }
     };
 
     const edge = {
         findByLineId(lineId) {
-            return request(`/line/${lineId}/edge`);
+            return request(`/lines/${lineId}/edges`);
         },
         create(lineId, data) {
-            return request(`/line/${lineId}/edge`, METHOD.POST(data));
+            return request(`/lines/${lineId}/edges`, METHOD.POST(data));
         },
         delete(lineId, data) {
-            return request(`/line/${lineId}/edge`, METHOD.DELETE(data));
+            return request(`/lines/${lineId}/edges`, METHOD.DELETE(data));
         },
         getLineEdge() {
-            return request(`/line/edge`);
+            return request(`/lines/edges`);
         }
     };
 
