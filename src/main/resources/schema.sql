@@ -9,7 +9,7 @@ create table if not exists STATION
 create table if not exists LINE
 (
    id bigint auto_increment not null,
-   title varchar(255) not null,
+   name varchar(255) not null,
    start_time time not null,
    end_time time not null,
    interval_time int not null,
@@ -28,9 +28,9 @@ create table if not exists LINE_STATION
     duration int
 );
 
-INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('1호선', PARSEDATETIME('06:00', 'HH:mm'), PARSEDATETIME('23:00', 'HH:mm'), 10, 'bg-blue-700');
-INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('2호선', PARSEDATETIME('07:00', 'HH:mm'), PARSEDATETIME('00:00', 'HH:mm'), 10, 'bg-green-500');
-INSERT INTO LINE(title, start_time, end_time, interval_time, bg_color) VALUES ('4호선', PARSEDATETIME('08:00', 'HH:mm'), PARSEDATETIME('22:00', 'HH:mm'), 10, 'bg-blue-500');
+INSERT INTO LINE(name, start_time, end_time, interval_time, bg_color) VALUES ('1호선', PARSEDATETIME('06:00', 'HH:mm'), PARSEDATETIME('23:00', 'HH:mm'), 10, 'bg-blue-700');
+INSERT INTO LINE(name, start_time, end_time, interval_time, bg_color) VALUES ('2호선', PARSEDATETIME('07:00', 'HH:mm'), PARSEDATETIME('00:00', 'HH:mm'), 10, 'bg-green-500');
+INSERT INTO LINE(name, start_time, end_time, interval_time, bg_color) VALUES ('4호선', PARSEDATETIME('08:00', 'HH:mm'), PARSEDATETIME('22:00', 'HH:mm'), 10, 'bg-blue-500');
 
 INSERT INTO STATION(name) VALUES ('당산');
 INSERT INTO STATION(name) VALUES ('합정');

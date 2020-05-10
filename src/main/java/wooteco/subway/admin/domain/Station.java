@@ -1,38 +1,46 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+
 public class Station {
-    @Id
-    private Long id;
-    private String name;
-    private LocalDateTime createdAt;
 
-    public Station() {
-    }
+	@Id
+	@Column("id")
+	private Long id;
 
-    public Station(Long id, String name){
-        this.id = id;
-        this.name = name;
-        this.createdAt = LocalDateTime.now();
-    }
+	@Column("name")
+	private String name;
 
-    public Station(String name) {
-        this.name = name;
-        this.createdAt = LocalDateTime.now();
-    }
+	@Column("created_at")
+	private LocalDateTime createdAt;
 
-    public Long getId() {
-        return id;
-    }
+	public Station() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Station(Long id, String name) {
+		this.id = id;
+		this.name = name;
+		this.createdAt = LocalDateTime.now();
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public Station(String name) {
+		this.name = name;
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
 }

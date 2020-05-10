@@ -1,40 +1,49 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
-    private Long preStationId;
-    private Long stationId;
-    private int distance;
-    private int duration;
 
-    public LineStation() {
-    }
+	@Column("pre_station_id")
+	private Long preStationId;
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
-    }
+	@Column("station_id")
+	private Long stationId;
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
+	@Column("distance")
+	private int distance;
 
-    public Long getStationId() {
-        return stationId;
-    }
+	@Column("duration")
+	private int duration;
 
-    public int getDistance() {
-        return distance;
-    }
+	public LineStation() {
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+		this.preStationId = preStationId;
+		this.stationId = stationId;
+		this.distance = distance;
+		this.duration = duration;
+	}
 
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
-    }
+	public Long getPreStationId() {
+		return preStationId;
+	}
+
+	public Long getStationId() {
+		return stationId;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void updatePreLineStation(Long preStationId) {
+		this.preStationId = preStationId;
+	}
+
 }
