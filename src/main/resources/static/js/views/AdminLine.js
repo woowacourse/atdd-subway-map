@@ -1,14 +1,9 @@
 import {EVENT_TYPE} from "../../utils/constants.js";
-import {
-    subwayLinesTemplate,
-    colorSelectOptionTemplate
-} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
 // TODO: validate 구현한 파일 분리
-// TODO: fetch 파일 분리
 function AdminLine() {
     // list
     const $subwayLineList = document.querySelector("#subway-line-list");
