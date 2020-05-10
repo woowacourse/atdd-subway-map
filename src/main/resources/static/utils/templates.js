@@ -47,9 +47,9 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 export const subwayLinesItemTemplate = line => {
   const stationsTemplate = line.stations
   .map(station => listItemTemplate(station.name, station.id))
-    .join("");
+  .join("");
   return `<div class="inline-block w-1/2 px-2">
-            <div class="rounded-sm w-full slider-list">
+            <div class="rounded-sm w-full slider-list line-station" data-line-id="${line.id}">
               <div class="border ${line.color} lint-title px-4 py-1">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}

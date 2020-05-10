@@ -12,29 +12,15 @@ function AdminEdge() {
   const $submitButton = document.querySelector('#submit-button');
   const createSubwayEdgeModal = new Modal();
 
-  const convertLines = (lines) => {
-    const newLine = [];
-    for (let l of lines) {
-      let o = {};
-      o.title = l.name;
-      o.bgColor = l.color;
-      o.stations = [];
-      for (let s of l.stations) {
-        o.stations.push(s.name);
-      }
-      newLine.push(o);
-    }
-    return newLine;
-  }
-
   const getLines = () => {
     return fetch("/lineStations")
     .then(res => res.json());
   }
 
+  // TODO: CUD 모두 id로 변경
   const initSubwayLinesSlider = async () => {
-    const persistLines = await getLines();
-    const lines = convertLines(persistLines);
+    const lines = await getLines();
+
     $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
     .join("");
@@ -73,9 +59,8 @@ function AdminEdge() {
       preStationName: $departStationName.value,
       stationName: stationName
     };
-    console.log("data", data);
 
-    fetch("/lineStation", {
+    fetch("/lineStations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -88,11 +73,20 @@ function AdminEdge() {
     createSubwayEdgeModal.toggle();
   };
 
-  const onRemoveStationHandler = event => {
+  const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      const $listItem = $target.closest(".list-item");
+      const lineId = $target.closest(".line-station").dataset.lineId;
+      const stationId = $listItem.dataset.stationId;
+      $listItem.remove();
+      await fetch(`lineStations/${lineId}/${stationId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      }).then(res => res.json());
     }
   };
 

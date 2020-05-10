@@ -5,7 +5,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineStationRequest;
-import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.LineStationService;
 
 @RestController
@@ -34,7 +35,7 @@ public class LineStationController {
 		return ResponseEntity.ok(lineStationService.findAll());
 	}
 
-	@PostMapping("/lineStation")
+	@PostMapping("/lineStations")
 	public ResponseEntity<?> create(
 			@RequestBody LineStationRequest request) throws URISyntaxException {
 		String lineName = request.getLineName();
@@ -46,7 +47,14 @@ public class LineStationController {
 		LineStation lineStation = lineStationService.createLineStation(
 				lineName, preStationName, stationName, distance, duration);
 
-		URI url = new URI("/lineStation/" + lineStation.getCustomId());
+		URI url = new URI("/lineStations/" + lineStation.getCustomId());
 		return ResponseEntity.created(url).body(lineStation);
+	}
+
+	@DeleteMapping("/lineStations/{lineId}/{stationId}")
+	public ResponseEntity<?> delete(
+			@PathVariable Long lineId,
+			@PathVariable Long stationId) {
+		return ResponseEntity.ok().body(lineStationService.removeLineStation(lineId, stationId));
 	}
 }

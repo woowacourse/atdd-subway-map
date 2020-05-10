@@ -50,7 +50,9 @@ public class LineStationService {
 	public LineStation removeLineStation(long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(NoSuchElementException::new);
-		return line.removeLineStationById(stationId);
+		LineStation removedLine = line.removeLineStationById(stationId);
+		lineRepository.save(line);
+		return removedLine;
 	}
 
 	public List<LineResponse> findAll() {
