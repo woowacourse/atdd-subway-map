@@ -1,12 +1,18 @@
 package wooteco.subway.admin.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 
+import javax.validation.constraints.Pattern;
 import java.time.LocalTime;
 
 public class LineRequest {
     private String name;
+    @Pattern(regexp = "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)\n", message = "hh:mm:ss 의 형태가 아닙니다.")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startTime;
+    @Pattern(regexp = "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)\n", message = "hh:mm:ss 의 형태가 아닙니다.")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endTime;
     private int intervalTime;
     private String lineColor;
