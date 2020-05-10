@@ -6,6 +6,10 @@ import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+  const $stationSelectOptions = document.querySelector('#station-select-options');
+  const $departStationName = document.querySelector('#depart-station-name');
+  const $arrivalStationName = document.querySelector('#arrival-station-name');
+  const $submitButton = document.querySelector('#submit-button');
   const createSubwayEdgeModal = new Modal();
 
   const convertLines = (lines) => {
@@ -61,6 +65,29 @@ function AdminEdge() {
     );
   };
 
+  const onAddStationHandler = event => {
+    event.preventDefault();
+    const stationName = $arrivalStationName.value;
+    const data = {
+      lineName: $stationSelectOptions.value,
+      preStationName: $departStationName.value,
+      stationName: stationName
+    };
+    console.log("data", data);
+
+    fetch("/lineStation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    // TODO: 새로고침 없이 반영되도록 변경
+    location.reload();
+    createSubwayEdgeModal.toggle();
+  };
+
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -70,10 +97,8 @@ function AdminEdge() {
   };
 
   const initEventListeners = () => {
-    $subwayLinesSlider.addEventListener(
-      EVENT_TYPE.CLICK,
-      onRemoveStationHandler
-    );
+    $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
+    $submitButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
   };
 
   this.init = () => {

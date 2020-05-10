@@ -10,6 +10,12 @@ public class LineStationRequest {
 	public LineStationRequest() {
 	}
 
+	public LineStationRequest(String lineName, String preStationName, String stationName) {
+		this.lineName = lineName;
+		this.preStationName = preStationName;
+		this.stationName = stationName;
+	}
+
 	public LineStationRequest(String lineName, String preStationName, String stationName,
 			int distance, int duration) {
 		this.lineName = lineName;
