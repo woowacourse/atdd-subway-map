@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 import org.springframework.data.annotation.Id;
 
 public class Line {
+	private static final Long NOT_EXIST = null;
+
 	@Id
 	private Long id;
 	private String title;
@@ -105,10 +107,10 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
-		if (lineStation.getPreStationId() == null && stations.size() != 0) {
-			LineStation prevFirstLineStation = findLineStationWith(value -> value.getPreStationId() == null);
+		if (isHeadLineStation(lineStation) && isNotEmptyStation()) {
+			LineStation prevFirstLineStation = findLineStationWith(this::isHeadLineStation);
 			prevFirstLineStation.updatePreLineStation(lineStation.getStationId());
-		} else if (stations.size() != 0) {
+		} else if (isNotEmptyStation()) {
 			stations.stream()
 				.filter(value -> value.getPreStationId() == lineStation.getPreStationId())
 				.findFirst()
@@ -119,12 +121,17 @@ public class Line {
 
 	public void removeLineStationById(Long stationId) {
 		LineStation removeStation = findLineStationWith(value -> stationId.equals(value.getStationId()));
-		LineStation headStation = findLineStationWith(value -> value.getPreStationId() == null);
+		Long headStationId = findLineStationWith(this::isHeadLineStation).getStationId();
 
-		if (headStation.getStationId() == stationId) {
+		if (isOnlyOneStationInLine()) {
+			stations.remove(removeStation);
+			return;
+		}
+
+		if (stationId.equals(headStationId)) {
 			stations.remove(removeStation);
 			LineStation newHeadStation = findLineStationWith(value -> stationId.equals(value.getPreStationId()));
-			newHeadStation.updatePreLineStation(null);
+			newHeadStation.updatePreLineStation(NOT_EXIST);
 			return;
 		}
 
@@ -139,7 +146,7 @@ public class Line {
 		List<Long> newStations = new ArrayList<>();
 
 		if (!stations.isEmpty()) {
-			LineStation headStation = findLineStationWith(value -> value.getPreStationId() == null);
+			LineStation headStation = findLineStationWith(this::isHeadLineStation);
 			newStations.add(headStation.getStationId());
 		}
 
@@ -159,5 +166,17 @@ public class Line {
 			.filter(expression)
 			.findFirst()
 			.orElseThrow(NoSuchElementException::new);
+	}
+
+	private boolean isHeadLineStation(LineStation lineStation) {
+		return lineStation.getPreStationId() == NOT_EXIST;
+	}
+
+	private boolean isNotEmptyStation() {
+		return !stations.isEmpty();
+	}
+
+	private boolean isOnlyOneStationInLine() {
+		return stations.size() == 1;
 	}
 }
