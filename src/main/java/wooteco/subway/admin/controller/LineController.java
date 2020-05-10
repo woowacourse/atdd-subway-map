@@ -70,7 +70,7 @@ public class LineController {
     }
 
     @GetMapping("/lines/stations")
-    public ResponseEntity findAllLineWithStations() {
-        return ResponseEntity.ok().body(lineService.findAllLineWithStations());
+    public ResponseEntity findAllLineWithSortedStations() {
+        return ResponseEntity.ok().body(lineService.findAllLineWithSortedStations());
     }
 }

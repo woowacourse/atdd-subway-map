@@ -7,9 +7,11 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.DuplicatedLineException;
 import wooteco.subway.admin.exception.NotFoundLineException;
+import wooteco.subway.admin.exception.NotFoundStationException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -76,16 +78,22 @@ public class LineService {
         return LineResponse.of(line, stations);
     }
 
-    public List<LineResponse> findAllLineWithStations() {
+    private Set<Station> findStationsByLine(Line line) {
+        return stationRepository.findAllById(line.getLineStationsId());
+    }
+
+    public List<LineResponse> findAllLineWithSortedStations() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line, findStationsByLine(line)))
+                .map(line -> LineResponse.of(line, findSortedStationsByLine(line)))
                 .collect(Collectors.toList());
     }
 
-    private Set<Station> findStationsByLine(Line line) {
+    private Set<Station> findSortedStationsByLine(Line line) {
         List<Long> ids = line.getLineStationsId();
-        Set<Station> stations = stationRepository.findAllById(ids);
-        return stations;
+        return ids.stream()
+                .map(id -> stationRepository.findById(id)
+                        .orElseThrow(NotFoundStationException::new))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), LinkedHashSet::new));
     }
 }
