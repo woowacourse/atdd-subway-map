@@ -125,7 +125,7 @@ public class Line {
                 .forEach(lineStation -> lineStation.updatePreStationId(newPreStationId));
     }
 
-    public List<Long> getSortedStationIDs() {
+    public List<Long> getSortedStationIds() {
         List<Long> orderedStations = new ArrayList<>();
 
         if (lineStations.isEmpty()) {

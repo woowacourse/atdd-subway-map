@@ -1,4 +1,10 @@
 const BASE_URL = "http://localhost:8080";
+const STATIONS_BASE_URI = "/stations";
+const LINES_BASE_URI = "/lines";
+const LINE_STATIONS_BASE_URI = "/lineStations";
+const STATIONS_BASE_URL = BASE_URL + STATIONS_BASE_URI;
+const LINES_BASE_URL = BASE_URL + LINES_BASE_URI;
+const LINE_STATIONS_BASE_URL = BASE_URL + LINE_STATIONS_BASE_URI;
 
 const METHOD = {
   PUT(data) {
@@ -32,49 +38,52 @@ export const api = (() => {
 
   const station = {
     get() {
-      return request(`${BASE_URL}/station`);
+      return request(`${STATIONS_BASE_URL}`);
     },
     create(data) {
-      return request(`${BASE_URL}/station`, METHOD.POST(data));
+      return request(`${STATIONS_BASE_URL}`, METHOD.POST(data));
     },
-    update(data) {
-      return request(`${BASE_URL}/station/${id}`, METHOD.PUT(data));
+    update(stationId, data) {
+      return request(`${STATIONS_BASE_URL}/${stationId}`, METHOD.PUT(data));
     },
     delete(name) {
       return requestWithoutResponseBody(
-          `${BASE_URL}/station/${name}`, METHOD.DELETE());
+          `${STATIONS_BASE_URL}/${name}`, METHOD.DELETE());
     }
   };
 
   const line = {
     getLines() {
-      return request(`${BASE_URL}/line`);
+      return request(`${LINES_BASE_URL}`);
     },
     getLine(lineId) {
-      return request(`${BASE_URL}/line/${lineId}`)
+      return request(`${LINES_BASE_URL}/${lineId}`)
     },
     create(data) {
-      return request(`${BASE_URL}/line`, METHOD.POST(data));
+      return request(`${LINES_BASE_URL}`, METHOD.POST(data));
     },
     update(lineId, data) {
-      return requestWithoutResponseBody(`${BASE_URL}/line/${lineId}`, METHOD.PUT(data));
+      return requestWithoutResponseBody(
+        `${LINES_BASE_URL}/${lineId}`, METHOD.PUT(data));
     },
     delete(lineId) {
       return requestWithoutResponseBody(
-          `${BASE_URL}/line/${lineId}`, METHOD.DELETE());
+          `${LINES_BASE_URL}/${lineId}`, METHOD.DELETE());
     }
   };
 
   const edge = {
     getLinesWithStations() {
-      return request(`${BASE_URL}/lineStation`);
+      return request(`${LINE_STATIONS_BASE_URL}`);
     },
     create(lineId, data) {
-      return requestWithoutResponseBody(`${BASE_URL}/lineStation/${lineId}`, METHOD.POST(data));
+      return requestWithoutResponseBody(
+        `${LINE_STATIONS_BASE_URL}/${lineId}`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
       return requestWithoutResponseBody(
-          `${BASE_URL}/lineStation/${lineId}/${stationId}`, METHOD.DELETE());
+        `${LINES_BASE_URL}/${lineId}/${LINE_STATIONS_BASE_URI}/${stationId}`,
+        METHOD.DELETE());
     }
   };
 

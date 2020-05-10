@@ -11,7 +11,7 @@ import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 
-@RequestMapping("/station")
+@RequestMapping("/stations")
 @RestController
 public class StationController {
     private final StationService stationService;

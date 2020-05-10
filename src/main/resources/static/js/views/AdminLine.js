@@ -27,17 +27,17 @@ function AdminLine() {
   const subwayLineModal = new Modal();
 
   const onToggleModalForCreate = event => {
-    $createSubwayLineButton.classList.remove("update")
-    $createSubwayLineButton.classList.add("create")
+    $createSubwayLineButton.classList.remove("update");
+    $createSubwayLineButton.classList.add("create");
     subwayLineModal.toggle()
   };
 
   const onToggleModalForUpdate = event => {
     const $target = event.target;
     subwayLineModal.toggle();
-    $createSubwayLineButton.dataset.lineId = $target.closest(".subway-line-item").dataset.lineId
-    $createSubwayLineButton.classList.remove("create")
-    $createSubwayLineButton.classList.add("update")
+    $createSubwayLineButton.dataset.lineId = $target.closest(".subway-line-item").dataset.lineId;
+    $createSubwayLineButton.classList.remove("create");
+    $createSubwayLineButton.classList.add("update");
   };
 
   const onSubmitButton = event => {
