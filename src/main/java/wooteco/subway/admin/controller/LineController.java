@@ -82,6 +82,7 @@ public class LineController {
 
     @DeleteMapping("{id}/edge")
     public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
+        lineService.removeEdge(lineId, edgeDeleteRequest.getStationId());
         return ResponseEntity.noContent().build();
     }
 }
