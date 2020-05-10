@@ -74,7 +74,7 @@ public class Line {
         return updatedAt;
     }
 
-    public void update(Line line) {
+    public void update(final Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
         }
@@ -95,52 +95,74 @@ public class Line {
     }
 
     public void addLineStation(final LineStation lineStation) {
-        List<LineStation> listStations = new ArrayList<>(stations);
+        final List<LineStation> listStations = new ArrayList<>(stations);
 
-        LineStation right = listStations.stream()
-                .filter(station -> station.getPreStationId() == null)
-                .findFirst()
-                .orElse(null);
+        if (listStations.isEmpty()) {
+            listStations.add(lineStation);
+            stations = new LinkedHashSet<>(listStations);
+            return;
+        }
 
-        if (lineStation.getPreStationId() == null) {
-            if (right != null) {
-                right.updatePreLineStation(lineStation.getStationId());
-            }
-            listStations.add(0, lineStation);
+        LineStation nextStation;
+
+        if (lineStation.isFirstStation()) {
+            nextStation = listStations.stream()
+                    .filter(LineStation::isFirstStation)
+                    .findFirst()
+                    .orElse(null);
+
+            updateAndInsertLineStation(lineStation, listStations, nextStation, 0);
         } else {
-            if (listStations.isEmpty()) {
-                listStations.add(lineStation);
-                stations = new LinkedHashSet<>(listStations);
-                return;
-            }
-            LineStation left = listStations.stream()
+            LineStation beforeStation = listStations.stream()
                     .filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
 
-            right = listStations.stream()
-                    .filter(station -> station.getPreStationId() != null
-                            && station.getPreStationId().equals(left.getStationId()))
-                    .findFirst()
-                    .orElse(null);
+            nextStation = getNextStation(beforeStation.getStationId(), listStations);
 
-            if (right != null) {
-                right.updatePreLineStation(lineStation.getStationId());
-                listStations.add(listStations.indexOf(right), lineStation);
-            } else {
-                listStations.add(lineStation);
-            }
+            updateAndInsertLineStation(lineStation, listStations, nextStation, listStations.indexOf(beforeStation) + 1);
         }
         stations = new LinkedHashSet<>(listStations);
     }
 
-    public LineStation removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
+    private void updateAndInsertLineStation(final LineStation lineStation, final List<LineStation> listStations,
+                                            final LineStation nextStation, final int index) {
+        if (nextStation != null) {
+            nextStation.updatePreLineStation(lineStation.getStationId());
+        }
+        listStations.add(index, lineStation);
+    }
+
+    public LineStation removeLineStationById(final Long stationId) {
+        final List<LineStation> listStations = new ArrayList<>(stations);
+
+        final LineStation lineStation = listStations.stream()
                 .filter(station -> station.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        stations.remove(lineStation);
+
+        LineStation nextStation;
+        if (lineStation.isFirstStation()) {
+            nextStation = listStations.get(1);
+        } else {
+            nextStation = getNextStation(stationId, listStations);
+        }
+
+        if (nextStation != null) {
+            nextStation.updatePreLineStation(lineStation.getStationId());
+        }
+
+        listStations.remove(lineStation);
+        stations = new LinkedHashSet<>(listStations);
         return lineStation;
+    }
+
+    private LineStation getNextStation(final Long stationId, final List<LineStation> listStations) {
+        return listStations.stream()
+                .filter(station -> !station.isFirstStation()
+                        && station.getPreStationId().equals(stationId))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Long> getLineStationsId() {

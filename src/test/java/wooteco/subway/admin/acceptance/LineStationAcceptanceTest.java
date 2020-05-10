@@ -65,8 +65,7 @@ public class LineStationAcceptanceTest {
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-        LineStation removedLineStation = lineStationService.removeLineStation(line.getId(),
-                station.getId());
+        LineStation removedLineStation = lineStationService.removeLineStation(line.getId(), station.getId());
         assertThat(lineStation).isEqualTo(removedLineStation);
 
         // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
