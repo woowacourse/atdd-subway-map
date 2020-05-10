@@ -9,7 +9,7 @@ public class Edge {
     private int distance;
     private int duration;
 
-    public Edge() {
+    private Edge() {
     }
 
     public Edge(Long preStationId, Long stationId) {

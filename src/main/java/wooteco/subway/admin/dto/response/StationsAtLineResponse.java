@@ -6,12 +6,12 @@ import wooteco.subway.admin.domain.Station;
 import java.util.List;
 
 public class StationsAtLineResponse {
-    private Long id; // lineId
-    private String name; // lineName
+    private Long id;        // lineId
+    private String name;    // lineName
     private String bgColor;
     private List<Station> stations;
 
-    public StationsAtLineResponse() {
+    private StationsAtLineResponse() {
     }
 
     public StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {

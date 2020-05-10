@@ -6,7 +6,7 @@ public class EdgeAddRequest {
     private int distance;
     private int duration;
 
-    protected EdgeAddRequest() {
+    private EdgeAddRequest() {
     }
 
 

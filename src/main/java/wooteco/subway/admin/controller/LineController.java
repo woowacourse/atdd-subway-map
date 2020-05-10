@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.request.EdgeAddRequest;
 import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.request.LineUpdateRequest;
@@ -38,7 +37,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity showLine(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        return ResponseEntity.ok().body(lineService.showLine(id));
     }
 
     @GetMapping("/lines")
@@ -48,20 +47,19 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
-        Line line = request.toLine();
-        return ResponseEntity.ok().body(lineService.updateLine(id, line));
+        return ResponseEntity.ok().body(lineService.updateLine(id, request));
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable("id") Long id) {
-        lineService.deleteLineById(id);
+        lineService.deleteLine(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
     @GetMapping("/edges")
     public ResponseEntity showEdges() {
-        List<StationsAtLineResponse> response = lineService.findAllEdges();
+        List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
         return ResponseEntity.ok().body(response);
     }
 
