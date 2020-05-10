@@ -43,15 +43,6 @@ public class StationResponse {
 	}
 
 	@Override
-	public String toString() {
-		return "StationResponse{" +
-			"id=" + id +
-			", name='" + name + '\'' +
-			", createdAt=" + createdAt +
-			'}';
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -60,12 +51,22 @@ public class StationResponse {
 			return false;
 		}
 		StationResponse that = (StationResponse) o;
-		return
-			Objects.equals(name, that.name);
+		return Objects.equals(id, that.id) &&
+			Objects.equals(name, that.name) &&
+			Objects.equals(createdAt, that.createdAt);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(id, name, createdAt);
+	}
+
+	@Override
+	public String toString() {
+		return "StationResponse{" +
+			"id=" + id +
+			", name='" + name + '\'' +
+			", createdAt=" + createdAt +
+			'}';
 	}
 }

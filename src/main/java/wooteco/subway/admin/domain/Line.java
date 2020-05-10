@@ -72,13 +72,7 @@ public class Line {
             .orElse(0);
 
         lineStations.add(index, requestLineStation);
-
-        int nextLineStationIndex = index + 1;
-        if (isExcessIndex(nextLineStationIndex)) {
-            return;
-        }
-        LineStation nextStation = lineStations.get(nextLineStationIndex);
-        nextStation.updatePreStationId(requestLineStation.getPreStationId());
+        adjustPreStationId(index + 1, requestLineStation.getStationId());
     }
 
     private void checkPreStation(LineStation requestLineStation) {
@@ -93,8 +87,11 @@ public class Line {
             .noneMatch(lineStation -> lineStation.getStationId().equals(preStationId));
     }
 
-    private boolean isExcessIndex(int nextLineStationIndex) {
-        return nextLineStationIndex >= lineStations.size();
+    private void adjustPreStationId(int nextLineStationIndex, Long stationId) {
+        if (nextLineStationIndex < lineStations.size()) {
+            LineStation nextStation = lineStations.get(nextLineStationIndex);
+            nextStation.updatePreStationId(stationId);
+        }
     }
 
     public void removeLineStationById(Long stationId) {
@@ -104,22 +101,8 @@ public class Line {
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("해당 지하철이 없습니다."));
 
-        lineStations.remove(index);
-
-        if (isExcessIndex(index)) {
-            return;
-        }
-        Long preStationId = findPreStationId(index);
-        LineStation nextStation = lineStations.get(index);
-        nextStation.updatePreStationId(preStationId);
-    }
-
-    private Long findPreStationId(int index) {
-        Long preStationId = null;
-        if (index != 0) {
-            preStationId = (long) (index - 1);
-        }
-        return preStationId;
+        LineStation removeLineStation = lineStations.remove(index);
+        adjustPreStationId(index, removeLineStation.getPreStationId());
     }
 
     public Long getId() {
@@ -164,15 +147,17 @@ public class Line {
             .collect(Collectors.toList());
     }
 
+
     @Override
     public String toString() {
         return "Line{" +
             "id=" + id +
             ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
             ", startTime=" + startTime +
             ", endTime=" + endTime +
             ", intervalTime=" + intervalTime +
-            ", stations=" + lineStations +
+            ", lineStations=" + lineStations +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             '}';

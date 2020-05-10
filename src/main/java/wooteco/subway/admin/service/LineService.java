@@ -66,6 +66,7 @@ public class LineService {
     }
 
     private void convertNameToId(LineStationCreateRequest request) {
+        System.out.println(request.getPreStationName());
         if (!request.getPreStationName().isEmpty()) {
             Station preStation = stationRepository.findByName(request.getPreStationName())
                 .orElseThrow(() -> new IllegalArgumentException("이전 역이 등록되어 있지 않습니다."));

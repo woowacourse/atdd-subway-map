@@ -54,10 +54,6 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
-    public void updatePreStationId(LineStation other) {
-        this.preStationId = other.getStationId();
-    }
-
     public boolean isSameStationId(Long stationId) {
         return this.stationId.equals(stationId);
     }
@@ -80,5 +76,15 @@ public class LineStation {
     @Override
     public int hashCode() {
         return Objects.hash(stationId, preStationId, distance, duration);
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+            "stationId=" + stationId +
+            ", preStationId=" + preStationId +
+            ", distance=" + distance +
+            ", duration=" + duration +
+            '}';
     }
 }

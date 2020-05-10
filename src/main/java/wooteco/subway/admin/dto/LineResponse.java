@@ -100,7 +100,7 @@ public class LineResponse {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		LineResponse that = (LineResponse)o;
+		LineResponse that = (LineResponse) o;
 		return intervalTime == that.intervalTime &&
 			Objects.equals(id, that.id) &&
 			Objects.equals(name, that.name) &&
