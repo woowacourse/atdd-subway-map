@@ -10,5 +10,5 @@ public class RenderController {
     public String index() {
         return "index";
     }
-    
+
 }

@@ -2,12 +2,13 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.util.StringUtils;
 
 import wooteco.subway.admin.exception.InvalidStationInsertionException;
 import wooteco.subway.admin.exception.LineStationNotFoundException;
@@ -20,7 +21,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<LineStation> stations = new ArrayList<>();
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -44,19 +45,19 @@ public class Line {
     }
 
     public void update(Line line) {
-        if (line.getName() != null) {
+        if (!StringUtils.isEmpty(line.getName())) {
             this.name = line.getName();
         }
-        if (line.getStartTime() != null) {
+        if (!StringUtils.isEmpty(line.getStartTime())) {
             this.startTime = line.getStartTime();
         }
-        if (line.getEndTime() != null) {
+        if (!StringUtils.isEmpty(line.getEndTime())) {
             this.endTime = line.getEndTime();
         }
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-        if (line.getBgColor() != null) {
+        if (!StringUtils.isEmpty(line.getBgColor())) {
             this.bgColor = line.getBgColor();
         }
 

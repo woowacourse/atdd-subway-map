@@ -2,7 +2,7 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +41,7 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
             line.getEndTime(),
             line.getIntervalTime(),
-            line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new ArrayList<>());
+            line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new LinkedList<>());
     }
 
     public static LineResponse of(Line line, List<Station> stations) {

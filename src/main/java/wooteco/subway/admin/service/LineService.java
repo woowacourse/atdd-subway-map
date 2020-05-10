@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -15,9 +16,10 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
+@Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -33,10 +35,6 @@ public class LineService {
 
     private boolean isDistinct(String name) {
         return lineRepository.countDistinctByName(name) == 0;
-    }
-
-    public List<Line> findLines() {
-        return lineRepository.findAll();
     }
 
     public List<LineResponse> findAllLinesWithStationsById() {
