@@ -1,10 +1,7 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.req.LineRequest;
@@ -12,6 +9,9 @@ import wooteco.subway.admin.dto.req.LineStationCreateRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LineService {
@@ -58,7 +58,7 @@ public class LineService {
             lineRepository.save(line);
             List<Station> stations = findStations(line);
             return LineResponse.of(line, stations);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
     }
