@@ -50,9 +50,6 @@ const api = (() => {
 		async get() {
 			return await request(`/lines`);
 		},
-		async getById(id) {
-			return await request(`/lines/${id}`);
-		},
 		async create(data) {
 			return await request(`/lines`, METHOD.POST(data));
 		},

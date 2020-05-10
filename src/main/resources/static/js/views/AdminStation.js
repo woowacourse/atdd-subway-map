@@ -52,7 +52,8 @@ function AdminStation() {
 
 	const isDuplicate = name => {
 		const isDuplicateName = subwayStations
-			.map(station => station.name).includes(name);
+			.map(station => station.name)
+			.includes(name);
 		if (isDuplicateName) {
 			alert(ERROR_MESSAGE.NOT_DUPLICATE);
 			return true;

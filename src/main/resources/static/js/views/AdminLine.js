@@ -1,4 +1,4 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
+import { ERROR_MESSAGE, EVENT_TYPE } from "../../utils/constants.js";
 import {
 	colorSelectOptionTemplate,
 	subwayLineInfoTemplate,
@@ -43,6 +43,16 @@ function AdminLine() {
 		return subwayLines.find(line => line.id === parseInt(id));
 	}
 
+	const isDuplicate = title => {
+		const isDuplicateName = subwayLines
+			.map(line => line.title)
+			.includes(title);
+		if (isDuplicateName) {
+			return true;
+		}
+		return false;
+	};
+
 	const onCreateSubwayLine = async event => {
 		const $target = event.target;
 		const isCreateButton = $target.classList.contains("create-btn");
@@ -50,6 +60,10 @@ function AdminLine() {
 			return;
 		}
 		const newSubwayLine = initSubwayLine();
+		if (isDuplicate(newSubwayLine.title)) {
+			alert(ERROR_MESSAGE.NOT_DUPLICATE);
+			return;
+		}
 		subwayLineModal.toggle();
 		$subwayLineList.insertAdjacentHTML(
 			"beforeend",
@@ -65,6 +79,11 @@ function AdminLine() {
 			return;
 		}
 		const updateSubwayLine = initSubwayLine();
+		const existingSubwayLineTitle = $activeSubwayLineItem.textContent.trim();
+		if (isDuplicate(updateSubwayLine.title) && (existingSubwayLineTitle !== updateSubwayLine.title)) {
+			alert(ERROR_MESSAGE.NOT_DUPLICATE);
+			return;
+		}
 		subwayLineModal.toggle();
 		await api.line.update($activeSubwayLineItem.dataset.lineId, updateSubwayLine);
 	};
