@@ -22,7 +22,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLine(@RequestBody @Valid LineRequest view) throws SQLException {
+    public ResponseEntity createLine(@RequestBody @Valid LineRequest view) {
         Line line = view.toLine();
         Line persistLine = lineService.save(line);
 

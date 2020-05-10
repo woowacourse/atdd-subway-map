@@ -23,7 +23,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) throws SQLException {
+    public Line save(Line line) {
         return lineRepository.save(line);
     }
 
