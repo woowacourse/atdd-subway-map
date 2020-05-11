@@ -1,6 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import org.springframework.data.annotation.Id;
 
@@ -9,12 +8,10 @@ public class Station {
     @Id
     private Long id;
     private String name;
-    private LocalDateTime createdAt;
 
     public Station(String name) {
         validateName(name);
         this.name = name;
-        this.createdAt = LocalDateTime.now();
     }
 
     private void validateName(String name) {
@@ -38,9 +35,5 @@ public class Station {
 
     public String getName() {
         return name;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }

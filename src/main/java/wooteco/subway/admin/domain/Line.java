@@ -1,6 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +21,6 @@ public class Line {
     private int intervalTime;
     @MappedCollection
     private List<LineStation> stations = new LinkedList<>();
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private String bgColor;
 
     public Line() {
@@ -36,8 +33,6 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
     }
 
@@ -71,14 +66,6 @@ public class Line {
         return stations;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public String getBgColor() {
         return bgColor;
     }
@@ -99,8 +86,6 @@ public class Line {
         if (line.getBgColor() != null) {
             this.bgColor = line.getBgColor();
         }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
