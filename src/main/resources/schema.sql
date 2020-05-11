@@ -22,8 +22,8 @@ create table if not exists LINE_STATION
 (
     line bigint not null,
     line_key bigint not null,
-    station bigint not null unique,
-    pre_station bigint unique,
+    station bigint not null,
+    pre_station bigint,
     distance int,
     duration int,
     created_at timestamp default current_timestamp,
