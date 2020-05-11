@@ -1,8 +1,10 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -12,11 +14,13 @@ import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -41,7 +45,8 @@ public class LineService {
         }
     }
 
-    public List<LineResponse> showLines() {
+    @Transactional(readOnly = true)
+    public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
         Set<Long> stationIds = getMatchingStationIds(lines);
         List<Station> stations = stationRepository.findAllById(stationIds);
@@ -66,7 +71,8 @@ public class LineService {
         return stationRepository.findAllByLineId(line.getId());
     }
 
-    public LineResponse showLine(Long id) {
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
         Line line = findById(id);
         List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
@@ -120,6 +126,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long stationId) {
         Line line = findById(stationId);
         List<Station> stations = findStations(line);
