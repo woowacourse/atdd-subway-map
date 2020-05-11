@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -45,9 +46,11 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional
     public LineResponse registerLineStation(String lineName, String preStationName, String arrivalStationName) {
         Line line = lineRepository.findByName(lineName);
         Station preStation = stationRepository.findByName(preStationName);
+        //todo: refac
         Station arrivalStation = stationRepository.save(new Station(arrivalStationName));
 
         LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);

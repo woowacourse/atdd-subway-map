@@ -13,16 +13,8 @@ function AdminEdge() {
     const initSubwayLinesSlider = () => {
 
         api.line.get().then(subwayLines => {
-                // subwayLines.forEach(subwayLine => {
-                //     let stations = subwayLine.stations;
-                //     // subwayLine.stations = stations.map(station => station.name);
-                // });
-
-
                 $subwayLinesSlider.innerHTML = subwayLines
                     .map(line => {
-                            console.log("쿨쿨");
-                            console.log(line);
                             const subwayLine = {title: line.title, bgColor: line.bgColor, stations: line.stations,}
                             return subwayLinesItemTemplate(subwayLine);
                         }
