@@ -22,6 +22,10 @@ public class LineStation {
         this.duration = duration;
     }
 
+    public boolean is(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
     public boolean isFirstLineStation() {
         return preStationId == null;
     }
@@ -32,6 +36,10 @@ public class LineStation {
 
     public boolean isPreStationOf(LineStation lineStation) {
         return this.stationId.equals(lineStation.getPreStationId());
+    }
+
+    public void updatePreStationId(Long preStationId) {
+        this.preStationId = preStationId;
     }
 
     public Long getPreStationId() {
@@ -48,14 +56,6 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public void updatePreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
-    public boolean is(Long stationId) {
-        return this.stationId.equals(stationId);
     }
 
     @Override

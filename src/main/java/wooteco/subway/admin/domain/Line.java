@@ -39,40 +39,21 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime, lineColor);
     }
 
-    public Long getId() {
-        return id;
-    }
+    public void addLineStationOnFirst(LineStation inputLineStation) {
+        validateFirstLineStationFormat(inputLineStation);
 
-    public String getName() {
-        return name;
-    }
+        if (stations.isEmpty()) {
+            stations.add(0, inputLineStation);
+            return;
+        }
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+        LineStation lineStation = stations.stream()
+                .filter(LineStation::isFirstLineStation)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public String getLineColor() {
-        return lineColor;
-    }
-
-    public List<LineStation> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+        lineStation.updatePreStationId(inputLineStation.getStationId());
+        stations.add(0, inputLineStation);
     }
 
     public void update(Line line) {
@@ -93,23 +74,6 @@ public class Line {
         }
 
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStationOnFirst(LineStation inputLineStation) {
-        validateFirstLineStationFormat(inputLineStation);
-
-        if (stations.isEmpty()) {
-            stations.add(0, inputLineStation);
-            return;
-        }
-
-        LineStation lineStation = stations.stream()
-                .filter(LineStation::isFirstLineStation)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-
-        lineStation.updatePreStationId(inputLineStation.getStationId());
-        stations.add(0, inputLineStation);
     }
 
     private void validateFirstLineStationFormat(LineStation inputLineStation) {
@@ -175,5 +139,41 @@ public class Line {
         return stations.stream()
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public String getLineColor() {
+        return lineColor;
+    }
+
+    public List<LineStation> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
