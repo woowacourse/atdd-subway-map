@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("lines")
 public class LineController {
 	private final LineService lineService;
 
@@ -18,7 +19,7 @@ public class LineController {
 		this.lineService = lineService;
 	}
 
-	@GetMapping("/lines")
+	@GetMapping
 	public ResponseEntity<List<LineWithStationsResponse>> showLines() {
 		List<LineWithStationsResponse> lineWithStationsResponses = lineService.findLines();
 
@@ -27,7 +28,7 @@ public class LineController {
 				.body(lineWithStationsResponses);
 	}
 
-	@GetMapping("/lines/{id}")
+	@GetMapping("{id}")
 	public ResponseEntity<LineWithStationsResponse> findLineWithStationsBy(@PathVariable(name = "id") Long id) {
 		LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
 
@@ -36,7 +37,7 @@ public class LineController {
 				.body(lineWithStationsResponse);
 	}
 
-	@PostMapping("/lines")
+	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest view) {
 		LineResponse lineResponse = lineService.save(view);
 
@@ -45,7 +46,7 @@ public class LineController {
 				.body(lineResponse);
 	}
 
-	@PutMapping("/lines/{id}")
+	@PutMapping("{id}")
 	public ResponseEntity<Void> updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineCreateRequest view) {
 		lineService.updateLine(id, view);
 
@@ -54,7 +55,7 @@ public class LineController {
 				.build();
 	}
 
-	@DeleteMapping("/lines/{id}")
+	@DeleteMapping("{id}")
 	public ResponseEntity<Void> deleteLineBy(@PathVariable(name = "id") Long id) {
 		lineService.deleteLineBy(id);
 
