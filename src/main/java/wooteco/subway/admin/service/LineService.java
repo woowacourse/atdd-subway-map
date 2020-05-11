@@ -1,14 +1,17 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.AlreadyExistNameException;
+import wooteco.subway.admin.exception.NotExistIdException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -23,17 +26,27 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        validateDuplicateName(line);
         return lineRepository.save(line);
+    }
+
+    private void validateDuplicateName(Line line) {
+        Line newLine = lineRepository.findByName(line.getName());
+
+        if (!Objects.isNull(newLine) && line.getStations().size() == 0) {
+            throw new AlreadyExistNameException(line.getName());
+        }
     }
 
     public List<Line> showLines() {
         return lineRepository.findAll();
     }
 
-    public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    @Transactional
+    public void updateLine(Long id, Line line) {
+        Line persistLine = lineRepository.findById(id).orElseThrow(() -> new NotExistIdException(id));
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -56,14 +69,6 @@ public class LineService {
         Line line = findById(lineId);
         line.removeLineStationById(stationId);
         save(line);
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = findById(id);
-        List<Long> lineStationsIds = line.getLineStationsId();
-        List<Station> stations = stationRepository.findAllById(lineStationsIds);
-
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
     public List<Station> findStationsByLineId(final List<Long> lineStationsIds) {
