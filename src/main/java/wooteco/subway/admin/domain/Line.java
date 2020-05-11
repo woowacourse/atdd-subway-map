@@ -96,17 +96,26 @@ public class Line {
     }
 
     public void addLineStationOnFirst(LineStation inputLineStation) {
+        validateFirstLineStationFormat(inputLineStation);
+
         if (stations.isEmpty()) {
             stations.add(0, inputLineStation);
             return;
         }
+
         LineStation lineStation = stations.stream()
                 .filter(LineStation::isFirstLineStation)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-        lineStation.updatePreStationId(inputLineStation.getStationId());
 
+        lineStation.updatePreStationId(inputLineStation.getStationId());
         stations.add(0, inputLineStation);
+    }
+
+    private void validateFirstLineStationFormat(LineStation inputLineStation) {
+        if (inputLineStation.isNotFirstLineStation()) {
+            throw new IllegalArgumentException("처음에 추가할 수 없는 구간 형태입니다.");
+        }
     }
 
     public void addLineStation(LineStation inputLineStation) {

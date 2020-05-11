@@ -26,6 +26,10 @@ public class LineStation {
         return preStationId == null;
     }
 
+    public boolean isNotFirstLineStation() {
+        return !isFirstLineStation();
+    }
+
     public boolean isPreStationOf(LineStation lineStation) {
         return this.stationId.equals(lineStation.getPreStationId());
     }
