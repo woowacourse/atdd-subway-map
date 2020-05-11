@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,9 +49,9 @@ public class LineController {
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        if(lineService.contains(lineRequest.getName())) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        // if(lineService.contains(lineRequest.getName())) {
+        //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // }
 
         Line persistLine = lineService.save(lineRequest.toLine());
 
