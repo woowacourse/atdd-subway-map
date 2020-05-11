@@ -83,13 +83,17 @@ public class LineService {
             .map(LineStation::getStationId)
             .collect(Collectors.toList());
 
-        Map<Long, Station> stations = stationRepository.findAllById(lineStations)
+        Map<Long, Station> stations = createIdToStation(lineStations);
+
+        return LineStationsResponse.of(line, stations);
+    }
+
+    private Map<Long, Station> createIdToStation(List<Long> lineStations) {
+        return stationRepository.findAllById(lineStations)
             .stream()
             .collect(Collectors.toMap(
                 Station::getId,
                 station -> station));
-
-        return LineStationsResponse.of(line, stations);
     }
 
     public StationResponse createStation(StationCreateRequest stationCreateRequest) {
