@@ -1,9 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
@@ -13,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
@@ -23,7 +18,6 @@ import wooteco.subway.admin.acceptance.handler.LineHandler;
 import wooteco.subway.admin.acceptance.handler.StationHandler;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -97,10 +91,10 @@ public class LineStationAcceptanceTest {
         //     Assertions.assertThat(iterator.next().getName()).isEqualTo("잠실역");
         //     Assertions.assertThat(iterator.next().getName()).isEqualTo("종합운동장역");
         // }
-        // TODO: 2020-05-09 Set 순서 문제(추정)으로 순서가 다르게 나옴. 이 부분은 테스트 추후 작성
+        // TODO: 2020-05-09 Set 순서 문제(추정)으로 순서가 다르게 나옴. 이 부분은 테스트 추후 작성 예정
 
         //when
-        deleteLineStation(1L, 2L);
+        lineHandler.deleteLineStation(1L, 2L);
         //then
         Assertions.assertThat(lineHandler.getLine(1L).getStations().size())
             .isEqualTo(1);
@@ -114,52 +108,5 @@ public class LineStationAcceptanceTest {
         while (iterator.hasNext()) {
             Assertions.assertThat(iterator.next().getName()).isNotEqualTo("종합운동장역");
         }
-    }
-
-    private List<LineStationResponse> getLineStations() {
-        return
-            given().
-                when().
-                get("/line-stations").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", LineStationResponse.class);
-    }
-
-    private LineStationResponse getLineStation(Long id) {
-        return
-            given().
-                when().
-                get("/line-stations/" + id).
-                then().
-                log().all().
-                extract().as(LineStationResponse.class);
-    }
-
-    private void createLineStation(Long preStationId, Long stationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("preStationId", preStationId.toString());
-        params.put("stationId", stationId.toString());
-        params.put("distance", "10");
-        params.put("duration", "10");
-
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/line-stations").
-            then().
-            log().all().
-            statusCode(HttpStatus.CREATED.value());
-    }
-
-    private void deleteLineStation(Long lineId, Long stationId) {
-        given().
-            when().
-            delete("/line/" + lineId + "/station/" + stationId).
-            then().
-            log().all();
     }
 }

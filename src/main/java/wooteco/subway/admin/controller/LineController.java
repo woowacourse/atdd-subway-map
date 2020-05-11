@@ -91,17 +91,17 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/line-station/{id}") // TODO: 2020-05-08 http 요청 메서드과 uri가 적절한지
-    public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody
+    @PostMapping("/line/{lineId}/stations")
+    public ResponseEntity addLineStation(@PathVariable Long lineId, @RequestBody
         LineStationCreateRequest lineStationCreateRequest) {
-        lineService.addLineStation(id, lineStationCreateRequest);
+        lineService.addLineStation(lineId, lineStationCreateRequest);
 
         return ResponseEntity
             .ok()
             .body(LineStationResponse.of(lineStationCreateRequest.toLineStation()));
     }
 
-    @DeleteMapping("/line/{lineId}/station/{stationId}")
+    @DeleteMapping("/line/{lineId}/stations/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId,
         @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
