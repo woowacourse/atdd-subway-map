@@ -3,10 +3,10 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.domain.exception.DuplicationNameException;
 import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.LineStationRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -76,14 +76,13 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
-        List<StationResponse> stations = getStationsByLine(line);
+        List<Station> stations = getStationsByLine(line);
         return LineResponse.of(line, new LinkedHashSet<>(stations));
     }
 
-    private List<StationResponse> getStationsByLine(final Line line) {
+    private List<Station> getStationsByLine(final Line line) {
         return line.getLineStationsId().stream()
                 .map(stationId -> stationRepository.findById(stationId).orElseThrow(NotFoundLineException::new))
-                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
