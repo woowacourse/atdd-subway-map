@@ -4,8 +4,8 @@ import api from "../../api/index.js";
 
 function AdminStation() {
     const $stationInput = document.querySelector("#station-name");
-    const $stationList = document.querySelector("#station-list");
     const $stationAddBtn = document.querySelector("#station-add-btn");
+    const $stationList = document.querySelector("#station-list");
 
     const validateName = stationName => {
         if (stationName === "") {
@@ -16,7 +16,8 @@ function AdminStation() {
             alert(ERROR_MESSAGE.NOT_BLANK);
             return false;
         }
-        if (/[\d]/g.test(stationName)) {
+        const hasNumber = /[\d]/g.test(stationName);
+        if (hasNumber) {
             alert(ERROR_MESSAGE.NOT_NUMBER);
             return false;
         }
@@ -28,8 +29,7 @@ function AdminStation() {
             return;
         }
         event.preventDefault();
-        const $stationNameInput = document.querySelector("#station-name");
-        const stationName = $stationNameInput.value;
+        const stationName = $stationInput.value;
         if (!validateName(stationName)) {
             return;
         }
@@ -38,24 +38,24 @@ function AdminStation() {
         .then(data => data.json());
         $stationList.insertAdjacentHTML(
             "beforeend",
-            listItemTemplate(station));
-        $stationNameInput.value = "";
+            listItemTemplate(station)
+        );
+        $stationInput.value = "";
     };
 
-    const onRemoveStationHandler = event => {
+    const onRemoveStationHandler = async event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         const isYes = confirm("정말 삭제하시겠습니까?")
         if (isDeleteButton && isYes) {
             const $deleteStationItem = $target.closest(".list-item");
             const stationId = $deleteStationItem.dataset.stationId;
-            api.station.delete(stationId)
-            .then(() => $deleteStationItem.remove())
-            .catch(error => console.log(error));
+            await api.station.delete(stationId);
+            $deleteStationItem.remove();
         }
     };
 
-    const initSubwayStationsList = async () => {
+    const initStations = async () => {
         const stations = await api.station.get().then(data => data.json());
         stations.map(station =>
             $stationList.insertAdjacentHTML(
@@ -65,14 +65,22 @@ function AdminStation() {
     };
 
     const initEventListeners = () => {
-        $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS,
-            onAddStationHandler);
-        $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
-        $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
+        $stationInput.addEventListener(
+            EVENT_TYPE.KEY_PRESS,
+            onAddStationHandler
+        );
+        $stationAddBtn.addEventListener(
+            EVENT_TYPE.CLICK,
+            onAddStationHandler
+        );
+        $stationList.addEventListener(
+            EVENT_TYPE.CLICK,
+            onRemoveStationHandler
+        );
     };
 
     const init = () => {
-        initSubwayStationsList();
+        initStations();
         initEventListeners();
     };
 
