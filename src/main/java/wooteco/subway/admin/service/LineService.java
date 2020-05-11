@@ -41,9 +41,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void updateLine(Long id, Line line) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(line);
+        persistLine.update(lineRequest.toLine());
         lineRepository.save(persistLine);
     }
 
