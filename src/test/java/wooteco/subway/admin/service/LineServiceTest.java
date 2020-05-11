@@ -17,6 +17,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -117,7 +118,7 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        LinkedHashSet<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
