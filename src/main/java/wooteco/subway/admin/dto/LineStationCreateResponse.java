@@ -1,5 +1,7 @@
 package wooteco.subway.admin.dto;
 
+import wooteco.subway.admin.dto.response.StationResponse;
+
 public class LineStationCreateResponse {
 	private Long lineId;
 	private StationResponse station;

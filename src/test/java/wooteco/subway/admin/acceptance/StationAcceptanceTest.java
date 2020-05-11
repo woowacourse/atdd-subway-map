@@ -10,8 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.dto.response.StationResponse;
 
 import java.util.HashMap;
 import java.util.List;

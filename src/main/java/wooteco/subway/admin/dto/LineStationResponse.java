@@ -2,7 +2,7 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.LineStation;
 
-public class LineStationResponse {
+public class LineStationResponse { // TODO: 2020/05/11 안 쓰인다.
 	private Long preStationId;
 	private Long stationId;
 	private int distance;

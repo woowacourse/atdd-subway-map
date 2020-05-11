@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.dto.response.StationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
