@@ -165,7 +165,7 @@ public class Line {
     }
 
     private boolean isExistStartStation() {
-        return lineStations.stream().anyMatch(LineStation::isNotExistPreStation);
+        return lineStations.stream().anyMatch(LineStation::isStart);
     }
 
     public String getColor() {

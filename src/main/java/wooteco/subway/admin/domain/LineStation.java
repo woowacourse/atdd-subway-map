@@ -35,7 +35,7 @@ public class LineStation {
         this.preStationId = newPreStationId;
     }
 
-    public boolean isNotExistPreStation() {
+    public boolean isStart() {
         return this.preStationId == null;
     }
 
@@ -44,7 +44,7 @@ public class LineStation {
     }
 
     public boolean isPreStationId(Long preStationId) {
-        if (this.isNotExistPreStation() && preStationId == null) {
+        if (this.isStart() && preStationId == null) {
             return true;
         }
         return preStationId != null && preStationId.equals(this.preStationId);
