@@ -12,10 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import io.restassured.RestAssured;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.acceptance.handler.StationHandler;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;

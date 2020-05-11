@@ -3,20 +3,23 @@ package wooteco.subway.admin.service;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -61,19 +64,14 @@ public class LineService {
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
-    //
-    // public LineResponse findLineWithStationsById(Long id) {
-    //     // TODO: Service의 반환타입이 Line? LineReponse?
-    //     return new LineResponse();
-    // }
+
+     public LineResponse findLineWithStationsById(Long id) {
+         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+         Set<Station> stations = toStations(line.findLineStationsId());
+         return LineResponse.of(line, stations);
+     }
 
     public Set<Station> toStations(List<Long> lineStationsId) {
-        Set<Station> stations = new LinkedHashSet<>();
-        for (Long id : lineStationsId) {
-            Station station = stationRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
-            stations.add(station);
-        }
-        return stations;
+        return new LinkedHashSet<>(stationRepository.findAllById(lineStationsId));
     }
 }

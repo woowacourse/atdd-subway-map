@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -129,8 +130,8 @@ public class LineServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
-        Line line = lineService.showLine(1L);
+        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 
-        assertThat(line.getLineStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).hasSize(3);
     }
 }
