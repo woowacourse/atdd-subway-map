@@ -12,8 +12,9 @@ import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -42,12 +43,23 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Line line : lines) {
-            List<Station> stations = findStations(line);
-            lineResponses.add(LineResponse.of(line, stations));
-        }
-        return lineResponses;
+        Set<Long> stationIds = getMatchingStationIds(lines);
+        List<Station> stations = stationRepository.findAllById(stationIds);
+
+        return matchLineWithStations(lines, stations);
+    }
+
+    private Set<Long> getMatchingStationIds(List<Line> lines) {
+        return lines.stream()
+                .map(Line::getLineStationsId)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    private List<LineResponse> matchLineWithStations(List<Line> lines, List<Station> stations) {
+        return lines.stream()
+                .map(line -> LineResponse.of(line, line.findMatchingStations(stations)))
+                .collect(Collectors.toList());
     }
 
     private List<Station> findStations(Line line) {

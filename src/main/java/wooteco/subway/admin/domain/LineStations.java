@@ -91,4 +91,14 @@ public class LineStations {
     List<LineStation> getStations() {
         return stations;
     }
+
+    public List<Station> findMatchingStations(List<Station> stations) {
+        List<Long> stationIds = this.stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+
+        return stations.stream()
+                .filter(station -> stationIds.contains(station.getId()))
+                .collect(Collectors.toList());
+    }
 }

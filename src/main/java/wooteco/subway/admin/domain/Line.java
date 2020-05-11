@@ -52,6 +52,10 @@ public class Line {
         return lineStations.getLineStationsId();
     }
 
+    public List<Station> findMatchingStations(List<Station> stations) {
+        return lineStations.findMatchingStations(stations);
+    }
+
     public void update(Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
