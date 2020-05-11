@@ -1,4 +1,5 @@
 import {
+    listItemTemplate,
     optionTemplate,
     subwayLinesItemTemplate
 } from "../../utils/templates.js";
@@ -76,11 +77,15 @@ function AdminEdge() {
             duration: 0
         };
         const lineId = $selectOptions.options[$selectOptions.selectedIndex].dataset.lineId;
-        await api.edge.create(lineId, newEdge);
+        const $stationList = document.querySelector(`.station-list-${lineId}`);
+        const lineStations = await api.edge.create(lineId, newEdge).then(data => data.json());
+        const stationsTemplate = lineStations
+            .map(station => listItemTemplate(station))
+            .join("");
+        $stationList.innerHTML = stationsTemplate;
 
         createSubwayEdgeModal.toggle();
         resetModalInputValue();
-        window.location.href = window.location.href;
     }
 
     const onRemoveStationHandler = event => {

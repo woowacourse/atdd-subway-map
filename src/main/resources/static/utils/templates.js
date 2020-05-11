@@ -60,7 +60,7 @@ export const subwayLinesItemTemplate = line => {
     return `<div class="line-info-container inline-block w-1/2 px-2" data-line-id="${line.id}">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
-              <div class="line-station-list-container overflow-y-auto height-90">
+              <div class="line-station-list-container overflow-y-auto height-90 station-list-${line.id}">
               ${stationsTemplate}
               </div>
             </div>

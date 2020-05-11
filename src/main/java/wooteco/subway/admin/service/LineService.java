@@ -40,11 +40,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStation lineStation) {
+    public List<Station> addLineStation(Long id, LineStation lineStation) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         line.addLineStation(lineStation);
         lineRepository.save(line);
+        return findStationsOf(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
