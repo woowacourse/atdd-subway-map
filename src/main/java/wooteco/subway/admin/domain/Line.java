@@ -155,8 +155,6 @@ public class Line {
             return;
         }
 
-        targetLineStation.getPreStationId();
-
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);
             LineStation nextByTargetStation = stations.get(index + 1);
