@@ -100,7 +100,7 @@ function AdminEdge() {
     const stationId = $currentSubwayStation.childNodes[$currentSubwayStation.selectedIndex].dataset.currentStationId;
     const distance = $distance.value;
     const duration = $duration.value;
-    if (preStationId) {
+    if (preStationId === "null") {
       preStationId = stationId;
     }
     const newSubwayLineStation = {
