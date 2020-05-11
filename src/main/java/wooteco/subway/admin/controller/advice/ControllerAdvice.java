@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.LineStationException;
 import wooteco.subway.admin.exception.NotFoundException;
 
 @RestControllerAdvice
@@ -19,4 +20,10 @@ public class ControllerAdvice {
     public ResponseEntity<String> notFoundException(NotFoundException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
+
+    @ExceptionHandler(LineStationException.class)
+    public ResponseEntity<String> lineStationException(LineStationException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
 }

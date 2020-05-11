@@ -15,16 +15,16 @@ function AdminEdge() {
   const $submitButton = document.querySelector("#submit-button");
   const createSubwayEdgeModal = new Modal();
 
-  // const initializeStations = () => {
-  //   api.station.getAll()
-  //   .then(response => {
-  //     if (response.status !== 200) {
-  //       throw new Error("잘못된 요청입니다.");
-  //     }
-  //     return response.json();
-  //   }).then(fetchedStations => stations = [...fetchedStations])
-  //   .catch(error => alert(error.message));
-  // }
+  const initializeStations = () => {
+    api.station.getAll()
+    .then(response => {
+      if (response.status !== 200) {
+        throw new Error("잘못된 요청입니다.");
+      }
+      return response.json();
+    }).then(fetchedStations => stations = [...fetchedStations])
+    .catch(error => alert(error.message));
+  }
 
   const initSubwayLinesSlider = () => {
     api.line.getAll()

@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -50,15 +51,30 @@ public class LineStation {
         return updatedAt;
     }
 
+    public boolean isFirstLineStation() {
+        return Objects.isNull(preStationId);
+    }
+
     public boolean isBaseStation(Long stationId) {
         return this.stationId.equals(stationId);
     }
 
+    public boolean samePreStation(Long preStationId) {
+        if (Objects.isNull(this.preStationId)) {
+            return Objects.isNull(preStationId);
+        }
+        return this.preStationId.equals(preStationId);
+    }
+
     public boolean isSameStation(LineStation lineStation) {
-        return (this.stationId.equals(lineStation.stationId) && this.preStationId.equals(
-            lineStation.preStationId))
-            || (this.preStationId.equals(lineStation.stationId) && this.stationId.equals(
-            lineStation.preStationId));
+        if (Objects.isNull(this.preStationId)) {
+            return Objects.isNull(lineStation.getPreStationId()) && this.stationId.equals(
+                lineStation.stationId);
+        }
+        return (stationId.equals(lineStation.stationId) && preStationId.equals(
+            lineStation.preStationId)) ||
+            (preStationId.equals(lineStation.stationId) && stationId.equals(
+                lineStation.preStationId));
     }
 
     public void updatePreLineStation(Long preStationId) {
