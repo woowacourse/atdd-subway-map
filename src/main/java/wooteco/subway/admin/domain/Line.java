@@ -1,20 +1,24 @@
 package wooteco.subway.admin.domain;
 
+import static java.util.stream.Collectors.*;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import wooteco.subway.admin.exception.LineStationException;
 
 public class Line {
+
+	public static final int HEAD_LINE_STATION_INDEX = 0;
+	public static final Long HEAD_STATION_ID = null;
 
 	@Id
 	@Column("id")
@@ -30,7 +34,7 @@ public class Line {
 	private LocalTime endTime;
 
 	@Column("interval_time")
-	private int intervalTime;
+	private Integer intervalTime;
 
 	@Column("bg_color")
 	private String bgColor;
@@ -41,12 +45,13 @@ public class Line {
 	@Column("updated_at")
 	private LocalDateTime updatedAt;
 
-	private Set<LineStation> stations = new LinkedHashSet<>();
+	@MappedCollection(idColumn = "line_id", keyColumn = "index")
+	private List<LineStation> stations = new LinkedList<>();
 
 	public Line() {
 	}
 
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, Integer intervalTime,
 		String bgColor) {
 		this.id = id;
 		this.name = name;
@@ -58,7 +63,7 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+	public Line(String name, LocalTime startTime, LocalTime endTime, Integer intervalTime,
 		String bgColor) {
 		this(null, name, startTime, endTime, intervalTime, bgColor);
 	}
@@ -79,7 +84,7 @@ public class Line {
 		return endTime;
 	}
 
-	public int getIntervalTime() {
+	public Integer getIntervalTime() {
 		return intervalTime;
 	}
 
@@ -87,7 +92,7 @@ public class Line {
 		return bgColor;
 	}
 
-	public Set<LineStation> getStations() {
+	public List<LineStation> getStations() {
 		return stations;
 	}
 
@@ -109,7 +114,7 @@ public class Line {
 		if (Objects.nonNull(line.getEndTime())) {
 			this.endTime = line.getEndTime();
 		}
-		if (line.getIntervalTime() != 0) {
+		if (Objects.nonNull(line.getIntervalTime())) {
 			this.intervalTime = line.getIntervalTime();
 		}
 		if (Objects.nonNull(line.getBgColor())) {
@@ -119,43 +124,52 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
+		final Long preStationId = lineStation.getPreStationId();
+
 		if (stations.isEmpty()) {
-			if (Objects.nonNull(lineStation.getPreStationId())) {
-				throw new LineStationException("출발역이 존재하지 않습니다.");
-			}
+			checkHeadStationByPreStationId(preStationId);
 			stations.add(lineStation);
 			return;
 		}
-		if (isHeadStation(lineStation)) {
-			final LineStation headLineStation = findHeadLineStation();
+
+		checkLineStationAlreadyExist(lineStation);
+
+		if (Objects.isNull(preStationId)) {
+			final LineStation headLineStation = stations.get(HEAD_LINE_STATION_INDEX);
 			headLineStation.updatePreLineStation(lineStation.getStationId());
-			stations.add(lineStation);
+			stations.add(HEAD_LINE_STATION_INDEX, lineStation);
 			return;
 		}
-		final boolean isAlreadyExistStation = findLineStationByStationId(lineStation.getStationId())
-			.isPresent();
-		if (isAlreadyExistStation) {
-			throw new LineStationException("이미 존재하는 역입니다.");
-		}
-		final Optional<LineStation> lineStationByPreStationId = findLineStationByPreStationId(
-			lineStation.getPreStationId());
-		if (lineStationByPreStationId.isPresent()) {
-			lineStationByPreStationId.get().updatePreLineStation(lineStation.getStationId());
-			stations.add(lineStation);
+
+		final Optional<LineStation> nextLineStation = findLineStationByPreStationId(preStationId);
+
+		if (nextLineStation.isPresent()) {
+			nextLineStation.get().updatePreLineStation(preStationId);
+			stations.add(stations.indexOf(nextLineStation.get()), lineStation);
 			return;
 		}
 		stations.add(lineStation);
 	}
 
-	private boolean isHeadStation(LineStation lineStation) {
-		return Objects.isNull(lineStation.getPreStationId());
+	private void checkHeadStationByPreStationId(Long preStationId) {
+		if (Objects.nonNull(preStationId)) {
+			throw new LineStationException("출발역이 존재하지 않습니다.");
+		}
 	}
 
-	private LineStation findHeadLineStation() {
+	private void checkLineStationAlreadyExist(LineStation lineStation) {
+		final Optional<LineStation> foundLineStation =
+			findLineStationByStationId(lineStation.getStationId());
+
+		if (foundLineStation.isPresent()) {
+			throw new LineStationException("이미 존재하는 역입니다.");
+		}
+	}
+
+	private Optional<LineStation> findLineStationByStationId(Long stationId) {
 		return stations.stream()
-		               .filter(lineStation -> Objects.isNull(lineStation.getPreStationId()))
-		               .findFirst()
-		               .orElseThrow(() -> new LineStationException("출발역이 존재하지 않습니다."));
+		               .filter(lineStation -> stationId.equals(lineStation.getStationId()))
+		               .findFirst();
 	}
 
 	private Optional<LineStation> findLineStationByPreStationId(Long preStationId) {
@@ -165,44 +179,17 @@ public class Line {
 	}
 
 	public void removeLineStationById(Long stationId) {
-		final LineStation removeLineStation = findLineStationByStationId(stationId)
+		final LineStation targetLineStation = findLineStationByStationId(stationId)
 			.orElseThrow(() -> new LineStationException("삭제하려는 역이 존재하지 않습니다."));
 
-		if (isHeadStation(removeLineStation)) {
-			stations.remove(removeLineStation);
-			findLineStationByPreStationId(stationId)
-				.ifPresent(lineStation -> lineStation.updatePreLineStation(null));
-			return;
-		}
-		stations.remove(removeLineStation);
+		stations.remove(targetLineStation);
 		findLineStationByPreStationId(stationId)
-			.ifPresent(lineStation -> lineStation
-				.updatePreLineStation(removeLineStation.getPreStationId()));
-	}
-
-	private Optional<LineStation> findLineStationByStationId(Long stationId) {
-		return stations.stream()
-		               .filter(lineStation -> stationId.equals(lineStation.getStationId()))
-		               .findFirst();
+			.ifPresent(value -> value.updatePreLineStation(targetLineStation.getPreStationId()));
 	}
 
 	public List<Long> getLineStationsId() {
-		final List<Long> stationIds = new ArrayList<>();
-
-		if (stations.isEmpty()) {
-			return stationIds;
-		}
-
-		final LineStation headLineStation = findHeadLineStation();
-		stationIds.add(headLineStation.getStationId());
-
-		while (stationIds.size() != stations.size()) {
-			final Long stationId =
-				findLineStationByPreStationId(stationIds.get(stationIds.size() - 1))
-					.map(LineStation::getStationId)
-					.orElseThrow(() -> new LineStationException("라인의 구간에 오류가 존재합니다."));
-			stationIds.add(stationId);
-		}
-		return stationIds;
+		return stations.stream()
+		               .map(LineStation::getStationId)
+		               .collect(toList());
 	}
 }

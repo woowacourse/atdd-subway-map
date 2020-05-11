@@ -4,6 +4,9 @@ import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
 
+	@Column("index")
+	private Long index;
+
 	@Column("pre_station_id")
 	private Long preStationId;
 
@@ -11,19 +14,25 @@ public class LineStation {
 	private Long stationId;
 
 	@Column("distance")
-	private int distance;
+	private Integer distance;
 
 	@Column("duration")
-	private int duration;
+	private Integer duration;
 
 	public LineStation() {
 	}
 
-	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+	public LineStation(Long index, Long preStationId, Long stationId, Integer distance,
+		Integer duration) {
+		this.index = index;
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
+	}
+
+	public Long getIndex() {
+		return index;
 	}
 
 	public Long getPreStationId() {
@@ -34,11 +43,11 @@ public class LineStation {
 		return stationId;
 	}
 
-	public int getDistance() {
+	public Integer getDistance() {
 		return distance;
 	}
 
-	public int getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}
 
