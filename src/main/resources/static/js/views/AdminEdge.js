@@ -16,9 +16,9 @@ function AdminEdge() {
     let preStationId = null;
     let stationId = null;
 
-    const updateLineStation = () => {
+    const createLineStation = (event) => {
         if (!$arriveStationNameInput.value) {
-            return alert(ERROR_MESSAGE.NOT_EMPTY);
+            return alert(ERROR_MESSAGE.NOT_EMPTY_STATION_NAME);
         }
 
         stations.then(data => {
@@ -65,17 +65,16 @@ function AdminEdge() {
                         } else {
                             alert("station을 업데이트 하지 못했습니다.");
                         }
-                        createSubwayEdgeModal.toggle();
-                        $departStationNameInput.value = "";
-                        $arriveStationNameInput.value = "";
-                        $distance.value = "";
-                        $duration.value = "";
-                        preStationId = null;
-                        stationId = null;
                     }
                 );
+            createSubwayEdgeModal.toggle();
+            $departStationNameInput.value = "";
+            $arriveStationNameInput.value = "";
+            $distance.value = "";
+            $duration.value = "";
+            preStationId = null;
+            stationId = null;
         });
-
     };
 
     const initSubwayLinesSlider = () => {
@@ -137,9 +136,19 @@ function AdminEdge() {
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
+        const $targetList = $target.closest(".list-item");
         const isDeleteButton = $target.classList.contains("mdi-delete");
+
         if (isDeleteButton && confirm("정말로 지우시겠습니까?")) {
-            $target.closest(".list-item").remove();
+            let lineId = $targetList.closest(".slider-list").id;
+            stationId = $targetList.dataset.stationId;
+            fetch("/lines/" + lineId + "/" + stationId, {
+                method: 'delete'
+            }).then(res => {
+                if (res.ok) {
+                    $target.closest(".list-item").remove();
+                }
+            });
         }
     };
 
@@ -148,7 +157,7 @@ function AdminEdge() {
             EVENT_TYPE.CLICK,
             onRemoveStationHandler
         );
-        $createButton.addEventListener(EVENT_TYPE.CLICK, updateLineStation);
+        $createButton.addEventListener(EVENT_TYPE.CLICK, createLineStation);
     };
 
     const initStations = () => {

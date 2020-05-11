@@ -1,5 +1,5 @@
 export const listItemTemplate = station =>
-    `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-line-id="${station.id}" data-station-name="${station.name}">
+    `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-station-id="${station.id}">
     ${station.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
@@ -49,7 +49,7 @@ export const subwayLinesItemTemplate = line => {
         .map(station => listItemTemplate(station))
         .join("");
     return `<div class="inline-block w-1/2 px-2">
-            <div class="rounded-sm w-full slider-list">
+            <div class="rounded-sm w-full slider-list" id="${line.id}">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}

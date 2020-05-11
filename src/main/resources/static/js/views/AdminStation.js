@@ -7,14 +7,12 @@ function AdminStation() {
     const $stationAddButton = document.querySelector("#station-add-btn");
 
     const onAddStationHandler = event => {
-        console.log(event);
         if (event.key !== KEY_TYPE.ENTER && event.type !== EVENT_TYPE.CLICK) {
             return;
         }
         event.preventDefault();
         const $stationNameInput = document.querySelector("#station-name");
         const $stationName = $stationNameInput.value;
-        console.log($stationNameInput.value);
         if (NotValidationOf($stationName)) {
             return;
         }
@@ -103,7 +101,7 @@ function AdminStation() {
         const $lists = document.querySelectorAll(".list-item");
         for (let i = 0; i < $lists.length; i++) {
             if ($lists[i].dataset.stationName === stationName) {
-                alert(ERROR_MESSAGE.NOT_SAME_STATATION);
+                alert(ERROR_MESSAGE.NOT_SAME_STATION);
                 return true;
             }
         }
