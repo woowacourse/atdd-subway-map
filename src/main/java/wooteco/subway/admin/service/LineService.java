@@ -1,16 +1,17 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.exception.ExistingNameException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -25,7 +26,15 @@ public class LineService {
     }
 
     public Long save(Line line) {
+        validateLine(line);
         return lineRepository.save(line).getId();
+    }
+
+    private void validateLine(Line lineToCreate) {
+        boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
+        if (exist) {
+            throw new ExistingNameException(lineToCreate.getName());
+        }
     }
 
     public List<LineResponse> showLines() {
@@ -74,10 +83,15 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponses(List<Long> stationsId) {
-        List<Station> stations = stationRepository.findAllById(stationsId);
-        return stations.stream()
+        return stationsId.stream()
+            .map(stationRepository::findById)
+            .map(Optional::get)
             .map(StationResponse::of)
             .collect(Collectors.toList());
+        // List<Station> stations = stationRepository.findAllById(stationsId);
+        // return stations.stream()
+        //     .map(StationResponse::of)
+        //     .collect(Collectors.toList());
     }
 
     private Line findById(Long id) {

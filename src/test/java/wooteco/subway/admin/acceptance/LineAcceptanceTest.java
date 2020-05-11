@@ -44,6 +44,8 @@ public class LineAcceptanceTest {
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
+        String message = createLineException("1호선");
+        assertThat(message).contains("이미 존재하는 이름");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -73,6 +75,28 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
+    private String createLineException(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", "bg-green-700");
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+
+        return given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.BAD_REQUEST.value()).
+            extract().
+            body().
+            asString();
+    }
+
     static LineResponse getLine(Long id) {
         return given().when().
             get("/lines/" + id).
@@ -98,9 +122,9 @@ public class LineAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value()).
-            extract()
-            .body()
-            .as(Long.class);
+            extract().
+            body().
+            as(Long.class);
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {

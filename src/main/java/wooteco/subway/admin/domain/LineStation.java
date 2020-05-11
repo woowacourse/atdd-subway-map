@@ -55,8 +55,10 @@ public class LineStation {
     }
 
     public boolean isSameStation(LineStation lineStation) {
-        return (this.stationId.equals(lineStation.stationId) && this.preStationId.equals(lineStation.preStationId))
-            || (this.preStationId.equals(lineStation.stationId) && this.stationId.equals(lineStation.preStationId));
+        return (this.stationId.equals(lineStation.stationId) && this.preStationId.equals(
+            lineStation.preStationId))
+            || (this.preStationId.equals(lineStation.stationId) && this.stationId.equals(
+            lineStation.preStationId));
     }
 
     public void updatePreLineStation(Long preStationId) {

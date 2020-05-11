@@ -2,7 +2,6 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -138,7 +137,7 @@ public class Line {
         for (LineStation lineStation : this.stations) {
             stations.add(lineStation.getStationId());
         }
-        return new ArrayList<>(stations);
+        return stations;
     }
 
     private void validateHavingSame(LineStation lineStation) {

@@ -12,7 +12,9 @@ export const validateSubwayName = (name, stations) => {
       throw new Error(ERROR_MESSAGE.CONTAINS_NUMBER);
     }
   }
-  if (stations.includes(name)) {
-    throw new Error(ERROR_MESSAGE.ALREADY_EXISTING);
-  }
+  stations.forEach(station => {
+    if (station.name === name) {
+      throw new Error(ERROR_MESSAGE.ALREADY_EXISTING);
+    }
+  })
 };
