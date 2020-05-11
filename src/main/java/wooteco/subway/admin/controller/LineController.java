@@ -1,10 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,70 +13,49 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.service.NewLineService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-	private final LineRepository lineRepository;
+	private final NewLineService newLineService;
 
-	public LineController(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
+	public LineController(NewLineService newLineService) {
+		this.newLineService = newLineService;
 	}
 
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> lines() {
-		return ResponseEntity.ok(LineResponse.listOf(lineRepository.findAll()));
+		return ResponseEntity.ok(newLineService.findAll());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> line(
-			@PathVariable("id") Long id) {
-		return ResponseEntity.ok()
-				.body(LineResponse.of(lineRepository.findById(id)
-						.orElseThrow(NoSuchElementException::new)));
+			@PathVariable Long id) {
+		return ResponseEntity.ok(newLineService.findById(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> create(
-			@RequestBody LineRequest request) throws URISyntaxException {
-		String name = request.getName();
-		String color = request.getColor();
-		LocalTime startTime = request.getStartTime();
-		LocalTime endTime = request.getEndTime();
-		int intervalTime = request.getIntervalTime();
-
-		Line line = new Line(name, color, startTime, endTime, intervalTime);
-		Line created = lineRepository.save(line);
-
-		URI url = new URI("/lines/" + created.getId());
-		return ResponseEntity.created(url).build();
+	public ResponseEntity<LineResponse> create(
+			@RequestBody LineRequest request) {
+		LineResponse created = newLineService.create(request);
+		return ResponseEntity
+				.created(URI.create("/lines/" + created.getId()))
+				.body(created);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Line> update(
-			@PathVariable("id") Long id, @RequestBody LineRequest request) {
-		String name = request.getName();
-		String color = request.getColor();
-		LocalTime startTime = request.getStartTime();
-		LocalTime endTime = request.getEndTime();
-		int intervalTime = request.getIntervalTime();
-
-		Line line = lineRepository.findById(id)
-				.orElseThrow(NoSuchElementException::new);
-		line.update(new Line(name, color, startTime, endTime, intervalTime));
-
-		Line updated = lineRepository.save(line);
-		return ResponseEntity.ok(updated);
+	public ResponseEntity<LineResponse> update(
+			@PathVariable Long id, @RequestBody LineRequest request) {
+		return ResponseEntity.ok(newLineService.update(id, request));
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(
 			@PathVariable Long id) {
-		lineRepository.deleteById(id);
+		newLineService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 }

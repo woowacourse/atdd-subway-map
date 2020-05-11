@@ -24,6 +24,10 @@ public class LineRequest {
 		this.intervalTime = intervalTime;
 	}
 
+	public Line toLine() {
+		return new Line(name, color, startTime, endTime, intervalTime);
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -42,9 +46,5 @@ public class LineRequest {
 
 	public int getIntervalTime() {
 		return intervalTime;
-	}
-
-	public Line toLine() {
-		return new Line(name, color, startTime, endTime, intervalTime);
 	}
 }

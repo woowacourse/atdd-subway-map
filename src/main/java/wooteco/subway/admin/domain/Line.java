@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
+import wooteco.subway.admin.dto.LineRequest;
+
 public class Line {
 	@Id
 	private Long id;
@@ -27,6 +29,11 @@ public class Line {
 	public Line() {
 	}
 
+	public Line(String name, String color, LocalTime startTime, LocalTime endTime,
+			int intervalTime) {
+		this(null, name, color, startTime, endTime, intervalTime);
+	}
+
 	public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
 			int intervalTime) {
 		this.id = id;
@@ -38,11 +45,6 @@ public class Line {
 		this.stations = new HashSet<>();
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
-	}
-
-	public Line(String name, String color, LocalTime startTime, LocalTime endTime,
-			int intervalTime) {
-		this(null, name, color, startTime, endTime, intervalTime);
 	}
 
 	public void update(Line line) {
