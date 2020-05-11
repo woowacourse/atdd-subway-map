@@ -139,30 +139,24 @@ public class Line {
         return stations.indexOf(lineStation) == stations.size() - 1;
     }
 
-    private boolean isNotLastStation(LineStation lineStation) {
-        return !isLastStation(lineStation);
-    }
-
     public void addLineStationOnLast(LineStation lineStation) {
         stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation targetLineStation = stations.stream()
-                .filter(station -> station.is(stationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
-
         if (stations.size() == 1) {
             stations.remove(0);
             return;
         }
 
-        if (targetLineStation.isFirstLineStation()) {
-            stations.remove(0);
-            stations.get(0).updatePreStationId(null);
-            return;
-        }
+        removeFromMultiLineStations(stationId);
+    }
+
+    private void removeFromMultiLineStations(Long stationId) {
+        LineStation targetLineStation = stations.stream()
+                .filter(station -> station.is(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
 
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);
@@ -171,6 +165,10 @@ public class Line {
         }
 
         stations.remove(targetLineStation);
+    }
+
+    private boolean isNotLastStation(LineStation lineStation) {
+        return !isLastStation(lineStation);
     }
 
     public List<Long> getLineStationsId() {
