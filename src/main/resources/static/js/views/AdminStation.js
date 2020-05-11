@@ -1,5 +1,5 @@
-import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate, subwayStationsTemplate } from "../../utils/templates.js";
+import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {listItemTemplate, subwayStationsTemplate} from "../../utils/templates.js";
 import api from "../../api/index.js";
 
 function AdminStation() {

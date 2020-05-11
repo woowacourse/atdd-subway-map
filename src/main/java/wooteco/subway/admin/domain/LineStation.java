@@ -20,16 +20,35 @@ public class LineStation {
         this.duration = duration;
     }
 
+    public boolean isStationIdNull() {
+        return stationId == null;
+    }
+
+    public boolean isPreStationIdNull() {
+        return preStationId == null;
+    }
+
     public boolean isFirstOnLine() {
         return this.preStationId == null;
     }
 
     public boolean isSameWithPreStationId(LineStation lineStation) {
-        return this.stationId.equals(lineStation.preStationId);
+        return isSameId(lineStation.preStationId);
     }
 
     public boolean isSameId(Long id) {
-        return this.stationId.equals(id);
+        return stationId.equals(id);
+    }
+
+    public boolean isSameId(LineStation lineStation) {
+        return isSameId(lineStation.stationId);
+    }
+
+    public boolean isSamePreStationId(LineStation lineStation) {
+        if (preStationId == null) {
+            return lineStation.preStationId == null;
+        }
+        return preStationId.equals(lineStation.preStationId);
     }
 
     public void updatePreLineStation(Long preStationId) {

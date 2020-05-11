@@ -1,17 +1,19 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.req.LineStationCreateRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LineService {
@@ -23,10 +25,17 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
+    public LineResponse save(LineRequest lineRequest) {
         try {
-            return LineResponse.of(lineRepository.save(line));
-        } catch (Exception e) {
+            return LineResponse.of(lineRepository.save(lineRequest.toLine()));
+        } catch (DbActionExecutionException e) {
+            throwDuplicateKeyException(e);
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    private void throwDuplicateKeyException(DbActionExecutionException e) {
+        if (e.getCause() instanceof DuplicateKeyException) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
     }
@@ -52,15 +61,16 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = findById(id);
+        line.update(lineRequest.toLine());
         try {
-            Line line = findById(id);
-            line.update(lineRequest.toLine());
             lineRepository.save(line);
-            List<Station> stations = findStations(line);
-            return LineResponse.of(line, stations);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
+        } catch (DbActionExecutionException e) {
+            throwDuplicateKeyException(e);
+            throw new IllegalArgumentException(e.getMessage());
         }
+        List<Station> stations = findStations(line);
+        return LineResponse.of(line, stations);
     }
 
     public void deleteLineById(Long id) {
@@ -68,16 +78,28 @@ public class LineService {
     }
 
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
+        LineStation lineStation = request.toLineStation();
+        validateStationExist(lineStation);
+
         Line line = findById(id);
-        line.addLineStation(request.toEntity());
+        line.addLineStation(lineStation);
         lineRepository.save(line);
         List<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
     }
 
+    private void validateStationExist(LineStation lineStation) {
+        if (lineStation.isStationIdNull() || !stationRepository.findById(lineStation.getStationId()).isPresent()) {
+            throw new IllegalArgumentException("추가하려는 지하철 역이 존재하지 않습니다.");
+        }
+        if (!lineStation.isPreStationIdNull() && !stationRepository.findById(lineStation.getPreStationId()).isPresent()) {
+            throw new IllegalArgumentException("추가하려는 전 역이 존재하지 않습니다.");
+        }
+    }
+
     private Line findById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

@@ -1,9 +1,9 @@
 package wooteco.subway.admin.dto.req;
 
-import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
+
+import java.time.LocalTime;
 
 public class LineRequest {
     private String name;

@@ -5,7 +5,7 @@ import {
   subwayLinesItemTemplate
 } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 

@@ -1,11 +1,11 @@
 package wooteco.subway.admin.domain;
 
-import java.util.ArrayList;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class LineStations {
     private static final int FIRST_INDEX = 0;
@@ -19,15 +19,26 @@ public class LineStations {
     }
 
     static LineStations createEmpty() {
-        return new LineStations(new ArrayList<>());
+        return new LineStations(new LinkedList<>());
     }
 
     void add(LineStation lineStation) {
-        int addIndex = findAddIndex(lineStation);
+        validateDuplicate(lineStation);
+
+        int addIndex = findNextIndex(lineStation);
         update(lineStation, addIndex);
     }
 
-    private int findAddIndex(LineStation lineStation) {
+    private void validateDuplicate(LineStation lineStation) {
+        boolean isDuplicate = stations.stream()
+                .filter(station -> station.isSameId(lineStation))
+                .anyMatch(station -> station.isSamePreStationId(lineStation));
+        if (isDuplicate) {
+            throw new IllegalArgumentException("중복된 구간은 존재하면 안됩니다.");
+        }
+    }
+
+    private int findNextIndex(LineStation lineStation) {
         if (lineStation.isFirstOnLine()) {
             return FIRST_INDEX;
         }
@@ -42,9 +53,13 @@ public class LineStations {
     private void update(LineStation lineStation, int targetIndex) {
         stations.add(targetIndex, lineStation);
 
+        updateIfNotLast(targetIndex, lineStation.getStationId());
+    }
+
+    private void updateIfNotLast(int targetIndex, Long stationId) {
         if (isNotLast(targetIndex)) {
             int shouldUpdateIndex = targetIndex + NEXT_STATION_INDEX;
-            stations.get(shouldUpdateIndex).updatePreLineStation(lineStation.getStationId());
+            stations.get(shouldUpdateIndex).updatePreLineStation(stationId);
         }
     }
 
@@ -53,17 +68,14 @@ public class LineStations {
     }
 
     void remove(Long stationId) {
-        int targetIndex = findRemoveIndex(stationId);
+        int targetIndex = findIndex(stationId);
 
         LineStation station = stations.get(targetIndex);
-        if (isNotLast(targetIndex)) {
-            int shouldUpdateIndex = targetIndex + NEXT_STATION_INDEX;
-            stations.get(shouldUpdateIndex).updatePreLineStation(station.getPreStationId());
-        }
+        updateIfNotLast(targetIndex, station.getStationId());
         stations.remove(targetIndex);
     }
 
-    private int findRemoveIndex(Long stationId) {
+    private int findIndex(Long stationId) {
         return IntStream.range(0, stations.size())
             .filter(index -> stations.get(index).isSameId(stationId))
             .findFirst()

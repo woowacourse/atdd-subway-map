@@ -1,13 +1,12 @@
 package wooteco.subway.admin.dto.res;
 
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -48,13 +47,6 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
             line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(),
             line.getUpdatedAt(), stations);
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-
-        return lines.stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
     }
 
     public Long getId() {

@@ -34,7 +34,7 @@ public class LineStationCreateRequest {
         return duration;
     }
 
-    public LineStation toEntity() {
+    public LineStation toLineStation() {
         return new LineStation(preStationId, stationId, distance, duration);
     }
 }
