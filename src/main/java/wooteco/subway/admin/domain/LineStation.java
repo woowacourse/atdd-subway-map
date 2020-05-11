@@ -27,12 +27,17 @@ public class LineStation {
 	}
 
 	public static LineStation of(Long preStationId, Long stationId, int distance, int duration) {
-		return new LineStation(preStationId, stationId, distance, duration, LocalDateTime.now(), LocalDateTime.now());
+		LocalDateTime currentTime = LocalDateTime.now();
+		return new LineStation(preStationId, stationId, distance, duration, currentTime, currentTime);
 	}
 
 	public LineStation updatePreLineStation(Long preStationId) {
 		return new LineStation(preStationId, this.stationId, this.distance, this.duration, this.createdAt,
 			LocalDateTime.now());
+	}
+
+	public boolean isStartStation() {
+		return preStationId == null;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -57,9 +62,5 @@ public class LineStation {
 
 	public int getDuration() {
 		return duration;
-	}
-
-	public boolean isStartStation() {
-		return preStationId == null;
 	}
 }
