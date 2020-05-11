@@ -21,10 +21,6 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public void updatePreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
     public boolean isPreStationOf(LineStation requestLineStation) {
         return this.stationId == requestLineStation.getPreStationId();
     }

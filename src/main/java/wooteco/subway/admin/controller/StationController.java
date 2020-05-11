@@ -8,8 +8,6 @@ import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/stations")
 public class StationController {
