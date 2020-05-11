@@ -49,7 +49,7 @@ public class LineService {
 	@Transactional
 	public Line updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id)
-				.orElseThrow(RuntimeException::new);
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		persistLine.update(line);
 		return lineRepository.save(persistLine);
