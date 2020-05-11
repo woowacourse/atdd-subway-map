@@ -86,8 +86,8 @@ public class LineService {
                 new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
         List<LineStation> lineStations = line.getStations();
 
-        return Collections.unmodifiableList(lineStations.stream()
+        return lineStations.stream()
                 .map(lineStation -> LineStationResponse.of(id, lineStation))
-                .collect(Collectors.toList()));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 }
