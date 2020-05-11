@@ -10,6 +10,7 @@ import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -30,8 +31,16 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> showLines() {
+        List<LineResponse> lineResponses = new ArrayList<>();
+        List<Line> lines = lineRepository.findAll();
+        for (Line line : lines) {
+            List<Long> lineStationsId = line.findLineStationsId();
+            Set<Station> stations = stationRepository.findAllById(lineStationsId);
+            lineResponses.add(LineResponse.of(line, stations));
+        }
+
+        return Collections.unmodifiableList(lineResponses);
     }
 
     public void updateLine(Long id, Line line) {

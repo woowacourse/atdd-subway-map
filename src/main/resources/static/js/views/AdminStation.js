@@ -80,7 +80,7 @@ function AdminStation() {
   }
 
   function validateDuplicateStationName(stationNameInput, input) {
-    if (stations.includes(input)) {
+    if (stations.map(station => station["name"]).includes(input)) {
       alert(ERROR_MESSAGE.DUPLICATE);
       stationNameInput.value = CONSTANT.EMPTY;
       return false;

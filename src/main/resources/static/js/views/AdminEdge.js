@@ -7,6 +7,7 @@ import api from "../../api/index.js";
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $createLineStationButton = document.querySelector("#submit-button");
+  const $stationSelectOptions = document.querySelector("#line-select-options");
   const createSubwayEdgeModal = new Modal();
 
   let subwayLines = [];
@@ -22,20 +23,20 @@ function AdminEdge() {
     for (let i = 0; i < lines.length; i++) {
       const targetLine = lines[i];
       const lineStations = targetLine["stations"];
-      const lineStationsIds = lineStations.map(lineStation => lineStation["stationId"]);
-      const targetLineStations = lineStationsIds.map(id => stations.filter(station => station["id"] === id)
-          .map(station => station["name"]));
+      const lineStationsIds = lineStations.map(lineStation => lineStation["id"]);
+      const targetLineStationNames = lineStationsIds.map(id => stations.find(station => station["id"] === id))
+          .map(station => station["name"]);
       const subwayLine = {
         lineId: targetLine["id"],
         title: targetLine["name"],
         bgColor: targetLine["bgColor"],
-        stations: targetLineStations
+        stations: targetLineStationNames
       }
       subwayLines = [...subwayLines, subwayLine];
     }
   }
 
-  const initSubwayLinesSlider = () => {
+  const initSubwayLinesSlider = async () => {
     $subwayLinesSlider.innerHTML = subwayLines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
@@ -53,18 +54,46 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
+  const initSubwayLineOptions = async () => {
     const subwayLineOptionTemplate = subwayLines
       .map(line => optionTemplate(line.title))
       .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#line-select-options"
-    );
     $stationSelectOptions.insertAdjacentHTML(
       "afterbegin",
       subwayLineOptionTemplate
     );
   };
+
+  async function initDepartStations() {
+    const lineName = $stationSelectOptions.options[$stationSelectOptions.selectedIndex].value;
+    const line = subwayLines.find(subway => subway["title"] === lineName);
+    const lineStations = ["출발역", ...line["stations"]];
+    const departOptionTemplate = lineStations
+        .map(lineStation => optionTemplate(lineStation))
+        .join("");
+    const $departStationOptions = document.querySelector("#depart-station-name");
+    $departStationOptions.innerHTML = "";
+    $departStationOptions.insertAdjacentHTML("afterbegin", departOptionTemplate);
+  }
+
+  async function initArrivalStations() {
+    const lineName = $stationSelectOptions.options[$stationSelectOptions.selectedIndex].value;
+    const line = subwayLines.find(subway => subway["title"] === lineName);
+    const lineStations = ["출발역", ...line["stations"]];
+    const arrivalStations = stations.filter(station => !lineStations.some(name => name === station["name"]))
+        .map(station => station["name"])
+    const arrivalOptionTemplate = arrivalStations
+        .map(lineStation => optionTemplate(lineStation))
+        .join("");
+    const $arrivalStationOptions = document.querySelector("#arrival-station-name");
+    $arrivalStationOptions.innerHTML = "";
+    $arrivalStationOptions.insertAdjacentHTML("afterbegin", arrivalOptionTemplate);
+  }
+
+  async function initStationOptions() {
+    await initDepartStations();
+    await initArrivalStations();
+  }
 
   const onRemoveStationHandler = async event => {
     const $target = event.target;
@@ -117,13 +146,15 @@ function AdminEdge() {
       onRemoveStationHandler
     );
     $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, await onCreateLineStation);
+    $stationSelectOptions.addEventListener(EVENT_TYPE.CHANGE, await initStationOptions)
   };
 
   this.init = async () => {
     await initSubwayLines();
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
+    await initSubwayLinesSlider();
+    await initSubwayLineOptions();
     await initEventListeners();
+    await initStationOptions();
   };
 }
 

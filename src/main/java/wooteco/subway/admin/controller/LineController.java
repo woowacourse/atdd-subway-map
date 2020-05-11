@@ -22,14 +22,14 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private LineService lineService;
+    private final LineService lineService;
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity createLines(@RequestBody Request<LineRequest> view) {
+    public ResponseEntity<LineResponse> createLines(@RequestBody Request<LineRequest> view) {
         Line line = view.getContent().toLine();
         Line persistLine = lineService.save(line);
 
@@ -39,25 +39,25 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity showLines() {
-        List<Line> lines = lineService.showLines();
-        return ResponseEntity.ok().body(lines);
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<LineResponse> lineResponses = lineService.showLines();
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.findLineWithStationsById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody Request<LineRequest> lineRequest) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody Request<LineRequest> lineRequest) {
         lineService.updateLine(id, lineRequest.getContent().toLine());
         return ResponseEntity.ok().build();
     }
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity deleteLine(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
 		lineService.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
