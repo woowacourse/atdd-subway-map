@@ -22,7 +22,6 @@ import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -127,8 +126,6 @@ public class LineStationAcceptanceTest {
 	}
 
 	private void addLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
-		LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStationId, stationId,
-			distance, duration);
 		Map<String, String> params = new HashMap<>();
 		params.put("preStationId", String.valueOf(preStationId));
 		params.put("stationId", String.valueOf(stationId));
