@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,8 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +45,16 @@ public class LineServiceTest {
         line.addLineStation(new LineStation(1L, null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 1L, 2L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 3L, 10, 10));
+    }
+
+    @DisplayName("Line 추가 시 중복된 이름일 경우 예외 발생")
+    @Test
+    void notAddDuplicatedLineName() {
+        assertThatThrownBy(() -> {
+            when(lineRepository.existsByName(any())).thenReturn(true);
+            Line newLine = new Line(2L, "1호선", "bg-red-500", LocalTime.of(6, 30), LocalTime.of(10, 30), 10);
+            lineService.save(newLine);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

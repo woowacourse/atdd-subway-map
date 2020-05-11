@@ -28,6 +28,9 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if (lineRepository.existsByName(line.getName())) {
+            throw new IllegalArgumentException("중복된 이름입니다.");
+        }
         return lineRepository.save(line);
     }
 
