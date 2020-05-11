@@ -77,6 +77,15 @@ public class LineService {
             sortedStations.add(selectedStation);
         }
 
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), sortedStations);
+        return new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getStartTime(),
+                line.getEndTime(),
+                line.getIntervalTime(),
+                line.getBackgroundColor(),
+                line.getCreatedAt(),
+                line.getUpdatedAt(),
+                sortedStations);
     }
 }

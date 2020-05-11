@@ -160,7 +160,7 @@ public class LineStationAcceptanceTest {
             delete("/lines/" + lineId + "/stations/" + stationId).
         then().
             log().all().
-            statusCode(HttpStatus.OK.value());
+            statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private void createLineStation(Long id, String stationId, String preStationId, String distance, String duration) {
