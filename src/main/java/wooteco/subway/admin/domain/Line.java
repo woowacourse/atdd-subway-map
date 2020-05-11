@@ -1,16 +1,13 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.annotation.Generated;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Table("LINE")
 public class Line {
@@ -20,7 +17,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations = new HashSet<>();
+    @MappedCollection(idColumn = "line", keyColumn = "sequence")
+    private List<LineStation> lineStations = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String bgColor;
@@ -62,8 +60,8 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
-        return stations;
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -76,6 +74,21 @@ public class Line {
 
     public String getBgColor() {
         return bgColor;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", intervalTime=" + intervalTime +
+                ", lineStations=" + lineStations +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", bgColor='" + bgColor + '\'' +
+                '}';
     }
 
     public void update(Line line) {
@@ -99,16 +112,68 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
+    public void addLineStation(LineStation requestLineStation) {
+        int index = lineStations.stream()
+                .filter(lineStation -> lineStation.isPreStationOf(requestLineStation))
+                .map(lineStation -> lineStations.indexOf(lineStation) + 1)
+                .findAny()
+                .orElse(0);
+        if(lineStations.size() > 1  && lineStations.size() > index) {
+            LineStation nextLineStation = lineStations.get(index);
+            System.out.println(index + "hello" + lineStations.size());
+            if(index == 0) {
+                nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
+                lineStations.add(index, requestLineStation);
+                return;
+            }
+
+            LineStation preLineStation = lineStations.get(index - 1);
+            requestLineStation.updatePreLineStationId(preLineStation.getStationId());
+            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
+            lineStations.add(index, requestLineStation);
+            return;
+        }
+        lineStations.add(index, requestLineStation);
+    }
+
+    private boolean isEndIndex(int index) {
+        return index >= lineStations.size();
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        int index = lineStations.stream()
+                .filter(lineStation -> lineStation.isSameStationId(stationId))
+                .map(lineStation -> lineStations.indexOf(lineStation))
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
+        LineStation preLineStation;
+        LineStation nextLineStation;
+
+        if(index == 0 && index == lineStations.size() - 1){
+            lineStations.remove(index);
+            return;
+        }
+        if(index == 0) {
+            nextLineStation = lineStations.get(1);
+            nextLineStation.updatePreLineStationId(null);
+            lineStations.remove(index);
+            return;
+        }
+        if(index == lineStations.size() -1)  {
+            lineStations.remove(index);
+            return;
+        }
+        nextLineStation = lineStations.get(index+1);
+        preLineStation = lineStations.get(index-1);
+        nextLineStation.updatePreLineStationId(preLineStation.getStationId());
+        lineStations.remove(index);
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return this.lineStations.stream()
+                .mapToLong(LineStation::getStationId)
+                .boxed()
+                .collect(Collectors.toList());
     }
+
 }

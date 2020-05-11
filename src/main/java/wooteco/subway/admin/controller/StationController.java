@@ -1,5 +1,6 @@
 package wooteco.subway.admin.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
@@ -24,10 +25,10 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
         Station persistStation = lineService.save(view.toStation());
         return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
+                .status(HttpStatus.CREATED)
                 .body(StationResponse.of(persistStation));
     }
 

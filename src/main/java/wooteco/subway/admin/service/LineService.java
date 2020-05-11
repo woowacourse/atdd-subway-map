@@ -2,13 +2,17 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -20,31 +24,38 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse save(Line line) {
+        Line saveLine = lineRepository.save(line);
+        return LineResponse.of(saveLine);
     }
 
     public Station save(Station station) {
         return stationRepository.save(station);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> showLines() {
+        List<Line> lines = lineRepository.findAll();
+//        List<Line> sortedLines = lines.stream()
+//                .map(line -> line.sortByStationId())
+//                .collect(Collectors.toList());
+        System.out.println("showLines에서의 Line리스"+lines);
+        return LineResponse.listOf(lines);
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
+    public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
+        return LineResponse.of(line);
     }
 
     public void deleteStationById(Long id) {
@@ -56,7 +67,27 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        if(request.hasNotAnyId()) {
+            convertNameToId(request);
+        }
+        Line line = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+        LineStation lineStation = request.toLineStation();
+
+        line.addLineStation(lineStation);
+        lineRepository.save(line);
+    }
+
+    private void convertNameToId(LineStationCreateRequest request) {
+        if(!request.getPreStationName().isEmpty()) {
+            Station preStation = stationRepository.findByName(request.getPreStationName())
+                    .orElseThrow(IllegalArgumentException::new);
+            request.setPreStationId(preStation.getId());
+        }
+        Station station = stationRepository.findByName(request.getStationName())
+                .orElseThrow(IllegalArgumentException::new);
+        request.setStationId(station.getId());
+
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -66,5 +97,36 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         // TODO: 구현
         return new LineResponse();
+    }
+
+    public List<LineResponse> findAllStationsWithLine() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(Line::getId)
+                .map(this::findStationsByLineId)
+                .collect(Collectors.toList());
+    }
+
+    public LineResponse findStationsByLineId(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        List<Station> stations = new ArrayList<>();
+
+        List<LineStation> lineStations = line.getLineStations();
+        for (LineStation lineStation : lineStations) {
+            for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
+                if(station.getId() == lineStation.getStationId()) {
+                    stations.add(station);
+                }
+            }
+        }
+        return LineResponse.of(line, stations);
+    }
+
+    public void deleteStationByLineIdAndStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 }

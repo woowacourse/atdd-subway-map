@@ -9,14 +9,17 @@ public class PageController {
     public String index() {
         return "admin-station";
     }
+
     @GetMapping("/admin-edge.html")
     public String edge() {
         return "admin-edge";
     }
+
     @GetMapping("/admin-line.html")
     public String line() {
         return "admin-line";
     }
+
     @GetMapping("/")
     public String station() {
         return "index";
