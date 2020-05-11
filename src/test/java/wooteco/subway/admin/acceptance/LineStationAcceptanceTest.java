@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
+import wooteco.subway.admin.dto.request.LineStationCreateRequest;
 import wooteco.subway.admin.dto.response.StationResponse;
 
 import java.time.LocalTime;
@@ -51,10 +52,10 @@ public class LineStationAcceptanceTest {
 		// And 지하철 노선이 추가되어있다.
 		LineResponse lineResponse = createLine("2호선");
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-		addStationOnLine("1", "", "신림");
-		addStationOnLine("1", "신림", "설입");
-		addStationOnLine("1", "설입", "사당");
-		addStationOnLine("1", "사당", "서초");
+		addStationOnLine("1", null, stationResponse1.getId());
+		addStationOnLine("1", stationResponse1.getId(), stationResponse2.getId());
+		addStationOnLine("1", stationResponse2.getId(), stationResponse3.getId());
+		addStationOnLine("1", stationResponse3.getId(), stationResponse4.getId());
 		// Then 지하철역이 노선에 추가 되었다.
 		LineWithStationsResponse persistLine  = getLineBy(lineResponse.getId());
 		assertEquals(persistLine.getStations().size(), 4);
@@ -98,18 +99,16 @@ public class LineStationAcceptanceTest {
 					extract().as(LineWithStationsResponse.class);
 	}
 
-	private void addStationOnLine(String lineId, String preStationName, String stationName) {
-		Map<String, String> params = new HashMap<>();
-		params.put("lineId", lineId);
-		params.put("preStationName" ,preStationName);
-		params.put("stationName" ,stationName);
+	private void addStationOnLine(String lineId, Long preStationId, Long stationId) {
+		LineStationCreateRequest lineStationCreateRequest =
+				new LineStationCreateRequest(preStationId, stationId, 10, 10);
 
 		given().
-				body(params).
+				body(lineStationCreateRequest).
 				contentType(MediaType.APPLICATION_JSON_VALUE).
 				accept(MediaType.APPLICATION_JSON_VALUE).
 		when()
-				.post("/lines/stations").
+				.post("/lines/" + Long.parseLong(lineId) + "/stations").
 		then().
 				log().all();
 	}

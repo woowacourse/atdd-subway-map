@@ -10,7 +10,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -42,10 +41,10 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        createLine("신분당선", "10");
+        createLine("1호선", "11");
+        createLine("2호선", "12");
+        createLine("3호선", "13");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -84,13 +83,13 @@ public class LineAcceptanceTest {
                         extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    private void createLine(String name, String intervalTime) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-        params.put("lineColor", "bg-pink-700");
+        params.put("intervalTime", intervalTime);
+        params.put("lineColor", "bg-pink-700" + name);
 
         given().
                 body(params).

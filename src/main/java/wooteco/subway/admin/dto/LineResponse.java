@@ -14,10 +14,9 @@ public class LineResponse {
     private LocalTime endTime;
     private int intervalTime;
     private String lineColor;
+    private List<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    private List<LineStation> stations;
 
     public LineResponse() {
     }
