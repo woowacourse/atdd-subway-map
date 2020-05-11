@@ -1,3 +1,40 @@
+# API 
+## StationController
+
+### /stations  [post] [@RequestBody StationCreateRequest] [StationResponse]
+역을 생성한다. 
+
+### /stations [get] [-] [body(List<StationResponse>)]
+모든 역을 조회한다.
+
+### /stations/id [delete] [@PathVariable Long id] [noContent]
+특정 역을 삭제한다.
+
+## LineController
+
+### /lines [post] [@RequestBody LineCreateRequest view] [LineResponse]
+노선을 생성한다.
+
+### /lines [get] [-] [List<LineWithStationsResponse>]
+모든 노선을 조회한다.
+
+### /lines/id [get] [@PathVariable(name = "id") Long id] [LineWithStationsResponse]
+특정 노선을 조회한다.
+
+### /lines/id [put] [@PathVariable(name = "id") Long id, @RequestBody LineCreateRequest view] [noContent]
+특정 노선을 수정한다.
+
+### /lines/{id} [delete] [@PathVariable(name = "id") Long id] [noContent]
+특정 노선을 삭제한다.
+
+## LineStationController
+
+### /lines/{lineId}/stations [post] [@PathVariable("lineId") Long lineId, @RequestBody LineStationCreateRequest view] [LineStationCreateResponse]
+특정 노선에 해당하는 특정 구간을 생성한다.
+
+### /lines/{lineId}/stations/{stationId} [delete] [@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId] [noContent]
+특정 노선에 해당하는 특정 구간을 삭제한다.
+
 # 지하철 노선 관리 기능
 
 ## 레벨 1
