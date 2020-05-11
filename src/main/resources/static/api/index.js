@@ -31,40 +31,40 @@ const api = (() => {
 
     const station = {
         get() {
-            return request(`${BASE_URL}/stations`).then(data => data.json());
+            return request(`${BASE_URL}/api/stations`).then(data => data.json());
         },
         create(data) {
-            return request(`${BASE_URL}/stations`, METHOD.POST(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/stations`, METHOD.POST(data)).then(data => data.json());
         },
         delete(id) {
-            return request(`${BASE_URL}/stations/${id}`, METHOD.DELETE());
+            return request(`${BASE_URL}/api/stations/${id}`, METHOD.DELETE());
         }
     };
 
     const line = {
         get() {
-            return request(`${BASE_URL}/lines`).then(data => data.json());
+            return request(`${BASE_URL}/api/lines`).then(data => data.json());
         },
         find(id) {
-            return request(`${BASE_URL}/lines/${id}`).then(data => data.json());
+            return request(`${BASE_URL}/api/lines/${id}`).then(data => data.json());
         },
         create(data) {
-            return request(`${BASE_URL}/lines`, METHOD.POST(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/lines`, METHOD.POST(data)).then(data => data.json());
         },
         update(id, data) {
-            return request(`${BASE_URL}/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
         },
         delete(id) {
-            return request(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
+            return request(`${BASE_URL}/api/lines/${id}`, METHOD.DELETE());
         }
     };
 
     const lineStation = {
         create(id, data) {
-            return request(`${BASE_URL}/lines/${id}/stations`, METHOD.PUT(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/lines/${id}/stations`, METHOD.PUT(data)).then(data => data.json());
         },
         delete(lineId, stationId) {
-            return request(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+            return request(`${BASE_URL}/api/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
 
