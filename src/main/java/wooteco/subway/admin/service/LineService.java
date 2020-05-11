@@ -19,6 +19,10 @@ public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
+    private static final String NO_LINE_EXCEPTION = "존재하지 않는 노선입니다.";
+    private static final String DUPLICATE_LINE_NAME_EXCEPTION = "중복되는 역이 존재합니다.";
+    private static final String NO_STATION_EXCEPTION = "존재하지 않는 역입니다.";
+
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
@@ -31,13 +35,13 @@ public class LineService {
 
     private void validateName(Line line) {
         if (lineRepository.findName(line.getName()) > 0) {
-            throw new IllegalArgumentException("중복되는 역이 존재합니다.");
+            throw new IllegalArgumentException(DUPLICATE_LINE_NAME_EXCEPTION);
         }
     }
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         return LineResponse.of(line);
     }
 
@@ -49,7 +53,8 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         persistLine.update(line);
         return LineResponse.of(lineRepository.save(persistLine));
     }
@@ -60,7 +65,7 @@ public class LineService {
 
     public StationsAtLineResponse addLineStation(Long id, LineStationAddRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         LineStation lineStation = createLineStation(request);
         line.addLineStation(lineStation);
 
@@ -81,14 +86,14 @@ public class LineService {
 
         for (LineStation lineStation : lineStations) {
             stations.add(stationRepository.findById(lineStation.getStationId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
+                    .orElseThrow(() -> new IllegalArgumentException(NO_STATION_EXCEPTION)));
         }
         return stations;
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
         stationRepository.deleteById(stationId);
