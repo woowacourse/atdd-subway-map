@@ -5,25 +5,25 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,44 +40,41 @@ public class LineStationAcceptanceTest {
     public static RequestSpecification given() {
         return RestAssured.given().log().all();
     }
-
-    /**
-     * Given 지하철역이 여러 개 추가되어있다.
-     * And 지하철 노선이 추가되어있다.
-     * <p>
-     * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     * Then 지하철역이 노선에 추가 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 새로 추가한 지하철역을 목록에서 찾는다.
-     * <p>
-     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     * Then 지하철역이 노선에서 제거 되었다.
-     * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //Given
         createStation("잠실");
         createStation("천호");
         createStation("몽촌토성");
-
+        //And
         createLine("8호선");
 
+        //When
         createLineStation(1L, null, 1L);
         createLineStation(1L, 1L, 2L);
         createLineStation(1L, 2L, 3L);
+        //Then
+        Set<Station> stations = getLine(1L).getStations();
+        assertThat(stations.size()).isEqualTo(3);
+        assertTrue(isStationExists(stations, "잠실"));
+        assertTrue(isStationExists(stations, "천호"));
+        assertTrue(isStationExists(stations, "몽촌토성"));
 
-        Set<Station> lineStations = getLine(1L).getStations();
-        assertThat(lineStations.size()).isEqualTo(3);
-
+        //When
         deleteLineStation(1L, 2L);
+        //Then
+        stations = getLine(1L).getStations();
+        assertThat(stations.size()).isEqualTo(2);
+        //And
+        assertFalse(isStationExists(stations, "천호"));
+    }
 
-        assertThat(getLine(1L).getStations().size()).isEqualTo(2);
+    private boolean isStationExists(Set<Station> stations, String stationName) {
+        return stations.stream()
+                .map(Station::getName)
+                .collect(Collectors.toList())
+                .contains(stationName);
     }
 
     private void deleteLineStation(long lineId, long stationId) {
