@@ -5,10 +5,7 @@ import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -39,16 +36,6 @@ public class LineResponse {
 
     public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
-    }
-
-    public static LineResponse of(Line line) {
-        return of(line, new HashSet<>());
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-                .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList());
     }
 
     public Long getId() {

@@ -10,6 +10,7 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private final StationRepository stationRepository;
 
@@ -17,7 +18,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
@@ -27,12 +28,12 @@ public class StationController {
                 .body(StationResponse.of(persistStation));
     }
 
-    @GetMapping("/stations")
+    @GetMapping
     public ResponseEntity showStations() {
         return ResponseEntity.ok().body(stationRepository.findAll());
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();

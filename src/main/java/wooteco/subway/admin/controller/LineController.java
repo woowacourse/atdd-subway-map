@@ -6,13 +6,15 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationCreateByNameRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -29,20 +31,23 @@ public class LineController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + line.getId()))
-                .body(LineResponse.of(line));
+                .body(LineResponse.of(line, new HashSet<>()));
     }
 
     @GetMapping
     public List<LineResponse> getLines() {
-        return LineResponse.listOf(lineService.showLines());
+        List<Line> lines = lineService.showLines();
+        return lines.stream()
+                .map(line -> LineResponse.of(line, lineService.findStationsOf(line.getId())))
+                .collect(Collectors.toList());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        Line line = lineService.updateLine(id, request.toLine());
+        LineResponse response = lineService.updateLine(id, request.toLine());
 
         return ResponseEntity.ok()
-                .body(LineResponse.of(line));
+                .body(response);
     }
 
     @GetMapping("/{id}")
@@ -58,13 +63,13 @@ public class LineController {
     }
 
     @PostMapping("/{id}/stations")
-    public ResponseEntity addStationToLine(
+    public ResponseEntity addLineStation(
             @PathVariable Long id,
-            @RequestBody LineStationCreateRequest request) {
-        lineService.addLineStation(id, request.toLineStation());
+            @RequestBody LineStationCreateByNameRequest request) {
+        lineService.addLineStationByName(id, request);
 
         return ResponseEntity
-                .created(URI.create("/lines/" + id + "/stations/" + request.getStationId()))
+                .ok()
                 .build();
     }
 

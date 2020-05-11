@@ -5,10 +5,11 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateByNameRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -33,10 +34,11 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        Line updatedLine = lineRepository.save(persistLine);
+        return LineResponse.of(updatedLine, findStationsOf(updatedLine));
     }
 
     public void deleteLineById(Long id) {
@@ -48,6 +50,17 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         line.addLineStation(lineStation);
         lineRepository.save(line);
+    }
+
+    public void addLineStationByName(Long id, LineStationCreateByNameRequest request) {
+        String preStationName = request.getPreStationName();
+        String stationName = request.getStationName();
+        int distance = request.getDistance();
+        int duration = request.getDuration();
+        Long preStationId = stationRepository.findIdByName(preStationName);
+        Long stationId = stationRepository.findIdByName(stationName);
+
+        addLineStation(id, new LineStation(preStationId, stationId, distance, duration));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -70,7 +83,7 @@ public class LineService {
     }
 
     private Set<Station> findStationsOf(Line line) {
-        Set<Station> stations = new HashSet<>();
+        Set<Station> stations = new LinkedHashSet<>();
         for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
             stations.add(station);
         }

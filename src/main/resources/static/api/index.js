@@ -52,6 +52,9 @@ const api = (() => {
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
+    createEdge(data, id) {
+      return request(`/lines/${id}/stations`, METHOD.POST(data));
+    },
     update(data, id) {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },

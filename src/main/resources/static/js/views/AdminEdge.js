@@ -1,8 +1,8 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -26,39 +26,44 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-        .map(line => optionTemplate(line.title))
-        .join("");
-    const $stationSelectOptions = document.querySelector(
-        "#station-select-options"
-    );
-    $stationSelectOptions.insertAdjacentHTML(
-        "afterbegin",
-        subwayLineOptionTemplate
-    );
-  };
+    const initSubwayLineOptions = () => {
+        api.line.get()
+            .then(data => data.json())
+            .then(lines => {
+                const subwayLineOptionTemplate = lines
+                    .map(line => optionTemplate(line))
+                    .join("");
+                const $stationSelectOptions = document.querySelector(
+                    "#station-select-options"
+                );
+                $stationSelectOptions.insertAdjacentHTML(
+                    "afterbegin",
+                    subwayLineOptionTemplate
+                );
+            })
+    };
 
-  const onRemoveStationHandler = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      $target.closest(".list-item").remove();
-    }
-  };
+    const onRemoveStationHandler = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (isDeleteButton) {
+            $target.closest(".list-item").remove();
+        }
+    };
 
-  const initEventListeners = () => {
-    $subwayLinesSlider.addEventListener(
-        EVENT_TYPE.CLICK,
-        onRemoveStationHandler
-    );
-  };
+    const initEventListeners = () => {
+        $subwayLinesSlider.addEventListener(
+            EVENT_TYPE.CLICK,
+            onRemoveStationHandler
+        );
+        $submitEdgeBtn.addEventListener(EVENT_TYPE.CLICK, onAddLineStationHandler);
+    };
 
-  this.init = () => {
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
-    initEventListeners();
-  };
+    this.init = () => {
+        initSubwayLinesSlider();
+        initSubwayLineOptions();
+        initEventListeners();
+    };
 }
 
 const adminEdge = new AdminEdge();
