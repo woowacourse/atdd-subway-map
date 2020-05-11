@@ -88,7 +88,8 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
-    public ResponseEntity removeStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+    public ResponseEntity removeLineStation(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
         service.removeLineStation(lineId, stationId);
         return ResponseEntity
             .noContent()

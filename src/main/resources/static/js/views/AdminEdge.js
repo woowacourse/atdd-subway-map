@@ -49,17 +49,17 @@ function AdminEdge() {
   };
 
   /* 구간 추가 버튼 */
-  const onAddLineStationHandler = event => {
+  const onAddLineStationHandler = async event => {
     event.preventDefault();
+    const $lineId = $subwayLineSelection.querySelector("option:checked")
+    .getAttribute("data-line-id");
     const data = {
-      lineSelection: $subwayLineSelection.value,
-      departStation: $subwayDepartStation.value,
-      arrivalStation: $subwayArrivalStation.value,
+      preStationId: await api.station.getByName($subwayDepartStation.value),
+      stationId: await api.station.getByName($subwayArrivalStation.value),
       distance: $subwayDistance.value,
       duration: $subwayDuration.value
     };
-    const $id = $subwayLineSelection.querySelector("option:checked").getAttribute("data-line-id");
-    api.line.addLineStation($id, data).then()
+    api.line.addLineStation($lineId, data).then();
     createSubwayEdgeModal.toggle();
     $subwayLineSelection.value = "";
     $subwayDepartStation.value = "";
@@ -71,9 +71,13 @@ function AdminEdge() {
 
   const onRemoveStationHandler = event => {
     const $target = event.target;
+    const $lineId = $target.closest("#line-info").getAttribute("#data-line-id");
+    const $stationId = $target.closest(".list-item").getAttribute("value");
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+      api.line.deleteLineStation($lineId, $stationId).then(() => {
+        $target.closest(".list-item").remove();
+      });
     }
   };
 

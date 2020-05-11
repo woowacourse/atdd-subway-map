@@ -42,6 +42,9 @@ const api = (() => {
         },
         delete(id) {
             return deleteRequest(`/api/stations/${id}`, METHOD.DELETE());
+        },
+        getByName(name) {
+            return request(`/api/stations/${name}`);
         }
     };
 

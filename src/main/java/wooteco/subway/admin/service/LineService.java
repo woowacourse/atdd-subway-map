@@ -67,20 +67,14 @@ public class LineService {
         // TODO: 구현
         final Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
-        LineResponse lineResponse = LineResponse.of(line);
-        final List<Long> lineStationIds = line.findLineStationsId();
-        lineResponse.setStations(Sets.newHashSet(stationRepository.findAllById(lineStationIds)));
-        return lineResponse;
+        return LineResponse.convert(line, findStationsByLineId(id));
     }
 
     public Set<Station> findStationsByLineId(Long lineId) {
+        // return findLineWithStationsById(lineId).getStations();
         final Optional<Station> byId = stationRepository.findById(lineId);
         if (byId.equals(Optional.empty()))
             return Collections.EMPTY_SET;
         return Sets.newHashSet(stationRepository.findById(lineId).get());
-    }
-
-    public int findStationIdByName(String name) {
-        return stationRepository.findIdByName(name);
     }
 }

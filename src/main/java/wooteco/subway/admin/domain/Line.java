@@ -153,7 +153,7 @@ public class Line {
         }
         for (int i = 0; i < stations.size() - 1; i++) {
             for (LineStation lineStation : stations) {
-                if (ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
+                if (lineStation.getPreStationId().equals(ids.get(ids.size() - 1))) {
                     ids.add(lineStation.getStationId());
                 }
             }

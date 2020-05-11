@@ -45,4 +45,11 @@ public class StationController {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{name}")
+    public ResponseEntity getStationIdByName(@PathVariable String name) {
+        return ResponseEntity
+            .ok()
+            .body(stationRepository.findIdByName(name));
+    }
 }
