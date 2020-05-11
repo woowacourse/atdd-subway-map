@@ -1,11 +1,13 @@
 package wooteco.subway.admin.service;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -16,6 +18,7 @@ import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+@Transactional
 @Service
 public class LineService {
 	private final LineRepository lineRepository;
@@ -37,7 +40,7 @@ public class LineService {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
 			.map(line -> LineResponse.of(line, stationRepository.findAllById(line.findLineStationsId())))
-			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 	public void updateLine(Long id, Line updatedLine) {
@@ -93,7 +96,7 @@ public class LineService {
 
 		return Collections.unmodifiableList(lineStations.stream()
 			.map(lineStation -> LineStationResponse.of(id, lineStation))
-			.collect(Collectors.toList()));
+			.collect(toList()));
 	}
 
 	private Line findLineById(Long lineId) {
@@ -101,3 +104,4 @@ public class LineService {
 			new IllegalArgumentException("존재하지 않는 노선입니다."));
 	}
 }
+

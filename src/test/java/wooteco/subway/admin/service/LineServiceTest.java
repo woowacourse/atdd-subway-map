@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -53,6 +52,8 @@ public class LineServiceTest {
 		LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.addLineStation(line.getId(), request);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
@@ -64,6 +65,8 @@ public class LineServiceTest {
 		LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.addLineStation(line.getId(), request);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
@@ -75,14 +78,19 @@ public class LineServiceTest {
 		LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.addLineStation(line.getId(), request);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
 			.containsExactly(entry(null, 1L), entry(1L, 2L), entry(2L, 3L), entry(3L, 4L));
 	}
+
 	@Test
 	void removeLineStationAtTheFirstOfLine() {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.removeLineStation(line.getId(), 1L);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
@@ -92,6 +100,8 @@ public class LineServiceTest {
 	@Test
 	void removeLineStationBetweenTwo() {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.removeLineStation(line.getId(), 2L);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
@@ -101,6 +111,8 @@ public class LineServiceTest {
 	@Test
 	void removeLineStationAtTheEndOfLine() {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.removeLineStation(line.getId(), 3L);
 
 		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
@@ -110,6 +122,8 @@ public class LineServiceTest {
 	@Test
 	void removeAllLineStations() {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(stationRepository.existsById(anyLong())).thenReturn(true);
+
 		lineService.removeLineStation(line.getId(), 3L);
 		lineService.removeLineStation(line.getId(), 1L);
 		lineService.removeLineStation(line.getId(), 2L);

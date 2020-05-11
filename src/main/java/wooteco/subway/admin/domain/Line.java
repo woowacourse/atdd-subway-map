@@ -100,7 +100,7 @@ public class Line {
 			updateNextAndInsertNode(0, lineStation);
 			return;
 		}
-		addIfStationIsNotDepart(lineStation);
+		addIfNotDepart(lineStation);
 	}
 
 	private void validateDuplicateLineStationId(LineStation lineStation) {
@@ -111,28 +111,28 @@ public class Line {
 		}
 	}
 
-	private void updateNextAndInsertNode(int index, LineStation lineStation) {
-		LineStation newLineStation = stations.get(index);
-		newLineStation.updatePreLineStation(lineStation.getStationId());
-		stations.add(index, lineStation);
+	private void updateNextAndInsertNode(int index, LineStation newNode) {
+		LineStation nextNode = stations.get(index);
+		nextNode.updatePreLineStation(newNode.getStationId());
+		stations.add(index, newNode);
 	}
 
-	private void addIfStationIsNotDepart(LineStation lineStation) {
-		if (stations.isEmpty() || lineStation.getPreStationId() == null) {
+	private void addIfNotDepart(LineStation newNode) {
+		if (stations.isEmpty() || newNode.getPreStationId() == null) {
 			return;
 		}
-		LineStation prevLineStation = findPrevLineStationFrom(lineStation);
-		int newIndex = stations.indexOf(prevLineStation) + 1;
-		if (newIndex < stations.size()) {
-			updateNextAndInsertNode(newIndex, lineStation);
+		LineStation prevNode = findPrevLineStationFrom(newNode);
+		int newNodeIndex = stations.indexOf(prevNode) + 1;
+		if (newNodeIndex < stations.size()) {
+			updateNextAndInsertNode(newNodeIndex, newNode);
 			return;
 		}
-		stations.add(lineStation);
+		stations.add(newNode);
 	}
 
-	private LineStation findPrevLineStationFrom(LineStation lineStation) {
+	private LineStation findPrevLineStationFrom(LineStation node) {
 		return stations.stream()
-			.filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
+			.filter(station -> station.getStationId().equals(node.getPreStationId()))
 			.findFirst()
 			.orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
 	}

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GlobalExceptionController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(value = RuntimeException.class)
-	public String handleBaseException(RuntimeException e){
+	public String handleBaseException(RuntimeException e) {
 		return e.getMessage();
 	}
 }
