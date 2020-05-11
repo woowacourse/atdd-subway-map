@@ -1,21 +1,14 @@
 package wooteco.subway.admin.controller;
 
-import java.net.URI;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
+
+import java.net.URI;
 
 @RestController
 public class LineController {
@@ -32,8 +25,8 @@ public class LineController {
         try {
             Line persistLine = lineService.save(line);
             return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+                    .created(URI.create("/lines/" + persistLine.getId()))
+                    .body(LineResponse.of(persistLine));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -63,22 +56,22 @@ public class LineController {
 
     @PostMapping("/lines/{id}/stations")
     public ResponseEntity addLineStation(@PathVariable Long id,
-        @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+                                         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         LineResponse lineResponse = lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
-            .body(lineResponse);
+                .body(lineResponse);
     }
 
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity findLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.findLineWithStationsById(id);
         return ResponseEntity.ok()
-            .body(lineResponse);
+                .body(lineResponse);
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId,
-        @PathVariable Long stationId) {
+                                            @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.noContent().build();
     }

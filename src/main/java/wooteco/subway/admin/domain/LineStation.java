@@ -1,11 +1,10 @@
 package wooteco.subway.admin.domain;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.time.LocalDateTime;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     @Column("station")
     private Long stationId;
     @Column("pre_station")
