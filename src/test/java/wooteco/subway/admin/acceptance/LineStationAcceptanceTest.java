@@ -151,8 +151,6 @@ public class LineStationAcceptanceTest {
     }
 
     private StationsAtLineResponse addLineStation(Long lineId, LineStationAddRequest request) {
-        Map<String, Object> params = new HashMap<>();
-
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

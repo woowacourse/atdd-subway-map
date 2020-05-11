@@ -101,7 +101,7 @@ public class Line {
             return;
         }
         LineStation originLineStation = stations.get(addIndex);
-        LineStation modifiedLineStation = new LineStation(lineStation.getStationId(), originLineStation.getPreStationId());
+        LineStation modifiedLineStation = new LineStation(lineStation.getStationId(), originLineStation.getStationId());
 
         stations.remove(originLineStation);
         stations.addAll(addIndex, Arrays.asList(lineStation, modifiedLineStation));
@@ -116,11 +116,11 @@ public class Line {
             return 0;
         }
 
-        Long addStationId = addLineStation.getStationId();
+        Long addPreStationId = addLineStation.getPreStationId();
 
         for (int i = 1; i < stations.size(); i++) {
             Long preStationId = stations.get(i).getPreStationId();
-            if (preStationId.equals(addStationId)) {
+            if (preStationId.equals(addPreStationId)) {
                 return i;
             }
         }
