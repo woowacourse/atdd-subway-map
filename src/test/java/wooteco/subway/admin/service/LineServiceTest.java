@@ -21,6 +21,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
+
     @Mock
     private LineRepository lineRepository;
     @Mock

@@ -1,7 +1,14 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,17 +20,10 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
 public class LineStationAcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -63,9 +63,9 @@ public class LineStationAcceptanceTest {
 
     private void removeLineStation(Long lineId, Long stationId) {
         given().when()
-                .delete("/lines/" + lineId + "/stations/" + stationId)
-                .then()
-                .log().all().statusCode(HttpStatus.NO_CONTENT.value());
+            .delete("/lines/" + lineId + "/stations/" + stationId)
+            .then()
+            .log().all().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private void addStationToLine(Long lineId, Long preStationId, Long stationId) {
@@ -76,24 +76,24 @@ public class LineStationAcceptanceTest {
         params.put("duration", "1");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines/" + lineId + "/stations").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines/" + lineId + "/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private List<StationResponse> getStationsOfLine(Long lineId) {
         return given().
-                when().
-                get("/lines/" + lineId + "/stations").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", StationResponse.class);
+            when().
+            get("/lines/" + lineId + "/stations").
+            then().
+            log().all().
+            extract().
+            jsonPath().getList(".", StationResponse.class);
     }
 
     private LineResponse createLine(String name) {
@@ -105,15 +105,15 @@ public class LineStationAcceptanceTest {
         params.put("bgColor", "bg-blue-700");
 
         return given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value()).
-                extract().as(LineResponse.class);
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value()).
+            extract().as(LineResponse.class);
     }
 
     private StationResponse createStation(String name) {
@@ -121,14 +121,14 @@ public class LineStationAcceptanceTest {
         params.put("name", name);
 
         return given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/stations").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value()).
-                extract().as(StationResponse.class);
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value()).
+            extract().as(StationResponse.class);
     }
 }
