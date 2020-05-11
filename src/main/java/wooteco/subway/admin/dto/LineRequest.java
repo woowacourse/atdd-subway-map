@@ -11,8 +11,7 @@ public class LineRequest {
     private int intervalTime;
     private String color;
 
-    public LineRequest() {
-    }
+    public LineRequest() {}
 
     public String getColor() {
         return color;

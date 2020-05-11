@@ -23,8 +23,7 @@ public class LineWithOrderedStationsResponse {
 
     private List<Station> orderedStations;
 
-    public LineWithOrderedStationsResponse() {
-    }
+    public LineWithOrderedStationsResponse() {}
 
     public LineWithOrderedStationsResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
                         int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,

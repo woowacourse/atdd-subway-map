@@ -22,8 +22,7 @@ public class LineResponse {
 
     private Set<LineStation> lineStations;
 
-    public LineResponse() {
-    }
+    public LineResponse() {}
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
                         int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt,

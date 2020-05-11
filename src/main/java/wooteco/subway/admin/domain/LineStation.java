@@ -47,10 +47,7 @@ public class LineStation {
         if (this.isNotExistPreStation() && preStationId == null) {
             return true;
         }
-        if (preStationId == null) {
-            return false;
-        }
-        return preStationId.equals(this.preStationId);
+        return preStationId != null && preStationId.equals(this.preStationId);
     }
 
     public Long getId() {
