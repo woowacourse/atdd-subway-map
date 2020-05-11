@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
+    List<Station> findAll();
+
+    @Override
     List<Station> findAllById(Iterable<Long> longs);
 
     @Query("SELECT * FROM station WHERE name = :name")
