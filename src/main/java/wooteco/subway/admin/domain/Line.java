@@ -60,8 +60,7 @@ public class Line {
 		}
 		stations.stream()
 			.filter(station -> Objects.nonNull(lineStation.getPreStationId()) && lineStation.getPreStationId()
-				.equals(station.getPreStationId()))
-			.findFirst()
+				.equals(station.getPreStationId())).findFirst()
 			.ifPresent(station -> {
 				LineStation newStation = station.updatePreLineStation(lineStation.getStationId());
 				stations.remove(station);
@@ -71,38 +70,43 @@ public class Line {
 	}
 
 	public void removeLineStationById(Long stationId) {
-		LineStation lineStation = stations.stream()
-			.filter(station -> station.getStationId().equals(stationId))
-			.findFirst()
-			.orElseThrow(RuntimeException::new);
-		stations.stream()
-			.filter(
-				station -> Objects.nonNull(station.getPreStationId()) && station.getPreStationId().equals(stationId))
-			.findFirst()
-			.ifPresent(nextLineStation -> {
-				LineStation newLineStation = nextLineStation.updatePreLineStation(lineStation.getPreStationId());
-				stations.add(newLineStation);
-				stations.remove(nextLineStation);
-			});
-		stations.remove(lineStation);
+		LineStation target = null;
+		LineStation next = null;
+
+		for (LineStation lineStation : stations) {
+			if (stationId.equals(lineStation.getStationId())) {
+				target = lineStation;
+			}
+			if (stationId.equals(lineStation.getPreStationId())) {
+				next = lineStation;
+			}
+		}
+		if (Objects.isNull(target)) {
+			throw new RuntimeException("존재하지 않는 역입니다.");
+		}
+		stations.remove(target);
+		if (Objects.nonNull(next)) {
+			stations.add(next.updatePreLineStation(target.getPreStationId()));
+			stations.remove(next);
+		}
 	}
 
 	public List<Long> getLineStationsId() {
 		List<Long> lineStationsId = new ArrayList<>();
 		stations.stream()
 			.filter(station -> station.getPreStationId() == null)
-			.findFirst().ifPresent(startLineStation -> {
+			.findFirst()
+			.ifPresent(startLineStation -> {
+				Queue<Long> queue = new LinkedList<>();
+				queue.add(startLineStation.getStationId());
 
-			Queue<Long> queue = new LinkedList<>();
-			queue.add(startLineStation.getStationId());
-
-			while (!queue.isEmpty()) {
-				Long stationId = queue.poll();
-				lineStationsId.add(stationId);
-				stations.stream()
-					.filter(station -> stationId.equals(station.getPreStationId()))
-					.findFirst()
-					.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
+				while (!queue.isEmpty()) {
+					Long stationId = queue.poll();
+					lineStationsId.add(stationId);
+					stations.stream()
+						.filter(station -> stationId.equals(station.getPreStationId()))
+						.findFirst()
+						.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
 			}
 		});
 		return lineStationsId;
