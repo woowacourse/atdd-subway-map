@@ -1,13 +1,10 @@
 package wooteco.subway.admin.repository;
 
-import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import wooteco.subway.admin.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 // TODO : 과연 Repository에서 LineStation을 Station으로 변환해주는 로직이 맞을까 ?
 public interface StationRepository extends CrudRepository<Station, Long> {
@@ -23,7 +20,4 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
 		return stations;
 	}
-
-	@Query("select * from station where name = :name")
-	Optional<Station> findByName(@Param("name") String name);
 }
