@@ -2,24 +2,24 @@ package wooteco.subway.admin.dto;
 
 public class LineStationRequest {
 	private Long lineId;
-	private String preStationName;
-	private String stationName;
+	private Long preStationId;
+	private Long stationId;
 
-	public LineStationRequest(Long lineId, String preStationName, String stationName) {
+	public LineStationRequest(Long lineId, Long preStationId, Long stationId) {
 		this.lineId = lineId;
-		this.preStationName = preStationName;
-		this.stationName = stationName;
+		this.preStationId = preStationId;
+		this.stationId = stationId;
 	}
 
 	public Long getLineId() {
 		return lineId;
 	}
 
-	public String getPreStationName() {
-		return preStationName;
+	public Long getPreStationId() {
+		return preStationId;
 	}
 
-	public String getStationName() {
-		return stationName;
+	public Long getStationId() {
+		return stationId;
 	}
 }

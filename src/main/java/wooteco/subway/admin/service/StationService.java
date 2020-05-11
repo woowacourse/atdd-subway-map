@@ -12,8 +12,8 @@ public class StationService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Station findByName(String name) {
-		return stationRepository.findByName(name)
+	public Station findBy(Long id) {
+		return stationRepository.findById(id)
 				.orElseThrow(() ->
 						new IllegalArgumentException("해당 이름의 역을 찾을 수 없습니다."));
 	}

@@ -10,10 +10,13 @@ function AdminEdge() {
   const $lineIdInput = document.querySelector("#station-select-options");
   const $preStationInput = document.querySelector("#depart-station-name");
   const $stationInput = document.querySelector("#arrival-station-name");
-
   const createSubwayEdgeModal = new Modal();
 
+  let stations = [];
+
   const initSubwayLinesSlider = async () => {
+    stations = await api.station.get();
+
     await api.line.get()
       .then(data => {
         $subwayLinesSlider.innerHTML = data
@@ -64,18 +67,29 @@ function AdminEdge() {
     }
   };
 
-  const onCreateStationToLine = event => {
+  const onCreateStationToLine = async event => {
     event.preventDefault();
-    const lindId = $lineIdInput.options[$lineIdInput.selectedIndex].dataset.id;
+
+    const lineId = $lineIdInput.options[$lineIdInput.selectedIndex].dataset.id;
     const preStationName = $preStationInput.value;
     const stationName = $stationInput.value;
+    const preStation = await stations.find(station => station.name === preStationName);
+    const station = await stations.find(station => station.name === stationName);
+    const preStationId = preStationName === "" ? null : preStation ? preStation["id"] : undefined;
+    const stationId = stationName ? station["id"] : undefined;
+
+    if (!lineId || preStationId === undefined || !stationId) {
+      alert('유효한 값을 입력해주세요');
+      return;
+    }
 
     const request = {
-      lineId: lindId,
-      preStationName: preStationName,
-      stationName: stationName
+      lineId: lineId,
+      preStationId: preStationId,
+      stationId: stationId
     };
-    api.lineStation.create(request)
+
+    await api.lineStation.create(request)
       .then(data => {
         const listItem = listItemTemplate(data);
         $subwayLinesSlider.insertAdjacentHTML("beforeend", listItem);

@@ -6,7 +6,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationCreateResponse;
 import wooteco.subway.admin.dto.LineStationRequest;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.dto.response.StationResponse;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
@@ -23,8 +23,8 @@ public class LineStationController {
 
 	@PostMapping("/lines/stations")
 	public ResponseEntity createLineStation(@RequestBody LineStationRequest view) {
-		Station station = stationService.findByName(view.getStationName());
-		if (view.getPreStationName().isEmpty()) {
+		Station station = stationService.findBy(view.getStationId());
+		if (isRequestForFirstStation(view)) {
 			lineService.addLineStation(view.getLineId(),
 					new LineStationCreateRequest(null, station.getId(), 0, 0));
 
@@ -34,7 +34,8 @@ public class LineStationController {
 					.ok()
 					.body(lineStationCreateResponse);
 		}
-		Station preStation = stationService.findByName(view.getPreStationName());
+
+		Station preStation = stationService.findBy(view.getPreStationId());
 
 		lineService.addLineStation(view.getLineId(),
 				new LineStationCreateRequest(preStation.getId(), station.getId(), 0, 0));
@@ -44,6 +45,10 @@ public class LineStationController {
 		return ResponseEntity
 				.ok()
 				.body(lineStationCreateResponse);
+	}
+
+	private boolean isRequestForFirstStation(@RequestBody LineStationRequest view) {
+		return view.getPreStationId() == null;
 	}
 
 	@DeleteMapping("/lines/{lineId}/stations/{stationId}")
