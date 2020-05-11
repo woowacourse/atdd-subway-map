@@ -10,7 +10,6 @@ import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,23 +27,21 @@ public class LineService {
 		return lineRepository.save(line);
 	}
 
-	public List<LineWithStationsResponse> showLines() {
-		List<Line> lines = lineRepository.findAll();
-
-		List<List<Long>> stationIdsPerLines = lines.stream()
-				.map(Line::getLineStationsId)
+	public List<LineWithStationsResponse> findLines() {
+		return lineRepository.findAll()
+				.stream()
+				.map(line -> findLineWithStationsBy(line.getId()))
 				.collect(Collectors.toList());
+	}
 
-		List<List<Station>> collect = stationIdsPerLines.stream()
-				.map(stationIds -> stationRepository.findAllById(stationIds))
-				.collect(Collectors.toList());
+	public LineWithStationsResponse findLineWithStationsBy(Long lineId) {
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		List<LineWithStationsResponse> result = new ArrayList<>();
-		for (int i = 0; i < lines.size(); i++) {
-			result.add(LineWithStationsResponse.of(lines.get(i), collect.get(i)));
-		}
+		List<Long> stationIds = persistLine.getLineStationsId();
+		List<Station> stations = stationRepository.findAllById(stationIds);
 
-		return result;
+		return LineWithStationsResponse.of(persistLine, stations);
 	}
 
 	@Transactional
@@ -84,16 +81,5 @@ public class LineService {
 
 		persistLine.removeLineStationById(stationId);
 		lineRepository.save(persistLine);
-	}
-
-	public LineWithStationsResponse findLineWithStationsBy(Long lineId) {
-		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
-
-		List<Long> stationIds = persistLine.getLineStationsId();
-
-		List<Station> stations = stationRepository.findAllById(stationIds);
-
-		return LineWithStationsResponse.of(persistLine, stations);
 	}
 }
