@@ -56,12 +56,17 @@ function AdminStation() {
   };
 
   const onRemoveStationHandler = event => {
-    if (confirm(CONFIRM_MESSAGE.DELETE)) {
-      const $target = event.target;
-      const isDeleteButton = $target.classList.contains("mdi-delete");
-      if (isDeleteButton) {
-        $target.closest(".list-item").remove();
-      }
+    const $target = event.target;
+    const isDeleteButton = $target.classList.contains("mdi-delete");
+    if (isDeleteButton && confirm(CONFIRM_MESSAGE.DELETE)) {
+      $target.closest(".list-item").remove();
+      const id = $target.closest(".list-item").dataset.stationId;
+      fetch(`/stations/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
     }
   };
 
