@@ -35,10 +35,6 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
-//        List<Line> sortedLines = lines.stream()
-//                .map(line -> line.sortByStationId())
-//                .collect(Collectors.toList());
-        System.out.println("showLines에서의 Line리스"+lines);
         return LineResponse.listOf(lines);
     }
 
@@ -90,15 +86,6 @@ public class LineService {
 
     }
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
-    }
-
     public List<LineResponse> findAllStationsWithLine() {
         List<Line> lines = lineRepository.findAll();
 
@@ -114,18 +101,25 @@ public class LineService {
 
         List<LineStation> lineStations = line.getLineStations();
         for (LineStation lineStation : lineStations) {
-            for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
-                if(station.getId() == lineStation.getStationId()) {
-                    stations.add(station);
-                }
-            }
+            checkAllStationById(line, stations, lineStation);
         }
         return LineResponse.of(line, stations);
     }
 
+    private void checkAllStationById(Line line, List<Station> stations, LineStation lineStation) {
+        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
+            checkSameId(stations, lineStation, station);
+        }
+    }
+
+    private void checkSameId(List<Station> stations, LineStation lineStation, Station station) {
+        if(station.getId() == lineStation.getStationId()) {
+            stations.add(station);
+        }
+    }
+
     public void deleteStationByLineIdAndStationId(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
