@@ -68,11 +68,9 @@ public class LineService {
         Line line = findById(id);
         List<LineStation> lineStations = line.getStations();
 
-        List<Station> sortedStations = lineStations.stream()
+        return lineStations.stream()
                 .map(lineStation -> stationRepository.findById(lineStation.getStationId())
                         .orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다.")))
                 .collect(Collectors.toList());
-
-        return sortedStations;
     }
 }
