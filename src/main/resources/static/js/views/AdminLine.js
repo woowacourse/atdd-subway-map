@@ -42,11 +42,15 @@ function AdminLine() {
 
   const createSubwayLine = async (newSubwayLine) => {
     try {
-      const line = await api.line.create(newSubwayLine);
-      lines = [...lines, line];
+      const lineId = await api.line.create(newSubwayLine);
+      const newLine = {
+        id: lineId,
+        ...newSubwayLine
+      };
+      lines = [...lines, newLine];
       $subwayLineList.insertAdjacentHTML(
         "beforeend",
-        subwayLinesTemplate(line)
+        subwayLinesTemplate(newLine)
       );
     }
     catch (error) {

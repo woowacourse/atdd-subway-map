@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
 
-        if (line.getStations().isEmpty() && request.getPreStationId() != null) {
+        if (line.getStations().isEmpty() && !Objects.isNull(request.getPreStationId())) {
             LineStation initialLineStation = new LineStation(null, request.getPreStationId(), 0, 0);
             line.addLineStation(initialLineStation);
         }

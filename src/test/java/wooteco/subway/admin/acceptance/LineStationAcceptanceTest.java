@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.StationResponse;
 
 @Sql({"/truncate.sql", "/schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -59,28 +58,28 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         // given
-        StationResponse station1 = createStation("잠실역");
-        StationResponse station2 = createStation("강남역");
-        StationResponse station3 = createStation("삼성역");
+        Long station1Id = createStation("잠실역");
+        Long station2Id = createStation("강남역");
+        Long station3Id = createStation("삼성역");
 
-        LineResponse line = createLine("2호선");
+        Long lineId = createLine("2호선");
 
         // when
-        addLineStation(line.getId(), null, station1.getId());
-        addLineStation(line.getId(), station1.getId(), station2.getId());
-        addLineStation(line.getId(), station2.getId(), station3.getId());
+        addLineStation(lineId, null, station1Id);
+        addLineStation(lineId, station1Id, station2Id);
+        addLineStation(lineId, station2Id, station3Id);
         // then
-        LineResponse lineStation = getLine(line.getId());
+        LineResponse lineStation = getLine(lineId);
         assertThat(lineStation.getStations().size()).isEqualTo(3);
 
         //when
-        deleteLineStation(line.getId(), station2.getId());
+        deleteLineStation(lineId, station2Id);
         //then
-        LineResponse lineStationAfterDelete = getLine(line.getId());
+        LineResponse lineStationAfterDelete = getLine(lineId);
         assertThat(lineStationAfterDelete.getStations().size()).isEqualTo(2);
     }
 
-    private StationResponse createStation(String name) {
+    private Long createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -93,7 +92,7 @@ public class LineStationAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value())
-            .extract().as(StationResponse.class);
+            .extract().as(Long.class);
     }
 
     private LineResponse getLine(Long lineId) {
@@ -106,7 +105,7 @@ public class LineStationAcceptanceTest {
                 extract().as(LineResponse.class);
     }
 
-    private LineResponse createLine(String name) {
+    private Long createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -123,7 +122,7 @@ public class LineStationAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value())
-            .extract().as(LineResponse.class);
+            .extract().as(Long.class);
     }
 
     private void addLineStation(Long lineId, Long preStationId, Long stationId) {

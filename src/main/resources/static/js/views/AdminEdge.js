@@ -64,7 +64,7 @@ function AdminEdge() {
       initSubwayLinesSlider();
     }
     catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
       createSubwayEdgeModal.toggle();
     }

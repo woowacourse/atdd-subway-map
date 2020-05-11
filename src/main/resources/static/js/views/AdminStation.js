@@ -31,10 +31,15 @@ function AdminStation() {
       return;
     }
 
-    const persistStation = await api.station.create({ name: stationName });
-    stations = [...stations, persistStation];
+    const persistStationId = await api.station.create({ name: stationName });
+    const newStation = {
+      id: persistStationId,
+      name: stationName
+    };
+    stations = [...stations, newStation];
+
     $stationNameInput.value = '';
-    $stationList.insertAdjacentHTML('beforeend', listItemTemplate(persistStation));
+    $stationList.insertAdjacentHTML('beforeend', listItemTemplate(newStation));
   };
 
   const onRemoveStationHandler = (event) => {
