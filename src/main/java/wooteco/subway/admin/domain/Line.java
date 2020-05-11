@@ -7,7 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.domain.vo.LineTimeTable;
 
 public class Line {
 
@@ -16,9 +18,8 @@ public class Line {
     @Id
     private Long id;
     private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
+    @Embedded.Nullable
+    private LineTimeTable lineTimeTable;
     @MappedCollection
     private List<LineStation> stations = new LinkedList<>();
     private String bgColor;
@@ -26,19 +27,26 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name,
-        LocalTime startTime, LocalTime endTime,
-        int intervalTime, String bgColor) {
+    public Line(Long id, String name, LineTimeTable lineTimeTable,
+        List<LineStation> stations, String bgColor) {
+        this.id = id;
         this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
+        this.lineTimeTable = lineTimeTable;
+        this.stations = stations;
         this.bgColor = bgColor;
     }
 
+    public Line(Long id, String name,
+        LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
+        this(id, name,
+            new LineTimeTable(startTime, endTime, intervalTime),
+            new LinkedList<>(), bgColor);
+    }
+
     public Line(String name,
-        LocalTime startTime, LocalTime endTime,
-        int intervalTime, String bgColor) {
+        LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -50,16 +58,8 @@ public class Line {
         return name;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
+    public LineTimeTable getLineTimeTable() {
+        return lineTimeTable;
     }
 
     public List<LineStation> getStations() {
@@ -74,14 +74,8 @@ public class Line {
         if (line.getName() != null) {
             this.name = line.getName();
         }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
+        if (line.getLineTimeTable() != null) {
+            this.lineTimeTable = line.getLineTimeTable();
         }
         if (line.getBgColor() != null) {
             this.bgColor = line.getBgColor();
