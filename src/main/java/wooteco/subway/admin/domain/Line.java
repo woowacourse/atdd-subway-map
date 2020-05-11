@@ -27,6 +27,9 @@ public class Line {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        if (isNotValid(name, intervalTime, bgColor)) {
+            throw new IllegalArgumentException("입력값이 잘못되었습니다.");
+        }
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -35,6 +38,15 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+    private boolean isNotValid(String name, int intervalTime, String bgColor) {
+        if (name == null || bgColor == null) {
+            return true;
+        }
+
+        return intervalTime <= 0;
+    }
+
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);

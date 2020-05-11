@@ -8,6 +8,7 @@ import wooteco.subway.admin.domain.Line;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +26,15 @@ public class LineRepositoryTest {
         Line haha = lineRepository.findByName("haha");
         assertThat(haha.getName()).isEqualTo(save.getName());
         assertThat(haha.getId()).isEqualTo(save.getId());
+    }
+
+    @Test
+    void findById() {
+        Line line = new Line("haha", LocalTime.now(), LocalTime.now(), 10, "red");
+        Line save = lineRepository.save(line);
+        System.out.println("haha");
+        System.out.println(save.getId());
+        Optional<Line> byId = lineRepository.findById(save.getId());
     }
 
 

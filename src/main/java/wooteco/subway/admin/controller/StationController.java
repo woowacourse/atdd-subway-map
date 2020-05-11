@@ -5,37 +5,50 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 
 @RestController
 public class StationController {
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
-        Station station = view.toStation();
-        stationRepository.save(station);
-        return ResponseEntity
-                .created(URI.create("/stations/" + 1))
-                .body(StationResponse.of(station));
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
+        try {
+            Station station = stationService.save(view.getName());
+            return ResponseEntity
+                    .created(URI.create("/stations/" + station.getId()))
+                    .body(StationResponse.of(station));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .build();
+        }
+
+
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(
-                stationRepository.findAll());
+    public ResponseEntity<Iterable<Station>> showStations() {
+        Iterable<Station> stations = stationService.findAllOfStations();
+        return ResponseEntity.ok()
+                .body(stations);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        Station station = stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        stationRepository.delete(station);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        try {
+            stationService.deleteStationById(id);
+            return ResponseEntity.noContent()
+                    .build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .build();
+        }
     }
 }

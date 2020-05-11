@@ -28,7 +28,7 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
+    public List<Line> getLines() {
         return lineRepository.findAll();
     }
 
@@ -45,14 +45,9 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public LineResponse registerLineStation(LineStationDto lineStationDto) {
-        String name = lineStationDto.getName();
-        Line line = lineRepository.findByName(name);
-
-        String preStationName = lineStationDto.getPreStationName();
+    public LineResponse registerLineStation(String lineName, String preStationName, String arrivalStationName) {
+        Line line = lineRepository.findByName(lineName);
         Station preStation = stationRepository.findByName(preStationName);
-
-        String arrivalStationName = lineStationDto.getArrivalStationName();
         Station arrivalStation = stationRepository.save(new Station(arrivalStationName));
 
         LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
@@ -91,5 +86,9 @@ public class LineService {
 
     public void delete(Line line) {
         lineRepository.delete(line);
+    }
+
+    public Line findByName(String name) {
+        return lineRepository.findByName(name);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -35,7 +36,6 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
@@ -49,7 +49,7 @@ public class LineAcceptanceTest {
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-            LineResponse line = getLine(lines.get(0).getId());
+        LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getTitle()).isNotNull();
@@ -102,10 +102,11 @@ public class LineAcceptanceTest {
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-
+        params.put("bgColor", "red");
         given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).

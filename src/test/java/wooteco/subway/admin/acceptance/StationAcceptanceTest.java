@@ -50,6 +50,18 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
+    @DisplayName("지하철역 이름 없이 지하철 생성 요청")
+    @Test
+    void createStationWithoutName() {
+        given().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/stations").
+        then().log().all().
+                statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
     private void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

@@ -138,6 +138,9 @@ public class LineStationAcceptanceTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
+        params.put("preStationName", "종합운동장역");
+        params.put("distance", "10");
+        params.put("duraction", "10");
         given().
                 body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
