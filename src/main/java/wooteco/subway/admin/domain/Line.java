@@ -3,17 +3,13 @@ package wooteco.subway.admin.domain;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import wooteco.subway.admin.domain.vo.LineTimeTable;
+import wooteco.subway.admin.domain.vo.Stations;
 
 public class Line {
-
-    private static final int FIRST = 0;
 
     @Id
     private Long id;
@@ -21,14 +17,15 @@ public class Line {
     @Embedded.Nullable
     private LineTimeTable lineTimeTable;
     @MappedCollection
-    private List<LineStation> stations = new LinkedList<>();
+    @Embedded.Empty
+    private Stations stations;
     private String bgColor;
 
     public Line() {
     }
 
     public Line(Long id, String name, LineTimeTable lineTimeTable,
-        List<LineStation> stations, String bgColor) {
+        Stations stations, String bgColor) {
         this.id = id;
         this.name = name;
         this.lineTimeTable = lineTimeTable;
@@ -41,7 +38,7 @@ public class Line {
         String bgColor) {
         this(id, name,
             new LineTimeTable(startTime, endTime, intervalTime),
-            new LinkedList<>(), bgColor);
+            new Stations(new LinkedList<>()), bgColor);
     }
 
     public Line(String name,
@@ -62,7 +59,7 @@ public class Line {
         return lineTimeTable;
     }
 
-    public List<LineStation> getStations() {
+    public Stations getStations() {
         return stations;
     }
 
@@ -83,66 +80,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.isFirst()) {
-            addFirst(lineStation);
-            return;
-        }
-
-        if (hasNoSuchPreStation(lineStation)) {
-            throw new NoSuchElementException("이전 역이 등록되지 않았습니다.");
-        }
-
-        Optional<LineStation> nextStation = findNextStationBy(lineStation.getPreStationId());
-        if (nextStation.isPresent()) {
-            addBetweenTwo(lineStation, nextStation.get());
-            return;
-        }
-
-        stations.add(lineStation);
-    }
-
-    private void addFirst(LineStation lineStation) {
-        stations.stream()
-            .findFirst()
-            .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
-        stations.add(FIRST, lineStation);
-    }
-
-    private void addBetweenTwo(LineStation lineStation, LineStation nextStation) {
-        nextStation.updatePreLineStation(lineStation.getStationId());
-        int position = stations.indexOf(nextStation);
-        stations.add(position, lineStation);
-    }
-
-    private boolean hasNoSuchPreStation(LineStation lineStation) {
-        return stations.stream()
-            .map(LineStation::getStationId)
-            .noneMatch(id -> lineStation.getPreStationId().equals(id));
-    }
-
-    private Optional<LineStation> findNextStationBy(Long stationId) {
-        return stations.stream()
-            .filter(station -> stationId.equals(station.getPreStationId()))
-            .findFirst();
+        stations.addLineStation(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation station = findStationBy(stationId);
-        findNextStationBy(stationId)
-            .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
-        stations.remove(station);
-    }
-
-    private LineStation findStationBy(Long stationId) {
-        return stations.stream()
-            .filter(lineStation -> lineStation.getStationId().equals(stationId))
-            .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
+        stations.removeLineStationById(stationId);
     }
 
     public List<Long> getStationIds() {
-        return stations.stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
+        return stations.getStationIds();
     }
 }
