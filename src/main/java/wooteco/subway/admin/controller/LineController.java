@@ -80,7 +80,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/addStation/{id}")
+    @PostMapping("/{id}/stations")
     public ResponseEntity addStation(@PathVariable Long id,
                                      @RequestBody HashMap<String, String> map) {
         Long preStationId = stationService.findStationId(map.get("preStationName"));
@@ -97,7 +97,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/station/{lineId}/{stationId}")
+    @DeleteMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();

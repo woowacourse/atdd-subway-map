@@ -64,7 +64,7 @@ function AdminEdge() {
         const $distance = document.querySelector("#distance").value;
         const $duration = document.querySelector("#duration").value;
 
-        fetch("lines/addStation/" + $selectedLineId, {
+        fetch("lines/" + $selectedLineId + "/stations", {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
@@ -85,7 +85,7 @@ function AdminEdge() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
 
         if (isDeleteButton && confirm("삭제하시겠습니까?")) {
-            const url = "lines/station/" + $selectedLineId + "/" + $selectedStationId;
+            const url = "lines/" + $selectedLineId + "/stations/" + $selectedStationId;
             fetch(url, {
                 method: 'delete'
             }).then(res => {

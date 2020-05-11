@@ -1,13 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,12 +10,17 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -81,8 +80,8 @@ public class LineStationAcceptanceTest {
 
         List<LineStation> lineStationsAfterDelete = getLineStations(lineEight.getId());
         assertThat(lineStationsAfterDelete.stream()
-            .map(LineStation::getStationId)
-            .anyMatch(id -> id.equals(station2.getId()))).isFalse();
+                .map(LineStation::getStationId)
+                .anyMatch(id -> id.equals(station2.getId()))).isFalse();
     }
 
     private void createLine(String name) {
@@ -131,7 +130,7 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                post("/lines/addStation/" + lineId).
+                post("/lines/" + lineId + "/stations").
                 then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
@@ -140,7 +139,7 @@ public class LineStationAcceptanceTest {
     private void removeStation(Long lineId, Long stationId) {
         given().
                 when().
-                delete("/lines/station/" + lineId + "/" + stationId).
+                delete("/lines/" + lineId + "/stations/" + stationId).
                 then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
