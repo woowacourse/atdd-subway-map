@@ -95,14 +95,14 @@ public class LineStationAcceptanceTest {
         List<LineStationsResponse> lineStationsResponse2 = getLineStations();
         List<LineStationResponse> lineStations2 = lineStationsResponse2.get(0).getStations();
         assertThat(lineStations2.size()).isEqualTo(3);
-        assertThat(lineStations2.get(0).getId()).isEqualTo(stations.get(3).getId());
-        assertThat(lineStations2.get(1).getId()).isEqualTo(stations.get(1).getId());
-        assertThat(lineStations2.get(2).getId()).isEqualTo(stations.get(2).getId());
-
+       
         // Then 지하철역 목록을 응답 받는다.
         // And 제외한 지하철역이 목록에 존재하지 않는다.
         List<Long> lineStationIds2 = convertToStationIds(lineStations2);
         assertThat(lineStationIds2).doesNotContain(lineStationResponse.getId());
+        assertThat(lineStations2.get(0).getId()).isEqualTo(stations.get(3).getId());
+        assertThat(lineStations2.get(1).getId()).isEqualTo(stations.get(1).getId());
+        assertThat(lineStations2.get(2).getId()).isEqualTo(stations.get(2).getId());
     }
 
     private List<Long> convertToStationIds(List<LineStationResponse> lineStationResponses) {

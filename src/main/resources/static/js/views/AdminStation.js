@@ -55,6 +55,7 @@ function AdminStation() {
       $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
     })
     .catch(error => {
+      console.log(error);
       alert(ERROR_MESSAGE[error.message]);
     });
     $stationNameInput.value = "";

@@ -27,7 +27,10 @@ const METHOD = {
 const api = (() => {
   const noContentRequest = (uri, config) => fetch(uri, config).then(response => {
     if (!response.ok) {
-      throw Error("메서드 호출에 실패했습니다.");
+      return response.json()
+      .then(error => {
+        throw Error(error.errorType);
+      });
     }
     return response;
   });
@@ -48,8 +51,8 @@ const api = (() => {
     create(data) {
       return noContentRequest(`/stations`, METHOD.POST(data));
     },
-    update(data) {
-      return request(`/stations/${id}`, METHOD.PUT(data));
+    update(id, data) {
+      return noContentRequest(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
       return noContentRequest(`/stations/${id}`, METHOD.DELETE());
