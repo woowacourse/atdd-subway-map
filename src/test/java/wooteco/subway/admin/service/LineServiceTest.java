@@ -50,7 +50,7 @@ public class LineServiceTest {
 
 	@Test
 	void addLineStationAtTheFirstOfLine() {
-		LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+		LineStationCreateRequest request = LineStationCreateRequest.of(LineStation.of(null, 4L, 10, 10));
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
@@ -64,7 +64,7 @@ public class LineServiceTest {
 
 	@Test
 	void addLineStationBetweenTwo() {
-		LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+		LineStationCreateRequest request = LineStationCreateRequest.of(LineStation.of(1L, 4L, 10, 10));
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
@@ -78,11 +78,10 @@ public class LineServiceTest {
 
 	@Test
 	void addLineStationAtTheEndOfLine() {
-		LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
+		LineStationCreateRequest request = LineStationCreateRequest.of(LineStation.of(3L, 4L, 10, 10));
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		lineService.addLineStation(line.getId(), request);
-
 		assertThat(line.getStations()).hasSize(4);
 		assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
 		assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
@@ -122,7 +121,7 @@ public class LineServiceTest {
 
 	@Test
 	void findLineWithStationsById() {
-		Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+		Set<Station> stations = Sets.newLinkedHashSet(Station.of("강남역"), Station.of("역삼역"), Station.of("삼성역"));
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 		when(stationRepository.findAllById(anyList())).thenReturn(stations);
 

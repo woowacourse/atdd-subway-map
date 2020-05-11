@@ -8,14 +8,19 @@ public class LineStationCreateRequest {
 	private int distance;
 	private int duration;
 
-	public LineStationCreateRequest() {
+	LineStationCreateRequest() {
 	}
 
-	public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
+	private LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
+	}
+
+	public static LineStationCreateRequest of(LineStation lineStation) {
+		return new LineStationCreateRequest(lineStation.getPreStationId(), lineStation.getStationId(),
+			lineStation.getDistance(), lineStation.getDuration());
 	}
 
 	public LineStation toLineStation() {

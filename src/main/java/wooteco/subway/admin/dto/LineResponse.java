@@ -2,13 +2,12 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
 	private Long id;
@@ -20,13 +19,13 @@ public class LineResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private Set<Station> stations;
+	private Set<StationResponse> stations;
 
-	public LineResponse() {
+	LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime,
-		LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+	private LineResponse(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime,
+		LocalDateTime createdAt, LocalDateTime updatedAt, Set<StationResponse> stations) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
@@ -40,10 +39,10 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(),
-			line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+			line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new LinkedHashSet<>());
 	}
 
-	public static LineResponse of(Line line, Set<Station> stations) {
+	public static LineResponse of(Line line, Set<StationResponse> stations) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(),
 			line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
 	}
@@ -54,7 +53,7 @@ public class LineResponse {
 			.collect(Collectors.toList());
 	}
 
-	public static List<LineResponse> listOf(final List<Line> lines, final List<Set<Station>> stations) {
+	public static List<LineResponse> listOf(final List<Line> lines, final List<Set<StationResponse>> stations) {
 		return lines.stream()
 			.map(line -> of(line, stations.remove(0)))
 			.collect(Collectors.toList());
@@ -84,7 +83,7 @@ public class LineResponse {
 		return intervalTime;
 	}
 
-	public Set<Station> getStations() {
+	public Set<StationResponse> getStations() {
 		return stations;
 	}
 

@@ -11,10 +11,10 @@ public class StationResponse {
 	private String name;
 	private LocalDateTime createdAt;
 
-	public StationResponse() {
+	StationResponse() {
 	}
 
-	public StationResponse(Long id, String name, LocalDateTime createdAt) {
+	private StationResponse(Long id, String name, LocalDateTime createdAt) {
 		this.id = id;
 		this.name = name;
 		this.createdAt = createdAt;
@@ -24,8 +24,8 @@ public class StationResponse {
 		return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
 	}
 
-	public static List<StationResponse> listOf(List<Station> lines) {
-		return lines.stream()
+	public static List<StationResponse> listOf(List<Station> stations) {
+		return stations.stream()
 			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}

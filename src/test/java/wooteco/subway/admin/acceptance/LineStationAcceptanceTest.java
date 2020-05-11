@@ -20,8 +20,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -67,7 +67,7 @@ public class LineStationAcceptanceTest {
 		addLineStation(1L, 1L, 2L, 3, 3);
 		addLineStation(1L, 2L, 3L, 3, 3);
 
-		Set<Station> stations = findLineWithStationsById(1L).getStations();
+		Set<StationResponse> stations = findLineWithStationsById(1L).getStations();
 		assertThat(stations).hasSize(3);
 
 		removeLineStation(1L, 1L);
