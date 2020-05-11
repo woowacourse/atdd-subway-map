@@ -12,10 +12,14 @@ public class LineStationCreateRequest {
     }
 
     public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
+        validate();
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    private void validate() {
     }
 
     public Long getPreStationId() {

@@ -25,6 +25,7 @@ public class Line {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        validate(name, startTime, endTime);
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -37,6 +38,18 @@ public class Line {
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
+    }
+
+    private void validate(String name, LocalTime startTime, LocalTime endTime) {
+        if (name == null || name.equals("")) {
+            throw new IllegalArgumentException("노선 이름이 비었습니다.");
+        }
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("첫차 시간 / 막차 시간이 비었습니다.");
+        }
+        if (startTime.compareTo(endTime) > 0) {
+            throw new IllegalArgumentException("종료 시간은 시작 시간보다 나중이어야 합니다.");
+        }
     }
 
     public Long getId() {
