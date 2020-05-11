@@ -2,7 +2,6 @@ package wooteco.subway.admin.domain.line;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,13 +20,16 @@ public class Line {
     private LineTimeTable lineTimeTable;
 
     private String bgColor;
-    private Set<LineStation> stations;
+
+    @Embedded.Empty
+    private LineStations stations;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @PersistenceConstructor
     public Line(Long id, String name, LineTimeTable lineTimeTable,
-        String bgColor, Set<LineStation> stations) {
+        String bgColor, LineStations stations) {
         this.id = id;
         this.name = name;
         this.lineTimeTable = lineTimeTable;
@@ -43,7 +45,7 @@ public class Line {
         this.name = name;
         this.lineTimeTable = new LineTimeTable(start, end, intervalTime);
         this.bgColor = bgColor;
-        this.stations = stations;
+        this.stations = new LineStations(stations);
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -73,7 +75,7 @@ public class Line {
     }
 
     public Set<LineStation> getStations() {
-        return stations;
+        return stations.getLineStations();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -102,70 +104,14 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (stations.isEmpty() && lineStation.isFirstNode()) {
-            stations.add(lineStation);
-            return;
-        }
-        if (lineStation.isFirstNode()) {
-            stations.stream()
-                .filter(LineStation::isFirstNode)
-                .findFirst()
-                .orElseThrow(AssertionError::new)
-                .updatePreLineStation(lineStation.getStationId());
-        } else {
-            LineStation preNodeOfInput = stations.stream()
-                .filter(station -> station.isPreNodeOf(lineStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                    "ID = " + lineStation.getPreStationId() + "인 역이 존재하지 않습니다.")
-                );
-
-            stations.stream()
-                .filter(preNodeOfInput::isPreNodeOf)
-                .findFirst()
-                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
-        }
-
         stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation nodeToRemove = stations.stream()
-            .filter(lineStation -> lineStation.isEqualStationId(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
-                "ID = " + stationId + "인 역이 존재하지 않습니다.")
-            );
-
-        stations.stream()
-            .filter(nodeToRemove::isPreNodeOf)
-            .findFirst()
-            .ifPresent(lineStation -> lineStation.updatePreLineStation(nodeToRemove.getPreStationId()));
-
-        stations.remove(nodeToRemove);
+        stations.remove(stationId);
     }
 
     public List<Long> getSortedStationsId() {
-        List<Long> sortedStationsId = new ArrayList<>();
-        if (stations.isEmpty()) {
-            return sortedStationsId;
-        }
-
-        LineStation preNode = stations.stream()
-            .filter(LineStation::isFirstNode)
-            .findFirst()
-            .orElseThrow(AssertionError::new);
-        sortedStationsId.add(preNode.getStationId());
-
-        while (sortedStationsId.size() < stations.size()) {
-            LineStation currentNode = stations.stream()
-                .filter(preNode::isPreNodeOf)
-                .findFirst()
-                .orElseThrow(AssertionError::new);
-            sortedStationsId.add(currentNode.getStationId());
-            preNode = currentNode;
-        }
-
-        return sortedStationsId;
+        return stations.getSortedStationsId();
     }
 }

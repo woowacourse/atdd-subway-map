@@ -29,11 +29,11 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(Line line) {
+    public Long save(Line line) {
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
-        return LineResponse.of(lineRepository.save(line));
+        return lineRepository.save(line).getId();
     }
 
     @Transactional(readOnly = true)

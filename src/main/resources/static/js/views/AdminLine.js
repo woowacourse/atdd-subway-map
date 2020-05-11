@@ -29,44 +29,51 @@ function AdminLine() {
   };
 
   const onCreateSubwayLine = async () => {
-    const lineResponse = await api.line.create(getLineRequest());
+    const lineRequest = getLineRequest();
+    const lineResponse = await api.line.create(lineRequest);
+    const responseLocation = lineResponse.headers.get("Location");
+    if (lineResponse.ok) {
+      const newSubwayLine = {
+        id: responseLocation.split("/")[2],
+        name: lineRequest.name,
+        bgColor: lineRequest.bgColor
+      };
 
-    const newSubwayLine = {
-      id: lineResponse.id,
-      name: lineResponse.name,
-      bgColor: lineResponse.bgColor
-    };
+      $subwayLineList.insertAdjacentHTML(
+        "beforeend",
+        subwayLinesTemplate(newSubwayLine)
+      );
 
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
-
-    subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
+      subwayLineModal.toggle();
+      $subwayLineNameInput.value = "";
+      $subwayLineColorInput.value = "";
+    } else {
+      alert(lineResponse);
+    }
   };
 
   const onUpdateSubwayLine = async ($lineItem) => {
     const lineId = $lineItem.dataset.lineId;
     const lineBgColor = $lineItem.dataset.bgColor;
-    const lineResponse = await api.line.update(lineId, getLineRequest());
+    const lineRequest = getLineRequest();
+    const lineResponse = await api.line.update(lineId, lineRequest);
+    if (lineResponse.ok) {
+      const newSubwayLine = {
+        id: lineId,
+        name: lineRequest.name,
+        bgColor: lineRequest.bgColor
+      };
+      $lineItem.querySelector(`.${lineBgColor}`).classList.replace(lineBgColor,
+        newSubwayLine.bgColor);
+      $lineItem.querySelector(".line-name").innerText = newSubwayLine.name;
 
-
-    const newSubwayLine = {
-      id: lineResponse.id,
-      name: lineResponse.name,
-      bgColor: lineResponse.bgColor
-    };
-
-    $lineItem.querySelector(`.${lineBgColor}`).classList.replace(lineBgColor,
-      newSubwayLine.bgColor);
-    $lineItem.querySelector(".line-name").innerText = newSubwayLine.name;
-
-    subwayLineModal.removeUpdateFromClassList();
-    subwayLineModal.toggle();
-    $subwayLineNameInput.value = "";
-    $subwayLineColorInput.value = "";
+      subwayLineModal.removeUpdateFromClassList();
+      subwayLineModal.toggle();
+      $subwayLineNameInput.value = "";
+      $subwayLineColorInput.value = "";
+    } else {
+      alert(lineResponse);
+    }
   };
 
   const onDeleteSubwayLine = event => {

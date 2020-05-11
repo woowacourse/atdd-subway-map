@@ -34,28 +34,19 @@ const api = (() => {
       return request(`/lines/${id}`);
     },
     create(data) {
-      return request(`/lines`, METHOD.POST(data));
+      return fetch(`/lines`, METHOD.POST(data));
     },
     createLineStation(id, data) {
-      return fetch(`/lines/${id}/stations`, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
+      return fetch(`/lines/${id}/stations`,  METHOD.POST(data));
     },
     update(id, data) {
-      return request(`/lines/${id}`, METHOD.PUT(data));
+      return fetch(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`lines/${id}`, {
-        method: 'DELETE'
-      })},
+      return fetch(`lines/${id}`, METHOD.DELETE());
+    },
     deleteLineStation(lindId, stationId) {
-      return fetch(`/lines/${lindId}/stations/${stationId}`, {
-        method: 'DELETE'
-      })
+      return fetch(`/lines/${lindId}/stations/${stationId}`, METHOD.DELETE())
     }
   }
 
@@ -64,15 +55,13 @@ const api = (() => {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/stations`, METHOD.POST(data));
+      return fetch(`/stations`, METHOD.POST(data));
     },
     update(data) {
-      request(`/station/${data.id}`, METHOD.PUT(data));
+      return fetch(`/station/${data.id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`stations/${id}`, {
-        method: 'DELETE'
-      });
+      return fetch(`stations/${id}`, METHOD.DELETE())
     }
   };
 

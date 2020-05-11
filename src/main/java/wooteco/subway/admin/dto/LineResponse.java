@@ -3,9 +3,7 @@ package wooteco.subway.admin.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.line.Line;
 import wooteco.subway.admin.domain.station.Station;
@@ -39,12 +37,6 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return of(line, new HashSet<>());
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
     }
 
     public Long getId() {

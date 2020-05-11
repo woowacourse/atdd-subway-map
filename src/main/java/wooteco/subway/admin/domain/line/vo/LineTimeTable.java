@@ -6,9 +6,9 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public class LineTimeTable {
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
+    private final LocalTime startTime;
+    private final LocalTime endTime;
+    private final int intervalTime;
 
     public LineTimeTable(LocalTime startTime, LocalTime endTime, int intervalTime) {
         validate(startTime, endTime, intervalTime);

@@ -15,8 +15,15 @@ function AdminStation() {
     }
 
     const stationResponse = await api.station.create(stationName);
+    const responseLocation = stationResponse.headers.get("Location");
+    const stationId = responseLocation.split("/")[2];
+    const listItem = {
+      id: stationId,
+      name: stationName
+    };
+
     $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationResponse));
+    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(listItem));
   };
 
   const isValidate = stationName => {
