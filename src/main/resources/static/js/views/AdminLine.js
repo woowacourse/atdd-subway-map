@@ -49,6 +49,7 @@ function AdminLine() {
                     "beforeend",
                     subwayLinesTemplate(newSubwayLine)
                 )
+                subwayLineModal.toggle();
             })
             .catch(error => {
                 if (error.status === 400) {
@@ -59,7 +60,6 @@ function AdminLine() {
                 alert(error.body.message)
             })
             .finally(() => {
-                subwayLineModal.toggle();
                 $subwayLineNameInput.value = "";
                 $subwayLineColorInput.value = "";
             });
