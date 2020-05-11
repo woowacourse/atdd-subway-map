@@ -17,7 +17,7 @@ import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
-@RequestMapping("/line-stations")
+@RequestMapping("/line/{lineId}/stations")
 public class LineStationController {
 
     private final LineService lineService;
@@ -26,19 +26,19 @@ public class LineStationController {
         this.lineService = lineService;
     }
 
-    @GetMapping("/{lineId}")
+    @GetMapping
     public List<StationResponse> getStationResponse(@PathVariable Long lineId) {
         return lineService.findStationsByLineId(lineId);
     }
 
-    @PostMapping("/{lineId}")
+    @PostMapping
     public ResponseEntity addLineStation(@PathVariable Long lineId,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         lineService.addLineStation(lineId, lineStationCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/{lineId}/{stationId}")
+    @DeleteMapping("/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId,
         @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);

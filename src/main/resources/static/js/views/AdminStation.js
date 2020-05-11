@@ -23,7 +23,7 @@ function AdminStation() {
       }).then(station => {
         $stationNameInput.value = "";
         $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
-        stations = [...stations, station]
+        stations = [...stations, stationName]
       }).catch(error => new Error(error.message));
     }
     catch (error) {
