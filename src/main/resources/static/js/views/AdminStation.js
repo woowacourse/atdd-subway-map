@@ -7,6 +7,17 @@ function AdminStation() {
     const $stationAddBtn = document.querySelector("#station-add-btn");
     const $stationList = document.querySelector("#station-list");
 
+    const initDefaultSubwayStations = () => {
+        api.station.get().then(subwayStations => subwayStations.forEach(
+            subwayStation => {
+                $stationList.insertAdjacentHTML(
+                    "beforeend",
+                    listItemTemplate(subwayStation)
+                );
+            }
+        ));
+    };
+
     const onAddStationHandler = event => {
         if (event.type !== EVENT_TYPE.CLICK && event.key !== KEY_TYPE.ENTER) {
             return;
@@ -52,7 +63,7 @@ function AdminStation() {
             }
         }
         return errorMsg;
-    }
+    };
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
@@ -71,6 +82,7 @@ function AdminStation() {
     };
 
     const init = () => {
+        initDefaultSubwayStations();
         initEventListeners();
     };
 
