@@ -1,5 +1,5 @@
-import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate } from "../../utils/templates.js";
+import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {listItemTemplate} from "../../utils/templates.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
@@ -46,12 +46,10 @@ function AdminStation() {
       alert(ERROR_MESSAGE.NOT_BLANK);
       throw new Error();
     }
-    //myCode
     if (/\d/.test(stationName)) {
       alert(ERROR_MESSAGE.CONTAIN_NUMBER);
       throw new Error();
     }
-    //myCode
     if (duplicatedName(stationName)) {
       alert(ERROR_MESSAGE.DUPLICATED);
       throw new Error();
