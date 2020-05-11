@@ -49,8 +49,8 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         LineStation lineStation = lineStationCreateRequest.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
