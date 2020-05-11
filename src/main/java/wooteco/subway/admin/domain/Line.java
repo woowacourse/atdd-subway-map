@@ -109,7 +109,7 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         if (lineStation.getPreStationId() == null && this.stations != null) {
-            Set tmp = this.stations;
+            Set<LineStation> tmp = this.stations;
             this.stations = new LinkedHashSet<>();
             this.stations.add(lineStation);
             this.stations.addAll(tmp);
