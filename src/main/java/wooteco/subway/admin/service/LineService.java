@@ -5,7 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.request.LineCreateRequest;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
+import wooteco.subway.admin.dto.response.LineResponse;
 import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -23,8 +25,28 @@ public class LineService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Line save(Line line) {
-		return lineRepository.save(line);
+	@Transactional
+	public LineResponse save(LineCreateRequest request) {
+		Line persistLine = lineRepository.save(request.toLine());
+
+		return LineResponse.of(persistLine);
+	}
+
+	@Transactional
+	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+
+		LineStation lineStation = lineStationCreateRequest.toLineStation();
+
+		if (lineStation.isFirstLineStation()) {
+			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
+			lineRepository.save(persistLine);
+			return;
+		}
+
+		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+		lineRepository.save(persistLine);
 	}
 
 	public List<LineWithStationsResponse> findLines() {
@@ -45,33 +67,16 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line updateLine(Long id, Line line) {
+	public void updateLine(Long id, LineCreateRequest request) {
 		Line persistLine = lineRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		persistLine.update(line);
-		return lineRepository.save(persistLine);
+		persistLine.update(request.toLine());
+		lineRepository.save(persistLine);
 	}
 
 	public void deleteLineBy(Long id) {
 		lineRepository.deleteById(id);
-	}
-
-	@Transactional
-	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
-		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
-
-		LineStation lineStation = lineStationCreateRequest.toLineStation();
-
-		if (lineStation.isFirstLineStation()) {
-			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
-			lineRepository.save(persistLine);
-			return;
-		}
-
-		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
-		lineRepository.save(persistLine);
 	}
 
 	@Transactional

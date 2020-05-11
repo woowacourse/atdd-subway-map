@@ -87,8 +87,8 @@ function AdminLine() {
     closeAndResetModalValue();
   };
 
-  const saveLine = () => {
-    return api.line.create({
+  const saveLine = async () => {
+    return await api.line.create({
       name: $subwayLineNameInput.value,
       startTime: $subwayLineFirstTimeInput.value,
       endTime: $subwayLineLastTimeInput.value,
@@ -116,8 +116,8 @@ function AdminLine() {
       </button>`
   };
 
-  const updateLine = () => {
-    fetch(`/lines/${updatingId}`, {
+  const updateLine = async () => {
+    await fetch(`/lines/${updatingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -129,7 +129,9 @@ function AdminLine() {
         intervalTime: $subwayLineIntervalTimeInput.value,
         lineColor: $subwayLineColorInput.value
       })
-    })
+    });
+
+    await fetch(`/lines/${updatingId}`, {method: "GET"})
       .then(response => response.json())
       .then(data => {
         convertLineItemBy(data);
@@ -137,14 +139,13 @@ function AdminLine() {
       });
   };
 
-  const saveOrUpdateLine = () => {
+  const saveOrUpdateLine = async () => {
     if (updatingId) {
-      updateLine();
+      await updateLine();
       updatingId = 0;
       return;
     }
-    let savedLine = saveLine();
-    savedLine.then(data => addLineInView(data));
+    await saveLine().then(data => addLineInView(data));
   };
 
   const validInput = () => {
@@ -171,10 +172,10 @@ function AdminLine() {
     return true;
   };
 
-  const onCreateSubwayLine = (event) => {
+  const onCreateSubwayLine = async (event) => {
     event.preventDefault();
     if (validInput()) {
-      saveOrUpdateLine();
+      await saveOrUpdateLine();
     }
   };
 

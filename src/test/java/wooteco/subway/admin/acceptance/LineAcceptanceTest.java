@@ -116,7 +116,7 @@ public class LineAcceptanceTest {
                 put("/lines/" + id).
         then().
                 log().all().
-                statusCode(HttpStatus.OK.value());
+                statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private List<LineResponse> getLines() {
