@@ -24,7 +24,7 @@ function AdminStation() {
 
         if (validateReduplication(stationName)) {
             $stationNameInput.value = "";
-            alert(ERROR_MESSAGE.REDUPLCATE_STATION_NAME);
+            alert(ERROR_MESSAGE.DUPLICATE_STATION_NAME);
             return;
         }
 

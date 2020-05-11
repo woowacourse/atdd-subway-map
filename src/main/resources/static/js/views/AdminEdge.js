@@ -57,6 +57,11 @@ function AdminEdge() {
           duration: document.querySelector("#duration").value
         }
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
+            console.log(data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
             createSubwayEdgeModal.toggle();
             location.reload();
         })

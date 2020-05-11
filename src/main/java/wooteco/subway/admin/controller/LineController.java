@@ -11,9 +11,7 @@ import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,19 +25,33 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
-        Line line = view.toLine();
-        Line persistLine = lineService.save(line);
+    public ResponseEntity createLine(@RequestBody LineRequest view) {
+        try {
+            Line line = view.toLine();
+            Line persistLine = lineService.save(line);
 
-        return ResponseEntity
-                .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+            return ResponseEntity
+                    .created(URI.create("/lines/" + persistLine.getId()))
+                    .body(LineResponse.of(persistLine));
+        } catch (Exception e) {
+            Map<String, String> param = new HashMap<>();
+            param.put("error", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(param);
+        }
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok()
-                .body(findLineWithStationsById(id));
+    public ResponseEntity getLine(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok()
+                    .body(findLineWithStationsById(id));
+        } catch (Exception e) {
+            Map<String, String> param = new HashMap<>();
+            param.put("error", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(param);
+        }
     }
 
     @PutMapping("/lines/{id}")
@@ -64,12 +76,18 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}/stations")
-    public ResponseEntity<LineResponse> createLineStation(@PathVariable Long id,
-                                            @RequestBody LineStationCreateRequest lineStationCreateRequest){
-        Line persistLine = lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
-
-        return ResponseEntity.ok()
-                .body(findLineWithStationsById(id));
+    public ResponseEntity createLineStation(@PathVariable Long id,
+                                            @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        try {
+            lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
+            return ResponseEntity.ok()
+                    .body(findLineWithStationsById(id));
+        } catch (Exception e) {
+            Map<String, String> param = new HashMap<>();
+            param.put("error", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(param);
+        }
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")

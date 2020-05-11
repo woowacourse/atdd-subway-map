@@ -1,4 +1,4 @@
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {CONFIRM_MESSAGE, ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
@@ -31,10 +31,12 @@ function AdminLine() {
             intervalTime: document.querySelector("#interval-time").value,
             color: $subwayLineColorInput.value
         };
-
+        if (formData.name === "" || formData.startTime === "" || formData.startTime === "" || formData.endTime === "" || formData.intervalTime === "" || formData.color === "") {
+            alert(ERROR_MESSAGE.FILL_FORM);
+            return;
+        }
         lineId ? updateLineColumn(formData) : insertLineColumn(formData);
 
-        subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineStartTimeInput.value = "";
         $subwayLineEndTimeInput.value = "";
@@ -45,6 +47,11 @@ function AdminLine() {
     const insertLineColumn = formData => {
         api.line.create(formData).then(
             data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                subwayLineModal.toggle();
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(data)
@@ -56,6 +63,11 @@ function AdminLine() {
     const updateLineColumn = formData => {
         api.line.update(lineId, formData).then(
             data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                subwayLineModal.toggle();
                 let oldLine = document.querySelector('div[data-id="' + lineId + '"]');
                 oldLine.insertAdjacentHTML(
                     "afterend",
@@ -71,6 +83,12 @@ function AdminLine() {
         const isDeleteButton = $target.classList.contains("mdi-delete");
         lineId = $target.closest(".subway-line-item").dataset.id;
         if (isDeleteButton) {
+            const isRemove = confirm(CONFIRM_MESSAGE.REMOVE);
+
+            if (!isRemove) {
+                return;
+            }
+
             api.line.delete(lineId).then(response => {
                 if (response.status === 204) {
                     $target.closest(".subway-line-item").remove();

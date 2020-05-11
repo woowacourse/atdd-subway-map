@@ -9,8 +9,8 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -21,8 +21,6 @@ import static org.mockito.Mockito.when;
 public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
-    @Mock
-    private StationRepository stationRepository;
 
     private Line line;
     private LineService lineService;
@@ -38,7 +36,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void addLineStationAtTheFirstOfLine() {
+    void addLineStationAtTheFirstOfLine() throws SQLException {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
@@ -52,7 +50,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void addLineStationBetweenTwo() {
+    void addLineStationBetweenTwo() throws SQLException {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
@@ -66,7 +64,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void addLineStationAtTheEndOfLine() {
+    void addLineStationAtTheEndOfLine() throws SQLException {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));

@@ -5,6 +5,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.repository.LineRepository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -41,10 +42,14 @@ public class LineService {
                 .anyMatch(lineName -> lineName.equals(line.getName()));
     }
 
-    public Line addLineStation(Long id, LineStation lineStation) {
-        Line persistLine = findById(id);
-        persistLine.addLineStation(lineStation);
-        return lineRepository.save(persistLine);
+    public Line addLineStation(Long id, LineStation lineStation) throws SQLException {
+        try {
+            Line persistLine = findById(id);
+            persistLine.addLineStation(lineStation);
+            return lineRepository.save(persistLine);
+        } catch (Exception e) {
+            throw new SQLException("올바르지 않은 구간입니다.");
+        }
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -53,7 +58,7 @@ public class LineService {
         updateLine(lineId, line);
     }
 
-    public Line findById(Long id){
+    public Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
     }
