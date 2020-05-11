@@ -20,7 +20,7 @@ public class LineResponse {
 
     private Set<Station> stations;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
@@ -38,12 +38,12 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), new HashSet<>());
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(), new HashSet<>());
     }
 
     public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), stations);
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(), stations);
     }
 
     public Long getId() {

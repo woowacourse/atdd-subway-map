@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,19 +19,22 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private String bgColor;
-    private List<LineStation> stations = new LinkedList<>();
+    @Column("bg_color")
+    private String backgroundColor;
+    private List<LineStation> lineStations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.backgroundColor = "bg-blue-500";
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -39,14 +43,107 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime);
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.bgColor = bgColor;
+        this.backgroundColor = backgroundColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (lineStations.isEmpty()) {
+            lineStations.add(lineStation);
+            return;
+        }
+
+        if (isFirstLineStation(lineStation)) {
+            LineStation firstLineStation = lineStations.get(0);
+            firstLineStation.modifyPreStationId(lineStation.getStationId());
+            lineStations.add(0, lineStation);
+            return;
+        }
+
+        LineStation targetLineStation = getLineStationBy(lineStation.getPreStationId());
+        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
+
+        if (isInclude(nextLineStationIndex)) {
+            LineStation nextLineStation = lineStations.get(nextLineStationIndex);
+            nextLineStation.modifyPreStationId(lineStation.getStationId());
+            lineStations.add(nextLineStationIndex, lineStation);
+            lineStations.set(nextLineStationIndex + 1, nextLineStation);
+            return;
+        }
+
+        lineStations.add(lineStation);
+    }
+
+    private boolean isFirstLineStation(LineStation lineStation) {
+        return lineStation.getPreStationId() == null;
+    }
+
+    private int getNextLineStationIndex(LineStation targetLineStation) {
+        return lineStations.indexOf(targetLineStation) + 1;
+    }
+
+    private boolean isInclude(int nextLineStationIndex) {
+        return nextLineStationIndex <= lineStations.size() - 1;
+    }
+
+    private LineStation getLineStationBy(Long id) {
+        return lineStations.stream()
+                .filter(station -> station.getStationId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결할 수 있는 역이 없습니다."));
+    }
+
+    public void removeLineStationById(Long stationId) {
+        LineStation targetLineStation = getLineStationBy(stationId);
+        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
+
+        if (isFirstLineStation(targetLineStation)) {
+            LineStation nextLineStation = lineStations.get(nextLineStationIndex);
+            nextLineStation.modifyPreStationId(null);
+            lineStations.set(nextLineStationIndex, nextLineStation);
+            lineStations.remove(targetLineStation);
+            return;
+        }
+
+        if (isInclude(nextLineStationIndex)) {
+            LineStation nextLineStation = lineStations.get(nextLineStationIndex);
+            LineStation preLineStation = lineStations.get(nextLineStationIndex - 1);
+            nextLineStation.modifyPreStationId(preLineStation.getStationId());
+            lineStations.set(nextLineStationIndex, nextLineStation);
+            lineStations.remove(targetLineStation);
+            return;
+        }
+
+        lineStations.remove(targetLineStation);
+    }
+
+    public List<Long> findLineStationsId() {
+        return lineStations.stream()
+                .map(LineStation::getStationId)
+                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
     public Long getId() {
@@ -69,8 +166,8 @@ public class Line {
         return intervalTime;
     }
 
-    public List<LineStation> getStations() {
-        return stations;
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -81,99 +178,7 @@ public class Line {
         return updatedAt;
     }
 
-    public String getBgColor() {
-        return bgColor;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        if (stations.isEmpty()) {
-            stations.add(lineStation);
-            return;
-        }
-
-        if (isFirstLineStation(lineStation)) {
-            LineStation firstLineStation = stations.get(0);
-            firstLineStation.modifyPreStationId(lineStation.getStationId());
-            stations.add(0, lineStation);
-            return;
-        }
-
-        LineStation targetLineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(lineStation.getPreStationId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
-
-        if (isInclude(nextLineStationIndex)) {
-            LineStation nextLineStation = stations.get(nextLineStationIndex);
-            nextLineStation.modifyPreStationId(lineStation.getStationId());
-            stations.add(nextLineStationIndex, lineStation);
-            stations.set(nextLineStationIndex + 1, nextLineStation);
-            return;
-        }
-
-        stations.add(lineStation);
-    }
-
-    private boolean isInclude(int nextLineStationIndex) {
-        return nextLineStationIndex <= stations.size() - 1;
-    }
-
-    private boolean isFirstLineStation(LineStation lineStation) {
-        return lineStation.getPreStationId() == null;
-    }
-
-    private int getNextLineStationIndex(LineStation targetLineStation) {
-        return stations.indexOf(targetLineStation) + 1;
-    }
-
-    public void removeLineStationById(Long stationId) {
-        LineStation targetLineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("연결할 수 있는 역이 없습니다."));
-        int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
-
-        if (isFirstLineStation(targetLineStation)) {
-            LineStation nextLineStation = stations.get(nextLineStationIndex);
-            nextLineStation.modifyPreStationId(null);
-            stations.set(nextLineStationIndex, nextLineStation);
-            stations.remove(targetLineStation);
-            return;
-        }
-
-        if (isInclude(nextLineStationIndex)) {
-            LineStation nextLineStation = stations.get(nextLineStationIndex);
-            LineStation preLineStation = stations.get(nextLineStationIndex - 1);
-            nextLineStation.modifyPreStationId(preLineStation.getStationId());
-            stations.set(nextLineStationIndex, nextLineStation);
-            stations.remove(targetLineStation);
-            return;
-        }
-
-        stations.remove(targetLineStation);
-    }
-
-    public List<Long> findLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 }

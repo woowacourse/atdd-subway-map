@@ -68,19 +68,23 @@ public class LineStationAcceptanceTest {
         List<StationResponse> stations = getStations();
         LineResponse line = getLine(1L);
 
-        createLineStation(null, stations.get(0).getId(), line.getId());
-        createLineStation(stations.get(0).getId(), stations.get(1).getId(), line.getId());
-        createLineStation(stations.get(1).getId(), stations.get(2).getId(), line.getId());
+        StationResponse gangbyun = stations.get(0);
+        StationResponse jamsilnaru = stations.get(1);
+        StationResponse jamsil = stations.get(2);
+
+        createLineStation(null, gangbyun.getId(), line.getId());
+        createLineStation(gangbyun.getId(), jamsilnaru.getId(), line.getId());
+        createLineStation(jamsilnaru.getId(), jamsil.getId(), line.getId());
 
         List<LineStationResponse> lineStations = getLineStations(line.getId());
         assertThat(lineStations.size()).isEqualTo(3);
 
         LineStationResponse lineStationResponse = lineStations.get(0);
         assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
-        assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(0).getId());
+        assertThat(lineStationResponse.getStationId()).isEqualTo(gangbyun.getId());
         assertThat(lineStationResponse.getPreStationId()).isNull();
 
-        deleteLineStation(line.getId(), stations.get(0).getId());
+        deleteLineStation(line.getId(), gangbyun.getId());
         List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());
         assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
 
@@ -120,6 +124,7 @@ public class LineStationAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-blue-500");
         Request<Map<String, String>> param = new Request<>(params);
 
         given().

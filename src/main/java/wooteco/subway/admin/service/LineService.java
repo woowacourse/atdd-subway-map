@@ -90,7 +90,7 @@ public class LineService {
     public List<LineStationResponse> findLineStations(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
-        List<LineStation> lineStations = line.getStations();
+        List<LineStation> lineStations = line.getLineStations();
 
         return lineStations.stream()
                 .map(lineStation -> LineStationResponse.of(id, lineStation))

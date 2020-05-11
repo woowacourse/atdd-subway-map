@@ -1,12 +1,16 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.relational.core.mapping.Column;
+
 public class LineStation {
+    @Column("station")
     private Long stationId;
+    @Column("pre_station")
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    private LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
@@ -14,10 +18,6 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
-    }
-
-    public static LineStation of(Long preStationId, Long stationId, int distance, int duration) {
-        return new LineStation(preStationId, stationId, distance, duration);
     }
 
     public Long getPreStationId() {
