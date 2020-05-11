@@ -1,7 +1,6 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,13 +17,14 @@ public class LineResponse {
     private LocalDateTime updatedAt;
     private String bgColor;
 
-    private Set<Station> stations;
+    private Set<StationResponse> stationResponses;
 
     private LineResponse() {
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-                        LocalDateTime createdAt, LocalDateTime updatedAt, String bgColor, Set<Station> stations) {
+                        LocalDateTime createdAt, LocalDateTime updatedAt, String bgColor,
+                        Set<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -33,17 +33,19 @@ public class LineResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.bgColor = bgColor;
-        this.stations = stations;
+        this.stationResponses = stationResponses;
     }
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(), new HashSet<>());
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(),
+                new HashSet<>());
     }
 
-    public static LineResponse of(Line line, Set<Station> stations) {
+    public static LineResponse of(Line line, Set<StationResponse> stationResponses) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(), stations);
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBackgroundColor(),
+                stationResponses);
     }
 
     public Long getId() {
@@ -66,8 +68,8 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
-        return stations;
+    public Set<StationResponse> getStationResponses() {
+        return stationResponses;
     }
 
     public LocalDateTime getCreatedAt() {

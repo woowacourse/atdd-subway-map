@@ -8,6 +8,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -19,6 +20,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final String ERROR_MESSAGE_DUPLICATE_LINE_NAME = "노선 이름이 중복됩니다.";
+    private static final String ERROR_MESSAGE_WRONG_LINE_ID = "잘못된 라인 아이디를 입력하였습니다.";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -37,12 +41,19 @@ public class LineService {
         List<LineResponse> lineResponses = new ArrayList<>();
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
-            List<Long> lineStationsId = line.findLineStationsId();
-            Set<Station> stations = stationRepository.findAllById(lineStationsId);
-            lineResponses.add(LineResponse.of(line, stations));
+            Set<StationResponse> stationResponses = getStationResponses(line);
+            lineResponses.add(LineResponse.of(line, stationResponses));
         }
 
         return Collections.unmodifiableList(lineResponses);
+    }
+
+    private Set<StationResponse> getStationResponses(Line line) {
+        List<Long> lineStationsId = line.findLineStationsId();
+        Set<Station> stations = stationRepository.findAllById(lineStationsId);
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
     }
 
     @Transactional
@@ -54,7 +65,7 @@ public class LineService {
 
     private void validateNameDuplicate(Line line) {
         if (lineRepository.existsByName(line.getName())) {
-            throw new IllegalArgumentException("노선 이름이 중복됩니다.");
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_LINE_NAME);
         }
     }
 
@@ -66,7 +77,7 @@ public class LineService {
     @Transactional
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+                new IllegalArgumentException(ERROR_MESSAGE_WRONG_LINE_ID));
         line.addLineStation(request.toLineStationRequest());
         lineRepository.save(line);
     }
@@ -74,22 +85,21 @@ public class LineService {
     @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
-                new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+                new IllegalArgumentException(ERROR_MESSAGE_WRONG_LINE_ID));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        List<Long> lineStationsId = line.findLineStationsId();
-        Set<Station> stations = stationRepository.findAllById(lineStationsId);
+        Set<StationResponse> stationResponses = getStationResponses(line);
 
-        return LineResponse.of(line, stations);
+        return LineResponse.of(line, stationResponses);
     }
 
     public List<LineStationResponse> findLineStations(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
+                new IllegalArgumentException(ERROR_MESSAGE_WRONG_LINE_ID));
         List<LineStation> lineStations = line.getLineStations();
 
         return lineStations.stream()
