@@ -146,7 +146,7 @@ public class LineStationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
 
         when().
-                post("/lines/" + id + "/register").
+                post("/lines/" + id + "/stations").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());

@@ -38,10 +38,10 @@ public class LineController {
         }
     }
 
-    @PostMapping("/lines/registerLineStation")
-    public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationDto lineStationDto) {
+    @PostMapping("/lines/stations")
+    public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationDto lineStationDto, @RequestParam String name) {
         try {
-            Line line = lineService.findByName(lineStationDto.getName());
+            Line line = lineService.findByName(name);
             Station preStation = stationService.findByName(lineStationDto.getPreStationName());
             Station arrivalStation = stationService.save(lineStationDto.getArrivalStationName());
             LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
@@ -119,7 +119,7 @@ public class LineController {
 
     }
 
-    @PostMapping("/lines/{id}/register")
+    @PostMapping("/lines/{id}/stations")
     public ResponseEntity<LineResponse> registerStation(@PathVariable Long id, @RequestBody StationCreateRequest stationCreateRequest) {
         try {
             Line line = lineService.findById(id);

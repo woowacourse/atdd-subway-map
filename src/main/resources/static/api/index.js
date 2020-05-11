@@ -55,7 +55,7 @@ const api = (() => {
             return fetch(`/lines/${id}`, METHOD.DELETE()).then();
         },
         registerLineStation(data) {
-            return request(`/lines/registerLineStation`, METHOD.POST(data));
+            return request(`/lines/stations?name=${data.name}`, METHOD.POST(data));
         }
     };
 
