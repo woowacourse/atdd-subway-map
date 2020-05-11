@@ -99,12 +99,20 @@ public class Line {
     public void addLineStation(LineStation lineStation) {
         if (stations.size() != 0) {
             int index = findStationsIndex(lineStation);
-            addAtIndexDefault(lineStation, index);
-            addAtIndexNotDefault(lineStation, index);
+            addByIndex(lineStation, index);
         }
         if (stations.size() == 0) {
             executePreStationIdNotNull(lineStation);
             stations.add(lineStation);
+        }
+    }
+
+    private void addByIndex(LineStation lineStation, int index) {
+        if (index == DEFAULT_INDEX) {
+            stations.add(lineStation);
+        }
+        if (index != DEFAULT_INDEX) {
+            stations.add(index, lineStation);
         }
     }
 
@@ -122,18 +130,6 @@ public class Line {
             index = i;
         }
         return index;
-    }
-
-    private void addAtIndexDefault(LineStation lineStation, int index) {
-        if (index == DEFAULT_INDEX) {
-            stations.add(lineStation);
-        }
-    }
-
-    private void addAtIndexNotDefault(LineStation lineStation, int index) {
-        if (index != DEFAULT_INDEX) {
-            stations.add(index, lineStation);
-        }
     }
 
     private void executePreStationIdNotNull(LineStation lineStation) {
@@ -155,26 +151,22 @@ public class Line {
 
     private void updateAfterRemove() {
         for (int i = 0; i < stations.size() - 1; i++){
-            beFirstIndex(i);
-            beNotFirstIndex(i);
+            updateByFirstIndex(i);
         }
     }
 
-    private void beFirstIndex(int index) {
+    private void updateByFirstIndex(int index) {
         if (index == 0) {
             updateFirstIndex(index);
+        }
+        if (index != 0) {
+            updateNotFirstIndex(index);
         }
     }
 
     private void updateFirstIndex(int index) {
         if (stations.get(index).getPreStationId() != null) {
             stations.get(index).updatePreLineStation(null);
-        }
-    }
-
-    private void beNotFirstIndex(int index) {
-        if (index != 0) {
-            updateNotFirstIndex(index);
         }
     }
 
