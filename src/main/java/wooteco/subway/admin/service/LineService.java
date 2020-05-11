@@ -23,7 +23,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
+    public Line create(Line line) {
         return lineRepository.save(line);
     }
 
