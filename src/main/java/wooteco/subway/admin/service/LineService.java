@@ -25,16 +25,13 @@ public class LineService {
     }
 
     public LineResponse save(Line line) {
-        validate(line);
+        validateName(line);
         return LineResponse.of(lineRepository.save(line));
     }
 
-    private void validate(Line line) {
-        List<Line> savedLines = lineRepository.findAll();
-        for (Line savedLine : savedLines) {
-            if (savedLine.getName().equals(line.getName())) {
-                throw new IllegalArgumentException("중복되는 역이 존재합니다.");
-            }
+    private void validateName(Line line) {
+        if (lineRepository.findName(line.getName()) > 0) {
+            throw new IllegalArgumentException("중복되는 역이 존재합니다.");
         }
     }
 
@@ -82,8 +79,8 @@ public class LineService {
         List<LineStation> lineStations = savedLine.getStations();
         List<Station> stations = new ArrayList<>();
 
-        for (LineStation ls : lineStations) {
-            stations.add(stationRepository.findById(ls.getStationId())
+        for (LineStation lineStation : lineStations) {
+            stations.add(stationRepository.findById(lineStation.getStationId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다.")));
         }
         return stations;

@@ -3,7 +3,8 @@ create table if not exists STATION
    id bigint auto_increment not null,
    name varchar(255) not null,
    created_at datetime,
-   primary key(id)
+   primary key(id),
+   unique (name)
 );
 
 create table if not exists LINE
@@ -16,7 +17,8 @@ create table if not exists LINE
    interval_time int not null,
    created_at datetime,
    updated_at datetime,
-   primary key(id)
+   primary key(id),
+   unique (name)
 );
 
 create table if not exists LINE_STATION
