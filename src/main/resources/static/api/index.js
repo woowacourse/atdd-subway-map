@@ -64,10 +64,10 @@ const api = (() => {
       return request(`/lines/${id}`);
     },
     create(data) {
-      return request(`/lines`, METHOD.POST(data));
+      return noContentRequest(`/lines`, METHOD.POST(data));
     },
     update(id, data) {
-      return request(`/lines/${id}`, METHOD.PUT(data));
+      return noContentRequest(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
       return noContentRequest(`/lines/${id}`, METHOD.DELETE());

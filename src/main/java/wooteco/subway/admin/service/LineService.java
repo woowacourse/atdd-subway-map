@@ -27,7 +27,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
+    public LineResponse addLine(Line line) {
         return LineResponse.of(lineRepository.save(line));
     }
 
@@ -94,7 +94,6 @@ public class LineService {
 
     public StationResponse createStation(StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
-
         return StationResponse.of(stationRepository.save(station));
     }
 
