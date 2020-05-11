@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.LineStationRepository;
@@ -67,12 +66,11 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long lineId, LineStationCreateRequest request) {
+    public void addLineStation(Long lineId, LineStation lineStation) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
-        LineStation toInput = LineStation.of(request);
-        line.updatePreStationWhenAdd(toInput);
-        line.addLineStation(toInput);
+        line.updatePreStationWhenAdd(lineStation);
+        line.addLineStation(lineStation);
         lineRepository.save(line);
     }
 

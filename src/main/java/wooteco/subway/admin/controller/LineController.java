@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -18,7 +19,6 @@ import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,18 +80,14 @@ public class LineController {
 
     @PostMapping("/{lineId}/stations")
     public ResponseEntity addStation(@PathVariable Long lineId,
-                                     @RequestBody HashMap<String, String> map) {
-        Long preStationId = stationService.findStationId(map.get("preStationName"));
-        Long stationId = stationService.findStationId(map.get("stationName"));
+                                     @RequestBody LineStationCreateRequest req) {
+        Long preStationId = stationService.findStationId(req.getPreStationName());
+        Long stationId = stationService.findStationId(req.getStationName());
 
-        LineStationCreateRequest lineStationCreateRequest =
-                new LineStationCreateRequest(
-                        preStationId,
-                        stationId,
-                        Integer.parseInt(map.get("distance")),
-                        Integer.parseInt(map.get("duration")));
+        LineStation lineStation = new LineStation(preStationId, stationId,
+                req.getDistance(), req.getDuration());
 
-        lineService.addLineStation(lineId, lineStationCreateRequest);
+        lineService.addLineStation(lineId, lineStation);
         return ResponseEntity.ok().build();
     }
 
