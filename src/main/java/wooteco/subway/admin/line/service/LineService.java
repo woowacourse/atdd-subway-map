@@ -14,7 +14,6 @@ import wooteco.subway.admin.line.service.dto.line.LineResponse;
 import wooteco.subway.admin.station.domain.Stations;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,12 +109,6 @@ public class LineService {
         Lines lines = new Lines(lineRepository.findAll());
         Stations stations = new Stations(stationRepository.findAllById(lines.getAllEdgeStationId()));
 
-        List<LineEdgeResponse> lineEdgeResponses = new ArrayList<>();
-        for (Line line : lines) {
-            Edges edges = line.getEdges();
-            List<EdgeResponse> edgeResponses = EdgeResponse.listOf(edges.getEdges(), stations);
-            lineEdgeResponses.add(new LineEdgeResponse(line, edgeResponses));
-        }
-        return lineEdgeResponses;
+        return LineEdgeResponse.listOf(lines, stations);
     }
 }
