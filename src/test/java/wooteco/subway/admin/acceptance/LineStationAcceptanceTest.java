@@ -79,7 +79,7 @@ public class LineStationAcceptanceTest {
 
     private void deleteStationOnLine(Long lineId, Long stationId) {
         given().when()
-            .delete("/line-stations/" + lineId + "/" + stationId)
+            .delete("/lines/" + lineId + "/stations/" + stationId)
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -93,7 +93,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/line-stations/" + lineId).
+            post("/lines/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());

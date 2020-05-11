@@ -67,13 +67,13 @@ const api = (() => {
 
   const lineStation = {
     getById(lineId) {
-      return request(`/line-stations/${lineId}`);
+      return request(`/lines/${lineId}/stations`);
     },
     create(lineId, lineStationRequest) {
-      return request(`/line-stations/${lineId}`, METHOD.POST(lineStationRequest));
+      return request(`/lines/${lineId}/stations`, METHOD.POST(lineStationRequest));
     },
     delete(lineId, stationId) {
-      return request(`/line-stations/${lineId}/${stationId}`, METHOD.DELETE());
+      return request(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   }
 

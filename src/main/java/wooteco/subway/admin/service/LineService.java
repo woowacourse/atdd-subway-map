@@ -28,7 +28,7 @@ public class LineService {
     }
 
     public Long save(Line line) {
-        validateLine(line);
+        validateDuplicateName(line);
         return lineRepository.save(line).getId();
     }
 
@@ -87,7 +87,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    private void validateLine(Line lineToCreate) {
+    private void validateDuplicateName(Line lineToCreate) {
         boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
         if (exist) {
             throw new ExistingNameException(lineToCreate.getName());

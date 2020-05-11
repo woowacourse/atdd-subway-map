@@ -103,8 +103,8 @@ public class Line {
         if (Objects.isNull(lineStation.getPreStationId())) {
             stations.add(0, lineStation);
             if (stations.size() != 1) {
-                LineStation firstLineStation = stations.get(1);
-                firstLineStation.updatePreLineStation(lineStation.getStationId());
+                LineStation prevFirstStation = stations.get(1);
+                prevFirstStation.updatePreLineStation(lineStation.getStationId());
             }
             return;
         }
@@ -115,12 +115,6 @@ public class Line {
             existing.updatePreLineStation(lineStation.getStationId());
         }
         stations.add(insertIndex, lineStation);
-    }
-
-    private void validateLineStation(LineStation lineStation) {
-        if (lineStation.getPreStationId().equals(lineStation.getStationId())) {
-            throw new IllegalArgumentException("같은 역을 출발지점과 도착지점으로 정할 수 없습니다.");
-        }
     }
 
     public void removeLineStationById(Long stationId) {
@@ -148,6 +142,12 @@ public class Line {
             if (station.isSameStation(lineStation)) {
                 throw new IllegalArgumentException("이미 등록된 구간입니다.");
             }
+        }
+    }
+
+    private void validateLineStation(LineStation lineStation) {
+        if (lineStation.getPreStationId().equals(lineStation.getStationId())) {
+            throw new IllegalArgumentException("같은 역을 출발지점과 도착지점으로 정할 수 없습니다.");
         }
     }
 
