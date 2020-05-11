@@ -57,9 +57,22 @@ const api = (() => {
     }
   };
 
+  const edge = {
+    get(id) {
+      return request(`/lines/${id}/stations`);
+    },
+    create(id, data) {
+      return request(`/lines/${id}/stations`, METHOD.POST(data));
+    },
+    delete(lineId, stationId) {
+      return request(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+    }
+  };
+
   return {
     station,
-    line
+    line,
+    edge
   };
 })();
 

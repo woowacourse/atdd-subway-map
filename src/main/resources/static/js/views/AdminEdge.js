@@ -1,65 +1,114 @@
-import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
+import {
+    optionTemplate,
+    subwayLinesItemTemplate
+} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminEdge() {
-  const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const createSubwayEdgeModal = new Modal();
+    const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
+    const $selectOptions = document.querySelector("#station-select-options");
+    const $departStationInput = document.querySelector("#depart-station-name");
+    const $arrivalStationInput = document.querySelector("#arrival-station-name");
+    const $submitEdgeBtn = document.querySelector("#submit-button");
 
-  const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
-        .map(line => subwayLinesItemTemplate(line))
+    const createSubwayEdgeModal = new Modal();
+
+    const resetModalInputValue = () => {
+        $departStationInput.value = "";
+        $arrivalStationInput.value = "";
+    };
+
+    const initSubwayLinesSlider = async () => {
+        const lines = await api.line.get().then(data => data.json());
+        $subwayLinesSlider.innerHTML = lines
+            .map(line => subwayLinesItemTemplate(line))
+            .join("");
+        tns({
+            container: ".subway-lines-slider",
+            loop: true,
+            slideBy: "page",
+            speed: 400,
+            autoplayButtonOutput: false,
+            mouseDrag: true,
+            lazyload: true,
+            controlsContainer: "#slider-controls",
+            items: 1,
+            edgePadding: 25
+        });
+    };
+
+    const initSubwayLineOptions = async () => {
+        const lines = await api.line.get().then(data => data.json());
+        const subwayLineOptionTemplate = lines
+        .map(line => optionTemplate(line))
         .join("");
-    tns({
-      container: ".subway-lines-slider",
-      loop: true,
-      slideBy: "page",
-      speed: 400,
-      autoplayButtonOutput: false,
-      mouseDrag: true,
-      lazyload: true,
-      controlsContainer: "#slider-controls",
-      items: 1,
-      edgePadding: 25
-    });
-  };
 
-  const initSubwayLineOptions = () => {
-    const subwayLineOptionTemplate = defaultSubwayLines
-        .map(line => optionTemplate(line.title))
-        .join("");
-    const $stationSelectOptions = document.querySelector(
-        "#station-select-options"
-    );
-    $stationSelectOptions.insertAdjacentHTML(
-        "afterbegin",
-        subwayLineOptionTemplate
-    );
-  };
+        const $stationSelectOptions = document.querySelector(
+            "#station-select-options"
+        );
+        $stationSelectOptions.insertAdjacentHTML(
+            "afterbegin",
+            subwayLineOptionTemplate
+        );
+    };
 
-  const onRemoveStationHandler = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      $target.closest(".list-item").remove();
+    const onCreateEdgeHandler = async event => {
+        event.preventDefault();
+        const stations = await api.station.get().then(data => data.json());
+        const depart = stations.filter(
+            station => station.name === $departStationInput.value)[0];
+        const arrival = stations.filter(
+            station => station.name === $arrivalStationInput.value)[0];
+
+        if (!arrival) {
+            alert(ERROR_MESSAGE.NO_STATION);
+            return;
+        }
+
+        const newEdge = {
+            preStationId: depart ? depart.id : null,
+            stationId: arrival.id,
+            distance: 0,
+            duration: 0
+        };
+        const lineId = $selectOptions.options[$selectOptions.selectedIndex].dataset.lineId;
+        await api.edge.create(lineId, newEdge);
+
+        initSubwayLinesSlider();
+        initSubwayLineOptions();
+        createSubwayEdgeModal.toggle();
+        resetModalInputValue();
     }
-  };
 
-  const initEventListeners = () => {
-    $subwayLinesSlider.addEventListener(
-        EVENT_TYPE.CLICK,
-        onRemoveStationHandler
-    );
-  };
+    const onRemoveStationHandler = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (isDeleteButton) {
+            $target.closest(".list-item").remove();
+        }
+    };
 
-  this.init = () => {
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
-    initEventListeners();
-  };
+    const initEventListeners = () => {
+        $submitEdgeBtn.addEventListener(
+            EVENT_TYPE.CLICK,
+            onCreateEdgeHandler
+        );
+        $subwayLinesSlider.addEventListener(
+            EVENT_TYPE.CLICK,
+            onRemoveStationHandler
+        );
+    };
+
+    this.init = () => {
+        initSubwayLinesSlider();
+        initSubwayLineOptions();
+        initEventListeners();
+    };
 }
 
 const adminEdge = new AdminEdge();
 adminEdge.init();
+

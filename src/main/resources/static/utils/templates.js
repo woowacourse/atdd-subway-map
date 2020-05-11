@@ -27,7 +27,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = line => `<option data-line-id="${line.id}">${line.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -57,15 +57,16 @@ export const subwayLinesItemTemplate = line => {
     const stationsTemplate = line.stations
         .map(station => listItemTemplate(station))
         .join("");
-    return `<div class="inline-block w-1/2 px-2">
+    return `<div class="line-info-container inline-block w-1/2 px-2" data-line-id="${line.id}">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
-              <div class="overflow-y-auto height-90">
+              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
+              <div class="line-station-list-container overflow-y-auto height-90">
               ${stationsTemplate}
               </div>
             </div>
           </div>`;
 };
+
 
 export const initNavigation = () => {
     document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
@@ -78,6 +79,7 @@ export const colorSelectOptionTemplate = (option, index) => {
         option.bgColor
     }" class="color-select-option button w-6 h-6 ${option.bgColor} ${
         option.hoverColor
-    } font-bold p-1 rounded">
+    } font-bold p-1 rounded ">
              </button> ${hasNewLine ? "<br/>" : ""}`;
 };
+

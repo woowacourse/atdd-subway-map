@@ -1,5 +1,8 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -7,11 +10,6 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 public class LineService {
@@ -57,20 +55,32 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    public List<LineResponse> findAllLineWithStations() {
+        List<LineResponse> result = new ArrayList<>();
+        List<Line> lines = lineRepository.findAll();
+
+        for (Line line : lines) {
+            List<Station> stations = findStationsOf(line);
+            result.add(LineResponse.of(line, stations));
+        }
+
+        return result;
+    }
+
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         return LineResponse.of(line, findStationsOf(line));
     }
 
-    public Set<Station> findStationsOf(Long id) {
+    public List<Station> findStationsOf(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         return findStationsOf(line);
     }
 
-    private Set<Station> findStationsOf(Line line) {
-        Set<Station> stations = new HashSet<>();
+    private List<Station> findStationsOf(Line line) {
+        List<Station> stations = new ArrayList<>();
         for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
             stations.add(station);
         }
