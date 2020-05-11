@@ -18,7 +18,7 @@ public class StationResponse {
     }
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName());
+        return new StationResponse(station.getId(), station.getStationName().getName());
     }
 
     public static List<StationResponse> listOf(List<Station> stations) {
