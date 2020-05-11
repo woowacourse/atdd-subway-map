@@ -11,7 +11,8 @@ function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $selectOptions = document.querySelector("#station-select-options");
     const $departStationInput = document.querySelector("#depart-station-name");
-    const $arrivalStationInput = document.querySelector("#arrival-station-name");
+    const $arrivalStationInput = document.querySelector(
+        "#arrival-station-name");
     const $submitEdgeBtn = document.querySelector("#submit-button");
 
     const createSubwayEdgeModal = new Modal();
@@ -24,8 +25,8 @@ function AdminEdge() {
     const initSubwayLinesSlider = async () => {
         const lines = await api.line.get().then(data => data.json());
         $subwayLinesSlider.innerHTML = lines
-            .map(line => subwayLinesItemTemplate(line))
-            .join("");
+        .map(line => subwayLinesItemTemplate(line))
+        .join("");
         tns({
             container: ".subway-lines-slider",
             loop: true,
@@ -77,18 +78,24 @@ function AdminEdge() {
         const lineId = $selectOptions.options[$selectOptions.selectedIndex].dataset.lineId;
         await api.edge.create(lineId, newEdge);
 
-        initSubwayLinesSlider();
-        initSubwayLineOptions();
         createSubwayEdgeModal.toggle();
         resetModalInputValue();
+        window.location.href = window.location.href;
     }
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
         const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+        if (!isDeleteButton) {
+            return;
         }
+
+        const lineId = $target.closest(".line-info-container").dataset.lineId;
+        const $station = $target.closest(".list-item");
+        const stationId = $station.dataset.stationId;
+
+        api.edge.delete(lineId, stationId)
+        .then(() => $station.remove());
     };
 
     const initEventListeners = () => {
