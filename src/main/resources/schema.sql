@@ -28,17 +28,17 @@ create table if not exists LINE_STATION
     duration integer not null
 );
 
-insert into line values (1, '1호선', 'bg-blue-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (2, '2호선', 'bg-green-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (3, '3호선', 'bg-orange-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (4, '4호선', 'bg-blue-400', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-insert into line values (5, '신분당선', 'bg-red-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
-
-
-insert into station values (1, '삼성역', CURRENT_DATE());
-insert into station values (2, '강남역', CURRENT_DATE());
-insert into station values (3, '사당역', CURRENT_DATE());
-insert into station values (4, '신촌역', CURRENT_DATE());
-insert into station values (5, '낙성대역', CURRENT_DATE());
-insert into station values (6, '서울대입구역', CURRENT_DATE());
-insert into station values (7, '잠실역', CURRENT_DATE());
+-- insert into line values (1, '1호선', 'bg-blue-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- insert into line values (2, '2호선', 'bg-green-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- insert into line values (3, '3호선', 'bg-orange-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- insert into line values (4, '4호선', 'bg-blue-400', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+-- insert into line values (5, '신분당선', 'bg-red-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+--
+--
+-- insert into station values (1, '삼성역', CURRENT_DATE());
+-- insert into station values (2, '강남역', CURRENT_DATE());
+-- insert into station values (3, '사당역', CURRENT_DATE());
+-- insert into station values (4, '신촌역', CURRENT_DATE());
+-- insert into station values (5, '낙성대역', CURRENT_DATE());
+-- insert into station values (6, '서울대입구역', CURRENT_DATE());
+-- insert into station values (7, '잠실역', CURRENT_DATE());

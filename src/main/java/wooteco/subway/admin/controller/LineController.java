@@ -3,7 +3,6 @@ package wooteco.subway.admin.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -19,13 +18,6 @@ public class LineController {
 
     @Autowired
     private LineService lineService;
-
-    @GetMapping("/admin-line")
-    public ModelAndView adminLine() {
-        ModelAndView mv = new ModelAndView("admin-line");
-        mv.addObject("lines", lineService.findAllLines());
-        return mv;
-    }
 
     @PostMapping("/lines")
     public ResponseEntity<?> create(
