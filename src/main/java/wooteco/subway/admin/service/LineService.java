@@ -37,7 +37,8 @@ public class LineService {
 
     public List<Station> findStationsByLineId(Long id) {
         Line line = findLineById(id);
-        return line.makeLineStationsIds().stream()
+        return line.makeLineStationsIds()
+            .stream()
             .map(stationRepository::findById)
             .map(optional -> optional.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 ID입니다.")))
             .collect(Collectors.toList());

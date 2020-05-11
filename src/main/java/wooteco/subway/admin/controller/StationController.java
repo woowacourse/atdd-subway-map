@@ -3,6 +3,7 @@ package wooteco.subway.admin.controller;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();

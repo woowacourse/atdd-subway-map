@@ -27,7 +27,12 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config);
+  const request = (uri, config) => fetch(uri, config).then(async response => {
+    if (response.status === 400) {
+      alert(await response.text())
+    }
+    return response;
+  });
 
   const station = {
     getAll() {
@@ -75,7 +80,7 @@ const api = (() => {
     delete(lineId, stationId) {
       return request(`/line/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
-  }
+  };
 
   return {
     station,

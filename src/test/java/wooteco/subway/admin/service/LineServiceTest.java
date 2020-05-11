@@ -118,7 +118,9 @@ public class LineServiceTest {
         List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"),
             new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(stations.get(0)));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(stations.get(1)));
+        when(stationRepository.findById(3L)).thenReturn(Optional.of(stations.get(2)));
 
         List<Station> existing = lineService.findStationsByLineId(1L);
 

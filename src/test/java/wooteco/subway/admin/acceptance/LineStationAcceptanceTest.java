@@ -1,8 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
-import static wooteco.subway.admin.acceptance.LineAcceptanceTest.*;
-import static wooteco.subway.admin.acceptance.StationAcceptanceTest.*;
 
 import java.util.List;
 
@@ -17,6 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
@@ -26,10 +25,12 @@ import wooteco.subway.admin.dto.StationResponse;
 public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
+    TestSupport testSupport;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        testSupport = new TestSupport();
     }
 
     public static RequestSpecification given() {
@@ -40,12 +41,12 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         // given
-        StationResponse jamsil = createStation("잠실역");
-        StationResponse jamsilSaenae = createStation("잠실새내역");
-        StationResponse seoknam = createStation("석남역");
-        StationResponse sindorim = createStation("신도림역");
-        StationResponse bupeyong = createStation("부평역");
-        Long lineId = createLine("2호선");
+        StationResponse jamsil = testSupport.createStation("잠실역");
+        StationResponse jamsilSaenae = testSupport.createStation("잠실새내역");
+        StationResponse seoknam = testSupport.createStation("석남역");
+        StationResponse sindorim = testSupport.createStation("신도림역");
+        StationResponse bupeyong = testSupport.createStation("부평역");
+        Long lineId = testSupport.createLine("2호선");
 
         // when
         // then
@@ -56,29 +57,29 @@ public class LineStationAcceptanceTest {
         register(lineId, sindorim.getId(), bupeyong.getId());
 
         // when
-        LineResponse line = getLine(lineId);
-        List<StationResponse> stations = line.getStations();
+        LineResponse line = testSupport.getLine(lineId);
+        List<Station> stations = line.getStations();
 
         // then
-        assertThat(stations).contains(jamsil);
-        assertThat(stations).contains(jamsilSaenae);
-        assertThat(stations).contains(seoknam);
-        assertThat(stations).contains(sindorim);
-        assertThat(stations).contains(bupeyong);
+        assertThat(stations).contains(jamsil.toStation());
+        assertThat(stations).contains(jamsilSaenae.toStation());
+        assertThat(stations).contains(seoknam.toStation());
+        assertThat(stations).contains(sindorim.toStation());
+        assertThat(stations).contains(bupeyong.toStation());
 
         // when
         // then
         deleteStationOnLine(lineId, jamsil);
 
         // when
-        LineResponse deletedLineResponse = getLine(lineId);
-        List<StationResponse> deletedStations = deletedLineResponse.getStations();
-        assertThat(deletedStations).doesNotContain(jamsil);
+        LineResponse deletedLineResponse = testSupport.getLine(lineId);
+        List<Station> deletedStations = deletedLineResponse.getStations();
+        assertThat(deletedStations).doesNotContain(jamsil.toStation());
     }
 
     private void deleteStationOnLine(Long lineId, StationResponse jamsil) {
         given().when()
-            .delete("/line-stations/" + lineId + "/" + jamsil.getId())
+            .delete("/line/" + lineId + "/stations/" + jamsil.getId())
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -92,7 +93,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/line-stations/" + lineId).
+            post("/line/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());

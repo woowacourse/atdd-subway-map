@@ -26,10 +26,12 @@ import wooteco.subway.admin.dto.LineResponse;
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+    TestSupport testSupport;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        testSupport = new TestSupport();
     }
 
     public static RequestSpecification given() {
@@ -40,16 +42,16 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        testSupport.createLine("신분당선");
+        testSupport.createLine("1호선");
+        testSupport.createLine("2호선");
+        testSupport.createLine("3호선");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        LineResponse line = testSupport.getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -62,7 +64,7 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        LineResponse updatedLine = testSupport.getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
@@ -71,36 +73,6 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
-    }
-
-    static LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
-    }
-
-    static Long createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", "bg-green-700");
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-
-        return given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.CREATED.value()).
-            extract()
-            .body()
-            .as(Long.class);
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {

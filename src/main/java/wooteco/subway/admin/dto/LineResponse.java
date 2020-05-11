@@ -19,7 +19,6 @@ public class LineResponse {
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private List<Station> stations;
 
     public LineResponse() {

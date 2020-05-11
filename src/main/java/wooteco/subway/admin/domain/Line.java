@@ -4,11 +4,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
+    private static final int FIRST_STATION_INDEX = 0;
+    private static final int SECOND_INDEX = 1;
+    private static final int ONLY_ONE_STATION = 1;
+
     @Id
     private Long id;
     private String name;
@@ -72,21 +77,18 @@ public class Line {
     }
 
     private void validateHavingSame(LineStation lineStation) {
-        for (LineStation station : stations) {
-            if (lineStation.isStartStation()) {
-                continue;
-            }
-            if (station.isSameStation(lineStation)) {
-                throw new IllegalArgumentException("이미 등록된 구간입니다.");
-            }
+        boolean isExistLineStation = stations.stream()
+            .anyMatch(station -> station.isSameStation(lineStation));
+        if (isExistLineStation) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다");
         }
     }
 
     private void addStartLineStation(LineStation lineStation) {
-        stations.add(0, lineStation);
-        if (stations.size() != 1) {
-            LineStation firstLineStation = stations.get(1);
-            firstLineStation.updatePreLineStation(lineStation.getStationId());
+        stations.add(FIRST_STATION_INDEX, lineStation);
+        if (stations.size() != ONLY_ONE_STATION) {
+            LineStation secondLineStation = stations.get(SECOND_INDEX);
+            secondLineStation.updatePreLineStation(lineStation.getStationId());
         }
     }
 
@@ -123,12 +125,10 @@ public class Line {
     }
 
     private int findPreStationIndex(Long stationId) {
-        for (int i = 0; i < stations.size(); i++) {
-            if (stations.get(i).isBaseStation(stationId)) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("존재하지 않는 이전역입니다.");
+        return IntStream.range(0, stations.size())
+            .filter(index -> stations.get(index).isBaseStation(stationId))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이전역입니다."));
     }
 
     public Long getId() {
@@ -166,5 +166,4 @@ public class Line {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
 }
