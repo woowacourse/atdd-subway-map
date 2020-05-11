@@ -26,7 +26,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLines(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest request) {
         Line line = lineService.save(request.toLine());
 
         return ResponseEntity
@@ -43,7 +43,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
         LineResponse response = lineService.updateLine(id, request.toLine());
 
         return ResponseEntity.ok()
@@ -56,14 +56,14 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/stations")
-    public ResponseEntity addLineStation(
+    public ResponseEntity<StationResponse> addLineStation(
             @PathVariable Long id,
             @RequestBody LineStationCreateByNameRequest request) {
         Long stationId = lineService.addLineStationByName(id, request);
@@ -74,7 +74,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}/stations")
-    public ResponseEntity getStationsOfLine(@PathVariable Long id) {
+    public ResponseEntity<List<StationResponse>> getStationsOfLine(@PathVariable Long id) {
         Set<Station> response = lineService.findStationsOf(id);
 
         return ResponseEntity
@@ -83,7 +83,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
-    public ResponseEntity removeLineStation(
+    public ResponseEntity<Void> removeLineStation(
             @PathVariable Long lineId,
             @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
