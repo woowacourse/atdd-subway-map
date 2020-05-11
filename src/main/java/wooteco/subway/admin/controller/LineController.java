@@ -23,7 +23,7 @@ import wooteco.subway.admin.service.LineService;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService lineService;
+    private LineService lineService;
 
     public LineController(LineService lineService) {
         this.lineService = lineService;

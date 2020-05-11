@@ -78,10 +78,11 @@ function AdminEdge() {
         };
         const lineId = $selectOptions.options[$selectOptions.selectedIndex].dataset.lineId;
         const $stationList = document.querySelector(`.station-list-${lineId}`);
-        const lineStations = await api.edge.create(lineId, newEdge).then(data => data.json());
+        const lineStations = await api.edge.create(lineId, newEdge).then(
+            data => data.json());
         const stationsTemplate = lineStations
-            .map(station => listItemTemplate(station))
-            .join("");
+        .map(station => listItemTemplate(station))
+        .join("");
         $stationList.innerHTML = stationsTemplate;
 
         createSubwayEdgeModal.toggle();

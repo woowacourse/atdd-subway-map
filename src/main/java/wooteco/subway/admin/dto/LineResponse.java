@@ -9,6 +9,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private LocalTime startTime;
@@ -23,7 +24,11 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
+    public LineResponse(Long id, String name,
+        LocalTime startTime, LocalTime endTime,
+        int intervalTime, String bgColor,
+        LocalDateTime createdAt, LocalDateTime updatedAt,
+        List<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -36,7 +41,9 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
+            line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(),
+            line.getUpdatedAt(), stations);
     }
 
     public static LineResponse of(Line line) {
@@ -45,8 +52,8 @@ public class LineResponse {
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

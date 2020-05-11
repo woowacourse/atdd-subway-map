@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import wooteco.subway.admin.domain.Station;
 
 public class StationResponse {
+
     private Long id;
     private String name;
     private LocalDateTime createdAt;
@@ -25,8 +26,8 @@ public class StationResponse {
 
     public static List<StationResponse> listOf(List<Station> stations) {
         return stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
     public Long getId() {

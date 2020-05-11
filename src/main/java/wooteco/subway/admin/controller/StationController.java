@@ -16,19 +16,21 @@ import wooteco.subway.admin.service.StationService;
 
 @RestController
 public class StationController {
-    private final StationService stationService;
+
+    private StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest request) {
+    public ResponseEntity<StationResponse> createStation(
+        @RequestBody StationCreateRequest request) {
         Station station = stationService.save(request.toStation());
 
         return ResponseEntity
-                .created(URI.create("/stations/" + station.getId()))
-                .body(StationResponse.of(station));
+            .created(URI.create("/stations/" + station.getId()))
+            .body(StationResponse.of(station));
     }
 
     @GetMapping("/stations")

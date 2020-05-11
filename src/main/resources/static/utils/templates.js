@@ -14,7 +14,6 @@ export const subwayLineInfoTemplate = line =>
      <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-200">간격</div>
      <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}</div>`;
 
-
 export const subwayLinesTemplate = line =>
     `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" data-line-id="${line.id}">
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
@@ -55,8 +54,8 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 
 export const subwayLinesItemTemplate = line => {
     const stationsTemplate = line.stations
-        .map(station => listItemTemplate(station))
-        .join("");
+    .map(station => listItemTemplate(station))
+    .join("");
     return `<div class="line-info-container inline-block w-1/2 px-2" data-line-id="${line.id}">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
@@ -67,9 +66,9 @@ export const subwayLinesItemTemplate = line => {
           </div>`;
 };
 
-
 export const initNavigation = () => {
-    document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
+    document.querySelector("body").insertAdjacentHTML("afterBegin",
+        navTemplate);
 };
 
 export const colorSelectOptionTemplate = (option, index) => {

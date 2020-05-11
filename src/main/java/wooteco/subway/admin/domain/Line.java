@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
+
     private static final int FIRST = 0;
 
     @Id
@@ -28,7 +29,9 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(Long id, String name,
+        LocalTime startTime, LocalTime endTime,
+        int intervalTime, String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -38,7 +41,9 @@ public class Line {
         this.bgColor = bgColor;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name,
+        LocalTime startTime, LocalTime endTime,
+        int intervalTime, String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
@@ -119,8 +124,8 @@ public class Line {
 
     private void addFirst(LineStation lineStation) {
         stations.stream()
-                .findFirst()
-                .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
+            .findFirst()
+            .ifPresent(station -> station.updatePreLineStation(lineStation.getStationId()));
         stations.add(FIRST, lineStation);
     }
 
@@ -132,33 +137,33 @@ public class Line {
 
     private boolean hasNoSuchPreStation(LineStation lineStation) {
         return stations.stream()
-                .map(LineStation::getStationId)
-                .noneMatch(id -> lineStation.getPreStationId().equals(id));
+            .map(LineStation::getStationId)
+            .noneMatch(id -> lineStation.getPreStationId().equals(id));
     }
 
     private Optional<LineStation> findNextStationBy(Long stationId) {
         return stations.stream()
-                .filter(station -> stationId.equals(station.getPreStationId()))
-                .findFirst();
+            .filter(station -> stationId.equals(station.getPreStationId()))
+            .findFirst();
     }
 
     public void removeLineStationById(Long stationId) {
         LineStation station = findStationBy(stationId);
         findNextStationBy(stationId)
-                .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
+            .ifPresent(nextStation -> nextStation.updatePreLineStation(station.getPreStationId()));
         stations.remove(station);
     }
 
     private LineStation findStationBy(Long stationId) {
         return stations.stream()
-                .filter(lineStation -> lineStation.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
+            .filter(lineStation -> lineStation.getStationId().equals(stationId))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
     }
 
     public List<Long> getStationIds() {
         return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }

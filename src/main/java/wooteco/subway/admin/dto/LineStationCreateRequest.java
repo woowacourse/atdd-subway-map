@@ -3,6 +3,7 @@ package wooteco.subway.admin.dto;
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
+
     private Long preStationId;
     private Long stationId;
     private int distance;

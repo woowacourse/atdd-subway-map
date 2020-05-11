@@ -4,6 +4,7 @@ import java.util.Objects;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
+
     @Column("station")
     private Long stationId;
     @Column("pre_station")
@@ -48,10 +49,10 @@ public class LineStation {
     @Override
     public String toString() {
         return "LineStation{" +
-                "stationId=" + stationId +
-                ", preStationId=" + preStationId +
-                ", distance=" + distance +
-                ", duration=" + duration +
-                '}';
+            "stationId=" + stationId +
+            ", preStationId=" + preStationId +
+            ", distance=" + distance +
+            ", duration=" + duration +
+            '}';
     }
 }
