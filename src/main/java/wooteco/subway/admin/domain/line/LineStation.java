@@ -38,12 +38,6 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
-    public boolean samePreStationId(LineStation lineStation) {
-        if (Objects.isNull(preStationId)) {
-            return Objects.isNull(lineStation.preStationId);
-        }
-        return preStationId.equals(lineStation.preStationId);
-    }
 
     public boolean isFirstNode() {
         return Objects.isNull(preStationId);
@@ -53,7 +47,7 @@ public class LineStation {
         return stationId.equals(lineStation.preStationId);
     }
 
-    public boolean sameStationId(Long stationId) {
+    public boolean isEqualStationId(Long stationId) {
         return this.stationId.equals(stationId);
     }
 }

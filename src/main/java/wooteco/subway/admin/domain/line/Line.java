@@ -131,7 +131,7 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         LineStation nodeToRemove = stations.stream()
-            .filter(lineStation -> lineStation.sameStationId(stationId))
+            .filter(lineStation -> lineStation.isEqualStationId(stationId))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(
                 "ID = " + stationId + "인 역이 존재하지 않습니다.")
