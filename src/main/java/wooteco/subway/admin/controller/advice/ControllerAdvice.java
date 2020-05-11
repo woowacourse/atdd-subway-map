@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller.advice;
 
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +13,8 @@ import wooteco.subway.admin.dto.SubwayErrorMessage;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler({InvalidLineTimeTableException.class, InvalidLineStationException.class, SQLException.class})
+    @ExceptionHandler({InvalidLineTimeTableException.class, InvalidLineStationException.class,
+        SQLException.class, NoSuchElementException.class})
     public ResponseEntity<SubwayErrorMessage> getException(Exception e) {
         return ResponseEntity.badRequest().body(new SubwayErrorMessage(e.getMessage()));
     }

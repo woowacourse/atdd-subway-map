@@ -30,9 +30,6 @@ public class LineService {
 
     @Transactional
     public Long save(Line line) {
-        if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
-            throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
-        }
         return lineRepository.save(line).getId();
     }
 
@@ -58,10 +55,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
-            throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
-        }
+        Line persistLine = findById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
@@ -73,26 +67,27 @@ public class LineService {
 
     @Transactional
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + id));
+        Line line = findById(id);
         line.addLineStation(request.toLineStation());
         lineRepository.save(line);
     }
 
     @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + lineId));
+        Line line = findById(lineId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
-
+        Line line = findById(id);
         List<Station> stations = stationRepository.findAllById(line.getSortedStationsId());
         return LineResponse.of(line, stations);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + id));
     }
 }
