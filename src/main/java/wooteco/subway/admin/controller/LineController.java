@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.exception.DuplicationNameException;
+import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -34,14 +36,14 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Line> createLine(@RequestBody LineRequest lineRequest) {
         Line line = LineRequest.toLine(lineRequest);
         Line savedLine = lineService.save(line);
         return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
     }
 
     @GetMapping
-    public ResponseEntity findAllLine() {
+    public ResponseEntity<List<LineResponse>> findAllLine() {
         List<LineResponse> lineResponses = lineService.findAll().stream()
                 .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
@@ -54,20 +56,20 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = LineRequest.toLine(lineRequest);
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{lineId}/stations")
-    public ResponseEntity addStation(@PathVariable Long lineId,
+    public ResponseEntity<Void> addStation(@PathVariable Long lineId,
                                      @RequestBody LineStationCreateRequest req) {
         Long preStationId = stationService.findStationId(req.getPreStationName());
         Long stationId = stationService.findStationId(req.getStationName());
@@ -80,13 +82,13 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
-    public ResponseEntity deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler
-    public ResponseEntity exceptionHandler(Exception e) {
+    @ExceptionHandler(value = {NotFoundLineException.class, DuplicationNameException.class})
+    public ResponseEntity<String> exceptionHandler(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

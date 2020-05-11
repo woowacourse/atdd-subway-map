@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.exception.DuplicationNameException;
+import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.StationRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class StationController {
@@ -24,7 +27,7 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station persistStation = stationService.save(stationRequest.getName());
         return ResponseEntity
             .created(URI.create("/stations/" + persistStation.getId()))
@@ -32,18 +35,18 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
+    public ResponseEntity<List<Station>> showStations() {
         return ResponseEntity.ok().body(stationService.findAll());
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler
-    public ResponseEntity exceptionHandler(Exception e) {
+    @ExceptionHandler(value = {NotFoundLineException.class, DuplicationNameException.class})
+    public ResponseEntity<String> exceptionHandler(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

@@ -1,9 +1,12 @@
 package wooteco.subway.admin.service;
 
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.domain.exception.DuplicationNameException;
 import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.List;
 
 @Service
 public class StationService {
@@ -32,8 +35,8 @@ public class StationService {
                 });
     }
 
-    public Object findAll() {
-        return stationRepository.findAll();
+    public List<Station> findAll() {
+        return Lists.newArrayList(stationRepository.findAll());
     }
 
     public void deleteById(final Long id) {
