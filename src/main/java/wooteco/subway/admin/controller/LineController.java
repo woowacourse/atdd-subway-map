@@ -3,9 +3,9 @@ package wooteco.subway.admin.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.request.LineCreateRequest;
+import wooteco.subway.admin.dto.response.LineResponse;
+import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;

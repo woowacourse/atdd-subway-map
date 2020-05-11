@@ -10,9 +10,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
+import wooteco.subway.admin.dto.response.LineResponse;
+import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.dto.response.StationResponse;
 
 import java.time.LocalTime;

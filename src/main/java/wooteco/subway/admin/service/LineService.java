@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
+import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
