@@ -13,6 +13,8 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 public class Line {
+    private static final String ERROR_MESSAGE_NO_CONTACT_STATION = "연결할 수 있는 역이 없습니다.";
+
     @Id
     private Long id;
     private String name;
@@ -113,7 +115,7 @@ public class Line {
         return lineStations.stream()
                 .filter(station -> station.getStationId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("연결할 수 있는 역이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NO_CONTACT_STATION));
     }
 
     public void removeLineStationById(Long stationId) {
