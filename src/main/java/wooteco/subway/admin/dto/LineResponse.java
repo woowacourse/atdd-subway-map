@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.line.Line;
+import wooteco.subway.admin.domain.station.Station;
 
 public class LineResponse {
     private Long id;

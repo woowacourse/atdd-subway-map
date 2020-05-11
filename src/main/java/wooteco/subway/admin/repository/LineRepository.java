@@ -7,7 +7,7 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.line.Line;
 
 public interface LineRepository extends CrudRepository<Line, Long> {
     @Override

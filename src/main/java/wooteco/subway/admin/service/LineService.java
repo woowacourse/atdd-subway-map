@@ -10,8 +10,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.line.Line;
+import wooteco.subway.admin.domain.station.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;

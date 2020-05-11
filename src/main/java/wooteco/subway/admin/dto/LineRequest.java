@@ -3,7 +3,7 @@ package wooteco.subway.admin.dto;
 import java.time.LocalTime;
 import java.util.HashSet;
 
-import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.line.Line;
 
 public class LineRequest {
     private Long id;
