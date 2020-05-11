@@ -1,4 +1,4 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.line.service.dto.line;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -6,8 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.line.domain.line.Line;
+import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.service.dto.StationResponse;
 
 public class LineResponse {
 

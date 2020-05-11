@@ -15,13 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.line.domain.edge.LineStation;
+import wooteco.subway.admin.line.domain.line.Line;
+import wooteco.subway.admin.line.repository.LineRepository;
+import wooteco.subway.admin.line.service.LineService;
+import wooteco.subway.admin.line.service.dto.edge.LineStationCreateRequest;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
+import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {

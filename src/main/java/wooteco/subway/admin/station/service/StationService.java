@@ -1,4 +1,4 @@
-package wooteco.subway.admin.service;
+package wooteco.subway.admin.station.service;
 
 import static java.util.stream.Collectors.*;
 
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.repository.StationRepository;
+import wooteco.subway.admin.station.service.dto.StationResponse;
 
 @Service
 public class StationService {

@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {

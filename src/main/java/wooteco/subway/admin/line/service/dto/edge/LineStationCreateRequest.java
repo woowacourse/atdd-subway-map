@@ -1,6 +1,6 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.line.service.dto.edge;
 
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.line.domain.edge.LineStation;
 
 public class LineStationCreateRequest {
 

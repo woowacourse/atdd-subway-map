@@ -1,4 +1,4 @@
-package wooteco.subway.admin.service;
+package wooteco.subway.admin.line.service;
 
 import static java.util.stream.Collectors.*;
 
@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.line.domain.line.Line;
+import wooteco.subway.admin.line.repository.LineRepository;
+import wooteco.subway.admin.line.service.dto.edge.LineStationCreateRequest;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
+import wooteco.subway.admin.station.domain.Station;
+import wooteco.subway.admin.station.repository.StationRepository;
 
 @Service
 public class LineService {
@@ -33,12 +33,12 @@ public class LineService {
 	}
 
 	public LineResponse findLineWithStationsById(Long id) {
-		final Line persistLine = lineRepository.findById(id)
-		                                       .orElseThrow(RuntimeException::new);
+		final Line line = lineRepository.findById(id)
+		                                .orElseThrow(RuntimeException::new);
 		final List<Station> stations =
-			findSortedStationByLineStationsId(persistLine.getLineStationsId());
+			findSortedStationByLineStationsId(line.getLineStationsId());
 
-		return LineResponse.of(persistLine, stations);
+		return LineResponse.of(line, stations);
 	}
 
 	private List<Station> findSortedStationByLineStationsId(List<Long> lineStationsId) {

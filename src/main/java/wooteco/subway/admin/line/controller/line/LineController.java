@@ -1,4 +1,4 @@
-package wooteco.subway.admin.controller;
+package wooteco.subway.admin.line.controller.line;
 
 import java.net.URI;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.dto.LineRequest;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.service.LineService;
+import wooteco.subway.admin.line.service.LineService;
+import wooteco.subway.admin.line.service.dto.line.LineRequest;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 @RequestMapping("/lines")
 @RestController

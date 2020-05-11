@@ -1,4 +1,4 @@
-package wooteco.subway.admin.domain;
+package wooteco.subway.admin.line.domain.line;
 
 import static java.util.stream.Collectors.*;
 
@@ -13,7 +13,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
-import wooteco.subway.admin.exception.LineStationException;
+import wooteco.subway.admin.line.domain.edge.LineStation;
+import wooteco.subway.admin.line.domain.edge.LineStationException;
 
 public class Line {
 

@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import wooteco.subway.admin.line.domain.edge.LineStation;
+import wooteco.subway.admin.line.domain.line.Line;
+
 public class LineTest {
 	private Line line;
 

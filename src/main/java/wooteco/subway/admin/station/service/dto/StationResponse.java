@@ -1,10 +1,10 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.station.service.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.station.domain.Station;
 
 public class StationResponse {
 
