@@ -30,7 +30,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLines(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest request) {
         Line line = lineService.save(request.toLine());
 
         return ResponseEntity
@@ -39,13 +39,15 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity getLines() {
+    public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok()
             .body(lineService.findAllLineWithStations());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> updateLine(
+        @PathVariable Long id,
+        @RequestBody LineRequest request) {
         Line line = lineService.updateLine(id, request.toLine());
 
         return ResponseEntity.ok()
@@ -53,19 +55,20 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public LineResponse getLine(@PathVariable Long id) {
-        return lineService.findLineWithStationsById(id);
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+        return ResponseEntity.ok()
+            .body(lineService.findLineWithStationsById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/stations")
-    public ResponseEntity addStationToLine(
+    public ResponseEntity<Void> addStationToLine(
         @PathVariable Long id,
         @RequestBody LineStationCreateRequest request) {
         lineService.addLineStation(id, request.toLineStation());
@@ -76,7 +79,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}/stations")
-    public ResponseEntity getStationsOfLine(@PathVariable Long id) {
+    public ResponseEntity<List<StationResponse>> getStationsOfLine(@PathVariable Long id) {
         List<Station> response = lineService.findStationsOf(id);
 
         return ResponseEntity
@@ -85,7 +88,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
-    public ResponseEntity removeLineStation(
+    public ResponseEntity<Void> removeLineStation(
         @PathVariable Long lineId,
         @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
