@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -57,6 +58,14 @@ public class LineStation {
     public boolean isSameStation(LineStation lineStation) {
         return (this.stationId.equals(lineStation.stationId) && this.preStationId.equals(lineStation.preStationId))
             || (this.preStationId.equals(lineStation.stationId) && this.stationId.equals(lineStation.preStationId));
+    }
+
+    public boolean isSameBothStation() {
+        return preStationId.equals(stationId);
+    }
+
+    public boolean isStartStation() {
+        return Objects.isNull(preStationId);
     }
 
     public void updatePreLineStation(Long preStationId) {

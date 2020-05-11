@@ -1,10 +1,6 @@
-import {
-  listItemTemplate,
-  optionTemplate,
-  subwayLinesItemTemplate
-} from "../../utils/templates.js";
+import {listItemTemplate, optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
@@ -25,7 +21,7 @@ function AdminEdge() {
       return response.json();
     }).then(fetchedStations => stations = [...fetchedStations])
     .catch(error => alert(error.message));
-  }
+  };
 
   const initSubwayLinesSlider = () => {
     api.line.getAll()
@@ -75,7 +71,7 @@ function AdminEdge() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const $stationContainer = $target.closest(".station-container");
-      const $item = $target.closest(".list-item")
+      const $item = $target.closest(".list-item");
       const lineId = $stationContainer.dataset.lineId;
       const stationId = $item.dataset.stationId;
       api.lineStation.delete(lineId, stationId)
@@ -84,7 +80,7 @@ function AdminEdge() {
           throw new Error("잘못된 요청입니다.");
         }
         const line = lines.find(line => line.id === parseInt(lineId));
-        line.stations = line.stations.filter(station => station.id !== parseInt(stationId))
+        line.stations = line.stations.filter(station => station.id !== parseInt(stationId));
         lines = [...lines];
         console.log(lines);
         $item.remove();
@@ -103,12 +99,16 @@ function AdminEdge() {
       const preStation = stations.find(station => station.name === $departStationName);
       const station = stations.find(station => station.name === $arrivalStationName);
       const lineId = $lineSelect[$lineSelect.selectedIndex].dataset.lineId;
+      if (!station) {
+        alert("존재하지 않는 역이 있습니다!");
+        return;
+      }
       const lineStationRequest = {
         preStationId: preStation ? preStation.id : null,
         stationId: station.id,
         distance: 10,
         duration: 20,
-      }
+      };
       api.lineStation.create(lineId, lineStationRequest)
       .then(response => {
         if (response.status !== 201) {
@@ -121,7 +121,7 @@ function AdminEdge() {
           const $preStationItem = document.querySelectorAll(`.station-${preStation.id}`);
           $preStationItem.forEach(item => item.insertAdjacentHTML("afterend", template))
         } else {
-          const $stationItemList = document.querySelectorAll(`.station-container-${line.id}`)
+          const $stationItemList = document.querySelectorAll(`.station-container-${line.id}`);
           $stationItemList.forEach(item => item.insertAdjacentHTML("afterbegin", template))
         }
         line.stations = [...line.stations, station];
@@ -129,7 +129,7 @@ function AdminEdge() {
         createSubwayEdgeModal.toggle();
       }).catch(error => alert(error.message));
     }
-  }
+  };
 
   const initEventListeners = () => {
     $submitButton.addEventListener(EVENT_TYPE.CLICK, onSubmitHandler);
@@ -141,7 +141,7 @@ function AdminEdge() {
 
   this.init = () => {
     initSubwayLinesSlider();
-    initializeStations()
+    initializeStations();
     // initSubwayLineOptions();
     initEventListeners();
   };

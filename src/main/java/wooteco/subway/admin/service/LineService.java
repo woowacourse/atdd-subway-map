@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -28,10 +26,27 @@ public class LineService {
         return lineRepository.save(line).getId();
     }
 
-    public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
-            .map(this::from)
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+    }
+
+    public List<Station> findStationsByLineId(Long id) {
+        Line line = findLineById(id);
+        return line.makeLineStationsIds().stream()
+            .map(stationRepository::findById)
+            .map(optional -> optional.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 ID입니다.")))
             .collect(Collectors.toList());
+    }
+
+    public void removeLineStation(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public void updateLine(Long id, Line line) {
@@ -45,43 +60,9 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = findById(id);
+        Line line = findLineById(id);
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
-    }
-
-    public void removeLineStation(Long lineId, Long stationId) {
-        Line line = findById(lineId);
-        line.removeLineStationById(stationId);
-        lineRepository.save(line);
-    }
-
-    public List<StationResponse> findStationsByLineId(Long id) {
-        Line line = findById(id);
-        return getStationResponses(line.getLineStationsId());
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = findById(id);
-        return from(line);
-    }
-
-    private LineResponse from(Line line) {
-        List<Long> stationsId = line.getLineStationsId();
-        List<StationResponse> stations = getStationResponses(stationsId);
-        return LineResponse.of(line, stations);
-    }
-
-    private List<StationResponse> getStationResponses(List<Long> stationsId) {
-        List<Station> stations = stationRepository.findAllById(stationsId);
-        return stations.stream()
-            .map(StationResponse::of)
-            .collect(Collectors.toList());
-    }
-
-    private Line findById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
     }
 }

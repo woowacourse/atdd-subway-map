@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,10 @@ public class LineStationController {
 
     @GetMapping
     public List<StationResponse> getStationResponse(@PathVariable Long lineId) {
-        return lineService.findStationsByLineId(lineId);
+        return lineService.findStationsByLineId(lineId)
+            .stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
     @PostMapping
