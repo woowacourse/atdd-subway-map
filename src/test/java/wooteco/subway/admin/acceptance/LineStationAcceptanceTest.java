@@ -12,11 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.admin.acceptance.LineAcceptanceTest.*;
@@ -88,14 +87,11 @@ public class LineStationAcceptanceTest {
     }
 
     private void addLineStation(Long lineId, Long stationId, Long preStationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("preStationId", String.valueOf(preStationId));
-        params.put("stationId", String.valueOf(stationId));
-        params.put("distance", String.valueOf(10));
-        params.put("duration", String.valueOf(10));
+        LineStationCreateRequest lineStationCreateRequest
+                = new LineStationCreateRequest(preStationId, stationId, 10, 10);
 
         given().
-                body(params).
+                body(lineStationCreateRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().

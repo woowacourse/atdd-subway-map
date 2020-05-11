@@ -10,6 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -83,15 +84,16 @@ public class LineAcceptanceTest {
     }
 
     public static void createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-        params.put("bgColor", "5");
+        LineRequest lineRequest = new LineRequest(
+                name,
+                LocalTime.of(5, 30),
+                LocalTime.of(23, 30),
+                10,
+                "5"
+        );
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().

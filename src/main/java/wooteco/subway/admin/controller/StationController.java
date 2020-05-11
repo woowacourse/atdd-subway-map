@@ -8,6 +8,7 @@ import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 public class StationController {
@@ -18,7 +19,7 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
 
@@ -28,17 +29,17 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
+    public ResponseEntity<Iterable<Station>> showStations() {
         return ResponseEntity.ok().body(stationRepository.findAll());
     }
 
     @GetMapping("/stations/id/")
-    public ResponseEntity findIdByNull() {
+    public ResponseEntity<Long> findIdByNullName() {
         return ResponseEntity.ok().body(0L);
     }
 
     @GetMapping("/stations/id/{name}")
-    public ResponseEntity findIdByName(@PathVariable String name) {
+    public ResponseEntity<Long> findIdByName(@PathVariable String name) {
         return ResponseEntity.ok().body(stationRepository.findIdByName(name));
     }
 
