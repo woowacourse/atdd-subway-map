@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -26,6 +27,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public Line save(Line line) {
         validateNameDuplicate(line);
         return lineRepository.save(line);
@@ -43,6 +45,7 @@ public class LineService {
         return Collections.unmodifiableList(lineResponses);
     }
 
+    @Transactional
     public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
@@ -55,10 +58,12 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
@@ -66,6 +71,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
                 new IllegalArgumentException("잘못된 라인 아이디를 입력하였습니다."));
