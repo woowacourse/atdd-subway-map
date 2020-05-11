@@ -1,6 +1,8 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +47,7 @@ public class LineAcceptanceTest {
         createLine("2호선");
         createLine("3호선");
         // when
-        createLineFail("3호선");
+        createLine("3호선");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -99,26 +101,7 @@ public class LineAcceptanceTest {
             post("/lines").
             then().
             log().all().
-            statusCode(HttpStatus.CREATED.value());
-    }
-
-    private void createLineFail(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-        params.put("bgColor", "bg-orange-100");
-
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.BAD_REQUEST.value());
+            statusCode(anyOf(is(HttpStatus.CREATED.value()), is(HttpStatus.BAD_REQUEST.value())));
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
