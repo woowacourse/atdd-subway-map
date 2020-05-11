@@ -25,4 +25,7 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 		+ " WHERE LINE_STATION.line = :lineId"
 		+ " ORDER BY sequence;")
 	List<Station> findAllByIdOrderBy(@Param("lineId") Long lineId);
+
+	@Query("SELECT STATION.ID FROM STATION WHERE STATION.NAME = :stationName")
+	Long findIdByName(@Param("stationName") String stationName);
 }

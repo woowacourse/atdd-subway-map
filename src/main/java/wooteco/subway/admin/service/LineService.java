@@ -10,6 +10,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateByNameRequest;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -41,12 +42,11 @@ public class LineService {
 		return LineResponse.listOf(lines);
 	}
 
-	public LineResponse updateLine(Long id, Line line) {
+	public void updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
 
-		Line updatedLine = lineRepository.save(persistLine);
-		return LineResponse.of(updatedLine);
+		lineRepository.save(persistLine);
 	}
 
 	public void deleteLineById(Long id) {
@@ -54,27 +54,14 @@ public class LineService {
 	}
 
 	public void addLineStation(Long lineId, LineStationCreateRequest request) {
-		if (request.hasNotAnyId()) {
-			convertNameToId(request);
-		}
 		Line line = lineRepository.findById(lineId)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
-
+		System.out.println(request);
+		System.out.println(">>>>>>>>>>>>");
 		LineStation lineStation = request.toLineStation();
 		line.addLineStation(lineStation);
 
 		lineRepository.save(line);
-	}
-
-	private void convertNameToId(LineStationCreateRequest request) {
-		if (!request.getPreStationName().isEmpty()) {
-			Station preStation = stationRepository.findByName(request.getPreStationName())
-				.orElseThrow(() -> new IllegalArgumentException("이전 역이 등록되어 있지 않습니다."));
-			request.setPreStationId(preStation.getId());
-		}
-		Station station = stationRepository.findByName(request.getStationName())
-			.orElseThrow(() -> new IllegalArgumentException("해당 역이 등록되어 있지 않습니다."));
-		request.setStationId(station.getId());
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
@@ -98,6 +85,18 @@ public class LineService {
 		return lines.stream()
 			.map(this::createLineResponse)
 			.collect(Collectors.toList());
+	}
+
+	public LineStationCreateRequest findLineByName(LineStationCreateByNameRequest request) {
+		System.out.println(request.getPreStationName());
+		System.out.println(request.getStationName());
+
+		Long preStationId = stationRepository.findIdByName(request.getPreStationName());
+		Long stationId = stationRepository.findIdByName(request.getStationName());
+		System.out.println(preStationId);
+		System.out.println(stationId);
+		System.out.println("스테이션 >>");
+		return new LineStationCreateRequest(preStationId, stationId, request.getDistance(), request.getDuration());
 	}
 
 	private LineResponse createLineResponse(Line line) {

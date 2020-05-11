@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.jdbc.Sql;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -24,6 +25,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
+@Sql("/truncate.sql")
 public class LineServiceTest {
 
 	@Mock
@@ -36,7 +38,7 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "초록이", "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
+		line = new Line(null, "초록이", "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
 		lineService = new LineService(lineRepository, stationRepository);
 
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -122,6 +124,8 @@ public class LineServiceTest {
 			.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 		when(stationRepository.findAllById(anyList())).thenReturn(stations);
+
+		System.out.println();
 
 		LineResponse lineResponse = lineService.findLineWithStationsById(1L);
 

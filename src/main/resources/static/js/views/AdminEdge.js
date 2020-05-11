@@ -69,11 +69,11 @@ function AdminEdge() {
         const lineStationInfo = {
             preStationName: preStationName,
             stationName: stationName,
-            distance: 0,
-            duration: 0,
+            distance: 1,
+            duration: 1,
         };
         console.log(lineStationInfo);
-        api.line.create(lineStationInfo, `/${lineId}/stations`).then(res => {
+        api.line.create(lineStationInfo, `/${lineId}/stations/name`).then(res => {
             if (res.status === 201) {
                 window.location.reload();
             }
