@@ -3,6 +3,8 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.exception.DuplicationNameException;
+import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
@@ -15,12 +17,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String ERROR_MESSAGE_NAME_OVER_LAP = "존재하는 이름입니다";
-    private static final String ERROR_MESSAGE_NOT_EXIST_LINE_ID = "해당 아이디의 노선이 존재하지 않습니다";
-
-    private LineRepository lineRepository;
-    private LineStationRepository lineStationRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final LineStationRepository lineStationRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository,
                        LineStationRepository lineStationRepository,
@@ -38,15 +37,13 @@ public class LineService {
     public void validateTitle(Line line) {
         lineRepository.findByTitle(line.getTitle())
                 .ifPresent(x -> {
-                    throw new IllegalArgumentException(ERROR_MESSAGE_NAME_OVER_LAP);
+                    throw new DuplicationNameException();
                 });
     }
 
     public void updateLine(Long id, Line line) {
         validateTitleWhenUpdateInfo(id, line);
-        Line persistLine = lineRepository.findById(id).orElseThrow(()->{
-            throw new IllegalArgumentException(ERROR_MESSAGE_NAME_OVER_LAP);
-        });
+        Line persistLine = lineRepository.findById(id).orElseThrow(DuplicationNameException::new);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
@@ -67,8 +64,7 @@ public class LineService {
     }
 
     public void addLineStation(Long lineId, LineStation lineStation) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
         line.updatePreStationWhenAdd(lineStation);
         line.addLineStation(lineStation);
         lineRepository.save(line);
@@ -79,29 +75,27 @@ public class LineService {
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
         List<StationResponse> stations = getStationsByLine(line);
         return LineResponse.of(line, new LinkedHashSet<>(stations));
     }
 
     private List<StationResponse> getStationsByLine(final Line line) {
         return line.getLineStationsId().stream()
-                .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new))
+                .map(stationId -> stationRepository.findById(stationId).orElseThrow(NotFoundLineException::new))
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
         line.updatePreStationWhenRemove(stationId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     private boolean isNotChangeTitle(final Long id, final Line line) {
-        Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line lineById = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
         return lineById.isTitleEquals(line.getTitle());
     }
 }
