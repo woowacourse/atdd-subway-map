@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.exception.StartStationNotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -110,7 +111,7 @@ public class Line {
             LineStation firstStation = stations.stream()
                     .filter(eachLineStation -> eachLineStation.getPreStationId() == null)
                     .findFirst()
-                    .orElseThrow(() -> new NullPointerException(FIRST_STATION_NOT_FOUND));
+                    .orElseThrow(() -> new StartStationNotFoundException(FIRST_STATION_NOT_FOUND));
             firstStation.updatePreLineStation(lineStation.getStationId());
         } else if (isInsertingBetween(lineStation)) {
             LineStation previousLineStation = stations.stream()
@@ -158,7 +159,7 @@ public class Line {
         LineStation firstLineStation = stations.stream()
                 .filter(lineStation -> lineStation.getPreStationId() == null)
                 .findFirst()
-                .orElseThrow(() -> new NullPointerException(FIRST_STATION_NOT_FOUND));
+                .orElseThrow(() -> new StartStationNotFoundException(FIRST_STATION_NOT_FOUND));
 
         List<Long> stationIds = new ArrayList<>();
 
