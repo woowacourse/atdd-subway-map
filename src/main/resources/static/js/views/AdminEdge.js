@@ -76,6 +76,25 @@ function AdminEdge() {
     $departStationOptions.insertAdjacentHTML("afterbegin", departOptionTemplate);
   }
 
+  async function initArrivalStations() {
+    const lineName = $stationSelectOptions.options[$stationSelectOptions.selectedIndex].value;
+    const line = subwayLines.find(subway => subway["title"] === lineName);
+    const lineStations = ["출발역", ...line["stations"]];
+    const arrivalStations = stations.filter(station => !lineStations.some(name => name === station["name"]))
+        .map(station => station["name"])
+    const arrivalOptionTemplate = arrivalStations
+        .map(lineStation => optionTemplate(lineStation))
+        .join("");
+    const $arrivalStationOptions = document.querySelector("#arrival-station-name");
+    $arrivalStationOptions.innerHTML = "";
+    $arrivalStationOptions.insertAdjacentHTML("afterbegin", arrivalOptionTemplate);
+  }
+
+  async function initStationOptions() {
+    await initDepartStations();
+    await initArrivalStations();
+  }
+
   const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -121,17 +140,13 @@ function AdminEdge() {
     location.reload();
   };
 
-  async function initStation() {
-    await initDepartStations();
-  }
-
   const initEventListeners = async () => {
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
     );
     $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, await onCreateLineStation);
-    $stationSelectOptions.addEventListener(EVENT_TYPE.CHANGE, await initStation)
+    $stationSelectOptions.addEventListener(EVENT_TYPE.CHANGE, await initStationOptions)
   };
 
   this.init = async () => {
@@ -139,7 +154,7 @@ function AdminEdge() {
     await initSubwayLinesSlider();
     await initSubwayLineOptions();
     await initEventListeners();
-    await initDepartStations();
+    await initStationOptions();
   };
 }
 
