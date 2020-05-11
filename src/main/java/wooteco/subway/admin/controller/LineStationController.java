@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineStationRequest;
@@ -23,11 +22,6 @@ public class LineStationController {
 
 	public LineStationController(LineStationService lineStationService) {
 		this.lineStationService = lineStationService;
-	}
-
-	@GetMapping("/admin-edge")
-	public ModelAndView adminEdge() {
-		return new ModelAndView("admin-edge");
 	}
 
 	@GetMapping("/lineStations")

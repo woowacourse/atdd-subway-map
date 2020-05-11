@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
@@ -24,9 +23,9 @@ public class StationController {
 		this.stationRepository = stationRepository;
 	}
 
-	@GetMapping("/admin-station")
-	public ModelAndView adminLine() {
-		return new ModelAndView("admin-station");
+	@GetMapping("/stations")
+	public ResponseEntity<?> showStations() {
+		return ResponseEntity.ok().body(stationRepository.findAll());
 	}
 
 	@PostMapping("/stations")
@@ -37,11 +36,6 @@ public class StationController {
 		return ResponseEntity
 				.created(URI.create("/stations/" + persistStation.getId()))
 				.body(StationResponse.of(persistStation));
-	}
-
-	@GetMapping("/stations")
-	public ResponseEntity<?> showStations() {
-		return ResponseEntity.ok().body(stationRepository.findAll());
 	}
 
 	@DeleteMapping("/stations/{id}")

@@ -27,17 +27,17 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
       </a>
     <div class="flex justify-start">
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-         <a href="/admin-station" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+         <a href="../admin-station.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           역 관리
           </a>
       </div>
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-         <a href="/admin-line" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+         <a href="../admin-line.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           노선 관리
           </a>
       </div>
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
-          <a href="/admin-edge" class="block inline-block lg:mt-0 text-gray-800 text-sm">
+          <a href="../admin-edge.html" class="block inline-block lg:mt-0 text-gray-800 text-sm">
           구간 관리
           </a>
       </div>

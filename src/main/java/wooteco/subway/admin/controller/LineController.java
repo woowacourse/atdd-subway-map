@@ -7,33 +7,25 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 
-@RestController
+@Controller
 public class LineController {
 	private final LineRepository lineRepository;
 
 	public LineController(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
-	}
-
-	@GetMapping("/admin-line")
-	public ModelAndView adminLine() {
-		ModelAndView mv = new ModelAndView("admin-line");
-		mv.addObject("lines", LineResponse.listOf(lineRepository.findAll()));
-		return mv;
 	}
 
 	@PostMapping("/lines")
@@ -83,7 +75,7 @@ public class LineController {
 
 	@DeleteMapping("/lines/{id}")
 	public ResponseEntity<?> delete(
-			@PathVariable("id") Long id) {
+			@PathVariable Long id) {
 		lineRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
