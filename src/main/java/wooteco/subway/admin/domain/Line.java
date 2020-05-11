@@ -13,6 +13,11 @@ import java.util.stream.Collectors;
 
 @Table("LINE")
 public class Line {
+    private static final int ONE_SIZE = 1;
+    private static final int FIRST_INDEX = 0;
+    private static final int SECOND_INDEX = 1;
+    private static final int NEXT_INDEX = 1;
+    private static final int BEFORE_INDEX = 1;
     @Id
     private Long id;
     private String title;
@@ -78,23 +83,7 @@ public class Line {
         return bgColor;
     }
 
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", intervalTime=" + intervalTime +
-                ", lineStations=" + lineStations +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", bgColor='" + bgColor + '\'' +
-                '}';
-    }
-
     public void update(Line line) {
-        // TODO: 검증 로직에 대해서 생각해봐야됨
         if (line.getTitle() != null) {
             this.title = line.getTitle();
         }
@@ -120,26 +109,31 @@ public class Line {
                 .map(lineStation -> lineStations.indexOf(lineStation) + 1)
                 .findAny()
                 .orElse(0);
-        if(lineStations.size() > 1  && lineStations.size() > index) {
+        if (isAlreadyInputStations(requestLineStation, index)) return;
+        lineStations.add(index, requestLineStation);
+    }
+
+    private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
+        if(lineStations.size() > ONE_SIZE) {
             LineStation nextLineStation = lineStations.get(index);
-            System.out.println(index + "hello" + lineStations.size());
-            if(index == 0) {
-                nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
-                lineStations.add(index, requestLineStation);
-                return;
-            }
+            if (isInputFirstIndex(requestLineStation, index, nextLineStation)) return true;
 
             LineStation preLineStation = lineStations.get(index - 1);
             requestLineStation.updatePreLineStationId(preLineStation.getStationId());
             nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
             lineStations.add(index, requestLineStation);
-            return;
+            return true;
         }
-        lineStations.add(index, requestLineStation);
+        return false;
     }
 
-    private boolean isEndIndex(int index) {
-        return index >= lineStations.size();
+    private boolean isInputFirstIndex(LineStation requestLineStation, int index, LineStation nextLineStation) {
+        if(index == 0) {
+            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
+            lineStations.add(index, requestLineStation);
+            return true;
+        }
+        return false;
     }
 
     public void removeLineStationById(Long stationId) {
@@ -151,24 +145,30 @@ public class Line {
         LineStation preLineStation;
         LineStation nextLineStation;
 
-        if(index == 0 && index == lineStations.size() - 1){
+        if (isRemoveStationUnNormalCase(index)) return;
+        nextLineStation = lineStations.get(index+ NEXT_INDEX);
+        preLineStation = lineStations.get(index- BEFORE_INDEX);
+        nextLineStation.updatePreLineStationId(preLineStation.getStationId());
+        lineStations.remove(index);
+    }
+
+    private boolean isRemoveStationUnNormalCase(int index) {
+        LineStation nextLineStation;
+        if(index == FIRST_INDEX && index == lineStations.size() - 1){
             lineStations.remove(index);
-            return;
+            return true;
         }
-        if(index == 0) {
-            nextLineStation = lineStations.get(1);
+        if(index == FIRST_INDEX) {
+            nextLineStation = lineStations.get(SECOND_INDEX);
             nextLineStation.updatePreLineStationId(null);
             lineStations.remove(index);
-            return;
+            return true;
         }
         if(index == lineStations.size() -1)  {
             lineStations.remove(index);
-            return;
+            return true;
         }
-        nextLineStation = lineStations.get(index+1);
-        preLineStation = lineStations.get(index-1);
-        nextLineStation.updatePreLineStationId(preLineStation.getStationId());
-        lineStations.remove(index);
+        return false;
     }
 
     public List<Long> getLineStationsId() {
