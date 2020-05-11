@@ -1,20 +1,21 @@
 package wooteco.subway.admin.domain;
 
-import static java.util.stream.Collectors.*;
+import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.exception.WrongIdException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.data.annotation.Id;
-
-import wooteco.subway.admin.exception.WrongIdException;
+import static java.util.stream.Collectors.toList;
 
 public class Line {
+
     public static final int FIRST = 0;
+
     @Id
     private Long id;
     private String name;
@@ -22,20 +23,18 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<LineStation> stations = new ArrayList<>();
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-        String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-        String bgColor) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -121,24 +120,24 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         LineStation lineStation = stations.stream()
-            .filter(station -> station.getStationId().equals(stationId))
-            .findAny()
-            .orElseThrow(WrongIdException::new);
+                .filter(station -> station.getStationId().equals(stationId))
+                .findAny()
+                .orElseThrow(WrongIdException::new);
 
         stations.remove(lineStation);
     }
 
     public List<Long> getStationsIds() {
         return stations.stream()
-            .map(LineStation::getStationId)
-            .collect(toList());
+                .map(LineStation::getStationId)
+                .collect(toList());
     }
 
     private Optional<LineStation> nextLineStation(LineStation lineStation) {
         return stations.stream()
-            .filter(station -> Objects.nonNull(station.getPreStationId()))
-            .filter(station -> station.getPreStationId()
-                .equals(lineStation.getPreStationId()))
-            .findAny();
+                .filter(station -> Objects.nonNull(station.getPreStationId()))
+                .filter(station -> station.getPreStationId()
+                        .equals(lineStation.getPreStationId()))
+                .findAny();
     }
 }

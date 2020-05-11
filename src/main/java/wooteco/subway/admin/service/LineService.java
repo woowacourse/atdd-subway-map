@@ -1,11 +1,6 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -16,6 +11,10 @@ import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.exception.WrongIdException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -33,13 +32,13 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-            .map(line -> LineResponse.of(line, mapLineStationsToStations(line.getStations())))
-            .collect(Collectors.toList());
+                .map(line -> LineResponse.of(line, mapLineStationsToStations(line.getStations())))
+                .collect(Collectors.toList());
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id)
-            .orElseThrow(WrongIdException::new);
+                .orElseThrow(WrongIdException::new);
         persistLine.update(lineRequest.toLine());
         return LineResponse.of(lineRepository.save(persistLine));
     }
@@ -50,37 +49,37 @@ public class LineService {
 
     public LineStationResponse addLineStation(LineStationRequest request) {
         Line line = lineRepository.findById(request.getLineId())
-            .orElseThrow(WrongIdException::new);
+                .orElseThrow(WrongIdException::new);
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
 
         return new LineStationResponse(request.getLineId(), lineStation.getPreStationId(),
-            lineStation.getStationId(), lineStation.getDistance(), lineStation.getDuration());
+                lineStation.getStationId(), lineStation.getDistance(), lineStation.getDuration());
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
-            .orElseThrow(WrongIdException::new);
+                .orElseThrow(WrongIdException::new);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(WrongIdException::new);
+                .orElseThrow(WrongIdException::new);
 
         List<Long> stationsId = line.getStations().stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
 
-        return LineResponse.of(line, (ArrayList<Station>)stationRepository.findAllById(stationsId));
+        return LineResponse.of(line, (ArrayList<Station>) stationRepository.findAllById(stationsId));
     }
 
     public List<Station> mapLineStationsToStations(List<LineStation> lineStations) {
         return lineStations.stream()
-            .map(lineStation -> stationRepository.findById(lineStation.getStationId())
-                .orElseThrow(WrongIdException::new))
-            .collect(Collectors.toList());
+                .map(lineStation -> stationRepository.findById(lineStation.getStationId())
+                        .orElseThrow(WrongIdException::new))
+                .collect(Collectors.toList());
     }
 }

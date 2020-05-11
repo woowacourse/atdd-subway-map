@@ -1,10 +1,11 @@
 package wooteco.subway.admin.domain;
 
-import static wooteco.subway.admin.controller.LineStationController.*;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalTime;
 
-import org.springframework.data.relational.core.mapping.Table;
+import static wooteco.subway.admin.controller.LineStationController.DEFAULT_DISTANCE;
+import static wooteco.subway.admin.controller.LineStationController.DEFAULT_DURATION;
 
 @Table(value = "LINE_STATION")
 public class LineStation {

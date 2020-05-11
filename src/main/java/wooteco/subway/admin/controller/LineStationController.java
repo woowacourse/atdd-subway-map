@@ -37,24 +37,23 @@ public class LineStationController {
         Long preStationId = stationRepository.findIdByName(request.getPreStationName());
         Long stationId = stationRepository.findIdByName(request.getStationName());
 
-        LineStationRequest requestWithId = new LineStationRequest(request.getLineId(), preStationId,
-            stationId, DEFAULT_DISTANCE, DEFAULT_DURATION);
+        LineStationRequest requestWithId = new LineStationRequest(request.getLineId(), preStationId, stationId, DEFAULT_DISTANCE, DEFAULT_DURATION);
         LineStationResponse lineStationResponse = lineService.addLineStation(requestWithId);
 
         return ResponseEntity.created(
-            URI.create("/lineStations/" + request.getLineId() + "/" + stationId))
-            .body(lineStationResponse);
+                URI.create("/lineStations/" + request.getLineId() + "/" + stationId))
+                .body(lineStationResponse);
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId,
-        @PathVariable Long stationId) {
+                                            @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler({WrongIdException.class, WrongNameException.class})
-    public ResponseEntity exceptionHandler(Errors errors){
+    public ResponseEntity exceptionHandler(Errors errors) {
         return ResponseEntity.badRequest().body(errors);
     }
 }

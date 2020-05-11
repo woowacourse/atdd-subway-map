@@ -1,5 +1,5 @@
 export const listItemTemplate = (value, lineId) =>
-  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-station-id='${value.id}' data-line-id='${lineId}'>
+    `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" data-station-id='${value.id}' data-line-id='${lineId}'>
     ${value.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
@@ -8,7 +8,7 @@ export const listItemTemplate = (value, lineId) =>
 
 
 export const subwayLinesTemplate = line =>
-  `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
+    `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800">
       <div class="line-id" hidden="hidden">${line.id}</div>
       <span class="${line.bgColor} line-color w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.name}
@@ -21,7 +21,7 @@ export const subwayLinesTemplate = line =>
     </div>`;
 
 export const innerSubwayLinesTemplate = line =>
-  `<div class="line-id" hidden="hidden">${line.id}</div>
+    `<div class="line-id" hidden="hidden">${line.id}</div>
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.name}
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
@@ -58,10 +58,10 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 </nav>`;
 
 export const subwayLinesItemTemplate = line => {
-  const stationsTemplate = line.stations
-  .map(station => listItemTemplate(station, line.id))
-  .join("");
-  return `<div class="inline-block w-1/2 px-2">
+    const stationsTemplate = line.stations
+        .map(station => listItemTemplate(station, line.id))
+        .join("");
+    return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} line-info lint-title px-4 py-1 data-line-id='${line.id}'">${line.name}</div>
               <div class="overflow-y-auto height-90">
@@ -73,16 +73,16 @@ export const subwayLinesItemTemplate = line => {
 
 
 export const initNavigation = () => {
-  document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
+    document.querySelector("body").insertAdjacentHTML("afterBegin", navTemplate);
 };
 
 export const colorSelectOptionTemplate = (option, index) => {
-  const hasNewLine = ++index % 7 === 0;
+    const hasNewLine = ++index % 7 === 0;
 
-  return ` <button data-color="${
-    option.bgColor
-  }" class="color-select-option button w-6 h-6 ${option.bgColor} ${
-    option.hoverColor
-  } font-bold p-1 rounded">
+    return ` <button data-color="${
+        option.bgColor
+    }" class="color-select-option button w-6 h-6 ${option.bgColor} ${
+        option.hoverColor
+    } font-bold p-1 rounded">
              </button> ${hasNewLine ? "<br/>" : ""}`;
 };
