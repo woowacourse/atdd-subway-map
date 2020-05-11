@@ -17,7 +17,6 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    @Column("bg_color")
     private String bgColor;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
