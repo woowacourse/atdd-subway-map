@@ -35,6 +35,10 @@ public class Station {
         return updatedAt;
     }
 
+    public void throwAlreadyExistNameException() {
+        throw new IllegalArgumentException(String.format("%s 이미 존재하는 역 이름입니다.", this.name));
+    }
+
     public boolean isSameId(final Long stationId) {
         return this.id.equals(stationId);
     }

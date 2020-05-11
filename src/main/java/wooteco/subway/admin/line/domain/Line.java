@@ -70,6 +70,10 @@ public class Line {
         edges.removeByStationId(stationId);
     }
 
+    public void throwAlreadyExistNameException() {
+        throw new IllegalArgumentException(String.format("%s 이미 존재하는 노선 이름입니다.", this.name));
+    }
+
     public List<Long> getEdgesStationIds() {
         return edges.getStationsId();
     }

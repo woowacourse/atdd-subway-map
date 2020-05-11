@@ -18,12 +18,8 @@ public class StationService {
     @Transactional
     public Long save(final Station station) {
         stationRepository.findByName(station.getName())
-                .ifPresent(this::throwAlreadyExistName);
+                .ifPresent(Station::throwAlreadyExistNameException);
         return stationRepository.save(station).getId();
-    }
-
-    private void throwAlreadyExistName(Station station) {
-        throw new IllegalArgumentException(station.getName() + " : 이미 존재하는 역 이름입니다.");
     }
 
     @Transactional(readOnly = true)
