@@ -70,9 +70,6 @@ const api = (() => {
   };
 
   const lineStation = {
-    get() {
-      return request(`/lines-response`).then(data => data.json());
-    },
     create(id, data) {
       return request(`/lines/${id}/stations`, METHOD.POST(data)).then(data => data.json());
     },

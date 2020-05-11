@@ -85,7 +85,7 @@ function AdminEdge() {
   };
 
   const initSubwayInfo = async () => {
-    subwayLines = [...await api.lineStation.get()];
+    subwayLines = [...await api.lines.get()];
     subwayStations = [...await api.station.get()];
     initSubwayLinesSlider();
     initSubwayLineOptions();

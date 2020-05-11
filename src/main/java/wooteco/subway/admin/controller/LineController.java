@@ -44,11 +44,6 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
-    @GetMapping("/lines-response")
-    public ResponseEntity showLineResponses() {
-        return ResponseEntity.ok().body(lineService.showLineResponses());
-    }
-
     @GetMapping("/lines/{id}")
     public ResponseEntity findLineById(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.showLine(id));

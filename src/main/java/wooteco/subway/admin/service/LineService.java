@@ -39,15 +39,7 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    public List<Line> showLines() {
-        List<Line> lines = lineRepository.findAll();
-        lines.stream()
-            .map(line -> findLineWithStationsById(line.getId()))
-            .collect(Collectors.toList());
-        return lineRepository.findAll();
-    }
-
-    public List<LineResponse> showLineResponses() {
+    public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
             .map(line -> findLineWithStationsById(line.getId()))
