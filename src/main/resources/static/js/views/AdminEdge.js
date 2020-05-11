@@ -13,7 +13,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const getLines = () => {
-    return fetch("/lineStations")
+    return fetch("/line-stations")
     .then(res => res.json());
   }
 
@@ -60,7 +60,7 @@ function AdminEdge() {
       stationName: stationName
     };
 
-    fetch("/lineStations", {
+    fetch("/line-stations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -81,7 +81,7 @@ function AdminEdge() {
       const lineId = $target.closest(".line-station").dataset.lineId;
       const stationId = $listItem.dataset.stationId;
       $listItem.remove();
-      await fetch(`lineStations/${lineId}/${stationId}`, {
+      await fetch(`line-stations/${lineId}/stations/${stationId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json"
