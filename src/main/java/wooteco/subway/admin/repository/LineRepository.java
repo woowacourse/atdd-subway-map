@@ -14,4 +14,7 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("select * from line where name = :name")
     Optional<Line> findByName(@Param("name") String name);
+
+    @Query("select count(*) from line_station where station = :stationId")
+    int countByStationId(@Param("stationId") Long stationId);
 }

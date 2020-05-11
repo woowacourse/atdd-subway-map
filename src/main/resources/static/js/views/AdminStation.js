@@ -23,11 +23,11 @@ function AdminStation() {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       return;
     }
-    // if (stationName.match(/\s/)) {
-    //   alert(ERROR_MESSAGE.NOT_SPACE);
-    //   $stationNameInput.value = "";
-    //   return;
-    // }
+    if (stationName.match(/\s/)) {
+      alert(ERROR_MESSAGE.NOT_SPACE);
+      $stationNameInput.value = "";
+      return;
+    }
     const $stations = document.querySelectorAll(".list-item");
     const stationNames = Array.from($stations).map(station => station.innerText);
     if (stationNames.includes(stationName)) {
@@ -55,8 +55,7 @@ function AdminStation() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton && confirm(SYS_MESSAGE.CONFIRM_REMOVE)) {
       const stationId = $target.closest(".list-item").dataset.stationId;
-      api.station.delete(stationId);
-      initDefaultSubwayStations();
+      api.station.delete(stationId).then(() => initDefaultSubwayStations());
     }
   };
 
