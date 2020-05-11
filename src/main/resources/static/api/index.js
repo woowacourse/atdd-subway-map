@@ -1,7 +1,7 @@
 const BASE_URL = "localhost:8080";
 
-const METHOD = {
-    PUT(data) {
+const method = {
+    put(data) {
         return {
             method: "PUT",
             headers: {
@@ -12,12 +12,12 @@ const METHOD = {
             )
         };
     },
-    DELETE() {
+    delete() {
         return {
             method: "DELETE"
         };
     },
-    POST(data) {
+    post(data) {
         return {
             method: "POST",
             headers: {
@@ -39,13 +39,13 @@ const api = (() => {
             return request(`/stations`);
         },
         create(data) {
-            return request(`/stations`, METHOD.POST(data));
+            return request(`/stations`, method.post(data));
         },
         update(data, id) {
-            return request(`/stations/${id}`, METHOD.PUT(data));
+            return request(`/stations/${id}`, method.put(data));
         },
         delete(id) {
-            return request(`/stations/${id}`, METHOD.DELETE());
+            return request(`/stations/${id}`, method.delete());
         }
     };
 
@@ -57,13 +57,13 @@ const api = (() => {
             return request(`/lines`);
         },
         create(data) {
-            return request('/lines', METHOD.POST(data));
+            return request('/lines', method.post(data));
         },
         update(data, id) {
-            return request(`/lines/${id}`, METHOD.PUT(data));
+            return request(`/lines/${id}`, method.put(data));
         },
         delete(id) {
-            return request(`/lines/${id}`, METHOD.DELETE());
+            return request(`/lines/${id}`, method.delete());
         }
     };
 
@@ -72,10 +72,10 @@ const api = (() => {
             return request(`/line-stations`);
         },
         post(data, lineId) {
-            return request(`/line-stations/${lineId}`, METHOD.POST(data));
+            return request(`/line-stations/${lineId}`, method.post(data));
         },
         delete(lineId, stationId) {
-            return request(`/line-stations/${lineId}/${stationId}`, METHOD.DELETE());
+            return request(`/line-stations/${lineId}/${stationId}`, method.delete());
         }
     };
 
