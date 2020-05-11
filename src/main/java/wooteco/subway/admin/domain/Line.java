@@ -31,7 +31,7 @@ public class Line {
         this.intervalTime = intervalTime;
         this.stations = new HashSet<>();
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = createdAt;
     }
 
     public Long getId() {

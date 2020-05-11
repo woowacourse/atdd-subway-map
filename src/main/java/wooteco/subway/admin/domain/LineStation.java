@@ -24,7 +24,7 @@ public class LineStation {
         this.distance = distance;
         this.duration = duration;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = createdAt;
     }
 
     public Long getPreStationId() {
