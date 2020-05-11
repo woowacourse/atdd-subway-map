@@ -27,7 +27,7 @@ public class LineStation {
     }
 
     public static LineStation of(final LineStationCreateRequest request) {
-        return new LineStation(request.getStationId(), request.getPreStationId(),
+        return new LineStation(request.getPreStationId(), request.getStationId(),
                 request.getDistance(), request.getDuration());
     }
 
