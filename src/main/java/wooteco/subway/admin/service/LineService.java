@@ -13,6 +13,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
+
     private static final String NO_SUCH_LINE = "해당 ID의 노선이 없습니다.";
 
     private LineRepository lineRepository;
@@ -28,7 +29,8 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         persistLine.update(line);
 
         return lineRepository.save(persistLine);
@@ -40,14 +42,14 @@ public class LineService {
 
     public void addLineStation(Long id, LineStation lineStation) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         line.addLineStation(lineStation);
         lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
@@ -66,14 +68,14 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
 
         return LineResponse.of(line, findStationsOf(line));
     }
 
     public List<Station> findStationsOf(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
 
         return findStationsOf(line);
     }
