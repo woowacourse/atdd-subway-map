@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import wooteco.subway.admin.domain.vo.BgColor;
 import wooteco.subway.admin.domain.vo.LineTimeTable;
 import wooteco.subway.admin.domain.vo.Name;
@@ -19,7 +18,6 @@ public class Line {
     private Name name;
     @Embedded.Nullable
     private LineTimeTable lineTimeTable;
-    @MappedCollection
     @Embedded.Empty
     private Stations stations;
     @Embedded.Nullable

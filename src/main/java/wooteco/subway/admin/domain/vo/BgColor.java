@@ -1,10 +1,12 @@
 package wooteco.subway.admin.domain.vo;
 
 public class BgColor {
+
     private String bgColor;
 
     public BgColor(String bgColor) {
         validate(bgColor);
+        this.bgColor = bgColor;
     }
 
     private void validate(String bgColor) {

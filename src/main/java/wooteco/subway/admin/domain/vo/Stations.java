@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import wooteco.subway.admin.domain.LineStation;
 
 public class Stations {
 
     private static final int FIRST = 0;
 
+    @MappedCollection(keyColumn = "line_key")
     private List<LineStation> stations;
 
     public Stations (List<LineStation> stations) {
