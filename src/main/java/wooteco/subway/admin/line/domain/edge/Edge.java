@@ -16,7 +16,7 @@ public class Edge {
     public Edge() {
     }
 
-    public Edge(Long preStationId, Long stationId, int distance, int duration) {
+    public Edge(Long preStationId, Long stationId, Integer distance, Integer duration) {
         validate(preStationId, stationId);
         this.preStationId = preStationId;
         this.stationId = stationId;
@@ -31,7 +31,7 @@ public class Edge {
     }
 
     public static Edge startEdge(Edge edge) {
-        return new Edge(null, edge.preStationId, 0, 0);
+        return new Edge(null, edge.preStationId, null, null);
     }
 
     public boolean isStartStation() {

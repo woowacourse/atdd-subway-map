@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS STATION
     id         bigint auto_increment not null,
     name       varchar(255)          not null,
     created_at datetime,
-    primary key (id)
+    primary key (id),
+    unique (name)
 );
 
 CREATE TABLE IF NOT EXISTS LINE
@@ -16,7 +17,8 @@ CREATE TABLE IF NOT EXISTS LINE
     created_at    datetime,
     updated_at    datetime,
     color         varchar(255)          not null,
-    primary key (id)
+    primary key (id),
+    unique (name)
 );
 
 CREATE TABLE IF NOT EXISTS EDGE
@@ -26,8 +28,8 @@ CREATE TABLE IF NOT EXISTS EDGE
     line_key       bigint                not null,
     station_id     bigint                not null,
     pre_station_id bigint,
-    distance       int                   not null,
-    duration       int                   not null,
+    distance       int,
+    duration       int,
     primary key (id)
 );
 
