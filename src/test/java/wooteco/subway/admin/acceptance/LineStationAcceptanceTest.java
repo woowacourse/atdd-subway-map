@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -39,7 +41,8 @@ public class LineStationAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선이 추가되어있다.
+     * Given 지하철역이 여러 개 추가되어있다.
+     * And 지하철 노선이 추가되어있다.
      * <p>
      * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
      * Then 지하철역이 노선에 추가 되었다.
@@ -58,31 +61,42 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
-        //when
+        //given
         createLine("8호선");
-        //then
+        createLine("2호선");
+        createStation("잠실나루");
+        createStation("잠실");
+        createStation("석촌");
+
+        //when
         List<LineResponse> lines = getLines();
         LineResponse lineEight = lines.get(0);
+        addStation(lineEight.getId(), null, "잠실나루");
+        addStation(lineEight.getId(), "잠실나루", "잠실");
+        addStation(lineEight.getId(), "잠실", "석촌");
 
-        addStation(lineEight.getId(), null, "잠실역");
-        addStation(lineEight.getId(), "잠실역", "석촌");
+        //then
+        LineResponse line = getLine(lineEight.getId());
+        Set<StationResponse> stationResponses = line.getStations();
+        assertThat(stationResponses.stream().anyMatch(x -> x.getName().equals("잠실나루"))).isTrue();
+        assertThat(stationResponses.stream().anyMatch(x -> x.getName().equals("잠실"))).isTrue();
+        assertThat(stationResponses.stream().anyMatch(x -> x.getName().equals("석촌"))).isTrue();
 
+        //when
         List<StationResponse> stations = getStations();
         StationResponse station = stations.get(0);
-        StationResponse station2 = stations.get(1);
 
-        List<LineStation> lineStations = getLineStations(lineEight.getId());
+        removeStation(lineEight.getId(), station.getId());
 
-        assertThat(lineStations.stream()
-                .map(LineStation::getStationId)
-                .anyMatch(id -> id.equals(station.getId()))).isTrue();
-
-        removeStation(lineEight.getId(), station2.getId());
-
-        List<LineStation> lineStationsAfterDelete = getLineStations(lineEight.getId());
-        assertThat(lineStationsAfterDelete.stream()
-                .map(LineStation::getStationId)
-                .anyMatch(id -> id.equals(station2.getId()))).isFalse();
+        //then
+        LineResponse lineStationsAfterDelete = getLine(lineEight.getId());
+        Set<StationResponse> stationResponsesAfterDelete = lineStationsAfterDelete.getStations();
+        assertThat(stationResponsesAfterDelete.stream().anyMatch(x -> x.getName().equals("잠실나루")))
+                .isFalse();
+        assertThat(stationResponsesAfterDelete.stream().anyMatch(x -> x.getName().equals("잠실")))
+                .isTrue();
+        assertThat(stationResponsesAfterDelete.stream().anyMatch(x -> x.getName().equals("석촌")))
+                .isTrue();
     }
 
     private void createLine(String name) {
@@ -126,8 +140,7 @@ public class LineStationAcceptanceTest {
         params.put("distance", String.valueOf(10));
         params.put("duration", String.valueOf(10));
 
-        given().
-                body(params).
+        given().body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
@@ -137,9 +150,25 @@ public class LineStationAcceptanceTest {
                 statusCode(HttpStatus.OK.value());
     }
 
+    private List<LineResponse> getLines() {
+        return given().when().
+                get("/lines").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
+    }
+
+    private LineResponse getLine(Long id) {
+        return given().when().
+                get("/lines/" + id).
+                then().
+                log().all().
+                extract().as(LineResponse.class);
+    }
+
     private void removeStation(Long lineId, Long stationId) {
-        given().
-                when().
+        given().when().
                 delete("/lines/" + lineId + "/stations/" + stationId).
                 then().
                 log().all().
@@ -147,35 +176,20 @@ public class LineStationAcceptanceTest {
     }
 
     private List<StationResponse> getStations() {
-        return
-                given().
-                        when().
-                        get("/stations").
-                        then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", StationResponse.class);
+        return given().when().
+                get("/stations").
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private List<LineStation> getLineStations(Long lineId) {
-        return
-                given().
-                        when().
-                        get("/lineStations/" + lineId).
-                        then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineStation.class);
-    }
-
-    private List<LineResponse> getLines() {
-        return
-                given().
-                        when().
-                        get("/lines").
-                        then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+        return given().when().
+                get("/lineStations/" + lineId).
+                then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineStation.class);
     }
 }

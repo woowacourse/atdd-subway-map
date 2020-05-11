@@ -7,6 +7,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.LineStationRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -68,13 +69,14 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
-        List<Station> stations = getStationsByLine(line);
+        List<StationResponse> stations = getStationsByLine(line);
         return LineResponse.of(line, new LinkedHashSet<>(stations));
     }
 
-    private List<Station> getStationsByLine(final Line line) {
+    private List<StationResponse> getStationsByLine(final Line line) {
         return line.getLineStationsId().stream()
                 .map(stationId -> stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 

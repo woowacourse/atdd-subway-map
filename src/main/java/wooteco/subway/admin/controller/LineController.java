@@ -60,7 +60,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findLineWithStationsById(id));
     }
 
@@ -92,12 +92,12 @@ public class LineController {
     public ResponseEntity addStation(@PathVariable Long id,
                                      @RequestBody HashMap<String, String> map) {
         Long preStationId = stationService.findStationId(map.get("preStationName"));
-        Station inputStation = stationService.save(map.get("stationName"));
+        Long stationId = stationService.findStationId(map.get("stationName"));
 
         LineStationCreateRequest lineStationCreateRequest =
                 new LineStationCreateRequest(
                         preStationId,
-                        inputStation.getId(),
+                        stationId,
                         Integer.parseInt(map.get("distance")),
                         Integer.parseInt(map.get("duration")));
 

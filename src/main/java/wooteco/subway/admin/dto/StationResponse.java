@@ -9,11 +9,11 @@ public class StationResponse {
     private String name;
     private LocalDateTime createdAt;
 
-    public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
+    public StationResponse() {
     }
 
-    public StationResponse() {
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
     }
 
     public StationResponse(Long id, String name, LocalDateTime createdAt) {
