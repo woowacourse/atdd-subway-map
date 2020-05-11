@@ -9,13 +9,13 @@ public class LineStation {
     private Long stationId;
     @Column("pre_station")
     private Long preStationId;
-    private int distance;
-    private int duration;
+    private Integer distance;
+    private Integer duration;
 
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStation(Long preStationId, Long stationId, Integer distance, Integer duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
@@ -34,11 +34,11 @@ public class LineStation {
         return stationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
