@@ -75,6 +75,12 @@ function AdminEdge() {
                 distance: $distance,
                 duration: $duration,
             })
+        }).then(res => {
+            if (!res.ok){
+                throw res;
+            }
+        }).catch(err => {
+            err.text().then(msg => alert(msg));
         })
     }
 
