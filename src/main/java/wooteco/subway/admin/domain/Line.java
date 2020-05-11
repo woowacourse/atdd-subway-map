@@ -1,7 +1,6 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,6 +33,7 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.bgColor = bgColor;
+        this.stations = new LinkedHashSet<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -108,38 +108,44 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.getPreStationId() == null && this.stations != null) {
-            Set<LineStation> tmp = this.stations;
-            this.stations = new LinkedHashSet<>();
-            this.stations.add(lineStation);
-            this.stations.addAll(tmp);
+        if (lineStation.isFirstStation()) {
+            addFirstStation(lineStation);
             return;
-
         }
 
-        if (lineStation.getPreStationId() != null && this.stations != null) {
-            Set<LineStation> tmp = this.stations;
-            this.stations = new LinkedHashSet<>();
-            for (LineStation lineStationGot : tmp) {
-                if (lineStationGot.getPreStationId() == null) {
-                    this.stations.add(lineStationGot);
-                } else if (!lineStationGot.getPreStationId().equals(lineStation.getPreStationId())) {
-                    this.stations.add(lineStationGot);
-                } else {
-                    this.stations.add(lineStation);
-                    lineStationGot.updatePreLineStation(lineStation.getStationId());
-                    this.stations.add(lineStationGot);
-                }
-            }
-
+        Set<LineStation> tmpStations = new LinkedHashSet<>(this.stations);
+        if (lineStation.inBetween(tmpStations)) {
+            this.stations.clear();
+            updateStations(lineStation, tmpStations);
+            return;
         }
-
-        if (this.stations == null) {
-            this.stations = new LinkedHashSet<>();
-        }
-
 
         this.stations.add(lineStation);
+    }
+
+    private void updateStations(LineStation lineStation, Set<LineStation> tmpStations) {
+        for (LineStation tmpStation : tmpStations) {
+            addStation(lineStation, tmpStation);
+        }
+    }
+
+    private void addStation(LineStation lineStation, LineStation tmpStation) {
+        if (lineStation.hasSamePrestation(tmpStation)) {
+            this.stations.add(lineStation);
+            tmpStation.updatePreLineStation(lineStation.getStationId());
+            this.stations.add(tmpStation);
+            return;
+        }
+
+        this.stations.add(tmpStation);
+    }
+
+    private void addFirstStation(LineStation lineStation) {
+        Set<LineStation> tmp = new LinkedHashSet<>(this.stations);
+        this.stations.clear();
+        this.stations.add(lineStation);
+        this.stations.addAll(tmp);
+        return;
     }
 
     public void removeLineStationById(Long stationId) {

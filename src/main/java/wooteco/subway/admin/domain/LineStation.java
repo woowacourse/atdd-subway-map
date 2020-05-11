@@ -3,6 +3,10 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 @Table("line_station")
 public class LineStation {
     @Column("station")
@@ -41,5 +45,26 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    boolean isFirstStation() {
+        return Objects.isNull(preStationId);
+
+    }
+
+    boolean isNotFirstStatoin() {
+        return Objects.nonNull(preStationId);
+    }
+
+    boolean hasSamePrestation(LineStation other) {
+        if (Objects.isNull(preStationId) || Objects.isNull(other.preStationId)) {
+            return false;
+        }
+        return other.preStationId.equals(preStationId);
+    }
+
+    boolean inBetween(Set<LineStation> tmpStations) {
+        return tmpStations.stream()
+                .anyMatch(this::hasSamePrestation);
     }
 }
