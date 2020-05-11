@@ -102,40 +102,47 @@ public class Line {
 
 	public void addLineStation(LineStation lineStation) {
 		if (!stations.isEmpty() && lineStation.getPreStationId() == null) {
-			LineStation firstStation = stations.stream()
-				.filter(eachLineStation -> eachLineStation.getPreStationId() == null)
-				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
-
+			LineStation firstStation = getFirstLineStation("노선 시작점이 없습니다.");
 			firstStation.updatePreLineStation(lineStation.getStationId());
 		} else if (!stations.isEmpty() && isSamePreStation(lineStation)) {
-			LineStation previousLineStation = stations.stream()
-				.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
-				.filter(eachLineStation -> lineStation.getPreStationId()
-					.equals(eachLineStation.getPreStationId()))
-				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
-
+			LineStation previousLineStation = getPreviousLineStation(lineStation);
 			previousLineStation.updatePreLineStation(lineStation.getStationId());
 		}
 
 		stations.add(lineStation);
 	}
 
+	private LineStation getPreviousLineStation(LineStation lineStation) {
+		return stations.stream()
+			.filter(eachLineStation -> eachLineStation.getPreStationId() != null && lineStation.getPreStationId()
+				.equals(eachLineStation.getPreStationId()))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
+	}
+
+	private LineStation getFirstLineStation(String errorMessage) {
+		return stations.stream()
+			.filter(eachLineStation -> eachLineStation.getPreStationId() == null)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException(errorMessage));
+	}
+
 	private boolean isSamePreStation(LineStation lineStation) {
 		return stations.stream()
-			.filter(eachLineStation -> eachLineStation.getPreStationId() != null)
-			.anyMatch(eachLineStation -> eachLineStation.getPreStationId()
-				.equals(lineStation.getPreStationId()));
+			.anyMatch(eachLineStation -> eachLineStation.getPreStationId() != null &&
+				eachLineStation.getPreStationId()
+					.equals(lineStation.getPreStationId()));
 	}
 
 	public void removeLineStationById(Long stationId) {
 		LineStation previousLineStation = stations.stream()
 			.filter(station -> stationId.equals(station.getStationId()))
-			.findFirst().orElse(null);
+			.findFirst()
+			.orElse(null);
 		LineStation nextLineStation = stations.stream()
 			.filter(station -> stationId.equals(station.getPreStationId()))
-			.findFirst().orElse(null);
+			.findFirst()
+			.orElse(null);
 
 		if (nextLineStation != null) {
 			nextLineStation.updatePreLineStation(previousLineStation.getPreStationId());
@@ -145,21 +152,19 @@ public class Line {
 	}
 
 	public List<Long> getLineStationsId() {
+		List<Long> stationIds = new ArrayList<>();
+
 		if (stations.isEmpty()) {
-			return new ArrayList<>();
+			return stationIds;
 		}
 
-		LineStation firstLineStation = stations.stream()
-			.filter(lineStation -> lineStation.getPreStationId() == null)
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("노선 역 경로를 찾을수 없습니다."));
-
-		List<Long> stationIds = new ArrayList<>();
+		LineStation firstLineStation = getFirstLineStation("노선 역 경로를 찾을 수 없습니다.");
 
 		stationIds.add(firstLineStation.getStationId());
 
 		while (true) {
 			Long lastStationId = stationIds.get(stationIds.size() - 1);
+
 			Optional<LineStation> nextLineStation = stations.stream()
 				.filter(lineStation -> Objects.equals(lineStation.getPreStationId(), lastStationId))
 				.findFirst();
@@ -171,6 +176,7 @@ public class Line {
 			stationIds.add(nextLineStation.get().getStationId());
 		}
 
+		System.out.println();
 		return stationIds;
 	}
 }

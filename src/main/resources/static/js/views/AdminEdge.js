@@ -4,13 +4,16 @@ import {EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
+
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $createLineStationButton = document.querySelector("#submit-button");
     const $stationSelectOptions = document.querySelector("#station-select-options");
     const $arrivalStationName = document.querySelector("#arrival-station-name");
+    const $departStationName = document.querySelector("#depart-station-name");
 
     const createSubwayEdgeModal = new Modal();
+
     const initSubwayLinesSlider = () => {
         api.line.get().then(data => {
             $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line))
@@ -46,14 +49,14 @@ function AdminEdge() {
     };
 
     const onCreateLineStationHandler = async event => {
-        if(event.type !== EVENT_TYPE.CLICK && event.key !== KEY_TYPE.ENTER){
+        if (event.type !== EVENT_TYPE.CLICK && event.key !== KEY_TYPE.ENTER) {
             return;
         }
 
         event.preventDefault();
         const stations = await api.station.get();
-        const preStation = stations.find(station => station.name === document.querySelector("#depart-station-name").value);
-        const station = stations.find(station => station.name === document.querySelector("#arrival-station-name").value);
+        const preStation = stations.find(station => station.name === $departStationName.value);
+        const station = stations.find(station => station.name === $arrivalStationName.value);
         const request = {
             preStationId: preStation ? preStation.id : null,
             stationId: station ? station.id : null,
@@ -61,7 +64,8 @@ function AdminEdge() {
             duration: 2
         };
 
-        api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
+        api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request)
+            .then(() => {
             createSubwayEdgeModal.toggle();
             initSubwayLinesSlider();
         })
