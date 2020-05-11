@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -35,7 +36,10 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineWithStationsById(id));
+        Line line = lineService.findById(id);
+        List<Station> stations = lineService.findStationsByLineId(line.getLineStationsId());
+
+        return ResponseEntity.ok().body(LineResponse.of(line, stations));
     }
 
     @GetMapping()
@@ -43,16 +47,12 @@ public class LineController {
         List<Line> lines = lineService.showLines();
 
         return lines.stream()
-                .map(line -> lineService.findLineWithStationsById(line.getId()))
+                .map(line -> LineResponse.of(line, lineService.findStationsByLineId(line.getLineStationsId())))
                 .collect(Collectors.toList());
     }
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        // if(lineService.contains(lineRequest.getName())) {
-        //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        // }
-
         Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))

@@ -14,8 +14,8 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -45,11 +45,6 @@ public class LineService {
             .orElseThrow(RuntimeException::new);
     }
 
-    public boolean contains(String lineName) {
-        return showLines().stream()
-            .anyMatch(line -> line.getName().equals(lineName));
-    }
-
     public Line addLineStation(Long id, LineStationCreateRequest request) {
         LineStation lineStation = request.toLineStation();
         Line line = findById(id);
@@ -69,5 +64,9 @@ public class LineService {
         List<Station> stations = stationRepository.findAllById(lineStationsIds);
 
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+    }
+
+    public List<Station> findStationsByLineId(final List<Long> lineStationsIds) {
+        return stationRepository.findAllById(lineStationsIds);
     }
 }
