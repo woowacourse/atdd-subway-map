@@ -18,7 +18,12 @@ import wooteco.subway.admin.line.service.dto.line.LineResponse;
 import wooteco.subway.admin.station.domain.Station;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,6 +58,7 @@ public class LineServiceMockTest {
         EdgeCreateRequest request = new EdgeCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(stationRepository.findAllById(new ArrayList<>(Arrays.asList(4L)))).thenReturn(Collections.singleton(new Station(4L, "", LocalDateTime.now(), LocalDateTime.now())));
         lineService.addEdge(line.getId(), request);
 
         Edges edges = line.getEdges();
@@ -70,6 +76,8 @@ public class LineServiceMockTest {
         EdgeCreateRequest request = new EdgeCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(stationRepository.findAllById(Arrays.asList(1L, 4L))).thenReturn(new HashSet<>(Arrays.asList(new Station(1L, "", LocalDateTime.now(), LocalDateTime.now()), new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
+
         lineService.addEdge(line.getId(), request);
 
         Edges edges = line.getEdges();
@@ -87,6 +95,8 @@ public class LineServiceMockTest {
         EdgeCreateRequest request = new EdgeCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(stationRepository.findAllById(Arrays.asList(3L, 4L))).thenReturn(new HashSet<>(Arrays.asList(new Station(3L, "", LocalDateTime.now(), LocalDateTime.now()), new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
+
         lineService.addEdge(line.getId(), request);
 
         Edges edges = line.getEdges();

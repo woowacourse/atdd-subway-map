@@ -34,10 +34,13 @@ public class Edges {
 
         List<Edge> updateEdges = new ArrayList<>();
 
-        for (Edge aEdge : this.edges) {
-            insertEdge(updateEdges, aEdge, edge);
+        for (Edge savedEdge : this.edges) {
+            insertEdge(updateEdges, savedEdge, edge);
         }
 
+        if (!this.contain(edge)) {
+
+        }
         if (!updateEdges.contains(edge)) {
             updateEdges.add(edge);
         }
@@ -45,12 +48,12 @@ public class Edges {
         this.edges = updateEdges;
     }
 
-    private void insertEdge(final List<Edge> updateEdges, final Edge aEdge, final Edge edge) {
-        if (aEdge.hasSamePreStation(edge)) {
-            aEdge.changePreStationToStationOf(edge);
+    private void insertEdge(final List<Edge> updateEdges, final Edge savedEdge, final Edge edge) {
+        if (savedEdge.hasSamePreStation(edge)) {
+            savedEdge.changePreStationToStationOf(edge);
             updateEdges.add(edge);
         }
-        updateEdges.add(aEdge);
+        updateEdges.add(savedEdge);
     }
 
     public void removeByStationId(final Long stationId) {
