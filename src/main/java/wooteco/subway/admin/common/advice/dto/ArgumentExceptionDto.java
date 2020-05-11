@@ -4,23 +4,23 @@ import org.springframework.validation.ObjectError;
 
 import java.util.Objects;
 
-public class MethodArgumentExceptionDto {
+public class ArgumentExceptionDto {
     private static final int FIELD_INDEX = 1;
     private static final String TOKEN = "\\.";
     private String field;
     private String message;
 
-    protected MethodArgumentExceptionDto() {
+    protected ArgumentExceptionDto() {
     }
 
-    public MethodArgumentExceptionDto(final String field, final String message) {
+    public ArgumentExceptionDto(final String field, final String message) {
         this.field = field;
         this.message = message;
     }
 
-    public static MethodArgumentExceptionDto of(ObjectError objectError) {
+    public static ArgumentExceptionDto of(ObjectError objectError) {
         String codes = Objects.requireNonNull(objectError.getCodes())[FIELD_INDEX];
-        return new MethodArgumentExceptionDto(codes.split(TOKEN)[FIELD_INDEX], objectError.getDefaultMessage());
+        return new ArgumentExceptionDto(codes.split(TOKEN)[FIELD_INDEX], objectError.getDefaultMessage());
     }
 
     public String getField() {

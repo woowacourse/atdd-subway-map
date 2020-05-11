@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import wooteco.subway.admin.common.advice.dto.MethodArgumentExceptionDto;
+import wooteco.subway.admin.common.advice.dto.ArgumentExceptionDto;
 import wooteco.subway.admin.line.service.dto.line.LineCreateRequest;
 
 import java.lang.reflect.Constructor;
@@ -66,11 +66,11 @@ class ValidationExceptionAdviceTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
 
 
-        List<MethodArgumentExceptionDto> methodArgumentExceptionDtos = objectMapper.readValue(contentAsString, new TypeReference<List<MethodArgumentExceptionDto>>() {
+        List<ArgumentExceptionDto> argumentExceptionDtos = objectMapper.readValue(contentAsString, new TypeReference<List<ArgumentExceptionDto>>() {
         });
 
         //then
-        assertThat(methodArgumentExceptionDtos).hasSize(4);
+        assertThat(argumentExceptionDtos).hasSize(4);
     }
 
 }
