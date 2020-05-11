@@ -17,12 +17,13 @@ function AdminEdge() {
     lines: []
   };
 
-  const initSubwayLinesSlider = () => {
-    api.line.getWithStations().then(lines => {
+  const initSubwayLinesSlider = async () => {
+    await api.line.getWithStations().then(lines => {
       $subwayLinesSlider.innerHTML = lines
           .map(line => subwayLinesItemTemplate(line))
           .join("");
     });
+
     tns({
       container: ".subway-lines-slider",
       loop: true,
@@ -33,7 +34,7 @@ function AdminEdge() {
       lazyload: true,
       controlsContainer: "#slider-controls",
       items: 1,
-      edgePadding: 25
+      edgePadding: 0
     });
   };
 
@@ -77,11 +78,7 @@ function AdminEdge() {
       duration: 0
     }
     await api.line.createLineStation(newLineStation, $stationSelectOptions.options[$stationSelectOptions.selectedIndex].value);
-    api.line.getWithStations().then(lines => {
-      $subwayLinesSlider.innerHTML = lines
-          .map(line => subwayLinesItemTemplate(line))
-          .join("");
-    });
+    initSubwayLinesSlider();
     createSubwayEdgeModal.toggle();
   }
 
