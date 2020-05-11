@@ -1,9 +1,10 @@
-import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate, subwayStationsTemplate } from "../../utils/templates.js";
+import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {listItemTemplate, subwayStationsTemplate} from "../../utils/templates.js";
 import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
+  const $stationAddButton = document.querySelector("#station-add-btn");
   const $stationList = document.querySelector("#station-list");
 
   const initDefaultSubwayStations = async () => {
@@ -19,10 +20,12 @@ function AdminStation() {
   };
 
   const onAddStationHandler = async event => {
-    if (event.key !== KEY_TYPE.ENTER) {
+    if (event.key !== KEY_TYPE.ENTER && event.type !== 'click') {
       return;
     }
-    event.preventDefault();
+    if (event.type !== 'click') {
+      event.preventDefault();
+    }
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
     if (!stationName) {
@@ -47,6 +50,7 @@ function AdminStation() {
 
   const initEventListeners = () => {
     $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
+    $stationAddButton.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
     $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
   };
 
