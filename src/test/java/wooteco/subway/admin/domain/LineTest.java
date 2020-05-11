@@ -23,6 +23,20 @@ public class LineTest {
     }
 
     @Test
+    void create_Fail_When_NameEmpty() {
+        assertThatThrownBy(() -> new Station(""))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("name은 빈 값이 올 수 없습니다.");
+    }
+
+    @Test
+    void create_Fail_When_NameContainsSpace() {
+        assertThatThrownBy(() -> new Station("지 하철"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("name은 공백이 포함 될 수 없습니다.");
+    }
+
+    @Test
     void create_Fail_When_IntervalUnderZero() {
         assertThatThrownBy(() ->
             new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 0, "bg-blue-500"))

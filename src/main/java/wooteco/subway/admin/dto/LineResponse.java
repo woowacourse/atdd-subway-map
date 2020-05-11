@@ -35,7 +35,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(
-            line.getId(), line.getName(),
+            line.getId(), line.getName().getName(),
             line.getLineTimeTable().getStartTime(),
             line.getLineTimeTable().getEndTime(),
             line.getLineTimeTable().getIntervalTime(),

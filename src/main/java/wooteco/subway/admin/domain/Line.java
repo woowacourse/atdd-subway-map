@@ -8,13 +8,15 @@ import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import wooteco.subway.admin.domain.vo.BgColor;
 import wooteco.subway.admin.domain.vo.LineTimeTable;
+import wooteco.subway.admin.domain.vo.Name;
 import wooteco.subway.admin.domain.vo.Stations;
 
 public class Line {
 
     @Id
     private Long id;
-    private String name;
+    @Embedded.Nullable
+    private Name name;
     @Embedded.Nullable
     private LineTimeTable lineTimeTable;
     @MappedCollection
@@ -26,7 +28,7 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LineTimeTable lineTimeTable,
+    public Line(Long id, Name name, LineTimeTable lineTimeTable,
         Stations stations, BgColor bgColor) {
         this.id = id;
         this.name = name;
@@ -38,7 +40,7 @@ public class Line {
     public Line(Long id, String name,
         LocalTime startTime, LocalTime endTime, int intervalTime,
         String bgColor) {
-        this(id, name,
+        this(id, new Name(name),
             new LineTimeTable(startTime, endTime, intervalTime),
             new Stations(new LinkedList<>()),
             new BgColor(bgColor));
@@ -54,7 +56,7 @@ public class Line {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 

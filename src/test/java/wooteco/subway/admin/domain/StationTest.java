@@ -17,14 +17,14 @@ class StationTest {
     void create_Fail_When_NameEmpty() {
         assertThatThrownBy(() -> new Station(""))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Station.name은 빈 값이 올 수 없습니다.");
+            .hasMessage("name은 빈 값이 올 수 없습니다.");
     }
 
     @Test
     void create_Fail_When_NameContainsSpace() {
         assertThatThrownBy(() -> new Station("지 하철1"))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Station.name은 공백이 포함 될 수 없습니다.");
+            .hasMessage("name은 공백이 포함 될 수 없습니다.");
     }
 
     @Test
