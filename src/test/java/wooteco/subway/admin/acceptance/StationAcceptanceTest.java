@@ -51,7 +51,7 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
-    static StationResponse createStation(String name) {
+    static Long createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -65,7 +65,18 @@ public class StationAcceptanceTest {
             log().all().
             statusCode(HttpStatus.CREATED.value()).
             extract().
-            jsonPath().getObject(".", StationResponse.class);
+            as(Long.class);
+    }
+
+    static StationResponse getStation(Long id) {
+        return given().
+            when().
+            get("/stations/" + id).
+            then().
+            log().all().
+            extract().
+            body().
+            as(StationResponse.class);
     }
 
     private List<StationResponse> getStations() {

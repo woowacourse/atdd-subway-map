@@ -40,35 +40,36 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         // given
-        StationResponse jamsil = createStation("잠실역");
-        StationResponse jamsilSaenae = createStation("잠실새내역");
-        StationResponse seoknam = createStation("석남역");
-        StationResponse sindorim = createStation("신도림역");
-        StationResponse bupeyong = createStation("부평역");
+        Long jamsilId = createStation("잠실역");
+        Long jamsilSaenaeId = createStation("잠실새내역");
+        Long seoknamId = createStation("석남역");
+        Long sindorimId = createStation("신도림역");
+        Long bupeyongId = createStation("부평역");
         Long lineId = createLine("2호선");
 
         // when
         // then
-        register(lineId, null, jamsil.getId());
-        register(lineId, jamsil.getId(), jamsilSaenae.getId());
-        register(lineId, jamsilSaenae.getId(), seoknam.getId());
-        register(lineId, seoknam.getId(), sindorim.getId());
-        register(lineId, sindorim.getId(), bupeyong.getId());
+        register(lineId, null, jamsilId);
+        register(lineId, jamsilId, jamsilSaenaeId);
+        register(lineId, jamsilSaenaeId, seoknamId);
+        register(lineId, seoknamId, sindorimId);
+        register(lineId, sindorimId, bupeyongId);
 
         // when
         LineResponse line = getLine(lineId);
         List<StationResponse> stations = line.getStations();
 
         // then
+        StationResponse jamsil = getStation(jamsilId);
         assertThat(stations).contains(jamsil);
-        assertThat(stations).contains(jamsilSaenae);
-        assertThat(stations).contains(seoknam);
-        assertThat(stations).contains(sindorim);
-        assertThat(stations).contains(bupeyong);
+        assertThat(stations).contains(getStation(jamsilSaenaeId));
+        assertThat(stations).contains(getStation(seoknamId));
+        assertThat(stations).contains(getStation(sindorimId));
+        assertThat(stations).contains(getStation(bupeyongId));
 
         // when
         // then
-        deleteStationOnLine(lineId, jamsil);
+        deleteStationOnLine(lineId, jamsilId);
 
         // when
         LineResponse deletedLineResponse = getLine(lineId);
@@ -76,9 +77,9 @@ public class LineStationAcceptanceTest {
         assertThat(deletedStations).doesNotContain(jamsil);
     }
 
-    private void deleteStationOnLine(Long lineId, StationResponse jamsil) {
+    private void deleteStationOnLine(Long lineId, Long stationId) {
         given().when()
-            .delete("/line-stations/" + lineId + "/" + jamsil.getId())
+            .delete("/line-stations/" + lineId + "/" + stationId)
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
