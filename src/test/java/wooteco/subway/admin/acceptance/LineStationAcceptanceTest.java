@@ -11,11 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -54,14 +58,15 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         // given - and
-        createStation("잠실역");
-        createStation("잠실새내역");
-        createStation("종합운동장역");
+        List<StationResponse> stationResponses = createStations("잠실역", "잠실새내역", "종합운동장역");
+        List<Long> stationIds = stationResponses.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
         LineResponse line = createLine("2호선");
         // when
-        registerStation(line.getId());
+        createLineStations(line.getId(), stationIds);
         // then
-        getLine(line.getId());
+        getStationByLineId(line.getId());
         //when & then
         getStationsOfLine(line.getId());
         //when & then
@@ -99,19 +104,26 @@ public class LineStationAcceptanceTest {
 
     }
 
-    private void createStation(String name) {
+    private List<StationResponse> createStations(String... names) {
+        return Stream.of(names)
+                .map(this::createStation)
+                .collect(Collectors.toList());
+    }
+
+    private StationResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        given().
+        return given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/stations").
-        then().
+                then().
                 log().all().
-                statusCode(HttpStatus.CREATED.value());
+                statusCode(HttpStatus.CREATED.value()).
+                extract().as(StationResponse.class);
     }
 
     private LineResponse createLine(String name) {
@@ -126,34 +138,45 @@ public class LineStationAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value())
                 .extract().as(LineResponse.class);
     }
 
-    private void registerStation(Long id) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
+    private void createLineStations(Long lineId, List<Long> stationIds) {
+        for (int i = 0; i < stationIds.size(); i++) {
+            Long preStationId = i == 0 ? null : stationIds.get(i - 1);
+            createLineStation(lineId, stationIds.get(i), preStationId);
+        }
+    }
+
+    private void createLineStation(Long lineId, Long stationId, Long preStationId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("preStationId", preStationId);
+        params.put("stationId", stationId);
+        params.put("distance", 10);
+        params.put("duration", 10);
 
         given().
                 body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines/" + id + "/register").
-        then().
+                when().
+                post("/lines/{lineId}/line-stations", lineId).
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void getLine(Long id) {
-        given().
+    private LineResponse getStationByLineId(Long id) {
+        return given().
                 when().
-                get("/lines/" + id).
+                get("/lines/" + id + "/stations").
                 then().
                 log().all().
-                statusCode(HttpStatus.OK.value());
+                statusCode(HttpStatus.OK.value()).
+                extract().as(LineResponse.class);
     }
 }
