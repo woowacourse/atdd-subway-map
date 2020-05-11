@@ -3,10 +3,10 @@ package wooteco.subway.admin.service;
 import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,15 +42,17 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         for (Line line : lines) {
-            Set<Station> stations = line.getSortedStationsId()
-                .stream()
-                .map(stationId -> stationRepository.findById(stationId)
-                    .orElseThrow(AssertionError::new))
-                .collect(toCollection(LinkedHashSet::new));
+            List<Station> stations = stationRepository.findAllById(line.getStationsId());
+            Map<Long, Station> stationMap = stations.stream()
+                .collect(toMap(Station::getId, Function.identity()));
 
-            result.add(LineResponse.of(line, stations));
+            List<Long> sortedStationsId = line.getSortedStationsId();
+            List<Station> sortedStations = sortedStationsId.stream()
+                .map(stationMap::get)
+                .collect(toList());
+
+            result.add(LineResponse.of(line, sortedStations));
         }
-
         return result;
     }
 
@@ -90,7 +92,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
 
-        Set<Station> stations = stationRepository.findAllById(line.getSortedStationsId());
+        List<Station> stations = stationRepository.findAllById(line.getSortedStationsId());
         return LineResponse.of(line, stations);
     }
 }

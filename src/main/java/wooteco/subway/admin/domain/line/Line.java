@@ -52,6 +52,27 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getLineTimeTable() != null) {
+            this.lineTimeTable = line.getLineTimeTable();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        stations.add(lineStation);
+    }
+
+    public void removeLineStationById(Long stationId) {
+        stations.remove(stationId);
+    }
+
     public Long getId() {
         return id;
     }
@@ -92,28 +113,11 @@ public class Line {
         return lineTimeTable;
     }
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getLineTimeTable() != null) {
-            this.lineTimeTable = line.getLineTimeTable();
-        }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        stations.add(lineStation);
-    }
-
-    public void removeLineStationById(Long stationId) {
-        stations.remove(stationId);
-    }
-
     public List<Long> getSortedStationsId() {
         return stations.getSortedStationsId();
+    }
+
+    public List<Long> getStationsId() {
+        return stations.getIds();
     }
 }

@@ -6,26 +6,6 @@ function AdminStation() {
   const $stationList = document.querySelector("#station-list");
   const $addForm = document.querySelector("#add-form");
 
-  const onAddStationHandler = async (event) => {
-    event.preventDefault();
-    const $stationNameInput = document.querySelector("#station-name");
-    const stationName = $stationNameInput.value;
-    if (!isValidate(stationName)) {
-      return;
-    }
-
-    const stationResponse = await api.station.create(stationName);
-    const responseLocation = stationResponse.headers.get("Location");
-    const stationId = responseLocation.split("/")[2];
-    const listItem = {
-      id: stationId,
-      name: stationName
-    };
-
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(listItem));
-  };
-
   const isValidate = stationName => {
     if (!stationName) {
       alert(ERROR_MESSAGE.NOT_EMPTY);
@@ -54,16 +34,42 @@ function AdminStation() {
     return true;
   }
 
+  const onAddStationHandler = async (event) => {
+    event.preventDefault();
+    const $stationNameInput = document.querySelector("#station-name");
+    const stationName = $stationNameInput.value;
+    if (!isValidate(stationName)) {
+      return;
+    }
+
+    const stationResponse = await api.station.create(stationName);
+    if (stationResponse.ok) {
+      const responseLocation = stationResponse.headers.get("Location");
+      const stationId = responseLocation.split("/")[2];
+      const listItem = {
+        id: stationId,
+        name: stationName
+      };
+
+      $stationNameInput.value = "";
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(listItem));
+    } else {
+      const response = await stationResponse.json();
+      alert(response.message);
+    }
+  };
+
   const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     const $listItem = $target.closest(".list-item");
     if (isDeleteButton && confirm("정말 삭제하시겠습니까?")) {
-      api.station.delete($listItem.dataset.stationId).then(response => {
+      api.station.delete($listItem.dataset.stationId).then(async (response) => {
           if (response.ok) {
             $listItem.remove();
           } else {
-            alert(response);
+            const res = await response.json();
+            alert(res.message);
           }
         }
       );

@@ -18,26 +18,10 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
-
-    public Long getStationId() {
-        return stationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
 
     public void updatePreStationIdTo(Long preStationId) {
         this.preStationId = preStationId;
     }
-
     public boolean isNotFirstNode() {
         return !Objects.isNull(preStationId);
     }
@@ -52,5 +36,21 @@ public class LineStation {
 
     public boolean isEqualStationId(Long stationId) {
         return this.stationId.equals(stationId);
+    }
+
+    public Long getPreStationId() {
+        return preStationId;
+    }
+
+    public Long getStationId() {
+        return stationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

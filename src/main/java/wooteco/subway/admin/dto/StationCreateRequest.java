@@ -6,7 +6,6 @@ public class StationCreateRequest {
     private String name;
 
     public StationCreateRequest() {
-
     }
 
     public StationCreateRequest(String name) {

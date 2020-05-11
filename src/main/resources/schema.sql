@@ -1,7 +1,7 @@
 create table if not exists STATION
 (
    id bigint auto_increment not null,
-   name varchar(255) not null,
+   name varchar(255) not null unique,
    created_at datetime,
    primary key(id)
 );

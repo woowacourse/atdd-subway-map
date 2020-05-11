@@ -48,7 +48,8 @@ function AdminLine() {
       $subwayLineNameInput.value = "";
       $subwayLineColorInput.value = "";
     } else {
-      alert(lineResponse);
+      const response = await lineResponse.json();
+      alert(response.message);
     }
   };
 
@@ -72,7 +73,8 @@ function AdminLine() {
       $subwayLineNameInput.value = "";
       $subwayLineColorInput.value = "";
     } else {
-      alert(lineResponse);
+      const response = await lineResponse.json();
+      alert(response.message);
     }
   };
 
@@ -85,11 +87,12 @@ function AdminLine() {
       const lineId = $lineItem.dataset.lineId;
 
       api.line.delete(lineId)
-      .then(response => {
+      .then(async (response) => {
         if (response.ok) {
           $lineItem.remove();
         } else {
-          alert(response);
+          const res = await response.json();
+          alert(res.message);
         }
       });
     }

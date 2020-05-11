@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain.line.relation;
 
+import static java.util.stream.Collectors.*;
 import static wooteco.subway.admin.domain.line.relation.InvalidLineStationException.*;
 
 import java.util.ArrayList;
@@ -88,5 +89,11 @@ public class LineStations {
 
     public Set<LineStation> getLineStations() {
         return lineStations;
+    }
+
+    public List<Long> getIds() {
+        return lineStations.stream()
+            .map(LineStation::getStationId)
+            .collect(toList());
     }
 }
