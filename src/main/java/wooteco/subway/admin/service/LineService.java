@@ -7,14 +7,10 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.exception.DuplicatedLineException;
 import wooteco.subway.admin.exception.NotFoundLineException;
-import wooteco.subway.admin.exception.NotFoundStationException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,9 +83,11 @@ public class LineService {
 
     private Set<Station> findStationsByLine(Line line) {
         List<Long> ids = line.getLineStationsId();
+        Map<Long, Station> stations = stationRepository.findAllById(ids)
+                .stream()
+                .collect(Collectors.toMap(Station::getId, station -> station));
         return ids.stream()
-                .map(id -> stationRepository.findById(id)
-                        .orElseThrow(NotFoundStationException::new))
+                .map(stations::get)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), LinkedHashSet::new));
     }
 }
