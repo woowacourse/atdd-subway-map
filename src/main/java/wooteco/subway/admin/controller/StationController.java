@@ -31,7 +31,7 @@ public class StationController {
         Station persistStation = stationRepository.save(station);
 
         return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
+            .created(URI.create("/api/stations/" + persistStation.getId()))
                 .body(StationResponse.of(persistStation));
     }
 

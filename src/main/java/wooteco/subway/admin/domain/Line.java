@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -146,6 +147,8 @@ public class Line {
     public List<Long> findLineStationsId() {
         // TODO: 구현
         List<Long> ids = new ArrayList<>();
+        if (stations.size() == 0)
+            return Collections.EMPTY_LIST;
         for (LineStation station : stations) {
             if (station.getPreStationId() == null) {
                 ids.add(station.getStationId());
@@ -153,7 +156,7 @@ public class Line {
         }
         for (int i = 0; i < stations.size() - 1; i++) {
             for (LineStation lineStation : stations) {
-                if (lineStation.getPreStationId().equals(ids.get(ids.size() - 1))) {
+                if (ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
                     ids.add(lineStation.getStationId());
                 }
             }

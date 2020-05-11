@@ -54,7 +54,8 @@ function AdminEdge() {
     const $lineId = $subwayLineSelection.querySelector("option:checked")
     .getAttribute("data-line-id");
     const data = {
-      preStationId: await api.station.getByName($subwayDepartStation.value),
+      preStationId: ($subwayDepartStation.value === "") ? null : await api.station.getByName(
+        $subwayDepartStation.value),
       stationId: await api.station.getByName($subwayArrivalStation.value),
       distance: $subwayDistance.value,
       duration: $subwayDuration.value
@@ -71,13 +72,18 @@ function AdminEdge() {
 
   const onRemoveStationHandler = event => {
     const $target = event.target;
-    const $lineId = $target.closest("#line-info").getAttribute("#data-line-id");
+    const $lineId = $target.closest("#line-info").getAttribute("data-line-id");
     const $stationId = $target.closest(".list-item").getAttribute("value");
+    console.log($lineId);
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
+      console.log("clicked");
       api.line.deleteLineStation($lineId, $stationId).then(() => {
+        console.log("api success")
         $target.closest(".list-item").remove();
-      });
+        console.log("api success2")
+        // location.reload();
+      }).catch(error => console.log(error));
     }
   };
 
