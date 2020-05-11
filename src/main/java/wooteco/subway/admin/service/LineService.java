@@ -27,13 +27,10 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
-    }
-
     public Line updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
+
         return lineRepository.save(persistLine);
     }
 
@@ -70,20 +67,24 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+
         return LineResponse.of(line, findStationsOf(line));
     }
 
     public List<Station> findStationsOf(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_LINE));
+
         return findStationsOf(line);
     }
 
     private List<Station> findStationsOf(Line line) {
         List<Station> stations = new ArrayList<>();
-        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
-            stations.add(station);
+        for (Long stationId : line.getStationIds()) {
+            stationRepository.findById(stationId)
+                .ifPresent(stations::add);
         }
+
         return stations;
     }
 }

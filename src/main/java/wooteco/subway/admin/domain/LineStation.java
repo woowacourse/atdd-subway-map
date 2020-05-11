@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
@@ -18,6 +19,10 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public boolean isFirst() {
+        return Objects.isNull(preStationId);
     }
 
     public Long getPreStationId() {
