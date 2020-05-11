@@ -95,49 +95,61 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        Set<LineStation> newStations = new LinkedHashSet<>();
-        int updated = 0;
-        for (LineStation station : stations) {
-            if (lineStation.getPreStationId() == null || lineStation.getPreStationId() == 0) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
-                updated = 1;
-                newStations.add(lineStation);
-                newStations.add(station);
-                station.updatePreLineStation(lineStation.getStationId());
-                continue;
-            }
-            newStations.add(station);
+    public void addLineStation(LineStation newLineStation) {
+        Set<LineStation> newLineStations = new LinkedHashSet<>();
+        for (LineStation lineStation : stations) {
+            addToNewLineStations(lineStation, newLineStation, newLineStations);
         }
-        if (updated == 0 || stations.size() == 0) {
+
+        if (notAddedYet(newLineStations)) {
+            newLineStations.add(newLineStation);
+        }
+        stations = newLineStations;
+    }
+
+    private void addToNewLineStations(LineStation lineStation, LineStation newLineStation, Set<LineStation> newStations) {
+        if (shouldAdd(newLineStation, lineStation)) {
+            newStations.add(newLineStation);
             newStations.add(lineStation);
+            lineStation.updatePreLineStation(newLineStation.getStationId());
+            return;
         }
-        stations = newStations;
+        newStations.add(lineStation);
+    }
+
+    private boolean shouldAdd(LineStation newLineStation, LineStation lineStation) {
+        Long newLinePreStationId = newLineStation.getPreStationId();
+        if(newLinePreStationId == null || newLinePreStationId == 0){
+            return true;
+        }
+        return newLinePreStationId.equals(lineStation.getPreStationId());
+    }
+
+    private boolean notAddedYet(Set<LineStation> newStations) {
+        return stations.size() == newStations.size()
+                || stations.size() == 0;
     }
 
     public void removeLineStationById(Long stationId) {
         Set<LineStation> newStations = new LinkedHashSet<>();
-        int flag = 0;
-        Long preLineStationId = null;
         for (LineStation station : stations) {
-            if (station.getStationId().equals(stationId)) {
-                flag = 1;
-                continue;
-            }
-            if (flag == 1) {
-                station.updatePreLineStation(preLineStationId);
-                flag = 0;
-            }
-            newStations.add(station);
-            preLineStationId = station.getStationId();
+            Long prevLineStationId = addLineStationIfNotTarget(stationId, station, newStations);
+            checkAndUpdateLink(station, prevLineStationId, stationId);
         }
         stations = newStations;
+    }
+
+    private Long addLineStationIfNotTarget(Long stationId, LineStation station, Set<LineStation> newStations) {
+        if(!station.getStationId().equals(stationId)){
+            newStations.add(station);
+        }
+        return station.getStationId();
+    }
+
+    private void checkAndUpdateLink(LineStation station, Long prevLineStationId, Long stationId) {
+        if(stationId.equals(prevLineStationId)){
+            station.updatePreLineStation(prevLineStationId);
+        }
     }
 
     public List<Long> getLineStationsId() {
