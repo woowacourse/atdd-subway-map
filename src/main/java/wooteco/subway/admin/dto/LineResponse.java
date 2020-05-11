@@ -2,13 +2,10 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.line.Line;
+import wooteco.subway.admin.domain.station.Station;
 
 public class LineResponse {
     private Long id;
@@ -17,11 +14,11 @@ public class LineResponse {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private Set<Station> stations;
+    private List<Station> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, Set<Station> stations, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, List<Station> stations, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -33,18 +30,8 @@ public class LineResponse {
         this.updatedAt = updatedAt;
     }
 
-    public static LineResponse of(Line line, Set<Station> stations) {
+    public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), stations, line.getCreatedAt(), line.getUpdatedAt());
-    }
-
-    public static LineResponse of(Line line) {
-        return of(line, new HashSet<>());
-    }
-
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -71,7 +58,7 @@ public class LineResponse {
         return bgColor;
     }
 
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return stations;
     }
 

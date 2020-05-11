@@ -49,11 +49,12 @@ function AdminEdge() {
     if (isDeleteButton) {
       const $listItem = $target.closest(".list-item");
       const lineId = $listItem.closest(".line-info-container").dataset.lineId;
-      api.line.deleteLineStation(lineId, $listItem.dataset.stationId).then(response => {
+      api.line.deleteLineStation(lineId, $listItem.dataset.stationId).then(async (response) => {
         if (response.ok) {
           $listItem.remove();
         } else {
-          alert(response);
+          const res = await response.json();
+          alert(res.message);
         }
       })
     }
@@ -82,12 +83,13 @@ function AdminEdge() {
 
     const lineId = $stationSelect.options[$stationSelect.selectedIndex].dataset.lineId;
 
-    api.line.createLineStation(lineId, createRequest).then(response => {
+    api.line.createLineStation(lineId, createRequest).then(async (response) => {
       if (response.ok) {
         createSubwayEdgeModal.toggle();
         window.location.href = window.location.href;
       } else {
-        alert(response);
+        const res = await response.json();
+        alert(res.message);
       }
     });
   }
