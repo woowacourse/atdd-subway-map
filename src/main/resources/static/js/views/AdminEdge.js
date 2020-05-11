@@ -1,6 +1,6 @@
-import { optionTemplate, subwayLinesItemTemplate, } from "../../utils/templates.js";
+import {optionTemplate, subwayLinesItemTemplate,} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
@@ -135,7 +135,7 @@ function AdminEdge() {
 
       const lineId = $target.closest(".list-item").dataset.lineId;
       const stationId = $target.closest(".list-item").dataset.stationId;
-      fetch("lineStations/delete/" + lineId + "/" + stationId, {
+      fetch("lineStations/" + lineId + "/stations/" + stationId, {
         method: 'DELETE'
       }).catch(alert);
     }
