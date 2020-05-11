@@ -3,24 +3,16 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+    public LineService(final LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
     public Line save(Line line) {
@@ -59,22 +51,6 @@ public class LineService {
         Line line = findById(lineId);
         line.removeLineStationById(stationId);
         updateLine(lineId, line);
-    }
-
-    public List<LineResponse> findAllLineWithStations(List<Line> lines) {
-        return lines.stream()
-                .map(line -> findLineWithStationsById(line.getId()))
-                .collect(Collectors.toList());
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = findById(id);
-        List<Long> lineStationsId = line.getLineStationsId();
-        Set<Station> stations = lineStationsId.stream()
-                .map(stationId -> stationRepository.findById(stationId).orElseThrow(NullPointerException::new))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        return LineResponse.of(line, stations);
     }
 
     public Line findById(Long id){
