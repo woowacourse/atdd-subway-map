@@ -30,8 +30,8 @@ public class StationController {
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity<?> createStation(@RequestBody StationCreateRequest view) {
-		Station station = view.toStation();
+	public ResponseEntity<?> createStation(@RequestBody StationCreateRequest request) {
+		Station station = request.toStation();
 		Station persistStation = stationRepository.save(station);
 
 		return ResponseEntity

@@ -6,6 +6,12 @@ function AdminStation() {
   const $stationList = document.querySelector("#station-list");
   const $stationButton = document.querySelector("#station-add-btn");
 
+  const showAllStations = async () => {
+    const stations = await fetch("/stations").then(res => res.json());
+    stations.map(st =>
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(st.name, st.id)));
+  }
+
   const onAddStationHandler = event => {
     if (event.key !== KEY_TYPE.ENTER && event.key !== KEY_TYPE.CLICK) {
       return;
@@ -15,6 +21,14 @@ function AdminStation() {
     const stationName = $stationNameInput.value;
     if (isValidStationName(stationName)) {
       $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+      fetch("/stations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name: stationName })
+      }).then(res => res.json())
+      .then(data => console.log(data));
     }
     $stationNameInput.value = "";
   };
@@ -59,6 +73,7 @@ function AdminStation() {
 
   const init = () => {
     initEventListeners();
+    showAllStations();
   };
 
   return {
