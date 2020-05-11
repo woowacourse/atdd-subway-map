@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,15 +93,15 @@ public class LineStationAcceptanceTest {
         //then
         stations = lineResponse.getStations();
         //and
-        // Iterator<Station> iterator = stations.iterator();
-        // while (iterator.hasNext()) {
-        //     Assertions.assertThat(iterator.next().getName()).isEqualTo("잠실역");
-        //     Assertions.assertThat(iterator.next().getName()).isEqualTo("종합운동장역");
-        // }
-        // TODO: 2020-05-09 Set 순서 문제(추정)으로 순서가 다르게 나옴. 이 부분은 테스트 추후 작성
+        List<String> names = stations
+                .stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        Assertions.assertThat(names.contains("잠실역"));
+        Assertions.assertThat(names.contains("종합운동장역"));
 
-        //when
-        deleteLineStation(1L, 2L);
+       //when
+        lineHandler.deleteLineStation(1L, 2L);
         //then
         Assertions.assertThat(lineHandler.getLine(1L).getStations().size())
             .isEqualTo(1);
@@ -120,7 +121,7 @@ public class LineStationAcceptanceTest {
         return
             given().
                 when().
-                get("/line-stations").
+                get("/line/stations").
                 then().
                 log().all().
                 extract().
@@ -131,7 +132,7 @@ public class LineStationAcceptanceTest {
         return
             given().
                 when().
-                get("/line-stations/" + id).
+                get("/line/" + id + "/stations").
                 then().
                 log().all().
                 extract().as(LineStationResponse.class);
@@ -149,17 +150,9 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/line-stations").
+            post("/line/stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
-    }
-
-    private void deleteLineStation(Long lineId, Long stationId) {
-        given().
-            when().
-            delete("/line/" + lineId + "/station/" + stationId).
-            then().
-            log().all();
     }
 }

@@ -117,9 +117,17 @@ public class LineHandler {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/line-station/" + lineId).
+            post("/line/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.OK.value());
+    }
+
+    public void deleteLineStation(Long lineId, Long stationId) {
+        given().
+                when().
+                delete("/line/" + lineId + "/station/" + stationId).
+                then().
+                log().all();
     }
 }
