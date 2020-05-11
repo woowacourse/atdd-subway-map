@@ -16,101 +16,108 @@ import wooteco.subway.admin.repository.StationRepository;
 @Service
 public class LineService {
 
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+	private LineRepository lineRepository;
+	private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-    }
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+	}
 
-    public List<LineResponse> showLines() {
-        List<Line> lines = lineRepository.findAll();
-        return LineResponse.listOf(lines);
-    }
+	public List<LineResponse> showLines() {
+		List<Line> lines = lineRepository.findAll();
+		return LineResponse.listOf(lines);
+	}
 
-    public List<LineResponse> showLinesWithStations() {
-        List<Line> lines = lineRepository.findAll();
+	public List<LineResponse> showLinesWithStations() {
+		List<Line> lines = lineRepository.findAll();
 
-        return lines.stream()
-            .map(this::createLineResponseWithStations)
-            .collect(Collectors.toList());
-    }
+		return lines.stream()
+			.map(this::createLineResponseWithStations)
+			.collect(Collectors.toList());
+	}
 
-    private LineResponse createLineResponseWithStations(Line line) {
-        List<Station> stations = stationRepository.findAllByIdOrderBy(line.getId());
-        return LineResponse.of(line, StationResponse.listOf(stations));
-    }
+	private LineResponse createLineResponseWithStations(Line line) {
+		List<Station> stations = stationRepository.findAllByIdOrderBy(line.getId());
+		return LineResponse.of(line, StationResponse.listOf(stations));
+	}
 
-    public LineResponse save(Line line) {
-        validateDuplicateName(line);
-        return LineResponse.of(lineRepository.save(line));
-    }
+	public LineResponse save(Line line) {
+		validateDuplicateName(line);
+		return LineResponse.of(lineRepository.save(line));
+	}
 
-    private void validateDuplicateName(Line line) {
-        boolean sameName = lineRepository.findByName(line.getName()).isPresent();
-        if (sameName) {
-            throw new IllegalArgumentException("중복되는 역 이름입니다.");
-        }
-    }
+	private void validateDuplicateName(Line line) {
+		boolean sameName = lineRepository.findByName(line.getName()).isPresent();
+		if (sameName) {
+			throw new IllegalArgumentException("중복되는 역 이름입니다.");
+		}
+	}
 
-    public LineResponse findLineResponseById(Long id) {
-        Line line = findLineById(id);
-        return LineResponse.of(line);
-    }
+	public LineResponse findLineResponseById(Long id) {
+		Line line = findLineById(id);
+		return LineResponse.of(line);
+	}
 
-    private Line findLineById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
-    }
+	private Line findLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+	}
 
-    public LineResponse updateLine(Long id, Line line) {
-        Line persistLine = findLineById(id);
-        persistLine.update(line);
+	public LineResponse updateLine(Long id, Line line) {
+		Line persistLine = findLineById(id);
+		persistLine.update(line);
 
-        Line updatedLine = lineRepository.save(persistLine);
-        return LineResponse.of(updatedLine);
-    }
+		Line updatedLine = lineRepository.save(persistLine);
+		return LineResponse.of(updatedLine);
+	}
 
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
+	public void deleteLineById(Long id) {
+		lineRepository.deleteById(id);
+	}
 
-    public void addLineStation(Long lineId, LineStationCreateRequest request) {
-        if (request.hasNotAnyId()) {
-            convertNameToId(request);
-        }
-        Line line = findLineById(lineId);
-        LineStation lineStation = request.toLineStation();
-        line.addLineStation(lineStation);
+	public void addLineStation(Long lineId, LineStationCreateRequest request) {
+		Line line = findLineById(lineId);
+		LineStation lineStation = makeLineStation(request);
+		line.addLineStation(lineStation);
 
-        lineRepository.save(line);
-    }
+		lineRepository.save(line);
+	}
 
-    private void convertNameToId(LineStationCreateRequest request) {
-        if (!request.getPreStationName().isEmpty()) {
-            Station preStation = findStationByName(request.getPreStationName());
-            request.setPreStationId(preStation.getId());
-        }
-        Station station = findStationByName(request.getStationName());
-        request.setStationId(station.getId());
-    }
+	private LineStation makeLineStation(LineStationCreateRequest request) {
+		if (request.hasStationId()) {
+			return request.toLineStation();
+		}
+		return makeLineStationByName(request);
+	}
 
-    private Station findStationByName(String stationName) {
-        return stationRepository.findByName(stationName)
-            .orElseThrow(
-                () -> new NoSuchElementException(String.format("%s역이 등록되어 있지 않습니다.", stationName)));
-    }
+	private LineStation makeLineStationByName(LineStationCreateRequest request) {
+		Long preStationId = null;
+		if (!request.getPreStationName().isEmpty()) {
+			preStationId = findStationIdByName(request.getPreStationName());
+		}
 
-    public LineResponse findLineResponseWithStationsById(Long id) {
-        Line line = findLineById(id);
-        return createLineResponseWithStations(line);
-    }
+		Long stationId = findStationIdByName(request.getStationName());
+		return new LineStation(preStationId, stationId, request.getDistance(),
+			request.getDuration());
+	}
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
-        line.removeLineStationById(stationId);
+	private Long findStationIdByName(String stationName) {
+		return stationRepository.findByName(stationName)
+			.map(Station::getId)
+			.orElseThrow(
+				() -> new NoSuchElementException(String.format("%s역이 등록되어 있지 않습니다.", stationName)));
+	}
 
-        lineRepository.save(line);
-    }
+	public LineResponse findLineResponseWithStationsById(Long id) {
+		Line line = findLineById(id);
+		return createLineResponseWithStations(line);
+	}
+
+	public void removeLineStation(Long lineId, Long stationId) {
+		Line line = findLineById(lineId);
+		line.removeLineStationById(stationId);
+
+		lineRepository.save(line);
+	}
 }

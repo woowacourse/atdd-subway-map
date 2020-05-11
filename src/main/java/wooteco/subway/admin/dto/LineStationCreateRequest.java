@@ -28,24 +28,16 @@ public class LineStationCreateRequest {
         return new LineStation(preStationId, stationId, distance, duration);
     }
 
-    public boolean hasNotAnyId() {
-        return preStationId == null && stationId == null;
+    public boolean hasStationId() {
+        return stationId != null;
     }
 
     public Long getPreStationId() {
         return preStationId;
     }
 
-    public void setPreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
     public Long getStationId() {
         return stationId;
-    }
-
-    public void setStationId(Long stationId) {
-        this.stationId = stationId;
     }
 
     public String getPreStationName() {
