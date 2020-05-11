@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Embedded;
 
+import wooteco.subway.admin.domain.line.relation.LineStation;
+import wooteco.subway.admin.domain.line.relation.LineStations;
 import wooteco.subway.admin.domain.line.vo.LineTimeTable;
 
 public class Line {

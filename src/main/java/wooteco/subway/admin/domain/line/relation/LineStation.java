@@ -1,4 +1,4 @@
-package wooteco.subway.admin.domain.line;
+package wooteco.subway.admin.domain.line.relation;
 
 import java.util.Objects;
 
@@ -34,10 +34,13 @@ public class LineStation {
         return duration;
     }
 
-    public void updatePreLineStation(Long preStationId) {
+    public void updatePreStationIdTo(Long preStationId) {
         this.preStationId = preStationId;
     }
 
+    public boolean isNotFirstNode() {
+        return !Objects.isNull(preStationId);
+    }
 
     public boolean isFirstNode() {
         return Objects.isNull(preStationId);

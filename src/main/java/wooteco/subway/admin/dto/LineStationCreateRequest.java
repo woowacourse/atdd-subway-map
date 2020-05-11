@@ -1,6 +1,6 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.line.LineStation;
+import wooteco.subway.admin.domain.line.relation.LineStation;
 
 public class LineStationCreateRequest {
     private Long preStationId;
