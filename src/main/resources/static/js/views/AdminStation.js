@@ -1,15 +1,17 @@
 import { CONFIRM_MESSAGE, ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
+import api from '../../api/index.js';
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
   const $stationButton = document.querySelector("#station-add-btn");
 
-  const showAllStations = async () => {
-    const stations = await fetch("/stations").then(res => res.json());
-    stations.map(st =>
-      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(st.name, st.id)));
+  const initStations = () => {
+    api.station.get().then((stations) => {
+      stations.map(st =>
+        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(st.name, st.id)));
+    });
   }
 
   const onAddStationHandler = event => {
@@ -20,17 +22,13 @@ function AdminStation() {
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
     if (isValidStationName(stationName)) {
+      const data = {
+        name: stationName
+      };
       $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
-      fetch("/stations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name: stationName })
-      }).then(res => res.json())
-      .then(data => console.log(data));
+      api.station.create(data)
+      .then(() => $stationNameInput.value = "");
     }
-    $stationNameInput.value = "";
   };
 
   const isValidStationName = stationName => {
@@ -59,14 +57,9 @@ function AdminStation() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton && confirm(CONFIRM_MESSAGE.DELETE)) {
-      $target.closest(".list-item").remove();
       const id = $target.closest(".list-item").dataset.stationId;
-      fetch(`/stations/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+      $target.closest(".list-item").remove();
+      api.station.delete(id);
     }
   };
 
@@ -78,7 +71,7 @@ function AdminStation() {
 
   const init = () => {
     initEventListeners();
-    showAllStations();
+    initStations();
   };
 
   return {

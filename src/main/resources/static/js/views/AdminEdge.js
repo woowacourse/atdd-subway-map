@@ -1,8 +1,9 @@
 import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
 import { defaultSubwayLines } from "../../utils/subwayMockData.js";
-import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import tns from "../../lib/slider/tiny-slider.js";
+import api from '../../api/index.js';
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -12,14 +13,8 @@ function AdminEdge() {
   const $submitButton = document.querySelector('#submit-button');
   const createSubwayEdgeModal = new Modal();
 
-  const getLines = () => {
-    return fetch("/line-stations")
-    .then(res => res.json());
-  }
-
-  // TODO: CUD 모두 id로 변경
   const initSubwayLinesSlider = async () => {
-    const lines = await getLines();
+    const lines = await api.line.get();
 
     $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
@@ -39,16 +34,12 @@ function AdminEdge() {
   };
 
   const initSubwayLineOptions = () => {
+    const $stationSelectOptions = document.querySelector("#station-select-options");
     const subwayLineOptionTemplate = defaultSubwayLines
     .map(line => optionTemplate(line.title))
     .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#station-select-options"
-    );
-    $stationSelectOptions.insertAdjacentHTML(
-      "afterbegin",
-      subwayLineOptionTemplate
-    );
+
+    $stationSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);
   };
 
   const onAddStationHandler = event => {
@@ -60,33 +51,22 @@ function AdminEdge() {
       stationName: stationName
     };
 
-    fetch("/line-stations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
+    api.lineStation.create(data).then(() => {
+      location.reload();
+      createSubwayEdgeModal.toggle();
     });
-
-    // TODO: 새로고침 없이 반영되도록 변경
-    location.reload();
-    createSubwayEdgeModal.toggle();
   };
 
-  const onRemoveStationHandler = async event => {
+  const onRemoveStationHandler = event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const $listItem = $target.closest(".list-item");
       const lineId = $target.closest(".line-station").dataset.lineId;
       const stationId = $listItem.dataset.stationId;
+
       $listItem.remove();
-      await fetch(`line-stations/${lineId}/stations/${stationId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        },
-      }).then(res => res.json());
+      api.lineStation.delete(lineId, stationId);
     }
   };
 

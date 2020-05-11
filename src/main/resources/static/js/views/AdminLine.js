@@ -1,10 +1,9 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
 import { colorSelectOptionTemplate, subwayLinesTemplate } from "../../utils/templates.js";
 import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
+import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from '../../api/index.js';
 
-// TODO: validate 구현한 파일 분리
-// TODO: fetch 파일 분리
 function AdminLine() {
   // list
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -42,7 +41,6 @@ function AdminLine() {
       inputSubwayLine.id = $subwayLineUpdateId.value;
     }
 
-    // validateSubwayLine(inputSubwayLine);
     sendNewLine(inputSubwayLine).then(() => location.reload());
 
     const newLineTemplate = subwayLinesTemplate({
@@ -64,21 +62,9 @@ function AdminLine() {
 
   const sendNewLine = data => {
     if (isEdit) {
-      return fetch(`/lines/${data.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }).catch(err => console.log(err));
+      return api.line.update(data.id, data);
     }
-    return fetch("/lines", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }).catch(err => console.log(err));
+    return api.line.create(data);
   };
 
   const clearForm = () => {
@@ -92,13 +78,11 @@ function AdminLine() {
 
   const onDeleteSubwayLine = event => {
     if (event.target && event.target.classList.contains("mdi-delete")) {
-      let $subwayLineItem = event.target.closest(".subway-line-item");
-      $subwayLineItem.remove();
+      const $subwayLineItem = event.target.closest(".subway-line-item");
       const lineId = $subwayLineItem.dataset.lineId;
 
-      fetch(`lines/${lineId}`, {
-        method: "DELETE"
-      });
+      $subwayLineItem.remove();
+      return api.line.delete(lineId);
     }
   };
 
@@ -108,7 +92,8 @@ function AdminLine() {
       isEdit = true;
       $currentSubwayLineItem = event.target.closest("div");
       const lineId = $currentSubwayLineItem.dataset.lineId;
-      const line = await getLine(lineId);
+      const line = await api.line.getLine(lineId);
+
       $subwayLineUpdateId.value = line.id;
       $subwayLineNameInput.value = line.name;
       $subwayLineColorInput.value = line.color;
@@ -123,20 +108,12 @@ function AdminLine() {
     event.preventDefault();
     if (event.target && event.target.classList.contains("subway-line-item")) {
       const lineId = event.target.dataset.lineId;
-      const line = await getLine(lineId);
+      const line = await api.line.getLine(lineId);
+
       $subwayLineFirstTimeInfo.innerText = line.startTime;
       $subwayLineLastTimeInfo.innerText = line.endTime;
       $subwayLineIntervalTimeInfo.innerText = line.intervalTime;
     }
-  }
-
-  const getLine = (id) => {
-    return fetch(`/lines/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json());
   }
 
   const onCancelSubwayLine = () => {
@@ -154,28 +131,23 @@ function AdminLine() {
   const onSelectColorHandler = event => {
     event.preventDefault();
     const $target = event.target;
+
     if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
-        $target.dataset.color;
+      document.querySelector("#subway-line-color").value = $target.dataset.color;
     }
   };
 
   const initCreateSubwayLineForm = () => {
-    const $colorSelectContainer = document.querySelector(
-      "#subway-line-color-select-container"
-    );
+    const $colorSelectContainer = document.querySelector("#subway-line-color-select-container");
     const colorSelectTemplate = subwayLineColorOptions
     .map((option, index) => colorSelectOptionTemplate(option, index))
     .join("");
+
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
-    $colorSelectContainer.addEventListener(
-      EVENT_TYPE.CLICK,
-      onSelectColorHandler
-    );
+    $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
   };
 
   this.init = () => {
-    // initDefaultSubwayLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };
