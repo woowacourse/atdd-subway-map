@@ -4,22 +4,25 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
+
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
-public class StationRepositoryTest {
+public class LineRepositoryTest {
     @Autowired
-    private StationRepository stationRepository;
+    private LineRepository lineRepository;
 
-    @DisplayName("역 추가 테스트")
+    @DisplayName("노선 추가 테스트")
     @Test
     void save() {
-        Station station = new Station("강남역");
+        Line line = new Line("2호선",LocalTime.of(8,00),LocalTime.of(8,00),10,"0");
 
-        Station persistStation = stationRepository.save(station);
+        Line persistLine = lineRepository.save(line);
 
-        assertThat(persistStation.getId()).isNotNull();
+        assertThat(persistLine.getId()).isNotNull();
     }
 }

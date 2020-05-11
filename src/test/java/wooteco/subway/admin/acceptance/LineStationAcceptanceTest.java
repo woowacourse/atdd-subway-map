@@ -98,9 +98,9 @@ public class LineStationAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
+        when().
                 post("/lines/" + lineId + "/stations").
-                then().
+        then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -108,18 +108,18 @@ public class LineStationAcceptanceTest {
     private List<StationResponse> getStationsByLineId(Long lineId) {
         return given().
                 when().
-                get("/lines/" + lineId + "/stations").
+                        get("/lines/" + lineId + "/stations").
                 then().
-                log().all().
-                extract().
-                jsonPath().getList(".", StationResponse.class);
+                        log().all().
+                        extract().
+                        jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteLineStation(Long lineId, Long stationId) {
         given().
-                when().
+        when().
                 delete("/lines/" + lineId + "/stations/" + stationId).
-                then().
+        then().
                 log().all();
     }
 }
