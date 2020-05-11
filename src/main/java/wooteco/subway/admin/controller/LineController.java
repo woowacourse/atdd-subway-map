@@ -56,7 +56,6 @@ public class LineController {
 
     @PostMapping("/{lineId}/stations")
     public ResponseEntity<Void> addStationByLineId(@PathVariable Long lineId, @RequestBody LineStationCreateRequest request) {
-        System.out.println(request.toString());
         lineService.addLineStation(lineId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -66,7 +65,6 @@ public class LineController {
     @GetMapping("{lineId}/stations")
     public ResponseEntity<LineResponse> findStationsByLineId(@PathVariable Long lineId) {
         LineResponse lineResponse = lineService.findStationsByLineId(lineId);
-        System.out.println(lineResponse);
         return ResponseEntity.ok(lineResponse);
     }
 

@@ -114,7 +114,7 @@ public class Line {
     }
 
     private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
-        if(lineStations.size() > ONE_SIZE) {
+        if(lineStations.size() > ONE_SIZE && lineStations.size() > index) {
             LineStation nextLineStation = lineStations.get(index);
             if (isInputFirstIndex(requestLineStation, index, nextLineStation)) return true;
 
