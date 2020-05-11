@@ -3,6 +3,7 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
 import wooteco.subway.admin.dto.response.LineWithStationsResponse;
@@ -64,7 +65,9 @@ public class LineService {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		if (lineStationCreateRequest.getPreStationId() == null) {
+		LineStation lineStation = lineStationCreateRequest.toLineStation();
+
+		if (lineStation.isFirstLineStation()) {
 			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
 			lineRepository.save(persistLine);
 			return;
