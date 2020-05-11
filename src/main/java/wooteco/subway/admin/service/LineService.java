@@ -11,6 +11,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.LineStationRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
         LineStation toInput = new LineStation(
                 request.getPreStationId(),
                 request.getStationId(),
@@ -68,9 +69,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
         List<Station> stations = getStationsByLine(line);
-        LineResponse lineResponse = LineResponse.of(line);
-        lineResponse.setStations(stations);
-        return lineResponse;
+        return LineResponse.of(line, new LinkedHashSet<>(stations));
     }
 
     private List<Station> getStationsByLine(final Line line) {
