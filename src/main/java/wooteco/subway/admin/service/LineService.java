@@ -1,17 +1,15 @@
 package wooteco.subway.admin.service;
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonIntegerFormatVisitor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -72,9 +70,11 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = findById(id);
         List<Long> lineStationsId = line.getLineStationsId();
-        Set<Station> stations = stationRepository.findAllById(lineStationsId);
+        Set<Station> stations = lineStationsId.stream()
+                .map(stationId -> stationRepository.findById(stationId).orElseThrow(NullPointerException::new))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        return LineResponse.of(line ,stations);
+        return LineResponse.of(line, stations);
     }
 
     public Line findById(Long id){
