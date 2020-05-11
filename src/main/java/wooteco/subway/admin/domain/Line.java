@@ -128,10 +128,10 @@ public class Line {
         stations.add(position, lineStation);
     }
 
-    private boolean hasNoSuchPreStation(LineStation lineStation) {
+    private boolean hasNoSuchPreStation(LineStation nextLineStation) {
         return stations.stream()
                 .map(LineStation::getStationId)
-                .noneMatch(id -> lineStation.getPreStationId().equals(id));
+                .noneMatch(id -> nextLineStation.getPreStationId().equals(id));
     }
 
     private Optional<LineStation> findNextStationBy(Long stationId) {
