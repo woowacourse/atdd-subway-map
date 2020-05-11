@@ -39,7 +39,7 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findById(id);
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
