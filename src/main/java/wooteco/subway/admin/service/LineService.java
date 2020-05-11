@@ -3,8 +3,6 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
@@ -31,17 +29,33 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        validateTitle(line);
         return lineRepository.save(line);
+    }
+
+    public void validateTitle(Line line) {
+        lineRepository.findByTitle(line.getTitle())
+                .ifPresent(x -> {
+                    throw new IllegalArgumentException("존재하는 이름입니다");
+                });
+    }
+
+    public void updateLine(Long id, Line line) {
+        validateTitleWhenUpdateInfo(id, line);
+        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        persistLine.update(line);
+        lineRepository.save(persistLine);
+    }
+
+    public void validateTitleWhenUpdateInfo(Long id, Line line) {
+        if (isNotChangeTitle(id, line)) {
+            return;
+        }
+        validateTitle(line);
     }
 
     public List<Line> findAll() {
         return lineRepository.findAll();
-    }
-
-    public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(line);
-        lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -88,22 +102,8 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public void validateTitle(LineRequest lineRequest) {
-        lineRepository.findByTitle(lineRequest.getTitle())
-                .ifPresent(line -> {
-                    throw new IllegalArgumentException("존재하는 이름입니다");
-                });
-    }
-
-    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) {
-        if (isNotChangeTitle(id, lineRequest)) {
-            return;
-        }
-        validateTitle(lineRequest);
-    }
-
-    private boolean isNotChangeTitle(final Long id, final LineRequest lineRequest) {
+    private boolean isNotChangeTitle(final Long id, final Line line) {
         Line lineById = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        return lineById.isTitleEquals(lineRequest.getTitle());
+        return lineById.isTitleEquals(line.getTitle());
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -36,7 +35,6 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        lineService.validateTitle(lineRequest);
         Line line = new Line(
                 lineRequest.getTitle(),
                 lineRequest.getStartTime(),
@@ -63,20 +61,15 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            lineService.validateTitleWhenUpdateInfo(id, lineRequest);
-            Line line = new Line(
-                    lineRequest.getTitle(),
-                    lineRequest.getStartTime(),
-                    lineRequest.getEndTime(),
-                    lineRequest.getIntervalTime(),
-                    lineRequest.getBgColor()
-            );
-            lineService.updateLine(id, line);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Line line = new Line(
+                lineRequest.getTitle(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(),
+                lineRequest.getBgColor()
+        );
+        lineService.updateLine(id, line);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
