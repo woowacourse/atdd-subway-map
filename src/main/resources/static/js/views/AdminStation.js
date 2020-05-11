@@ -6,6 +6,16 @@ function AdminStation() {
     const $stationAddBtn = document.querySelector("#station-add-btn");
     const $stationList = document.querySelector("#station-list");
 
+    const initStationsList = () => {
+        fetch("/stations", {
+            method: 'get'
+        }).then(res => res.json())
+            .then(data => {
+                data.map(station =>
+                    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station)));
+            })
+    };
+
     const onAddStationHandler = event => {
         if (event.key !== KEY_TYPE.ENTER) {
             return;
@@ -37,9 +47,18 @@ function AdminStation() {
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
+        const $id = $target.closest(".list-item").dataset.stationId;
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            $target.closest(".list-item").remove();
+            if (isDeleteButton && confirm("지우시겠습니까?")) {
+                fetch("/stations/" + $id, {
+                    method: 'delete'
+                }).then(res => {
+                    if (res.ok) {
+                        $target.closest(".list-item").remove();
+                    }
+                });
+            }
         }
     };
 
@@ -50,6 +69,7 @@ function AdminStation() {
     };
 
     const init = () => {
+        initStationsList();
         initEventListeners();
     };
 
