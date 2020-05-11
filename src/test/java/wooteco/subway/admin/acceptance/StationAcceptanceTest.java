@@ -85,6 +85,27 @@ public class StationAcceptanceTest {
         when().
                 delete("/stations/" + id).
         then().
-                log().all();
+                log().all().
+               statusCode(HttpStatus.NO_CONTENT.value());
+
+    }
+
+    @DisplayName("지하철 역 이름 생성_DuplicateName_Should 서버에서 400 에러를 보냄")
+    @Test
+    void duplicateStationName() {
+        createStation("종각역");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "종각역");
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -121,7 +121,8 @@ public class LineServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        Line line = lineService.findById(1L);
+        LineResponse lineResponse = LineResponse.of(line, lineService.findStationsByLineId(line.getLineStationsId()));
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }

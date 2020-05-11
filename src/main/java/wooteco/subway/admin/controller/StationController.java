@@ -2,12 +2,12 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.data.relational.core.conversion.DbActionExecutionException;
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,36 +30,41 @@ public class StationController {
     }
 
     @PostMapping()
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest stationCreateRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationCreateRequest stationCreateRequest) {
         Station station = stationCreateRequest.toStation();
         Station persistStation = stationService.addStation(station);
 
         return ResponseEntity
-            .created(URI.create("/stations/" + persistStation.getId()))
-            .body(StationResponse.of(persistStation));
+            .created(URI.create(String.valueOf(persistStation.getId())))
+            .build();
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<Long> findStation(@PathVariable String name) {
-        Station station = stationService.findStationByName(name);
-        return ResponseEntity.ok().body(station.getId());
+    @GetMapping("/{id}")
+    public ResponseEntity<Station> findStationById(@PathVariable Long id) {
+        Station station = stationService.findStationById(id);
+
+        return ResponseEntity
+            .ok()
+            .body(station);
     }
 
     @GetMapping()
-    public ResponseEntity<List<Station>> showStations() {
-        return ResponseEntity.ok().body(stationService.showStations());
+    public ResponseEntity<List<StationResponse>> showStations() {
+        List<Station> stations = stationService.showStations();
+        List<StationResponse> stationResponses = stations.stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+
+        return ResponseEntity
+            .ok()
+            .body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.removeStation(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+            .noContent()
+            .build();
     }
-
-    @ExceptionHandler(DbActionExecutionException.class)
-    public ResponseEntity<Model> dbException(Exception e, Model model) {
-        model.addAttribute("error", "중복된 이름을 넣었습니다!");
-        return ResponseEntity.badRequest().body(model);
-    }
-
 }

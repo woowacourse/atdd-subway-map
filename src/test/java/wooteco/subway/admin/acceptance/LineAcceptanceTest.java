@@ -114,6 +114,7 @@ public class LineAcceptanceTest {
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
@@ -127,7 +128,7 @@ public class LineAcceptanceTest {
             put("/lines/" + id).
         then().
             log().all().
-            statusCode(HttpStatus.OK.value());
+            statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private void deleteLine(Long id) {
@@ -135,10 +136,12 @@ public class LineAcceptanceTest {
         when().
             delete("/lines/" + id).
         then().
-            log().all();
+            log().all().
+            statusCode(HttpStatus.NO_CONTENT.value());
+
     }
 
-    @DisplayName("지하철 노선 이름 생성_DuplicateName_Should 서버에서 500 에러를 보냄")
+    @DisplayName("지하철 노선 이름 생성_DuplicateName_Should 서버에서 400 에러를 보냄")
     @Test
     void duplicateStationName() {
         createLine("종각역");
@@ -158,7 +161,6 @@ public class LineAcceptanceTest {
             post("/lines").
         then().
             log().all().
-            statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
+            statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }
