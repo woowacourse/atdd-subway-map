@@ -23,3 +23,10 @@ export const LINE_INPUT_ERROR_MESSAGE = {
 export const TRANSFER_ERROR_MESSAGE = {
     WARN: "에러가 발생하였습니다 😅"
 }
+
+export const HTTP_STATUS = {
+    OK: 200,
+    CREATED: 201,
+    PRECONDITION_FAILED: 412,
+    CONFLICT: 409
+}

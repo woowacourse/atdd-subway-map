@@ -1,5 +1,5 @@
 import Modal from "../../ui/Modal.js";
-import {EVENT_TYPE, LINE_INPUT_ERROR_MESSAGE, TRANSFER_ERROR_MESSAGE} from "../../utils/constants.js";
+import {EVENT_TYPE, HTTP_STATUS, LINE_INPUT_ERROR_MESSAGE, TRANSFER_ERROR_MESSAGE} from "../../utils/constants.js";
 import api from "../../api/index.js";
 import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
@@ -90,17 +90,26 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.create(data)
-            .then(subwayLine => {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(subwayLine)
-                );
-                subwayLineModal.toggle();
-            }).catch(() => {
-            alert(TRANSFER_ERROR_MESSAGE.WARN);
+        createLine(data, line => {
+            $subwayLineList.insertAdjacentHTML(
+                "beforeend",
+                subwayLinesTemplate(line));
+            removeLineDataInput();
+            subwayLineModal.toggle();
         });
-        removeLineDataInput();
+    };
+
+    const createLine = (data, onCompleteCreateLine) => {
+        api.line.create(data)
+            .then(response => {
+                if (response.status === HTTP_STATUS.CONFLICT) {
+                    alert("이미 등록된 노선입니다!");
+                } else if (response.status === HTTP_STATUS.CREATED) {
+                    response.json()
+                        .then(line => onCompleteCreateLine(line))
+                        .catch(() => alert(TRANSFER_ERROR_MESSAGE.WARN))
+                }
+            })
     };
 
     const onDeleteSubwayLine = event => {
@@ -128,15 +137,28 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.update(lineId, data).then(() => {
+
+        updateLine(lineId, data, () => {
             subwayLineModal.toggle();
             const subwayLineList = document.querySelector("#subway-line-list");
             while (subwayLineList.hasChildNodes()) {
                 subwayLineList.removeChild(subwayLineList.firstChild);
             }
             initDefaultSubwayLines();
-        });
+        })
         removeLineDataInput();
+    };
+
+    const updateLine = (lineId, data, onCompleteUpdateLine) => {
+        api.line.update(lineId, data)
+            .then(response => {
+                if (response.status === HTTP_STATUS.CONFLICT) {
+                    alert("이미 등록된 노선입니다!");
+                } else if (response.status === HTTP_STATUS.OK) {
+                    return response.json();
+                }
+            })
+            .then(() => onCompleteUpdateLine())
     };
 
     const removeTImeDataOnView = () => {
@@ -170,14 +192,15 @@ function AdminLine() {
     }
 
     const initDefaultSubwayLines = () => {
-        api.line.get().then(subwayLines => subwayLines.forEach(
-            subwayLine => {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(subwayLine)
-                );
-            }
-        ));
+        api.line.get().then(response => response.json())
+            .then(subwayLines => subwayLines.forEach(
+                subwayLine => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(subwayLine)
+                    );
+                }
+            ));
     };
 
     const initEventListeners = () => {

@@ -1,6 +1,6 @@
 import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import {EVENT_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, HTTP_STATUS} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js"
 
@@ -9,9 +9,12 @@ function AdminEdge() {
     const $subwayLineAddButton = document.querySelector("#subway-line-add-btn");
     const $submitButton = document.querySelector('#submit-button');
     const createSubwayEdgeModal = new Modal();
+    const lineFinder = new Map();
 
     const initSubwayLinesSlider = () => {
-        api.line.get().then(subwayLines => {
+        api.line.get()
+            .then(response => response.json())
+            .then(subwayLines => {
                 $subwayLinesSlider.innerHTML = subwayLines
                     .map(line => {
                             const subwayLine = {
@@ -42,21 +45,26 @@ function AdminEdge() {
     };
 
     const initSubwayLineOptions = () => {
-        api.line.get().then(subwayLines => {
-            const subwayLineOptionTemplate = subwayLines
-                .map(line => {
-                    return optionTemplate(line.title)
-                })
-                .join("");
+        api.line.get()
+            .then(response => response.json())
+            .then(subwayLines => {
+                lineFinder.clear();
+                subwayLines.forEach(line => lineFinder.set(line.title, line.id));
 
-            const $stationSelectOptions = document.querySelector(
-                "#station-select-options"
-            );
+                const subwayLineOptionTemplate = subwayLines
+                    .map(line => {
+                        return optionTemplate(line.title)
+                    })
+                    .join("");
+
+                const $stationSelectOptions = document.querySelector(
+                    "#station-select-options"
+                );
             $stationSelectOptions.insertAdjacentHTML(
                 "afterbegin",
                 subwayLineOptionTemplate
             );
-        });
+            });
     };
 
     const onSubwayLineAddBtnClicked = () => {
@@ -64,22 +72,70 @@ function AdminEdge() {
     };
 
     const onSubmitClicked = event => {
+        event.preventDefault();
+        const $selectOptions = document.querySelector("#station-select-options");
+        const $selectOptionValue = $selectOptions.options[$selectOptions.selectedIndex].value;
+        const $lineId = lineFinder.get($selectOptionValue);
+
         const isSubwayLineAddButton = event.target.classList.contains("subway-line-add-button");
         if (!isSubwayLineAddButton) {
             return;
         }
-        const $selectOptions = document.querySelector("#station-select-options");
-        const lineStationDto = {
-            name: $selectOptions[$selectOptions.selectedIndex].value,
-            preStationName: document.querySelector("#depart-station-name").value,
-            arrivalStationName: document.querySelector("#arrival-station-name").value
-        };
 
+        const departStationName = document.querySelector("#depart-station-name").value;
+        const arrivalStationName = document.querySelector("#arrival-station-name").value;
+        if (!arrivalStationName) {
+            alert("대상역은 반드시 존재해야 합니다!");
+            return;
+        }
+        const names = [departStationName, arrivalStationName].filter(name => name).join(",");
+        const lineStations = "/?names=" + names;
+
+        requestStations(lineStations, stations => {
+            let preStationId = null;
+            let stationId;
+            if (stations.length === 1) {
+                stationId = stations[0].id;
+            } else {
+                const isFirstStationDeparture = departStationName === stations[0].name;
+                preStationId = stations[isFirstStationDeparture ? 0 : 1].id;
+                stationId = stations[isFirstStationDeparture ? 1 : 0].id;
+            }
+            const lineStation = {
+                preStationId,
+                stationId,
+                distance: 10,
+                duration: 10
+            };
+
+            createLineStation($lineId, lineStation, () => {
+                createSubwayEdgeModal.toggle();
+                initSubwayLinesSlider();
+            });
+        });
+    };
+
+    const createLineStation = (lineId, lineStation, onCompleteCreateLineStation) => {
         api.line
-            .registerLineStation(lineStationDto)
-            .then(() => createSubwayEdgeModal.toggle());
+            .registerLineStation(lineId, lineStation)
+            .then(response => {
+                if (response.status === HTTP_STATUS.CONFLICT) {
+                    alert("대상역이 중복되거나, 이전역에 입력된 역이 존재하지 않네요!");
+                } else if (response.status === HTTP_STATUS.CREATED) {
+                    response.json().then(() => onCompleteCreateLineStation());
+                }
+            })
+    };
 
-        initSubwayLineOptions();
+    const requestStations = (lineStations, callback) => {
+        api.station.getStationsByNames(lineStations)
+            .then(response => {
+                if (response.status === HTTP_STATUS.PRECONDITION_FAILED) {
+                    alert("존재하지 않는 역을 입력하셨습니다!");
+                } else if (response.status === HTTP_STATUS.OK) {
+                    response.json().then(result => callback(result));
+                }
+            });
     };
 
     const onRemoveStationHandler = event => {

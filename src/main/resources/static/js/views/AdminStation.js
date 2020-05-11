@@ -1,4 +1,10 @@
-import {EVENT_TYPE, KEY_TYPE, STATION_INPUT_ERROR_MESSAGE, TRANSFER_ERROR_MESSAGE} from "../../utils/constants.js";
+import {
+    EVENT_TYPE,
+    HTTP_STATUS,
+    KEY_TYPE,
+    STATION_INPUT_ERROR_MESSAGE,
+    TRANSFER_ERROR_MESSAGE
+} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
 import api from "../../api/index.js";
 
@@ -31,17 +37,25 @@ function AdminStation() {
             return;
         }
 
+        createStations(stationName, station =>
+            $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station))
+        );
+        $stationInput.value = "";
+    };
+
+    const createStations = (stationName, onCompleteCreateStation) => {
         const stationData = {
             name: stationName
         };
         api.station.create(stationData)
-            .then(station => {
-                $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
-            }).catch(() => {
-            alert(TRANSFER_ERROR_MESSAGE.WARN);
-        });
-
-        $stationInput.value = "";
+            .then(response => {
+                if (response.status === HTTP_STATUS.CONFLICT) {
+                    alert("이미 등록되어 있는 역입니다!");
+                } else if (response.status === HTTP_STATUS.CREATED) {
+                    response.json().then(result => onCompleteCreateStation(result))
+                        .catch(() => alert(TRANSFER_ERROR_MESSAGE.WARN));
+                }
+            })
     };
 
     const getInvalidNameErrorMsg = (stationName) => {
