@@ -29,6 +29,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<Long> createLine(@RequestBody LineRequest lineRequest) {
+
         Line line = lineRequest.toLine();
         Line persistLine = lineService.save(line);
         return ResponseEntity
