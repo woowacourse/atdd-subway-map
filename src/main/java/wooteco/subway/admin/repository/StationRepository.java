@@ -7,11 +7,17 @@ import org.springframework.data.repository.query.Param;
 import wooteco.subway.admin.domain.Station;
 
 import java.util.List;
-import java.util.Set;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
     List<Station> findAll();
+
+    @Override
+    List<Station> findAllById(Iterable<Long> ids);
+
+    // cannot use in h2
+    // @Query("SELECT * FROM station WHERE id IN (:ids) ORDER BY FIELD(id, :ids)")
+    // List<Station> findAllByIdInOrder(@Param("ids") Iterable<Long> ids);
 
     @Modifying
     @Query("DELETE FROM Station WHERE name = :name")

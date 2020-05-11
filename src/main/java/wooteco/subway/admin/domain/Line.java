@@ -31,8 +31,7 @@ public class Line {
     @Column("color")
     private String color;
 
-    public Line() {
-    }
+    public Line() {}
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
         this.name = name;

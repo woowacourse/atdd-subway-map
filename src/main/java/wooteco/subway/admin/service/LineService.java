@@ -1,6 +1,8 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -73,10 +75,27 @@ public class LineService {
 
     private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
         List<Long> orderedStationIds = line.getSortedStationIds();
-        List<Station> orderedStations = orderedStationIds.stream()
-            .map(stationId ->
-                stationRepository.findById(stationId).orElseThrow(IllegalStateException::new))
-            .collect(Collectors.toList());
-        return LineWithOrderedStationsResponse.of(line, orderedStations);
+        List<Station> stations = stationRepository.findAllById(orderedStationIds);
+        return LineWithOrderedStationsResponse.of(line,
+            orderStationsBy(stations, orderedStationIds));
+    }
+
+    private List<Station> orderStationsBy(List<Station> stations, List<Long> orderedStationIds) {
+        List<Station> orderedStations = new ArrayList<>();
+
+        for (Long stationId : orderedStationIds) {
+            orderedStations.add(findStationById(stationId, stations));
+        }
+        return Collections.unmodifiableList(orderedStations);
+    }
+
+    private Station findStationById(Long stationId, List<Station> stations) {
+        Optional<Station> foundStation =  stations.stream()
+            .filter(station -> station.isId(stationId))
+            .findFirst();
+        if (foundStation.isPresent()) {
+            return foundStation.get();
+        }
+        throw new IllegalArgumentException("id가" + stationId + "인 역이 존재하지 않습니다.");
     }
 }

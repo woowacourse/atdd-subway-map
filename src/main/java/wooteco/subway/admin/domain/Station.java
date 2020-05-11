@@ -12,9 +12,7 @@ public class Station {
     private String name;
     private LocalDateTime createdAt;
 
-    public Station() {
-
-    }
+    public Station() {}
 
     public Station(Long id, String name, LocalDateTime createdAt) {
         this.id = id;
@@ -36,5 +34,9 @@ public class Station {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isId(Long stationId) {
+        return this.id.equals(stationId);
     }
 }

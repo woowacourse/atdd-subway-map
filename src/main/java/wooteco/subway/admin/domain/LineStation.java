@@ -17,8 +17,7 @@ public class LineStation {
     @Column("duration")
     private int duration;
 
-    public LineStation() {
-    }
+    public LineStation() {}
 
     public LineStation(Long id, Long preStationId, Long stationId, int distance, int duration) {
         this.id = id;
