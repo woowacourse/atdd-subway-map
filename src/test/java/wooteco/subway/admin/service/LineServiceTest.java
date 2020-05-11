@@ -38,9 +38,9 @@ public class LineServiceTest {
 		line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-blue-600");
 		lineService = new LineService(lineRepository, stationRepository);
 
-		line.addLineStation(new LineStation(null, 1L, 10, 10));
-		line.addLineStation(new LineStation(1L, 2L, 10, 10));
-		line.addLineStation(new LineStation(2L, 3L, 10, 10));
+		line.addLineStation(new LineStation(0L, null, 1L, 10, 10));
+		line.addLineStation(new LineStation(1L, 1L, 2L, 10, 10));
+		line.addLineStation(new LineStation(2L, 2L, 3L, 10, 10));
 	}
 
 	@Test

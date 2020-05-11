@@ -1,8 +1,13 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
+
+	@Id
+	@Column("id")
+	private Long id;
 
 	@Column("index")
 	private Long index;

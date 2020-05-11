@@ -3,14 +3,14 @@ package wooteco.subway.admin.service;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -35,24 +35,31 @@ public class LineService {
 	public LineResponse findLineWithStationsById(Long id) {
 		final Line persistLine = lineRepository.findById(id)
 		                                       .orElseThrow(RuntimeException::new);
-		List<Station> stations = persistLine.getLineStationsId()
-		                                    .stream()
-		                                    .map(stationId -> stationRepository
-			                                    .findById(stationId)
-			                                    .orElseThrow(
-				                                    NoSuchElementException::new))
-		                                    .collect(toList());
+		final List<Station> stations =
+			findSortedStationByLineStationsId(persistLine.getLineStationsId());
 
 		return LineResponse.of(persistLine, stations);
+	}
+
+	private List<Station> findSortedStationByLineStationsId(List<Long> lineStationsId) {
+		final Map<Long, Station> stations = stationRepository.findAllById(lineStationsId)
+		                                                     .stream()
+		                                                     .collect(toMap(
+			                                                     Station::getId,
+			                                                     station -> station));
+
+		return lineStationsId.stream()
+		                     .map(stations::get)
+		                     .collect(toList());
 	}
 
 	public LineResponse save(Line line) {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	public void save(Long id, LineStation lineStation) {
+	public void save(Long id, LineStationCreateRequest request) {
 		final Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.addLineStation(lineStation);
+		persistLine.addLineStation(request.toLineStation());
 		lineRepository.save(persistLine);
 	}
 

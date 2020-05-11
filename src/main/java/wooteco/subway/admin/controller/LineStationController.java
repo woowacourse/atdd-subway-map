@@ -25,7 +25,7 @@ public class LineStationController {
 	@PutMapping("/{lineId}/stations")
 	public ResponseEntity<LineResponse> save(@PathVariable Long lineId,
 		@RequestBody LineStationCreateRequest request) {
-		lineService.save(lineId, request.toLineStation());
+		lineService.save(lineId, request);
 		return ResponseEntity.noContent()
 		                     .build();
 	}
