@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,39 +12,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.StationService;
 
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-	private final StationRepository stationRepository;
+	private final StationService stationService;
 
-	public StationController(StationRepository stationRepository) {
-		this.stationRepository = stationRepository;
+	public StationController(StationService stationService) {
+		this.stationService = stationService;
 	}
 
 	@GetMapping
-	public ResponseEntity<Iterable<Station>> stations() {
-		return ResponseEntity.ok(stationRepository.findAll());
+	public ResponseEntity<List<StationResponse>> stations() {
+		return ResponseEntity.ok(stationService.findAll());
 	}
 
 	@PostMapping
 	public ResponseEntity<StationResponse> create(
-			@RequestBody StationCreateRequest request) {
-		Station station = request.toStation();
-		Station persistStation = stationRepository.save(station);
-
+			@RequestBody StationRequest request) {
+		StationResponse created = stationService.create(request);
 		return ResponseEntity
-				.created(URI.create("/stations/" + persistStation.getId()))
-				.body(StationResponse.of(persistStation));
+				.created(URI.create("/stations/" + created.getId()))
+				.body(created);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		stationRepository.deleteById(id);
+		stationService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 }

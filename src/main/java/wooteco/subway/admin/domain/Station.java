@@ -13,7 +13,7 @@ public class Station {
 	public Station() {
 	}
 
-	public Station(final Long id, final String name) {
+	public Station(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
