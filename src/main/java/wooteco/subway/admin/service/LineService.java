@@ -27,13 +27,6 @@ public class LineService {
 	}
 
 	public LineResponse save(Line line) {
-		boolean sameName = showLines().stream()
-			.anyMatch(element -> element.getName().equals(line.getName()));
-
-		if (sameName) {
-			throw new IllegalArgumentException("중복되는 역 이름입니다.");
-		}
-
 		return LineResponse.of(lineRepository.save(line));
 	}
 
@@ -56,8 +49,6 @@ public class LineService {
 	public void addLineStation(Long lineId, LineStationCreateRequest request) {
 		Line line = lineRepository.findById(lineId)
 			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
-		System.out.println(request);
-		System.out.println(">>>>>>>>>>>>");
 		LineStation lineStation = request.toLineStation();
 		line.addLineStation(lineStation);
 
@@ -95,7 +86,6 @@ public class LineService {
 		Long stationId = stationRepository.findIdByName(request.getStationName());
 		System.out.println(preStationId);
 		System.out.println(stationId);
-		System.out.println("스테이션 >>");
 		return new LineStationCreateRequest(preStationId, stationId, request.getDistance(), request.getDuration());
 	}
 

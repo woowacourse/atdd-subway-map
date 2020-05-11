@@ -123,7 +123,7 @@ public class LineServiceTest {
 		List<Station> stations = Arrays
 			.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-		when(stationRepository.findAllById(anyList())).thenReturn(stations);
+		when(stationRepository.findAllByIdOrderBy(null)).thenReturn(stations);
 
 		System.out.println();
 

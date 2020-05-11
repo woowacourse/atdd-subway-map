@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 
 public class LineStationCreateByNameRequest {
 	private String preStationName;
-	@NotBlank
+	@NotBlank(message = "대상역은 꼭 입력해야합니다.")
 	private String stationName;
 	@Min(1)
 	private int distance;

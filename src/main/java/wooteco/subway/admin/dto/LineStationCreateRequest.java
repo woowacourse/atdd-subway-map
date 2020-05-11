@@ -7,7 +7,7 @@ import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
 	private Long preStationId;
-	@NotNull
+	@NotNull(message = "존재하지 않은 역입니다.")
 	private Long stationId;
 	@Min(1)
 	private int distance;

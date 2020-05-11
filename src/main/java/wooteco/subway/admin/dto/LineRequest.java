@@ -8,13 +8,13 @@ import javax.validation.constraints.NotBlank;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
-	@NotBlank
+	@NotBlank(message = "이름을 입력해주세요!")
 	private String name;
-	@NotBlank
+	@NotBlank(message = "색깔을 입력해주세요!")
 	private String color;
 	private LocalTime startTime;
 	private LocalTime endTime;
-	@Min(1)
+	@Min(message = "양수를 입력해주세요!", value = 1)
 	private int intervalTime;
 
 	public LineRequest() {

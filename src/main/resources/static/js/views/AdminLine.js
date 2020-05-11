@@ -28,34 +28,46 @@ function AdminLine() {
         }
     };
 
-    const settingLineList = (statusCode, res) => {
+    const settingLineList = (statusCode, res, newSubwayLine) => {
         if (res.status !== statusCode) {
+            res.json().then(data => {
+                let errors = "";
+                console.log(data["errors"]);
+                data["errors"].forEach(
+                    err => errors += err['defaultMessage']
+                );
+                return alert(errors)
+            });
             linesInfo.clear();
             return;
         }
-        res.json().then(res => {
-            if (changeInfo.target !== null) {
-                updateSubwayLineList(res);
-            } else {
-                addSubwayLineList(res);
-            }
-            linesInfo.setBy(res);
-        });
+
+        if (changeInfo.target !== null) {
+            console.log(newSubwayLine);
+            updateSubwayLineList(newSubwayLine);
+        } else {
+            let strings = res.headers.get("Location").split("/");
+            const id = strings[strings.length - 1];
+            addSubwayLineList(newSubwayLine, id);
+        }
+
+        linesInfo.setBy(res);
     };
 
-    const addSubwayLineList = newSubwayLine => {
+    const addSubwayLineList = (newSubwayLine, id) => {
+        newSubwayLine['id'] = id;
         $subwayLineList.insertAdjacentHTML(
             "beforeend",
             subwayLinesTemplate(newSubwayLine)
         );
     };
 
-    const updateSubwayLineList = res => {
+    const updateSubwayLineList = newSubwayLine => {
         changeInfo.target.querySelector("span").classList.remove(
             changeInfo.beforeColor);
-        changeInfo.target.querySelector("span").classList.add(res.color);
+        changeInfo.target.querySelector("span").classList.add(newSubwayLine.color);
         changeInfo.target.innerHTML = changeInfo.target.innerHTML.replace(
-            changeInfo.beforeName, res.name);
+            changeInfo.beforeName, newSubwayLine.name);
     };
 
     const onSelectSubwayLine = event => {
@@ -96,7 +108,7 @@ function AdminLine() {
         const lineId = $target.closest(".subway-line-item").dataset.lineId;
         api.line.delete("/" + lineId).then(res => {
             if (res.status !== 200) {
-                alert("삭제불가!");
+                console.log(res.body);
                 return;
             }
             $target.closest(".subway-line-item").remove()
@@ -106,7 +118,7 @@ function AdminLine() {
     const initDefaultSubwayLines = () => {
         api.line.get().then(newSubwayLines => {
             newSubwayLines.forEach(newSubwayLine => {
-                addSubwayLineList(newSubwayLine)
+                addSubwayLineList(newSubwayLine, newSubwayLine['id'])
             })
         });
     };
@@ -131,7 +143,8 @@ function AdminLine() {
         let newSubwayLine = subwayLineModal.makeFrom();
         console.log(newSubwayLine);
         api.line.create(newSubwayLine).then(
-            res => settingLineList(201, res));
+            res => settingLineList(201, res, newSubwayLine))
+        // .catch(err => alert(err))
         subwayLineModal.toggle();
     };
 
@@ -139,7 +152,8 @@ function AdminLine() {
         let newSubwayLine = subwayLineModal.makeFrom();
         api.line.update("/" + subwayLineModal.subwayLineId(),
             newSubwayLine).then(
-            res => settingLineList(200, res));
+            res => settingLineList(200, res, newSubwayLine))
+        // .catch(err => alert(err));
         subwayLineModal.toggle();
     };
 
