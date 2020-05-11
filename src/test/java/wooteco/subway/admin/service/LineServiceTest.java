@@ -8,21 +8,34 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.StationRepository;
 
+@Sql("/truncate.sql")
 @SpringBootTest
 public class LineServiceTest {
 	@Autowired
 	private LineService lineService;
 	@Autowired
 	private StationService stationService;
+	@Autowired
+	private LineRepository lineRepository;
+	@Autowired
+	private StationRepository stationRepository;
 
+	@Transactional
 	@BeforeEach
 	void setUp() {
+		lineRepository.deleteAll();
+		stationRepository.deleteAll();
+
 		lineService.save(new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bgColor"));
 
 		stationService.save(new Station("역1"));
@@ -35,13 +48,14 @@ public class LineServiceTest {
 		lineService.addLineStation(1L, new LineStation(2L, 3L, 10, 10));
 	}
 
+	@Transactional
 	@Test
 	void saveTest() {
 		Line persistLine = lineService.findLine(1L);
 
 		assertThat(persistLine).isNotNull();
 	}
-
+	@Transactional
 	@Test
 	void addLineStationAtTheFirstOfLine() {
 		lineService.addLineStation(1L, new LineStation(null, 4L, 10, 10));
@@ -53,7 +67,7 @@ public class LineServiceTest {
 		assertThat(line.getStations().get(2).getId()).isEqualTo(2L);
 		assertThat(line.getStations().get(3).getId()).isEqualTo(3L);
 	}
-
+	@Transactional
 	@Test
 	void addLineStationBetweenTwo() {
 		lineService.addLineStation(1L, new LineStation(1L, 4L, 10, 10));
@@ -65,7 +79,7 @@ public class LineServiceTest {
 		assertThat(line.getStations().get(2).getId()).isEqualTo(2L);
 		assertThat(line.getStations().get(3).getId()).isEqualTo(3L);
 	}
-
+	@Transactional
 	@Test
 	void addLineStationAtTheEndOfLine() {
 		lineService.addLineStation(1L, new LineStation(3L, 4L, 10, 10));
@@ -78,7 +92,7 @@ public class LineServiceTest {
 		assertThat(line.getStations().get(2).getId()).isEqualTo(3L);
 		assertThat(line.getStations().get(3).getId()).isEqualTo(4L);
 	}
-
+	@Transactional
 	@Test
 	void removeLineStationAtTheFirstOfLine() {
 		lineService.removeLineStation(1L, 1L);
@@ -89,7 +103,7 @@ public class LineServiceTest {
 		assertThat(line.getStations().get(0).getId()).isEqualTo(2L);
 		assertThat(line.getStations().get(1).getId()).isEqualTo(3L);
 	}
-
+	@Transactional
 	@Test
 	void removeLineStationBetweenTwo() {
 		lineService.removeLineStation(1L, 2L);
@@ -100,7 +114,7 @@ public class LineServiceTest {
 		assertThat(line.getStations().get(0).getId()).isEqualTo(1L);
 		assertThat(line.getStations().get(1).getId()).isEqualTo(3L);
 	}
-
+	@Transactional
 	@Test
 	void removeLineStationAtTheEndOfLine() {
 		lineService.removeLineStation(1L, 3L);
