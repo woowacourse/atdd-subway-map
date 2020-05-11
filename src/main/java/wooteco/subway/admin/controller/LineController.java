@@ -50,9 +50,9 @@ public class LineController {
 
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        // if(lineService.contains(lineRequest.getName())) {
-        //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        // }
+        if(lineService.contains(lineRequest.getName())) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         Line persistLine = lineService.save(lineRequest.toLine());
 

@@ -1,8 +1,6 @@
 package wooteco.subway.admin.dto;
 
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import wooteco.subway.admin.domain.Station;
 
