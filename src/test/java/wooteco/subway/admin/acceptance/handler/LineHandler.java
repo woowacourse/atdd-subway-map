@@ -16,7 +16,6 @@ import wooteco.subway.admin.dto.LineResponse;
 
 @Component
 public class LineHandler {
-    // TODO: 2020-05-08 테스트 중복코드 분리가 적절한지? 궁금
     private static RequestSpecification given() {
         return RestAssured.given().log().all();
     }

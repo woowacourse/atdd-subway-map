@@ -91,7 +91,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/line/{id}/stations") // TODO: 2020-05-08 http 요청 메서드과 uri가 적절한지
+    @PostMapping("/line/{id}/stations") // TODO: 2020-05-08 http 요청 메서드과 uri가 적절한지 확인
     public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody
         LineStationCreateRequest lineStationCreateRequest) {
         lineService.addLineStation(id, lineStationCreateRequest);

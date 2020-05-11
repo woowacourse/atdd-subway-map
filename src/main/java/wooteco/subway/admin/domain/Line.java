@@ -38,7 +38,6 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.lineStations = new LinkedHashSet<>();
-        // TODO: 2020/05/11 이부분때문에, showLine하면 스테이션즈가 전달 안됨
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
