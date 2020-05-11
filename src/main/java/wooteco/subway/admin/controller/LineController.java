@@ -47,10 +47,10 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
         @RequestBody LineRequest view) {
-        Line line = lineService.updateLine(id, view.toLine());
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        lineService.updateLine(id, view.toLine());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
@@ -60,10 +60,10 @@ public class LineController {
     }
 
     @PostMapping("/lines/{id}/stations")
-    public ResponseEntity<LineResponse> addLineStation(@PathVariable Long id,
+    public ResponseEntity<Void> addLineStation(@PathVariable Long id,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        LineResponse lineResponse = lineService.addLineStation(id, lineStationCreateRequest);
-        return ResponseEntity.created(URI.create("/line/" + id + "/stations")).body(lineResponse);
+        lineService.addLineStation(id, lineStationCreateRequest);
+        return ResponseEntity.created(URI.create("/line/" + id + "/stations")).build();
     }
 
     @GetMapping("/lines/{id}/stations")

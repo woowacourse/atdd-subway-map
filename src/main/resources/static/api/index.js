@@ -49,7 +49,7 @@ const api = (() => {
   };
 
   const line = {
-    get() {
+    get(id) {
       return request(`/lines/${id}`).then(data => data.json());
     },
     create(data) {
@@ -70,8 +70,8 @@ const api = (() => {
   };
 
   const lineStation = {
-    get() {
-      return request(`/lines-response`).then(data => data.json());
+    get(id) {
+      return request(`/lines/${id}/stations`).then(data => data.json());
     },
     create(id, data) {
       return request(`/lines/${id}/stations`, METHOD.POST(data)).then(data => data.json());

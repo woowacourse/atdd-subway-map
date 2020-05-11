@@ -59,7 +59,8 @@ function AdminLine() {
 
   const updateSubwayLine = async newSubwayLine => {
     try {
-      const updatedLine = await api.line.update(edit, newSubwayLine);
+      await api.line.update(edit, newSubwayLine);
+      const updatedLine = await api.line.get(edit);
       const standardNode = document.querySelector(`div[data-id="${edit}"]`);
       const divNode = document.createElement("div");
       divNode.innerHTML = subwayLinesTemplate(updatedLine);

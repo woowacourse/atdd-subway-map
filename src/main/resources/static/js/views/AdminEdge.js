@@ -57,7 +57,8 @@ function AdminEdge() {
       stationId: subwayStations.find(station => station.name === $arrivalStationInput.value).id,
     };
     try {
-      const newLine = await api.lineStation.create(lineId, newLineStation);
+      await api.lineStation.create(lineId, newLineStation);
+      const newLine = await api.lineStation.get(lineId);
       subwayLines = subwayLines.filter(subwayLine => subwayLine.id !== newLine.id);
       subwayLines.push(newLine);
       initSubwayLinesSlider();

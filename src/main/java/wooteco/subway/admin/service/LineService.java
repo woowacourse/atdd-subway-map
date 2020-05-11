@@ -2,7 +2,6 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,17 +44,17 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public Line updateLine(Long id, Line line) {
+    public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
+    public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
 
@@ -65,13 +64,7 @@ public class LineService {
         }
 
         line.addLineStation(request.toLineStation());
-        Line persistLine = lineRepository.save(line);
-
-        if (Objects.isNull(line.getId())) {
-            return LineResponse.of(line);
-        }
-
-        return findLineWithStationsById(persistLine.getId());
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
