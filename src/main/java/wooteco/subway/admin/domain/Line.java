@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.domain.vo.BgColor;
 import wooteco.subway.admin.domain.vo.LineTimeTable;
 import wooteco.subway.admin.domain.vo.Stations;
 
@@ -19,13 +20,14 @@ public class Line {
     @MappedCollection
     @Embedded.Empty
     private Stations stations;
-    private String bgColor;
+    @Embedded.Nullable
+    private BgColor bgColor;
 
     public Line() {
     }
 
     public Line(Long id, String name, LineTimeTable lineTimeTable,
-        Stations stations, String bgColor) {
+        Stations stations, BgColor bgColor) {
         this.id = id;
         this.name = name;
         this.lineTimeTable = lineTimeTable;
@@ -38,7 +40,8 @@ public class Line {
         String bgColor) {
         this(id, name,
             new LineTimeTable(startTime, endTime, intervalTime),
-            new Stations(new LinkedList<>()), bgColor);
+            new Stations(new LinkedList<>()),
+            new BgColor(bgColor));
     }
 
     public Line(String name,
@@ -63,7 +66,7 @@ public class Line {
         return stations;
     }
 
-    public String getBgColor() {
+    public BgColor getBgColor() {
         return bgColor;
     }
 

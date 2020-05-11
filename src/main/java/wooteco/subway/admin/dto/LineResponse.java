@@ -39,7 +39,7 @@ public class LineResponse {
             line.getLineTimeTable().getStartTime(),
             line.getLineTimeTable().getEndTime(),
             line.getLineTimeTable().getIntervalTime(),
-            line.getBgColor(), stations);
+            line.getBgColor().getBgColor(), stations);
     }
 
     public static LineResponse of(Line line) {

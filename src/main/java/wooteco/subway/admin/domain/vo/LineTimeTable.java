@@ -23,9 +23,6 @@ public class LineTimeTable {
         if (Objects.isNull(endTime)) {
             throw new IllegalArgumentException("Line.endTime은 null일 수 없습니다.");
         }
-        if (startTime.compareTo(endTime) >= 0) {
-            throw new IllegalArgumentException("Line.startTime은 Line.endTime보다 늦을 수 없습니다.");
-        }
         if (intervalTime <= 0) {
             throw new IllegalArgumentException("Line.inttervalTime은 0이하일 수 없습니다.");
         }
