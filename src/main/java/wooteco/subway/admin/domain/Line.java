@@ -1,14 +1,15 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Line {
+    public static final String FIRST_STATION_NOT_FOUND = "시작역을 찾을 수 없습니다.";
+    public static final String WRONG_STATION_NAME = "잘못된 역명입니다.";
+
     @Id
     private Long id;
     private String name;
@@ -105,22 +106,22 @@ public class Line {
     }
 
     private void realignPreviousLinks(LineStation lineStation) {
-        if (isInsertingAtFirst(lineStation)){
+        if (isFirstStation(lineStation)) {
             LineStation firstStation = stations.stream()
                     .filter(eachLineStation -> eachLineStation.getPreStationId() == null)
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("노선 시작점이 없습니다."));
+                    .orElseThrow(() -> new NullPointerException(FIRST_STATION_NOT_FOUND));
             firstStation.updatePreLineStation(lineStation.getStationId());
-        }else if(isInsertingBetween(lineStation)) {
+        } else if (isInsertingBetween(lineStation)) {
             LineStation previousLineStation = stations.stream()
                     .filter(eachLineStation -> lineStation.getPreStationId().equals(eachLineStation.getPreStationId()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("잘못된 역명입니다."));
+                    .orElseThrow(() -> new IllegalArgumentException(WRONG_STATION_NAME));
             previousLineStation.updatePreLineStation(lineStation.getStationId());
         }
     }
 
-    private boolean isInsertingAtFirst(LineStation lineStation) {
+    private boolean isFirstStation(LineStation lineStation) {
         return lineStation.getPreStationId() == null;
     }
 
@@ -157,7 +158,7 @@ public class Line {
         LineStation firstLineStation = stations.stream()
                 .filter(lineStation -> lineStation.getPreStationId() == null)
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new NullPointerException(FIRST_STATION_NOT_FOUND));
 
         List<Long> stationIds = new ArrayList<>();
 
