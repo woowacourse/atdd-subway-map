@@ -78,8 +78,8 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/stations")
-    public ResponseEntity addStation(@PathVariable Long id,
+    @PostMapping("/{lineId}/stations")
+    public ResponseEntity addStation(@PathVariable Long lineId,
                                      @RequestBody HashMap<String, String> map) {
         Long preStationId = stationService.findStationId(map.get("preStationName"));
         Long stationId = stationService.findStationId(map.get("stationName"));
@@ -91,7 +91,7 @@ public class LineController {
                         Integer.parseInt(map.get("distance")),
                         Integer.parseInt(map.get("duration")));
 
-        lineService.addLineStation(id, lineStationCreateRequest);
+        lineService.addLineStation(lineId, lineStationCreateRequest);
         return ResponseEntity.ok().build();
     }
 

@@ -16,11 +16,15 @@ function AdminStation() {
             })
     };
 
-    const onAddStationHandler = event => {
+    const onAddStationHandlerPressEnter = event => {
         if (event.key !== KEY_TYPE.ENTER) {
             return;
         }
         event.preventDefault();
+        addStation();
+    };
+
+    function addStation() {
         const $stationNameInput = document.querySelector("#station-name");
         const stationName = $stationNameInput.value;
         if (!stationName) {
@@ -36,14 +40,17 @@ function AdminStation() {
                 name: stationName
             })
         }).then(res => {
-            if (res.ok) {
-                res.json().then(data => {
-                    $stationNameInput.value = "";
-                    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
-                })
+            if (!res.ok) {
+                throw res
             }
+            res.json().then(data => {
+                $stationNameInput.value = "";
+                $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+            })
+        }).catch(error => {
+            error.text().then(msg => alert(msg));
         })
-    };
+    }
 
     const onRemoveStationHandler = event => {
         const $target = event.target;
@@ -63,8 +70,8 @@ function AdminStation() {
     };
 
     const initEventListeners = () => {
-        $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
-        $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler)
+        $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandlerPressEnter);
+        $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, addStation)
         $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     };
 

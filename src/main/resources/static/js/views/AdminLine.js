@@ -56,30 +56,11 @@ function AdminLine() {
                     })
                 }
             ).catch(error => {
-            error.text().then(text => {
-                alert(text);
-            })
+            error.text().then(msg => alert(msg));
         });
 
         subwayLineModal.toggle();
     };
-
-    const onDeleteSubwayLine = event => {
-        const $target = event.target;
-        const $id = $target.closest(".subway-line-item").dataset.lineId;
-        console.log($id);
-        const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton && confirm("지우시겠습니까?")) {
-            fetch("/lines/" + $id, {
-                method: 'delete'
-            }).then(res => {
-                if (res.ok) {
-                    $target.closest(".subway-line-item").remove();
-                }
-            });
-        }
-    };
-
 
     const onUpdateSubwayLine = event => {
         $isEdit = true;
@@ -106,6 +87,23 @@ function AdminLine() {
         }
     };
 
+
+    const onDeleteSubwayLine = event => {
+        const $target = event.target;
+        const $id = $target.closest(".subway-line-item").dataset.lineId;
+        console.log($id);
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (isDeleteButton && confirm("지우시겠습니까?")) {
+            fetch("/lines/" + $id, {
+                method: 'delete'
+            }).then(res => {
+                if (res.ok) {
+                    $target.closest(".subway-line-item").remove();
+                }
+            });
+        }
+    };
+
     const onEditSubwayLine = () => {
         let url = "/lines/" + $editId;
         let editRequest = {
@@ -124,10 +122,12 @@ function AdminLine() {
         fetch(url, editRequest)
             .then(res => {
                     if (!res.ok) {
-                        alert("중복된 이름입니다");
+                        throw res;
                     }
                 }
-            );
+            ).catch(error => {
+                error.text().then(msg => alert(msg));
+        })
         subwayLineModal.toggle();
     };
 

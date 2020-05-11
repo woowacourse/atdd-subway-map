@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final String ERROR_MESSAGE_NAME_OVER_LAP = "존재하는 이름입니다";
+    private static final String ERROR_MESSAGE_NOT_EXIST_LINE_ID = "해당 아이디의 노선이 존재하지 않습니다";
+
     private LineRepository lineRepository;
     private LineStationRepository lineStationRepository;
     private StationRepository stationRepository;
@@ -36,13 +39,15 @@ public class LineService {
     public void validateTitle(Line line) {
         lineRepository.findByTitle(line.getTitle())
                 .ifPresent(x -> {
-                    throw new IllegalArgumentException("존재하는 이름입니다");
+                    throw new IllegalArgumentException(ERROR_MESSAGE_NAME_OVER_LAP);
                 });
     }
 
     public void updateLine(Long id, Line line) {
         validateTitleWhenUpdateInfo(id, line);
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id).orElseThrow(()->{
+            throw new IllegalArgumentException(ERROR_MESSAGE_NAME_OVER_LAP);
+        });
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
@@ -62,15 +67,10 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
-        LineStation toInput = new LineStation(
-                request.getPreStationId(),
-                request.getStationId(),
-                request.getDistance(),
-                request.getDuration());
-
+    public void addLineStation(Long lineId, LineStationCreateRequest request) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
+        LineStation toInput = LineStation.of(request);
         line.updatePreStationWhenAdd(toInput);
         line.addLineStation(toInput);
         lineRepository.save(line);
@@ -82,7 +82,7 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
         List<StationResponse> stations = getStationsByLine(line);
         return LineResponse.of(line, new LinkedHashSet<>(stations));
     }
@@ -96,7 +96,7 @@ public class LineService {
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_EXIST_LINE_ID));
         line.updatePreStationWhenRemove(stationId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
