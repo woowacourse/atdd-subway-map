@@ -40,7 +40,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLine() {
-        return LineResponse.listOf(showLines(), mappingLineStation());
+        return LineResponse.listOf(showLines(), mapLineAndStation());
     }
 
     public void updateLine(Long id, Line line) {
@@ -92,7 +92,7 @@ public class LineService {
         return stationRepository.findAllById(stationIds);
     }
 
-    private Map<Long, Set<Station>> mappingLineStation() {
+    private Map<Long, Set<Station>> mapLineAndStation() {
         Map<Long, Set<Station>> mappingLineStation = new HashMap<>();
         List<Line> lines = showLines();
         for (Line line : lines) {
