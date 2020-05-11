@@ -1,6 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -61,13 +61,14 @@ public class LineStationAcceptanceTest {
 
         // Then 지하철역이 노선에 추가 되었다.
         LineResponse line = lines.get(0);
-        addLineStation(String.valueOf(line.getId()), "", String.valueOf(stations.get(0).getId()), "10", "10");
+        addLineStation(String.valueOf(line.getId()), null, String.valueOf(stations.get(0).getId()),
+            "10", "10");
         addLineStation(String.valueOf(line.getId()), String.valueOf(stations.get(0).getId()),
-                String.valueOf(stations.get(1).getId()), "10", "10");
+            String.valueOf(stations.get(1).getId()), "10", "10");
         addLineStation(String.valueOf(line.getId()), String.valueOf(stations.get(1).getId()),
-                String.valueOf(stations.get(2).getId()), "10", "10");
-        addLineStation(String.valueOf(line.getId()), String.valueOf(stations.get(2).getId()),
-                String.valueOf(stations.get(3).getId()), "10", "10");
+            String.valueOf(stations.get(2).getId()), "10", "10");
+        addLineStation(String.valueOf(line.getId()), null,
+            String.valueOf(stations.get(3).getId()), "10", "10");
 
         // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
         List<LineStationsResponse> lineStations = getLineStations();
@@ -80,19 +81,23 @@ public class LineStationAcceptanceTest {
         LineStationsResponse lineStationsResponse = lineStations.get(0);
         List<LineStationResponse> lineStationResponses = lineStationsResponse.getStations();
         List<Long> lineStationIds = convertToStationIds(lineStationResponses);
-        assertThat(lineStationIds).contains((stations.get(0).getId()));
-        assertThat(lineStationIds).contains((stations.get(1).getId()));
-        assertThat(lineStationIds).contains((stations.get(2).getId()));
-        assertThat(lineStationIds).contains((stations.get(3).getId()));
+        assertThat(lineStationIds.get(0)).isEqualTo(stations.get(3).getId());
+        assertThat(lineStationIds.get(1)).isEqualTo(stations.get(0).getId());
+        assertThat(lineStationIds.get(2)).isEqualTo(stations.get(1).getId());
+        assertThat(lineStationIds.get(3)).isEqualTo(stations.get(2).getId());
 
         // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
         // Then 지하철역이 노선에서 제거 되었다
         // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-        LineStationResponse lineStationResponse = lineStationResponses.get(0);
-        deleteLineStation(String.valueOf(line.getId()), String.valueOf(lineStationResponse.getId()));
+        LineStationResponse lineStationResponse = lineStationResponses.get(1);
+        deleteLineStation(String.valueOf(line.getId()),
+            String.valueOf(lineStationResponse.getId()));
         List<LineStationsResponse> lineStationsResponse2 = getLineStations();
         List<LineStationResponse> lineStations2 = lineStationsResponse2.get(0).getStations();
         assertThat(lineStations2.size()).isEqualTo(3);
+        assertThat(lineStations2.get(0).getId()).isEqualTo(stations.get(3).getId());
+        assertThat(lineStations2.get(1).getId()).isEqualTo(stations.get(1).getId());
+        assertThat(lineStations2.get(2).getId()).isEqualTo(stations.get(2).getId());
 
         // Then 지하철역 목록을 응답 받는다.
         // And 제외한 지하철역이 목록에 존재하지 않는다.
@@ -102,8 +107,8 @@ public class LineStationAcceptanceTest {
 
     private List<Long> convertToStationIds(List<LineStationResponse> lineStationResponses) {
         return lineStationResponses.stream()
-                .map(LineStationResponse::getId)
-                .collect(Collectors.toList());
+            .map(LineStationResponse::getId)
+            .collect(Collectors.toList());
     }
 
     private void createLine(String name) {
@@ -115,14 +120,14 @@ public class LineStationAcceptanceTest {
         params.put("bgColor", "bg-green-700");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private void createStation(String name) {
@@ -130,38 +135,39 @@ public class LineStationAcceptanceTest {
         params.put("name", name);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/stations").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private List<StationResponse> getStations() {
         return given().
-                when().
-                get("/stations").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", StationResponse.class);
+            when().
+            get("/stations").
+            then().
+            log().all().
+            extract().
+            jsonPath().getList(".", StationResponse.class);
     }
 
     private List<LineResponse> getLines() {
         return given().
-                when().
-                get("/lines").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", LineResponse.class);
+            when().
+            get("/lines").
+            then().
+            log().all().
+            extract().
+            jsonPath().getList(".", LineResponse.class);
     }
 
-    private void addLineStation(String lineId, String preStationId, String stationId, String distance,
-            String duration) {
+    private void addLineStation(String lineId, String preStationId, String stationId,
+        String distance,
+        String duration) {
         Map<String, String> params = new HashMap<>();
         params.put("preStationId", preStationId);
         params.put("stationId", stationId);
@@ -169,31 +175,31 @@ public class LineStationAcceptanceTest {
         params.put("duration", duration);
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines/" + lineId + "/stations").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("/lines/" + lineId + "/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private List<LineStationsResponse> getLineStations() {
         return given().
-                when().
-                get("/lines/stations").
-                then().
-                log().all().
-                extract().
-                jsonPath().getList(".", LineStationsResponse.class);
+            when().
+            get("/lines/stations").
+            then().
+            log().all().
+            extract().
+            jsonPath().getList(".", LineStationsResponse.class);
     }
 
     private void deleteLineStation(String lineId, String stationId) {
         given().
-                when().
-                delete("/lines/" + lineId + "/stations/" + stationId).
-                then().
-                log().all();
+            when().
+            delete("/lines/" + lineId + "/stations/" + stationId).
+            then().
+            log().all();
     }
 }

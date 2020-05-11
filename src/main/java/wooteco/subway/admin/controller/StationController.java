@@ -24,13 +24,13 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(
+    public ResponseEntity<Void> createStation(
         @RequestBody StationCreateRequest stationCreateRequest) {
         StationResponse persistStation = lineService.createStation(stationCreateRequest);
 
         return ResponseEntity
             .created(URI.create("/stations/" + persistStation.getId()))
-            .body(persistStation);
+            .build();
     }
 
     @GetMapping("/stations")
@@ -41,7 +41,7 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{stationId}")
-    public ResponseEntity deleteStation(@PathVariable Long stationId) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long stationId) {
         lineService.deleteStationById(stationId);
 
         return ResponseEntity

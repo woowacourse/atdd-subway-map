@@ -27,14 +27,14 @@ public class LineStationController {
     }
 
     @PostMapping("/{lineId}/stations")
-    ResponseEntity<LineResponse> addLineStation(@PathVariable Long lineId,
+    ResponseEntity<Void> addLineStation(@PathVariable Long lineId,
         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         LineResponse line = lineService.addLineStation(lineId, lineStationCreateRequest);
 
         return ResponseEntity
             .created(URI.create(
                 "/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-            .body(line);
+            .build();
     }
 
     @GetMapping("/{lineId}/stations")
@@ -54,7 +54,8 @@ public class LineStationController {
     }
 
     @DeleteMapping("{lineId}/stations/{stationId}")
-    ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+    ResponseEntity<Void> deleteLineStation(@PathVariable Long lineId,
+        @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
 
         return ResponseEntity
