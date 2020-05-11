@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
@@ -20,6 +21,7 @@ import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort

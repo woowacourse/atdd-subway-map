@@ -1,8 +1,10 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.DuplicateLineException;
 import wooteco.subway.admin.exception.LineNotFoundException;
+import wooteco.subway.admin.exception.StationNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -27,14 +30,18 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if (isDistinct(line.getName())) {
+        try {
+            validateUniquenessOf(line.getName());
             return lineRepository.save(line);
+        } catch (DbActionExecutionException e) {
+            throw new DuplicateLineException(line.getName());
         }
-        throw new DuplicateLineException(line.getName());
     }
 
-    private boolean isDistinct(String name) {
-        return lineRepository.countDistinctByName(name) == 0;
+    private void validateUniquenessOf(String name) {
+        if (lineRepository.countDistinctByName(name) != 0) {
+            throw new DuplicateLineException(name);
+        }
     }
 
     public List<LineResponse> findAllLinesWithStationsById() {
@@ -47,15 +54,15 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
-        List<Station> stations = stationRepository.findAllById(line.getLineStationsId());
+        List<Station> stations = stationRepository.findAllByLineId(line.getId());
         return LineResponse.of(line, stations);
     }
 
-    public Line updateLine(Long id, Line line) {
+    public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -66,8 +73,16 @@ public class LineService {
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
+        validateExistenceOf(request.getStationId());
         persistLine.addLineStation(request.toLineStation());
         lineRepository.save(persistLine);
+    }
+
+    private void validateExistenceOf(final Long stationId) {
+        if (Objects.isNull(stationId)
+            || !stationRepository.findById(stationId).isPresent()) {
+            throw new StationNotFoundException(stationId);
+        }
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

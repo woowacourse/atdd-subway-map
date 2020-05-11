@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.StringUtils;
 
+import wooteco.subway.admin.exception.DuplicateLineStationException;
 import wooteco.subway.admin.exception.InvalidStationInsertionException;
 import wooteco.subway.admin.exception.LineStationNotFoundException;
 
@@ -30,6 +31,7 @@ public class Line {
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
         String bgColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -65,6 +67,11 @@ public class Line {
     }
 
     public void addLineStation(LineStation newLineStation) {
+        if (stations.stream()
+            .anyMatch(station -> station.isDuplicateOf(newLineStation))) {
+            throw new DuplicateLineStationException(newLineStation.getStationId());
+        }
+
         if (newLineStation.isFirst()) {
             stations.stream()
                 .filter(LineStation::isFirst)

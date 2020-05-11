@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
@@ -30,9 +29,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest request) {
         Line saved = lineService.save(request.toLine());
-        return ResponseEntity
-            .created(URI.create("/lines/" + saved.getId()))
-            .body(LineResponse.of(saved));
+        return ResponseEntity.created(URI.create("/lines/" + saved.getId())).build();
     }
 
     @GetMapping
@@ -48,8 +45,8 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id,
         @RequestBody LineRequest request) {
-        Line line = lineService.updateLine(id, request.toLine());
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        lineService.updateLine(id, request.toLine());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -59,17 +56,19 @@ public class LineController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity addStation(@PathVariable("id") Long id,
-        @RequestBody LineStationCreateRequest request) {
+    public ResponseEntity addStation(
+        @PathVariable("id") Long id,
+        @RequestBody LineStationCreateRequest request
+    ) {
         lineService.addLineStation(id, request);
-        return ResponseEntity
-            .created(URI.create("/lines/" + id))
-            .body(lineService.findLineWithStationsById(id));
+        return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
 
     @DeleteMapping("/{lineId}/stations/{stationId}")
-    public ResponseEntity deleteStationFromLine(@PathVariable("lineId") Long lineId,
-        @PathVariable("stationId") Long stationId) {
+    public ResponseEntity deleteStationFromLine(
+        @PathVariable("lineId") Long lineId,
+        @PathVariable("stationId") Long stationId
+    ) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.noContent().build();
     }

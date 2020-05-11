@@ -16,7 +16,7 @@ public class LineResponse {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<Station> stations;
+    private List<StationResponse> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,7 +34,9 @@ public class LineResponse {
         this.bgColor = bgColor;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stations = stations;
+        this.stations = stations.stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
     public static LineResponse of(Line line) {
@@ -81,7 +83,7 @@ public class LineResponse {
         return bgColor;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 

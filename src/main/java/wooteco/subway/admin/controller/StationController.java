@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 @RestController
@@ -30,8 +29,7 @@ public class StationController {
         Station station = stationRequest.toStation();
         Station persistStation = stationRepository.save(station);
         return ResponseEntity
-            .created(URI.create("/stations/" + persistStation.getId()))
-            .body(StationResponse.of(persistStation));
+            .created(URI.create("/stations/" + persistStation.getId())).build();
     }
 
     @GetMapping

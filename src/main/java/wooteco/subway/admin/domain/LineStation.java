@@ -26,6 +26,10 @@ public class LineStation {
         return stationId.equals(other.preStationId);
     }
 
+    public boolean isDuplicateOf(LineStation other) {
+        return stationId.equals(other.stationId);
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }
