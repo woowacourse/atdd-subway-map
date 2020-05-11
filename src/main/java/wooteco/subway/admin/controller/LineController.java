@@ -28,7 +28,7 @@ public class LineController {
 	}
 
 	@PostMapping("/lines")
-	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
+	public ResponseEntity<Void> createLine(@RequestBody LineRequest view) {
 		Line persistLine = service.save(view.toLine());
 
 		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId())).build();

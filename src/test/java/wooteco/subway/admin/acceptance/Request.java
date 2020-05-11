@@ -11,11 +11,12 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import io.restassured.response.Response;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 public class Request {
-	public static void createLine(String name) {
+	public static Long createLine(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("title", name);
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -23,15 +24,21 @@ public class Request {
 		params.put("bgColor", "bg-red-400");
 		params.put("intervalTime", "10");
 
-		given().
+		Response post = given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
-			post("/lines").
-			then().
+			post("/lines");
+
+		post.then().
 			log().all().
 			statusCode(HttpStatus.CREATED.value());
+
+		String location = post.header("Location");
+
+		char id = location.charAt(location.length() - 1);
+		return Long.valueOf(String.valueOf(id));
 	}
 
 	public static void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -78,22 +85,27 @@ public class Request {
 			.then()
 			.log().all()
 			.extract().as(LineResponse.class);
-
 	}
 
-	public static void createStation(String name) {
+	public static Long createStation(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 
-		given().
+		Response post = given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
-			post("/stations").
-			then().
+			post("/stations");
+
+		post.then().
 			log().all()
 			.statusCode(HttpStatus.CREATED.value());
+
+		String location = post.header("Location");
+
+		char id = location.charAt(location.length() - 1);
+		return Long.valueOf(String.valueOf(id));
 	}
 
 	public static List<StationResponse> getStations(Long id) {
@@ -128,6 +140,6 @@ public class Request {
 			.when()
 			.delete("/lines/" + lineId + "/stations/" + stationId)
 			.then()
-			.log().all();
+			.log().all().statusCode(HttpStatus.NO_CONTENT.value());
 	}
 }

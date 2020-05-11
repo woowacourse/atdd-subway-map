@@ -26,10 +26,7 @@ public class LineService {
 	}
 
 	public Line save(Line line) {
-		boolean isDuplicated = lineRepository.findAll()
-			.stream()
-			.anyMatch(existLine -> existLine.isSameTitle(line));
-		if (isDuplicated) {
+		if (isDuplicatedTitle(line.getTitle())) {
 			throw new DuplicatedValueException(line.getTitle());
 		}
 
@@ -48,6 +45,9 @@ public class LineService {
 	}
 
 	public void updateLine(Long id, Line line) {
+		if (isDuplicatedTitle(line.getTitle())) {
+			throw new DuplicatedValueException(line.getTitle());
+		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
 		lineRepository.save(persistLine);
@@ -88,5 +88,10 @@ public class LineService {
 			.collect(Collectors.toList());
 
 		return LineResponse.of(persistLine, StationResponse.of(stations));
+	}
+
+	private boolean isDuplicatedTitle(String title) {
+		return lineRepository.findByName(title)
+			.isPresent();
 	}
 }

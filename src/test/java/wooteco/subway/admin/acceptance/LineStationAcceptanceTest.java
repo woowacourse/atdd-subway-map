@@ -3,9 +3,7 @@ package wooteco.subway.admin.acceptance;
 import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.admin.acceptance.Request.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
@@ -58,24 +54,31 @@ public class LineStationAcceptanceTest {
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
 	void manageLineStation() {
-		createStation("신촌");
-		createStation("잠실");
+		Long 신촌Id = createStation("신촌");
+		Long 잠실Id = createStation("잠실");
 
-		createLine("1호선");
-		createLine("2호선");
+		Long 호선1Id = createLine("1호선");
+		Long 호선2Id = createLine("2호선");
 
-		addLineStation(1L, null, 1L);
-		addLineStation(1L, 1L, 2L);
-		LineResponse line = getLine(1L);
+		addLineStation(호선1Id, null, 신촌Id);
+		addLineStation(호선1Id, 신촌Id, 잠실Id);
+		LineResponse line = getLine(호선1Id);
 		assertThat(line.getStations()).hasSize(2);
 
-		List<String> stationIds = getStations(line.getId()).stream()
+		List<String> stationNames = getStations(line.getId()).stream()
 			.map(StationResponse::getName)
 			.collect(Collectors.toList());
-		assertThat(stationIds).contains("잠실", "신촌");
+		assertThat(stationNames).contains("잠실", "신촌");
 
-		deleteLineStation(1L, 1L);
-		line = getLine(1L);
+		deleteLineStation(호선1Id, 신촌Id);
+
+		line = getLine(호선1Id);
 		assertThat(line.getStations()).hasSize(1);
+
+		stationNames = getStations(line.getId()).stream()
+			.map(StationResponse::getName)
+			.collect(Collectors.toList());
+		assertThat(stationNames).contains("잠실");
+		assertThat(stationNames).doesNotContain("신촌");
 	}
 }

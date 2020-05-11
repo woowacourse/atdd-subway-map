@@ -21,9 +21,8 @@ public class StationService {
 	}
 
 	public Station save(Station station) {
-		boolean isDuplicated = findAllStations()
-			.stream()
-			.anyMatch(existStation -> existStation.isSameName(station));
+		boolean isDuplicated = stationRepository.findByName(station.getName())
+			.isPresent();
 		if (isDuplicated) {
 			throw new DuplicatedValueException(station.getName());
 		}
