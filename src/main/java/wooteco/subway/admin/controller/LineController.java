@@ -35,13 +35,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(
-                lineRequest.getTitle(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime(),
-                lineRequest.getBgColor()
-        );
+        Line line = LineRequest.toLine(lineRequest);
         Line savedLine = lineService.save(line);
         return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
     }
@@ -61,13 +55,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = new Line(
-                lineRequest.getTitle(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime(),
-                lineRequest.getBgColor()
-        );
+        Line line = LineRequest.toLine(lineRequest);
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
     }
@@ -84,8 +72,8 @@ public class LineController {
         Long preStationId = stationService.findStationId(req.getPreStationName());
         Long stationId = stationService.findStationId(req.getStationName());
 
-        LineStation lineStation = new LineStation(preStationId, stationId,
-                req.getDistance(), req.getDuration());
+        LineStation lineStation = new LineStation(
+                preStationId, stationId, req.getDistance(), req.getDuration());
 
         lineService.addLineStation(lineId, lineStation);
         return ResponseEntity.ok().build();
