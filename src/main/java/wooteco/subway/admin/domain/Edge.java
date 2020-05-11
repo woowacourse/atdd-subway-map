@@ -6,8 +6,8 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Edge {
     private Long preStationId;
     private Long stationId;
-    private int distance;
-    private int duration;
+    private Integer distance;
+    private Integer duration;
 
     private Edge() {
     }
@@ -26,6 +26,14 @@ public class Edge {
         this.duration = duration;
     }
 
+    public void updatePreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public boolean isFirstEdge() {
+        return preStationId == null;
+    }
+
     public Long getPreStationId() {
         return preStationId;
     }
@@ -34,11 +42,11 @@ public class Edge {
         return stationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 }

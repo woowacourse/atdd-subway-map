@@ -10,13 +10,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.EdgeAddRequest;
+import wooteco.subway.admin.dto.request.EdgeCreateRequest;
+import wooteco.subway.admin.dto.response.LineResponse;
 import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,19 +64,24 @@ public class EdgeAcceptanceTest {
         Station station1 = createStation("잠실역");
         Station station2 = createStation("삼성역");
         Station station3 = createStation("강변역");
-        Line line = createLine("2호선");
+        List<Station> stations = new ArrayList<>();
+        stations.add(station1);
+        stations.add(station2);
+        stations.add(station3);
+
+        LineResponse lineResponse = createLine("2호선");
 
         //when 노선 추가
-        EdgeAddRequest edgeAddRequest1 = new EdgeAddRequest(null, "잠실역", 10, 10);
-        EdgeAddRequest edgeAddRequest2 = new EdgeAddRequest("잠실역", "삼성역", 10, 10);
-        EdgeAddRequest edgeAddRequest3 = new EdgeAddRequest("삼성역", "강변역", 10, 10);
+        EdgeCreateRequest edgeCreateRequest1 = new EdgeCreateRequest(null, "잠실역", 10, 10);
+        EdgeCreateRequest edgeCreateRequest2 = new EdgeCreateRequest("잠실역", "삼성역", 10, 10);
+        EdgeCreateRequest edgeCreateRequest3 = new EdgeCreateRequest("삼성역", "강변역", 10, 10);
 
-        addEdge(line.getId(), edgeAddRequest1);
-        addEdge(line.getId(), edgeAddRequest2);
-        StationsAtLineResponse response = addEdge(line.getId(), edgeAddRequest3);
+        createEdge(lineResponse.getId(), edgeCreateRequest1);
+        createEdge(lineResponse.getId(), edgeCreateRequest2);
+        StationsAtLineResponse response = createEdge(lineResponse.getId(), edgeCreateRequest3);
 
         //then
-        assertThat(response.getId()).isEqualTo(line.getId());
+        assertThat(response.getId()).isEqualTo(lineResponse.getId());
         assertThat(response.getStations().size()).isEqualTo(3);
 
         //when 노선의 지하철역 조회
@@ -89,7 +95,7 @@ public class EdgeAcceptanceTest {
         assertThat(savedStationNames).contains("삼성역");
 
         //when 노선의 특정 지하철역 제거
-        deleteEdge(line.getId(), station3.getId());
+        deleteEdge(lineResponse.getId(), station3.getId());
 
         //then
         List<StationsAtLineResponse> deletedEdges = findAllEdges();
@@ -100,7 +106,7 @@ public class EdgeAcceptanceTest {
 
     private void deleteEdge(Long lineId, Long stationId) {
         given().when()
-                .delete("/Edges/" + lineId + "/" + stationId)
+                .delete("/lines/" + lineId + "/edges/" + stationId)
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
@@ -109,7 +115,7 @@ public class EdgeAcceptanceTest {
     private List<StationsAtLineResponse> findAllEdges() {
         return given().
                 when().
-                get("/Edges").
+                get("/edges").
                 then().
                 log().all().
                 extract().
@@ -131,7 +137,7 @@ public class EdgeAcceptanceTest {
                 .as(Station.class);
     }
 
-    private Line createLine(String name) {
+    private LineResponse createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("bgColor", "bg-green-500");
@@ -147,15 +153,15 @@ public class EdgeAcceptanceTest {
                 post("/lines").
                 then().
                 log().all().
-                extract().as(Line.class);
+                extract().as(LineResponse.class);
     }
 
-    private StationsAtLineResponse addEdge(Long lineId, EdgeAddRequest request) {
+    private StationsAtLineResponse createEdge(Long lineId, EdgeCreateRequest request) {
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/Edges/" + lineId)
+                .post("/lines/" + lineId + "/edges")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .log().all()

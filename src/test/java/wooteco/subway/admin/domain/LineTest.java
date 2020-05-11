@@ -18,6 +18,10 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line(1L, "2호선", "bg-green-500", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        Station station1 = new Station(1L, "잠실역");
+        Station station2 = new Station(2L, "강변역");
+        Station station3 = new Station(3L, "구의역");
+
         line.addEdge(new Edge(null, 1L, 10, 10));
         line.addEdge(new Edge(1L, 2L, 10, 10));
         line.addEdge(new Edge(2L, 3L, 10, 10));
@@ -35,8 +39,8 @@ public class LineTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeEdge(Long stationId) {
-        line.removeEdgeById(stationId);
+        line.removeEdge(stationId);
 
-        assertThat(line.getStations()).hasSize(2);
+//        assertThat(line.getEdges()).hasSize(2);
     }
 }

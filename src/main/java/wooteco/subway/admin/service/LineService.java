@@ -2,9 +2,10 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Edge;
+import wooteco.subway.admin.domain.Edges;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.EdgeAddRequest;
+import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.request.LineUpdateRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
@@ -12,6 +13,7 @@ import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +22,8 @@ import java.util.stream.Collectors;
 public class LineService {
     private static final String DUPLICATED_STATION_EXCEPTION_MESSAGE = "이미 동일한 역이 존재합니다.";
     private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "존재하지 않는 노선입니다.";
-    private static final String NO_SUCH_STATION_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
+    private static final String NO_SUCH_EDGE_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
+    private static final String REQUIRE_STATION_NAME_EXCEPTION_MESSAGE = "다음역의 이름을 입력해주세요.";
     private static final String REQUIRE_LINE_NAME_EXCEPTION_MESSAGE = "노선의 이름을 입력해주세요.";
 
     private LineRepository lineRepository;
@@ -34,7 +37,7 @@ public class LineService {
     public LineResponse save(LineRequest response) {
         Line line = response.toLine();
         validateLine(line);
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.of(lineRepository.save(line), findStationsAtLine(line));
     }
 
     private void validateLine(Line line) {
@@ -50,13 +53,13 @@ public class LineService {
 
     public LineResponse showLine(Long id) {
         Line line = findLine(id);
-        return LineResponse.of(line);
+        return LineResponse.of(line, findStationsAtLine(line));
     }
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll()
                 .stream()
-                .map(LineResponse::of)
+                .map(line -> LineResponse.of(line, findStationsAtLine(line)))
                 .collect(Collectors.toList());
     }
 
@@ -64,16 +67,18 @@ public class LineService {
         Line updatedLine = request.toLine();
         Line originalLine = findLine(id);
         originalLine.update(updatedLine);
-        return LineResponse.of(lineRepository.save(originalLine));
+        Line persistLine = lineRepository.save(originalLine);
+        return LineResponse.of(persistLine, findStationsAtLine(persistLine));
     }
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public StationsAtLineResponse addEdge(Long lineId, EdgeAddRequest request) {
+    public StationsAtLineResponse addEdge(Long lineId, @Valid EdgeCreateRequest request) {
         Line line = findLine(lineId);
         Edge edge = toEdge(request);
+        //TODO: edge의 prestation, stationid 존재하는지 체크
         line.addEdge(edge);
 
         Line savedLine = lineRepository.save(line);
@@ -93,7 +98,7 @@ public class LineService {
     }
 
     public List<Station> findStationsAtLine(Line savedLine) {
-        List<Edge> edges = savedLine.getStations();
+        Edges edges = savedLine.getEdges();
         List<Station> stations = new ArrayList<>();
 
         for (Edge edge : edges) {
@@ -104,7 +109,7 @@ public class LineService {
 
     public void removeEdge(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-        line.removeEdgeById(stationId);
+        line.removeEdge(stationId);
         lineRepository.save(line);
     }
 
@@ -115,14 +120,17 @@ public class LineService {
 
     private Station findStation(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new IllegalArgumentException(REQUIRE_STATION_NAME_EXCEPTION_MESSAGE));
     }
 
-    private Edge toEdge(EdgeAddRequest request) {
+    private Edge toEdge(EdgeCreateRequest request) {
         Long preStationId = stationRepository.findIdByName(request.getPreStationName());
         Long stationId = stationRepository.findIdByName(request.getStationName());
-        if ((request.getPreStationName() != null && preStationId == null) || stationId == null) {
-            throw new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION_MESSAGE);
+        if ((request.getPreStationName() != null && preStationId == null)) {
+            throw new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE);
+        }
+        if (stationId == null) {
+            throw new IllegalArgumentException(REQUIRE_STATION_NAME_EXCEPTION_MESSAGE);
         }
         return new Edge(preStationId, stationId, request.getDistance(), request.getDuration());
     }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.admin.dto.request.EdgeAddRequest;
+import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.request.LineUpdateRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
@@ -28,7 +28,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLine(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
         LineResponse persistLine = lineService.save(request);
         return ResponseEntity
                 .created(URI.create("/stations/" + persistLine.getId()))
@@ -36,17 +36,17 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity showLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(lineService.showLine(id));
     }
 
     @GetMapping("/lines")
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
         return ResponseEntity.ok().body(lineService.updateLine(id, request));
     }
 
@@ -56,15 +56,14 @@ public class LineController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
-    @GetMapping("/edges")
-    public ResponseEntity showEdges() {
+    @GetMapping("/lines/edges")
+    public ResponseEntity<List<StationsAtLineResponse>> showEdges() {
         List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/edges/{lineId}")
-    public ResponseEntity createEdge(@PathVariable("lineId") Long lineId, @RequestBody EdgeAddRequest request) {
+    @PostMapping("/lines/{lineId}/edges")
+    public ResponseEntity<StationsAtLineResponse> createEdge(@PathVariable("lineId") Long lineId, @RequestBody EdgeCreateRequest request) {
         StationsAtLineResponse response = lineService.addEdge(lineId, request);
 
         return ResponseEntity
@@ -72,7 +71,7 @@ public class LineController {
                 .body(response);
     }
 
-    @DeleteMapping("/edges/{lineId}/{stationId}")
+    @DeleteMapping("/lines/{lineId}/edges/{stationId}")
     public ResponseEntity<Void> deleteEdge(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
         lineService.removeEdge(lineId, stationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

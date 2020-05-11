@@ -9,7 +9,7 @@ public class LineUpdateRequest {
     private LocalTime endTime;
     private int intervalTime;
 
-    public LineUpdateRequest() {
+    private LineUpdateRequest() {
     }
 
     public LocalTime getStartTime() {

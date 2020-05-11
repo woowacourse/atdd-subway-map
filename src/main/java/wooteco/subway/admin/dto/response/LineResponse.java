@@ -5,7 +5,6 @@ import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
@@ -19,6 +18,9 @@ public class LineResponse {
     private LocalDateTime updatedAt;
     private List<Station> stations;
 
+    private LineResponse() {
+    }
+
     public LineResponse(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
         this.id = id;
         this.name = name;
@@ -31,7 +33,7 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(line.getId(),
                 line.getName(),
                 line.getBgColor(),
@@ -40,7 +42,7 @@ public class LineResponse {
                 line.getIntervalTime(),
                 line.getCreatedAt(),
                 line.getUpdatedAt(),
-                new ArrayList<>());
+                stations);
     }
 
     public Long getId() {

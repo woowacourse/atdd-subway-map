@@ -11,7 +11,7 @@ public class LineRequest {
     private LocalTime endTime;
     private int intervalTime;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public String getName() {
