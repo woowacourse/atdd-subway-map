@@ -79,4 +79,8 @@ public class LineService {
             return Collections.EMPTY_SET;
         return Sets.newHashSet(stationRepository.findById(lineId).get());
     }
+
+    public int findStationIdByName(String name) {
+        return stationRepository.findIdByName(name);
+    }
 }

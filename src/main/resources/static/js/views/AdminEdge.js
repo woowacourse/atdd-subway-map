@@ -6,7 +6,8 @@ import Modal from "../../ui/Modal.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const $createLineStationButton = document.querySelector("#subway-line-add-button");
+  const $submitCreateEdgeButton = document.querySelector(
+    "#subway-line-station-create-form #submit-button");
   const $submitLineStationButton = document.querySelector("#submit-button")
   const $subwayLineSelection = document.querySelector('#station-select-options');
   const $subwayDepartStation = document.querySelector('#depart-station-name');
@@ -19,16 +20,6 @@ function AdminEdge() {
   let subwayLines = [];
 
   const initSubwayLinesSlider = () => {
-
-    // let hello = [];
-    // api.line.get().then(data => data.map(line => hello.push(subwayLinesItemTemplate(line))));
-    //
-    // console.log(hello);
-    // console.log("###");
-    // console.log(hello[0]);
-    // console.log(hello.length);
-    // console.log(hello.join(""));
-
     $subwayLinesSlider.innerHTML = subwayLines.map(line => subwayLinesItemTemplate(line)).join("");
 
     tns({
@@ -46,11 +37,8 @@ function AdminEdge() {
   };
 
   const initSubwayLineOptions = () => {
-    api.line.get().then(data => console.log(data));
     const subwayLineOptionTemplate =
-      api.line.get()
-      .then(data => data.map(line => optionTemplate(line)))
-      .then(data => data.join(""));
+      subwayLines.map(line => optionTemplate(line)).join("");
     const $stationSelectOptions = document.querySelector(
       "#station-select-options"
     );
@@ -70,10 +58,15 @@ function AdminEdge() {
       distance: $subwayDistance.value,
       duration: $subwayDuration.value
     };
-    console.log(data);
-    if ($submitLineStationButton) {
-      alert("");
-    }
+    const $id = $subwayLineSelection.querySelector("option:checked").getAttribute("data-line-id");
+    api.line.addLineStation($id, data).then()
+    createSubwayEdgeModal.toggle();
+    $subwayLineSelection.value = "";
+    $subwayDepartStation.value = "";
+    $subwayArrivalStation.value = "";
+    $subwayDistance.value = "";
+    $subwayDuration.value = "";
+    location.reload();
   }
 
   const onRemoveStationHandler = event => {
@@ -85,11 +78,8 @@ function AdminEdge() {
   };
 
   const initEventListeners = () => {
-    $createLineStationButton.addEventListener(EVENT_TYPE.CLICK, onAddLineStationHandler);
-    $subwayLinesSlider.addEventListener(
-      EVENT_TYPE.CLICK,
-      onRemoveStationHandler
-    );
+    $submitCreateEdgeButton.addEventListener(EVENT_TYPE.CLICK, onAddLineStationHandler);
+    $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
   };
 
   const initState = async () => {

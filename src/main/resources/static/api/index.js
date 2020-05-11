@@ -73,6 +73,7 @@ const api = (() => {
     };
 
     return {
+        station,
         line
     };
 })();

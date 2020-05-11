@@ -1,6 +1,6 @@
-export const listItemTemplate = value =>
-  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
-    ${value}
+export const listItemTemplate = station =>
+  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" value="${station.id}">
+    ${station.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
     </button>
@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option data-line-id="${value.id}">${value.name}</option>`;
+export const optionTemplate = value => `<option id="station-select-option" data-line-id="${value.id}">${value.name}</option>`;
 
 const navTemplate =
   `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
@@ -47,6 +47,7 @@ const navTemplate =
 </nav>`;
 
 export const subwayLinesItemTemplate = line => {
+  console.log(line)
   const stationsTemplate = line.stations
   .map(station => listItemTemplate(station))
   .join("");
