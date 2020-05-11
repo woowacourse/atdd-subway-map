@@ -2,9 +2,13 @@ const api = (() => {
   const request = (uri, config) => fetch(uri, config);
 
   const METHOD = {
-    PUT() {
+    PUT(data) {
       return {
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
       };
     },
     DELETE() {
