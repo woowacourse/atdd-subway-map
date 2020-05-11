@@ -114,7 +114,7 @@ public class Line {
         }
 
         Set<LineStation> tmpStations = new LinkedHashSet<>(this.stations);
-        if (lineStation.inBetween(tmpStations)) {
+        if (lineStation.hasSamePreStation(tmpStations)) {
             this.stations.clear();
             updateStations(lineStation, tmpStations);
             return;
@@ -149,12 +149,26 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        for (LineStation lineStation : stations) {
-            if (lineStation.getStationId().equals(stationId)) {
-                stations.remove(lineStation);
-                break;
-            }
+        LineStation lineStation = getLineStationByStationId(stationId);
+        if (lineStation.inBetween(stations)) {
+            LineStation nextLineStation = getLineStationByPrestationId(stationId);
+            nextLineStation.updatePreLineStation(lineStation.getPreStationId());
         }
+        stations.remove(lineStation);
+    }
+
+    private LineStation getLineStationByPrestationId(Long preStationId) {
+        return stations.stream()
+                .filter(lineStation -> lineStation.hasSamePrestationId(preStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+    }
+
+    private LineStation getLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(lineStation -> lineStation.hasSameId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
     }
 
     public List<Long> getLineStationsId() {

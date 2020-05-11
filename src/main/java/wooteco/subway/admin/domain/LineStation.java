@@ -63,8 +63,28 @@ public class LineStation {
         return other.preStationId.equals(preStationId);
     }
 
-    boolean inBetween(Set<LineStation> tmpStations) {
-        return tmpStations.stream()
+    boolean hasSamePreStation(Set<LineStation> stations) {
+        return stations.stream()
                 .anyMatch(this::hasSamePrestation);
+    }
+
+    boolean inBetween(Set<LineStation> stations) {
+        return isNotFirstStatoin() && isNotLastStation(stations);
+    }
+
+    private boolean isNotLastStation(Set<LineStation> stations) {
+        return stations.stream()
+                .anyMatch(lineStation -> lineStation.hasSamePrestationId(stationId));
+    }
+
+    boolean hasSameId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    boolean hasSamePrestationId(Long preStationId) {
+        if (Objects.isNull(this.preStationId) || Objects.isNull(preStationId)) {
+            return false;
+        }
+        return this.preStationId.equals(preStationId);
     }
 }
