@@ -13,19 +13,17 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = 0;
-        this.duration = 0;
-    }
-
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
     }
+
+    public LineStation(Long preStationId, Long stationId) {
+        this(preStationId, stationId, 0, 0);
+    }
+
 
     public Long getPreStationId() {
         return preStationId;
