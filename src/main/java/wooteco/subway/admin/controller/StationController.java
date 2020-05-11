@@ -31,7 +31,7 @@ public class StationController {
         Station persistStation = stationRepository.save(station);
 
         return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
+            .created(URI.create("/api/stations/" + persistStation.getId()))
                 .body(StationResponse.of(persistStation));
     }
 
@@ -44,5 +44,12 @@ public class StationController {
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity getStationIdByName(@PathVariable String name) {
+        return ResponseEntity
+            .ok()
+            .body(stationRepository.findIdByName(name));
     }
 }

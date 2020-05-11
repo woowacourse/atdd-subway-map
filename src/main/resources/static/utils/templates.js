@@ -1,13 +1,13 @@
-export const listItemTemplate = value =>
-  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800">
-    ${value}
+export const listItemTemplate = station =>
+  `<div class="list-item border border-gray-200 py-2 px-4 text-gray-800" value="${station.id}">
+    ${station.name}
     <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
        <span class="mdi mdi-delete"></span>
     </button>
   </div>`;
 
 export const subwayLinesTemplate = line =>
-  `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" value="${line.id}" id="linesss">
+  `<div class="subway-line-item border border-gray-200 py-2 px-4 text-gray-800" value="${line.id}">
       <span class="${line.bgColor} w-3 h-3 rounded-full inline-block mr-1"></span>
       ${line.name}
       <button class="hover:bg-gray-300 hover:text-gray-500 text-gray-300 px-1 rounded-full float-right">
@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = value => `<option id="station-select-option" data-line-id="${value.id}">${value.name}</option>`;
 
 const navTemplate =
   `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
@@ -53,7 +53,7 @@ export const subwayLinesItemTemplate = line => {
   return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
               <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
-              <div class="overflow-y-auto height-90">
+              <div class="overflow-y-auto height-90" id="line-info" data-line-id="${line.id}">
               ${stationsTemplate}
               </div>
             </div>

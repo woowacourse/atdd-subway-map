@@ -8,8 +8,8 @@ function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
-  const $subwayLineFirstTimeInput = document.querySelector("#first-time");
-  const $subwayLineLastTimeInput = document.querySelector("#last-time");
+  const $subwayLineStartTimeInput = document.querySelector("#first-time");
+  const $subwayLineEndTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
 
   const $createSubwayLineButton = document.querySelector(
@@ -22,8 +22,8 @@ function AdminLine() {
     const data = {
       name: $subwayLineNameInput.value,
       bgColor: $subwayLineColorInput.value,
-      firstTime: $subwayLineFirstTimeInput.value + ":00",
-      lastTime: $subwayLineLastTimeInput.value + ":00",
+      startTime: $subwayLineStartTimeInput.value + ":00",
+      endTime: $subwayLineEndTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
     };
     let $id = document.querySelector('#modal-update-condition').getAttribute("value");
@@ -33,8 +33,8 @@ function AdminLine() {
         body: JSON.stringify({
           name: $subwayLineNameInput.value,
           bgColor: $subwayLineColorInput.value,
-          firstTime: $subwayLineFirstTimeInput.value + ":00",
-          lastTime: $subwayLineLastTimeInput.value + ":00",
+          startTime: $subwayLineStartTimeInput.value + ":00",
+          endTime: $subwayLineEndTimeInput.value + ":00",
           intervalTime: $subwayLineIntervalTimeInput.value
         }),
         headers: { "Content-Type": "application/json" }
@@ -43,8 +43,8 @@ function AdminLine() {
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
-        $subwayLineFirstTimeInput.value = "";
-        $subwayLineLastTimeInput.value = "";
+        $subwayLineStartTimeInput.value = "";
+        $subwayLineEndTimeInput.value = "";
         $subwayLineIntervalTimeInput.value = "";
         document.querySelector('#modal-update-condition').value = "";
       })
@@ -58,8 +58,8 @@ function AdminLine() {
         subwayLineModal.toggle();
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
-        $subwayLineFirstTimeInput.value = "";
-        $subwayLineLastTimeInput.value = "";
+        $subwayLineStartTimeInput.value = "";
+        $subwayLineEndTimeInput.value = "";
         $subwayLineIntervalTimeInput.value = "";
       });
     }

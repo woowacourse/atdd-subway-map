@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,20 +102,25 @@ public class Line {
     public void addLineStation(LineStation lineStation) {
         // TODO: 구현
         List<Long> ids = this.findLineStationsId();
-        if (lineStation.getPreStationId() == null || ids.get(ids.size() - 1)
-            .equals(lineStation.getPreStationId())) {
+        if (ids.size() == 0 || ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
             stations.add(lineStation);
             return;
         }
-        for (LineStation station : stations) {
-            if (lineStation.getPreStationId().equals(station.getPreStationId())) {
-                stations.add(lineStation);
-                stations.add(new LineStation(lineStation.getStationId(), station.getStationId(),
-                    station.getDistance(), station.getDuration()));
-                stations.remove(station);
-                break;
-            }
+        if (lineStation.getPreStationId() == null) {
+            stations.stream()
+                .filter(station -> station.getPreStationId() == null)
+                .findFirst()
+                .get()
+                .updatePreLineStation(lineStation.getStationId());
+            stations.add(lineStation);
+            return;
         }
+        stations.stream()
+            .filter(station -> lineStation.getPreStationId().equals(station.getPreStationId()))
+            .findFirst()
+            .get()
+            .updatePreLineStation(lineStation.getStationId());
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
@@ -141,6 +147,8 @@ public class Line {
     public List<Long> findLineStationsId() {
         // TODO: 구현
         List<Long> ids = new ArrayList<>();
+        if (stations.size() == 0)
+            return Collections.EMPTY_LIST;
         for (LineStation station : stations) {
             if (station.getPreStationId() == null) {
                 ids.add(station.getStationId());

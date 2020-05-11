@@ -45,6 +45,12 @@ public class LineResponse {
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
     }
 
+    public static LineResponse convert(Line line, Set<Station> stationsByLineId) {
+        final LineResponse lineResponse = LineResponse.of(line);
+        lineResponse.setStations(stationsByLineId);
+        return lineResponse;
+    }
+
     public void setStations(Set<Station> stations) {
         this.stations = stations;
     }

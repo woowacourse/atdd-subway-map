@@ -42,6 +42,9 @@ const api = (() => {
         },
         delete(id) {
             return deleteRequest(`/api/stations/${id}`, METHOD.DELETE());
+        },
+        getByName(name) {
+            return request(`/api/stations/${name}`);
         }
     };
 
@@ -60,10 +63,20 @@ const api = (() => {
         },
         delete(id) {
             return deleteRequest(`/api/lines/${id}`, METHOD.DELETE());
+        },
+        getLineStations(lineId) {
+            return request(`/api/lines/${lineId}/stations`);
+        },
+        addLineStation(lineId, data) {
+            return request(`/api/lines/${lineId}/stations`, METHOD.POST(data));
+        },
+        deleteLineStation(lineId, stationId) {
+            return deleteRequest(`/api/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
 
     return {
+        station,
         line
     };
 })();

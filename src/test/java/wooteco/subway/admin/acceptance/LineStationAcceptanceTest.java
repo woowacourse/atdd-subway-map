@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -60,19 +61,36 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         //given
-        createStation("오목교역");
-        createStation("목동역");
-        createStation("신정역");
-        createLine("5호선");
+        createStation("일원역");
+        createStation("이대역");
+        createStation("삼성역");
+        createLine("55호선");
         final LineResponse line = getLines().get(0);
         final StationResponse station = getStations().get(0);
 
         //when
         addLineStation(line.getId(), station.getId());
-
         //then
         List<StationResponse> stationResponse = findLineStationsById(line.getId());
         assertThat(stationResponse.size()).isEqualTo(1);
+
+        //when
+        addLineStation(line.getId(), getStations().get(1).getId());
+        List<StationResponse> stationResponses = findLineStationsById(line.getId());
+        //then
+        assertThat(stationResponses).isNotNull();
+        assertThat(stationResponses).contains(StationResponse.of(new Station("이대역")));
+
+        //when
+        deleteLineStation(line.getId(), getStations().get(0).getId());
+        //then
+        assertThat(findLineStationsById(line.getId()).size()).isEqualTo(1);
+
+        //when
+        List<StationResponse> stationResponsesAfterDelete = findLineStationsById(line.getId());
+        //then
+        assertThat(stationResponsesAfterDelete).doesNotContain(
+            StationResponse.of(new Station("일원역")));
     }
 
     private List<StationResponse> findLineStationsById(Long id) {
@@ -136,6 +154,14 @@ public class LineStationAcceptanceTest {
             statusCode(HttpStatus.CREATED.value());
     }
 
+    private void deleteLineStation(Long lineId, Long stationId) {
+        given().
+            when().
+            delete("/api/lines/" + lineId + "/stations/" + stationId).
+            then().
+            log().all();
+    }
+
     private List<LineResponse> getLines() {
         return
             given().
@@ -145,14 +171,6 @@ public class LineStationAcceptanceTest {
                 log().all().
                 extract().
                 jsonPath().getList(".", LineResponse.class);
-    }
-
-    private LineResponse getLine(Long id) {
-        return given().when().
-            get("/api/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
     }
 
     private List<StationResponse> getStations() {
