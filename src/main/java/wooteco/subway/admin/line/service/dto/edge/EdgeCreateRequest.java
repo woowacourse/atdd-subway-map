@@ -4,6 +4,8 @@ import wooteco.subway.admin.line.domain.edge.Edge;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
 
 public class EdgeCreateRequest {
     @NotNull(message = "이전 역 값이 비어있습니다.")
@@ -39,6 +41,10 @@ public class EdgeCreateRequest {
 
     public Integer getDuration() {
         return duration;
+    }
+
+    public List<Long> getAllStationId() {
+        return Arrays.asList(preStationId, stationId);
     }
 
     public Edge toEdge() {

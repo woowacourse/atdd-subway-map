@@ -42,9 +42,9 @@ public class LineServiceMockTest {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new Edge(null, 1L, 10, 10));
-        line.addLineStation(new Edge(1L, 2L, 10, 10));
-        line.addLineStation(new Edge(2L, 3L, 10, 10));
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
     }
 
     @DisplayName("출발역을 추가한다.")

@@ -14,10 +14,14 @@ public class Stations {
     }
 
     public String findNameById(Long stationId) {
+        return findById(stationId)
+                .getName();
+    }
+
+    public Station findById(final Long stationId) {
         return stations.stream()
                 .filter(station -> station.isSameId(stationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(stationId + " : 일치하는 역이 없습니다."))
-                .getName();
+                .orElseThrow(() -> new IllegalArgumentException(stationId + " : 일치하는 역이 없습니다."));
     }
 }

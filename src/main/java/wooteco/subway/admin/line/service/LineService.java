@@ -80,8 +80,19 @@ public class LineService {
     @Transactional
     public void addEdge(Long lineId, EdgeCreateRequest request) {
         Line line = findLineById(lineId);
-        line.addLineStation(request.toEdge());
+
+        checkExistStationIds(request);
+
+        line.addEdge(request.toEdge());
         lineRepository.save(line);
+    }
+
+    private void checkExistStationIds(final EdgeCreateRequest request) {
+        Stations stations = new Stations(stationRepository.findAllById(request.getAllStationId()));
+
+        for (Long stationId : request.getAllStationId()) {
+            stations.findById(stationId);
+        }
     }
 
     @Transactional

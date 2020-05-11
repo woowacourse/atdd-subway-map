@@ -13,7 +13,7 @@ public class Edge {
     private Integer distance;
     private Integer duration;
 
-    public Edge() {
+    private Edge() {
     }
 
     public Edge(Long preStationId, Long stationId, Integer distance, Integer duration) {
@@ -83,4 +83,5 @@ public class Edge {
     public Integer getDuration() {
         return duration;
     }
+
 }

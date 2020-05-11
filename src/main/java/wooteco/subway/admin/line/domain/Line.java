@@ -1,6 +1,8 @@
 package wooteco.subway.admin.line.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Embedded;
 import wooteco.subway.admin.line.domain.edge.Edge;
 import wooteco.subway.admin.line.domain.edge.Edges;
@@ -19,10 +21,12 @@ public class Line {
     private String color;
     @Embedded.Empty
     private Edges edges = Edges.empty();
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
@@ -31,8 +35,6 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.color = color;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
@@ -55,11 +57,9 @@ public class Line {
         if (line.getColor() != null) {
             this.color = line.getColor();
         }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(Edge edge) {
+    public void addEdge(Edge edge) {
         if (edges.contain(edge)) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }

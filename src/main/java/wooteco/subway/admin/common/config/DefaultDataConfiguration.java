@@ -37,9 +37,9 @@ public class DefaultDataConfiguration {
             Station station4 = stationRepository.save(new Station("마곡나루역"));
             Station station5 = stationRepository.save(new Station("서울역"));
             Station station6 = stationRepository.save(new Station("용산역"));
-            airLine.addLineStation(new Edge(station1.getId(), station2.getId(), 10, 10));
-            airLine.addLineStation(new Edge(station2.getId(), station3.getId(), 10, 10));
-            airLine.addLineStation(new Edge(station3.getId(), station4.getId(), 10, 10));
+            airLine.addEdge(new Edge(station1.getId(), station2.getId(), 10, 10));
+            airLine.addEdge(new Edge(station2.getId(), station3.getId(), 10, 10));
+            airLine.addEdge(new Edge(station3.getId(), station4.getId(), 10, 10));
             lineRepository.save(airLine);
         }
     }

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS STATION
     id         bigint auto_increment not null,
     name       varchar(255)          not null,
     created_at datetime,
+    updated_at datetime,
     primary key (id),
     unique (name)
 );

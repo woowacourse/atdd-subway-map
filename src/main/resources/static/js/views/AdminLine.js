@@ -12,14 +12,17 @@ function AdminLine() {
     const $subwayFirstTime = document.querySelector("#first-time");
     const $subwayLastTime = document.querySelector("#last-time");
     const $subwayIntervalTime = document.querySelector("#interval-time");
-    const $subwayFirstTimeInfo = document.querySelector("#first-time-info");
-    const $subwayLastTimeInfo = document.querySelector("#last-time-info");
-    const $subwayIntervalTimeInfo = document.querySelector("#interval-time-info");
-
-    const $createSubwayLineButton = document.querySelector(
-        "#subway-line-create-form #submit-button"
-    );
+    const $modalCancelButton = document.querySelector("#modal-cancel");
+    const $createSubwayLineButton = document.querySelector("#subway-line-create-form #submit-button");
     const subwayLineModal = new Modal();
+
+    const modalClear = () => {
+        $subwayFirstTime.value = '';
+        $subwayLastTime.value = '';
+        $subwayIntervalTime.value = '';
+        $subwayLineNameInput.value = '';
+        $subwayLineColorInput.value = '';
+    };
 
     function collectMessages(errorDtos) {
         const messages = [];
@@ -42,14 +45,14 @@ function AdminLine() {
             bgColor: $subwayLineColorInput.value
         };
 
-
         api.line.create(newSubwayLine)
             .then(data => {
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(newSubwayLine)
-                )
+                );
                 subwayLineModal.toggle();
+                modalClear();
             })
             .catch(error => {
                 if (error.status === 400) {
@@ -83,7 +86,6 @@ function AdminLine() {
         const $target = event.target;
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (isUpdateButton) {
-            subwayLineModal.toggle();
             const subwayLineId = $target.closest("div").id.split("subway-")[1];
             api.line.findById(subwayLineId)
                 .then(response => {
@@ -95,10 +97,15 @@ function AdminLine() {
                     $subwayLineNameInput.value = info.title;
                     $subwayLineId.value = info.id;
                 });
+            subwayLineModal.toggle();
+            modalClear();
         }
     };
 
     function renderInfo(info) {
+        const $subwayFirstTimeInfo = document.querySelector("#first-time-info");
+        const $subwayLastTimeInfo = document.querySelector("#last-time-info");
+        const $subwayIntervalTimeInfo = document.querySelector("#interval-time-info");
         $subwayFirstTimeInfo.innerHTML = info.startTime;
         $subwayLastTimeInfo.innerHTML = info.endTime;
         $subwayIntervalTimeInfo.innerHTML = info.intervalTime + "분";
@@ -140,6 +147,7 @@ function AdminLine() {
                     }
                 });
                 subwayLineModal.toggle();
+                modalClear();
             })
             .catch(error => {
                 if (error.status === 400) {
@@ -161,6 +169,7 @@ function AdminLine() {
     };
 
     const initEventListeners = () => {
+        $modalCancelButton.addEventListener(EVENT_TYPE.CLICK, () => modalClear());
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
