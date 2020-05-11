@@ -14,7 +14,7 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private List<LineStation> stations = new ArrayList<>();
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
