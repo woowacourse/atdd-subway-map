@@ -41,6 +41,6 @@ public class LineTest {
     void removeEdge(Long stationId) {
         line.removeEdge(stationId);
 
-//        assertThat(line.getEdges()).hasSize(2);
+        assertThat(line.getEdges()).hasSize(2);
     }
 }

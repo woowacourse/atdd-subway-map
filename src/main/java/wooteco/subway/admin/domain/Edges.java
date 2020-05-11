@@ -29,7 +29,9 @@ public class Edges implements Iterable<Edge> {
         if (edges.isEmpty()) {
             validateFirstEdge(edge);
         }
+        validateEdge(edge);
         int insertionIndex = edges.size();
+
         if (findSamePreStationEdge(edge.getPreStationId()).isPresent()) {
             Edge nextEdge = findSamePreStationEdge(edge.getPreStationId()).get();
             insertionIndex = edges.indexOf(nextEdge);
@@ -55,7 +57,7 @@ public class Edges implements Iterable<Edge> {
 
     private Edge findSameStationEdge(Long id) {
         return edges.stream()
-                .filter(value -> value.getStationId() == id)
+                .filter(value -> id.equals(value.getStationId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE));
     }

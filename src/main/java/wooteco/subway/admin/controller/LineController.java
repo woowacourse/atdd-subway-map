@@ -56,12 +56,6 @@ public class LineController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/lines/edges")
-    public ResponseEntity<List<StationsAtLineResponse>> showEdges() {
-        List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
-        return ResponseEntity.ok().body(response);
-    }
-
     @PostMapping("/lines/{lineId}/edges")
     public ResponseEntity<StationsAtLineResponse> createEdge(@PathVariable("lineId") Long lineId, @RequestBody EdgeCreateRequest request) {
         StationsAtLineResponse response = lineService.addEdge(lineId, request);
@@ -69,6 +63,12 @@ public class LineController {
         return ResponseEntity
                 .created(URI.create("/edges/" + lineId))
                 .body(response);
+    }
+
+    @GetMapping("/lines/edges")
+    public ResponseEntity<List<StationsAtLineResponse>> showEdges() {
+        List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{lineId}/edges/{stationId}")

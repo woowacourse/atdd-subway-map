@@ -17,7 +17,6 @@ import wooteco.subway.admin.dto.response.StationsAtLineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +63,6 @@ public class EdgeAcceptanceTest {
         Station station1 = createStation("잠실역");
         Station station2 = createStation("삼성역");
         Station station3 = createStation("강변역");
-        List<Station> stations = new ArrayList<>();
-        stations.add(station1);
-        stations.add(station2);
-        stations.add(station3);
 
         LineResponse lineResponse = createLine("2호선");
 
@@ -115,7 +110,7 @@ public class EdgeAcceptanceTest {
     private List<StationsAtLineResponse> findAllEdges() {
         return given().
                 when().
-                get("/edges").
+                get("/lines/edges").
                 then().
                 log().all().
                 extract().
@@ -157,6 +152,11 @@ public class EdgeAcceptanceTest {
     }
 
     private StationsAtLineResponse createEdge(Long lineId, EdgeCreateRequest request) {
+//        StationsAtLineResponse.class.getConstructors();
+//        for (Constructor<?> c : StationsAtLineResponse.class.getConstructors()) {
+//            System.out.println("HERE" + c.getName() + Arrays.toString(c.getParameterTypes()));
+//        }
+
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

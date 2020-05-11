@@ -78,7 +78,6 @@ public class LineService {
     public StationsAtLineResponse addEdge(Long lineId, @Valid EdgeCreateRequest request) {
         Line line = findLine(lineId);
         Edge edge = toEdge(request);
-        //TODO: edge의 prestation, stationid 존재하는지 체크
         line.addEdge(edge);
 
         Line savedLine = lineRepository.save(line);
@@ -126,7 +125,8 @@ public class LineService {
     private Edge toEdge(EdgeCreateRequest request) {
         Long preStationId = stationRepository.findIdByName(request.getPreStationName());
         Long stationId = stationRepository.findIdByName(request.getStationName());
-        if ((request.getPreStationName() != null && preStationId == null)) {
+
+        if (request.getPreStationName() != null && preStationId == null) {
             throw new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE);
         }
         if (stationId == null) {
