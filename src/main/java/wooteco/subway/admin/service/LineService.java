@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +9,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.NotFoundValueException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -43,18 +43,20 @@ public class LineService {
 
     public Line findById(final Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(RuntimeException::new);
+                .orElseThrow(RuntimeException::new);
     }
 
     public boolean contains(String lineName) {
         return showLines().stream()
-            .anyMatch(line -> line.getName().equals(lineName));
+                .anyMatch(line -> line.getName().equals(lineName));
     }
 
     public Line addLineStation(Long id, LineStationCreateRequest request) {
         LineStation lineStation = request.toLineStation();
         Line line = findById(id);
+
         line.addLineStation(lineStation);
+
         return save(line);
     }
 
@@ -70,7 +72,7 @@ public class LineService {
 
         return lineStations.stream()
                 .map(lineStation -> stationRepository.findById(lineStation.getStationId())
-                        .orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다.")))
+                        .orElseThrow(() -> new NotFoundValueException("해당 역이 없습니다.")))
                 .collect(Collectors.toList());
     }
 }

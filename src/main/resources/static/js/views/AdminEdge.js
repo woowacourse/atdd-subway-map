@@ -55,6 +55,8 @@ function AdminEdge() {
     const initSubwayLinesSlider = async () => {
         await api.lines.getDetail().then(data => {
             $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line)).join("");
+        }).catch(error => {
+            alert(error.message)
         });
 
         tns({

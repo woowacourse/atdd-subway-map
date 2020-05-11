@@ -42,28 +42,24 @@ function AdminLine() {
 
     const onCreateSubwayLine = (newSubwayLine) => {
         return api.lines.create(newSubwayLine).then(data => {
-            if (data.error) {
-                alert("입력값을 입력해주세요.");
-            } else {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(data)
-                );
-            }
+            $subwayLineList.insertAdjacentHTML(
+                "beforeend",
+                subwayLinesTemplate(data)
+            );
+        }).catch(error => {
+            alert(error.message);
         });
     }
 
     const onUpdateSubwayLine = (newSubwayLine) => {
         return api.lines.update($subwayLineId.value, newSubwayLine).then(data => {
-            if (data.error) {
-                alert("입력값을 입력해주세요.")
-            } else {
-                let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
-                let divNode = document.createElement("div");
-                divNode.innerHTML = subwayLinesTemplate(data);
-                $subwayLineList.insertBefore(divNode.firstChild, standardNode);
-                standardNode.remove();
-            }
+            let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
+            let divNode = document.createElement("div");
+            divNode.innerHTML = subwayLinesTemplate(data);
+            $subwayLineList.insertBefore(divNode.firstChild, standardNode);
+            standardNode.remove();
+        }).catch(error => {
+            alert(error.message);
         })
     }
 

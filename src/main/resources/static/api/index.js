@@ -27,8 +27,18 @@ const METHOD = {
 };
 
 const api = (() => {
-  const dataRequest = (uri, config) => fetch(uri, config).then(data => data.json());
-  const noDataRequest = (uri, config) => fetch(uri, config);
+  const dataRequest = (uri, config) => fetch(uri, config).then(data => {
+    if (data.ok) {
+      return data.json();
+    }
+    return data.json().then(error => {throw new Error(error.errorMessage)});
+  });
+
+  const noDataRequest = (uri, config) => fetch(uri, config).then(data => {
+    if (!data.ok) {
+      throw Error("실행할 수 없습니다.");
+    }
+  });
 
   const station = {
     get() {

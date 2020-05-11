@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicatedValueException;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
@@ -49,7 +49,7 @@ public class LineController {
     @PostMapping()
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         if(lineService.contains(lineRequest.getName())) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new DuplicatedValueException("중복된 이름이 존재합니다.");
         }
 
         Line persistLine = lineService.save(lineRequest.toLine());
@@ -65,6 +65,10 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        if(lineService.contains(lineRequest.getName())) {
+            throw new DuplicatedValueException("중복된 이름이 존재합니다.");
+        }
+
         Line persistLine = lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().body(LineResponse.of(persistLine));
     }
