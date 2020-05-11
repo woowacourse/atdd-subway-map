@@ -5,11 +5,13 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    @Autowired
+    private StationRepository stationRepository;
     @LocalServerPort
     int port;
 
     @BeforeEach
     void setUp() {
+        stationRepository.deleteAll();
         RestAssured.port = port;
     }
 
@@ -40,6 +45,8 @@ public class StationAcceptanceTest {
         createStation("강남역");
 
         List<StationResponse> stations = getStations();
+        stations.forEach(stationResponse ->
+                System.out.println(stationResponse + stationResponse.getName()));
         assertThat(stations.size()).isEqualTo(4);
 
         deleteStation(stations.get(0).getId());
