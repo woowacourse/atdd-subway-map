@@ -84,12 +84,13 @@ function AdminEdge() {
     }
 
     const request = {
-      lineId: lineId,
       preStationId: preStationId,
-      stationId: stationId
+      stationId: stationId,
+      distance: 0,
+      duration: 0
     };
 
-    await api.lineStation.create(request)
+    await api.lineStation.create(lineId, request)
       .then(data => {
         const listItem = listItemTemplate(data);
         $subwayLinesSlider.insertAdjacentHTML("beforeend", listItem);

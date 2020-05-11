@@ -66,8 +66,8 @@ const api = (() => {
     get() {
       return request(`/line-stations`);
     },
-    create(data) {
-      return request(`/lines/stations`, METHOD.POST(data));
+    create(lineId, data) {
+      return request(`/lines/${lineId}/stations`, METHOD.POST(data));
     },
     update(id, data) {
       return request(`/line-stations/${id}`, METHOD.PUT(data));
