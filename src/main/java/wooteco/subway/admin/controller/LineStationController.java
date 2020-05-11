@@ -20,7 +20,7 @@ public class LineStationController {
 	}
 
 	@PostMapping("/line-stations")
-	public ResponseEntity createLineStation(@RequestBody LineStationRequest view) {
+	public ResponseEntity<Void> createLineStation(@RequestBody LineStationRequest view) {
 		if (view.getPreStationName().isEmpty()) {
 			Station station = stationService.findByName(view.getStationName());
 
@@ -40,11 +40,10 @@ public class LineStationController {
 		return ResponseEntity
 				.ok()
 				.build();
-//				.body(LineStationResponse.of(view.toLineStation()));
 	}
 
 	@DeleteMapping("/line-stations/{lineId}/{stationId}")
-	public ResponseEntity deleteLineStation(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
+	public ResponseEntity<Void> deleteLineStation(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
 
 		lineService.removeLineStation(lineId, stationId);
 

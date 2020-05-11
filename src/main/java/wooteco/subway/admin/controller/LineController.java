@@ -22,7 +22,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLine(@RequestBody @Valid LineRequest view) {
+    public ResponseEntity<LineWithStationsResponse> createLine(@RequestBody @Valid LineRequest view) {
         Line line = view.toLine();
         Line persistLine = lineService.save(line);
 
@@ -32,7 +32,12 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineWithStationsResponse>> showLines() {
+        /*
+        * lineService.showLines() 서비스객체의 리턴값으로 presentation에 그대로 전달하네요.
+        이는 뷰와 도메인이 강결합이 될 것 같은데요,
+        도메인 객체와 화면에 돌려줄 객체를 분리해보아요. :)
+        * */
         List<LineWithStationsResponse> lineWithStationsResponses = lineService.showLines();
 
         return ResponseEntity
@@ -41,22 +46,16 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity findLineWithStationsBy(@PathVariable(name = "id") Long id) {
-        try {
-            LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
+    public ResponseEntity<LineWithStationsResponse> findLineWithStationsBy(@PathVariable(name = "id") Long id) {
+        LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(id);
 
-            return ResponseEntity
-                    .ok()
-                    .body(lineWithStationsResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+        return ResponseEntity
+                .ok()
+                .body(lineWithStationsResponse);
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
+    public ResponseEntity<LineResponse> updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
         Line persistLine = lineService.updateLine(id, view.toLine());
         return ResponseEntity
                 .ok()
@@ -64,7 +63,7 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLineBy(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<Void> deleteLineBy(@PathVariable(name = "id") Long id) {
         lineService.deleteLineBy(id);
 
         return ResponseEntity
