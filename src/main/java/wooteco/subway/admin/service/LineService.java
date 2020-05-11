@@ -36,10 +36,10 @@ public class LineService {
         return lineResponses;
     }
 
-    public void updateLine(Long id, Line line) {
+    public Line updateLine(Long id, Line line) {
         Line persistLine = getPersistLine(id);
         persistLine.update(line);
-        lineRepository.save(persistLine);
+        return lineRepository.save(persistLine);
     }
 
     private Line getPersistLine(Long id) {

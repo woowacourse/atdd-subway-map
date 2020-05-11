@@ -14,5 +14,5 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     Set<Station> findAllById(@Param("ids") List<Long> ids);
 
     @Query("SELECT id FROM station WHERE name=:name")
-    Optional<Long> findIdByName(@Param("name") String name);
+    Long findIdByName(@Param("name") String name);
 }
