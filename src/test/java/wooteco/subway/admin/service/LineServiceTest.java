@@ -1,14 +1,11 @@
 package wooteco.subway.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
 import java.util.Optional;
-import java.util.Set;
-import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,11 +113,11 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("역")));
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        lineResponse.getStations().forEach(System.out::println);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }
