@@ -27,7 +27,7 @@ public class LineStationController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-                .body(LineStationResponse.of(lineStationCreateRequest));
+                .body(LineStationResponse.of(lineId, lineStationCreateRequest));
     }
 
     @GetMapping

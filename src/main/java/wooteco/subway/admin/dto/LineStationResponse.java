@@ -25,8 +25,8 @@ public class LineStationResponse {
                 lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDuration());
     }
 
-    public static LineStationResponse of(LineStationCreateRequest LineStationCreateRequest) {
-        return new LineStationResponse(LineStationCreateRequest.getLineId(), LineStationCreateRequest.getStationId(),
+    public static LineStationResponse of(Long lineId, LineStationCreateRequest LineStationCreateRequest) {
+        return new LineStationResponse(lineId, LineStationCreateRequest.getStationId(),
                 LineStationCreateRequest.getPreStationId(), LineStationCreateRequest.getDistance(),
                 LineStationCreateRequest.getDuration());
     }
