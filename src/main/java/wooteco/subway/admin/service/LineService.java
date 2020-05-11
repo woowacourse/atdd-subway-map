@@ -1,6 +1,9 @@
 package wooteco.subway.admin.service;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -37,7 +40,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLine() {
-        return LineResponse.listOf(showLines());
+        return LineResponse.listOf(showLines(), mappingLineStation());
     }
 
     public void updateLine(Long id, Line line) {
@@ -77,16 +80,25 @@ public class LineService {
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
-        if (line.isStationsEmpty()) {
-            return LineResponse.of(line);
-        }
+            .orElseThrow(() -> new IllegalArgumentException("해당 라인아이디가 존지하지 않습니다"));
         return LineResponse.of(line, generateStations(line));
     }
 
     private Set<Station> generateStations(Line line) {
+        if (line.isStationsEmpty()) {
+            return new HashSet<>();
+        }
         List<Long> stationIds = line.generateLineStationId();
         return stationRepository.findAllById(stationIds);
+    }
+
+    private Map<Long, Set<Station>> mappingLineStation() {
+        Map<Long, Set<Station>> mappingLineStation = new HashMap<>();
+        List<Line> lines = showLines();
+        for (Line line : lines) {
+            mappingLineStation.put(line.getId(), generateStations(line));
+        }
+        return mappingLineStation;
     }
 
     public void validateTitle(LineRequest lineRequest) {

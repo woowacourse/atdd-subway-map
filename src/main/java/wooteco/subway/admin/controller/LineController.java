@@ -73,8 +73,9 @@ public class LineController {
     @PostMapping("/addStation/{id}")
     public ResponseEntity addStation(@PathVariable Long id,
         @RequestBody LineStationCreateRequest LineStationCreateRequest) {
+        System.out.println(LineStationCreateRequest.toString());
         lineService.addLineStation(id, LineStationCreateRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(lineService.findLineWithStationsById(id));
     }
 
     @GetMapping("/lineStations/{id}")

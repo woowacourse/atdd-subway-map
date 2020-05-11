@@ -2,8 +2,8 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,19 +39,14 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
-            line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), new HashSet<>());
-    }
-
     public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines) {
+    public static List<LineResponse> listOf(List<Line> lines, Map<Long, Set<Station>> mappingLineStation) {
         return lines.stream()
-            .map(it -> LineResponse.of(it))
+            .map(it -> LineResponse.of(it, mappingLineStation.get(it.getId())))
             .collect(Collectors.toList());
     }
 
