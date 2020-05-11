@@ -29,7 +29,7 @@ public class LineController {
 	}
 
 	@PostMapping("/lines")
-	public ResponseEntity<?> create(
+	public ResponseEntity<Void> create(
 			@RequestBody LineRequest request) throws URISyntaxException {
 		String name = request.getName();
 		String color = request.getColor();
@@ -45,19 +45,20 @@ public class LineController {
 	}
 
 	@GetMapping("/lines")
-	public List<LineResponse> lines() {
-		return LineResponse.listOf(lineRepository.findAll());
+	public ResponseEntity<List<LineResponse>> lines() {
+		return ResponseEntity.ok(LineResponse.listOf(lineRepository.findAll()));
 	}
 
 	@GetMapping("/lines/{id}")
-	public LineResponse line(
+	public ResponseEntity<LineResponse> line(
 			@PathVariable("id") Long id) {
-		return LineResponse.of(lineRepository.findById(id)
-				.orElseThrow(NoSuchElementException::new));
+		return ResponseEntity.ok()
+				.body(LineResponse.of(lineRepository.findById(id)
+						.orElseThrow(NoSuchElementException::new)));
 	}
 
 	@PutMapping("/lines/{id}")
-	public ResponseEntity<?> update(
+	public ResponseEntity<Line> update(
 			@PathVariable("id") Long id, @RequestBody LineRequest request) {
 		String name = request.getName();
 		String color = request.getColor();
@@ -74,7 +75,7 @@ public class LineController {
 	}
 
 	@DeleteMapping("/lines/{id}")
-	public ResponseEntity<?> delete(
+	public ResponseEntity<Void> delete(
 			@PathVariable Long id) {
 		lineRepository.deleteById(id);
 		return ResponseEntity.noContent().build();

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.service.LineStationService;
 
@@ -25,12 +26,12 @@ public class LineStationController {
 	}
 
 	@GetMapping("/lineStations")
-	public ResponseEntity<List<?>> lineStations() {
+	public ResponseEntity<List<LineResponse>> lineStations() {
 		return ResponseEntity.ok(lineStationService.findAll());
 	}
 
 	@PostMapping("/lineStations")
-	public ResponseEntity<?> create(
+	public ResponseEntity<LineStation> create(
 			@RequestBody LineStationRequest request) throws URISyntaxException {
 		String lineName = request.getLineName();
 		String preStationName = request.getPreStationName();
@@ -46,7 +47,7 @@ public class LineStationController {
 	}
 
 	@DeleteMapping("/lineStations/{lineId}/{stationId}")
-	public ResponseEntity<?> delete(
+	public ResponseEntity<LineStation> delete(
 			@PathVariable Long lineId,
 			@PathVariable Long stationId) {
 		return ResponseEntity.ok().body(lineStationService.removeLineStation(lineId, stationId));

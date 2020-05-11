@@ -24,12 +24,13 @@ public class StationController {
 	}
 
 	@GetMapping("/stations")
-	public ResponseEntity<?> showStations() {
-		return ResponseEntity.ok().body(stationRepository.findAll());
+	public ResponseEntity<Iterable<Station>> showStations() {
+		return ResponseEntity.ok(stationRepository.findAll());
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity<?> createStation(@RequestBody StationCreateRequest request) {
+	public ResponseEntity<StationResponse> createStation(
+			@RequestBody StationCreateRequest request) {
 		Station station = request.toStation();
 		Station persistStation = stationRepository.save(station);
 
@@ -39,7 +40,7 @@ public class StationController {
 	}
 
 	@DeleteMapping("/stations/{id}")
-	public ResponseEntity<?> deleteStation(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
 		stationRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
