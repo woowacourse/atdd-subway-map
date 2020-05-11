@@ -44,22 +44,14 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        System.out.println(line.findLineStationsId() + "line id is : " + line.getId());
-
         LineStationCreateRequest request = new LineStationCreateRequest(0L, 4L, 10, 10);
 
-        System.out.println("before Mockito  : " + line.findLineStationsId());
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        System.out.println(
-            "after Mockito : " + line.findLineStationsId() + "line id : " + line.getId());
 
         lineService.addLineStation(line.getId(), request);
 
-        System.out.println(line.findLineStationsId() + "id is... : " + line.getId());
-
         assertThat(line.getLineStations()).hasSize(4);
         assertThat(line.findLineStationsId().get(0)).isEqualTo(4L);
-        System.out.println(line.findLineStationsId());
         assertThat(line.findLineStationsId().get(1)).isEqualTo(1L);
         assertThat(line.findLineStationsId().get(2)).isEqualTo(2L);
         assertThat(line.findLineStationsId().get(3)).isEqualTo(3L);

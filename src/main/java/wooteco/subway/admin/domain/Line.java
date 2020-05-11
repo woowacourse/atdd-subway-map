@@ -158,4 +158,14 @@ public class Line {
         }
         return stations;
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", lineStations=" + lineStations +
+            '}';
+    }
 }
