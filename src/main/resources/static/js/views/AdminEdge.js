@@ -8,7 +8,6 @@ function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $submitCreateEdgeButton = document.querySelector(
     "#subway-line-station-create-form #submit-button");
-  const $submitLineStationButton = document.querySelector("#submit-button")
   const $subwayLineSelection = document.querySelector('#station-select-options');
   const $subwayDepartStation = document.querySelector('#depart-station-name');
   const $subwayArrivalStation = document.querySelector('#arrival-station-name');
@@ -74,16 +73,11 @@ function AdminEdge() {
     const $target = event.target;
     const $lineId = $target.closest("#line-info").getAttribute("data-line-id");
     const $stationId = $target.closest(".list-item").getAttribute("value");
-    console.log($lineId);
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      console.log("clicked");
       api.line.deleteLineStation($lineId, $stationId).then(() => {
-        console.log("api success")
         $target.closest(".list-item").remove();
-        console.log("api success2")
-        // location.reload();
-      }).catch(error => console.log(error));
+      });
     }
   };
 

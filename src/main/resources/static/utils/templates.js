@@ -47,7 +47,6 @@ const navTemplate =
 </nav>`;
 
 export const subwayLinesItemTemplate = line => {
-  console.log(line)
   const stationsTemplate = line.stations
   .map(station => listItemTemplate(station))
   .join("");

@@ -32,7 +32,6 @@ function AdminStation() {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
-      console.log($target)
       api.station.delete($target.closest(".list-item").getAttribute("value")).then(() => {
         $target.closest(".list-item").remove();
       })
