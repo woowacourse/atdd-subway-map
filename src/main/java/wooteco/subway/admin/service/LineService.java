@@ -70,11 +70,11 @@ public class LineService {
         List<Station> stations = stationRepository.findAllById(lineStationsIds);
         List<Station> sortedStations = new ArrayList<>();
         for (Long lineStationsId : lineStationsIds) {
-            Station station = stations.stream()
-                    .filter(station1 -> station1.getId().equals(lineStationsId))
+            Station selectedStation = stations.stream()
+                    .filter(station -> lineStationsId.equals(station.getId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("해당 역을 찾을 수 없습니다."));
-            sortedStations.add(station);
+            sortedStations.add(selectedStation);
         }
 
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBackgroundColor(), line.getCreatedAt(), line.getUpdatedAt(), sortedStations);
