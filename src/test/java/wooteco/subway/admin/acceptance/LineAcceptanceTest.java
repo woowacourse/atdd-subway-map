@@ -14,9 +14,7 @@ import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,9 +54,10 @@ public class LineAcceptanceTest {
         assertThat(line.getIntervalTime()).isNotNull();
 
         // when
-        LocalTime startTime = LocalTime.of(8, 0);
-        LocalTime endTime = LocalTime.of(22, 0);
-        updateLine(line.getId(), startTime, endTime);
+        String startTime = "08:00";
+        String endTime = "22:00";
+        updateLine(line.getId(), line.getName(), line.getColor(), startTime, endTime, line.getIntervalTime());
+
         //then
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
@@ -81,14 +80,15 @@ public class LineAcceptanceTest {
     }
 
     private void createLine(String name) {
-        LineRequest request = new LineRequest(name,
+        LineRequest lineRequest = new LineRequest(
+                name,
                 "bg-red-500",
                 LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
                 LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
                 10);
 
         given().
-                body(request).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
@@ -98,19 +98,22 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+    private void updateLine(Long id, String name, String color, String startTime, String endTime, int intervalTime) {
+        LineRequest lineRequest = new LineRequest(
+                name,
+                color,
+                startTime,
+                endTime,
+                intervalTime
+        );
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }

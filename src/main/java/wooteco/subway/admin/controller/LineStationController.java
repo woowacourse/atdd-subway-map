@@ -16,26 +16,26 @@ public class LineStationController {
     @Autowired
     private LineStationService lineStationService;
 
-    @PostMapping("/lineStation")
+    @PostMapping("/lines/{lineId}/stations")
     public ResponseEntity<?> create(
+            @PathVariable("lineId") Long lineId,
             @RequestBody LineStationCreateRequest request
     ) throws URISyntaxException {
 
-        final Long lineName = request.getLine();
         final Long preStationName = request.getPreStationId();
         final Long stationName = request.getStationId();
         final int distance = request.getDistance();
         final int duration = request.getDuration();
 
         LineStation lineStation = lineStationService.createLineStation(
-                lineName, preStationName, stationName, distance, duration);
+                lineId, preStationName, stationName, distance, duration);
 
-        final URI url = new URI("/lineStation/" + lineStation.getCustomId());
+        final URI url = new URI("/lines/" + lineId + "/stations/" + lineStation.getStationId());
         return ResponseEntity.created(url)
                 .body(lineStation);
     }
 
-    @DeleteMapping("/lineStation/{lineId}/rm/{id}")
+    @DeleteMapping("/lines/{lineId}/station/{id}")
     public ResponseEntity<?> delete(
             @PathVariable("lineId") Long lineId,
             @PathVariable("id") Long id

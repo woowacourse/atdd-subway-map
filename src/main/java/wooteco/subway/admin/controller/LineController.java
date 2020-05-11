@@ -10,7 +10,6 @@ import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -21,16 +20,10 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<?> create(
-            @RequestBody LineRequest request
+            @RequestBody LineRequest lineRequest
     ) throws URISyntaxException {
-        String name = request.getName();
-        String color = request.getColor();
-        LocalTime startTime = request.getStartTime();
-        LocalTime endTime = request.getEndTime();
-        int intervalTime = request.getIntervalTime();
 
-        Line line = new Line(name, color, startTime, endTime, intervalTime);
-        Line created = lineService.save(line);
+        Line created = lineService.save(lineRequest.toLine());
 
         final URI url = new URI("/lines/" + created.getId());
         return ResponseEntity.created(url).body("{}");
@@ -50,19 +43,12 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<?> update(
-            @PathVariable("id") Long id, @RequestBody LineRequest request
+            @PathVariable("id") Long id,
+            @RequestBody LineRequest lineRequest
     ) {
-        String name = request.getName();
-        String color = request.getColor();
-        LocalTime startTime = request.getStartTime();
-        LocalTime endTime = request.getEndTime();
-        int intervalTime = request.getIntervalTime();
-
-        Line line = lineService.findLineById(id);
-        line.update(new Line(name, color, startTime, endTime, intervalTime));
-
-        Line updated = lineService.save(line);
-        return ResponseEntity.ok(updated);
+        Line line = lineRequest.toLine();
+        lineService.updateLine(id, line);
+        return ResponseEntity.ok(line);
     }
 
     @DeleteMapping("/lines/{id}")

@@ -10,7 +10,7 @@ public class LineRequest {
     private String color;
     private LocalTime startTime;
     private LocalTime endTime;
-    private int intervalTime;
+    private Integer intervalTime;
 
     public LineRequest() {
     }
@@ -44,6 +44,9 @@ public class LineRequest {
     }
 
     public Line toLine() {
+        if (name.isEmpty() | color.isEmpty() | startTime == null | endTime == null | intervalTime == null) {
+            throw new IllegalArgumentException("요청이 올바르지 않습니다.");
+        }
         return new Line(name, color, startTime, endTime, intervalTime);
     }
 }

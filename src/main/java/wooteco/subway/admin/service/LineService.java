@@ -54,7 +54,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
-        LineStation lineStation = new LineStation(request.getLine(), request.getPreStationId(), request.getStationId(),
+        LineStation lineStation = new LineStation(id, request.getPreStationId(), request.getStationId(),
                 request.getDistance(), request.getDuration());
         line.addLineStation(lineStation);
     }

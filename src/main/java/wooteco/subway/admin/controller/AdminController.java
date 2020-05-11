@@ -39,8 +39,6 @@ public class AdminController {
     public ModelAndView adminEdge() {
         ModelAndView mv = new ModelAndView("admin-edge");
 
-        System.out.println(">>>>>>" + lineService.findLineById(1L).getStations());
-
         List<LineResponse> lines = lineService.findAllLines().stream()
                 .map(line -> lineService.findLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
