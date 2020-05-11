@@ -66,10 +66,10 @@ public class LineController {
     public ResponseEntity addLineStation(
             @PathVariable Long id,
             @RequestBody LineStationCreateByNameRequest request) {
-        lineService.addLineStationByName(id, request);
+        Long stationId = lineService.addLineStationByName(id, request);
 
         return ResponseEntity
-                .ok()
+                .created(URI.create("/lines/" + id + "/stations/" + stationId))
                 .build();
     }
 

@@ -21,8 +21,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -44,8 +44,8 @@ public class LineStationAcceptanceTest {
         StationResponse station2 = createStation("역삼역");
 
         //when
-        addStationToLine(line.getId(), null, station1.getId());
-        addStationToLine(line.getId(), station1.getId(), station2.getId());
+        addStationToLine(line.getId(), null, station1.getName());
+        addStationToLine(line.getId(), station1.getName(), station2.getName());
         //then
         assertThat(getStationsOfLine(line.getId()).size()).isEqualTo(2);
 
@@ -68,10 +68,10 @@ public class LineStationAcceptanceTest {
                 .log().all().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    private void addStationToLine(Long lineId, Long preStationId, Long stationId) {
+    private void addStationToLine(Long lineId, String preStationName, String stationName) {
         Map<String, String> params = new HashMap<>();
-        params.put("preStationId", String.valueOf(preStationId));
-        params.put("stationId", String.valueOf(stationId));
+        params.put("preStationName", preStationName);
+        params.put("stationName", stationName);
         params.put("distance", "1");
         params.put("duration", "1");
 

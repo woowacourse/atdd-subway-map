@@ -52,7 +52,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public void addLineStationByName(Long id, LineStationCreateByNameRequest request) {
+    public Long addLineStationByName(Long id, LineStationCreateByNameRequest request) {
         String preStationName = request.getPreStationName();
         String stationName = request.getStationName();
         int distance = request.getDistance();
@@ -61,6 +61,7 @@ public class LineService {
         Long stationId = stationRepository.findIdByName(stationName);
 
         addLineStation(id, new LineStation(preStationId, stationId, distance, duration));
+        return stationId;
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
