@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.line.Line;
 import wooteco.subway.admin.domain.station.Station;
@@ -27,6 +28,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse save(Line line) {
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
@@ -34,6 +36,7 @@ public class LineService {
         return LineResponse.of(lineRepository.save(line));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLineWithStations() {
         List<LineResponse> result = new ArrayList<>();
         List<Line> lines = lineRepository.findAll();
@@ -51,19 +54,22 @@ public class LineService {
         return result;
     }
 
-    public LineResponse updateLine(Long id, Line line) {
+    @Transactional
+    public void updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         if (lineRepository.findLineWithStationsByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("중복된 지하철 역입니다. name = " + line.getName());
         }
         persistLine.update(line);
-        return LineResponse.of(lineRepository.save(persistLine));
+        lineRepository.save(persistLine);
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + id));
@@ -71,6 +77,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + lineId));
@@ -78,6 +85,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 Line 입니다. id=" + id));
