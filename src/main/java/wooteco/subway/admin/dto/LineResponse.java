@@ -89,19 +89,4 @@ public class LineResponse {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
-    @Override
-    public String toString() {
-        return "LineResponse{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", intervalTime=" + intervalTime +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", bgColor='" + bgColor + '\'' +
-                ", stations=" + stations +
-                '}';
-    }
 }

@@ -56,18 +56,6 @@ public class LineStationCreateRequest {
         this.stationId = stationId;
     }
 
-    @Override
-    public String toString() {
-        return "LineStationCreateRequest{" +
-                "preStationId=" + preStationId +
-                ", stationId=" + stationId +
-                ", preStationName='" + preStationName + '\'' +
-                ", stationName='" + stationName + '\'' +
-                ", distance=" + distance +
-                ", duration=" + duration +
-                '}';
-    }
-
     public boolean hasNotAnyId() {
         return preStationId == null && stationId == null;
     }
