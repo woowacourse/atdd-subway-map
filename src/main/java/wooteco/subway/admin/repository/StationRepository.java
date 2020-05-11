@@ -1,7 +1,6 @@
 package wooteco.subway.admin.repository;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,7 +10,10 @@ import wooteco.subway.admin.domain.Station;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
 	@Override
-	Set<Station> findAllById(Iterable<Long> id);
+	List<Station> findAllById(Iterable<Long> id);
+
+	@Query("SELECT S.* FROM station AS S INNER JOIN line_station AS LS ON S.id = LS.station_id WHERE LS.line = :stationId")
+	List<Station> findStations(@Param("stationId") Long stationsId);
 
 	@Override
 	List<Station> findAll();

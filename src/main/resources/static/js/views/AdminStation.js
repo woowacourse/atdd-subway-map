@@ -8,32 +8,19 @@ function AdminStation() {
   const $addStationButton = document.querySelector("#station-add-btn");
   let stationNames = [];
 
-  const isInValidStation = stationName => {
-    const invalidConditions = {
-      empty : {
-        condition : name => !name,
-        message : ERROR_MESSAGE.NOT_EMPTY
-      },
-      containsNumber : {
-        condition : name => REGEX_PATTERN.INTEGER.exec(name),
-        message : ERROR_MESSAGE.NOT_INTEGER
-      },
-      containsSpace : {
-        condition : name => REGEX_PATTERN.SPACE.exec(name),
-        message : ERROR_MESSAGE.NOT_WHITE_SPACE
-      },
-      duplicateName : {
-        condition : name => stationNames.includes(name),
-        message : ERROR_MESSAGE.ALREADY_EXIST_STATION
-      }
-    };
-    const firstInvalidObject = Object.values(invalidConditions)
-        .find(val => val.condition(stationName));
-
-    if (firstInvalidObject) {
-      alert(firstInvalidObject.message);
+  const validateStationName = name => {
+    if (!name) {
+      throw ERROR_MESSAGE.NOT_EMPTY;
     }
-    return firstInvalidObject;
+    if (REGEX_PATTERN.INTEGER.exec(name)) {
+      throw ERROR_MESSAGE.NOT_INTEGER;
+    }
+    if (REGEX_PATTERN.SPACE.exec(name)) {
+      throw ERROR_MESSAGE.NOT_WHITE_SPACE;
+    }
+    if (stationNames.find(station => station.name === name)) {
+      throw ERROR_MESSAGE.ALREADY_EXIST_STATION;
+    }
   };
 
   const onAddStationHandler = async event => {
@@ -43,13 +30,15 @@ function AdminStation() {
     event.preventDefault();
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
-    if (isInValidStation(stationName)) {
-      return;
+    try {
+      validateStationName(stationName);
+      const savedStation = await api.station.create({"name": stationName});
+      stationNames = [...stationNames, savedStation];
+      $stationNameInput.value = "";
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+    } catch (e) {
+      alert(e);
     }
-    const savedStation = await api.station.create({name : stationName});
-    stationNames = [...stationNames, savedStation];
-    $stationNameInput.value = "";
-    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
   };
 
   const onRemoveStationHandler = async event => {
@@ -58,11 +47,15 @@ function AdminStation() {
     if (isDeleteButton && confirm(CONFIRM_MESSAGE.DELETE)) {
       const targetName = $target.closest(".list-item").innerText;
       const targetId = stationNames.find(station => station.name === targetName)["id"];
-      await api.station.delete(targetId);
-      $target.closest(".list-item").remove();
-      const index = stationNames.map(subway => subway["id"])
-          .indexOf(targetId);
-      stationNames.splice(index, 1);
+      try {
+        await api.station.delete(targetId);
+        $target.closest(".list-item").remove();
+        const index = stationNames.map(subway => subway["id"])
+            .indexOf(targetId);
+        stationNames.splice(index, 1);
+      } catch (e) {
+        alert(e);
+      }
     }
   };
 

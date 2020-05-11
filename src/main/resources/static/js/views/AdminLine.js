@@ -35,14 +35,18 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalInput.value
     };
-    const savedLine = await api.line.create(newSubwayLine);
-    subwayLines = [...subwayLines, savedLine];
-    $subwayLineList.insertAdjacentHTML(
-      "beforeend",
-      subwayLinesTemplate(newSubwayLine)
-    );
-    subwayLineModal.toggle();
-    componentClear();
+    try {
+      const savedLine = await api.line.create(newSubwayLine);
+      subwayLines = [...subwayLines, savedLine];
+      $subwayLineList.insertAdjacentHTML(
+          "beforeend",
+          subwayLinesTemplate(newSubwayLine)
+      );
+      subwayLineModal.toggle();
+      componentClear();
+    } catch (e) {
+      alert(e);
+    }
   };
 
   const onDeleteSubwayLine = async event => {
@@ -69,13 +73,17 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalInput.value
     };
-    await api.line.update(updatedLine, selectedSubwayId);
-    const index = subwayLines.map(subway => subway["id"])
-        .indexOf(selectedSubwayId);
-    subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
-    subwayLineModal.toggle();
-    componentClear();
-    changeEvent();
+    try {
+      await api.line.update(updatedLine, selectedSubwayId);
+      const index = subwayLines.map(subway => subway["id"])
+          .indexOf(selectedSubwayId);
+      subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
+      subwayLineModal.toggle();
+      componentClear();
+      changeEvent();
+    } catch (e) {
+      alert(e);
+    }
   }
 
   const onSelectSubwayLine = event => {

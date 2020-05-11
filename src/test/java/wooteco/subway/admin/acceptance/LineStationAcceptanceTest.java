@@ -22,7 +22,6 @@ import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
-import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -47,33 +46,55 @@ public class LineStationAcceptanceTest {
 		createStation("강변");
 		createStation("잠실나루");
 		createStation("잠실");
+
 		createLine("2호선");
 		List<StationResponse> stations = getStations();
 		List<LineResponse> lines = getLines();
 		LineResponse line = getLine(lines.get(0).getId());
 
 		//when
-		createLineStation(null, stations.get(0).getId(), line.getId());
-		createLineStation(stations.get(0).getId(), stations.get(1).getId(), line.getId());
+		createLineStation(null, stations.get(1).getId(), line.getId());
 		createLineStation(stations.get(1).getId(), stations.get(2).getId(), line.getId());
+		createLineStation(stations.get(2).getId(), stations.get(0).getId(), line.getId());
 		//then
 		List<LineStationResponse> lineStations = getLineStations(line.getId());
 		assertThat(lineStations.size()).isEqualTo(3);
+
+		assertThat(getLine(lines.get(0).getId()).getStations().stream().map(StationResponse::getName))
+			.containsExactly("잠실나루", "잠실", "강변");
 
 		//when
 		LineStationResponse lineStationResponse = lineStations.get(0);
 		//then
 		assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
-		assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(0).getId());
+		assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(1).getId());
+
+		//given
+		createStation("테스트역");
+
+		//when //then
+		assertThatThrownBy(() -> createLineStation(null, stations.get(0).getId(), line.getId()));
+		//when //then
+		assertThatThrownBy(() -> createLineStation(null, stations.get(3).getId(), null));
+		//when //then
+		assertThatThrownBy(() -> createLineStation(null, Long.MAX_VALUE, line.getId()));
+		//when //then
+		assertThatThrownBy(() -> createLineStation(Long.MAX_VALUE, stations.get(3).getId(), line.getId()));
 
 		//when
-		deleteLineStation(line.getId(), stations.get(0).getId());
+		deleteLineStation(line.getId(), stations.get(1).getId());
 		//then
 		List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());
 		assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
 		//and
 		boolean isExistLineStation = isExistLineStation(lineStationResponse, lineStationsAfterDelete);
 		assertThat(isExistLineStation).isFalse();
+
+		//when //then
+		assertThatThrownBy(() -> deleteLineStation(Long.MAX_VALUE, stations.get(0).getId()));
+
+		//when //then
+		assertThatThrownBy(() -> deleteLineStation(line.getId(), Long.MAX_VALUE));
 	}
 
 	private boolean isExistLineStation(LineStationResponse lineStationResponse,
@@ -88,7 +109,8 @@ public class LineStationAcceptanceTest {
 			when().
 			delete("/lines/" + lineId + "/stations/" + stationId).
 			then().
-			log().all();
+			log().all().
+			statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	private void createStation(String name) {
@@ -96,7 +118,7 @@ public class LineStationAcceptanceTest {
 		params.put("name", name);
 
 		given().
-			body(new Request<>(params)).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -112,10 +134,10 @@ public class LineStationAcceptanceTest {
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("intervalTime", "10");
-		Request<Map<String, String>> param = new Request<>(params);
+		params.put("bgColor", "bg-yellow-800");
 
 		given().
-			body(param).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -146,7 +168,9 @@ public class LineStationAcceptanceTest {
 	}
 
 	private LineResponse getLine(Long id) {
-		return given().when().
+		return given().
+			accept(MediaType.APPLICATION_JSON_VALUE).
+			when().
 			get("/lines/" + id).
 			then().
 			log().all().
@@ -160,7 +184,7 @@ public class LineStationAcceptanceTest {
 			duration);
 
 		given().
-			body(new Request<>(lineStationRequest)).
+			body(lineStationRequest).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -173,6 +197,7 @@ public class LineStationAcceptanceTest {
 	private List<LineStationResponse> getLineStations(Long lineId) {
 		return
 			given().
+				accept(MediaType.APPLICATION_JSON_VALUE).
 				when().
 				get("/lines/" + lineId + "/stations").
 				then().

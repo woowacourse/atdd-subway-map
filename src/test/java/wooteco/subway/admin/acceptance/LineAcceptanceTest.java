@@ -7,12 +7,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,7 +26,6 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.Request;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -58,9 +63,12 @@ public class LineAcceptanceTest {
 		assertThat(line.getEndTime()).isNotNull();
 		assertThat(line.getIntervalTime()).isNotNull();
 
+
+		assertThatThrownBy(() -> createLine("3호선"));
+
 		// when
-		LocalTime startTime = LocalTime.of(8, 00);
-		LocalTime endTime = LocalTime.of(22, 00);
+		LocalTime startTime = LocalTime.of(8, 0);
+		LocalTime endTime = LocalTime.of(22, 0);
 		updateLine(line.getId(), startTime, endTime);
 		//then
 		LineResponse updatedLine = getLine(line.getId());
@@ -72,10 +80,16 @@ public class LineAcceptanceTest {
 		// then
 		List<LineResponse> linesAfterDelete = getLines();
 		assertThat(linesAfterDelete.size()).isEqualTo(3);
+		assertThat(linesAfterDelete.stream().map(LineResponse::getName).collect(Collectors.toList()))
+			.containsExactly("1호선", "2호선", "3호선");
+
+		assertThatThrownBy(() -> deleteLine(Long.MAX_VALUE));
 	}
 
 	private LineResponse getLine(Long id) {
-		return given().when().
+		return given().
+			accept(MediaType.APPLICATION_JSON_VALUE).
+			when().
 			get("/lines/" + id).
 			then().
 			log().all().
@@ -88,10 +102,10 @@ public class LineAcceptanceTest {
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("intervalTime", "10");
-		Request<Map<String, String>> param = new Request<>(params);
+		params.put("bgColor", "bg-yellow-800");
 
 		given().
-			body(param).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -106,10 +120,11 @@ public class LineAcceptanceTest {
 		params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("intervalTime", "10");
-		Request<Map<String, String>> param = new Request<>(params);
+		params.put("name", "100호선");
+		params.put("bgColor", "bg-yellow-800");
 
 		given().
-			body(param).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -122,6 +137,7 @@ public class LineAcceptanceTest {
 	private List<LineResponse> getLines() {
 		return
 			given().
+				accept(MediaType.APPLICATION_JSON_VALUE).
 				when().
 				get("/lines").
 				then().
@@ -135,6 +151,7 @@ public class LineAcceptanceTest {
 			when().
 			delete("/lines/" + id).
 			then().
-			log().all();
+			log().all().
+			statusCode(HttpStatus.NO_CONTENT.value());
 	}
 }

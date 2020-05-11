@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,13 +26,13 @@ public class StationAcceptanceTest {
 	@LocalServerPort
 	int port;
 
+	public static RequestSpecification given() {
+		return RestAssured.given().log().all();
+	}
+
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = port;
-	}
-
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
 	}
 
 	@DisplayName("지하철역을 관리한다")
@@ -46,10 +46,16 @@ public class StationAcceptanceTest {
 		List<StationResponse> stations = getStations();
 		assertThat(stations.size()).isEqualTo(4);
 
+		assertThatThrownBy(() -> createStation("선릉역"));
+
 		deleteStation(stations.get(0).getId());
 
 		List<StationResponse> stationsAfterDelete = getStations();
 		assertThat(stationsAfterDelete.size()).isEqualTo(3);
+		assertThat(stationsAfterDelete.stream().map(StationResponse::getName).collect(Collectors.toList()))
+			.containsExactly("종합운동장역", "선릉역", "강남역");
+
+		assertThatThrownBy(() -> deleteStation(Long.MAX_VALUE));
 	}
 
 	private void createStation(String name) {
@@ -57,7 +63,7 @@ public class StationAcceptanceTest {
 		params.put("name", name);
 
 		given().
-			body(new Request<>(params)).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -82,6 +88,7 @@ public class StationAcceptanceTest {
 			when().
 			delete("/stations/" + id).
 			then().
-			log().all();
+			log().all().
+			statusCode(HttpStatus.NO_CONTENT.value());
 	}
 }

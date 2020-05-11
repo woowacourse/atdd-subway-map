@@ -3,6 +3,8 @@ package wooteco.subway.admin.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
-import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
@@ -28,19 +30,19 @@ public class LineStationController {
 
 	@PostMapping
 	public ResponseEntity<LineStationResponse> createLineStation(@PathVariable Long lineId,
-		@RequestBody Request<LineStationCreateRequest> lineStationRequest) {
-		LineStationCreateRequest lineStationCreateRequest = lineStationRequest.getContent();
-		LineStationResponse lineStationResponse = lineService.addLineStation(lineId, lineStationCreateRequest);
+		@Valid @RequestBody LineStationCreateRequest view) {
+		LineStation lineStation = view.toLineStation();
+		lineService.addLineStation(lineId, lineStation);
 
 		return ResponseEntity
-			.created(URI.create("/lines/" + lineId + "/stations/" + lineStationCreateRequest.getStationId()))
-			.body(lineStationResponse);
+			.created(URI.create("/lines/" + lineId + "/stations/" + lineStation.getStationId()))
+			.body(LineStationResponse.of(lineId, lineStation));
 	}
 
 	@GetMapping
 	public ResponseEntity<List<LineStationResponse>> getLineStations(@PathVariable Long lineId) {
-		List<LineStationResponse> lineStations = lineService.findLineStations(lineId);
-		return ResponseEntity.ok().body(lineStations);
+		List<LineStation> lineStations = lineService.findLineStations(lineId);
+		return ResponseEntity.ok().body(LineStationResponse.ofList(lineId, lineStations));
 	}
 
 	@DeleteMapping("/{stationId}")

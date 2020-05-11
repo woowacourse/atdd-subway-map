@@ -10,9 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicateLineNameException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -54,9 +51,9 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		when(stationRepository.existsById(anyLong())).thenReturn(true);
 
-		lineService.addLineStation(line.getId(), request);
+		lineService.addLineStation(line.getId(), request.toLineStation());
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 4L), entry(4L, 1L), entry(1L, 2L), entry(2L, 3L));
 	}
 
@@ -67,9 +64,9 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		when(stationRepository.existsById(anyLong())).thenReturn(true);
 
-		lineService.addLineStation(line.getId(), request);
+		lineService.addLineStation(line.getId(), request.toLineStation());
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 1L), entry(1L, 4L), entry(4L, 2L), entry(2L, 3L));
 	}
 
@@ -80,9 +77,9 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		when(stationRepository.existsById(anyLong())).thenReturn(true);
 
-		lineService.addLineStation(line.getId(), request);
+		lineService.addLineStation(line.getId(), request.toLineStation());
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 1L), entry(1L, 2L), entry(2L, 3L), entry(3L, 4L));
 	}
 
@@ -93,7 +90,7 @@ public class LineServiceTest {
 
 		lineService.removeLineStation(line.getId(), 1L);
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 2L), entry(2L, 3L));
 	}
 
@@ -104,7 +101,7 @@ public class LineServiceTest {
 
 		lineService.removeLineStation(line.getId(), 2L);
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 1L), entry(1L, 3L));
 	}
 
@@ -115,7 +112,7 @@ public class LineServiceTest {
 
 		lineService.removeLineStation(line.getId(), 3L);
 
-		assertThat(generatePairWith(findPreStationsId(), line.findLineStationsId()))
+		assertThat(generatePairWith(findPreStationsId(), line.findLineStationIds()))
 			.containsExactly(entry(null, 1L), entry(1L, 2L));
 	}
 
@@ -132,14 +129,11 @@ public class LineServiceTest {
 	}
 
 	@Test
-	void findLineWithStationsById() {
-		Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
-		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-		when(stationRepository.findAllById(anyList())).thenReturn(stations);
+	void findLineById() {
+		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+		Line line = lineService.findLine(1L);
 
-		LineResponse lineResponse = lineService.findLineWithStationsById(1L);
-
-		assertThat(lineResponse.getStations()).hasSize(3);
+		assertThat(line.getStations()).hasSize(3);
 	}
 
 	@Test
@@ -147,7 +141,7 @@ public class LineServiceTest {
 		Line newLine = new Line(null, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
 		assertThatThrownBy(() -> lineService.save(newLine))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(DuplicateLineNameException.class);
 	}
 
 	@Test
@@ -175,7 +169,7 @@ public class LineServiceTest {
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(true);
 		assertThatThrownBy(() -> lineService.updateLine(newLine.getId(), newLine))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(DuplicateLineNameException.class);
 	}
 
 	@Test

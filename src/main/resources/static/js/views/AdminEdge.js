@@ -73,11 +73,14 @@ function AdminEdge() {
       duration : 10
     };
 
-    await api.edge.create(lineId, requestData);
-
-    initSubwayLinesSlider().then();
-    createSubwayEdgeModal.toggle();
-    cleanComponent();
+    try {
+      await api.edge.create(lineId, requestData);
+      initSubwayLinesSlider().then();
+      createSubwayEdgeModal.toggle();
+      cleanComponent();
+    } catch(e) {
+      alert(e);
+    }
   };
 
   const cleanComponent = () => {

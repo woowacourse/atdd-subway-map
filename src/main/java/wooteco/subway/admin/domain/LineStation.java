@@ -6,7 +6,7 @@ public class LineStation {
 	private int distance;
 	private int duration;
 
-	public LineStation() {
+	private LineStation() {
 	}
 
 	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
@@ -14,6 +14,14 @@ public class LineStation {
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
+	}
+
+	public void updatePreLineStation(Long preStationId) {
+		this.preStationId = preStationId;
+	}
+
+	public boolean hasSameStationId(LineStation lineStation) {
+		return this.stationId.equals(lineStation.stationId);
 	}
 
 	public Long getPreStationId() {
@@ -30,13 +38,5 @@ public class LineStation {
 
 	public int getDuration() {
 		return duration;
-	}
-
-	public void updatePreLineStation(Long preStationId) {
-		this.preStationId = preStationId;
-	}
-
-	public boolean hasSameStationId(LineStation lineStation) {
-		return this.stationId.equals(lineStation.stationId);
 	}
 }

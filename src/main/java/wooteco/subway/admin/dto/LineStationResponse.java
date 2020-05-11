@@ -1,5 +1,10 @@
 package wooteco.subway.admin.dto;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collections;
+import java.util.List;
+
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationResponse {
@@ -9,7 +14,7 @@ public class LineStationResponse {
 	private int distance;
 	private int duration;
 
-	public LineStationResponse() {
+	private LineStationResponse() {
 	}
 
 	public LineStationResponse(Long lineId, Long stationId, Long preStationId, int distance, int duration) {
@@ -23,6 +28,12 @@ public class LineStationResponse {
 	public static LineStationResponse of(Long lineId, LineStation lineStation) {
 		return new LineStationResponse(lineId, lineStation.getStationId(),
 			lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDuration());
+	}
+
+	public static List<LineStationResponse> ofList(Long lineId, List<LineStation> lineStations) {
+		return lineStations.stream()
+			.map(lineStation -> LineStationResponse.of(lineId, lineStation))
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 	public Long getLineId() {

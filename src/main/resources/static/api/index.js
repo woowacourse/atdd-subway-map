@@ -1,50 +1,41 @@
-const BASE_URL = "localhost:8080";
-
-const METHOD = {
-  PUT(data) {
+const method = {
+  put(data) {
     return {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        content: data
-      })
+      body: JSON.stringify(data)
     };
   },
-  DELETE() {
+  delete() {
     return {
       method: "DELETE"
     };
   },
-  POST(data) {
+  post(data) {
     return {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        content: data
-      })
+      body: JSON.stringify(data)
     };
   }
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json()).catch(error => alert(error));
-  const requestWithEmptyResponse = (uri, config) => fetch(uri, config).then().catch(error => alert(error));
+  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+
   const station = {
     get() {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/stations`, METHOD.POST(data));
-    },
-    update(data, id) {
-      return requestWithEmptyResponse(`/stations/${id}`, METHOD.PUT(data));
+      return request(`/stations`, method.post(data));
     },
     delete(id) {
-      return requestWithEmptyResponse(`/stations/${id}`, METHOD.DELETE());
+      return fetch(`/stations/${id}`, method.delete());
     }
   };
 
@@ -53,13 +44,13 @@ const api = (() => {
       return request(`/lines`);
     },
     create(data) {
-      return request(`/lines`, METHOD.POST(data));
+      return request(`/lines`, method.post(data));
     },
     update(data, id) {
-      return requestWithEmptyResponse(`/lines/${id}`, METHOD.PUT(data));
+      return fetch(`/lines/${id}`, method.put(data));
     },
     delete(id) {
-      return requestWithEmptyResponse(`/lines/${id}`, METHOD.DELETE());
+      return fetch(`/lines/${id}`, method.delete());
     }
   };
 
@@ -68,13 +59,10 @@ const api = (() => {
       return request(`/lines/${lineId}/stations`);
     },
     create(lineId, data) {
-      return request(`/lines/${lineId}/stations`, METHOD.POST(data));
-    },
-    update(lineId, data) {
-      return requestWithEmptyResponse(`/lines/${lineId}/stations`, METHOD.PUT(data));
+      return request(`/lines/${lineId}/stations`, method.post(data));
     },
     delete(lineId, stationId) {
-      return requestWithEmptyResponse(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      return requestWithEmptyResponse(`/lines/${lineId}/stations/${stationId}`, method.delete());
     }
   };
   return {

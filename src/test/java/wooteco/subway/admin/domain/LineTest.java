@@ -23,7 +23,7 @@ public class LineTest {
 
 	@Test
 	void getLineStations() {
-		List<Long> stationIds = line.findLineStationsId();
+		List<Long> stationIds = line.findLineStationIds();
 		assertThat(stationIds).containsExactly(1L, 2L, 3L);
 	}
 
