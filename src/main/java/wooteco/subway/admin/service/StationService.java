@@ -17,10 +17,11 @@ public class StationService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Station findBy(Long id) {
-		return stationRepository.findById(id)
+	public StationResponse findBy(Long id) {
+		Station persistStation = stationRepository.findById(id)
 				.orElseThrow(() ->
 						new IllegalArgumentException("해당 이름의 역을 찾을 수 없습니다."));
+		return StationResponse.of(persistStation);
 	}
 
 	public List<StationResponse> findAll() {
