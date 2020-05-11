@@ -127,8 +127,8 @@ function AdminLine() {
         const updatedSubwayLine = getLineInputValues();
 
         const line = await api.line.update(
-            updatedSubwayLine,
-            $updateLineItem.dataset.lineId
+            $updateLineItem.dataset.lineId,
+            updatedSubwayLine
         ).then(data => data.json());
         $updateLineItem.insertAdjacentHTML(
             "afterend",

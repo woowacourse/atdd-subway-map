@@ -34,9 +34,6 @@ const api = (() => {
     create(data) {
       return request(`/stations`, METHOD.POST(data));
     },
-    update(data, id) {
-      return request(`/stations/${id}`, METHOD.PUT(data));
-    },
     delete(id) {
       return request(`/stations/${id}`, METHOD.DELETE());
     }
@@ -52,7 +49,7 @@ const api = (() => {
     create(data) {
       return request(`/lines`, METHOD.POST(data));
     },
-    update(data, id) {
+    update(id, data) {
       return request(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
