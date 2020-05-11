@@ -37,9 +37,14 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = getPersistLine(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
+    }
+
+    private Line getPersistLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
     }
 
     public void deleteLineById(Long id) {
@@ -47,29 +52,26 @@ public class LineService {
     }
 
     public Line addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        line.addLineStation(request.toLineStation());
-        return lineRepository.save(line);
+        Line persistLine = getPersistLine(id);
+        persistLine.addLineStation(request.toLineStation());
+        return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        line.removeLineStationById(stationId);
-        lineRepository.save(line);
+        Line persistLine = getPersistLine(lineId);
+        persistLine.removeLineStationById(stationId);
+        lineRepository.save(persistLine);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        return LineResponse.of(line, findStationsByLineId(id));
+        Line persistLine = getPersistLine(id);
+        return LineResponse.of(persistLine, findStationsByLineId(id));
     }
 
     public List<StationResponse> findStationsByLineId(Long id) {
         List<StationResponse> stations = new ArrayList<>();
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
-        List<Long> stationsIds = line.getLineStationsId();
+        Line persistLine = getPersistLine(id);
+        List<Long> stationsIds = persistLine.getLineStationsId();
 
         for (int i = 0; i < stationsIds.size(); i++) {
             Optional<Station> foundStation = stationRepository.findById(stationsIds.get(i));

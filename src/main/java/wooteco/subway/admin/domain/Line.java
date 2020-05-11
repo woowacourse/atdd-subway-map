@@ -119,7 +119,7 @@ public class Line {
 
     private boolean shouldAdd(LineStation newLineStation, LineStation lineStation) {
         Long newLinePreStationId = newLineStation.getPreStationId();
-        if(newLinePreStationId == null || newLinePreStationId == 0){
+        if (newLinePreStationId == null || newLinePreStationId == 0) {
             return true;
         }
         return newLinePreStationId.equals(lineStation.getPreStationId());
@@ -140,14 +140,14 @@ public class Line {
     }
 
     private Long addLineStationIfNotTarget(Long stationId, LineStation station, Set<LineStation> newStations) {
-        if(!station.getStationId().equals(stationId)){
+        if (!station.getStationId().equals(stationId)) {
             newStations.add(station);
         }
         return station.getStationId();
     }
 
     private void checkAndUpdateLink(LineStation station, Long prevLineStationId, Long stationId) {
-        if(stationId.equals(prevLineStationId)){
+        if (stationId.equals(prevLineStationId)) {
             station.updatePreLineStation(prevLineStationId);
         }
     }
