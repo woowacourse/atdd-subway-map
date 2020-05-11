@@ -58,6 +58,18 @@ function AdminStation() {
     }
   };
 
+  const initDefaultStations = () => {
+    api.station.get()
+        .then(data => data.json())
+        .then(stations =>
+            stations.map(station => {
+              $stationList.insertAdjacentHTML(
+                  "beforeend",
+                  listItemTemplate(station)
+              );
+            }));
+  };
+
   const initEventListeners = () => {
     $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
     $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler);
@@ -66,6 +78,7 @@ function AdminStation() {
 
   const init = () => {
     initEventListeners();
+    initDefaultStations();
   };
 
   return {
