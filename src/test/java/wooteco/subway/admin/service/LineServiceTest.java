@@ -116,8 +116,8 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"),
-            new Station("삼성역"));
+        List<Station> stations = Arrays.asList(new Station(1L, "강남역"), new Station(2L, "역삼역"),
+            new Station(3L, "삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 

@@ -43,12 +43,12 @@ public class StationResponse {
             return false;
         StationResponse that = (StationResponse)o;
         return Objects.equals(id, that.id) &&
-            Objects.equals(name, that.name) &&
-            Objects.equals(createdAt, that.createdAt);
+            Objects.equals(name, that.name);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, createdAt);
+        return Objects.hash(id, name);
     }
 }

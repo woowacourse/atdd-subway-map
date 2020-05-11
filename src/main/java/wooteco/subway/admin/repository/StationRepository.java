@@ -14,4 +14,7 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     @Query("SELECT count(*) FROM station WHERE name = :name")
     boolean existsStationBy(@Param("name") String name);
+
+    @Override
+    List<Station> findAll();
 }

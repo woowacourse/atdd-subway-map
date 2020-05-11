@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
@@ -22,11 +23,10 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
-    }
-
+    @PersistenceConstructor
     public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
         int intervalTime) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.startTime = startTime;

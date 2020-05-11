@@ -1,17 +1,19 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -30,13 +32,6 @@ public class LineService {
         return lineRepository.save(line).getId();
     }
 
-    private void validateLine(Line lineToCreate) {
-        boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
-        if (exist) {
-            throw new ExistingNameException(lineToCreate.getName());
-        }
-    }
-
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
             .map(this::from)
@@ -44,7 +39,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
@@ -83,19 +78,24 @@ public class LineService {
     }
 
     private List<StationResponse> getStationResponses(List<Long> stationsId) {
+        Map<Long, Station> stations = stationRepository.findAllById(stationsId)
+            .stream()
+            .collect(Collectors.toMap(Station::getId, station -> station));
         return stationsId.stream()
-            .map(stationRepository::findById)
-            .map(Optional::get)
+            .map(stations::get)
             .map(StationResponse::of)
             .collect(Collectors.toList());
-        // List<Station> stations = stationRepository.findAllById(stationsId);
-        // return stations.stream()
-        //     .map(StationResponse::of)
-        //     .collect(Collectors.toList());
+    }
+
+    private void validateLine(Line lineToCreate) {
+        boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
+        if (exist) {
+            throw new ExistingNameException(lineToCreate.getName());
+        }
     }
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+            .orElseThrow(() -> new NotFoundException(id));
     }
 }
