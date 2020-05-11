@@ -64,7 +64,7 @@ public class LineService {
         save(line);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
+    public List<Station> findStationsByLineId(Long id) {
         Line line = findById(id);
         List<Long> lineStationsIds = line.getLineStationsId();
         List<Station> stations = stationRepository.findAllById(lineStationsIds);
@@ -77,15 +77,6 @@ public class LineService {
             sortedStations.add(selectedStation);
         }
 
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getStartTime(),
-                line.getEndTime(),
-                line.getIntervalTime(),
-                line.getBackgroundColor(),
-                line.getCreatedAt(),
-                line.getUpdatedAt(),
-                sortedStations);
+        return sortedStations;
     }
 }

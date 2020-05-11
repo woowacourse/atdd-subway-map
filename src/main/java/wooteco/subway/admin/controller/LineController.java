@@ -41,7 +41,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> getLinesDetail() {
         List<Line> lines = lineService.showLines();
         List<LineResponse> linesDetail = lines.stream()
-                .map(line -> lineService.findLineWithStationsById(line.getId()))
+                .map(line -> LineResponse.of(line, lineService.findStationsByLineId(line.getId())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(linesDetail);
     }
