@@ -15,6 +15,8 @@ public class Station {
         this.createdAt = LocalDateTime.now();
     }
 
+    public Station() { }
+
     public Long getId() {
         return id;
     }

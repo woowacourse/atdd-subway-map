@@ -28,7 +28,7 @@ public class LineController {
 
         return ResponseEntity
                 .created(URI.create("/lines/" + persistLine.getId()))
-                .body(LineResponse.of(persistLine));
+                .body(LineWithStationsResponse.of(persistLine));
     }
 
     @GetMapping("/lines")

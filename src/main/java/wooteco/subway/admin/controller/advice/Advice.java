@@ -1,4 +1,4 @@
-package wooteco.subway.admin.controller.exception.handler;
+package wooteco.subway.admin.controller.advice;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
