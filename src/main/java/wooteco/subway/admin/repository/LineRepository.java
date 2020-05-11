@@ -13,4 +13,11 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("SELECT * FROM LINE WHERE NAME = :name;")
     Line findByName(@Param("name") String name);
+
+    @Query("SELECT COUNT(*) FROM LINE WHERE NAME = :name LIMIT 1")
+    int countSameLineByName(@Param("name") String name);
+
+    default boolean isExistLineByName(String name) {
+        return countSameLineByName(name) != 0;
+    }
 }
