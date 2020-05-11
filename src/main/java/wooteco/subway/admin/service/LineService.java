@@ -2,13 +2,13 @@ package wooteco.subway.admin.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -66,16 +66,12 @@ public class LineService {
 
     public List<Station> findStationsByLineId(Long id) {
         Line line = findById(id);
-        List<Long> lineStationsIds = line.getLineStationsId();
-        List<Station> stations = stationRepository.findAllById(lineStationsIds);
-        List<Station> sortedStations = new ArrayList<>();
-        for (Long lineStationsId : lineStationsIds) {
-            Station selectedStation = stations.stream()
-                    .filter(station -> lineStationsId.equals(station.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("해당 역을 찾을 수 없습니다."));
-            sortedStations.add(selectedStation);
-        }
+        List<LineStation> lineStations = line.getStations();
+
+        List<Station> sortedStations = lineStations.stream()
+                .map(lineStation -> stationRepository.findById(lineStation.getStationId())
+                        .orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다.")))
+                .collect(Collectors.toList());
 
         return sortedStations;
     }
