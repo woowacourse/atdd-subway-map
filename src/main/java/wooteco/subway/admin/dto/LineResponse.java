@@ -23,7 +23,8 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    private LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
+                         String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;
@@ -35,14 +36,16 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+    public static LineResponse from(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
+                                line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(),
+                                new HashSet<>());
     }
 
     public static LineResponse withStations(Line line, Set<Station> stations) {
-        LineResponse of = of(line);
-        of.stations = stations;
-        return of;
+        LineResponse from = from(line);
+        from.stations = stations;
+        return from;
     }
 
     public Long getId() {
