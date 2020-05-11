@@ -58,8 +58,9 @@ public class LineStationAcceptanceTest {
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        //when
         createLine("8호선");
-
+        //then
         List<LineResponse> lines = getLines();
         LineResponse lineEight = lines.get(0);
 

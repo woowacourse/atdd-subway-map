@@ -35,16 +35,20 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        lineService.validateTitle(lineRequest);
-        Line line = new Line(
-                lineRequest.getTitle(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime(),
-                lineRequest.getBgColor()
-        );
-        Line savedLine = lineService.save(line);
-        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
+        try {
+            lineService.validateTitle(lineRequest);
+            Line line = new Line(
+                    lineRequest.getTitle(),
+                    lineRequest.getStartTime(),
+                    lineRequest.getEndTime(),
+                    lineRequest.getIntervalTime(),
+                    lineRequest.getBgColor()
+            );
+            Line savedLine = lineService.save(line);
+            return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -62,16 +66,20 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.validateTitleWhenUpdateInfo(id, lineRequest);
-        Line line = new Line(
-                lineRequest.getTitle(),
-                lineRequest.getStartTime(),
-                lineRequest.getEndTime(),
-                lineRequest.getIntervalTime(),
-                lineRequest.getBgColor()
-        );
-        lineService.updateLine(id, line);
-        return ResponseEntity.ok().build();
+        try {
+            lineService.validateTitleWhenUpdateInfo(id, lineRequest);
+            Line line = new Line(
+                    lineRequest.getTitle(),
+                    lineRequest.getStartTime(),
+                    lineRequest.getEndTime(),
+                    lineRequest.getIntervalTime(),
+                    lineRequest.getBgColor()
+            );
+            lineService.updateLine(id, line);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

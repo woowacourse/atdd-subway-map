@@ -3,6 +3,7 @@ import {listItemTemplate} from "../../utils/templates.js";
 
 function AdminStation() {
     const $stationInput = document.querySelector("#station-name");
+    const $stationAddBtn = document.querySelector("#station-add-btn");
     const $stationList = document.querySelector("#station-list");
 
     const onAddStationHandler = event => {
@@ -16,8 +17,22 @@ function AdminStation() {
             alert(ERROR_MESSAGE.NOT_EMPTY);
             return;
         }
-        $stationNameInput.value = "";
-        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+        fetch("/stations", {
+            method: 'post',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: stationName
+            })
+        }).then(res => {
+            if (res.ok) {
+                res.json().then(data => {
+                    $stationNameInput.value = "";
+                    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+                })
+            }
+        })
     };
 
     const onRemoveStationHandler = event => {
@@ -30,6 +45,7 @@ function AdminStation() {
 
     const initEventListeners = () => {
         $stationInput.addEventListener(EVENT_TYPE.KEY_PRESS, onAddStationHandler);
+        $stationAddBtn.addEventListener(EVENT_TYPE.CLICK, onAddStationHandler)
         $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     };
 
