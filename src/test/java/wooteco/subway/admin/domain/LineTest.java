@@ -37,9 +37,7 @@ public class LineTest {
 	@ValueSource(longs = {1L, 2L, 3L})
 	void removeLineStation(Long stationId) {
 		line.removeLineStationById(stationId);
-		for (LineStation lineStation : line.getStations()) {
-			System.out.println(lineStation.getPreStationId() + " " + lineStation.getStationId());
-		}
+
 		assertThat(line.getStations()).hasSize(2);
 	}
 }
