@@ -105,6 +105,9 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (lineStations.isEmpty()) {
+            validateFirstLineStation(lineStation);
+        }
         lineStations.add(lineStation);
 
         Long preStationId = lineStation.getPreStationId();
@@ -118,6 +121,12 @@ public class Line {
                 selectedLineStation.setPreStationId(stationId);
                 break;
             }
+        }
+    }
+
+    private void validateFirstLineStation(LineStation lineStation) {
+        if (lineStation.getPreStationId() != 0L) {
+            throw new IllegalArgumentException("처음 추가된 역의 preStationId는 0L이어야 합니다.");
         }
     }
 
