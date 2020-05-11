@@ -88,14 +88,14 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public void validateTitle(LineRequest lineRequest) throws Exception {
+    public void validateTitle(LineRequest lineRequest) {
         lineRepository.findByTitle(lineRequest.getTitle())
                 .ifPresent(line -> {
                     throw new IllegalArgumentException("존재하는 이름입니다");
                 });
     }
 
-    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) throws Exception {
+    public void validateTitleWhenUpdateInfo(Long id, LineRequest lineRequest) {
         if (isNotChangeTitle(id, lineRequest)) {
             return;
         }

@@ -45,19 +45,21 @@ function AdminLine() {
 
         fetch(url, createRequest)
             .then(res => {
-                    if (res.ok) {
-                        res.json().then(data => {
-                            $subwayLineList.insertAdjacentHTML(
-                                "beforeend",
-                                subwayLinesTemplate(data)
-                            )
-                        })
-                    } else {
-                        console.log(res);
-                        console.log(res.body);
+                    if (!res.ok) {
+                        throw res
                     }
+                    res.json().then(data => {
+                        $subwayLineList.insertAdjacentHTML(
+                            "beforeend",
+                            subwayLinesTemplate(data)
+                        )
+                    })
                 }
-            );
+            ).catch(error => {
+            error.text().then(text => {
+                alert(text);
+            })
+        });
 
         subwayLineModal.toggle();
     };

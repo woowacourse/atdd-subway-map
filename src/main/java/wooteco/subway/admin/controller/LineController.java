@@ -2,6 +2,7 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,20 +36,16 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            lineService.validateTitle(lineRequest);
-            Line line = new Line(
-                    lineRequest.getTitle(),
-                    lineRequest.getStartTime(),
-                    lineRequest.getEndTime(),
-                    lineRequest.getIntervalTime(),
-                    lineRequest.getBgColor()
-            );
-            Line savedLine = lineService.save(line);
-            return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        lineService.validateTitle(lineRequest);
+        Line line = new Line(
+                lineRequest.getTitle(),
+                lineRequest.getStartTime(),
+                lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(),
+                lineRequest.getBgColor()
+        );
+        Line savedLine = lineService.save(line);
+        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(savedLine);
     }
 
     @GetMapping
@@ -109,5 +106,10 @@ public class LineController {
     public ResponseEntity deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity exceptionHandler(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
