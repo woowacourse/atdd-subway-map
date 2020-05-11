@@ -1,6 +1,7 @@
 import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE, MAGIC_NUMBER, NODE_NAME, REGEX} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
 import api from "../../api/index.js";
+import {markingErrorField} from "../../utils/validate.js";
 
 function AdminStation() {
     const $stationInput = document.querySelector("#station-name");
@@ -88,13 +89,21 @@ function AdminStation() {
         const stationRequest = {
             name: stationName
         };
-        api.station.create(stationRequest).then(data => {
-            if (data.error) {
-                alert(data.error);
+        api.station.create(stationRequest).then(response => {
+            let location = response.headers.get('Location');
+            if (location === null) {
+                response.json().then(data => {
+                    alert(data.error);
+                    markingErrorField(data);
+                });
                 return;
             }
-            $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+
+            api.station.find(location).then(responseData => {
+                $stationList.insertAdjacentHTML("beforeend", listItemTemplate(responseData));
+            });
         });
+
         $stationNameInput.value = "";
     };
 
@@ -114,7 +123,7 @@ function AdminStation() {
     };
 
     const initDefaultSubwayStation = () => {
-        api.station.get().then(data => {
+        api.station.show().then(data => {
             data.map(station => {
                     $stationList.insertAdjacentHTML(
                         "beforeend",

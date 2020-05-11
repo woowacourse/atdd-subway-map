@@ -31,44 +31,44 @@ const api = (() => {
   const noDataRequest = (uri, config) => fetch(uri, config);
 
   const station = {
-    get() {
+    create(data) {
+      return noDataRequest(`${BASE_URL}/stations`, METHOD.POST(data));
+    },
+    show() {
       return dataRequest(`${BASE_URL}/stations`);
     },
-    getId(name) {
-      return dataRequest(`${BASE_URL}/stations/${name}`);
-    },
-    create(data) {
-      return dataRequest(`${BASE_URL}/stations`, METHOD.POST(data));
+    find(id) {
+      return dataRequest(`${BASE_URL}/stations/${id}`);
     },
     update(id, data) {
-      noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.PUT(data));
+      return noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.DELETE());
+      return noDataRequest(`${BASE_URL}/stations/${id}`, METHOD.DELETE());
     }
   };
 
   const lines = {
-    get() {
-      return dataRequest(`${BASE_URL}/lines`);
-    },
     create(data) {
-      return dataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
+      return noDataRequest(`${BASE_URL}/lines`, METHOD.POST(data));
     },
     createLineStation(id, data) {
-      return dataRequest(`${BASE_URL}/lines/${id}/stations`, METHOD.POST(data));
+      return noDataRequest(`${BASE_URL}/lines/${id}/stations`, METHOD.POST(data));
+    },
+    show() {
+      return dataRequest(`${BASE_URL}/lines`);
     },
     find(id) {
       return dataRequest(`${BASE_URL}/lines/${id}`);
     },
     update(id, data) {
-      return dataRequest(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
+      return noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
+      return noDataRequest(`${BASE_URL}/lines/${id}`, METHOD.DELETE());
     },
     deleteLineStation(lineId, stationId) {
-      noDataRequest(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      return noDataRequest(`${BASE_URL}/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   };
 

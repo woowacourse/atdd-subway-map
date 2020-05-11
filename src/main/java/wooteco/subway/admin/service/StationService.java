@@ -9,7 +9,6 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class StationService {
-
     private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -24,11 +23,12 @@ public class StationService {
         return stationRepository.findAll();
     }
 
-    public Station findStationByName(final String stationName) {
-        return stationRepository.findByName(stationName);
-    }
-
     public void removeStation(final Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStationById(final Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(RuntimeException::new);
     }
 }

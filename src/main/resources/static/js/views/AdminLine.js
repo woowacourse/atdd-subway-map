@@ -42,22 +42,34 @@ function AdminLine() {
     };
 
     const onCreateSubwayLine = (newSubwayLine) => {
-        return api.lines.create(newSubwayLine).then(data => {
-            markingErrorField(data);
-            $subwayLineList.insertAdjacentHTML(
-                "beforeend",
-                subwayLinesTemplate(data)
-            );
+        return api.lines.create(newSubwayLine).then(response => {
+            let location = response.headers.get('Location');
+            if (location === null) {
+                return response.json().then(data => markingErrorField(data));
+            }
+            api.lines.find(location).then(responseData => {
+                $subwayLineList.insertAdjacentHTML(
+                    "beforeend",
+                    subwayLinesTemplate(responseData)
+                );
+            });
         });
     }
 
+    const onUpdateSubwayLine = async newSubwayLine => {
+        await api.lines.update($subwayLineId.value, newSubwayLine)
+            .then(response => {
+                if (response.status === 400) {
+                    response.json().then(responseData => {
+                        markingErrorField(responseData);
+                    });
+                }
+            });
 
-    const onUpdateSubwayLine = (newSubwayLine) => {
-        return api.lines.update($subwayLineId.value, newSubwayLine).then(data => {
-            markingErrorField(data);
+        await api.lines.find($subwayLineId.value).then(responseData => {
             let standardNode = document.querySelector(`[data-line-id="${$subwayLineId.value}"]`);
             let divNode = document.createElement("div");
-            divNode.innerHTML = subwayLinesTemplate(data);
+            divNode.innerHTML = subwayLinesTemplate(responseData);
             $subwayLineList.insertBefore(divNode.firstChild, standardNode);
             standardNode.remove();
         })
@@ -113,7 +125,7 @@ function AdminLine() {
     }
 
     const initDefaultSubwayLines = () => {
-        api.lines.get().then(data => {
+        api.lines.show().then(data => {
             data.map(line => {
                     $subwayLineList.insertAdjacentHTML(
                         "beforeend",

@@ -1,4 +1,9 @@
-import {listItemTemplate, optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
+import {
+    listItemTemplate,
+    optionLineTemplate,
+    optionSubwayTemplate,
+    subwayLinesItemTemplate
+} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
@@ -18,17 +23,9 @@ function AdminEdge() {
     const onCreateSubwayEdge = async event => {
         event.preventDefault();
 
-        let preStationId;
-        let currentStationId;
-
-        await api.station.getId($preStation.value).then(data => {
-            preStationId = data;
-        });
-        await api.station.getId($currentStation.value).then(data => {
-            currentStationId = data;
-        });
-
-        const lineId = $selectStation.options[$selectStation.selectedIndex].dataset.edgeId;
+        const lineId = $selectStation.options[$selectStation.selectedIndex].dataset.optionLineId;
+        const preStationId = $preStation.options[$preStation.selectedIndex].dataset.optionStationId;
+        const currentStationId = $currentStation.options[$currentStation.selectedIndex].dataset.optionStationId;
 
         const newSubwayEdge = {
             preStationId: preStationId,
@@ -37,21 +34,30 @@ function AdminEdge() {
             duration: 10
         }
 
-        api.lines.createLineStation(lineId, newSubwayEdge).then(data => {
-            markingErrorField(data);
-            let sameLines = document.querySelectorAll(`[data-line-edge-id="${data.id}"]`);
-            sameLines.forEach(line => {
-                    line.lastElementChild.innerHTML = data.stations.map(station => listItemTemplate(station)).join("");
+        await api.lines.createLineStation(lineId, newSubwayEdge)
+            .then(response => {
+                if (response.status === 400) {
+                    response.json().then(responseData => {
+                        markingErrorField(responseData);
+                    });
                 }
-            );
-        });
+            });
+
+        await api.lines.find(lineId)
+            .then(response => {
+                let sameLines = document.querySelectorAll(`[data-line-edge-id="${response.id}"]`);
+                sameLines.forEach(line => {
+                        line.lastElementChild.innerHTML = response.stations.map(station => listItemTemplate(station)).join("");
+                    }
+                );
+            });
 
         createSubwayEdgeModal.toggle();
         onEmptyInput();
     }
 
     const initSubwayLinesSlider = async () => {
-        await api.lines.get().then(data => {
+        await api.lines.show().then(data => {
             $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line)).join("");
         });
 
@@ -69,19 +75,32 @@ function AdminEdge() {
         });
     };
 
-    const initSubwayLineOptions = async () => {
-        let subwayLineOptionTemplate;
-        await api.lines.get().then(data => {
-            subwayLineOptionTemplate = data.map(line => optionTemplate(line)).join("");
-        })
+    const initSubwayStationOptions = () => {
+        let subwayStationOptionTemplate;
 
-        const $stationSelectOptions = document.querySelector(
-            "#station-select-options"
-        );
-        $stationSelectOptions.insertAdjacentHTML(
-            "afterbegin",
-            subwayLineOptionTemplate
-        );
+        api.station.show().then(data => {
+            subwayStationOptionTemplate = data.map(station => optionSubwayTemplate(station)).join("");
+            $preStation.insertAdjacentHTML(
+                "afterbegin",
+                subwayStationOptionTemplate
+            );
+            $currentStation.insertAdjacentHTML(
+                "afterbegin",
+                subwayStationOptionTemplate
+            );
+        });
+    }
+
+    const initSubwayLineOptions = () => {
+        let subwayLineOptionTemplate;
+
+        api.lines.show().then(data => {
+            subwayLineOptionTemplate = data.map(line => optionLineTemplate(line)).join("");
+            $selectStation.insertAdjacentHTML(
+                "afterbegin",
+                subwayLineOptionTemplate
+            );
+        });
     };
 
     const onRemoveStationHandler = event => {
@@ -93,7 +112,6 @@ function AdminEdge() {
 
             $target.closest(".list-item").remove();
             api.lines.deleteLineStation(lineId, stationId);
-
         }
     };
 
@@ -112,6 +130,7 @@ function AdminEdge() {
     this.init = () => {
         initSubwayLinesSlider();
         initSubwayLineOptions();
+        initSubwayStationOptions();
         initEventListeners();
     };
 }
