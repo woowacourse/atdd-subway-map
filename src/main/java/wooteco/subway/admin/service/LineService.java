@@ -12,6 +12,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,25 +45,6 @@ public class LineService {
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
-    }
-
-    @Transactional
-    public LineResponse registerLineStation(String lineName, String preStationName, String arrivalStationName) {
-        Line line = lineRepository.findByName(lineName);
-        Station preStation = stationRepository.findByName(preStationName);
-        //todo: refac
-        Station arrivalStation = stationRepository.save(new Station(arrivalStationName));
-
-        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
-        addLineStation(line.getId(), lineStationCreateRequest);
-
-        List<Long> stationIds = line.getStations().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-
-        Set<Station> stations = stationRepository.findAllById(stationIds);
-
-        return LineResponse.withStations(line, stations);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

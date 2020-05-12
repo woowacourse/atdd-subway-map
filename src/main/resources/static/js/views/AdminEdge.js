@@ -67,14 +67,7 @@ function AdminEdge() {
             return;
         }
         const $selectOptions = document.querySelector("#station-select-options");
-        let lineName = $selectOptions[$selectOptions.selectedIndex].value;
-        let departStationName = document.querySelector("#depart-station-name").value;
-        let arrivalStationName = document.querySelector("#arrival-station-name").value;
 
-        console.log("ㅗㅗㅗㅗ");
-        console.log(lineName);
-        console.log(departStationName);
-        console.log(arrivalStationName);
         const lineStationDto = {
             name: $selectOptions[$selectOptions.selectedIndex].value,
             preStationName: document.querySelector("#depart-station-name").value,
