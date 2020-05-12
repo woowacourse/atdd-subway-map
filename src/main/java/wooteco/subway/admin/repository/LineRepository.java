@@ -12,6 +12,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
 
-    @Query("SELECT * FROM line WHERE name = :name")
+    @Query("SELECT * FROM line WHERE EXISTS (SELECT * FROM line WHERE name = :name)")
     Line findByName(@Param("name") String name);
 }
