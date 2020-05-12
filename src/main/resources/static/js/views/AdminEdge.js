@@ -12,8 +12,7 @@ function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $selectOptions = document.querySelector("#station-select-options");
     const $departStationInput = document.querySelector("#depart-station-name");
-    const $arrivalStationInput = document.querySelector(
-        "#arrival-station-name");
+    const $arrivalStationInput = document.querySelector("#arrival-station-name");
     const $submitEdgeBtn = document.querySelector("#submit-button");
 
     const createSubwayEdgeModal = new Modal();
@@ -60,7 +59,7 @@ function AdminEdge() {
     const onCreateEdgeHandler = async event => {
         event.preventDefault();
         const stations = await api.station.get().then(data => data.json());
-        const depart = stations.filter(
+        let depart = stations.filter(
             station => station.name === $departStationInput.value)[0];
         const arrival = stations.filter(
             station => station.name === $arrivalStationInput.value)[0];
