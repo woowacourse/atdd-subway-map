@@ -105,9 +105,9 @@ public class Line {
             stations.add(lineStation);
             return;
         }
-        if (lineStation.getPreStationId() == null) {
+        if (lineStation.isStartStation()) {
             stations.stream()
-                .filter(station -> station.getPreStationId() == null)
+                .filter(station -> station.isStartStation())
                 .findFirst()
                 .get()
                 .updatePreLineStation(lineStation.getStationId());
