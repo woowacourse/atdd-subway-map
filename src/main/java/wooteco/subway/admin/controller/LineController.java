@@ -34,7 +34,7 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Long> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
+	public ResponseEntity<Long> createLine(@RequestBody @Valid final LineCreateRequest lineCreateRequest) {
 		Long id = lineService.save(lineCreateRequest.toLine());
 		return ResponseEntity.created(URI.create("/lines/" + id)).body(id);
 	}
@@ -45,18 +45,19 @@ public class LineController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long lineId) {
+	public ResponseEntity<LineResponse> getLine(@PathVariable("id") final Long lineId) {
 		return ResponseEntity.ok(lineService.findLineWithStationsById(lineId));
 	}
 
 	@PutMapping("{id}")
-	public ResponseEntity<Long> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId, @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
+	public ResponseEntity<Long> updateLine(@PathVariable("id") final Long lineId,
+		@RequestBody @Valid final LineUpdateRequest lineUpdateRequest) {
 		lineService.updateLine(lineId, lineUpdateRequest.toLine());
 		return ResponseEntity.ok(lineId);
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Long> deleteLine(@PathVariable("id") Long lineId) {
+	public ResponseEntity<Long> deleteLine(@PathVariable("id") final Long lineId) {
 		lineService.deleteLineById(lineId);
 		return ResponseEntity.ok(lineId);
 	}
