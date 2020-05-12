@@ -3,6 +3,7 @@ package wooteco.subway.admin.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -43,14 +44,14 @@ public class LineService {
 	}
 
 	public LineResponse save(Line line) {
-		validateDuplicateName(line);
-		return LineResponse.of(lineRepository.save(line));
-	}
-
-	private void validateDuplicateName(Line line) {
-		boolean sameName = lineRepository.findByName(line.getName()).isPresent();
-		if (sameName) {
-			throw new IllegalArgumentException("중복되는 역 이름입니다.");
+		try {
+			return LineResponse.of(lineRepository.save(line));
+		} catch (DbActionExecutionException dee) {
+			String causeMessage = dee.getCause().toString();
+			if (causeMessage.contains("DuplicateKeyException")) {
+				throw new IllegalArgumentException("라인명은 중복될 수 없습니다.");
+			}
+			throw dee;
 		}
 	}
 
