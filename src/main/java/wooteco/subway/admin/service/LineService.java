@@ -1,8 +1,11 @@
 package wooteco.subway.admin.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
@@ -33,14 +36,35 @@ public class LineService {
 	public List<LineResponse> showLinesWithStations() {
 		List<Line> lines = lineRepository.findAll();
 
+		Stream<LineStation> allLineStationStream = lines.stream()
+			.flatMap(line -> line.getLineStations().stream());
+		Map<Long, Station> stations = findStationsBy(allLineStationStream);
+
 		return lines.stream()
-			.map(this::createLineResponseWithStations)
+			.map(line -> getLineResponses(line, stations))
 			.collect(Collectors.toList());
 	}
 
+	public Map<Long, Station> findStationsBy(Stream<LineStation> lineStationStream) {
+		Set<Long> stationIds = lineStationStream.map(LineStation::getStationId)
+			.collect(Collectors.toSet());
+
+		return stationRepository.findAllById(stationIds).stream()
+			.collect(Collectors.toMap(Station::getId, station -> station));
+	}
+
 	private LineResponse createLineResponseWithStations(Line line) {
-		List<Station> stations = stationRepository.findAllByIdOrderBy(line.getId());
-		return LineResponse.of(line, StationResponse.listOf(stations));
+		Map<Long, Station> stations = findStationsBy(line.getLineStations().stream());
+		return getLineResponses(line, stations);
+	}
+
+	private LineResponse getLineResponses(Line line, Map<Long, Station> stations) {
+		List<StationResponse> stationResponses = StationResponse
+			.listOf(line.getLineStations().stream()
+				.map(LineStation::getStationId)
+				.map(stations::get)
+				.collect(Collectors.toList()));
+		return LineResponse.of(line, stationResponses);
 	}
 
 	public LineResponse save(Line line) {

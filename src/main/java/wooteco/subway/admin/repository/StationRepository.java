@@ -17,11 +17,4 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     @Query("SELECT * FROM STATION WHERE NAME = :name")
     Optional<Station> findByName(@Param("name") String name);
-
-    @Query("SELECT STATION.*"
-        + "  FROM  STATION"
-        + " INNER JOIN LINE_STATION ON STATION.ID = LINE_STATION.STATION"
-        + " WHERE LINE_STATION.LINE = :lineId"
-        + " ORDER BY SEQUENCE;")
-    List<Station> findAllByIdOrderBy(@Param("lineId") Long lineId);
 }
