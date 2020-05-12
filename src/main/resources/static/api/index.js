@@ -25,7 +25,14 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config);
+    const request = (uri, config) => fetch(uri, config)
+    .then(response => {
+        if (!response.ok) {
+            alert("뭔가 잘못되었어요! 실패했습니다.");
+            console.log(response.text());
+        }
+        return response;
+    });
 
     const station = {
         get() {
