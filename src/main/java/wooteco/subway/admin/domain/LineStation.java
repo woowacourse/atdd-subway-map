@@ -10,7 +10,7 @@ public class LineStation {
     private int distance;
     private int duration;
 
-    public LineStation() {
+    private LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {

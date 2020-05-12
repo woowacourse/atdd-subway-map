@@ -24,7 +24,7 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
