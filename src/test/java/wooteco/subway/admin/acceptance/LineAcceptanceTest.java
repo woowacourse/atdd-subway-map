@@ -13,12 +13,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
-        // when
+        // when : line 테이블에 다음 네 개의 노선을 저장한다.
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
-        // then
+        // then : line 테이블에 네개의 노선이 정상적으로 저장되었는가?
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
