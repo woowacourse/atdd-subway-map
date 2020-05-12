@@ -23,6 +23,14 @@ function AdminLine() {
   let $selectedLine = null;
   let isUpdate = false;
 
+  const clear = () => {
+    $subwayLineNameInput.value = "";
+    $subwayStartTimeInput.value = "";
+    $subwayEndTimeInput.value = "";
+    $subwayIntervalTimeInput.value = "";
+    $subwayLineBgColorInput.value = "";
+  };
+
   const updateLine = (updateLine) => {
     api.line
     .update($selectedLine.dataset.lineId, updateLine)
@@ -59,7 +67,7 @@ function AdminLine() {
     });
   };
 
-  const onClickConfirm = event => {
+  const onClickConfirm = async event => {
     event.preventDefault();
     const line = {
       name: $subwayLineNameInput.value,
@@ -69,7 +77,6 @@ function AdminLine() {
       bgColor: $subwayLineBgColorInput.value,
     };
     isUpdate ? updateLine(line) : createLine(line);
-    clear();
     subwayLineModal.toggle();
   };
 
@@ -127,6 +134,7 @@ function AdminLine() {
     event.preventDefault();
     if (event.target.id === "subway-line-add-btn") {
       isUpdate = false;
+      clear();
     }
   };
 
@@ -141,14 +149,6 @@ function AdminLine() {
         );
       })
     );
-  };
-
-  const clear = () => {
-    $subwayLineNameInput.value = "";
-    $subwayStartTimeInput.value = "";
-    $subwayEndTimeInput.value = "";
-    $subwayIntervalTimeInput.value = "";
-    $subwayLineBgColorInput.value = "";
   };
 
   const initEventListeners = () => {

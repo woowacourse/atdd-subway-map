@@ -20,6 +20,7 @@ public class Station {
     }
 
     public Station(String name) {
+        this.id = null;
         this.name = name;
         this.createdAt = LocalDateTime.now();
     }

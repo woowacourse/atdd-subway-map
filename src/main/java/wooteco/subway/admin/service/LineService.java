@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
@@ -27,7 +28,8 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse addLine(Line line) {
+    public LineResponse addLine(LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
         return LineResponse.of(lineRepository.save(line));
     }
 
