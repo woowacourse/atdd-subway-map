@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,12 +25,15 @@ class StationServiceTest {
     @Mock
     private StationRepository stationRepository;
 
+    @Mock
+    private LineRepository lineRepository;
+
     private StationService stationService;
     private List<Station> stations;
 
     @BeforeEach
     void setUp() {
-        stationService = new StationService(stationRepository);
+        stationService = new StationService(stationRepository, lineRepository);
 
         stations = Arrays.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
     }
