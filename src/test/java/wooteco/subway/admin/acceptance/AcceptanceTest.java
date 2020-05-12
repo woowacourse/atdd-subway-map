@@ -13,9 +13,9 @@ import org.springframework.http.MediaType;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
-public class TestSupport {
+public class AcceptanceTest {
 
-    public LineResponse getLine(Long id) {
+    public static LineResponse getLine(Long id) {
         return given().when().
             get("/lines/" + id).
             then().
@@ -23,7 +23,7 @@ public class TestSupport {
             extract().as(LineResponse.class);
     }
 
-    public Long createLine(String name) {
+    public static Long createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-green-700");
@@ -45,7 +45,7 @@ public class TestSupport {
             .as(Long.class);
     }
 
-    public StationResponse createStation(String name) {
+    public static StationResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 

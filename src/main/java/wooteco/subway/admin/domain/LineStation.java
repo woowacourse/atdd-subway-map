@@ -70,5 +70,6 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+        this.updatedAt = LocalDateTime.now();
     }
 }

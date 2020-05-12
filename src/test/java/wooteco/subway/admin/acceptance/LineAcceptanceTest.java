@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.admin.acceptance.AcceptanceTest.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,12 +27,10 @@ import wooteco.subway.admin.dto.LineResponse;
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
-    TestSupport testSupport;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        testSupport = new TestSupport();
     }
 
     public static RequestSpecification given() {
@@ -42,16 +41,16 @@ public class LineAcceptanceTest {
     @Test
     void manageLine() {
         // when
-        testSupport.createLine("신분당선");
-        testSupport.createLine("1호선");
-        testSupport.createLine("2호선");
-        testSupport.createLine("3호선");
+        createLine("신분당선");
+        createLine("1호선");
+        createLine("2호선");
+        createLine("3호선");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = testSupport.getLine(lines.get(0).getId());
+        LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -64,7 +63,7 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = testSupport.getLine(line.getId());
+        LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 

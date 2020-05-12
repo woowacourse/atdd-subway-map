@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.admin.acceptance.AcceptanceTest.*;
 
 import java.util.List;
 
@@ -20,12 +21,10 @@ import wooteco.subway.admin.dto.StationResponse;
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
-    TestSupport testSupport;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        testSupport = new TestSupport();
     }
 
     public static RequestSpecification given() {
@@ -35,10 +34,10 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 관리한다")
     @Test
     void manageStation() {
-        testSupport.createStation("잠실역");
-        testSupport.createStation("종합운동장역");
-        testSupport.createStation("선릉역");
-        testSupport.createStation("강남역");
+        createStation("잠실역");
+        createStation("종합운동장역");
+        createStation("선릉역");
+        createStation("강남역");
 
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
