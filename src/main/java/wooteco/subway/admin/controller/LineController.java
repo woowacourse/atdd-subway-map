@@ -33,8 +33,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity addLine(@RequestBody LineRequest view) {
-        Line line = view.toLine();
+    public ResponseEntity addLine(@RequestBody LineRequest request) {
+        Line line = request.toLine();
         Line persistLine = service.save(line);
 
         return ResponseEntity
@@ -53,8 +53,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest view) {
-        service.updateLine(id, view.toLine());
+    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest request) {
+        service.updateLine(id, request.toLine());
         return ResponseEntity.ok().build();
     }
 
@@ -67,8 +67,8 @@ public class LineController {
     /* 구간 추가 */
     @PostMapping("/{lineId}/stations")
     public ResponseEntity addLineStation(@PathVariable Long lineId,
-        @RequestBody LineStationCreateRequest view) {
-        service.addLineStation(lineId, view);
+        @RequestBody LineStationCreateRequest request) {
+        service.addLineStation(lineId, request);
         return ResponseEntity
             .created(URI.create("/api/lines/{lineId}/stations"))
             .build();
