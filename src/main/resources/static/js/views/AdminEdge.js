@@ -4,13 +4,13 @@ import {
 } from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
-import Modal from "../../ui/Modal.js";
+import ModalEdge from "../../ui/ModalEdge.js";
 import api from "../../api/index.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $subwayLinesSubmitButton = document.querySelector("#submit-button");
-    const createSubwayEdgeModal = new Modal();
+    const createSubwayEdgeModal = new ModalEdge();
 
     const initSubwayLinesSlider = res => {
         $subwayLinesSlider.innerHTML = res

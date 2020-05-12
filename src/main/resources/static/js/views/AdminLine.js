@@ -5,13 +5,13 @@ import {
 } from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import api from "../../api/index.js";
-import Modal from "../../ui/Modal.js";
+import ModalLine from "../../ui/ModalLine.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");
     const $createSubwayLineButton =
         document.querySelector("#subway-line-create-form #submit-button");
-    const subwayLineModal = new Modal();
+    const subwayLineModal = new ModalLine();
     const changeInfo = subwayLineModal.$changeInfo;
     const linesInfo = {
         'viewStartTime': document.querySelector("#view-start-time"),
