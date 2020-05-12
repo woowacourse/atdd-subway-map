@@ -84,4 +84,20 @@ public class LineService {
         }
         return stationResponses;
     }
+
+    public Station saveStation(Station station) {
+        return stationRepository.save(station);
+    }
+
+    public List<Station> findAllStations() {
+        return stationRepository.findAll();
+    }
+
+    public void deleteStationById(Long id) {
+        stationRepository.deleteById(id);
+    }
+
+    public Long findStationIdByName(String name) {
+        return stationRepository.findIdByName(name);
+    }
 }

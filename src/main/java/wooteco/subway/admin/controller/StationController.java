@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
 @RequestMapping("/api/stations")
 public class StationController {
-    private final StationRepository stationRepository;
+    private final LineService service;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationController(LineService service) {
+        this.service = service;
     }
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
         @RequestBody StationCreateRequest request) {
         Station station = request.toStation();
-        Station persistStation = stationRepository.save(station);
+        Station persistStation = service.saveStation(station);
 
         return ResponseEntity
             .created(URI.create("/api/stations/" + persistStation.getId()))
@@ -39,19 +39,19 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<Station>> showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
+        return ResponseEntity.ok().body(service.findAllStations());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
+        service.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<Long> getStationIdByName(@PathVariable String name) {
+    public ResponseEntity<Long> getStationidByName(@PathVariable String name) {
         return ResponseEntity
             .ok()
-            .body(stationRepository.findIdByName(name));
+            .body(service.findStationIdByName(name));
     }
 }
