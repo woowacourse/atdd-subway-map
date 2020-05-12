@@ -33,8 +33,11 @@ const api = (() => {
         get() {
             return request(`${BASE_URL}/api/stations`).then(data => data.json());
         },
+        find(id) {
+            return request(`${BASE_URL}/api/stations/${id}`).then(data => data.json());
+        },
         create(data) {
-            return request(`${BASE_URL}/api/stations`, METHOD.POST(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/stations`, METHOD.POST(data));
         },
         delete(id) {
             return request(`${BASE_URL}/api/stations/${id}`, METHOD.DELETE());
@@ -49,10 +52,10 @@ const api = (() => {
             return request(`${BASE_URL}/api/lines/${id}`).then(data => data.json());
         },
         create(data) {
-            return request(`${BASE_URL}/api/lines`, METHOD.POST(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/lines`, METHOD.POST(data));
         },
         update(id, data) {
-            return request(`${BASE_URL}/api/lines/${id}`, METHOD.PUT(data)).then(data => data.json());
+            return request(`${BASE_URL}/api/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             return request(`${BASE_URL}/api/lines/${id}`, METHOD.DELETE());

@@ -4,7 +4,6 @@ import {EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
 
-
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $createLineStationButton = document.querySelector("#submit-button");

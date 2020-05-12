@@ -38,7 +38,7 @@ function AdminLine() {
         insertFormData("", "", "", "", "");
     };
 
-    const insertFormData = (lineName, lineStartTime, lineEndTime, lineIntervalTime, lineColor) =>{
+    const insertFormData = (lineName, lineStartTime, lineEndTime, lineIntervalTime, lineColor) => {
         $subwayLineNameInput.value = lineName;
         $subwayLineStartTimeInput.value = lineStartTime;
         $subwayLineEndTimeInput.value = lineEndTime;
@@ -48,26 +48,28 @@ function AdminLine() {
 
     const insertLineColumn = formData => {
         api.line.create(formData).then(
-            data => {
-                $subwayLineList.insertAdjacentHTML(
-                    "beforeend",
-                    subwayLinesTemplate(data)
-                );
-            }
-        );
+            (response) => {
+                const lineId = response.headers.get("location").split("/")[2];
+                api.line.find(lineId).then(data =>
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(data)
+                    ));
+            });
     };
 
     const updateLineColumn = formData => {
         api.line.update(lineId, formData).then(
-            data => {
-                let oldLine = document.querySelector('div[data-id="' + lineId + '"]');
-                oldLine.insertAdjacentHTML(
-                    "afterend",
-                    subwayLinesTemplate(data)
-                );
-                oldLine.remove();
-                lineId = null;
-            });
+            () => api.line.find(lineId).then(data => {
+                    const oldLine = document.querySelector('div[data-id="' + lineId + '"]');
+                    oldLine.insertAdjacentHTML(
+                        "afterend",
+                        subwayLinesTemplate(data)
+                    );
+                    oldLine.remove();
+                    lineId = null;
+                })
+        )
     };
 
     const onDeleteSubwayLine = event => {
@@ -91,7 +93,7 @@ function AdminLine() {
         if (isUpdateButton) {
             subwayLineModal.toggle();
             api.line.find(lineId).then(data => {
-                insertFormData(data.name, data.startTime.substring(0,5), data.endTime.substring(0,5),
+                insertFormData(data.name, data.startTime.substring(0, 5), data.endTime.substring(0, 5),
                     data.intervalTime, data.color);
             });
         }
@@ -101,11 +103,11 @@ function AdminLine() {
         const $target = event.target;
         const id = $target.closest(".subway-line-item").dataset.id;
         const isLineName = $target.id === "line-name";
-        if(isLineName) {
+        if (isLineName) {
             api.line.find(id).then(data => {
-                $subwayLineStartTimeView.innerHTML = data.startTime.substring(0,5);
-                $subwayLineEndTimeView.innerHTML = data.endTime.substring(0,5);
-                $subwayLineIntervalTimeView.innerHTML = data.intervalTime.toString()+"분";
+                $subwayLineStartTimeView.innerHTML = data.startTime.substring(0, 5);
+                $subwayLineEndTimeView.innerHTML = data.endTime.substring(0, 5);
+                $subwayLineIntervalTimeView.innerHTML = data.intervalTime.toString() + "분";
             })
         }
     };

@@ -40,8 +40,11 @@ function AdminStation() {
 
         $stationNameInput.value = "";
 
-        api.station.create(station).then(data => {
-            $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+        api.station.create(station).then(response => {
+            const stationId = response.headers.get("location").split("/")[2];
+            api.station.find(stationId).then(data => {
+                $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
+            });
         });
     };
 

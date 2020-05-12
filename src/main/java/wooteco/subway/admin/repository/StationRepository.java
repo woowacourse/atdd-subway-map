@@ -1,6 +1,7 @@
 package wooteco.subway.admin.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.repository.CrudRepository;
@@ -13,4 +14,7 @@ public interface StationRepository extends CrudRepository<Station, Long> {
 
     @Override
     Set<Station> findAllById(Iterable<Long> ids);
+
+	@Override
+	Optional<Station> findById(Long aLong);
 }
