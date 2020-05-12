@@ -14,10 +14,7 @@ import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,14 +101,16 @@ public class LineAcceptanceTest {
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-        params.put("bgColor", "5");
+        LineRequest lineRequest = new LineRequest(
+                "2호선",
+                startTime,
+                endTime,
+                10,
+                "5"
+        );
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
