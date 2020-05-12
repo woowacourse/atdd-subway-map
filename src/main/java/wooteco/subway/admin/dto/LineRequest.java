@@ -23,6 +23,16 @@ public class LineRequest {
     public LineRequest() {
     }
 
+    public LineRequest(@NotBlank String name, @NotNull LocalTime startTime,
+        @NotNull LocalTime endTime, @NotNull int intervalTime,
+        @NotBlank String color) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.color = color;
+    }
+
     public String getName() {
         return name;
     }

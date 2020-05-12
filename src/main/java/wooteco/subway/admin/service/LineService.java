@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -24,7 +26,8 @@ public class LineService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Line save(Line line) {
+	public Line save(LineRequest lineRequest) {
+		Line line = lineRequest.toLine();
 		if (isDuplicateName(line)) {
 			throw new IllegalArgumentException("중복된 이름입니다!");
 		}
@@ -32,15 +35,20 @@ public class LineService {
 		return lineRepository.save(line);
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public List<LineResponse> showLines() {
+		List<Line> lines = lineRepository.findAll();
+
+		return lines.stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
 	}
 
-	public Line updateLine(Long id, Line line) {
+	public void updateLine(Long id, LineRequest lineRequest) {
 		Line persistLine = findById(id);
-		persistLine.update(line);
+		Line line = lineRequest.toLine();
 
-		return lineRepository.save(persistLine);
+		persistLine.update(line);
+		lineRepository.save(persistLine);
 	}
 
 	public void deleteLineById(Long id) {
@@ -52,7 +60,8 @@ public class LineService {
 			.anyMatch(lineName -> lineName.equals(line.getName()));
 	}
 
-	public void addLineStation(Long id, LineStation lineStation) {
+	public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
+		LineStation lineStation = lineStationCreateRequest.toLineStation();
 		Line persistLine = findById(id);
 
 		persistLine.addLineStation(lineStation);
@@ -61,12 +70,15 @@ public class LineService {
 
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line line = findById(lineId);
+		LineRequest lineRequest = new LineRequest(line.getName(), line.getStartTime(),
+			line.getEndTime(), line.getIntervalTime(), line.getColor());
 
 		line.removeLineStationById(stationId);
-		updateLine(lineId, line);
+		updateLine(lineId, lineRequest);
 	}
 
-	public List<LineResponse> findAllLineWithStations(List<Line> lines) {
+	public List<LineResponse> findAllLineWithStations() {
+		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
 			.map(line -> findLineWithStationsById(line.getId()))
 			.collect(Collectors.toList());
@@ -82,7 +94,7 @@ public class LineService {
 		return LineResponse.of(line, sortBySubwayRule(lineStationsIds));
 	}
 
-	public Line findById(Long id) {
+	private Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
 	}

@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -17,8 +18,9 @@ public class StationService {
 		this.stationRepository = stationRepository;
 	}
 
-	public Station save(Station station) {
-		return stationRepository.save(station);
+	public StationResponse save(StationCreateRequest stationCreateRequest) {
+		Station station = stationCreateRequest.toStation();
+		return StationResponse.of(stationRepository.save(station));
 	}
 
 	public List<Station> findAll() {

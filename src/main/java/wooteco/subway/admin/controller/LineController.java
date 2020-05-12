@@ -30,8 +30,7 @@ public class LineController {
 
 	@PostMapping()
 	public ResponseEntity<Void> createLine(@RequestBody LineRequest view) {
-		Line line = view.toLine();
-		Line persistLine = lineService.save(line);
+		Line persistLine = lineService.save(view);
 
 		return ResponseEntity.created(URI.create("/lines/" + persistLine.getId()))
 			.build();
@@ -45,15 +44,13 @@ public class LineController {
 
 	@GetMapping()
 	public ResponseEntity<List<LineResponse>> getLines() {
-		List<Line> lines = lineService.showLines();
-
 		return ResponseEntity.ok()
-			.body(lineService.findAllLineWithStations(lines));
+			.body(lineService.findAllLineWithStations());
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-		lineService.updateLine(id, view.toLine());
+		lineService.updateLine(id, view);
 
 		return ResponseEntity.noContent()
 			.build();
@@ -70,7 +67,7 @@ public class LineController {
 	@PutMapping("/{id}/stations")
 	public ResponseEntity<Void> createLineStation(@PathVariable Long id,
 		@RequestBody LineStationCreateRequest lineStationCreateRequest) {
-		lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
+		lineService.addLineStation(id, lineStationCreateRequest);
 
 		return ResponseEntity.noContent()
 			.build();
