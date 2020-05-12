@@ -110,7 +110,7 @@ public class LineStationAcceptanceTest {
 			put("/api/lines/" + lineId + "/stations").
         then().
 			log().all().
-			statusCode(HttpStatus.OK.value());
+			statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	private Map<String, String> makeLineParam(String name) {

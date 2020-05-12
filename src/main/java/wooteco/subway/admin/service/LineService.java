@@ -70,11 +70,9 @@ public class LineService {
 
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line line = findById(lineId);
-		LineRequest lineRequest = new LineRequest(line.getName(), line.getStartTime(),
-			line.getEndTime(), line.getIntervalTime(), line.getColor());
-
 		line.removeLineStationById(stationId);
-		updateLine(lineId, lineRequest);
+
+		lineRepository.save(line);
 	}
 
 	public List<LineResponse> findAllLineWithStations() {
@@ -87,9 +85,6 @@ public class LineService {
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = findById(id);
 		List<Long> lineStationsIds = line.getLineStationsId();
-		Set<Station> stations = stationRepository.findAllById(lineStationsIds);
-
-		stations.forEach(station -> System.out.println(station.getId()));
 
 		return LineResponse.of(line, sortBySubwayRule(lineStationsIds));
 	}

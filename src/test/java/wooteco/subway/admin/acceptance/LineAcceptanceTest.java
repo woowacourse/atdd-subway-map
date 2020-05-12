@@ -91,7 +91,7 @@ public class LineAcceptanceTest {
 			post("/api/lines").
         then().
 			log().all().
-			statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			statusCode(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private Map<String, String> makeParam(String name) {
@@ -141,7 +141,7 @@ public class LineAcceptanceTest {
 			put("/api/lines/" + id).
         then().
 			log().all().
-			statusCode(HttpStatus.OK.value());
+			statusCode(HttpStatus.NO_CONTENT.value());
 	}
 
 	private List<LineResponse> getLines() {
