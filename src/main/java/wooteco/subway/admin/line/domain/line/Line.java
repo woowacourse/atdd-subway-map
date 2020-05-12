@@ -16,7 +16,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import wooteco.subway.admin.line.domain.edge.LineStation;
-import wooteco.subway.admin.line.domain.edge.LineStationException;
 
 public class Line {
 
@@ -50,9 +49,8 @@ public class Line {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	// TODO: 2020/05/12 LinkedList로 변경 후 관련 로직 수정하기
 	@MappedCollection(idColumn = "line_id", keyColumn = "index")
-	private List<LineStation> stations = new LinkedList<>();
+	private LinkedList<LineStation> stations = new LinkedList<>();
 
 	public Line() {
 	}
@@ -96,7 +94,7 @@ public class Line {
 		return bgColor;
 	}
 
-	public List<LineStation> getStations() {
+	public LinkedList<LineStation> getStations() {
 		return stations;
 	}
 
@@ -139,9 +137,9 @@ public class Line {
 		checkLineStationAlreadyExist(lineStation);
 
 		if (Objects.isNull(preStationId)) {
-			final LineStation headLineStation = stations.get(HEAD_LINE_STATION_INDEX);
+			final LineStation headLineStation = stations.getFirst();
 			headLineStation.updatePreLineStation(lineStation.getStationId());
-			stations.add(HEAD_LINE_STATION_INDEX, lineStation);
+			stations.addFirst(lineStation);
 			return;
 		}
 
@@ -157,7 +155,7 @@ public class Line {
 
 	private void checkHeadStationByPreStationId(Long preStationId) {
 		if (Objects.nonNull(preStationId)) {
-			throw new LineStationException("출발역이 존재하지 않습니다.");
+			throw new IllegalArgumentException("출발역이 존재하지 않습니다.");
 		}
 	}
 
@@ -166,25 +164,25 @@ public class Line {
 			findLineStationByStationId(lineStation.getStationId());
 
 		if (foundLineStation.isPresent()) {
-			throw new LineStationException("이미 존재하는 역입니다.");
+			throw new IllegalArgumentException("이미 존재하는 역입니다.");
 		}
 	}
 
 	private Optional<LineStation> findLineStationByStationId(Long stationId) {
 		return stations.stream()
-		               .filter(lineStation -> stationId.equals(lineStation.getStationId()))
+		               .filter(lineStation -> lineStation.isSameStation(stationId))
 		               .findFirst();
 	}
 
 	private Optional<LineStation> findLineStationByPreStationId(Long preStationId) {
 		return stations.stream()
-		               .filter(lineStation -> preStationId.equals(lineStation.getPreStationId()))
+		               .filter(lineStation -> lineStation.isSamePreStation(preStationId))
 		               .findFirst();
 	}
 
 	public void removeLineStationById(Long stationId) {
 		final LineStation targetLineStation = findLineStationByStationId(stationId)
-			.orElseThrow(() -> new LineStationException("삭제하려는 역이 존재하지 않습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("삭제하려는 역이 존재하지 않습니다."));
 
 		stations.remove(targetLineStation);
 		findLineStationByPreStationId(stationId)

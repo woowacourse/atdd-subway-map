@@ -62,4 +62,12 @@ public class LineStation {
 		this.preStationId = preStationId;
 	}
 
+	public boolean isSamePreStation(Long preStationId) {
+		return preStationId.equals(this.preStationId);
+	}
+
+	public boolean isSameStation(Long stationId) {
+		return stationId.equals(this.stationId);
+	}
+
 }
