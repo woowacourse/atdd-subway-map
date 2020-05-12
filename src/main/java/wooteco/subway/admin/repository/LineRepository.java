@@ -14,4 +14,12 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("SELECT * FROM LINE WHERE NAME = :name")
     Optional<Line> findByName(@Param("name") String name);
+
+    @Query("SELECT *"
+        + "  FROM LINE"
+        + " WHERE LINE_ID IN (SELECT DISTINCT(ID)"
+        + "                     FROM LINE"
+        + "                     JOIN LINE_STATION ON LINE.ID = LINE_STATION.LINE"
+        + "                    WHERE LINE_STATION.STATION = :stationId)")
+    List<Line> findLinesByStationId(@Param("stationId") Long stationId);
 }
