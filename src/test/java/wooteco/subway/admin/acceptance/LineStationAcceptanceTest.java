@@ -1,7 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,22 +16,16 @@ import wooteco.subway.admin.dto.StationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.admin.acceptance.LineAcceptanceTest.createLine;
-import static wooteco.subway.admin.acceptance.StationAcceptanceTest.createStation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
-public class LineStationAcceptanceTest {
+public class LineStationAcceptanceTest extends AcceptanceTest {
     @LocalServerPort
     int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     /**

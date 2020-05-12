@@ -1,16 +1,12 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.List;
@@ -19,17 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
     @LocalServerPort
     int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     @DisplayName("지하철역을 관리한다")
@@ -49,30 +41,6 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
         assertThat(stationsAfterDelete.stream()
                 .map(StationResponse::getName)).doesNotContain("잠실역");
-    }
-
-    static void createStation(String name) {
-        StationCreateRequest stationCreateRequest = new StationCreateRequest(name);
-
-        given().
-                body(stationCreateRequest).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/stations").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
-    }
-
-    static List<StationResponse> getStations() {
-        return given().
-                when().
-                    get("/stations").
-                then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteStation(Long id) {

@@ -1,7 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
-public class LineAcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -28,11 +27,6 @@ public class LineAcceptanceTest {
     void setUp() {
         RestAssured.port = port;
     }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
-
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -80,20 +74,7 @@ public class LineAcceptanceTest {
                     extract().as(LineResponse.class);
     }
 
-    static void createLine(String name) {
-        LineRequest lineRequest = new LineRequest(name, "bg-red-300",
-                LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
 
-        given().
-                body(lineRequest).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
-    }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         LineRequest lineRequest = new LineRequest(null, null, startTime, endTime, 10);
