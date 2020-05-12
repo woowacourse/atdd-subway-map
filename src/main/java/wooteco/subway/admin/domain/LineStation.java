@@ -4,7 +4,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Table("line_station")

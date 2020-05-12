@@ -75,7 +75,6 @@ function AdminEdge() {
 
         };
 
-        console.log(lineStationDto);
         api.line
             .registerLineStation(lineStationDto)
             .then(response => createSubwayEdgeModal.toggle());
