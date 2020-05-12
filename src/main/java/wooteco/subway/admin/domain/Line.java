@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
-import wooteco.subway.admin.dto.LineRequest;
-
 public class Line {
 	@Id
 	private Long id;
@@ -22,7 +20,7 @@ public class Line {
 	private LocalTime startTime;
 	private LocalTime endTime;
 	private int intervalTime;
-	private Set<LineStation> stations;
+	private Set<Edge> stations;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -66,30 +64,31 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void addLineStation(LineStation lineStation) {
+	public void addEdge(Edge edge) {
 		stations.stream()
-				.filter(st -> Objects.equals(st.getPreStationId(), lineStation.getPreStationId()))
+				.filter(st -> Objects.equals(st.getPreStationId(), edge.getPreStationId()))
 				.findFirst()
-				.ifPresent(st -> st.updatePreLineStation(lineStation.getStationId()));
-		stations.add(lineStation);
+				.ifPresent(st -> st.updatePreLineStation(edge.getStationId()));
+		stations.add(edge);
 	}
 
-	public LineStation removeLineStationById(Long stationId) {
-		LineStation lineStation = stations.stream()
-				.filter(st -> st.getStationId().equals(stationId))
+	public Edge removeEdgeById(Long stationId) {
+		Edge target = stations.stream()
+				.filter(st -> st.isEqualsWithStationId(stationId))
 				.findFirst()
 				.orElseThrow(NoSuchElementException::new);
-		stations.remove(lineStation);
 
 		stations.stream()
-				.filter(st -> Objects.equals(st.getPreStationId(), stationId))
+				.filter(st -> st.isEqualsWithPreStationId(stationId))
 				.findFirst()
-				.ifPresent(st -> st.updatePreLineStation(lineStation.getPreStationId()));
-		return lineStation;
+				.ifPresent(st -> st.updatePreLineStation(target.getPreStationId()));
+
+		stations.remove(target);
+		return target;
 	}
 
-	public List<Long> getLineStationsId() {
-		List<LineStation> list = new ArrayList<>();
+	public List<Long> getEdgesId() {
+		List<Edge> list = new ArrayList<>();
 		stations.stream()
 				.filter(lineStation -> lineStation.getPreStationId() == null)
 				.findFirst()
@@ -99,11 +98,11 @@ public class Line {
 			list.add(findNext(list.get(i)));
 		}
 		return list.stream()
-				.map(LineStation::getStationId)
+				.map(Edge::getStationId)
 				.collect(Collectors.toList());
 	}
 
-	private LineStation findNext(LineStation nextStation) {
+	private Edge findNext(Edge nextStation) {
 		return stations.stream()
 				.filter(lineStation -> Objects.equals(
 						lineStation.getPreStationId(), nextStation.getStationId()))
@@ -135,7 +134,7 @@ public class Line {
 		return intervalTime;
 	}
 
-	public Set<LineStation> getStations() {
+	public Set<Edge> getStations() {
 		return stations;
 	}
 

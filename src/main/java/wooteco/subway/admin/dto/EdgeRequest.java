@@ -1,22 +1,22 @@
 package wooteco.subway.admin.dto;
 
-public class LineStationRequest {
+public class EdgeRequest {
 	private String lineName;
 	private String preStationName;
 	private String stationName;
 	private int distance;
 	private int duration;
 
-	public LineStationRequest() {
+	public EdgeRequest() {
 	}
 
-	public LineStationRequest(String lineName, String preStationName, String stationName) {
+	public EdgeRequest(String lineName, String preStationName, String stationName) {
 		this.lineName = lineName;
 		this.preStationName = preStationName;
 		this.stationName = stationName;
 	}
 
-	public LineStationRequest(String lineName, String preStationName, String stationName,
+	public EdgeRequest(String lineName, String preStationName, String stationName,
 			int distance, int duration) {
 		this.lineName = lineName;
 		this.preStationName = preStationName;

@@ -50,7 +50,7 @@ public class LineStationAcceptanceTest {
 		when(stationRepository.findByName("사당역")).thenReturn(Optional.of(preStation));
 		when(stationRepository.findByName("강남역")).thenReturn(Optional.of(station));
 
-		LineStation lineStation = lineStationService.createLineStation("1호선", "사당역", "강남역", 1, 1);
+		LineStation lineStation = lineStationService.create("1호선", "사당역", "강남역", 1, 1);
 		assertThat(lineStation.getLine()).isEqualTo(1L);
 		assertThat(lineStation.getPreStationId()).isEqualTo(2L);
 		assertThat(lineStation.getStationId()).isEqualTo(3L);
@@ -68,7 +68,7 @@ public class LineStationAcceptanceTest {
 
 		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-		LineStation removedLineStation = lineStationService.removeLineStation(line.getId(),
+		LineStation removedLineStation = lineStationService.remove(line.getId(),
 				station.getId());
 		assertThat(lineStation).isEqualTo(removedLineStation);
 

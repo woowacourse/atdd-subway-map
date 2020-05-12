@@ -1,15 +1,15 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Edge;
 
-public class LineStationResponse {
+public class EdgeResponse {
 	private Long line;
 	private Long preStationId;
 	private Long stationId;
 	private int distance;
 	private int duration;
 
-	public LineStationResponse(Long line, Long preStationId, Long stationId, int distance,
+	public EdgeResponse(Long line, Long preStationId, Long stationId, int distance,
 			int duration) {
 		this.line = line;
 		this.preStationId = preStationId;
@@ -18,9 +18,9 @@ public class LineStationResponse {
 		this.duration = duration;
 	}
 
-	public static LineStationResponse of(LineStation lineStation) {
-		return new LineStationResponse(lineStation.getLine(), lineStation.getPreStationId(),
-				lineStation.getStationId(), lineStation.getDistance(), lineStation.getDuration());
+	public static EdgeResponse of(Edge edge) {
+		return new EdgeResponse(edge.getLine(), edge.getPreStationId(),
+				edge.getStationId(), edge.getDistance(), edge.getDuration());
 	}
 
 	public String getCustomId() {

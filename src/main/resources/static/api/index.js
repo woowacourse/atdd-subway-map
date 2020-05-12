@@ -60,13 +60,13 @@ const api = (() => {
 
   const lineStation = {
     get() {
-      return request(`/line-stations`);
+      return request(`/edges`);
     },
     create(data) {
-      return request(`/line-stations`, METHOD.POST(data))
+      return request(`/edges`, METHOD.POST(data))
     },
     delete(lineId, stationId) {
-      return request(`/line-stations/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      return request(`/edges/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   }
 

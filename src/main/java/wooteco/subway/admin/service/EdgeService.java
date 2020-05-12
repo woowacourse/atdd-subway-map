@@ -6,22 +6,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationRequest;
-import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.EdgeRequest;
+import wooteco.subway.admin.dto.EdgeResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
-public class LineStationService {
+public class EdgeService {
 	private final LineRepository lineRepository;
 	private final StationRepository stationRepository;
 
-	public LineStationService(LineRepository lineRepository, StationRepository stationRepository) {
+	public EdgeService(LineRepository lineRepository, StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
 		this.stationRepository = stationRepository;
 	}
@@ -30,17 +31,18 @@ public class LineStationService {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
 				.map(line -> LineResponse.of(
-						line, stationRepository.findAllById(line.getLineStationsId())))
+						line, stationRepository.findAllById(line.getEdgesId())))
 				.collect(Collectors.toList());
 	}
 
-	public Set<LineStation> findLineStation(long lineId) {
+	public Set<Edge> findLineStation(long lineId) {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(NoSuchElementException::new);
 		return line.getStations();
 	}
 
-	public LineStationResponse create(LineStationRequest request) {
+	@Transactional
+	public EdgeResponse create(EdgeRequest request) {
 		Line line = lineRepository.findByName(request.getLineName())
 				.orElseThrow(NoSuchElementException::new);
 		Station preStation = stationRepository.findByName(request.getPreStationName())
@@ -48,19 +50,20 @@ public class LineStationService {
 		Station station = stationRepository.findByName(request.getStationName())
 				.orElseThrow(NoSuchElementException::new);
 
-		LineStation lineStation = new LineStation(line.getId(), preStation.getId(), station.getId(),
+		Edge edge = new Edge(line.getId(), preStation.getId(), station.getId(),
 				request.getDistance(), request.getDuration());
 
-		line.addLineStation(lineStation);
+		line.addEdge(edge);
 		lineRepository.save(line);
-		return LineStationResponse.of(lineStation);
+		return EdgeResponse.of(edge);
 	}
 
-	public LineStationResponse removeLineStation(long lineId, Long stationId) {
+	@Transactional
+	public EdgeResponse remove(long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(NoSuchElementException::new);
-		LineStation removedLine = line.removeLineStationById(stationId);
+		Edge removedLine = line.removeEdgeById(stationId);
 		lineRepository.save(line);
-		return LineStationResponse.of(removedLine);
+		return EdgeResponse.of(removedLine);
 	}
 }
