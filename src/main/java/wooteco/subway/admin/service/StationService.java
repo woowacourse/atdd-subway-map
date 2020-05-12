@@ -3,9 +3,11 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -21,8 +23,10 @@ public class StationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Station> findAll() {
-		return stationRepository.findAll();
+	public List<StationResponse> findAll() {
+		return stationRepository.findAll().stream()
+			.map(StationResponse::of)
+			.collect(Collectors.toList());
 	}
 
 	@Transactional

@@ -29,7 +29,7 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity<List<Station>> showStations() {
+    public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAll());
     }
 
