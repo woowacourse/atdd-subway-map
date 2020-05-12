@@ -6,7 +6,7 @@ public class EdgeDeleteRequest {
     @NotNull(message = "지우려는 역의 값이 비어있습니다.")
     private Long stationId;
 
-    public EdgeDeleteRequest() {
+    private EdgeDeleteRequest() {
     }
 
     public EdgeDeleteRequest(final Long stationId) {

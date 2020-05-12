@@ -1,6 +1,7 @@
 package wooteco.subway.admin.line.domain.edge;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 
 import java.util.Objects;
 
@@ -13,7 +14,14 @@ public class Edge {
     private Integer distance;
     private Integer duration;
 
-    private Edge() {
+    @PersistenceConstructor
+    private Edge(final Long id, final Long lineKey, final Long stationId, final Long preStationId, final Integer distance, final Integer duration) {
+        this.id = id;
+        this.lineKey = lineKey;
+        this.stationId = stationId;
+        this.preStationId = preStationId;
+        this.distance = distance;
+        this.duration = duration;
     }
 
     public Edge(Long preStationId, Long stationId, Integer distance, Integer duration) {

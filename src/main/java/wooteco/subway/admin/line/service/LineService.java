@@ -4,17 +4,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.line.domain.Lines;
+import wooteco.subway.admin.line.domain.edge.Edge;
 import wooteco.subway.admin.line.domain.edge.Edges;
 import wooteco.subway.admin.line.domain.repository.LineRepository;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
+import wooteco.subway.admin.line.service.dto.line.LineCreateRequest;
 import wooteco.subway.admin.line.service.dto.line.LineEdgeResponse;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
 import wooteco.subway.admin.station.domain.Stations;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,12 +31,18 @@ public class LineService {
     }
 
     @Transactional
-    public Long save(Line line) {
+    public Long save(LineCreateRequest lineCreateRequest) {
+        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getStartTime(),
+                lineCreateRequest.getEndTime(), lineCreateRequest.getIntervalTime(), lineCreateRequest.getBgColor());
         lineRepository.findByName(line.getName())
-                .ifPresent(Line::throwAlreadyExistNameException);
+                .ifPresent(this::throwAlreadyExistNameException);
 
         Line persistLine = lineRepository.save(line);
         return persistLine.getId();
+    }
+
+    public void throwAlreadyExistNameException(Line line) {
+        throw new IllegalArgumentException(String.format("%s 이미 존재하는 노선 이름입니다.", line.getName()));
     }
 
     @Transactional(readOnly = true)
@@ -47,9 +56,14 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findLineById(id);
+
         persistLine.update(line);
         lineRepository.save(persistLine);
+    }
+
+    private Supplier<IllegalArgumentException> throwNotExistEntityException(final Long id) {
+        return () -> new IllegalArgumentException(id + "존재하지 않는 id 값 입니다.");
     }
 
     @Transactional
@@ -64,30 +78,24 @@ public class LineService {
         Stations stations = new Stations(stationRepository.findAllById(line.getEdgesStationIds()));
 
         Edges edges = line.getEdges();
-        return EdgeResponse.listOf(edges.getEdges(), stations);
+        return EdgeResponse.listOf(edges, stations);
     }
 
     private Line findLineById(final Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + " : 존재하지 않는 노선값 입니다."));
+                .orElseThrow(throwNotExistEntityException(lineId));
     }
 
     @Transactional
     public void addEdge(Long lineId, EdgeCreateRequest request) {
         Line line = findLineById(lineId);
 
-        checkExistStationIds(request);
-
-        line.addEdge(request.toEdge());
-        lineRepository.save(line);
-    }
-
-    private void checkExistStationIds(final EdgeCreateRequest request) {
         Stations stations = new Stations(stationRepository.findAllById(request.getAllStationId()));
+        stations.checkCreatableEdge(request.getAllStationId());
 
-        for (Long stationId : request.getAllStationId()) {
-            stations.findById(stationId);
-        }
+        Edge edge = new Edge(request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
+        line.addEdge(edge);
+        lineRepository.save(line);
     }
 
     @Transactional
@@ -99,8 +107,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(id);
+
         return LineResponse.of(line, stationRepository.findAllById(line.getEdgesStationIds()));
     }
 

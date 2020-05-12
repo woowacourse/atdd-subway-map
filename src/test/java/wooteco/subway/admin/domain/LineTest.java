@@ -1,6 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,17 +13,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineTest {
-    private Line line;
-
-    @BeforeEach
-    void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-blue-200");
-        line.addEdge(new Edge(1L, 2L, 10, 10));
-        line.addEdge(new Edge(2L, 3L, 10, 10));
-    }
 
     @Test
     void getLineStations() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-blue-200");
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         Edges edges = line.getEdges();
 
         List<Long> stationIds = edges.getStationsId();
@@ -37,6 +32,10 @@ public class LineTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-blue-200");
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         line.removeLineStationById(stationId);
 
         Edges edges = line.getEdges();

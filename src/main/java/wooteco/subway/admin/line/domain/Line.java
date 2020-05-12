@@ -3,6 +3,7 @@ package wooteco.subway.admin.line.domain;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Embedded;
 import wooteco.subway.admin.line.domain.edge.Edge;
 import wooteco.subway.admin.line.domain.edge.Edges;
@@ -26,7 +27,17 @@ public class Line {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private Line() {
+    @PersistenceConstructor
+    private Line(final Long id, final String name, final LocalTime startTime, final LocalTime endTime, final int intervalTime, final String color, final Edges edges, final LocalDateTime createdAt, final LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.color = color;
+        this.edges = edges;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
@@ -68,10 +79,6 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         edges.removeByStationId(stationId);
-    }
-
-    public void throwAlreadyExistNameException() {
-        throw new IllegalArgumentException(String.format("%s 이미 존재하는 노선 이름입니다.", this.name));
     }
 
     public List<Long> getEdgesStationIds() {

@@ -39,26 +39,27 @@ public class LineServiceMockTest {
     @Mock
     private StationRepository stationRepository;
 
-    private Line line;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
         lineService = new LineService(lineRepository, stationRepository);
-
-        line.addEdge(new Edge(null, 1L, 10, 10));
-        line.addEdge(new Edge(1L, 2L, 10, 10));
-        line.addEdge(new Edge(2L, 3L, 10, 10));
     }
 
     @DisplayName("출발역을 추가한다.")
     @Test
     void addLineStationAtTheFirstOfLine() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         EdgeCreateRequest request = new EdgeCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(new ArrayList<>(Arrays.asList(4L)))).thenReturn(Collections.singleton(new Station(4L, "", LocalDateTime.now(), LocalDateTime.now())));
+        when(stationRepository.findAllById(new ArrayList<>(Arrays.asList(4L))))
+                .thenReturn(Collections.singleton(
+                        new Station(4L, "", LocalDateTime.now(), LocalDateTime.now())));
         lineService.addEdge(line.getId(), request);
 
         Edges edges = line.getEdges();
@@ -73,10 +74,19 @@ public class LineServiceMockTest {
     @DisplayName("중간에 역 끼워넣기")
     @Test
     void addLineStationBetweenTwo() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         EdgeCreateRequest request = new EdgeCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(Arrays.asList(1L, 4L))).thenReturn(new HashSet<>(Arrays.asList(new Station(1L, "", LocalDateTime.now(), LocalDateTime.now()), new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
+        when(stationRepository.findAllById(Arrays.asList(1L, 4L)))
+                .thenReturn(new HashSet<>(
+                        Arrays.asList(
+                                new Station(1L, "", LocalDateTime.now(), LocalDateTime.now()),
+                                new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
 
         lineService.addEdge(line.getId(), request);
 
@@ -92,10 +102,19 @@ public class LineServiceMockTest {
     @DisplayName("마지막에 역 추가하기")
     @Test
     void addLineStationAtTheEndOfLine() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         EdgeCreateRequest request = new EdgeCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(Arrays.asList(3L, 4L))).thenReturn(new HashSet<>(Arrays.asList(new Station(3L, "", LocalDateTime.now(), LocalDateTime.now()), new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
+        when(stationRepository.findAllById(Arrays.asList(3L, 4L)))
+                .thenReturn(new HashSet<>(
+                        Arrays.asList(
+                                new Station(3L, "", LocalDateTime.now(), LocalDateTime.now()),
+                                new Station(4L, "", LocalDateTime.now(), LocalDateTime.now()))));
 
         lineService.addEdge(line.getId(), request);
 
@@ -111,6 +130,11 @@ public class LineServiceMockTest {
     @DisplayName("출발역 제거하기")
     @Test
     void removeLineStationAtTheFirstOfLine() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(1L));
 
@@ -124,6 +148,11 @@ public class LineServiceMockTest {
     @DisplayName("중간역 제거하기")
     @Test
     void removeLineStationBetweenTwo() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(2L));
 
@@ -137,6 +166,11 @@ public class LineServiceMockTest {
     @DisplayName("마지막 역 제거하기")
     @Test
     void removeLineStationAtTheEndOfLine() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeEdge(line.getId(), new EdgeDeleteRequest(3L));
 
@@ -150,6 +184,11 @@ public class LineServiceMockTest {
     @DisplayName("해당 노선에 존재하는 구간 정보 전체 조회하기")
     @Test
     void findLineWithStationsById() {
+        Line line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-green-200");
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
+
         Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);

@@ -55,7 +55,6 @@ public class EdgeAcceptanceTest {
         Long preStationId = 1L;
         Long stationId = 2L;
         EdgeCreateRequest edgeCreateRequest = new EdgeCreateRequest(preStationId, stationId, 10, 10);
-
         given()
                 .body(edgeCreateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

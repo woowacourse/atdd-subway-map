@@ -1,6 +1,7 @@
 package wooteco.subway.admin.line.service.dto.edge;
 
 import wooteco.subway.admin.line.domain.edge.Edge;
+import wooteco.subway.admin.line.domain.edge.Edges;
 import wooteco.subway.admin.station.domain.Stations;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class EdgeResponse {
     private Long stationId;
     private String stationName;
 
-    protected EdgeResponse() {
+    private EdgeResponse() {
     }
 
     public EdgeResponse(final Long preStationId, final Long stationId, final String stationName) {
@@ -20,8 +21,8 @@ public class EdgeResponse {
         this.stationName = stationName;
     }
 
-    public static List<EdgeResponse> listOf(final List<Edge> edges, final Stations stations) {
-        return edges.stream()
+    public static List<EdgeResponse> listOf(final Edges edges, final Stations stations) {
+        return edges.getEdges().stream()
                 .map(edge -> EdgeResponse.of(edge, stations))
                 .collect(Collectors.toList());
     }

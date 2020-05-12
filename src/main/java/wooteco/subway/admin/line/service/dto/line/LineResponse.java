@@ -19,11 +19,11 @@ public class LineResponse {
 
     private Set<Station> stations;
 
-    protected LineResponse() {
+    private LineResponse() {
     }
 
-    public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
-                        final String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    private LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
+                         final String bgColor, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;

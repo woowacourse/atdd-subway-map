@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("lines")
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
@@ -36,7 +36,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<Long> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
-        Long id = lineService.save(lineCreateRequest.toLine());
+        Long id = lineService.save(lineCreateRequest);
         return ResponseEntity.created(URI.create("/line/" + id)).body(id);
     }
 
@@ -45,42 +45,42 @@ public class LineController {
         return ResponseEntity.ok(lineService.getLineResponses());
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findByLineId(@PathVariable("id") Long lineId) {
         return ResponseEntity.ok(lineService.findLineWithStationsById(lineId));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Long> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId,
                                            @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(lineId, lineUpdateRequest.toLine());
         return ResponseEntity.ok(lineId);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteLine(@PathVariable("id") Long lineId) {
         lineService.deleteLineById(lineId);
         return ResponseEntity.ok(lineId);
     }
 
-    @GetMapping("{id}/edges")
+    @GetMapping("/{id}/edges")
     public ResponseEntity<List<EdgeResponse>> findEdgesByLineId(@PathVariable(name = "id") final Long lineId) {
         return ResponseEntity.ok(lineService.findEdgesByLineId(lineId));
     }
 
-    @PostMapping("{id}/edges")
+    @PostMapping("/{id}/edges")
     public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
         lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(1L, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{id}/edges")
+    @DeleteMapping("/{id}/edges")
     public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
         lineService.removeEdge(lineId, edgeDeleteRequest);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("edges")
+    @GetMapping("/edges")
     public ResponseEntity<List<LineEdgeResponse>> getAllLineAndEdges() {
         return ResponseEntity.ok(lineService.getAllLineEdge());
     }

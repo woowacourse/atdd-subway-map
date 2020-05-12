@@ -1,7 +1,5 @@
 package wooteco.subway.admin.line.service.dto.edge;
 
-import wooteco.subway.admin.line.domain.edge.Edge;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ public class EdgeCreateRequest {
     @Min(value = 1, message = "기간 값을 1이상 입력해 주십시오.")
     private Integer duration;
 
-    public EdgeCreateRequest() {
+    private EdgeCreateRequest() {
     }
 
     public EdgeCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
@@ -53,7 +51,4 @@ public class EdgeCreateRequest {
         return new ArrayList<>(Arrays.asList(preStationId, stationId));
     }
 
-    public Edge toEdge() {
-        return new Edge(this.preStationId, this.stationId, this.distance, this.duration);
-    }
 }
