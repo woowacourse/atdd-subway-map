@@ -95,6 +95,7 @@ public class LineStationAcceptanceTest {
 
     private void createLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
         LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStationId, stationId, distance, duration);
+
         given().
                 body(lineStationCreateRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
