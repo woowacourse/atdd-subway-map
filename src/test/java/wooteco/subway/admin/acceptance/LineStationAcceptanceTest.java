@@ -75,9 +75,6 @@ public class LineStationAcceptanceTest {
         // Then
         LineResponse lineResponse = getLineWithStations(3L);
         assertThat(lineResponse.getStations().size()).isEqualTo(4);
-
-        // When Then
-        List<StationResponse> stations = lineResponse.getStations();
         // And
         assertThat(lineResponse.getStations()
                 .stream()
