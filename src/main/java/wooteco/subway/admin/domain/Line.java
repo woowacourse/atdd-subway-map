@@ -2,13 +2,19 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
 public class Line {
+    private static final Long DEPARTURE_VALUE = null;
+    private static final int DEFAULT_DISTANCE = 10;
+    private static final int DEFAULT_DURATION = 10;
+
     @Id
     private Long id;
     private String name;
@@ -23,7 +29,8 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+        String backgroundColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -31,7 +38,7 @@ public class Line {
         this.backgroundColor = backgroundColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.stations = new ArrayList<>();
+        this.stations = new LinkedList<>();
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
@@ -94,50 +101,86 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        if (stations.size() != 0) {
-            for (int i = 0; i < stations.size(); i++) {
-                if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
-                    stations.get(i).updatePreLineStation(lineStation.getStationId());
-                    stations.add(i, lineStation);
-                    return;
-                }
-            }
-            stations.add(lineStation);
+    public void addLineStation(LineStation newLineStation) {
+        if (stations.isEmpty() && isNotStartStation(newLineStation)) {
+            stations.add(new LineStation(null, newLineStation.getPreStationId(), DEFAULT_DISTANCE, DEFAULT_DURATION));
+        } else if (!stations.isEmpty()) {
+            stations.stream()
+                .filter(lineStation -> Objects.equals(lineStation.getPreStationId(), newLineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(lineStation -> lineStation.updatePreLineStation(newLineStation.getStationId()));
         }
-        if (stations.size() == 0) {
-            if (lineStation.getPreStationId() != null) {
-                stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
-            }
-            stations.add(lineStation);
-        }
-
+        stations.add(newLineStation);
     }
 
     public void removeLineStationById(Long stationId) {
         LineStation lineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 station 정보가 없습니다."));
-        stations.remove(lineStation);
+            .filter(station -> Objects.equals(station.getStationId(), stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 station 정보가 없습니다."));
 
-        for (int i = 0; i < stations.size() - 1; i++){
-            if (i == 0) {
-                if (stations.get(i).getPreStationId() != null) {
-                    stations.get(i).updatePreLineStation(null);
-                }
-            }
-            if (i != 0) {
-                if (stations.get(i).getStationId() != stations.get(i+1).getPreStationId()) {
-                    stations.get(i+1).updatePreLineStation(stations.get(i).getStationId());
-                }
-            }
+        if (!isNotStartStation(lineStation)) {
+            updateLineStation(lineStation, DEPARTURE_VALUE);
+            return;
         }
+
+        updateLineStation(lineStation, lineStation.getPreStationId());
+    }
+
+    private void updateLineStation(final LineStation lineStation, final Long updateValue) {
+        stations.stream()
+            .filter(station -> Objects.equals(lineStation.getStationId(), station.getPreStationId()))
+            .findFirst()
+            .ifPresent(station -> station.updatePreLineStation(updateValue));
+
+        stations.remove(lineStation);
+    }
+
+    private boolean isNotStartStation(LineStation newlineStation) {
+        return Objects.nonNull(newlineStation.getPreStationId());
+    }
+
+    private Optional<LineStation> findHeadStation() {
+        return stations.stream()
+            .filter(lineStation -> Objects.isNull(lineStation.getPreStationId()))
+            .findFirst();
+    }
+
+    private Optional<LineStation> findPreStationBy(Long stationId) {
+        return stations.stream()
+            .filter(lineStation -> Objects.equals(lineStation.getPreStationId(), stationId))
+            .findFirst();
+    }
+
+    private List<LineStation> sortByStationRule() {
+        List<LineStation> lineStations = new LinkedList<>();
+
+        Optional<LineStation> headLineStation = findHeadStation();
+
+        if (!headLineStation.isPresent()) {
+            return lineStations;
+        }
+
+        Long nextStationId = headLineStation.get().getStationId();
+        lineStations.add(headLineStation.get());
+
+        while (true) {
+            Optional<LineStation> lineStation = findPreStationBy(nextStationId);
+            if (!lineStation.isPresent()) {
+                break;
+            }
+            lineStations.add(lineStation.get());
+            nextStationId = lineStation.get().getStationId();
+        }
+
+        return lineStations;
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        List<LineStation> lineStations = sortByStationRule();
+
+        return lineStations.stream()
+            .map(LineStation::getStationId)
+            .collect(Collectors.toList());
     }
 }
