@@ -3,7 +3,10 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Station;
 
+import javax.validation.constraints.NotEmpty;
+
 public class StationCreateRequest {
+    @NotEmpty(message = "역 이름을 입력해야 한다.")
     private String name;
 
     public StationCreateRequest() {

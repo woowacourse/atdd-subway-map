@@ -17,6 +17,7 @@ function AdminLine() {
   };
 
   const createSubwayLine = async data => {
+  try{
     const { id } = await api.line.create(data);
     if (!id) {
       alert(ERROR_MESSAGE.NOT_EXIST);
@@ -30,6 +31,9 @@ function AdminLine() {
       })
     );
     subwayLineModal.toggle();
+    } catch (e) {
+      alert(e);
+    }
   };
 
   const updateSubwayLine = async data => {

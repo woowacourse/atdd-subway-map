@@ -25,7 +25,13 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const myfetch = (uri, config) => fetch(uri, config).then(async response => {
+    if (response.ok) {
+      return response;
+    }
+    return Promise.reject(await response.text());
+  });
+  const request = (uri, config) => myfetch(uri, config).then(data => data.json());
 
   const station = {
     get() {
@@ -35,7 +41,7 @@ const api = (() => {
       return request(`/stations`, METHOD.POST(data));
     },
     delete(id) {
-      return fetch(`/stations/${id}`, METHOD.DELETE());
+      return myfetch(`/stations/${id}`, METHOD.DELETE());
     }
   };
 
@@ -47,10 +53,10 @@ const api = (() => {
       return request(`/lines`, METHOD.POST(data));
     },
     update(data, id) {
-      return fetch(`/lines/${id}`, METHOD.PUT(data));
+      return myfetch(`/lines/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`/lines/${id}`, METHOD.DELETE());
+      return myfetch(`/lines/${id}`, METHOD.DELETE());
     }
   };
 
@@ -59,10 +65,10 @@ const api = (() => {
       return !id ? request(`/lines/stations`) : request(`/lines/${id}/stations`);
     },
     create(data, id) {
-      return fetch(`/lines/${id}/stations`, METHOD.POST(data));
+      return myfetch(`/lines/${id}/stations`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
-      return fetch(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      return myfetch(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
     }
   };
 
