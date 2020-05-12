@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -43,6 +44,7 @@ public class LineServiceTest {
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
 
+    @DisplayName("출발역을 새로 설정한다")
     @Test
     void addLineStationAtTheFirstOfLine() {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
@@ -57,6 +59,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
     }
 
+    @DisplayName("구간 사이에 새로운 구간을 추가한다")
     @Test
     void addLineStationBetweenTwo() {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
@@ -71,6 +74,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
     }
 
+    @DisplayName("라인의 종착역을 추가한다")
     @Test
     void addLineStationAtTheEndOfLine() {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
@@ -85,6 +89,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(3)).isEqualTo(4L);
     }
 
+    @DisplayName("출발역을 삭제한다")
     @Test
     void removeLineStationAtTheFirstOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
@@ -95,6 +100,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
     }
 
+    @DisplayName("구간과 구간 사이의 역을 제거한다")
     @Test
     void removeLineStationBetweenTwo() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
@@ -105,6 +111,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
     }
 
+    @DisplayName("종착역을 제거한다")
     @Test
     void removeLineStationAtTheEndOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
@@ -115,6 +122,7 @@ public class LineServiceTest {
         assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
     }
 
+    @DisplayName("라인의 전체 역 목록을 구한다")
     @Test
     void findLineWithStationsById() {
         Set<Station> stations = Sets.newLinkedHashSet(new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "삼성역"));
