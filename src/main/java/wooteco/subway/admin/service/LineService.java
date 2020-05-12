@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
 import wooteco.subway.admin.domain.Line;
@@ -16,6 +17,7 @@ import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+@Transactional
 @Service
 public class LineService {
     private final LineRepository lineRepository;
