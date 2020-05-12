@@ -3,10 +3,9 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -93,23 +92,35 @@ public class Line {
 
 	public List<Long> getLineStationsId() {
 		List<Long> lineStationsId = new ArrayList<>();
-		stations.stream()
-			.filter(station -> station.getPreStationId() == null)
-			.findFirst()
-			.ifPresent(startLineStation -> {
-				Queue<Long> queue = new LinkedList<>();
-				queue.add(startLineStation.getStationId());
 
-				while (!queue.isEmpty()) {
-					Long stationId = queue.poll();
-					lineStationsId.add(stationId);
-					stations.stream()
-						.filter(station -> stationId.equals(station.getPreStationId()))
-						.findFirst()
-						.ifPresent(lineStation -> queue.add(lineStation.getStationId()));
+		Optional<LineStation> startStation = findStart();
+		if (!startStation.isPresent()) {
+			throw new UnsupportedOperationException("출발역이 없습니다.");
+		}
+
+		Long currentId = startStation.get().getStationId();
+		while (Objects.nonNull(currentId)) {
+			lineStationsId.add(currentId);
+			Optional<LineStation> next = findNext(currentId);
+			if (next.isPresent()) {
+				currentId = next.get().getStationId();
+				continue;
 			}
-		});
+			currentId = null;
+		}
 		return lineStationsId;
+	}
+
+	private Optional<LineStation> findNext(final Long currentId) {
+		return stations.stream()
+			.filter(station -> currentId.equals(station.getPreStationId()))
+			.findFirst();
+	}
+
+	private Optional<LineStation> findStart() {
+		return stations.stream()
+			.filter(station -> station.getPreStationId() == null)
+			.findFirst();
 	}
 
 	public Line withId(final Long id) {
