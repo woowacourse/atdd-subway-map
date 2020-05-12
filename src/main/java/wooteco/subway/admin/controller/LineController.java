@@ -15,32 +15,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.service.NewLineService;
+import wooteco.subway.admin.service.LineService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-	private final NewLineService newLineService;
+	private final LineService lineService;
 
-	public LineController(NewLineService newLineService) {
-		this.newLineService = newLineService;
+	public LineController(LineService lineService) {
+		this.lineService = lineService;
 	}
 
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> lines() {
-		return ResponseEntity.ok(newLineService.findAll());
+		return ResponseEntity.ok(lineService.findAll());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> line(
 			@PathVariable Long id) {
-		return ResponseEntity.ok(newLineService.findById(id));
+		return ResponseEntity.ok(lineService.findById(id));
 	}
 
 	@PostMapping
 	public ResponseEntity<LineResponse> create(
 			@RequestBody LineRequest request) {
-		LineResponse created = newLineService.create(request);
+		LineResponse created = lineService.create(request);
 		return ResponseEntity
 				.created(URI.create("/lines/" + created.getId()))
 				.body(created);
@@ -49,13 +49,13 @@ public class LineController {
 	@PutMapping("/{id}")
 	public ResponseEntity<LineResponse> update(
 			@PathVariable Long id, @RequestBody LineRequest request) {
-		return ResponseEntity.ok(newLineService.update(id, request));
+		return ResponseEntity.ok(lineService.update(id, request));
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(
 			@PathVariable Long id) {
-		newLineService.delete(id);
+		lineService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 }

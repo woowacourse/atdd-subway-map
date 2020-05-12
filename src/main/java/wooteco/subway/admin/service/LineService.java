@@ -2,61 +2,50 @@ package wooteco.subway.admin.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 
+@Service
 public class LineService {
 	private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
 	}
 
-	public Line save(Line line) {
-		return lineRepository.save(line);
+	public List<LineResponse> findAll() {
+		return LineResponse.listOf(lineRepository.findAll());
 	}
 
-	public List<Line> showLines() {
-		return lineRepository.findAll();
+	public LineResponse findById(Long id) {
+		return LineResponse.of(lineRepository.findById(id)
+				.orElseThrow(NoSuchElementException::new));
 	}
 
-	public void updateLine(Long id, Line line) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-		persistLine.update(line);
-		lineRepository.save(persistLine);
+	@Transactional
+	public LineResponse create(LineRequest request) {
+		Line line = request.toLine();
+		Line created = lineRepository.save(line);
+		return LineResponse.of(created);
 	}
 
-	public void deleteLineById(Long id) {
+	@Transactional
+	public LineResponse update(Long id, LineRequest request) {
+		Line target = lineRepository.findById(id)
+				.orElseThrow(NoSuchElementException::new);
+		target.update(request.toLine());
+		Line updated = lineRepository.save(target);
+		return LineResponse.of(updated);
+	}
+
+	@Transactional
+	public void delete(Long id) {
 		lineRepository.deleteById(id);
-	}
-
-	public void addLineStation(Long id, LineStationCreateRequest request) {
-		Line line = lineRepository.findById(id)
-				.orElseThrow(NoSuchElementException::new);
-		LineStation lineStation = new LineStation(id, request.getPreStationId(),
-				request.getStationId(), request.getDistance(), request.getDuration());
-		line.addLineStation(lineStation);
-	}
-
-	public void removeLineStation(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId)
-				.orElseThrow(NoSuchElementException::new);
-		line.removeLineStationById(stationId);
-	}
-
-	public LineResponse findLineWithStationsById(Long id) {
-		Line line = lineRepository.findById(id)
-				.orElseThrow(NoSuchElementException::new);
-		Set<Station> stations = stationRepository.findAllById(line.getLineStationsId());
-		return LineResponse.of(line, stations);
 	}
 }

@@ -44,6 +44,6 @@ public class LineStationController {
 	public ResponseEntity<LineStationResponse> delete(
 			@PathVariable Long lineId,
 			@PathVariable Long stationId) {
-		return ResponseEntity.ok(lineStationService.removeLineStation(lineId, stationId));
+		return ResponseEntity.ok(lineStationService.remove(lineId, stationId));
 	}
 }
