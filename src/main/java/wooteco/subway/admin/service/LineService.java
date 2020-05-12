@@ -11,6 +11,7 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,7 +86,7 @@ public class LineService {
         List<Long> ids = line.getLineStationsId();
         Map<Long, Station> stations = stationRepository.findAllById(ids)
                 .stream()
-                .collect(Collectors.toMap(Station::getId, station -> station));
+                .collect(Collectors.toMap(Station::getId, Function.identity()));
         return ids.stream()
                 .map(stations::get)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), LinkedHashSet::new));
