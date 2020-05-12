@@ -6,6 +6,9 @@ import wooteco.subway.admin.exception.InvalidStationNameException;
 import java.time.LocalDateTime;
 
 public class Station {
+    private static final String NUMBER_REGEX = ".*[0-9].*";
+    private static final String BLANK = " ";
+
     @Id
     private Long id;
     private String name;
@@ -22,13 +25,13 @@ public class Station {
     }
 
     private void validateName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             throw new InvalidStationNameException("빈 이름");
         }
-        if (name.contains(" ")) {
+        if (name.contains(BLANK)) {
             throw new InvalidStationNameException("이름에 공백이 포함");
         }
-        if (name.matches(".*[0-9].*")) {
+        if (name.matches(NUMBER_REGEX)) {
             throw new InvalidStationNameException("이름에 숫자가 포함");
         }
     }
