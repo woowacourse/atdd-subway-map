@@ -18,12 +18,6 @@ public class Station {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Station(Long id, String name, LocalDateTime createdAt) {
-        this.id = id;
-        this.name = name;
-        this.createdAt = createdAt;
-    }
-
     public Long getId() {
         return id;
     }

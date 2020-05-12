@@ -52,10 +52,9 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(4L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(1L);
-        assertThat(getStationsIds(line).get(2)).isEqualTo(2L);
-        assertThat(getStationsIds(line).get(3)).isEqualTo(3L);
+        assertThat(line.getStations())
+            .extracting(LineStation::getStationId)
+            .containsExactly(4L, 1L, 2L, 3L);
     }
 
     @Test
@@ -66,10 +65,9 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(4L);
-        assertThat(getStationsIds(line).get(2)).isEqualTo(2L);
-        assertThat(getStationsIds(line).get(3)).isEqualTo(3L);
+        assertThat(line.getStations())
+            .extracting(LineStation::getStationId)
+            .containsExactly(1L, 4L, 2L, 3L);
     }
 
     @Test
@@ -80,10 +78,10 @@ public class LineServiceTest {
         lineService.addLineStation(request);
 
         assertThat(line.getStations()).hasSize(4);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(2L);
-        assertThat(getStationsIds(line).get(2)).isEqualTo(3L);
-        assertThat(getStationsIds(line).get(3)).isEqualTo(4L);
+        assertThat(line.getStations())
+            .extracting(LineStation::getStationId)
+            .containsExactly(1L, 2L, 3L, 4L);
+
     }
 
     @Test
@@ -92,8 +90,7 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 1L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(2L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(3L);
+        assertThat(getStationsIds(line)).containsExactly(2L, 3L);
     }
 
     @Test
@@ -102,8 +99,7 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 2L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(3L);
+        assertThat(getStationsIds(line)).containsExactly(1L, 3L);
     }
 
     @Test
@@ -112,8 +108,7 @@ public class LineServiceTest {
         lineService.deleteLineStation(line.getId(), 3L);
 
         assertThat(line.getStations()).hasSize(2);
-        assertThat(getStationsIds(line).get(0)).isEqualTo(1L);
-        assertThat(getStationsIds(line).get(1)).isEqualTo(2L);
+        assertThat(getStationsIds(line)).containsExactly(1L, 2L);
     }
 
     @Test

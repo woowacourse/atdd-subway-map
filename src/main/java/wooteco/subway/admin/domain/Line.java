@@ -13,7 +13,7 @@ import wooteco.subway.admin.exception.WrongIdException;
 
 public class Line {
 
-    public static final int FIRST = 0;
+    private static final int FIRST = 0;
     @Id
     private Long id;
     private String name;
@@ -105,7 +105,6 @@ public class Line {
     public void addLineStation(LineStation lineStation) {
         if (Objects.isNull(lineStation.getPreStationId())) {
             addAtFirst(lineStation);
-            stations.add(FIRST, lineStation);
             return;
         }
 
@@ -124,6 +123,7 @@ public class Line {
         if (stations.size() != 0) {
             stations.get(0).updatePreLineStation(lineStation.getStationId());
         }
+        stations.add(FIRST, lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
@@ -132,15 +132,12 @@ public class Line {
             .findAny()
             .orElseThrow(WrongIdException::new);
 
-        LineStation nextLineStation = stations.stream()
+        stations.stream()
             .filter(station -> Objects.nonNull(station.getPreStationId()))
             .filter(station -> station.getPreStationId().equals(stationId))
             .findAny()
-            .orElse(null);
-
-        if (Objects.nonNull(nextLineStation)) {
-            nextLineStation.updatePreLineStation(lineStation.getPreStationId());
-        }
+            .ifPresent(lineStation1 ->
+                lineStation1.updatePreLineStation(lineStation.getPreStationId()));
 
         stations.remove(lineStation);
     }

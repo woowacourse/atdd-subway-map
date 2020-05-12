@@ -17,7 +17,7 @@ public class LineResponse {
     private String bgColor;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<Station> stations;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -33,13 +33,11 @@ public class LineResponse {
         this.bgColor = bgColor;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stations = stations;
+        this.stations = StationResponse.listOf(stations);
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
-            line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(),
-            line.getUpdatedAt(), new ArrayList<>());
+        return LineResponse.of(line, new ArrayList<>());
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
@@ -72,7 +70,7 @@ public class LineResponse {
         return bgColor;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 

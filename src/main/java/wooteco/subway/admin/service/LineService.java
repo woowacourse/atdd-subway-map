@@ -41,8 +41,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-            .orElseThrow(WrongIdException::new);
+        Line persistLine = getLine(id);
         persistLine.update(lineRequest.toLine());
     }
 
@@ -51,8 +50,7 @@ public class LineService {
     }
 
     public LineStationResponse addLineStation(LineStationRequest request) {
-        Line line = lineRepository.findById(request.getLineId())
-            .orElseThrow(WrongIdException::new);
+        Line line = getLine(request.getLineId());
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         lineRepository.save(line);
@@ -62,16 +60,14 @@ public class LineService {
     }
 
     public void deleteLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(WrongIdException::new);
+        Line line = getLine(lineId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(WrongIdException::new);
+        Line line = getLine(id);
 
         List<Long> stationsId = line.getStations().stream()
             .map(LineStation::getStationId)
@@ -82,5 +78,10 @@ public class LineService {
 
     private List<Station> mapLineStationsToStations(Long lineId) {
         return stationRepository.findAllOrderByKey(lineId);
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(WrongIdException::new);
     }
 }

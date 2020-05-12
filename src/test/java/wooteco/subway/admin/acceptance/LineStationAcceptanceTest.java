@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
@@ -74,17 +73,16 @@ public class LineStationAcceptanceTest {
         //then
         List<LineResponse> lines = getLineStations();
         LineResponse lineResponse = getLineResponseById(lineResponse1, lines);
-        List<Station> stations = lineResponse.getStations();
+        List<StationResponse> stations = lineResponse.getStations();
 
-        assertThat(stations.size()).isEqualTo(2);
-        assertThat(stations.stream()
-            .anyMatch(station -> station.getId().equals(lineStationResponse1.getStationId())))
-            .isTrue();
+        assertThat(stations)
+            .hasSize(2)
+            .anyMatch(station -> station.getId().equals(lineStationResponse1.getStationId()));
 
         deleteLineStation(lineResponse1.getId(), lineStationResponse1.getStationId());
         List<LineResponse> linesAfterDelete = getLineStations();
         LineResponse lineResponseAfterDelete = getLineResponseById(lineResponse1, linesAfterDelete);
-        List<Station> stationsAfterDelete = lineResponseAfterDelete.getStations();
+        List<StationResponse> stationsAfterDelete = lineResponseAfterDelete.getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(1);
 
         assertThat(stationsAfterDelete.stream()

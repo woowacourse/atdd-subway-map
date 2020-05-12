@@ -77,7 +77,7 @@ function AdminEdge() {
 
     validate(data);
 
-    fetch('/line-stations', {
+    fetch('/lines/' + data.lineId, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -158,7 +158,7 @@ function AdminEdge() {
 
       const lineId = $target.closest(".list-item").dataset.lineId;
       const stationId = $target.closest(".list-item").dataset.stationId;
-      fetch("line-stations/lines/" + lineId + "/stations/" + stationId, {
+      fetch("/lines/" + lineId + "/stations/" + stationId, {
         method: 'DELETE'
       }).catch(alert);
     }
