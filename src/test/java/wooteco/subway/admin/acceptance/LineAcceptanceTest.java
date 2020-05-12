@@ -10,13 +10,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,15 +81,11 @@ public class LineAcceptanceTest {
     }
 
     static void createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", "bg-red-300");
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+        LineRequest lineRequest = new LineRequest(name, "bg-red-300",
+                LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
@@ -102,13 +96,10 @@ public class LineAcceptanceTest {
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+        LineRequest lineRequest = new LineRequest(null, null, startTime, endTime, 10);
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
@@ -119,8 +110,7 @@ public class LineAcceptanceTest {
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
+        return given().
                 when().
                         get("/lines").
                 then().

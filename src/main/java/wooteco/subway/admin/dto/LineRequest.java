@@ -21,6 +21,14 @@ public class LineRequest {
     public LineRequest() {
     }
 
+    public LineRequest(String name, String color, LocalTime startTime, LocalTime endTime, Integer intervalTime) {
+        this.name = name;
+        this.color = color;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+    }
+
     public String getName() {
         return name;
     }
