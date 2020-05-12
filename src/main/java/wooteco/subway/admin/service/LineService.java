@@ -11,8 +11,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
-import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.exception.LineNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -35,7 +34,8 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
         persistLine.update(line);
         return lineRepository.save(persistLine);
     }
@@ -45,58 +45,52 @@ public class LineService {
     }
 
     public Line addLineStation(Long lineId, LineStationCreateRequest request) {
-        Line persistLine = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(lineId)
+                .orElseThrow(LineNotFoundException::new);
         persistLine.addLineStation(request.toLineStation());
         return lineRepository.save(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line persistLine = lineRepository.findById(lineId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(LineNotFoundException::new);
         persistLine.removeLineStationById(stationId);
         lineRepository.save(persistLine);
     }
 
     public LineResponse findLineById(Long id) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
         return LineResponse.of(persistLine);
     }
 
     public List<LineStationsResponse> findAllLineStations() {
-        Map<Long, Station> stations = generateStationMapper();
-        return lineRepository.findAll()
-                .stream()
+        List<Line> lines = lineRepository.findAll();
+        List<Long> lineIds = generateStationIds(lines);
+        Map<Long, Station> stations = generateStationMapper(lineIds);
+        return lines.stream()
                 .map(line -> LineStationsResponse.of(line, stations))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> generateStationIds(List<Line> lines) {
+        return lines.stream()
+                .flatMap(line -> line.getLineStationsId().stream())
                 .collect(Collectors.toList());
     }
 
     public LineStationsResponse findLineStationsById(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(RuntimeException::new);
-        Map<Long, Station> stations = generateStationMapper();
+                .orElseThrow(LineNotFoundException::new);
+        Map<Long, Station> stations = generateStationMapper(line.getLineStationsId());
         return LineStationsResponse.of(line, stations);
     }
 
-    private Map<Long, Station> generateStationMapper() {
-        return stationRepository.findAll()
+    private Map<Long, Station> generateStationMapper(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds)
                 .stream()
                 .collect(Collectors.toMap(
                         Station::getId,
                         station -> station));
-    }
-
-    public Station createStation(StationCreateRequest stationCreateRequest) {
-        Station station = stationCreateRequest.toStation();
-        return stationRepository.save(station);
-    }
-
-    public List<StationResponse> findAllStations() {
-        List<Station> persistStations = stationRepository.findAll();
-        return StationResponse.listOf(persistStations);
-    }
-
-    public void deleteStationById(Long stationId) {
-        stationRepository.deleteById(stationId);
     }
 }

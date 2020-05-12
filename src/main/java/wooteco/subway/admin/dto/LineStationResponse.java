@@ -1,10 +1,10 @@
 package wooteco.subway.admin.dto;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -52,17 +52,11 @@ public class LineStationResponse {
 
     private static List<LineStationResponse> generateLineStations(List<LineStation> lineStations,
             Map<Long, Station> stations) {
-        List<LineStationResponse> lineStationResponses = new ArrayList<>();
-        // LineStation firstStation = lineStations.get(0);
-        // lineStationResponses.add(LineStationResponse.of(firstStation, stations.get(firstStation.getStationId())));
-
-        for (int index = 0; index < lineStations.size(); index++) {
-            LineStation lineStation = lineStations.get(index);
-            Station station = stations.get(lineStation.getStationId());
-            Station preStation = stations.get(lineStation.getPreStationId());
-            lineStationResponses.add(LineStationResponse.of(lineStation, station, preStation));
-        }
-        return lineStationResponses;
+        return lineStations.stream()
+                .map(lineStation -> LineStationResponse.of(lineStation,
+                        stations.get(lineStation.getStationId()),
+                        stations.get(lineStation.getPreStationId())))
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

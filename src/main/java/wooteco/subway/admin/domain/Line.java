@@ -4,16 +4,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import wooteco.subway.admin.exception.DuplicateLineStationException;
+import wooteco.subway.admin.exception.LineStationNotFoundException;
 
 public class Line {
+    private static final int FIRST_LINE_STATION_INDEX = 0;
+
     @Id
     private Long id;
     private String name;
@@ -37,7 +38,7 @@ public class Line {
         this.intervalTime = intervalTime;
         this.bgColor = bgColor;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = createdAt;
     }
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
@@ -101,10 +102,10 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         validateDuplicateLineStation(lineStation);
-        if (Objects.isNull(lineStation.getPreStationId())) {
-            addLineStationAtFirst(lineStation);
-        } else {
+        if (lineStation.hasPreStation()) {
             addLineStationAfterFirst(lineStation);
+        } else {
+            addLineStationAtFirst(lineStation);
         }
     }
 
@@ -120,7 +121,7 @@ public class Line {
     }
 
     private void addLineStationAfterFirst(LineStation lineStation) {
-        for (int index = 0; index < stations.size(); index++) {
+        for (int index = FIRST_LINE_STATION_INDEX; index < stations.size(); index++) {
             LineStation currentLineStation = stations.get(index);
             int nextIndex = index + 1;
             if (containsPreStationInBetween(lineStation, currentLineStation, nextIndex)) {
@@ -136,11 +137,11 @@ public class Line {
 
     private boolean containsPreStationInBetween(LineStation lineStation, LineStation currentLineStation,
             int nextIndex) {
-        return currentLineStation.getStationId().equals(lineStation.getPreStationId()) && nextIndex < stations.size();
+        return currentLineStation.isSameStationId(lineStation.getPreStationId()) && nextIndex < stations.size();
     }
 
     private boolean containsPreStationAtLast(LineStation lineStation, LineStation currentLineStation, int nextIndex) {
-        return currentLineStation.getStationId().equals(lineStation.getPreStationId())
+        return currentLineStation.isSameStationId(lineStation.getPreStationId())
                 && nextIndex == stations.size();
     }
 
@@ -151,17 +152,19 @@ public class Line {
     }
 
     private void addLineStationAtFirst(LineStation lineStation) {
-        stations.add(0, lineStation);
+        stations.add(FIRST_LINE_STATION_INDEX, lineStation);
         if (stations.size() > 1) {
-            stations.get(1).updatePreLineStation(lineStation.getStationId());
+            LineStation nextLineStation = stations.get(FIRST_LINE_STATION_INDEX + 1);
+            nextLineStation.updatePreLineStation(lineStation.getStationId());
         }
     }
 
     public void removeLineStationById(Long stationId) {
         LineStation lineStation = findLineStationByStationId(stationId);
-        int targetIndex = findLineStationIndex(stationId);
+        int targetIndex = stations.indexOf(lineStation);
         if (targetIndex != stations.size() - 1) {
-            LineStation nextLineStation = stations.get(targetIndex + 1);
+            int nextIndex = targetIndex + 1;
+            LineStation nextLineStation = stations.get(nextIndex);
             nextLineStation.updatePreLineStation(stations.get(targetIndex).getPreStationId());
         }
         stations.remove(lineStation);
@@ -169,16 +172,9 @@ public class Line {
 
     private LineStation findLineStationByStationId(Long stationId) {
         return stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
+                .filter(station -> station.isSameStationId(stationId))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private int findLineStationIndex(Long stationId) {
-        return IntStream.range(0, stations.size())
-                .filter(index -> stations.get(index).isSameStationId(stationId))
-                .findAny()
-                .orElse(0);
+                .orElseThrow(LineStationNotFoundException::new);
     }
 
     public List<Long> getLineStationsId() {

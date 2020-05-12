@@ -1,5 +1,7 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
@@ -40,11 +42,15 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
+    public boolean hasPreStation() {
+        return Objects.nonNull(preStationId);
+    }
+
     public boolean isSameStation(LineStation lineStation) {
-        return this.getStationId().equals(lineStation.getStationId());
+        return getStationId().equals(lineStation.getStationId());
     }
 
     public boolean isSameStationId(Long stationId) {
-        return this.getStationId().equals(stationId);
+        return getStationId().equals(stationId);
     }
 }
