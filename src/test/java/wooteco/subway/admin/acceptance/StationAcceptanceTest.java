@@ -47,6 +47,8 @@ public class StationAcceptanceTest {
 
         List<StationResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
+        assertThat(stationsAfterDelete.stream()
+                .map(StationResponse::getName)).doesNotContain("잠실역");
     }
 
     static void createStation(String name) {
