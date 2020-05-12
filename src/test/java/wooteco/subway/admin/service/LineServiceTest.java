@@ -16,113 +16,75 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
-    @Mock
-    private StationRepository stationRepository;
 
     private Line line;
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        lineService = new LineService(lineRepository, stationRepository);
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30),
+            LocalTime.of(22, 30), 5);
+        lineService = new LineService(lineRepository);
     }
 
     @Test
-    void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
-
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
-
-        assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+    void saveLine() {
+        when(lineRepository.save(any(Line.class))).thenReturn(line);
+        Long id = lineService.save(line);
+        assertThat(id).isEqualTo(line.getId());
     }
 
     @Test
-    void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
-
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
-
-        assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+    void updateLine() {
+        when(lineRepository.findById(any(Long.class))).thenReturn(Optional.of(line));
+        Line lineToUpdate = new Line("2호선", "bg-orange-700", LocalTime.of(06, 00),
+            LocalTime.of(23, 30), 5);
+        lineService.updateLine(1L, lineToUpdate);
     }
 
     @Test
-    void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
-
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
-
-        assertThat(line.getStations()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(3L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(4L);
+    void deleteLine() {
+        when(lineRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+        lineService.deleteLineById(1L);
+        assertThatThrownBy(() -> lineService.findLineWithoutStations(1L))
+            .isInstanceOf(NotFoundException.class);
     }
 
     @Test
-    void removeLineStationAtTheFirstOfLine() {
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 1L);
-
-        assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+    void getLine() {
+        when(lineRepository.findById(any(Long.class))).thenReturn(Optional.of(line));
+        LineResponse lineResponse = lineService.findLineWithoutStations(line.getId());
+        assertThat(lineResponse).isEqualTo(LineResponse.from(line));
     }
 
     @Test
-    void removeLineStationBetweenTwo() {
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 2L);
-
-        assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+    void getLines() {
+        Line thirdLine = new Line(2L, "3호선", "bg-orange-700", LocalTime.of(06, 00),
+            LocalTime.of(23, 30), 15);
+        Line firstLine = new Line(3L, "1호선", "bg-blue-500", LocalTime.of(05, 40),
+            LocalTime.of(23, 40), 10);
+        List<Line> lines = Arrays.asList(line, thirdLine, firstLine);
+        when(lineRepository.findAll()).thenReturn(lines);
+        List<LineResponse> lineResponses = lineService.findAllWithoutStations();
+        assertThat(lineResponses)
+            .contains(LineResponse.from(line))
+            .contains(LineResponse.from(thirdLine))
+            .contains(LineResponse.from(firstLine));
     }
 
     @Test
-    void removeLineStationAtTheEndOfLine() {
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.removeLineStation(line.getId(), 3L);
-
-        assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
-    }
-
-    @Test
-    void findLineWithStationsById() {
-        List<Station> stations = Arrays.asList(new Station(1L, "강남역"), new Station(2L, "역삼역"),
-            new Station(3L, "삼성역"));
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
-
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
-
-        assertThat(lineResponse.getStations()).hasSize(3);
+    void createException() {
+        when(lineRepository.existsLineBy(any(String.class))).thenReturn(true);
+        assertThatThrownBy(() -> lineService.save(line))
+            .isInstanceOf(ExistingNameException.class);
     }
 }

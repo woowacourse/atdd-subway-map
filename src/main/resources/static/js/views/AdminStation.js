@@ -1,6 +1,5 @@
 import { EVENT_TYPE } from "../../utils/constants.js";
 import { listItemTemplate } from "../../utils/templates.js";
-import { validateSubwayName } from '../../utils/validate.js';
 import api from '../../api/index.js';
 
 function AdminStation() {
@@ -8,59 +7,61 @@ function AdminStation() {
   const $stationAddForm = document.querySelector("#station-add-form");
   const $stationList = document.querySelector("#station-list");
 
-  const onAddStationHandler = event => {
+  const onAddStationHandler = async event => {
     try {
       event.preventDefault();
       const $stationNameInput = document.querySelector("#station-name");
       const stationName = $stationNameInput.value;
-      validateSubwayName(stationName, stations);
-      api.station.create({ name: stationName })
-      .then(response => {
-        if (response.status !== 201) {
-          throw new Error("잘못된 요청입니다.");
-        }
-        return response.json();
-      }).then(station => {
-        $stationNameInput.value = "";
-        $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
-        stations = [...stations, station]
-      }).catch(error => new Error(error.message));
+      const newStation = { name: stationName }
+      const response = await api.station.create(newStation);
+      if (response.status !== 201) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+      newStation.id = await response.json();
+      $stationNameInput.value = "";
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(newStation));
+      stations = [...stations, newStation]
     }
     catch (error) {
       alert(error.message);
     }
   };
 
-  const onRemoveStationHandler = event => {
+  const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton && confirm("진짜 지울거야?")) {
+    if (!(isDeleteButton && confirm("진짜 지울거야?"))) {
+      return;
+    }
+    try {
       const stationItem = $target.closest(".list-item");
       const id = stationItem.dataset.stationId;
-      api.station.delete(id)
-      .then(response => {
-        if (response.status !== 204) {
-          throw new Error("삭제 실패");
-        }
-        stations = stations.filter(station => station.id !== parseInt(id));
-        stationItem.remove();
-      }).catch(error => alert(error.message));
+      const response = await api.station.delete(id);
+      if (response.status !== 204) {
+        throw new Error("삭제 실패");
+      }
+      stations = stations.filter(station => station.id !== parseInt(id));
+      stationItem.remove();
+    }
+    catch (error) {
+      alert(error.message);
     }
   };
 
-  const initStations = () => {
-    api.station.getAll()
-    .then(response => {
+  const initStations = async () => {
+    try {
+      const response = await api.station.getAll();
       if (response.status !== 200) {
-        throw new Error("잘못된 요청입니다.");
+        throw new Error("역 정보를 불러올 수 없습니다.");
       }
-      return response.json();
-    }).then(fetchedStations => {
+      const fetchedStations = await response.json();
+      $stationList.innerHTML = fetchedStations.map(station => listItemTemplate(station)).join("");
       stations = [...fetchedStations];
-      return fetchedStations.map(station => listItemTemplate(station))
-      .join("");
-    }).then(stationsTemplate => $stationList.innerHTML = stationsTemplate)
-    .catch(error => alert(error.message));
+    }
+    catch (error) {
+      alert(error.message);
+    }
   }
 
   const initEventListeners = () => {

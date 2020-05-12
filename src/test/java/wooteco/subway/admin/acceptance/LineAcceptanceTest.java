@@ -19,6 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.controller.advice.ApiError;
+import wooteco.subway.admin.dto.LineDetailResponse;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,10 +46,10 @@ public class LineAcceptanceTest {
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
-        String message = createLineException("1호선");
-        assertThat(message).contains("이미 존재하는 이름");
+        ApiError error = createLineException("1호선");
+        assertThat(error.getMessage()).contains("이미 존재하는 이름");
         // then
-        List<LineResponse> lines = getLines();
+        List<LineDetailResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
@@ -71,11 +73,11 @@ public class LineAcceptanceTest {
         // when
         deleteLine(line.getId());
         // then
-        List<LineResponse> linesAfterDelete = getLines();
+        List<LineDetailResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private String createLineException(String name) {
+    private ApiError createLineException(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-green-700");
@@ -93,8 +95,7 @@ public class LineAcceptanceTest {
             log().all().
             statusCode(HttpStatus.BAD_REQUEST.value()).
             extract().
-            body().
-            asString();
+            as(ApiError.class);
     }
 
     static LineResponse getLine(Long id) {
@@ -144,7 +145,7 @@ public class LineAcceptanceTest {
             statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineResponse> getLines() {
+    private List<LineDetailResponse> getLines() {
         return
             given().
                 when().
@@ -152,7 +153,7 @@ public class LineAcceptanceTest {
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", LineResponse.class);
+                jsonPath().getList(".", LineDetailResponse.class);
     }
 
     private void deleteLine(Long id) {

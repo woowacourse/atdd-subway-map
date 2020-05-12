@@ -15,46 +15,58 @@ function AdminEdge() {
   const $submitButton = document.querySelector("#submit-button");
   const createSubwayEdgeModal = new Modal();
 
-  const initializeStations = () => {
-    api.station.getAll()
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error("잘못된 요청입니다.");
+  const initializeStations = async () => {
+    try {
+      const response = await api.station.getAll();
+      switch (response.status) {
+        case 400:
+          const error = await response.json();
+          throw new Error(error.message);
+        case 200:
+          const fetchedStations = await response.json();
+          stations = [...fetchedStations];
       }
-      return response.json();
-    }).then(fetchedStations => stations = [...fetchedStations])
-    .catch(error => alert(error.message));
+    }
+    catch (error) {
+      alert(error.message);
+    }
+  }
+
+  const initializeSubway = async () => {
+    try {
+      const response = await api.line.getAll();
+      switch (response.status) {
+        case 400:
+          const error = await response.json();
+          throw new Error(error.message);
+        case 200:
+          const fetchedLines = await response.json();
+          lines = [...fetchedLines];
+          initSubwayLinesSlider();
+          initSubwayLineOptions();
+      }
+    }
+    catch (error) {
+      alert(error.message);
+    }
   }
 
   const initSubwayLinesSlider = () => {
-    api.line.getAll()
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error("잘못된 요청입니다.");
-      }
-      return response.json();
-    }).then(fetchedLines => {
-      lines = [...fetchedLines];
-      return lines.map(line => subwayLinesItemTemplate(line))
-      .join("");
-    }).then(linesTemplate => $subwayLinesSlider.innerHTML = linesTemplate)
-    .then(() => {
-      tns({
-        container: ".subway-lines-slider",
-        loop: true,
-        slideBy: "page",
-        speed: 400,
-        autoplayButtonOutput: false,
-        mouseDrag: true,
-        lazyload: true,
-        controlsContainer: "#slider-controls",
-        items: 1,
-        edgePadding: 25
-      });
-      initSubwayLineOptions();
-    })
-    .catch(error => alert(error.message));
-  };
+    $subwayLinesSlider.innerHTML = lines.map(line => subwayLinesItemTemplate(line))
+    .join("");
+    tns({
+      container: ".subway-lines-slider",
+      loop: true,
+      slideBy: "page",
+      speed: 400,
+      autoplayButtonOutput: false,
+      mouseDrag: true,
+      lazyload: true,
+      controlsContainer: "#slider-controls",
+      items: 1,
+      edgePadding: 25
+    });
+  }
 
   const initSubwayLineOptions = () => {
     const subwayLineOptionTemplate = lines
@@ -69,27 +81,85 @@ function AdminEdge() {
     );
   };
 
-  const onRemoveStationHandler = event => {
+  const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton) {
-      const $stationContainer = $target.closest(".station-container");
-      const $item = $target.closest(".list-item")
-      const lineId = $stationContainer.dataset.lineId;
-      const stationId = $item.dataset.stationId;
-      api.lineStation.delete(lineId, stationId)
-      .then(response => {
-        if (response.status !== 204) {
-          throw new Error("잘못된 요청입니다.");
+    if (isDeleteButton && confirm("진짜 지울거야??ㅠㅠㅠ")) {
+      try {
+        const $stationContainer = $target.closest(".station-container");
+        const $item = $target.closest(".list-item")
+        const lineId = parseInt($stationContainer.dataset.lineId);
+        const stationId = parseInt($item.dataset.stationId);
+        const response = await api.lineStation.delete(lineId, stationId);
+        switch (response.status) {
+          case 400:
+            const error = await response.json();
+            throw new Error(error.message);
+          case 204:
+            const line = lines.find(line => line.id === lineId);
+            line.stations = line.stations.filter(station => station.id !== stationId);
+            lines = [...lines];
+            console.log(lines);
+            $item.remove();
         }
-        const line = lines.find(line => line.id === parseInt(lineId));
-        line.stations = line.stations.filter(station => station.id !== parseInt(stationId))
-        lines = [...lines];
-        console.log(lines);
-        $item.remove();
-      }).catch(error => alert(error.message));
+      }
+      catch (error) {
+        alert(error.message);
+      }
     }
   };
+
+  const onSubmitHandler2 = async event => {
+    event.preventDefault();
+    const $target = event.target;
+    const isSubmitButton = $target.id === "submit-button";
+    if (isSubmitButton) {
+      try {
+        const $departStationNameInput = document.querySelector("#depart-station-name");
+        const $arrivalStationNameInput = document.querySelector("#arrival-station-name");
+        const $lineSelect = document.querySelector("#station-select-options");
+        const departStationName = $departStationNameInput.value.trim();
+        const arrivalStationName = $arrivalStationNameInput.value.trim();
+        const preStation = stations.find(station => station.name === departStationName);
+        const station = stations.find(station => station.name === arrivalStationName);
+        const lineId = parseInt($lineSelect[$lineSelect.selectedIndex].dataset.lineId);
+        if ((arrivalStationName && !preStation) || (departStationName && !station)) {
+          alert("잘못된 역입니다.");
+          return;
+        }
+        const lineStationRequest = {
+          preStationId: preStation ? preStation.id : null,
+          stationId: station.id,
+          distance: 10,
+          duration: 20,
+        }
+        const response = await api.lineStation.create(lineId, lineStationRequest);
+        switch (response.status) {
+          case 400:
+            const error = await response.json();
+            throw new Error(error.message);
+          case 201:
+            const line = lines.find(line => line.id === lineId);
+            const template = listItemTemplate(station);
+            if (preStation) {
+              const $preStationItem = document.querySelectorAll(`.station-${preStation.id}`);
+              $preStationItem.forEach(item => item.insertAdjacentHTML("afterend", template))
+            } else {
+              const $stationItemList = document.querySelectorAll(`.station-container-${line.id}`)
+              $stationItemList.forEach(item => item.insertAdjacentHTML("afterbegin", template))
+            }
+            line.stations = [...line.stations, station];
+            lines = [...lines];
+            $departStationNameInput.value = "";
+            $arrivalStationNameInput.value = "";
+            createSubwayEdgeModal.toggle();
+        }
+      }
+      catch (error) {
+        alert(error.message);
+      }
+    }
+  }
 
   const onSubmitHandler = event => {
     event.preventDefault();
@@ -131,7 +201,7 @@ function AdminEdge() {
   }
 
   const initEventListeners = () => {
-    $submitButton.addEventListener(EVENT_TYPE.CLICK, onSubmitHandler);
+    $submitButton.addEventListener(EVENT_TYPE.CLICK, onSubmitHandler2);
     $subwayLinesSlider.addEventListener(
       EVENT_TYPE.CLICK,
       onRemoveStationHandler
@@ -139,8 +209,8 @@ function AdminEdge() {
   };
 
   this.init = () => {
-    initSubwayLinesSlider();
-    // initializeStations()
+    initializeSubway();
+    initializeStations()
     initEventListeners();
   };
 }

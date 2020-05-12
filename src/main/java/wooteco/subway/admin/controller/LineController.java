@@ -27,7 +27,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public List<LineResponse> findLines() {
-        return lineService.showLines();
+        return lineService.findAllWithoutStations();
     }
 
     @PostMapping("/lines")
@@ -38,7 +38,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public LineResponse findLine(@PathVariable Long id) {
-        return lineService.findLineWithStationsById(id);
+        return lineService.findLineWithoutStations(id);
     }
 
     @PutMapping("/lines/{id}")

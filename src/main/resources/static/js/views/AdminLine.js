@@ -14,16 +14,10 @@ function AdminLine() {
   const $subwayLineIdInput = document.querySelector("#subway-line-id");
   const $subwayLineNameInput = document.querySelector("#subway-line-name");
   const $subwayLineColorInput = document.querySelector("#subway-line-color");
-  const $firstTimeInput = document.querySelector("#first-time");
-  const $lastTimeInput = document.querySelector("#last-time");
-  const $intervalTimeInput = document.querySelector("#interval-time");
+  const $subwayFirstTimeInput = document.querySelector("#first-time");
+  const $subwayLastTimeInput = document.querySelector("#last-time");
+  const $subwayIntervalTimeInput = document.querySelector("#interval-time");
   const $subwayLineInfo = document.querySelector("#subway-line-info");
-  const $subwayLineName = document.querySelector("#subway-line-name");
-  const $subwayFirstTime = document.querySelector("#first-time");
-  const $subwayLastTime = document.querySelector("#last-time");
-  const $subwayIntervalTime = document.querySelector("#interval-time");
-  const $subwayLineColor = document.querySelector("#subway-line-color");
-  const $subwayLineId = document.querySelector("#subway-line-id");
   const $openModalButton = document.querySelector(".modal-open");
 
   const $createSubwayLineButton = document.querySelector(
@@ -32,12 +26,12 @@ function AdminLine() {
   const subwayLineModal = new Modal();
 
   const initializeData = (line = {}) => {
-    $subwayLineId.value = line.id ? line.id : "";
-    $subwayLineName.value = line.name ? line.name : "";
-    $subwayFirstTime.value = line.startTime ? line.startTime : "";
-    $subwayLastTime.value = line.endTime ? line.endTime : "";
-    $subwayIntervalTime.value = line.intervalTime ? line.intervalTime : "";
-    $subwayLineColor.value = line.color ? line.color : "";
+    $subwayLineIdInput.value = line.id ? line.id : "";
+    $subwayLineNameInput.value = line.name ? line.name : "";
+    $subwayFirstTimeInput.value = line.startTime ? line.startTime : "";
+    $subwayLastTimeInput.value = line.endTime ? line.endTime : "";
+    $subwayIntervalTimeInput.value = line.intervalTime ? line.intervalTime : "";
+    $subwayLineColorInput.value = line.color ? line.color : "";
   };
 
   const onSubmitSubwayLine = event => {
@@ -46,9 +40,9 @@ function AdminLine() {
     const newSubwayLine = {
       name: $subwayLineNameInput.value.trim(),
       color: $subwayLineColorInput.value.trim(),
-      startTime: $firstTimeInput.value.trim(),
-      endTime: $lastTimeInput.value.trim(),
-      intervalTime: $intervalTimeInput.value.trim(),
+      startTime: $subwayFirstTimeInput.value.trim(),
+      endTime: $subwayLastTimeInput.value.trim(),
+      intervalTime: $subwayIntervalTimeInput.value.trim(),
     };
     id ? updateLine(newSubwayLine, id) : createLine(newSubwayLine);
   };

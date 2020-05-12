@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineDetailResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -56,7 +56,7 @@ public class LineStationAcceptanceTest {
         register(lineId, sindorimId, bupeyongId);
 
         // when
-        LineResponse line = getLine(lineId);
+        LineDetailResponse line = getLineDetail(lineId);
         List<StationResponse> stations = line.getStations();
 
         // then
@@ -72,16 +72,17 @@ public class LineStationAcceptanceTest {
         deleteStationOnLine(lineId, jamsilId);
 
         // when
-        LineResponse deletedLineResponse = getLine(lineId);
+        LineDetailResponse deletedLineResponse = getLineDetail(lineId);
         List<StationResponse> deletedStations = deletedLineResponse.getStations();
         assertThat(deletedStations).doesNotContain(jamsil);
     }
 
-    private void deleteStationOnLine(Long lineId, Long stationId) {
-        given().when()
-            .delete("/lines/" + lineId + "/stations/" + stationId)
-            .then()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+    private LineDetailResponse getLineDetail(Long lineId) {
+        return given().when().
+            get("/lines/" + lineId + "/stations").
+            then().
+            log().all().
+            extract().as(LineDetailResponse.class);
     }
 
     private void register(Long lineId, Long preStationId, Long stationId) {
@@ -97,5 +98,12 @@ public class LineStationAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void deleteStationOnLine(Long lineId, Long stationId) {
+        given().when()
+            .delete("/lines/" + lineId + "/stations/" + stationId)
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

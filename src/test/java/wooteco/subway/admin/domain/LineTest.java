@@ -47,7 +47,7 @@ public class LineTest {
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
-        line.removeLineStationById(stationId);
+        line.removeStationBy(stationId);
 
         assertThat(line.getStations()).hasSize(2);
     }

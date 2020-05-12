@@ -71,7 +71,7 @@ public class Line {
         stations.add(insertIndex, lineStation);
     }
 
-    public void removeLineStationById(Long stationId) {
+    public void removeStationBy(Long stationId) {
         int index = findStationIndex(stationId);
         int indexToUpdate = index + 1;
         Long preStationdId = stations.get(index).getPreStationId();
