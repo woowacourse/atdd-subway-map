@@ -2,8 +2,6 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalTime;
 
 public class LineRequest {

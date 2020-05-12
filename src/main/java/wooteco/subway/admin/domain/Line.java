@@ -50,13 +50,12 @@ public class Line {
         if (startTime.compareTo(endTime) >= 0) {
             throw new IllegalArgumentException("종료 시간은 시작 시간보다 나중이어야 합니다.");
         }
-        if(intervalTime <= 0){
+        if (intervalTime <= 0) {
             throw new IllegalArgumentException("간격 시간이 올바르지 않습니다.");
         }
-        if(bgColor == null){
-            throw new IllegalArgumentException("");
+        if (bgColor == null || bgColor.equals("")) {
+            throw new IllegalArgumentException("노선 색을 선택해 주세요.");
         }
-        System.out.println(intervalTime + "<<<<<<<<<<<<<");
     }
 
     public Long getId() {

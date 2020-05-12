@@ -49,7 +49,7 @@ public class LineController {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> exception(IllegalArgumentException e){
+    public ResponseEntity<String> exception(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
