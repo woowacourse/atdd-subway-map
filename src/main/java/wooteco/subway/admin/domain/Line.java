@@ -132,12 +132,12 @@ public class Line {
 
     public List<Long> getLineStationsId() {
         List<Long> lineStationsId = new ArrayList<>();
-        Optional<LineStation> maybeLineStation = findStartLineStation();
+        Optional<LineStation> optionalLineStation = findStartLineStation();
 
-        while (maybeLineStation.isPresent()) {
-            Long stationId = maybeLineStation.get().getStationId();
+        while (optionalLineStation.isPresent()) {
+            Long stationId = optionalLineStation.get().getStationId();
             lineStationsId.add(stationId);
-            maybeLineStation = findNextLineStationByStationId(stationId);
+            optionalLineStation = findNextLineStationByStationId(stationId);
         }
 
         return lineStationsId;
