@@ -12,4 +12,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 
     @Query("SELECT name FROM line")
     List<String> findAllName();
+
+
 }

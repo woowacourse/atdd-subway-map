@@ -176,7 +176,6 @@ public class Line {
 			stationIds.add(nextLineStation.get().getStationId());
 		}
 
-		System.out.println();
 		return stationIds;
 	}
 }

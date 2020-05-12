@@ -2,11 +2,9 @@ package wooteco.subway.admin.service;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
@@ -77,16 +75,26 @@ public class LineService {
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = findById(id);
 		List<Long> lineStationsIds = line.getLineStationsId();
-		Set<Station> stations = lineStationsIds.stream()
-			.map(stationId -> stationRepository.findById(stationId)
-				.orElseThrow(() -> new NoSuchElementException("역을 찾을 수 없습니다.")))
-			.collect(Collectors.toCollection(LinkedHashSet::new));
+		Set<Station> stations = stationRepository.findAllById(lineStationsIds);
 
-		return LineResponse.of(line, stations);
+		stations.forEach(station -> System.out.println(station.getId()));
+
+		return LineResponse.of(line, sortBySubwayRule(lineStationsIds));
 	}
 
 	public Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("노선을 찾을수 없습니다."));
+	}
+
+	public Set<Station> sortBySubwayRule(List<Long> lineStationsIds) {
+		Set<Station> stations = stationRepository.findAllById(lineStationsIds);
+
+		return lineStationsIds.stream()
+			.map(lineStationsId -> stations.stream()
+				.filter(station -> lineStationsId.equals(station.getId()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다")))
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 }

@@ -81,7 +81,7 @@ public class LineStationAcceptanceTest {
 	private void deleteLineStation(long lineId, long stationId) {
 		given().
         when().
-			delete("/lines/" + lineId + "/stations/" + stationId).
+			delete("/api/lines/" + lineId + "/stations/" + stationId).
         then().
 			log().all();
 	}
@@ -89,7 +89,7 @@ public class LineStationAcceptanceTest {
 	private LineResponse getLine(Long id) {
 		return given().
         when().
-			get("/lines/" + id).
+			get("/api/lines/" + id).
         then().
 			log().all().
 			extract().as(LineResponse.class);
@@ -107,7 +107,7 @@ public class LineStationAcceptanceTest {
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-			put("/lines/" + lineId + "/stations").
+			put("/api/lines/" + lineId + "/stations").
         then().
 			log().all().
 			statusCode(HttpStatus.OK.value());
@@ -131,7 +131,7 @@ public class LineStationAcceptanceTest {
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-			post("/stations").
+			post("/api/stations").
         then().
 			log().all().
 			statusCode(HttpStatus.CREATED.value());
@@ -145,7 +145,7 @@ public class LineStationAcceptanceTest {
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-			post("/lines").
+			post("/api/lines").
         then().
 			log().all().
 			statusCode(HttpStatus.CREATED.value());
