@@ -8,7 +8,7 @@ public class EdgeResponse {
     private Long stationId;
     private String stationName;
 
-    protected EdgeResponse() {
+    private EdgeResponse() {
     }
 
     public EdgeResponse(final Long lineId, final String lineName, final Long preStationId, final String preStationName, final Long stationId, final String stationName) {

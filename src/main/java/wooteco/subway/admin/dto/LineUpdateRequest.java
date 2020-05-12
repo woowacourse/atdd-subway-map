@@ -1,11 +1,9 @@
 package wooteco.subway.admin.dto;
 
+import java.time.LocalTime;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import wooteco.subway.admin.domain.Line;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalTime;
 
 public class LineUpdateRequest {
     @JsonAlias("title")
@@ -17,7 +15,7 @@ public class LineUpdateRequest {
     @JsonAlias("bgColor")
     private String color;
 
-    protected LineUpdateRequest() {
+    private LineUpdateRequest() {
     }
 
     public String getName() {

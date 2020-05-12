@@ -1,12 +1,17 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
 	@Id
@@ -21,7 +26,7 @@ public class Line {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public Line() {
+	private Line() {
 	}
 
 	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {

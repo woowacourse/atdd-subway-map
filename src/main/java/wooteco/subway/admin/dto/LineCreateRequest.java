@@ -1,11 +1,12 @@
 package wooteco.subway.admin.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import wooteco.subway.admin.domain.Line;
+import java.time.LocalTime;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import wooteco.subway.admin.domain.Line;
 
 public class LineCreateRequest {
     @JsonAlias("title")
@@ -20,7 +21,7 @@ public class LineCreateRequest {
     @NotNull(message = "노선 색상값이 비어있습니다.")
     private String bgColor;
 
-    protected LineCreateRequest() {
+    private LineCreateRequest() {
     }
 
     public String getName() {

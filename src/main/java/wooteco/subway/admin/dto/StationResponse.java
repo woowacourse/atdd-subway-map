@@ -1,8 +1,8 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Station;
-
 import java.time.LocalDateTime;
+
+import wooteco.subway.admin.domain.Station;
 
 public class StationResponse {
     private Long id;
@@ -13,7 +13,7 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
     }
 
-    public StationResponse() {
+    private StationResponse() {
     }
 
     public StationResponse(Long id, String name, LocalDateTime createdAt) {

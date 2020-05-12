@@ -7,7 +7,7 @@ public class EdgeDeleteRequest {
     @NotNull
     private Long stationId;
 
-    public EdgeDeleteRequest() {
+    private EdgeDeleteRequest() {
     }
 
     public EdgeDeleteRequest(Long preStationId, Long stationId) {

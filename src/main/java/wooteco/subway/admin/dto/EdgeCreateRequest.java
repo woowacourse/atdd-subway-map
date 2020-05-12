@@ -9,7 +9,7 @@ public class EdgeCreateRequest {
     private int distance;
     private int duration;
 
-    public EdgeCreateRequest() {
+    private EdgeCreateRequest() {
     }
 
     public EdgeCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
