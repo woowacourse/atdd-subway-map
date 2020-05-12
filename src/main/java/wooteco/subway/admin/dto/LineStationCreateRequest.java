@@ -18,11 +18,6 @@ public class LineStationCreateRequest {
         this.duration = duration;
     }
 
-    public static LineStation toLineStation(LineStationCreateRequest request) {
-        return new LineStation(request.preStationId, request.stationId, request.distance,
-            request.duration);
-    }
-
     public Long getPreStationId() {
         return preStationId;
     }
@@ -37,5 +32,9 @@ public class LineStationCreateRequest {
 
     public int getDuration() {
         return duration;
+    }
+
+    public LineStation toLineStation() {
+        return new LineStation(this.preStationId, this.stationId, this.distance, this.duration);
     }
 }

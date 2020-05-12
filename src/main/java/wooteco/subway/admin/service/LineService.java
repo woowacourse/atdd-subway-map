@@ -54,7 +54,7 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        line.addLineStation(LineStationCreateRequest.toLineStation(request));
+        line.addLineStation(request.toLineStation());
         lineRepository.save(line);
     }
 
