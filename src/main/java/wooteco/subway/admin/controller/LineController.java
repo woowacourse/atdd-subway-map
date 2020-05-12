@@ -23,7 +23,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLine(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
         Line line = request.toLine();
         LineResponse persistLine = lineService.save(line);
         return ResponseEntity
@@ -32,17 +32,17 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity showLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @GetMapping("/lines")
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
         Line line = request.toLine();
         return ResponseEntity.ok().body(lineService.updateLine(id, line));
     }
@@ -55,13 +55,13 @@ public class LineController {
 
 
     @GetMapping("/line-stations")
-    public ResponseEntity showLineStations() {
+    public ResponseEntity<List<StationsAtLineResponse>> showLineStations() {
         List<StationsAtLineResponse> response = lineService.findAllLineStations();
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/line-stations/{line-id}")
-    public ResponseEntity createLineStations(@PathVariable("line-id") Long lineId, @RequestBody LineStationAddRequest request) {
+    public ResponseEntity<StationsAtLineResponse> createLineStations(@PathVariable("line-id") Long lineId, @RequestBody LineStationAddRequest request) {
         StationsAtLineResponse response = lineService.addLineStation(lineId, request);
 
         return ResponseEntity

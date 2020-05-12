@@ -82,8 +82,8 @@ public class LineService {
 
     public List<Station> findStationsAtLine(Line savedLine) {
         List<LineStation> lineStations = savedLine.getStations();
-        List<Station> stations = new ArrayList<>();
 
+        List<Station> stations = new ArrayList<>();
         for (LineStation lineStation : lineStations) {
             stations.add(stationRepository.findById(lineStation.getStationId())
                     .orElseThrow(() -> new IllegalArgumentException(NO_STATION_EXCEPTION)));
