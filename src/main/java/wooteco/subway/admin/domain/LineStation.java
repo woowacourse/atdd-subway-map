@@ -44,10 +44,6 @@ public class LineStation {
 		this.preStationId = preStationId;
 	}
 
-	public String getCustomId() {
-		return "" + getLine() + getPreStationId() + getStationId();
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

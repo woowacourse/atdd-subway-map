@@ -1,5 +1,4 @@
 import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import tns from "../../lib/slider/tiny-slider.js";
@@ -14,7 +13,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
-    const lines = await api.line.get();
+    const lines = await api.lineStation.get();
 
     $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
@@ -33,10 +32,10 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = () => {
-    const $stationSelectOptions = document.querySelector("#station-select-options");
-    const subwayLineOptionTemplate = defaultSubwayLines
-    .map(line => optionTemplate(line.title))
+  const initSubwayLineOptions = async () => {
+    const subwayLines = await api.line.get();
+    const subwayLineOptionTemplate = subwayLines
+    .map(line => optionTemplate(line.name))
     .join("");
 
     $stationSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);

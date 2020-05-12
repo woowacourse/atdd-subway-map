@@ -59,6 +59,9 @@ const api = (() => {
   };
 
   const lineStation = {
+    get() {
+      return request(`/line-stations`);
+    },
     create(data) {
       return request(`/line-stations`, METHOD.POST(data))
     },
