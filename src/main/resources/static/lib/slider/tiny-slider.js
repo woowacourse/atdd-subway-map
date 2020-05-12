@@ -960,7 +960,7 @@ var tns = (function () {
       var autoplayDirection = options.autoplayDirection === 'forward' ? 1 : -1,
         autoplayButton = options.autoplayButton,
         autoplayButtonHTML = options.autoplayButton ? options.autoplayButton.outerHTML : '',
-        autoplayHtmlStrings = ["<span class="tns - visually - hidden">", ' animation</span>'],
+          autoplayHtmlStrings = ["<span class='tns-visually-hidden'>", ' animation</span>'],
         autoplayTimer,
         animating,
         autoplayHoverPaused,

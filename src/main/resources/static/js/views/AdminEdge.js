@@ -9,9 +9,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = () => {
-    $subwayLinesSlider.innerHTML = defaultSubwayLines
-    .map(line => subwayLinesItemTemplate(line)
-    )
+    $subwayLinesSlider.innerHTML = defaultSubwayLines.map(line => subwayLinesItemTemplate(line))
     .join("");
     tns({
       container: ".subway-lines-slider",
