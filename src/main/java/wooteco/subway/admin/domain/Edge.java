@@ -29,13 +29,13 @@ public class Edge {
 		duration = edge.duration;
 	}
 
-	public boolean isStationId(final Long stationId) {
+	public boolean stationIdEquals(final Long stationId) {
 		return Objects.equals(this.stationId, stationId);
 	}
 
-    public boolean isPreStationId(Long preStationOfNext) {
-        return Objects.equals(this.preStationId, preStationOfNext);
-    }
+	public boolean preStationIdEquals(Long preStationId) {
+		return Objects.equals(this.preStationId, preStationId);
+	}
 
 	public boolean isNotStartEdge() {
 		return preStationId != null;

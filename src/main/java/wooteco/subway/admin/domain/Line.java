@@ -97,11 +97,11 @@ public class Line {
 	private boolean isFinalEdge(final Edge edge) {
 		try {
 			Edge previous = edges.stream()
-					.filter(item -> item.isStationId(edge.getPreStationId()))
+				.filter(item -> item.stationIdEquals(edge.getPreStationId()))
 					.findFirst()
 					.orElseThrow(NoSuchElementException::new);
 			return edges.stream()
-					.noneMatch(item -> item.isPreStationId(previous.getStationId()));
+				.noneMatch(item -> item.preStationIdEquals(previous.getStationId()));
 		} catch (NoSuchElementException e) {
 			return false;
 		}
@@ -115,18 +115,18 @@ public class Line {
 		updateNextEdge(stationId);
 
 		edges = edges.stream()
-				.filter(edge -> !edge.isStationId(stationId))
+			.filter(edge -> !edge.stationIdEquals(stationId))
 				.collect(Collectors.toSet());
 	}
 
 	private void updateNextEdge(final Long stationId) {
 		try {
 			Edge nextEdge = edges.stream()
-					.filter(edge -> edge.isPreStationId(stationId))
+				.filter(edge -> edge.preStationIdEquals(stationId))
 					.findFirst()
 					.orElseThrow(NoSuchElementException::new);
 			Long afterPreStationIdOfNextEdge = edges.stream()
-					.filter(edge -> edge.isStationId(stationId))
+				.filter(edge -> edge.stationIdEquals(stationId))
 					.findFirst()
 					.orElseThrow(NoSuchElementException::new)
 					.getPreStationId();
@@ -143,7 +143,7 @@ public class Line {
 			try {
 				final Long preStationOfNext = preStation;
 				Edge nextEdge = edges.stream()
-						.filter(edge -> edge.isPreStationId(preStationOfNext))
+					.filter(edge -> edge.preStationIdEquals(preStationOfNext))
 						.findFirst()
 						.orElseThrow(NoSuchElementException::new);
 				edgeIds.add(nextEdge.getStationId());
