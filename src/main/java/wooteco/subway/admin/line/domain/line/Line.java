@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
@@ -41,11 +43,14 @@ public class Line {
 	private String bgColor;
 
 	@Column("created_at")
+	@CreatedDate
 	private LocalDateTime createdAt;
 
 	@Column("updated_at")
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	// TODO: 2020/05/12 LinkedList로 변경 후 관련 로직 수정하기
 	@MappedCollection(idColumn = "line_id", keyColumn = "index")
 	private List<LineStation> stations = new LinkedList<>();
 
@@ -60,8 +65,6 @@ public class Line {
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
 		this.bgColor = bgColor;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
 	}
 
 	public Line(String name, LocalTime startTime, LocalTime endTime, Integer intervalTime,

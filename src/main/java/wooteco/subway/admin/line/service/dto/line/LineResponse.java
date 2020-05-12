@@ -20,6 +20,7 @@ public class LineResponse {
 	private String bgColor;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
 	private List<StationResponse> stations = new LinkedList<>();
 
 	public LineResponse() {

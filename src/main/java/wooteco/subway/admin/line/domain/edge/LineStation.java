@@ -2,6 +2,7 @@ package wooteco.subway.admin.line.domain.edge;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.lang.Nullable;
 
 public class LineStation {
 
@@ -12,6 +13,7 @@ public class LineStation {
 	@Column("index")
 	private Long index;
 
+	@Nullable
 	@Column("pre_station_id")
 	private Long preStationId;
 

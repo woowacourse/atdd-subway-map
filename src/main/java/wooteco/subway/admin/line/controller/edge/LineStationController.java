@@ -1,5 +1,7 @@
 package wooteco.subway.admin.line.controller.edge;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +26,7 @@ public class LineStationController {
 
 	@PutMapping("/{lineId}/stations")
 	public ResponseEntity<LineResponse> save(@PathVariable Long lineId,
-		@RequestBody LineStationCreateRequest request) {
+		@RequestBody @Valid LineStationCreateRequest request) {
 		lineService.save(lineId, request);
 		return ResponseEntity.noContent()
 		                     .build();
