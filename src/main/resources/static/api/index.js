@@ -22,7 +22,7 @@ const METHOD = {
       },
       body: JSON.stringify(data)
     };
-  }
+  },
 };
 const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
@@ -37,10 +37,10 @@ const api = (() => {
       return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return fetch(`/stations/${id}`, METHOD.PUT(data));
+      return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return fetch(`/stations/${id}`, METHOD.DELETE());
+      return request(`/stations/${id}`, METHOD.DELETE());
     }
   };
   const line = {
@@ -51,7 +51,7 @@ const api = (() => {
       return request(`/lines/${id}`);
     },
     create(data) {
-      return request(`/lines`, METHOD.POST(data));
+      return fetch(`/lines`, METHOD.POST(data));
     },
     update(data, id) {
       return request(`/lines/${id}`, METHOD.PUT(data));

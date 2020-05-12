@@ -65,15 +65,19 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTime.value,
       bgColor: $subwayLineColorInput.value
     };
-    api.line.create(newSubwayLineData).then(() => {
-      $subwayLineList.innerHTML = "";
-      initDefaultSubwayLines();
-      subwayLineModal.toggle();
-      $subwayLineNameInput.value = "";
-      $subwayLineColorInput.value = "";
-      $subwayLineFirstTime.value = "";
-      $subwayLineLastTime.value = "";
-      $subwayLineIntervalTime.value = "";
+    api.line.create(newSubwayLineData).then((response) => {
+      if (response.ok) {
+        $subwayLineList.innerHTML = "";
+        initDefaultSubwayLines();
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayLineFirstTime.value = "";
+        $subwayLineLastTime.value = "";
+        $subwayLineIntervalTime.value = "";
+      } else {
+        response.text().then(errorMessage => alert(errorMessage));
+      }
     });
   };
   const onDeleteSubwayLine = event => {
