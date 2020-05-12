@@ -30,9 +30,16 @@ public class LineService {
 
 	@Transactional
 	public LineResponse create(LineRequest request) {
+		validateDuplicatedName(request);
 		Line line = request.toLine();
 		Line created = lineRepository.save(line);
 		return LineResponse.of(created);
+	}
+
+	private void validateDuplicatedName(LineRequest request) {
+		if (lineRepository.findByName(request.getName()).isPresent()) {
+			throw new IllegalArgumentException("해당 라인이 이미 존재합니다.");
+		}
 	}
 
 	@Transactional
