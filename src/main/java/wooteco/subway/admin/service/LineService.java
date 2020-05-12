@@ -1,7 +1,6 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,9 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.req.LineStationCreateRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
+import wooteco.subway.admin.exceptions.DuplicateLineNameException;
+import wooteco.subway.admin.exceptions.LineNotFoundException;
+import wooteco.subway.admin.exceptions.StationNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -31,18 +33,12 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
-        try {
-            return LineResponse.of(lineRepository.save(lineRequest.toLine()));
-        } catch (DbActionExecutionException e) {
-            throwDuplicateKeyException(e);
-            throw new IllegalArgumentException(e.getMessage());
+        if (lineRepository.hasLineName(lineRequest.getName()).isPresent()) {
+            throw new DuplicateLineNameException(lineRequest.getName());
         }
-    }
-
-    private void throwDuplicateKeyException(DbActionExecutionException e) {
-        if (e.getCause() instanceof DuplicateKeyException) {
-            throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
-        }
+        Line line = lineRequest.toLine();
+        save(line);
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
@@ -81,14 +77,24 @@ public class LineService {
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         line.update(lineRequest.toLine());
+        save(line);
+        List<Station> stations = findStations(line);
+        return LineResponse.of(line, stations);
+    }
+
+    private void checkDuplicateKeyException(DbActionExecutionException e, String name) {
+        if (e.getCause() instanceof DuplicateKeyException) {
+            throw new DuplicateLineNameException(name);
+        }
+    }
+
+    private void save(Line line) {
         try {
             lineRepository.save(line);
         } catch (DbActionExecutionException e) {
-            throwDuplicateKeyException(e);
+            checkDuplicateKeyException(e, line.getName());
             throw new IllegalArgumentException(e.getMessage());
         }
-        List<Station> stations = findStations(line);
-        return LineResponse.of(line, stations);
     }
 
     public void deleteLineById(Long id) {
@@ -107,17 +113,17 @@ public class LineService {
     }
 
     private void validateStationExist(LineStation lineStation) {
-        if (lineStation.isStationIdNull() || !stationRepository.findById(lineStation.getStationId()).isPresent()) {
-            throw new IllegalArgumentException("추가하려는 지하철 역이 존재하지 않습니다.");
+        if (lineStation.isStationNotExist() || !stationRepository.findById(lineStation.getStationId()).isPresent()) {
+            throw new StationNotFoundException(lineStation.getStationId());
         }
-        if (!lineStation.isPreStationIdNull() && !stationRepository.findById(lineStation.getPreStationId()).isPresent()) {
-            throw new IllegalArgumentException("추가하려는 전 역이 존재하지 않습니다.");
+        if (lineStation.isPreStationExist() && !stationRepository.findById(lineStation.getPreStationId()).isPresent()) {
+            throw new StationNotFoundException(lineStation.getPreStationId());
         }
     }
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+                .orElseThrow(() -> new LineNotFoundException(id));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

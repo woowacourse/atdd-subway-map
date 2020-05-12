@@ -20,33 +20,33 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public boolean isStationIdNull() {
+    public boolean isStationNotExist() {
         return stationId == null;
     }
 
-    public boolean isPreStationIdNull() {
-        return preStationId == null;
+    public boolean isPreStationExist() {
+        return preStationId != null;
     }
 
     public boolean isFirstOnLine() {
-        return this.preStationId == null;
+        return !isPreStationExist();
     }
 
-    public boolean isSameWithPreStationId(LineStation lineStation) {
-        return isSameId(lineStation.preStationId);
+    public boolean isPreStationOf(LineStation lineStation) {
+        return isSame(lineStation.preStationId);
     }
 
-    public boolean isSameId(Long id) {
+    public boolean isSame(Long id) {
         return stationId.equals(id);
     }
 
-    public boolean isSameId(LineStation lineStation) {
-        return isSameId(lineStation.stationId);
+    public boolean isSame(LineStation lineStation) {
+        return isSame(lineStation.stationId);
     }
 
-    public boolean isSamePreStationId(LineStation lineStation) {
-        if (preStationId == null) {
-            return lineStation.preStationId == null;
+    public boolean isPreStationSame(LineStation lineStation) {
+        if (!isPreStationExist()) {
+            return lineStation.isPreStationExist();
         }
         return preStationId.equals(lineStation.preStationId);
     }

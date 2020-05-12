@@ -1,6 +1,8 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.exceptions.DuplicateLineStationException;
+import wooteco.subway.admin.exceptions.LineNotFoundException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,12 +32,14 @@ public class LineStations {
     }
 
     private void validateDuplicate(LineStation lineStation) {
-        boolean isDuplicate = stations.stream()
-                .filter(station -> station.isSameId(lineStation))
-                .anyMatch(station -> station.isSamePreStationId(lineStation));
-        if (isDuplicate) {
-            throw new IllegalArgumentException("중복된 구간은 존재하면 안됩니다.");
+        if (isDuplicate(lineStation)) {
+            throw new DuplicateLineStationException(lineStation.getPreStationId(), lineStation.getStationId());
         }
+    }
+
+    private boolean isDuplicate(LineStation lineStation) {
+        return stations.stream()
+                .anyMatch(station -> station.isSame(lineStation) && station.isPreStationSame(lineStation));
     }
 
     private int findNextIndex(LineStation lineStation) {
@@ -44,9 +48,9 @@ public class LineStations {
         }
 
         int targetIndex = IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isSameWithPreStationId(lineStation))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("이전역이 존재하지 않습니다."));
+                .filter(index -> stations.get(index).isPreStationOf(lineStation))
+                .findFirst()
+                .orElseThrow(() -> new LineNotFoundException(lineStation.getPreStationId()));
         return targetIndex + NEXT_STATION_INDEX;
     }
 
@@ -77,28 +81,26 @@ public class LineStations {
 
     private int findIndex(Long stationId) {
         return IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isSameId(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+                .filter(index -> stations.get(index).isSame(stationId))
+                .findFirst()
+                .orElseThrow(() -> new LineNotFoundException(stationId));
     }
 
     List<Long> getLineStationsId() {
         return stations.stream()
-            .map(LineStation::getStationId)
-            .collect(Collectors.toList());
-    }
-
-    List<LineStation> getStations() {
-        return stations;
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 
     public List<Station> findMatchingStations(List<Station> stations) {
-        List<Long> stationIds = this.stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        List<Long> stationIds = getLineStationsId();
 
         return stations.stream()
                 .filter(station -> stationIds.contains(station.getId()))
                 .collect(Collectors.toList());
+    }
+
+    List<LineStation> getStations() {
+        return stations;
     }
 }

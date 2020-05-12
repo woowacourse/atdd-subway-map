@@ -1,5 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
+import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +70,11 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
+
+        // when
+        ValidatableResponse failResponse = createLineOf("1호선");
+        // then
+        failResponse.statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private void createLines(String... lines) {
@@ -77,21 +84,25 @@ public class LineAcceptanceTest {
     }
 
     private void createLine(String name) {
+        createLineOf(name).
+            statusCode(HttpStatus.CREATED.value());
+    }
+
+    private ValidatableResponse createLineOf(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
 
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.CREATED.value());
+        return given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines").
+                then().
+                log().all();
     }
 
     private LineResponse getLine(Long id) {

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
-    List<Station> findAllById(Iterable<Long> longs);
+    List<Station> findAllById(Iterable<Long> ids);
 
     @Override
     List<Station> findAll();
