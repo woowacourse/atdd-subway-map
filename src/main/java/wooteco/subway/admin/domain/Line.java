@@ -47,6 +47,9 @@ public class Line {
 	}
 
 	public void addLineStation(LineStation lineStation) {
+		if (alreadyExists(lineStation)) {
+			throw new UnsupportedOperationException("이미 존재하는 구간입니다.");
+		}
 		if (lineStation.isStartStation() && stations.size() != 0) {
 			stations.stream()
 				.filter(LineStation::isStartStation)
@@ -66,6 +69,12 @@ public class Line {
 				stations.add(newStation);
 			});
 		stations.add(lineStation);
+	}
+
+	private boolean alreadyExists(LineStation lineStation) {
+		return stations.stream()
+			.anyMatch(station -> (station.getPreStationId().equals(lineStation.getPreStationId()))
+				&& (station.getStationId().equals(lineStation.getStationId())));
 	}
 
 	public void removeLineStationById(Long stationId) {
