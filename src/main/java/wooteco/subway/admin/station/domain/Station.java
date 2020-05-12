@@ -2,6 +2,8 @@ package wooteco.subway.admin.station.domain;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -9,9 +11,11 @@ public class Station {
 
 	@Id
 	@Column("id")
+	@NotNull
 	private Long id;
 
 	@Column("name")
+	@NotNull
 	private String name;
 
 	@Column("created_at")

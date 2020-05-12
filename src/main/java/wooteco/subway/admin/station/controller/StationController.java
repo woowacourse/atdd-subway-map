@@ -36,6 +36,7 @@ public class StationController {
 	@PostMapping
 	public ResponseEntity<StationResponse> save(@RequestBody StationCreateRequest request) {
 		final StationResponse response = stationService.save(request.toStation());
+
 		return ResponseEntity.created(URI.create("/stations/" + response.getId()))
 		                     .body(response);
 	}
@@ -43,6 +44,7 @@ public class StationController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> remove(@PathVariable Long id) {
 		stationService.delete(id);
+
 		return ResponseEntity.noContent()
 		                     .build();
 	}

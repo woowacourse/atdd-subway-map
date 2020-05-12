@@ -1,10 +1,9 @@
 package wooteco.subway.admin.station.service;
 
-import static java.util.stream.Collectors.*;
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.station.domain.Station;
 import wooteco.subway.admin.station.repository.StationRepository;
@@ -15,21 +14,26 @@ public class StationService {
 
 	private final StationRepository stationRepository;
 
-	public StationService(StationRepository stationRepository) {
+	public StationService(final StationRepository stationRepository) {
 		this.stationRepository = stationRepository;
 	}
 
-	public List<StationResponse> findAll() {
-		return stationRepository.findAll()
-		                        .stream()
-		                        .map(StationResponse::of)
-		                        .collect(toList());
-	}
+	@Transactional
+	public StationResponse save(final Station station) {
+		if (stationRepository.findByName(station.getName()).isPresent()) {
+			throw new IllegalArgumentException("중복된 이름의 역이 존재합니다.");
+		}
 
-	public StationResponse save(Station station) {
 		return StationResponse.of(stationRepository.save(station));
 	}
 
+	@Transactional(readOnly = true)
+	public List<StationResponse> findAll() {
+		final List<Station> stations = stationRepository.findAll();
+		return StationResponse.listOf(stations);
+	}
+
+	@Transactional
 	public void delete(Long id) {
 		stationRepository.deleteById(id);
 	}
