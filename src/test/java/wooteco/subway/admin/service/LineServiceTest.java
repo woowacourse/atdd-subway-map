@@ -118,7 +118,6 @@ public class LineServiceTest {
         when(stationRepository.findById(anyLong())).thenReturn(Optional.of(new Station("역")));
 
         LineResponse lineResponse = lineService.findLineWithStationsById(1L);
-        lineResponse.getStations().forEach(System.out::println);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }
