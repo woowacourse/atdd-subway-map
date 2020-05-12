@@ -2,9 +2,13 @@ const api = (() => {
   const request = (uri, config) => fetch(uri, config);
 
   const METHOD = {
-    PUT() {
+    PUT(data) {
       return {
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
       };
     },
     DELETE() {
@@ -28,13 +32,13 @@ const api = (() => {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/station`, METHOD.POST(data));
+      return request(`/stations`, METHOD.POST(data));
     },
     update(data, id) {
-      return request(`/station/${id}`, METHOD.PUT(data));
+      return request(`/stations/${id}`, METHOD.PUT(data));
     },
     delete(id) {
-      return request(`/station/${id}`, METHOD.DELETE());
+      return request(`/stations/${id}`, METHOD.DELETE());
     }
   };
 
