@@ -3,7 +3,6 @@ package wooteco.subway.admin.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.req.LineRequest;
 import wooteco.subway.admin.dto.res.LineResponse;
 import wooteco.subway.admin.service.LineService;
@@ -22,7 +21,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@Valid @RequestBody LineRequest lineRequest) {
-        LineResponse response = lineService.save(Line.of(lineRequest));
+        LineResponse response = lineService.save(lineRequest.toLine());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -30,13 +29,13 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> readAll() {
-        final List<LineResponse> lines = lineService.getLines();
+        final List<LineResponse> lines = lineService.getLineResponses();
         return ResponseEntity.ok(lines);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> readById(@PathVariable Long id) {
-        final LineResponse line = lineService.getLine(id);
+        final LineResponse line = lineService.getLineResponse(id);
         return ResponseEntity.ok(line);
     }
 
