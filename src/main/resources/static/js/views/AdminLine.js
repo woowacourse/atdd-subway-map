@@ -33,6 +33,7 @@ function AdminLine() {
 
     const settingLineList = (statusCode, res) => {
         if (res.status !== statusCode) {
+            res.text().then(res => alert(res));
             linesInfo.clear();
             return;
         }
@@ -99,7 +100,7 @@ function AdminLine() {
         const lineId = $target.closest(".subway-line-item").dataset.lineId;
         api.line.delete("/" + lineId).then(res => {
             if (res.status !== 200) {
-                alert("삭제불가!");
+                res.text().then(res => alert(res));
                 return;
             }
             $target.closest(".subway-line-item").remove()

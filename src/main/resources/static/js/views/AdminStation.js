@@ -34,14 +34,14 @@ function AdminStation() {
         }
         $stationNameInput.value = "";
 
-
         api.station
-            .create({'name': stationName})
-            .then(res =>
-                res.json()
-                    .then(data => $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data)))
-            )
-            .catch(error => alert("에러가 발생했습니다."));
+        .create({'name': stationName})
+        .then(res =>
+            res.json()
+            .then(data => $stationList.insertAdjacentHTML("beforeend",
+                listItemTemplate(data)))
+        )
+        .catch(() => alert("예기치 않은 에러가 발생했습니다. 다시 시도해주세요."));
 
     };
 

@@ -1,7 +1,6 @@
 package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
-import javax.validation.constraints.Min;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
@@ -10,7 +9,6 @@ public class LineRequest {
     private String color;
     private LocalTime startTime;
     private LocalTime endTime;
-    @Min(1)
     private int intervalTime;
 
     public LineRequest() {
