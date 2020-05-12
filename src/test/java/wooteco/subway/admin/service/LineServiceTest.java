@@ -90,6 +90,11 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
 
+        List<Station> staitonss = lineService.findStationsAtLine(line);
+
+        for (Station station : staitonss) {
+            System.out.println(station.getName());
+        }
         assertThat(line.getEdges()).hasSize(4);
         assertThat(line.findStationsId().get(0)).isEqualTo(1L);
         assertThat(line.findStationsId().get(1)).isEqualTo(4L);

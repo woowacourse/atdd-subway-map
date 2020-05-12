@@ -91,7 +91,7 @@ public class LineService {
 
         for (Line line : lines) {
             List<Station> stations = findStationsAtLine(line);
-            response.add(new StationsAtLineResponse(line.getId(), line.getName(), line.getBgColor(), stations));
+            response.add(new StationsAtLineResponse(line, stations));
         }
         return response;
     }
@@ -126,12 +126,16 @@ public class LineService {
         Long preStationId = stationRepository.findIdByName(request.getPreStationName());
         Long stationId = stationRepository.findIdByName(request.getStationName());
 
-        if (request.getPreStationName() != null && preStationId == null) {
+        if (isValidStationFormat(request.getPreStationName()) && preStationId == null) {
             throw new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE);
         }
         if (stationId == null) {
             throw new IllegalArgumentException(REQUIRE_STATION_NAME_EXCEPTION_MESSAGE);
         }
         return new Edge(preStationId, stationId, request.getDistance(), request.getDuration());
+    }
+
+    private boolean isValidStationFormat(String name) {
+        return name != null && !name.isEmpty();
     }
 }

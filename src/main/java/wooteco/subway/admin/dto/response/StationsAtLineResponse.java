@@ -14,7 +14,7 @@ public class StationsAtLineResponse {
     private StationsAtLineResponse() {
     }
 
-    public StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {
+    private StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.bgColor = bgColor;
@@ -22,10 +22,7 @@ public class StationsAtLineResponse {
     }
 
     public StationsAtLineResponse(Line line, List<Station> stations) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.bgColor = line.getBgColor();
-        this.stations = stations;
+        this(line.getId(), line.getName(), line.getBgColor(), stations);
     }
 
     public Long getId() {

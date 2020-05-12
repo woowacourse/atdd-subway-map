@@ -58,7 +58,7 @@ public class EdgeAcceptanceTest {
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
-    void manageEdge() {
+    void manageEdge() throws Exception {
         //given
         Station station1 = createStation("잠실역");
         Station station2 = createStation("삼성역");
@@ -151,11 +151,9 @@ public class EdgeAcceptanceTest {
                 extract().as(LineResponse.class);
     }
 
-    private StationsAtLineResponse createEdge(Long lineId, EdgeCreateRequest request) {
-//        StationsAtLineResponse.class.getConstructors();
-//        for (Constructor<?> c : StationsAtLineResponse.class.getConstructors()) {
-//            System.out.println("HERE" + c.getName() + Arrays.toString(c.getParameterTypes()));
-//        }
+    private StationsAtLineResponse createEdge(Long lineId, EdgeCreateRequest request) throws NoSuchMethodException {
+//        Constructor<StationsAtLineResponse> constructor = StationsAtLineResponse.class.getConstructor(null);
+//        constructor.setAccessible(true);
 
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
