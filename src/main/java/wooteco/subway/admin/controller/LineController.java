@@ -59,7 +59,6 @@ public class LineController {
     @PostMapping("/lines/{lineId}/edges")
     public ResponseEntity<StationsAtLineResponse> createEdge(@PathVariable("lineId") Long lineId, @RequestBody EdgeCreateRequest request) {
         StationsAtLineResponse response = lineService.addEdge(lineId, request);
-
         return ResponseEntity
                 .created(URI.create("/edges/" + lineId))
                 .body(response);
