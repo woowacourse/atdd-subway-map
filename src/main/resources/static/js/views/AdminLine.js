@@ -41,30 +41,22 @@ function AdminLine() {
       inputSubwayLine.id = $subwayLineUpdateId.value;
     }
 
-    sendNewLine(inputSubwayLine).then(() => location.reload());
+    if (isEdit) {
+      api.line.update(inputSubwayLine.id, inputSubwayLine);
+    }
+    api.line.create(inputSubwayLine)
+    .then(line => $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line)));
 
-    const newLineTemplate = subwayLinesTemplate({
-      title: inputSubwayLine.name,
-      bgColor: inputSubwayLine.color
-    });
+    const newLineTemplate = subwayLinesTemplate(inputSubwayLine);
 
     const $subwayLineItem = document.createElement('div');
     $subwayLineItem.innerHTML = newLineTemplate;
 
     if (isEdit) {
       $subwayLineList.replaceChild($subwayLineItem.firstChild, $currentSubwayLineItem);
-    } else {
-      $subwayLineList.insertAdjacentHTML("beforeend", newLineTemplate);
     }
     subwayLineModal.toggle();
     clearForm();
-  };
-
-  const sendNewLine = data => {
-    if (isEdit) {
-      return api.line.update(data.id, data);
-    }
-    return api.line.create(data);
   };
 
   const clearForm = () => {
@@ -147,7 +139,15 @@ function AdminLine() {
     $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
   };
 
+  const initLines = () => {
+    api.line.get().then((lines) => {
+      lines.map(line =>
+        $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line)));
+    });
+  }
+
   this.init = () => {
+    initLines();
     initEventListeners();
     initCreateSubwayLineForm();
   };
