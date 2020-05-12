@@ -61,18 +61,4 @@ public class LineController {
 		lineService.deleteLineById(lineId);
 		return ResponseEntity.ok(lineId);
 	}
-
-	@PostMapping("{id}/edge")
-	public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId,
-		@RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
-		lineService.addEdge(lineId, edgeCreateRequest);
-		return new ResponseEntity<>(1L, HttpStatus.CREATED);
-	}
-
-	@DeleteMapping("{id}/edge")
-	public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId,
-		@RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
-		lineService.removeEdge(lineId, edgeDeleteRequest.getStationId());
-		return ResponseEntity.noContent().build();
-	}
 }

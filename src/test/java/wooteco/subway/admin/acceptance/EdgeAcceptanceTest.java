@@ -61,7 +61,7 @@ public class EdgeAcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post("/lines/{id}/edge", lineId)
+			.post("/lines/{id}/edges", lineId)
 			.then()
 			.log().all()
 			.statusCode(HttpStatus.CREATED.value());
@@ -96,7 +96,7 @@ public class EdgeAcceptanceTest {
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.body(edgeDeleteRequest)
 			.when()
-			.delete("/lines/{id}/edge", lineId)
+			.delete("/lines/{id}/edges", lineId)
 			.then()
 			.log().all()
 			.statusCode(HttpStatus.NO_CONTENT.value());

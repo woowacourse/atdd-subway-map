@@ -81,10 +81,10 @@ const api = (() => {
 
     const edge = {
         create(data, id) {
-            return request(`/lines/${id}/edge`, METHOD.POST(data));
+            return request(`/lines/${id}/edges`, METHOD.POST(data));
         },
         delete(data, id) {
-            return request(`/lines/${id}/edge`, METHOD.DELETE(data));
+            return request(`/lines/${id}/edges`, METHOD.DELETE(data));
         }
     };
 
