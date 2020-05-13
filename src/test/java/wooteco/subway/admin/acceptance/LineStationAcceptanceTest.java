@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
@@ -40,40 +41,60 @@ public class LineStationAcceptanceTest {
 	@Test
 	void manageLineStation() {
 		// Given
-		createLine("신분당선");
+		createLine("8호선");
 		createStation("잠실역");
-		createStation("종합운동장역");
-		LineResponse line = getLines().get(0); // 신분당
-		StationResponse station = getStations().get(0); // 잠실
+		createStation("송파역");
+		createStation("모란역");
+		LineResponse LineEight = getLines().get(0); // 8호선
+		StationResponse stationJamSil = getStations().get(0); // 잠실
+		StationResponse stationSongPa = getStations().get(1); // 송파
+		StationResponse stationMoran = getStations().get(2); // 모란
+
+		// When - Then POP!
+		assertThatThrownBy(
+			() -> addStationToLine(LineEight.getId(), stationMoran.getId(), stationJamSil.getId()));
 
 		// When
-		addStationToLine(line.getId(), station.getId());
+		addStationToLine(LineEight.getId(), null, stationJamSil.getId());
 		// Then
-		LineResponse lineResponse = findStationsByLineId(line.getId());
+		LineResponse lineResponse = findStationsByLineId(LineEight.getId());
 		assertThat(lineResponse.getStations()).isNotNull();
 
 		// When
-		List<StationResponse> stations = findStationsByLineId(line.getId()).getStations();
+		addStationToLine(LineEight.getId(), stationJamSil.getId(), stationSongPa.getId());
+		// Then
+		lineResponse = findStationsByLineId(LineEight.getId());
+		assertThat(lineResponse.getStations()).hasSize(2);
+
+		// When - Then POP!
+		assertThatThrownBy(
+			() -> addStationToLine(LineEight.getId(), stationJamSil.getId(),
+				stationJamSil.getId()));
+
+		// When
+		List<StationResponse> stations = findStationsByLineId(LineEight.getId()).getStations();
 		// Then
 		assertThat(stations.size()).isNotEqualTo(0);
-		assertThat(stations).contains(station);
+		assertThat(stations).contains(stationJamSil);
 
 		// When
-		deleteStation(line.getId(), station.getId());
+		deleteStation(LineEight.getId(), stationJamSil.getId());
+		deleteStation(LineEight.getId(), stationSongPa.getId());
 		// Then
-		stations = findStationsByLineId(line.getId()).getStations();
-		assertThat(stations).doesNotContain(station);
+		stations = findStationsByLineId(LineEight.getId()).getStations();
+		assertThat(stations).doesNotContain(stationJamSil);
 
 		// When
-		stations = findStationsByLineId(line.getId()).getStations();
+		stations = findStationsByLineId(LineEight.getId()).getStations();
 		// Then
 		assertThat(stations).isNotNull();
-		assertThat(stations).doesNotContain(station);
+		assertThat(stations).doesNotContain(stationJamSil);
 	}
 
-	private void addStationToLine(Long lineId, Long stationId) {
+	private void addStationToLine(Long lineId, Long preStationId, Long stationId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("lineId", lineId);
+		params.put("preStationId", preStationId);
 		params.put("stationId", stationId);
 		params.put("distance", 10);
 		params.put("duration", 10);
