@@ -29,4 +29,26 @@ class LineRepositoryTest {
         lineRepository.save(line);
         assertThat(lineRepository.countByStationId(1L)).isEqualTo(1);
     }
+
+    @Test
+    void save() {
+        Line line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "5");
+
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
+        Line saved = lineRepository.save(line);
+        saved.removeLineStationById(1L);
+        saved = lineRepository.save(saved);
+        assertThat(saved.getStations().getLineStationsId()).isEmpty();
+    }
+
+    @Test
+    void delete() {
+        Line line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "5");
+
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
+        Line saved = lineRepository.save(line);
+
+        lineRepository.delete(saved);
+        assertThat(lineRepository.findAll()).isEmpty();
+    }
 }
