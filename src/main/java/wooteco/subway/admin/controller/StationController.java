@@ -8,6 +8,8 @@ import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/stations")
 public class StationController {
@@ -18,7 +20,7 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity showStations() {
+    public ResponseEntity<List<Station>> showStations() {
         return ResponseEntity.ok().body(lineService.showStations());
     }
 
@@ -31,7 +33,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         lineService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }

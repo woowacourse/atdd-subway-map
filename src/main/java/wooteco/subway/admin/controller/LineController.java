@@ -26,24 +26,24 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest view) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest view) {
         LineResponse persistLine = lineService.save(view.toLine());
         return new ResponseEntity(persistLine, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return new ResponseEntity(lineService.findById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
         LineResponse line = lineService.updateLine(id, view.toLine());
         return new ResponseEntity(line, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
@@ -69,7 +69,7 @@ public class LineController {
     }
 
     @DeleteMapping("{lineId}/stations/{stationId}")
-    public ResponseEntity deleteStationByLineId(@PathVariable Long lineId, @PathVariable Long stationId) {
+    public ResponseEntity<Void> deleteStationByLineId(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.deleteStationByLineIdAndStationId(lineId, stationId);
         return ResponseEntity
                 .status(HttpStatus.OK)
