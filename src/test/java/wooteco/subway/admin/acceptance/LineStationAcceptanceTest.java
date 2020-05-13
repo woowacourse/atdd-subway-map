@@ -60,11 +60,11 @@ public class LineStationAcceptanceTest {
         List<Station> stations = line.getStations();
 
         // then
-        assertThat(stations).contains(jamsil.toStation());
-        assertThat(stations).contains(jamsilSaenae.toStation());
-        assertThat(stations).contains(seoknam.toStation());
-        assertThat(stations).contains(sindorim.toStation());
-        assertThat(stations).contains(bupeyong.toStation());
+        assertThat(stations.get(0).getId()).isEqualTo(jamsil.getId());
+        assertThat(stations.get(1).getId()).isEqualTo(jamsilSaenae.getId());
+        assertThat(stations.get(2).getId()).isEqualTo(seoknam.getId());
+        assertThat(stations.get(3).getId()).isEqualTo(sindorim.getId());
+        assertThat(stations.get(4).getId()).isEqualTo(bupeyong.getId());
 
         // when
         // then
@@ -78,7 +78,7 @@ public class LineStationAcceptanceTest {
 
     private void deleteStationOnLine(Long lineId, StationResponse jamsil) {
         given().when()
-            .delete("/" + lineId + "/stations/" + jamsil.getId())
+            .delete("lines/" + lineId + "/stations/" + jamsil.getId())
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -92,7 +92,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/" + lineId + "/stations").
+            post("lines/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());

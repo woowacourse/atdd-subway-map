@@ -9,11 +9,9 @@ import java.util.stream.IntStream;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
-public class Line {
-    private static final int FIRST_STATION_INDEX = 0;
-    private static final int SECOND_INDEX = 1;
-    private static final int ONLY_ONE_STATION = 1;
+import wooteco.subway.admin.utils.Validator;
 
+public class Line {
     @Id
     private Long id;
     private String name;
@@ -31,6 +29,8 @@ public class Line {
 
     public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
         int intervalTime) {
+        Validator.validateNotEmpty(name);
+        Validator.validateNotContainsBlank(name);
         this.name = name;
         this.color = color;
         this.startTime = startTime;
@@ -68,12 +68,9 @@ public class Line {
 
     public void addLineStation(LineStation lineStation) {
         validateHavingSame(lineStation);
-        if (lineStation.isStartStation()) {
-            addStartLineStation(lineStation);
-            return;
-        }
-        validateLineStation(lineStation);
-        addBetweenLineStation(lineStation);
+        int insertIndex = findInsertIndex(lineStation.getPreStationId());
+        stations.add(insertIndex, lineStation);
+        updatePreLineStation(insertIndex, lineStation.getStationId());
     }
 
     private void validateHavingSame(LineStation lineStation) {
@@ -84,31 +81,24 @@ public class Line {
         }
     }
 
-    private void addStartLineStation(LineStation lineStation) {
-        stations.add(FIRST_STATION_INDEX, lineStation);
-        if (stations.size() != ONLY_ONE_STATION) {
-            LineStation secondLineStation = stations.get(SECOND_INDEX);
-            secondLineStation.updatePreLineStation(lineStation.getStationId());
-        }
+    private int findInsertIndex(Long stationId) {
+        int stationsSize = stations.size();
+        return IntStream.range(0, stationsSize)
+            .filter(index -> stations.get(index).isPreStation(stationId))
+            .findAny()
+            .orElse(stationsSize);
     }
 
-    private void validateLineStation(LineStation lineStation) {
-        if (lineStation.isSameBothStation()) {
-            throw new IllegalArgumentException("같은 역을 출발지점과 도착지점으로 정할 수 없습니다.");
+    public void updatePreLineStation(int index, Long stationId) {
+        if (stations.size() == index - 1) {
+            return;
         }
-    }
-
-    private void addBetweenLineStation(LineStation lineStation) {
-        int insertIndex = findPreStationIndex(lineStation.getPreStationId()) + 1;
-        if (stations.size() != insertIndex) {
-            LineStation existing = stations.get(insertIndex);
-            existing.updatePreLineStation(lineStation.getStationId());
-        }
-        stations.add(insertIndex, lineStation);
+        LineStation lineStation = stations.get(index + 1);
+        lineStation.updatePreLineStation(stationId);
     }
 
     public void removeLineStationById(Long stationId) {
-        int index = findPreStationIndex(stationId);
+        int index = findInsertIndex(stationId);
         if (stations.size() != index + 1) {
             LineStation lineStation = stations.get(index);
             stations.get(index + 1).updatePreLineStation(lineStation.getPreStationId());
@@ -122,13 +112,6 @@ public class Line {
             stations.add(lineStation.getStationId());
         }
         return stations;
-    }
-
-    private int findPreStationIndex(Long stationId) {
-        return IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isBaseStation(stationId))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이전역입니다."));
     }
 
     public Long getId() {

@@ -9,7 +9,4 @@ import wooteco.subway.admin.domain.Station;
 public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
     List<Station> findAll();
-
-    @Override
-    List<Station> findAllById(Iterable<Long> ids);
 }

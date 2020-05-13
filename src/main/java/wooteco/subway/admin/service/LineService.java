@@ -9,6 +9,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.NotFoundLineIdException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -32,7 +33,7 @@ public class LineService {
 
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+            .orElseThrow(NotFoundLineIdException::new);
     }
 
     public List<Station> findStationsByLineId(Long id) {
@@ -40,7 +41,7 @@ public class LineService {
         return line.makeLineStationsIds()
             .stream()
             .map(stationRepository::findById)
-            .map(optional -> optional.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 ID입니다.")))
+            .map(optional -> optional.orElseThrow(NotFoundLineIdException::new))
             .collect(Collectors.toList());
     }
 

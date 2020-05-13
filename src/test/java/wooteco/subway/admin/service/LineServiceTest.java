@@ -49,6 +49,10 @@ public class LineServiceTest {
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
+        for (LineStation station : line.getStations()) {
+            System.out.println(station.getPreStationId());
+            System.out.println(station.getStationId());
+        }
         assertThat(line.makeLineStationsIds().get(0)).isEqualTo(4L);
         assertThat(line.makeLineStationsIds().get(1)).isEqualTo(1L);
         assertThat(line.makeLineStationsIds().get(2)).isEqualTo(2L);
