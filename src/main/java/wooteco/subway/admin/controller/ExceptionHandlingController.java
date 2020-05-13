@@ -12,9 +12,26 @@ import wooteco.subway.admin.exception.NotFoundValueException;
 @ControllerAdvice
 @RestController
 public class ExceptionHandlingController {
-    @ExceptionHandler({DuplicatedValueException.class, NotFoundValueException.class})
-    public ResponseEntity<ErrorResponse> error(DuplicatedValueException error) {
+
+    @ExceptionHandler({DuplicatedValueException.class})
+    public ResponseEntity<ErrorResponse> errorDuplicatedValue(DuplicatedValueException error) {
+        return errorResponseResponseEntity(error);
+    }
+
+    @ExceptionHandler({NotFoundValueException.class})
+    public ResponseEntity<ErrorResponse> errorNotFoundValue(NotFoundValueException error) {
+        return errorResponseResponseEntity(error);
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorResponse> handleException(Exception error) {
+        return errorResponseResponseEntity(error);
+    }
+
+    private ResponseEntity<ErrorResponse> errorResponseResponseEntity(Exception error) {
         final ErrorResponse response = ErrorResponse.of(error.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 }
