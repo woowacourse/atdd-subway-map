@@ -24,9 +24,27 @@ public class StationService {
 
 	@Transactional
 	public StationResponse create(StationRequest request) {
+		validateName(request.getName());
 		Station station = request.toStation();
 		Station created = stationRepository.save(station);
 		return StationResponse.of(created);
+	}
+
+	private void validateName(String name) {
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("값을 입력해주세요.");
+		}
+		if (name.contains(" ")) {
+			throw new IllegalArgumentException("공백 없이 입력해주세요.");
+		}
+		for (char c : name.toCharArray()) {
+			if (Character.isDigit(c)) {
+				throw new IllegalArgumentException("숫자 없이 입력해주세요.");
+			}
+		}
+		if (stationRepository.findByName(name).isPresent()) {
+			throw new IllegalArgumentException("역 이름은 중복될수 없습니다.");
+		}
 	}
 
 	@Transactional
