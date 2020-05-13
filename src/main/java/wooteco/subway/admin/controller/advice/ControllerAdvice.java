@@ -1,14 +1,14 @@
-package wooteco.subway.admin.controller;
+package wooteco.subway.admin.controller.advice;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.admin.controller.advice.dto.ExceptionDto;
 
 @RestControllerAdvice
 public class ControllerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> getIllegalArgumentException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ExceptionDto> getIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage()));
     }
 }

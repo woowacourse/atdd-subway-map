@@ -51,7 +51,8 @@ function AdminEdge() {
         );
     };
 
-    const onCreateEdgeHandler = event => {
+    const onCreateEdgeHandler = async event => {
+        event.preventDefault();
         const selectedIndex = $selectedLine.selectedIndex;
         const lineId = $selectedLine.options[selectedIndex].getAttribute("data-line-id");
 
@@ -62,9 +63,15 @@ function AdminEdge() {
             duration: 0
         };
 
-        api.edge.post(newEdge, lineId);
+        await api.edge.post(newEdge, lineId);
         createSubwayEdgeModal.toggle();
         initSubwayLinesSlider();
+
+        // api.edge.post(newEdge, lineId)
+        //     .then(() => {
+        //         createSubwayEdgeModal.toggle();
+        //         initSubwayLinesSlider();
+        //     })
     };
 
     const onRemoveStationHandler = event => {
@@ -81,10 +88,7 @@ function AdminEdge() {
     };
 
     const initEventListeners = () => {
-        $subwayLinesSlider.addEventListener(
-            EVENT_TYPE.CLICK,
-            onRemoveStationHandler
-        );
+        $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
         $createEdgeButton.addEventListener(EVENT_TYPE.CLICK, onCreateEdgeHandler);
     };
 

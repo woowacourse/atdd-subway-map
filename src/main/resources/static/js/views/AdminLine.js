@@ -38,15 +38,12 @@ function AdminLine() {
         if ($subwayLineIdInput.innerText !== "") {
             let result = api.line.update(updateSubwayLine, $subwayLineIdInput.innerText);
         } else {
-            let result = api.line.create(newSubwayLine)
+            api.line.create(newSubwayLine)
                 .then(response => {
                     $subwayLineList.insertAdjacentHTML(
                         "beforeend",
                         subwayLinesTemplate(response)
                     );
-                })
-                .catch(error => {
-                    alert("에러가 발생했다");
                 });
         }
         subwayLineModal.toggle();

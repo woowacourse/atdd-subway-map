@@ -42,7 +42,7 @@ public class StationService {
             throw new IllegalArgumentException("값을 입력해주세요.");
         }
         if (Pattern.compile(NUMBER_REGEX).matcher(stationName).find()) {
-            throw new IllegalArgumentException("역 이름에는 숫자를 포함할 수 없습니다.");
+            throw new IllegalArgumentException("역 이름에는 숫자가 포함될 수 없습니다.");
         }
         if (stationName.contains(BLANK_SPACE)) {
             throw new IllegalArgumentException("역 이름에는 공백이 포함될 수 없습니다.");

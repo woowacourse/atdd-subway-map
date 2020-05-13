@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.MappedCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,12 +17,7 @@ public class Edges implements Iterable<Edge> {
     @MappedCollection(idColumn = "line_id", keyColumn = "line_key")
     private List<Edge> edges = new ArrayList<>();
 
-    public Edges() {
-    }
-
-    public Edges(List<Edge> edges) {
-        this.edges = edges;
-    }
+    public Edges() {}
 
     public void addEdge(Edge edge) {
         if (edges.isEmpty()) {
@@ -49,7 +45,7 @@ public class Edges implements Iterable<Edge> {
 
     private Optional<Edge> findSamePreStationEdge(Long id) {
         return edges.stream()
-                .filter(value -> value.getPreStationId() == id)
+                .filter(value -> Objects.equals(id, value.getPreStationId()))
                 .findFirst();
     }
 
