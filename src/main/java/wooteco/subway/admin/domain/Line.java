@@ -28,8 +28,7 @@ public class Line {
 	private Line() {
 	}
 
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
-		this.id = id;
+	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -37,10 +36,6 @@ public class Line {
 		this.color = color;
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
-	}
-
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
-		this(null, name, startTime, endTime, intervalTime, color);
 	}
 
 	public void update(Line line) {
