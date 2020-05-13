@@ -2,14 +2,11 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -141,48 +138,10 @@ public class Line {
                 .forEach(lineStation -> lineStation.updatePreStationId(newPreStationId));
     }
 
-    public List<Long> getSortedStationIds() {
-        List<Long> orderedStations = new ArrayList<>();
-
-        if (lineStations.isEmpty()) {
-            return orderedStations;
-        }
-        if (!isExistStartStation()) {
-            throw new IllegalStateException("구간이 존재하는데 시작역이 존재하지 않을 수 없습니다.");
-        }
-        return getSortedStationIDsWhenStartStationExist();
-    }
-
-    private List<Long> getSortedStationIDsWhenStartStationExist() {
-        List<Long> orderedStations = new ArrayList<>();
-        Map<Long, Long> stationIdsPerPreId = createStationIdsPerPreId();
-
-        Long now = PRE_ID_OF_FIRST_STATION;
-        for (int i = 0; i < stationIdsPerPreId.size(); i++) {
-            now = stationIdsPerPreId.get(now);
-            orderedStations.add(now);
-        }
-        return Collections.unmodifiableList(orderedStations);
-    }
-
-    /**
-     * @return key: 전 역 ID, value: 현재 역 ID
-     * 단, 시작역의 preStationId 는 -1L (constant : PRE_ID_OF_FIRST_STATION) 로 대체함 */
-    private Map<Long, Long> createStationIdsPerPreId() {
-        Map<Long, Long> stationIdOrder = new HashMap<>();
-
-        lineStations.forEach(lineStation -> {
-            if (Objects.isNull(lineStation.getPreStationId())) {
-                stationIdOrder.put(PRE_ID_OF_FIRST_STATION, lineStation.getStationId());
-            } else {
-                stationIdOrder.put(lineStation.getPreStationId(), lineStation.getStationId());
-            }
-        });
-        return Collections.unmodifiableMap(stationIdOrder);
-    }
-
-    private boolean isExistStartStation() {
-        return lineStations.stream().anyMatch(LineStation::isStart);
+    public List<Long> getStationIds() {
+        return this.lineStations.stream()
+            .map(LineStation::getId)
+            .collect(Collectors.toList());
     }
 
     public String getColor() {

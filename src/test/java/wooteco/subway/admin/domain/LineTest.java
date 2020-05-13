@@ -29,12 +29,9 @@ public class LineTest {
     }
 
     @Test
-    void getLineStations() {
-        List<Long> stationIds = line.getSortedStationIds();
-
+    void getStationIds() {
+        List<Long> stationIds = line.getStationIds();
         assertThat(stationIds.size()).isEqualTo(2);
-        assertThat(stationIds.get(0)).isEqualTo(1L);
-        assertThat(stationIds.get(1)).isEqualTo(2L);
     }
 
     @ParameterizedTest
