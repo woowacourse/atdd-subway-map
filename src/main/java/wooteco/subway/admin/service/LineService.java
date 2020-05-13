@@ -32,7 +32,7 @@ public class LineService {
     }
 
     public Line updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id).orElseThrow(() -> new NotFoundValueException("해당 노선을 찾을 수 없습니다."));
         persistLine.update(line);
         return lineRepository.save(persistLine);
     }
@@ -43,7 +43,7 @@ public class LineService {
 
     public Line findById(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundValueException("해당 노선을 찾을 수 없습니다."));
     }
 
     public boolean contains(String lineName) {

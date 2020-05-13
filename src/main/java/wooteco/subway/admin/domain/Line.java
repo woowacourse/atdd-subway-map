@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.util.CollectionUtils;
 import wooteco.subway.admin.exception.NotFoundValueException;
 
 public class Line {
@@ -98,14 +99,13 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (stations.size() != 0) {
-            int index = findStationsIndex(lineStation);
-            addByIndex(lineStation, index);
-        }
-        if (stations.size() == 0) {
+        if (CollectionUtils.isEmpty(stations)) {
             executePreStationIdNotNull(lineStation);
             stations.add(lineStation);
+            return;
         }
+        int index = findStationsIndex(lineStation);
+        addByIndex(lineStation, index);
     }
 
     private int findStationsIndex(LineStation lineStation) {
