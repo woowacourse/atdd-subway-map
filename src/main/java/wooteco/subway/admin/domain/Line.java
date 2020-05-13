@@ -29,6 +29,7 @@ public class Line {
 	}
 
 	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
+		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
