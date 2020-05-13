@@ -41,6 +41,7 @@ public class StationAcceptanceTest {
         createStation("종합운동장역");
         createStation("선릉역");
         createStation("강남역");
+        createStationFail("강남역");
 
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
@@ -49,6 +50,21 @@ public class StationAcceptanceTest {
 
         List<StationResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
+    }
+
+    private void createStationFail(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        given().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/stations").
+                then().
+                log().all().
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private void createStation(String name) {
