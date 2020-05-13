@@ -5,11 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
+@Sql("/truncate.sql")
 public class LineStationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")

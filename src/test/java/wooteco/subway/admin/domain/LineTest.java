@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +18,14 @@ public class LineTest {
         line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "test-color");
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
+    }
+
+    @Test
+    void validateAddLineStation() {
+        assertThatThrownBy(() -> {
+            line.addLineStation(new LineStation(1L, 3L, 10, 10));
+        }).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("라인에 역 등록은 시작역부터 순서대로 해주세요.");
     }
 
     @Test

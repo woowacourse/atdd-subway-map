@@ -1,8 +1,14 @@
 package wooteco.subway.admin.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.util.Lists;
-import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,15 +23,6 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
-
-import java.time.LocalTime;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -51,30 +48,17 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
-
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
-
-        assertThat(line.getLineStations()).hasSize(4);
-        assertThat(line.getSortedStationIds().get(0)).isEqualTo(4L);
-        assertThat(line.getSortedStationIds().get(1)).isEqualTo(1L);
-        assertThat(line.getSortedStationIds().get(2)).isEqualTo(2L);
-        assertThat(line.getSortedStationIds().get(3)).isEqualTo(3L);
-    }
-
-    @Test
-    void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+        LineStationCreateRequest request = new LineStationCreateRequest(
+            3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getLineStations()).hasSize(4);
         assertThat(line.getSortedStationIds().get(0)).isEqualTo(1L);
-        assertThat(line.getSortedStationIds().get(1)).isEqualTo(4L);
-        assertThat(line.getSortedStationIds().get(2)).isEqualTo(2L);
-        assertThat(line.getSortedStationIds().get(3)).isEqualTo(3L);
+        assertThat(line.getSortedStationIds().get(1)).isEqualTo(2L);
+        assertThat(line.getSortedStationIds().get(2)).isEqualTo(3L);
+        assertThat(line.getSortedStationIds().get(3)).isEqualTo(4L);
     }
 
     @Test

@@ -6,8 +6,10 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 
+@Sql("/truncate.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 관리한다")

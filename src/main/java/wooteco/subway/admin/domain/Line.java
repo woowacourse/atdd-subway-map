@@ -1,14 +1,20 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-
-@Table("Line")
+@Table("LINE")
 public class Line {
     private static final long PRE_ID_OF_FIRST_STATION = -1L;
 
@@ -23,7 +29,7 @@ public class Line {
     @Column("interval_time")
     private int intervalTime;
     @Column("line")
-    private Set<LineStation> lineStations = new HashSet<>();
+    private List<LineStation> lineStations = new LinkedList<>();
     @Column("created_at")
     private LocalDateTime createdAt;
     @Column("updated_at")
@@ -67,8 +73,8 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getLineStations() {
-        return lineStations;
+    public List<LineStation> getLineStations() {
+        return Collections.unmodifiableList(lineStations);
     }
 
     public LocalDateTime getCreatedAt() {
@@ -97,12 +103,23 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        Optional<LineStation> lineStationWithSamePreStation = this.lineStations.stream()
-                .filter(anyLineStation -> anyLineStation.isPreStationId(lineStation.getPreStationId()))
-                .findFirst();
-        lineStationWithSamePreStation.ifPresent(station ->
-            updatePreOfLineStation(station.getStationId(), lineStation.getStationId()));
+        if (doAlreadyExist(lineStation)) {
+            throw new IllegalArgumentException(this.id + " line에 해당 역이 이미 존재합니다.");
+        }
+        if (!isInOrder(lineStation)) {
+            throw new IllegalArgumentException("라인에 역 등록은 시작역부터 순서대로 해주세요.");
+        }
         this.lineStations.add(lineStation);
+    }
+
+    private boolean doAlreadyExist(LineStation lineStation) {
+        return this.lineStations.stream()
+            .anyMatch(anyLineStation -> anyLineStation.isStationId(lineStation.getStationId()));
+    }
+
+    private boolean isInOrder(LineStation lineStation) {
+        return (lineStations.isEmpty() && lineStation.isStart())
+            || lineStation.isPreStationId(lineStations.get(this.lineStations.size() - 1).getStationId());
     }
 
     public void removeLineStationByStationId(Long stationId) {
