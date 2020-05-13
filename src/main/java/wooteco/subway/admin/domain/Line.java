@@ -4,10 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Line {
     @Id
@@ -97,20 +94,55 @@ public class Line {
     }
 
     public void removeLineStationById(final Long stationId) {
-        stations.stream()
-                .filter(station -> stationId.equals(station.getStationId()))
+        LineStation targetLineStation = stations.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
                 .findFirst()
-                .ifPresent(station -> stations.remove(station));
+                .orElseThrow(RuntimeException::new);
+
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
+
+        stations.remove(targetLineStation);
     }
 
     public void addLineStation(LineStation lineStation) {
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
+
         stations.add(lineStation);
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        if (stations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LineStation firstLineStation = stations.stream()
+                .filter(ls -> ls.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        List<Long> stationIds = new ArrayList<>();
+        stationIds.add(firstLineStation.getStationId());
+
+        while (true) {
+            Long lastStationId = stationIds.get(stationIds.size() - 1);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(ls -> Objects.equals(ls.getPreStationId(), lastStationId))
+                    .findFirst();
+
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+
+            stationIds.add(nextLineStation.get().getStationId());
+        }
+
+        return stationIds;
     }
 
     @Override

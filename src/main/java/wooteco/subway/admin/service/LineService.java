@@ -60,13 +60,14 @@ public class LineService {
         LineStation lineStation = new LineStation(id, request.getPreStationId(), request.getStationId(),
                 request.getDistance(), request.getDuration());
         line.addLineStation(lineStation);
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
-
         line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(final Long id) {
