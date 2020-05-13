@@ -27,7 +27,5 @@ create table if not exists line_station
     distance int,
     duration int,
     created_at datetime,
-    updated_at datetime,
-    foreign key(line) references line (id),
-    foreign key(station) references station (id)
+    updated_at datetime
 );

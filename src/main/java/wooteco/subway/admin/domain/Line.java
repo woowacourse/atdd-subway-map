@@ -1,6 +1,8 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
@@ -17,7 +19,9 @@ public class Line {
     private int intervalTime;
     @Embedded.Empty
     private LineStations stations;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private String bgColor;
 
