@@ -30,7 +30,8 @@ public class LineStationResponse {
     }
 
     public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getStationId(), lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDistance());
+        return new LineStationResponse(lineStation.getStationId(), lineStation.getPreStationId(),
+                lineStation.getDistance(), lineStation.getDistance());
     }
 
     public Long getStationId() {

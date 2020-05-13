@@ -37,11 +37,13 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new ArrayList<>(), line.getBgColor());
+        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new ArrayList<>(), line.getBgColor());
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getBgColor());
+        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getBgColor());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
