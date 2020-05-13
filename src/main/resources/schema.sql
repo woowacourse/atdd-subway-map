@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS EDGE
     pre_station_id bigint                ,
     distance       int                   not null,
     duration       int                   not null,
+    sequence       int                   not null,
     primary key (id)
 );

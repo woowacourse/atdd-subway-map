@@ -2,15 +2,21 @@ package wooteco.subway.admin.domain;
 
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 
 public class Edge {
 	@Id
 	private Long id;
+	@NotNull
 	private Long stationId;
+	@NotNull
 	private Long preStationId;
-	private int distance;
-	private int duration;
+	@NotNull
+	private Integer distance;
+	@NotNull
+	private Integer duration;
 
 	private Edge() {
 	}
@@ -20,6 +26,10 @@ public class Edge {
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
+	}
+
+	public void updatePreStationId(Long preStationId) {
+		this.preStationId = preStationId;
 	}
 
 	public void update(Edge edge) {
@@ -38,7 +48,11 @@ public class Edge {
 	}
 
 	public boolean isNotStartEdge() {
-		return preStationId != null;
+		return !isStartEdge();
+	}
+
+	public boolean isStartEdge() {
+		return preStationId.equals(stationId);
 	}
 
 	public Long getStationId() {

@@ -2,18 +2,17 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
+	private static final int ONE = 1;
+	private static final int FIRST_INDEX = 0;
+
 	@Id
 	private Long id;
 	private String name;
@@ -21,8 +20,8 @@ public class Line {
 	private LocalTime endTime;
 	private int intervalTime;
 	private String color;
-	@MappedCollection(idColumn = "line_id")
-	private Set<Edge> edges = new HashSet<>();
+	@MappedCollection(idColumn = "line_id", keyColumn = "sequence")
+	private List<Edge> edges = new LinkedList<>();
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -65,95 +64,62 @@ public class Line {
 
 	public void addEdge(Edge edge) {
 		if (edges.isEmpty() && edge.isNotStartEdge()) {
-			edges.add(new Edge(null, edge.getPreStationId(), 0, 0));
+			edges.add(new Edge(edge.getPreStationId(), edge.getPreStationId(), 0, 0));
 			edges.add(edge);
 			return;
 		}
 
-		if (isFinalEdge(edge)) {
-			edges.add(edge);
-			return;
-		}
+		int index = findIndex(edge);
+		edges.add(index, edge);
 
-		if (isFirstEdge(edge)) {
-			edges.stream()
-					.filter(item -> item.getPreStationId() == null)
-					.findFirst()
-					.ifPresent(item -> item.update(new Edge(edge.getStationId(), item.getStationId(),
-							0, 0)));
-			edges.add(edge);
-			return;
-		}
-
-		edges.stream()
-				.filter(item -> Objects.equals(item.getPreStationId(), edge.getPreStationId()))
-				.findFirst()
-				.ifPresent(item -> item.update(new Edge(edge.getStationId(), item.getStationId(),
-						item.getDistance(), item.getDuration())));
-
-		edges.add(edge);
-	}
-
-	private boolean isFinalEdge(final Edge edge) {
-		try {
-			Edge previous = edges.stream()
-				.filter(item -> item.stationIdEquals(edge.getPreStationId()))
-					.findFirst()
-					.orElseThrow(NoSuchElementException::new);
-			return edges.stream()
-				.noneMatch(item -> item.preStationIdEquals(previous.getStationId()));
-		} catch (NoSuchElementException e) {
-			return false;
+		if (index < getEndIndexOfEdges()) {
+			edges.get(index + ONE).updatePreStationId(edge.getStationId());
 		}
 	}
 
-	private boolean isFirstEdge(final Edge edge) {
-		return edge.getPreStationId() == null;
+	private int findIndex(Edge edge) {
+		if (edge.isStartEdge()) {
+			return 0;
+		}
+		return edges.stream()
+			.filter(item -> item.stationIdEquals(edge.getPreStationId()))
+			.findFirst()
+			.map(item -> edges.indexOf(item) + ONE)
+			.orElseThrow(IllegalArgumentException::new);
+	}
+
+	private int getEndIndexOfEdges() {
+		return edges.size() - 1;
 	}
 
 	public void removeEdgeById(Long stationId) {
-		updateNextEdge(stationId);
+		int index = edges.stream()
+			.filter(edge -> edge.stationIdEquals(stationId))
+			.findFirst()
+			.map(edge -> edges.indexOf(edge))
+			.orElseThrow(() -> new IllegalArgumentException("지우려는 역이 존재하지 않습니다."));
 
-		edges = edges.stream()
-			.filter(edge -> !edge.stationIdEquals(stationId))
-				.collect(Collectors.toSet());
-	}
+		Edge removeEdge = edges.remove(index);
 
-	private void updateNextEdge(final Long stationId) {
-		try {
-			Edge nextEdge = edges.stream()
-				.filter(edge -> edge.preStationIdEquals(stationId))
-					.findFirst()
-					.orElseThrow(NoSuchElementException::new);
-			Long afterPreStationIdOfNextEdge = edges.stream()
-				.filter(edge -> edge.stationIdEquals(stationId))
-					.findFirst()
-					.orElseThrow(NoSuchElementException::new)
-					.getPreStationId();
-			nextEdge.update(new Edge(afterPreStationIdOfNextEdge, nextEdge.getStationId(),
-					nextEdge.getDistance(), nextEdge.getDuration()));
-		} catch (NoSuchElementException ignored) {
+		if (edges.isEmpty()) {
+			return;
+		}
+
+		if (removeEdge.isStartEdge()) {
+			Edge newFirstEdge = edges.get(FIRST_INDEX);
+			newFirstEdge.updatePreStationId(newFirstEdge.getStationId());
+			return;
+		}
+
+		if (index < edges.size() - ONE) {
+			edges.get(index).updatePreStationId(edges.get(index - ONE).getStationId());
 		}
 	}
 
 	public List<Long> getEdgesId() {
-		List<Long> edgeIds = new ArrayList<>();
-		Long preStation = null;
-		while (true) {
-			try {
-				final Long preStationOfNext = preStation;
-				Edge nextEdge = edges.stream()
-					.filter(edge -> edge.preStationIdEquals(preStationOfNext))
-						.findFirst()
-						.orElseThrow(NoSuchElementException::new);
-				edgeIds.add(nextEdge.getStationId());
-				preStation = nextEdge.getStationId();
-			} catch (NoSuchElementException ignored) {
-				break;
-			}
-		}
-
-		return edgeIds;
+		return edges.stream()
+			.map(Edge::getStationId)
+			.collect(Collectors.toList());
 	}
 
 	public Long getId() {
@@ -176,7 +142,7 @@ public class Line {
 		return intervalTime;
 	}
 
-	public Set<Edge> getEdges() {
+	public List<Edge> getEdges() {
 		return edges;
 	}
 
@@ -195,15 +161,15 @@ public class Line {
 	@Override
 	public String toString() {
 		return "Line{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", startTime=" + startTime +
-				", endTime=" + endTime +
-				", intervalTime=" + intervalTime +
-				", color='" + color + '\'' +
-				", edges=" + edges +
-				", createdAt=" + createdAt +
-				", updatedAt=" + updatedAt +
-				'}';
+			"id=" + id +
+			", name='" + name + '\'' +
+			", startTime=" + startTime +
+			", endTime=" + endTime +
+			", intervalTime=" + intervalTime +
+			", color='" + color + '\'' +
+			", edges=" + edges +
+			", createdAt=" + createdAt +
+			", updatedAt=" + updatedAt +
+			'}';
 	}
 }
