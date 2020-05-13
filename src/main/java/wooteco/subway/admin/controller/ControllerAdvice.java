@@ -10,6 +10,12 @@ import wooteco.subway.admin.exception.NotExistIdException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Model> unExpectedException(Model model) {
+        model.addAttribute("error", "개발자도 예측하지 못한 예외입니다!");
+        return ResponseEntity.badRequest().body(model);
+    }
+
     @ExceptionHandler(AlreadyExistNameException.class)
     public ResponseEntity<Model> alreadyExistName(Model model, AlreadyExistNameException exception) {
         model.addAttribute("error", exception.getMessage());

@@ -3,7 +3,6 @@ package wooteco.subway.admin.service;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,19 +28,15 @@ public class LineService {
     public Line save(Line line) {
         validateDuplicateName(line);
         return lineRepository.save(line);
+
     }
 
     private void validateDuplicateName(Line line) {
-        try {
-            Line newLine = lineRepository.findByName(line.getName());
+        Line newLine = lineRepository.findByName(line.getName());
 
-            if (!Objects.isNull(newLine) && line.getStations().size() == 0) {
-                throw new AlreadyExistNameException(line.getName());
-            }
-        } catch (DbActionExecutionException e) {
+        if (Objects.nonNull(newLine) && line.getStations().size() == 0) {
             throw new AlreadyExistNameException(line.getName());
         }
-
     }
 
     public List<Line> showLines() {
