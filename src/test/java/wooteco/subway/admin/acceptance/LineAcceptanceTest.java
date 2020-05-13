@@ -1,36 +1,16 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineRequest;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
+@Sql("/truncate.sql")
+public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -68,72 +48,5 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
-    }
-
-    private LineResponse getLine(Long id) {
-        return given().
-                when().
-                get("/lines/" + id).
-                then().
-                log().all().
-                extract().as(LineResponse.class);
-    }
-
-    private void createLine(String name) {
-        LineRequest lineRequest = new LineRequest(
-                name,
-                "bg-red-500",
-                LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
-                LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME),
-                10);
-
-        given().
-                body(lineRequest).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
-    }
-
-    private void updateLine(Long id, String name, String color, String startTime, String endTime, int intervalTime) {
-        LineRequest lineRequest = new LineRequest(
-                name,
-                color,
-                startTime,
-                endTime,
-                intervalTime
-        );
-
-        given().
-                body(lineRequest).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                put("/lines/" + id).
-                then().
-                log().all().
-                statusCode(HttpStatus.OK.value());
-    }
-
-    private List<LineResponse> getLines() {
-        return
-                given().
-                when().
-                        get("/lines").
-                then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
-    }
-
-    private void deleteLine(Long id) {
-        given().
-        when().
-                delete("/lines/" + id).
-        then().
-                log().all();
     }
 }

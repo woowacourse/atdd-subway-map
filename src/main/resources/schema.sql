@@ -21,19 +21,23 @@ create table if not exists LINE
 
 create table if not exists LINE_STATION
 (
-    line bigint references line(id),
+    line           bigint  not null,
     pre_station_id bigint,
-    station_id bigint not null,
-    distance integer not null,
-    duration integer not null
+    station_id     bigint  not null,
+    distance       integer not null,
+    duration       integer not null
 );
+
+ALTER TABLE LINE
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE STATION
+    ALTER COLUMN id RESTART WITH 1;
 
 -- insert into line values (1, '1호선', 'bg-blue-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 -- insert into line values (2, '2호선', 'bg-green-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 -- insert into line values (3, '3호선', 'bg-orange-500', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 -- insert into line values (4, '4호선', 'bg-blue-400', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
 -- insert into line values (5, '신분당선', 'bg-red-700', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 10, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
---
 --
 -- insert into station values (1, '삼성역', CURRENT_DATE());
 -- insert into station values (2, '강남역', CURRENT_DATE());

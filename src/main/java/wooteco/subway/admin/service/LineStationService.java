@@ -5,23 +5,28 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 @Service
 public class LineStationService {
 
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     @Autowired
-    public LineStationService(LineRepository lineRepository) {
+    public LineStationService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineStation createLineStation(final Long lineId, final Long preStationId,
                                          final Long stationId, final int distance, final int duration) {
-        final Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(NoSuchElementException::new);
+
         final LineStation lineStation = new LineStation(lineId, preStationId, stationId, distance, duration);
 
         line.addLineStation(lineStation);
@@ -30,18 +35,11 @@ public class LineStationService {
         return lineStation;
     }
 
-    public Set<LineStation> findLineStation(long lineId) {
+    public void removeLineStation(long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
-        return line.getStations();
-    }
-
-    public LineStation removeLineStation(long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(NoSuchElementException::new);
-        LineStation lineStation = line.removeLineStationById(stationId);
+        line.removeLineStationById(stationId);
         lineRepository.save(line);
-        return lineStation;
     }
 
 }

@@ -4,17 +4,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.LineStationService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class LineStationController {
 
     @Autowired
     private LineStationService lineStationService;
+
+    @Autowired
+    private LineService lineService;
+
+    @GetMapping("/lines/{lineId}/stations")
+    public ResponseEntity<?> stations(
+            @PathVariable("lineId") Long lineId
+    ) {
+        LineResponse lineResponse = lineService.findLineWithStationsById(lineId);
+        List<Station> lineStations = new ArrayList<>(lineResponse.getStations());
+        return ResponseEntity.ok()
+                .body(lineStations);
+    }
 
     @PostMapping("/lines/{lineId}/stations")
     public ResponseEntity<?> create(
@@ -35,13 +53,12 @@ public class LineStationController {
                 .body(lineStation);
     }
 
-    @DeleteMapping("/lines/{lineId}/station/{id}")
+    @DeleteMapping("/lines/{lineId}/stations/{id}")
     public ResponseEntity<?> delete(
             @PathVariable("lineId") Long lineId,
             @PathVariable("id") Long id
     ) {
         lineStationService.removeLineStation(lineId, id);
         return ResponseEntity.noContent().build();
-
     }
 }
