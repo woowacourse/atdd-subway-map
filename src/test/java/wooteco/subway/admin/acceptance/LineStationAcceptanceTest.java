@@ -70,6 +70,7 @@ public class LineStationAcceptanceTest {
         Long lineId = line.getId();
 
         // when
+        createLineStation(lineId, "1", null, "10", "10");
         createLineStation(lineId, "2", "1", "10", "10");
         createLineStation(lineId, "3", "2", "10", "10");
 
@@ -87,6 +88,9 @@ public class LineStationAcceptanceTest {
         // then
         List<LineStation> restStations = getLineStations(lineId);
         assertThat(restStations.size()).isEqualTo(2);
+
+        assertThat(restStations.get(0).getStationId()).isEqualTo(2);
+        assertThat(restStations.get(1).getStationId()).isEqualTo(3);
     }
 
     private void createStation(String name) {
