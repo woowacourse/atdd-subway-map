@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final String NOT_FOUND_LINE = "해당되는 노선을 찾을 수 없습니다.";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -53,21 +55,21 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
         line.addLineStation(request.toLineStation());
         lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
         return findLineWithStationsByLine(line);
     }
 
