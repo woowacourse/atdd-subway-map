@@ -21,6 +21,9 @@ public class LineDetailResponse {
 
     private List<StationResponse> stations;
 
+    private LineDetailResponse() {
+    }
+
     public LineDetailResponse(Long id, String name, String color, LocalTime startTime,
         LocalTime endTime,
         int intervalTime,

@@ -8,8 +8,10 @@ import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Embedded;
 
+import wooteco.subway.admin.domain.vo.LineSchedule;
+import wooteco.subway.admin.domain.vo.LineStations;
 import wooteco.subway.admin.exception.LineStationException;
 
 public class Line {
@@ -17,31 +19,39 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
-    @MappedCollection(idColumn = "line", keyColumn = "index")
-    private LinkedList<LineStation> stations;
+    @Embedded.Nullable
+    private LineSchedule lineSchedule;
+    @Embedded.Empty
+    private LineStations lineStations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @PersistenceConstructor
-    public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
+    public Line(Long id, String name, String color, LineSchedule lineSchedule,
+        LineStations lineStations,
+        LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
-        this.stations = new LinkedList<>();
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.lineSchedule = lineSchedule;
+        this.lineStations = lineStations;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public Line(String name, String color, LocalTime startTime, LocalTime endTime,
+    public static Line of(Long id, String name, String color, LocalTime startTime,
+        LocalTime endTime,
         int intervalTime) {
-        this(null, name, color, startTime, endTime, intervalTime);
+        LineSchedule lineSchedule = LineSchedule.of(startTime, endTime, intervalTime);
+        return new Line(id, name, color, lineSchedule, LineStations.empty(), LocalDateTime.now(),
+            LocalDateTime.now());
+    }
+
+    public static Line withoutId(String name, String color, LocalTime startTime, LocalTime endTime,
+        int intervalTime) {
+        LineSchedule lineSchedule = LineSchedule.of(startTime, endTime, intervalTime);
+        return new Line(null, name, color, lineSchedule, LineStations.empty(), LocalDateTime.now(),
+            LocalDateTime.now());
     }
 
     public void update(Line line) {
@@ -51,14 +61,8 @@ public class Line {
         if (line.getColor() != null) {
             this.color = line.getColor();
         }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
+        if (line.lineSchedule != null) {
+            this.lineSchedule = line.lineSchedule;
         }
         this.updatedAt = LocalDateTime.now();
     }
@@ -68,20 +72,20 @@ public class Line {
         int insertIndex = findInsertIndex(lineStation.getPreStationId());
         Long stationId = lineStation.getStationId();
         updatePreStation(insertIndex, stationId);
-        stations.add(insertIndex, lineStation);
+        lineStations.add(insertIndex, lineStation);
     }
 
     public void removeStationBy(Long stationId) {
         int index = findStationIndex(stationId);
         int indexToUpdate = index + 1;
-        Long preStationdId = stations.get(index).getPreStationId();
+        Long preStationdId = lineStations.get(index).getPreStationId();
         updatePreStation(indexToUpdate, preStationdId);
-        stations.remove(index);
+        lineStations.remove(index);
     }
 
     public List<Long> getLineStationsId() {
         LinkedList<Long> stations = new LinkedList<>();
-        for (LineStation lineStation : this.stations) {
+        for (LineStation lineStation : this.lineStations.getStations()) {
             stations.add(lineStation.getStationId());
         }
         return stations;
@@ -100,19 +104,19 @@ public class Line {
     }
 
     public LocalTime getStartTime() {
-        return startTime;
+        return lineSchedule.getStartTime();
     }
 
     public LocalTime getEndTime() {
-        return endTime;
+        return lineSchedule.getEndTime();
     }
 
     public int getIntervalTime() {
-        return intervalTime;
+        return lineSchedule.getIntervalTime();
     }
 
-    public List<LineStation> getStations() {
-        return stations;
+    public List<LineStation> getLineStations() {
+        return lineStations.getStations();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -137,7 +141,7 @@ public class Line {
     }
 
     private void validateAlreadyRegistered(LineStation lineStation) {
-        if (!lineStation.isFirstLineStation() && stations.isEmpty()) {
+        if (!lineStation.isFirstLineStation() && lineStations.isEmpty()) {
             throw new LineStationException("첫 노선을 먼저 등록해야 합니다.");
         }
     }
@@ -149,7 +153,7 @@ public class Line {
     }
 
     private void validateHavingSame(LineStation lineStation) {
-        for (LineStation station : stations) {
+        for (LineStation station : lineStations.getStations()) {
             if (station.isSameStation(lineStation)) {
                 throw new LineStationException("이미 등록된 구간입니다.");
             }
@@ -157,8 +161,8 @@ public class Line {
     }
 
     private void updatePreStation(int index, Long stationId) {
-        if (stations.size() != index) {
-            LineStation existing = stations.get(index);
+        if (lineStations.size() != index) {
+            LineStation existing = lineStations.get(index);
             existing.updatePreLineStation(stationId);
         }
     }
@@ -167,22 +171,22 @@ public class Line {
         if (Objects.isNull(preStationId)) {
             return 0;
         }
-        LineStation last = stations.getLast();
+        LineStation last = lineStations.getLast();
         if (preStationId.equals(last.getStationId())) {
-            return stations.size();
+            return lineStations.size();
         }
-        LineStation preStation = stations.stream()
+        LineStation preStation = lineStations.getStations().stream()
             .filter(station -> station.samePreStation(preStationId))
             .findAny()
             .orElseThrow(() -> new LineStationException("현재 노선에 등록되지 않은 이전역입니다."));
-        return stations.indexOf(preStation);
+        return lineStations.indexOf(preStation);
     }
 
     private int findStationIndex(Long stationId) {
-        LineStation lineStation = stations.stream()
+        LineStation lineStation = lineStations.getStations().stream()
             .filter(station -> station.isBaseStation(stationId))
             .findFirst()
             .orElseThrow(() -> new LineStationException("해당 호선에 등록되지 않은 역입니다."));
-        return stations.indexOf(lineStation);
+        return lineStations.indexOf(lineStation);
     }
 }

@@ -31,7 +31,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30),
+        line = Line.of(1L, "2호선", "bg-green-700", LocalTime.of(05, 30),
             LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository);
     }
@@ -46,7 +46,7 @@ public class LineServiceTest {
     @Test
     void updateLine() {
         when(lineRepository.findById(any(Long.class))).thenReturn(Optional.of(line));
-        Line lineToUpdate = new Line("2호선", "bg-orange-700", LocalTime.of(06, 00),
+        Line lineToUpdate = Line.withoutId("2호선", "bg-orange-700", LocalTime.of(06, 00),
             LocalTime.of(23, 30), 5);
         lineService.updateLine(1L, lineToUpdate);
     }
@@ -68,9 +68,9 @@ public class LineServiceTest {
 
     @Test
     void getLines() {
-        Line thirdLine = new Line(2L, "3호선", "bg-orange-700", LocalTime.of(06, 00),
+        Line thirdLine = Line.of(2L, "3호선", "bg-orange-700", LocalTime.of(06, 00),
             LocalTime.of(23, 30), 15);
-        Line firstLine = new Line(3L, "1호선", "bg-blue-500", LocalTime.of(05, 40),
+        Line firstLine = Line.of(3L, "1호선", "bg-blue-500", LocalTime.of(05, 40),
             LocalTime.of(23, 40), 10);
         List<Line> lines = Arrays.asList(line, thirdLine, firstLine);
         when(lineRepository.findAll()).thenReturn(lines);

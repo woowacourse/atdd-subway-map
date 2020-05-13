@@ -10,6 +10,9 @@ public class StationResponse {
     private String name;
     private LocalDateTime createdAt;
 
+    private StationResponse() {
+    }
+
     public static StationResponse of(Station station) {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
     }

@@ -11,6 +11,9 @@ public class LineRequest {
     private LocalTime endTime;
     private int intervalTime;
 
+    private LineRequest() {
+    }
+
     public LineRequest(String name, String color, LocalTime startTime, LocalTime endTime,
         int intervalTime) {
         this.name = name;
@@ -41,7 +44,7 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, startTime, endTime, intervalTime);
+        return Line.withoutId(name, color, startTime, endTime, intervalTime);
     }
 
 }

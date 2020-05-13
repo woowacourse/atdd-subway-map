@@ -19,6 +19,9 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private LineResponse() {
+    }
+
     public LineResponse(Long id, String name, String color, LocalTime startTime,
         LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

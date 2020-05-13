@@ -20,7 +20,6 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.controller.advice.ApiError;
-import wooteco.subway.admin.dto.LineDetailResponse;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,7 +48,7 @@ public class LineAcceptanceTest {
         ApiError error = createLineException("1호선");
         assertThat(error.getMessage()).contains("이미 존재하는 이름");
         // then
-        List<LineDetailResponse> lines = getLines();
+        List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
@@ -73,7 +72,7 @@ public class LineAcceptanceTest {
         // when
         deleteLine(line.getId());
         // then
-        List<LineDetailResponse> linesAfterDelete = getLines();
+        List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
@@ -145,7 +144,7 @@ public class LineAcceptanceTest {
             statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineDetailResponse> getLines() {
+    private List<LineResponse> getLines() {
         return
             given().
                 when().
@@ -153,7 +152,7 @@ public class LineAcceptanceTest {
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", LineDetailResponse.class);
+                jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {

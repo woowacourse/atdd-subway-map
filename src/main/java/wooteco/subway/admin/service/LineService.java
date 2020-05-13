@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
@@ -19,28 +20,33 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public List<LineResponse> findAllWithoutStations() {
         return lineRepository.findAll().stream()
             .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public LineResponse findLineWithoutStations(Long id) {
         Line line = findById(id);
         return LineResponse.from(line);
     }
 
+    @Transactional
     public Long save(Line line) {
         validateDuplicateName(line);
         return lineRepository.save(line).getId();
     }
 
+    @Transactional
     public void updateLine(Long id, Line line) {
         Line persistLine = findById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
