@@ -24,7 +24,8 @@ public class LineService {
     }
 
     public LineResponse addLine(LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
+        Line line = new Line(lineRequest.getName(), lineRequest.getStartTime(),
+                lineRequest.getEndTime(), lineRequest.getIntervalTime(), lineRequest.getBgColor());
         validateDuplicate(line);
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
@@ -45,7 +46,9 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(lineRequest.toLine());
+        Line line = new Line(lineRequest.getName(), lineRequest.getStartTime(),
+                lineRequest.getEndTime(), lineRequest.getIntervalTime(), lineRequest.getBgColor());
+        persistLine.update(line);
         lineRepository.save(persistLine);
     }
 

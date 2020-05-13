@@ -49,8 +49,4 @@ public class LineRequest {
     public String getBgColor() {
         return bgColor;
     }
-
-    public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime, bgColor);
-    }
 }

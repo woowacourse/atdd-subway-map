@@ -18,10 +18,6 @@ public class StationCreateRequest {
         this.name = name;
     }
 
-    public Station toStation() {
-        return new Station(name);
-    }
-
     public String getName() {
         return name;
     }

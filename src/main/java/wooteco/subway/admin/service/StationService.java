@@ -20,7 +20,7 @@ public class StationService {
     }
 
     public StationResponse addStation(StationCreateRequest request) {
-        Station station = request.toStation();
+        Station station = new Station(request.getName());
         validateDuplicate(station);
         Station persistStation = stationRepository.save(station);
 
