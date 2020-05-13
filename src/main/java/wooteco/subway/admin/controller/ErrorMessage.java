@@ -1,21 +1,19 @@
 package wooteco.subway.admin.controller;
 
-import org.springframework.http.HttpStatus;
-
-public class ErrorMessage {
-    private HttpStatus error;
+public class ErrorMessage<T extends Throwable> {
     private String message;
+    private T data;
 
-    public ErrorMessage(HttpStatus error, String message) {
-        this.error = error;
+    public ErrorMessage(String message, T data) {
         this.message = message;
-    }
-
-    public HttpStatus getError() {
-        return error;
+        this.data = data;
     }
 
     public String getMessage() {
         return message;
+    }
+
+    public T getData() {
+        return data;
     }
 }
