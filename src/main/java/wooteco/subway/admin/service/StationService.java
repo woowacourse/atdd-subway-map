@@ -11,8 +11,8 @@ import java.util.List;
 
 @Service
 public class StationService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public StationService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
