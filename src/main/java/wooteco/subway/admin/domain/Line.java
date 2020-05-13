@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
@@ -19,7 +20,7 @@ public class Line {
 	private LocalTime endTime;
 	private int intervalTime;
 	@MappedCollection(idColumn = "line", keyColumn = "sequence")
-	private List<LineStation> lineStations = new ArrayList<>();
+	private List<LineStation> lineStations = new LinkedList<>();
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
