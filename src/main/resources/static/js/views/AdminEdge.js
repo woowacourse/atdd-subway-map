@@ -52,8 +52,16 @@ function AdminEdge() {
   const onCreateSubwayLine = async event => {
     event.preventDefault();
     const lineId = subwayLines.find(line => line.name === $lineInput.value).id;
-    const newLineStation = {
-      preStationId: subwayStations.find(station => station.name === $departStationInput.value).id,
+    let departInput;
+    if($departStationInput.value.trim() === ""){
+      departInput = null;
+    }
+    else {
+      departInput = subwayStations.find(station => station.name === departInput).id
+    }
+    console.log(departInput);
+      const newLineStation = {
+      preStationId: departInput,
       stationId: subwayStations.find(station => station.name === $arrivalStationInput.value).id,
     };
     const newLine = await api.lineStation.create(lineId, newLineStation);
