@@ -1,14 +1,22 @@
 package wooteco.subway.admin.dto;
 
+import org.springframework.beans.factory.annotation.Value;
 import wooteco.subway.admin.domain.Line;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalTime;
 
 public class LineRequest {
+
+    @NotEmpty
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
+    @Positive
     private int intervalTime;
+    @NotNull
     private String bgColor;
 
     public LineRequest() {
