@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.ErrorResponse;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -84,5 +86,10 @@ public class LineController {
 	@GetMapping("/stations")
 	public ResponseEntity findAllLineWithStations() {
 		return ResponseEntity.ok(lineService.findAllLineWithStations());
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity handleException(Exception e) {
+		return ResponseEntity.badRequest().body(ErrorResponse.of(e.getMessage()));
 	}
 }

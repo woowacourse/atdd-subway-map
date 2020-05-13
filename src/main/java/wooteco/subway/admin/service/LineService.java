@@ -26,7 +26,7 @@ public class LineService {
 
 	public LineResponse save(Line line) {
 		if (lineRepository.existsByName(line.getName())) {
-			throw new RuntimeException();
+			throw new RuntimeException("이미 있는 노선 이름입니다.");
 		}
 		return LineResponse.of(lineRepository.save(line));
 	}
@@ -37,7 +37,7 @@ public class LineService {
 
 	public LineResponse updateLine(Long id, Line line) {
 		if (!lineRepository.existsByName(line.getName())) {
-			throw new RuntimeException();
+			throw new RuntimeException("찾는 노선이 없습니다!");
 		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		return LineResponse.of(lineRepository.save(persistLine.update(line)));
