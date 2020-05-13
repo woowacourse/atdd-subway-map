@@ -38,11 +38,6 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, String bgColor, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
-        this(null, name, bgColor, startTime, endTime, intervalTime);
-    }
-
     public Long getId() {
         return id;
     }
