@@ -109,14 +109,18 @@ public class Line {
                 .map(lineStation -> lineStations.indexOf(lineStation) + 1)
                 .findAny()
                 .orElse(0);
-        if (isAlreadyInputStations(requestLineStation, index)) return;
+        if (isAlreadyInputStations(requestLineStation, index)){
+            return;
+        }
         lineStations.add(index, requestLineStation);
     }
 
     private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
         if(lineStations.size() > ONE_SIZE && lineStations.size() > index) {
             LineStation nextLineStation = lineStations.get(index);
-            if (isInputFirstIndex(requestLineStation, index, nextLineStation)) return true;
+            if (isInputFirstIndex(requestLineStation, index, nextLineStation)){
+                return true;
+            }
 
             LineStation preLineStation = lineStations.get(index - 1);
             requestLineStation.updatePreLineStationId(preLineStation.getStationId());
@@ -145,7 +149,9 @@ public class Line {
         LineStation preLineStation;
         LineStation nextLineStation;
 
-        if (isRemoveStationUnNormalCase(index)) return;
+        if (isRemoveStationUnNormalCase(index)){
+            return;
+        }
         nextLineStation = lineStations.get(index+ NEXT_INDEX);
         preLineStation = lineStations.get(index- BEFORE_INDEX);
         nextLineStation.updatePreLineStationId(preLineStation.getStationId());
