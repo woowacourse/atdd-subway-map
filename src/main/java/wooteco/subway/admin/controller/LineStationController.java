@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
 import wooteco.subway.admin.dto.response.LineStationCreateResponse;
-import wooteco.subway.admin.dto.response.StationResponse;
+import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
@@ -22,9 +22,11 @@ public class LineStationController {
 	}
 
 	@PostMapping("{lineId}/stations")
-	public ResponseEntity<LineStationCreateResponse> createLineStation(@PathVariable("lineId") Long lineId, @RequestBody @Valid LineStationCreateRequest view) {
+	public ResponseEntity<LineStationCreateResponse> createLineStation(
+			@PathVariable("lineId") Long lineId,
+			@RequestBody @Valid LineStationCreateRequest view) {
 		lineService.addLineStation(lineId, view);
-		StationResponse stationResponse = stationService.findBy(view.getStationId());
+		StationCreateServiceResponse stationResponse = stationService.findBy(view.getStationId());
 		LineStationCreateResponse lineStationCreateResponse = new LineStationCreateResponse(lineId, stationResponse);
 
 		return ResponseEntity

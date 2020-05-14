@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
-import wooteco.subway.admin.dto.response.StationResponse;
 import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
+import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -45,10 +45,10 @@ public class LineStationAcceptanceTest {
 		// @formatter:off
 
 		// Given 지하철역이 여러 개 추가되어있다.
-		StationResponse stationResponse1 = createStation("신림");
-		StationResponse stationResponse2 = createStation("설입");
-		StationResponse stationResponse3 = createStation("사당");
-		StationResponse stationResponse4 = createStation("서초");
+		StationCreateServiceResponse stationResponse1 = createStation("신림");
+		StationCreateServiceResponse stationResponse2 = createStation("설입");
+		StationCreateServiceResponse stationResponse3 = createStation("사당");
+		StationCreateServiceResponse stationResponse4 = createStation("서초");
 		// And 지하철 노선이 추가되어있다.
 		LineCreateServiceResponse lineResponse = createLine("2호선");
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
@@ -132,7 +132,7 @@ public class LineStationAcceptanceTest {
 					extract().as(LineCreateServiceResponse.class);
 	}
 
-	private StationResponse createStation(String stationName) {
+	private StationCreateServiceResponse createStation(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
 
@@ -144,7 +144,7 @@ public class LineStationAcceptanceTest {
 				post("/stations").
 		then().
 				log().all().
-				extract().as(StationResponse.class);
+				extract().as(StationCreateServiceResponse.class);
 	}
 	// @formatter:on
 }

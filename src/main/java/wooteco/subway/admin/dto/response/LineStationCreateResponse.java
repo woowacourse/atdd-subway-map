@@ -1,10 +1,12 @@
 package wooteco.subway.admin.dto.response;
 
+import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
+
 public class LineStationCreateResponse {
 	private Long lineId;
-	private StationResponse station;
+	private StationCreateServiceResponse station;
 
-	public LineStationCreateResponse(Long lineId, StationResponse station) {
+	public LineStationCreateResponse(Long lineId, StationCreateServiceResponse station) {
 		this.lineId = lineId;
 		this.station = station;
 	}
@@ -13,7 +15,7 @@ public class LineStationCreateResponse {
 		return lineId;
 	}
 
-	public StationResponse getStation() {
+	public StationCreateServiceResponse getStation() {
 		return station;
 	}
 }
