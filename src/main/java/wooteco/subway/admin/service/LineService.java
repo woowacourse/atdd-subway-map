@@ -11,7 +11,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,10 +26,8 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        List<Line> lines = lineRepository.findAll();
-        boolean hasDuplicateName = lines.stream()
-                .anyMatch(persistLine -> persistLine.getName().equals(line.getName()));
-        if (hasDuplicateName) {
+        Optional<Line> duplicatedLine = lineRepository.findByName(line.getName());
+        if (duplicatedLine.isPresent()) {
             throw new IllegalArgumentException("중복된 노선 이름은 등록할 수 없습니다.");
         }
         return lineRepository.save(line);
@@ -69,7 +67,7 @@ public class LineService {
         if (line.getId() == null) {
             return LineResponse.of(line);
         }
-        return LineResponse.of(persistLine, stationRepository.findAllById(persistLine.findLineStationsId()));
+        return LineResponse.of(persistLine, findStations(persistLine));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -82,7 +80,11 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
-        Set<Station> stations = stationRepository.findAllById(line.findLineStationsId());
+        Set<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
+    }
+
+    private Set<Station> findStations(Line line) {
+        return stationRepository.findAllById(line.findLineStationsId());
     }
 }

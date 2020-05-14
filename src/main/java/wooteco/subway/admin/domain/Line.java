@@ -89,7 +89,7 @@ public class Line {
 
     private void addInMiddle(LineStation lineStation) {
         stations.stream()
-                .filter(station -> Objects.equals(lineStation.getStationId(), station.getStationId()))
+                .filter(station -> Objects.equals(lineStation.getPreStationId(), station.getPreStationId()))
                 .findFirst()
                 .ifPresent(station -> {
                     if (Objects.isNull(station.getStationId())) {
