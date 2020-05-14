@@ -28,7 +28,7 @@ function AdminLine() {
     );
     subwayLineModal.toggle();
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
   };
 
@@ -45,7 +45,7 @@ function AdminLine() {
       $activeSubwayLineItem.remove();
       subwayLineModal.toggle();
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
   };
 
@@ -58,7 +58,7 @@ function AdminLine() {
         await api.line.delete($subwayLineItem.dataset.lineId);
         $subwayLineItem.remove();
       } catch (e) {
-        alert(e);
+        alert(e.message);
       }
     }
   };
@@ -71,7 +71,7 @@ function AdminLine() {
         const line = await api.line.get($target.dataset.lineId);
         $linesInfo.innerHTML = detailSubwayLineTemplate(line);
       } catch (e) {
-        alert(e);
+        alert(e.message);
       }
     }
   }
@@ -86,7 +86,7 @@ function AdminLine() {
         subwayLineModal.toggle();
         subwayLineModal.setData(line);
       } catch (e) {
-        alert(e);
+        alert(e.message);
       }
     }
   };
@@ -101,7 +101,7 @@ function AdminLine() {
         );
       });
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
   };
 

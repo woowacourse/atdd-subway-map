@@ -29,7 +29,7 @@ const api = (() => {
     if (response.ok) {
       return response;
     }
-    return Promise.reject(await response.text());
+    return Promise.reject(await response.json());
   });
   const request = (uri, config) => myfetch(uri, config).then(data => data.json());
 

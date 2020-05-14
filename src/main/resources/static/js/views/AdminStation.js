@@ -49,7 +49,8 @@ function AdminStation() {
       addStation({ id, name: stationName });
       $stationNameInput.value = "";
     } catch (e) {
-      alert(e);
+    console.log(e);
+      alert(e.message);
     }
   };
 

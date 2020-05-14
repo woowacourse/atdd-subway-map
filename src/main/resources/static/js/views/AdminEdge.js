@@ -66,7 +66,7 @@ function AdminEdge() {
       initSubwayLinesSlider();
       subwayEdgeModal.toggle();
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
   };
 
