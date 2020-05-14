@@ -1,8 +1,11 @@
 package wooteco.subway.admin.controller;
 
+import static wooteco.subway.admin.controller.DefinedSqlException.*;
+
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +30,12 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<Void> createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
-        Long stationId = stationRepository.save(station).getId();
+        Long stationId;
+        try {
+            stationId = stationRepository.save(station).getId();
+        } catch (DbActionExecutionException e) {
+            throw new DefinedSqlException(DUPLICATED_NAME);
+        }
 
         return ResponseEntity
             .created(URI.create("/stations/" + stationId))
