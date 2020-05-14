@@ -3,11 +3,13 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 public class Station {
 	@Id
 	private Long id;
-	private String name;
+	@Embedded.Nullable
+	private StationName name;
 	private LocalDateTime createdAt;
 
 	public Station() {
@@ -15,11 +17,11 @@ public class Station {
 
 	public Station(Long id, String name) {
 		this.id = id;
-		this.name = name;
+		this.name = new StationName(name);
 	}
 
 	public Station(String name) {
-		this.name = name;
+		this.name = new StationName(name);
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -28,7 +30,7 @@ public class Station {
 	}
 
 	public String getName() {
-		return name;
+		return name.getName();
 	}
 
 	public LocalDateTime getCreatedAt() {
