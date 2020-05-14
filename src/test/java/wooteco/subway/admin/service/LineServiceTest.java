@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.DuplicateNameException;
 import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 
@@ -85,6 +85,6 @@ public class LineServiceTest {
     void createException() {
         when(lineRepository.existsLineBy(any(String.class))).thenReturn(true);
         assertThatThrownBy(() -> lineService.save(line))
-            .isInstanceOf(ExistingNameException.class);
+            .isInstanceOf(DuplicateNameException.class);
     }
 }

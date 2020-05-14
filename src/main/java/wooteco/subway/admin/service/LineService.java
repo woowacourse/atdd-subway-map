@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.DuplicateNameException;
 import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 
@@ -54,7 +54,7 @@ public class LineService {
     private void validateDuplicateName(Line lineToCreate) {
         boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
         if (exist) {
-            throw new ExistingNameException(lineToCreate.getName());
+            throw new DuplicateNameException(lineToCreate.getName());
         }
     }
 

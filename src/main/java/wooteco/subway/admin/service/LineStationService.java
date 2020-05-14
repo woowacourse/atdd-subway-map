@@ -30,9 +30,25 @@ public class LineStationService {
     }
 
     @Transactional
+    public List<LineDetailResponse> findLinesWithStations() {
+        List<Line> lines = lineRepository.findAll();
+        Map<Long, Station> stations = stationRepository.findAll()
+            .stream()
+            .collect(Collectors.toMap(Station::getId, station -> station));
+        return lines.stream()
+            .map(line -> {
+                List<StationResponse> stationResponses = line.getStationsId().stream()
+                    .map(stations::get)
+                    .map(StationResponse::of)
+                    .collect(Collectors.toList());
+                return LineDetailResponse.of(line, stationResponses);
+            }).collect(Collectors.toList());
+    }
+
+    @Transactional
     public LineDetailResponse findLineWithStationsBy(Long lineId) {
         Line line = findLineBy(lineId);
-        List<Long> stationsId = line.getLineStationsId();
+        List<Long> stationsId = line.getStationsId();
         List<StationResponse> stations = getStationResponses(stationsId);
         return LineDetailResponse.of(line, stations);
     }

@@ -83,7 +83,7 @@ public class Line {
         lineStations.remove(index);
     }
 
-    public List<Long> getLineStationsId() {
+    public List<Long> getStationsId() {
         LinkedList<Long> stations = new LinkedList<>();
         for (LineStation lineStation : this.lineStations.getStations()) {
             stations.add(lineStation.getStationId());

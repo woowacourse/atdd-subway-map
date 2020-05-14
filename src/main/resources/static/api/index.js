@@ -66,8 +66,11 @@ const api = (() => {
   };
 
   const lineStation = {
+    getAll() {
+      return request('/lines/detail')
+    },
     getById(lineId) {
-      return request(`/lines/${lineId}/stations`);
+      return request(`/lines/${lineId}/detail`);
     },
     create(lineId, lineStationRequest) {
       return request(`/lines/${lineId}/stations`, METHOD.POST(lineStationRequest));

@@ -5,15 +5,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.DuplicateNameException;
 import wooteco.subway.admin.exception.LineStationException;
 import wooteco.subway.admin.exception.NotFoundException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler(ExistingNameException.class)
+    @ExceptionHandler(DuplicateNameException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError existingNameException(ExistingNameException exception) {
+    public ApiError existingNameException(DuplicateNameException exception) {
         return new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 

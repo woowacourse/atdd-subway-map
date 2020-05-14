@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.exception.ExistingNameException;
+import wooteco.subway.admin.exception.DuplicateNameException;
 import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -51,7 +51,7 @@ public class StationService {
     private void validateDuplication(String name) {
         boolean exist = stationRepository.existsStationBy(name);
         if (exist) {
-            throw new ExistingNameException(name);
+            throw new DuplicateNameException(name);
         }
     }
 }

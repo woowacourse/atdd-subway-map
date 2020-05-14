@@ -79,7 +79,7 @@ public class LineStationAcceptanceTest {
 
     private LineDetailResponse getLineDetail(Long lineId) {
         return given().when().
-            get("/lines/" + lineId + "/stations").
+            get("/lines/" + lineId + "/detail").
             then().
             log().all().
             extract().as(LineDetailResponse.class);

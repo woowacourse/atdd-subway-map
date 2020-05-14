@@ -26,29 +26,31 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public List<LineResponse> findLines() {
-        return lineService.findAllWithoutStations();
+    public ResponseEntity<List<LineResponse>> findLines() {
+        List<LineResponse> lines = lineService.findAllWithoutStations();
+        return ResponseEntity.ok(lines);
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createLines(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Long> createLines(@RequestBody LineRequest lineRequest) {
         Long id = lineService.save(lineRequest.toLine());
         return ResponseEntity.created(URI.create("/lines/" + id)).body(id);
     }
 
     @GetMapping("/lines/{id}")
-    public LineResponse findLine(@PathVariable Long id) {
-        return lineService.findLineWithoutStations(id);
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        LineResponse lineResponse = lineService.findLineWithoutStations(id);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }

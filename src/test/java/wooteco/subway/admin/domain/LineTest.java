@@ -23,7 +23,7 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getStationsId();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -33,14 +33,14 @@ public class LineTest {
     @Test
     void addLineStation() {
         line.addLineStation(new LineStation(null, 4L, 10, 10));
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getStationsId();
         assertThat(stationIds).size().isEqualTo(4);
     }
 
     @Test
     void addLineStationBetweenTwo() {
         line.addLineStation(new LineStation(1L, 4L, 10, 10));
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getStationsId();
         assertThat(stationIds).size().isEqualTo(4);
     }
 

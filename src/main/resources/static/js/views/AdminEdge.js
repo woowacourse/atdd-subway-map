@@ -34,7 +34,7 @@ function AdminEdge() {
 
   const initializeSubway = async () => {
     try {
-      const response = await api.line.getAll();
+      const response = await api.lineStation.getAll();
       switch (response.status) {
         case 400:
           const error = await response.json();

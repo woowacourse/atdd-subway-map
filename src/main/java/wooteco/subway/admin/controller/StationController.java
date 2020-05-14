@@ -24,18 +24,19 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
+    public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stations = stationService.getAll();
         return ResponseEntity.ok().body(stations);
     }
 
     @GetMapping("/stations/{id}")
-    public StationResponse getStation(@PathVariable Long id) {
-        return stationService.getById(id);
+    public ResponseEntity<StationResponse> getStation(@PathVariable Long id) {
+        StationResponse stationResponse = stationService.getById(id);
+        return ResponseEntity.ok(stationResponse);
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
+    public ResponseEntity<Long> createStation(@RequestBody StationCreateRequest view) {
         Long savedId = stationService.save(view);
 
         return ResponseEntity
@@ -44,7 +45,7 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
