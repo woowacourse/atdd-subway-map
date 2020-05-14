@@ -38,8 +38,9 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Station>> showStations() {
-        return ResponseEntity.ok().body(service.findAllStations());
+    public ResponseEntity<List<StationResponse>> showStations() {
+        final List<Station> stations = service.findAllStations();
+        return ResponseEntity.ok().body(StationResponse.listOf(stations));
     }
 
     @DeleteMapping("/{id}")
