@@ -131,6 +131,10 @@ public class Line {
         if (stations.isEmpty()) {
             return;
         }
+        if (stations.size() == 1) {
+            stations.remove(0);
+            return;
+        }
         // LS size == 1 -> 자기 자신만 있을 때 삭제 예외 처리
         // 첫번째 station (1) 삭제 ->  (null 1)
         if (findFirstLineStation().getStationId().equals(stationId)) {

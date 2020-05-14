@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,11 +33,23 @@ public class LineTest {
         assertThat(stationIds.get(2)).isEqualTo(3L);
     }
 
+    @DisplayName("Line에 추가된 역 제거")
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
         assertThat(line.getStations()).hasSize(2);
+    }
+
+    @DisplayName("Line에 추가된 역이 하나일 때 역 제거")
+    @Test
+    void removeLineStation_Size1() {
+        Long stationId = 1L;
+        Line line = new Line(1L, "2호선", "bg-green-500", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line.addLineStation(new LineStation(null, stationId, 10, 10));
+
+        line.removeLineStationById(stationId);
+        assertThat(line.getStations()).hasSize(0);
     }
 }
