@@ -31,7 +31,7 @@ public class StationService {
     private void validateName(final String stationName) {
         stationRepository.findByName(stationName)
                 .ifPresent(station -> {
-                    throw new DuplicationNameException();
+                    throw new DuplicationNameException(stationName);
                 });
     }
 

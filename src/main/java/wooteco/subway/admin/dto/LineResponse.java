@@ -2,13 +2,13 @@ package wooteco.subway.admin.dto;
 
 import com.google.common.collect.Sets;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -44,15 +44,9 @@ public class LineResponse {
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), new LinkedHashSet<>());
     }
 
-    public static LineResponse of(final Line line, final Set<Station> stations) {
+    public static LineResponse of(final Line line, final List<StationResponse> stations) {
         return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
-                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), toStationResponse(stations));
-    }
-
-    private static Set<StationResponse> toStationResponse(Set<Station> stations) {
-        return stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toSet());
+                line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), new HashSet<>(stations));
     }
 
     public Long getId() {

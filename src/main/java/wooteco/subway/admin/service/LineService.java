@@ -7,11 +7,11 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.domain.exception.DuplicationNameException;
 import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.LineStationRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +77,7 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
         List<Station> stations = getStationsByLine(line);
-        return LineResponse.of(line, new LinkedHashSet<>(stations));
+        return LineResponse.of(line, StationResponse.listOf(stations));
     }
 
     private List<Station> getStationsByLine(final Line line) {

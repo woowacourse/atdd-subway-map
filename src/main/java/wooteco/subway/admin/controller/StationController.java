@@ -35,8 +35,9 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity<List<Station>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAll());
+    public ResponseEntity<List<StationResponse>> showStations() {
+        List<Station> stations = stationService.findAll();
+        return ResponseEntity.ok().body(StationResponse.listOf(stations));
     }
 
     @DeleteMapping("/stations/{id}")
