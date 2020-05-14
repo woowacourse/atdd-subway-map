@@ -1,6 +1,8 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -26,7 +28,9 @@ public class Line {
     private int intervalTime;
     @MappedCollection(idColumn = "line", keyColumn = "sequence")
     private List<LineStation> lineStations = new ArrayList<>();
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private String bgColor;
 
@@ -38,8 +42,6 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
     }
 
@@ -99,8 +101,6 @@ public class Line {
         if (line.getBgColor() != null) {
             this.bgColor = line.getBgColor();
         }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation requestLineStation) {
