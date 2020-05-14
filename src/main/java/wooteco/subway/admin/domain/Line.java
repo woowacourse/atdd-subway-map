@@ -95,36 +95,28 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        int addIndex = findAddIndex(lineStation);
-        if (addIndex >= stations.size()) {
+        if (stations.isEmpty() && !lineStation.isFirstLineStation()) {
+            throw new IllegalArgumentException("첫 역을 먼저 입력해주세요.");
+        }
+
+        Optional<LineStation> nextLineStation = findNextLineStation(lineStation);
+        if (!nextLineStation.isPresent()) {
             stations.add(lineStation);
             return;
         }
-        LineStation originLineStation = stations.get(addIndex);
+
+        LineStation originLineStation = nextLineStation.get();
         LineStation modifiedLineStation = new LineStation(lineStation.getStationId(), originLineStation.getStationId());
 
+        int addIndex = stations.indexOf(originLineStation);
         stations.remove(originLineStation);
         stations.addAll(addIndex, Arrays.asList(lineStation, modifiedLineStation));
     }
 
-    public int findAddIndex(LineStation addLineStation) {
-        if (stations.isEmpty() && !addLineStation.isFirstLineStation()) {
-            throw new IllegalArgumentException("첫 역을 먼저 입력해주세요.");
-        }
-
-        if (addLineStation.isFirstLineStation()) {
-            return 0;
-        }
-
-        Long addPreStationId = addLineStation.getPreStationId();
-
-        for (int i = 1; i < stations.size(); i++) {
-            Long preStationId = stations.get(i).getPreStationId();
-            if (preStationId.equals(addPreStationId)) {
-                return i;
-            }
-        }
-        return stations.size();
+    private Optional<LineStation> findNextLineStation(LineStation lineStation) {
+        return stations.stream()
+                .filter(lineStation::isNextStation)
+                .findAny();
     }
 
     public void removeLineStationById(Long stationId) {

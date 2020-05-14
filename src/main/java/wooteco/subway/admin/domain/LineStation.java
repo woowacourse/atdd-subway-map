@@ -2,6 +2,8 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Objects;
+
 @Table
 public class LineStation {
     // TODO: 테이블 컬럼명과 변수명이 다른 경우
@@ -43,5 +45,14 @@ public class LineStation {
 
     public boolean isFirstLineStation() {
         return preStationId == null;
+    }
+
+    public boolean isNextStation(LineStation compare) {
+        Long comparePreStationId = compare.getPreStationId();
+
+        if (Objects.isNull(preStationId)) {
+            return Objects.isNull(comparePreStationId);
+        }
+        return preStationId.equals(comparePreStationId);
     }
 }
