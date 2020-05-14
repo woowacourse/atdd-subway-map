@@ -4,41 +4,48 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String bgColor;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this.name = name;
+    public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.bgColor = bgColor;
+        this.stations = new LinkedHashSet<>();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, title, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -65,9 +72,13 @@ public class Line {
         return updatedAt;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
+        if (line.getTitle() != null) {
+            this.title = line.getTitle();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
@@ -78,20 +89,68 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        this.stations.add(lineStation);
     }
 
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+    public void removeLineStationById(Long id) {
+        this.stations.stream()
+                .filter(x -> x.isStationIdEquals(id))
+                .findAny()
+                .ifPresent(target -> {
+                    this.stations.remove(target);
+                });
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<LineStation> result = new ArrayList<>();
+        stations.stream()
+                .filter(x -> x.isPreStationIdEquals(LineStation.NULL_PRE_STATION_VALUE))
+                .findAny()
+                .ifPresent(result::add);
+
+        for (int i = 0; i < stations.size() - 1; i++) {
+            result.add(findNextLineStation(result.get(i)));
+        }
+        return result.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+    }
+
+    private LineStation findNextLineStation(final LineStation preStation) {
+        return stations.stream()
+                .filter(x -> x.isPreStationIdEquals(preStation.getStationId()))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void updatePreStationWhenAdd(final LineStation toInput) {
+        stations.stream()
+                .filter(x -> x.isPreStationIdEquals(toInput.getPreStationId()))
+                .findAny().ifPresent(lineStation -> {
+            lineStation.updatePreLineStation(toInput.getStationId());
+        });
+    }
+
+    public void updatePreStationWhenRemove(final Long toRemoveId) {
+        LineStation removeStation =
+                stations.stream().filter(x -> x.isStationIdEquals(toRemoveId))
+                        .findAny().orElseThrow(IllegalArgumentException::new);
+
+        stations.stream()
+                .filter(x -> x.isPreStationIdEquals(toRemoveId))
+                .findAny().ifPresent(lineStation -> {
+            lineStation.updatePreLineStation(removeStation.getPreStationId());
+        });
+    }
+
+    public boolean isTitleEquals(final String title) {
+        return this.title.equals(title);
     }
 }
