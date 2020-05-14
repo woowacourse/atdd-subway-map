@@ -122,7 +122,7 @@ public class LineStationAcceptanceTest {
     private void createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-        params.put("bgColor", "red");
+        params.put("backgroundColor", "red");
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");

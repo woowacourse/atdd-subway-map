@@ -21,7 +21,7 @@ function AdminLine() {
     event.preventDefault();
     const data = {
       name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value,
+      backgroundColor: $subwayLineColorInput.value,
       startTime: $subwayLineStartTimeInput.value + ":00",
       endTime: $subwayLineEndTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
@@ -32,7 +32,7 @@ function AdminLine() {
         method: "PUT",
         body: JSON.stringify({
           name: $subwayLineNameInput.value,
-          bgColor: $subwayLineColorInput.value,
+          backgroundColor: $subwayLineColorInput.value,
           startTime: $subwayLineStartTimeInput.value + ":00",
           endTime: $subwayLineEndTimeInput.value + ":00",
           intervalTime: $subwayLineIntervalTimeInput.value
@@ -92,14 +92,14 @@ function AdminLine() {
         document.querySelector('#first-time').value = data.startTime.substring(0, 5);
         document.querySelector('#last-time').value = data.endTime.substring(0, 5);
         document.querySelector('#interval-time').value = data.intervalTime;
-        document.querySelector('#subway-line-color').value = data.bgColor;
+        document.querySelector('#subway-line-color').value = data.backgroundColor;
       });
       subwayLineModal.toggle();
       document.querySelector('#subway-line-name').value = "";
       document.querySelector('#first-time').value = "";
       document.querySelector('#last-time').value = "";
       document.querySelector('#interval-time').value = data.intervalTime;
-      document.querySelector('#subway-line-color').value = data.bgColor;
+      document.querySelector('#subway-line-color').value = data.backgroundColor;
     }
   };
 

@@ -16,7 +16,7 @@ public class Line {
     @Id
     private Long id;
     private String name;
-    private String bgColor;
+    private String backgroundColor;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -27,10 +27,11 @@ public class Line {
     private Line() {
     }
 
-    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
+    public Line(Long id, String name, String backgroundColor, LocalTime startTime,
+        LocalTime endTime,
         int intervalTime) {
         this.name = name;
-        this.bgColor = bgColor;
+        this.backgroundColor = backgroundColor;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -46,8 +47,8 @@ public class Line {
         return name;
     }
 
-    public String getBgColor() {
-        return bgColor;
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 
     public LocalTime getStartTime() {
@@ -78,8 +79,8 @@ public class Line {
         if (line.getName() != null) {
             this.name = line.getName();
         }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
+        if (line.getBackgroundColor() != null) {
+            this.backgroundColor = line.getBackgroundColor();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
