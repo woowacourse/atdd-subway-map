@@ -12,7 +12,7 @@ public class LineStationsResponse {
     private String bgColor;
     private List<LineStationResponse> stations;
 
-    public LineStationsResponse() {
+    private LineStationsResponse() {
     }
 
     public LineStationsResponse(Long id, String name, String bgColor,

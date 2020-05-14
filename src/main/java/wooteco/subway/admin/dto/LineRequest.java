@@ -11,7 +11,7 @@ public class LineRequest {
     private int intervalTime;
     private String bgColor;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public String getName() {

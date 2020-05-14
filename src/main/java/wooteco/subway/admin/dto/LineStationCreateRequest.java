@@ -8,7 +8,7 @@ public class LineStationCreateRequest {
     private int distance;
     private int duration;
 
-    public LineStationCreateRequest() {
+    private LineStationCreateRequest() {
     }
 
     public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {

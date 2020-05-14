@@ -17,7 +17,7 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor,

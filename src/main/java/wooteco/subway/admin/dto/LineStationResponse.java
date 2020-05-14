@@ -17,7 +17,7 @@ public class LineStationResponse {
     private int distance;
     private int duration;
 
-    public LineStationResponse() {
+    private LineStationResponse() {
     }
 
     public LineStationResponse(Long id, String name, Long preStationId, String preStationName,
