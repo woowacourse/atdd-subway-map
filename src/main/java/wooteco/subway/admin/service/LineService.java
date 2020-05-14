@@ -37,13 +37,13 @@ public class LineService {
     private void validateTitle(Line line) {
         lineRepository.findByTitle(line.getTitle())
                 .ifPresent(x -> {
-                    throw new DuplicationNameException();
+                    throw new DuplicationNameException(line.getTitle());
                 });
     }
 
     public void updateLine(Long id, Line line) {
         validateTitleWhenUpdateInfo(id, line);
-        Line persistLine = lineRepository.findById(id).orElseThrow(DuplicationNameException::new);
+        Line persistLine = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
