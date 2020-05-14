@@ -1,36 +1,45 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.util.CollectionUtils;
+import wooteco.subway.admin.exception.NotFoundValueException;
 
 public class Line {
+    private static final int DEFAULT_INDEX = -1;
+
     @Id
     private Long id;
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private String backgroundColor;
+    private List<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.backgroundColor = backgroundColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.stations = new ArrayList<>();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
+        this(null, name, startTime, endTime, intervalTime, backgroundColor);
     }
 
     public Long getId() {
@@ -53,7 +62,11 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -78,20 +91,95 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getBackgroundColor() != null) {
+            this.backgroundColor = line.getBackgroundColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        if (CollectionUtils.isEmpty(stations)) {
+            executePreStationIdNotNull(lineStation);
+            stations.add(lineStation);
+            return;
+        }
+        int index = findStationsIndex(lineStation);
+        addByIndex(lineStation, index);
+    }
+
+    private int findStationsIndex(LineStation lineStation) {
+        int index = DEFAULT_INDEX;
+        for (int i = 0; i < stations.size(); i++) {
+            index = getIndex(lineStation, index, i);
+        }
+        return index;
+    }
+
+    private int getIndex(LineStation lineStation, int index, int i) {
+        if (stations.get(i).getPreStationId() == lineStation.getPreStationId()) {
+            stations.get(i).updatePreLineStation(lineStation.getStationId());
+            index = i;
+        }
+        return index;
+    }
+
+    private void addByIndex(LineStation lineStation, int index) {
+        if (index == DEFAULT_INDEX) {
+            stations.add(lineStation);
+        }
+        if (index != DEFAULT_INDEX) {
+            stations.add(index, lineStation);
+        }
+    }
+
+    private void executePreStationIdNotNull(LineStation lineStation) {
+        if (lineStation.getPreStationId() != null) {
+            stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
+        }
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = stations.stream()
+                .filter(station -> station.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundValueException("해당 역이 없습니다."));
+
+        stations.remove(lineStation);
+
+        updateAfterRemove();
+    }
+
+    private void updateAfterRemove() {
+        for (int i = 0; i < stations.size() - 1; i++){
+            updateByFirstIndex(i);
+        }
+    }
+
+    private void updateByFirstIndex(int index) {
+        if (index == 0) {
+            updateFirstIndex(index);
+        }
+        if (index != 0) {
+            updateNotFirstIndex(index);
+        }
+    }
+
+    private void updateFirstIndex(int index) {
+        if (stations.get(index).getPreStationId() != null) {
+            stations.get(index).updatePreLineStation(null);
+        }
+    }
+
+    private void updateNotFirstIndex(int index) {
+        if (stations.get(index).getStationId() != stations.get(index+1).getPreStationId()) {
+            stations.get(index+1).updatePreLineStation(stations.get(index).getStationId());
+        }
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }

@@ -1,17 +1,19 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.NotFoundValueException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
-import java.util.Set;
-
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -29,26 +31,48 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    public Line updateLine(Long id, Line line) {
+        Line persistLine = lineRepository.findById(id).orElseThrow(() -> new NotFoundValueException("해당 노선을 찾을 수 없습니다."));
         persistLine.update(line);
-        lineRepository.save(persistLine);
+        return lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+    public Line findById(final Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundValueException("해당 노선을 찾을 수 없습니다."));
+    }
+
+    public boolean contains(String lineName) {
+        return showLines().stream()
+                .anyMatch(line -> line.getName().equals(lineName));
+    }
+
+    public Line addLineStation(Long id, LineStationCreateRequest request) {
+        LineStation lineStation = request.toLineStation();
+        Line line = findById(id);
+
+        line.addLineStation(lineStation);
+
+        return save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = findById(lineId);
+        line.removeLineStationById(stationId);
+        save(line);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+    public List<Station> findStationsByLineId(Long id) {
+        Line line = findById(id);
+        List<LineStation> lineStations = line.getStations();
+
+        return lineStations.stream()
+                .map(lineStation -> stationRepository.findById(lineStation.getStationId())
+                        .orElseThrow(() -> new NotFoundValueException("해당 역이 없습니다.")))
+                .collect(Collectors.toList());
     }
 }

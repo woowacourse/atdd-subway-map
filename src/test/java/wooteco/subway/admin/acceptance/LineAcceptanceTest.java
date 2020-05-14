@@ -1,15 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,9 +8,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Line;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -33,7 +36,6 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
@@ -43,11 +45,11 @@ public class LineAcceptanceTest {
         createLine("2호선");
         createLine("3호선");
         // then
-        List<LineResponse> lines = getLines();
+        List<Line> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        Line line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -60,23 +62,35 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        Line updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
         // when
         deleteLine(line.getId());
         // then
-        List<LineResponse> linesAfterDelete = getLines();
+        List<Line> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
-        return given().when().
-                        get("/lines/" + id).
-                then().
-                        log().all().
-                        extract().as(LineResponse.class);
+    private Line getLine(Long id) {
+        return given()
+            .when().
+                get("/lines/" + id).
+            then().
+                log().all().
+                extract().as(Line.class);
+    }
+
+    private List<Line> getLines() {
+        return
+            given().
+            when().
+                get("/lines").
+            then().
+                log().all().
+                extract().
+                jsonPath().getList(".", Line.class);
     }
 
     private void createLine(String name) {
@@ -85,16 +99,17 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-red-800");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/lines").
+            post("/lines").
         then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -102,34 +117,47 @@ public class LineAcceptanceTest {
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("backgroundColor", "bg-red-800");
 
         given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                put("/lines/" + id).
+            put("/lines/" + id).
         then().
-                log().all().
-                statusCode(HttpStatus.OK.value());
-    }
-
-    private List<LineResponse> getLines() {
-        return
-                given().
-                when().
-                        get("/lines").
-                then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+            log().all().
+            statusCode(HttpStatus.OK.value());
     }
 
     private void deleteLine(Long id) {
         given().
-                when().
-                delete("/lines/" + id).
-                then().
-                log().all();
+        when().
+            delete("/lines/" + id).
+        then().
+            log().all();
+    }
+
+    @DisplayName("지하철 노선 이름 생성_DuplicateName_Should 서버에서 500 에러를 보냄")
+    @Test
+    void duplicateStationName() {
+        createLine("종각역");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "종각역");
+        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+        params.put("intervalTime", "10");
+
+        given().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+            post("/lines").
+        then().
+            log().all().
+            statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 }
