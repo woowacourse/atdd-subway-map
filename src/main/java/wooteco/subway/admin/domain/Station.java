@@ -1,9 +1,8 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import wooteco.subway.admin.exception.InvalidStationNameException;
-
-import java.time.LocalDateTime;
 
 public class Station {
     private static final String NUMBER_REGEX = ".*[0-9].*";

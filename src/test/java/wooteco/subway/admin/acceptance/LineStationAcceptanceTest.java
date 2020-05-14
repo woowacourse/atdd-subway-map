@@ -1,6 +1,9 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,10 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -29,22 +28,15 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철역이 여러 개 추가되어있다.
-     * And 지하철 노선이 추가되어있다.
+     * Given 지하철역이 여러 개 추가되어있다. And 지하철 노선이 추가되어있다.
      * <p>
-     * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     * Then 지하철역이 노선에 추가 되었다.
+     * When 지하철 노선에 지하철역을 등록하는 요청을 한다. Then 지하철역이 노선에 추가 되었다.
      * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 새로 추가한 지하철역을 목록에서 찾는다.
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 새로 추가한 지하철역을 목록에서 찾는다.
      * <p>
-     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     * Then 지하철역이 노선에서 제거 되었다.
+     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다. Then 지하철역이 노선에서 제거 되었다.
      * <p>
-     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     * Then 지하철역 목록을 응답 받는다.
-     * And 제외한 지하철역이 목록에 존재하지 않는다.
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다. Then 지하철역 목록을 응답 받는다. And 제외한 지하철역이 목록에 존재하지 않는다.
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
@@ -86,8 +78,10 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getName)).doesNotContain("잠실역");
     }
 
-    private void createLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
-        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStationId, stationId, distance, duration);
+    private void createLineStation(Long lineId, Long preStationId, Long stationId, int distance,
+            int duration) {
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(
+                preStationId, stationId, distance, duration);
 
         given().
                 body(lineStationCreateRequest).

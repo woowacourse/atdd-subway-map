@@ -1,8 +1,7 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.LineStation;
-
 import javax.validation.constraints.NotNull;
+import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
     private Long preStationId;
@@ -16,7 +15,8 @@ public class LineStationCreateRequest {
     public LineStationCreateRequest() {
     }
 
-    public LineStationCreateRequest(Long preStationId, Long stationId, Integer distance, Integer duration) {
+    public LineStationCreateRequest(Long preStationId, Long stationId, Integer distance,
+            Integer duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;

@@ -1,12 +1,15 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.annotation.Id;
 import wooteco.subway.admin.exception.DuplicatedLineStationException;
 import wooteco.subway.admin.exception.NotFoundLineStationException;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
 
 public class Line {
     @Id
@@ -23,7 +26,8 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, String color, LocalTime startTime, LocalTime endTime,
+            int intervalTime) {
         this.name = name;
         this.color = color;
         this.startTime = startTime;
@@ -113,7 +117,7 @@ public class Line {
 
     public void removeLineStationById(Long stationId) {
         LineStation lineStation = findLineStationByStationId(stationId)
-                        .orElseThrow(NotFoundLineStationException::new);
+                .orElseThrow(NotFoundLineStationException::new);
 
         updatePreLineStation(stationId, lineStation.getPreStationId());
         stations.remove(lineStation);

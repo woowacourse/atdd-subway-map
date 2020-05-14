@@ -2,14 +2,13 @@ package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import java.time.LocalTime;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-
-import java.time.LocalTime;
-import java.util.List;
 
 public class AcceptanceTest {
     public static RequestSpecification given() {
@@ -24,9 +23,9 @@ public class AcceptanceTest {
                 body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
+        when().
                 post("/lines").
-                then().
+        then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }

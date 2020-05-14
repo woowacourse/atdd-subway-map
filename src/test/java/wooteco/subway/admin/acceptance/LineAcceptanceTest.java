@@ -1,6 +1,10 @@
 package wooteco.subway.admin.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,11 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -68,12 +67,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineResponse getLine(Long id) {
         return given()
                 .when().
-                    get("/lines/" + id).
+                        get("/lines/" + id).
                 then().
-                    log().all().
-                    extract().as(LineResponse.class);
+                        log().all().
+                        extract().as(LineResponse.class);
     }
-
 
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -91,13 +89,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private List<LineResponse> getLines() {
-        return given().
-                when().
-                        get("/lines").
+        return given()
+                .when().
+                    get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+                    log().all().
+                    extract().
+                    jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {

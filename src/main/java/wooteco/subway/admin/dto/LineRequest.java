@@ -1,10 +1,9 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-
+import java.time.LocalTime;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalTime;
+import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
     @NotEmpty(message = "노선 이름을 입력해야 한다.")
@@ -21,7 +20,8 @@ public class LineRequest {
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color, LocalTime startTime, LocalTime endTime, Integer intervalTime) {
+    public LineRequest(String name, String color, LocalTime startTime, LocalTime endTime,
+            Integer intervalTime) {
         this.name = name;
         this.color = color;
         this.startTime = startTime;

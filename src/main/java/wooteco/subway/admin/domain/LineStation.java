@@ -1,9 +1,8 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.relational.core.mapping.Column;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
+import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
     @Column("station")
