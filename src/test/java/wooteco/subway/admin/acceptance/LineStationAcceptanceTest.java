@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
-import wooteco.subway.admin.dto.response.LineResponse;
-import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.dto.response.StationResponse;
+import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -50,14 +50,14 @@ public class LineStationAcceptanceTest {
 		StationResponse stationResponse3 = createStation("사당");
 		StationResponse stationResponse4 = createStation("서초");
 		// And 지하철 노선이 추가되어있다.
-		LineResponse lineResponse = createLine("2호선");
+		LineCreateServiceResponse lineResponse = createLine("2호선");
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
 		addStationOnLine("1", null, stationResponse1.getId());
 		addStationOnLine("1", stationResponse1.getId(), stationResponse2.getId());
 		addStationOnLine("1", stationResponse2.getId(), stationResponse3.getId());
 		addStationOnLine("1", stationResponse3.getId(), stationResponse4.getId());
 		// Then 지하철역이 노선에 추가 되었다.
-		LineWithStationsResponse persistLine  = getLineBy(lineResponse.getId());
+		LineWithStationsServiceResponse persistLine  = getLineBy(lineResponse.getId());
 		assertEquals(4, persistLine.getStations().size());
 
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
@@ -72,7 +72,7 @@ public class LineStationAcceptanceTest {
 		// When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
 		deleteStationBy(persistLine.getId(), stationResponse4.getId());
 		// Then 지하철역이 노선에서 제거 되었다.
-		LineWithStationsResponse oneStationDeletedLine = getLineBy(lineResponse.getId());
+		LineWithStationsServiceResponse oneStationDeletedLine = getLineBy(lineResponse.getId());
 		assertEquals(oneStationDeletedLine.getStations().size(), 3);
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.
@@ -90,13 +90,13 @@ public class LineStationAcceptanceTest {
 				log().all();
 	}
 
-	private LineWithStationsResponse getLineBy(Long id) {
+	private LineWithStationsServiceResponse getLineBy(Long id) {
 		return given().
 				when().
 					get("/lines/" + id).
 				then().
 					log().all().
-					extract().as(LineWithStationsResponse.class);
+					extract().as(LineWithStationsServiceResponse.class);
 	}
 
 	private void addStationOnLine(String lineId, Long preStationId, Long stationId) {
@@ -113,7 +113,7 @@ public class LineStationAcceptanceTest {
 				log().all();
 	}
 
-	private LineResponse createLine(String name) {
+	private LineCreateServiceResponse createLine(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -129,7 +129,7 @@ public class LineStationAcceptanceTest {
 					post("/lines").
 				then().
 					log().all().
-					extract().as(LineResponse.class);
+					extract().as(LineCreateServiceResponse.class);
 	}
 
 	private StationResponse createStation(String stationName) {

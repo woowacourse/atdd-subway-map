@@ -10,7 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.dto.response.LineResponse;
+import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -46,11 +46,11 @@ public class LineAcceptanceTest {
         createLine("2호선", "12");
         createLine("3호선", "13");
         // then
-        List<LineResponse> lines = getLines();
+        List<LineCreateServiceResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        LineCreateServiceResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
@@ -64,23 +64,23 @@ public class LineAcceptanceTest {
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line, startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        LineCreateServiceResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
         // when
         deleteLine(line.getId());
         // then
-        List<LineResponse> linesAfterDelete = getLines();
+        List<LineCreateServiceResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
+    private LineCreateServiceResponse getLine(Long id) {
         return given().when().
                         get("/lines/" + id).
                 then().
                         log().all().
-                        extract().as(LineResponse.class);
+                        extract().as(LineCreateServiceResponse.class);
     }
 
     private void createLine(String name, String intervalTime) {
@@ -102,7 +102,7 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private void updateLine(LineResponse line, LocalTime startTime, LocalTime endTime) {
+    private void updateLine(LineCreateServiceResponse line, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("startTime", LocalTime.of(8, 00).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -121,7 +121,7 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    private List<LineResponse> getLines() {
+    private List<LineCreateServiceResponse> getLines() {
         return
                 given().
                 when().
@@ -129,7 +129,7 @@ public class LineAcceptanceTest {
                 then().
                         log().all().
                         extract().
-                        jsonPath().getList(".", LineResponse.class);
+                        jsonPath().getList(".", LineCreateServiceResponse.class);
     }
 
     private void deleteLine(Long id) {

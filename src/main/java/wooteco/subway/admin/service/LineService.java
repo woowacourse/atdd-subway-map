@@ -5,10 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.LineCreateRequest;
+import wooteco.subway.admin.dto.controller.request.LineCreateControllerRequest;
 import wooteco.subway.admin.dto.request.LineStationCreateRequest;
-import wooteco.subway.admin.dto.response.LineResponse;
-import wooteco.subway.admin.dto.response.LineWithStationsResponse;
+import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -26,10 +26,10 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse save(LineCreateRequest request) {
+	public LineCreateServiceResponse save(LineCreateControllerRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 
-		return LineResponse.of(persistLine);
+		return LineCreateServiceResponse.of(persistLine);
 	}
 
 	@Transactional
@@ -49,25 +49,25 @@ public class LineService {
 		lineRepository.save(persistLine);
 	}
 
-	public List<LineWithStationsResponse> findLines() {
+	public List<LineWithStationsServiceResponse> findLines() {
 		return lineRepository.findAll()
 				.stream()
 				.map(line -> findLineWithStationsBy(line.getId()))
 				.collect(Collectors.toList());
 	}
 
-	public LineWithStationsResponse findLineWithStationsBy(Long lineId) {
+	public LineWithStationsServiceResponse findLineWithStationsBy(Long lineId) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		List<Long> stationIds = persistLine.getLineStationsId();
 		List<Station> stations = stationRepository.findAllById(stationIds);
 
-		return LineWithStationsResponse.of(persistLine, stations);
+		return LineWithStationsServiceResponse.of(persistLine, stations);
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineCreateRequest request) {
+	public void updateLine(Long id, LineCreateControllerRequest request) {
 		Line persistLine = lineRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
