@@ -61,9 +61,9 @@ public class LineService {
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
 		List<Long> stationIds = persistLine.getLineStationsId();
-		List<Station> stations = stationRepository.findAllById(stationIds);
+		Iterable<Station> lineStations = stationRepository.findAllById(stationIds);
 
-		return LineWithStationsServiceResponse.of(persistLine, stations);
+		return LineWithStationsServiceResponse.of(persistLine, lineStations);
 	}
 
 	@Transactional

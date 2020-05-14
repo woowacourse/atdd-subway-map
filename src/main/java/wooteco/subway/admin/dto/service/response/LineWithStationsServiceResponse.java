@@ -5,6 +5,7 @@ import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineWithStationsServiceResponse {
@@ -21,7 +22,9 @@ public class LineWithStationsServiceResponse {
 	public LineWithStationsServiceResponse() {
 	}
 
-	public LineWithStationsServiceResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor, LocalDateTime createdAt, LocalDateTime updatedAt, List<Station> stations) {
+	public LineWithStationsServiceResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+										   int intervalTime, String lineColor, LocalDateTime createdAt,
+										   LocalDateTime updatedAt, List<Station> stations) {
 		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
@@ -33,8 +36,12 @@ public class LineWithStationsServiceResponse {
 		this.stations = stations;
 	}
 
-	public static LineWithStationsServiceResponse of(Line line, List<Station> stations) {
-		return new LineWithStationsServiceResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getLineColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+	public static LineWithStationsServiceResponse of(Line line, Iterable<Station> inputStations) {
+		List<Station> stations = new ArrayList<>();
+		inputStations.forEach(stations::add);
+
+		return new LineWithStationsServiceResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(),
+				line.getIntervalTime(), line.getLineColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
 	}
 
 	public Long getId() {
