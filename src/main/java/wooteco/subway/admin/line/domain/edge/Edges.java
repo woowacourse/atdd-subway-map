@@ -38,9 +38,6 @@ public class Edges {
             insertEdge(updateEdges, savedEdge, edge);
         }
 
-        if (!this.contain(edge)) {
-
-        }
         if (!updateEdges.contains(edge)) {
             updateEdges.add(edge);
         }
