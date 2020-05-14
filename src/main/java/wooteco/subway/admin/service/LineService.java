@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
@@ -88,6 +87,6 @@ public class LineService {
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재 하지 않는 노선입니다. id = " + id));
+            .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 노선입니다. id = " + id));
     }
 }

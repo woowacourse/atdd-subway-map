@@ -1,9 +1,14 @@
 package wooteco.subway.admin.controller;
 
+import static wooteco.subway.admin.controller.DefinedSqlException.*;
+
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +30,18 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<Void> createStation(@RequestBody StationCreateRequest view) {
+    public ResponseEntity<String> createStation(@RequestBody StationCreateRequest view, Errors errors) {
+        if (errors.hasErrors()) {
+            String message = Objects.requireNonNull(errors.getFieldError()).getDefaultMessage();
+            return ResponseEntity.badRequest().body(message);
+        }
         Station station = view.toStation();
-        Long stationId = stationRepository.save(station).getId();
+        Long stationId;
+        try {
+            stationId = stationRepository.save(station).getId();
+        } catch (DbActionExecutionException e) {
+            throw new DefinedSqlException(DUPLICATED_NAME);
+        }
 
         return ResponseEntity
             .created(URI.create("/stations/" + stationId))
@@ -36,7 +50,7 @@ public class StationController {
 
     @GetMapping("/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> responses = StationResponse.toList(stationRepository.findAll());
+        List<StationResponse> responses = StationResponse.listOf(stationRepository.findAll());
         return ResponseEntity.ok().body(responses);
     }
 

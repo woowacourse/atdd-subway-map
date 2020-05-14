@@ -1,8 +1,11 @@
 package wooteco.subway.admin.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import wooteco.subway.admin.domain.station.Station;
 
 public class StationCreateRequest {
+    @NotBlank(message = "이름을 입력해 주세요.")
     private String name;
 
     public StationCreateRequest() {
