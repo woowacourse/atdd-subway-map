@@ -80,15 +80,14 @@ public class LineService {
         return new LineStation(preStationId, stationId, request.getDistance(), request.getDuration());
     }
 
-    public List<Station> findStationsAtLine(Line savedLine) {
-        List<LineStation> lineStations = savedLine.getStations();
+    public List<Station> findStationsAtLine(Line line) {
+        List<Long> ids = line.getStations()
+                .stream()
+                .mapToLong(LineStation::getStationId)
+                .boxed()
+                .collect(Collectors.toList());
 
-        List<Station> stations = new ArrayList<>();
-        for (LineStation lineStation : lineStations) {
-            stations.add(stationRepository.findById(lineStation.getStationId())
-                    .orElseThrow(() -> new IllegalArgumentException(NO_STATION_EXCEPTION)));
-        }
-        return stations;
+        return stationRepository.findAllByIds(ids);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
