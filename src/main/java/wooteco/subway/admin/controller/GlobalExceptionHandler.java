@@ -10,7 +10,8 @@ import wooteco.subway.admin.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class,
+            HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponse> handleRequest() {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of("입력이 유효하지 않습니다."));
