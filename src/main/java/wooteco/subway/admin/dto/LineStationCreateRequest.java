@@ -2,8 +2,11 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.LineStation;
 
+import javax.validation.constraints.NotNull;
+
 public class LineStationCreateRequest {
     private Long preStationId;
+    @NotNull(message = "대상역이 비어있습니다.")
     private Long stationId;
     private String preStationName;
     private String stationName;
@@ -18,10 +21,6 @@ public class LineStationCreateRequest {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
-    }
-
-    public LineStation toLineStation() {
-        return new LineStation(preStationId, stationId, distance, duration);
     }
 
     public Long getPreStationId() {

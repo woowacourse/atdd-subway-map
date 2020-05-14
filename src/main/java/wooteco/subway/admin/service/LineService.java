@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
@@ -16,15 +17,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    final private LineRepository lineRepository;
+    final private StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
+    public LineResponse save(LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getTitle(), lineRequest.getStartTime(), lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(), lineRequest.getBgColor());
         Line saveLine = lineRepository.save(line);
         return LineResponse.of(saveLine);
     }
@@ -38,7 +41,9 @@ public class LineService {
         return LineResponse.listOf(lines);
     }
 
-    public LineResponse updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = new Line(lineRequest.getTitle(), lineRequest.getStartTime(), lineRequest.getEndTime(),
+                lineRequest.getIntervalTime(), lineRequest.getBgColor());
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
         return LineResponse.of(lineRepository.save(persistLine));
@@ -68,7 +73,9 @@ public class LineService {
         }
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
-        LineStation lineStation = request.toLineStation();
+
+        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
+                request.getDistance(), request.getDuration());
 
         line.addLineStation(lineStation);
         lineRepository.save(line);
