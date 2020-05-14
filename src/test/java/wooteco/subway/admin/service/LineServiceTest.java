@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,13 +29,12 @@ import wooteco.subway.admin.repository.StationRepository;
 @Sql("/truncate.sql")
 public class LineServiceTest {
 
+	static private Line line;
+	static private LineService lineService;
 	@Mock
 	private LineRepository lineRepository;
 	@Mock
 	private StationRepository stationRepository;
-
-	private Line line;
-	private LineService lineService;
 
 	@BeforeEach
 	void setUp() {
@@ -44,6 +44,12 @@ public class LineServiceTest {
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
 		line.addLineStation(new LineStation(1L, 2L, 10, 10));
 		line.addLineStation(new LineStation(2L, 3L, 10, 10));
+	}
+
+	@AfterEach
+	void afterAll() {
+		line = null;
+		lineService = null;
 	}
 
 	@Test
@@ -125,10 +131,7 @@ public class LineServiceTest {
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 		when(stationRepository.findAllByIdOrderBy(null)).thenReturn(stations);
 
-		System.out.println();
-
 		LineResponse lineResponse = lineService.findLineWithStationsById(1L);
-
 		assertThat(lineResponse.getStations()).hasSize(3);
 	}
 }
