@@ -19,10 +19,6 @@ function AdminLine() {
   const createSubwayLine = async data => {
   try{
     const { id } = await api.line.create(data);
-    if (!id) {
-      alert(ERROR_MESSAGE.NOT_EXIST);
-      return;
-    }
     $subwayLineList.insertAdjacentHTML(
       "beforeend",
       subwayLinesTemplate({
@@ -38,19 +34,19 @@ function AdminLine() {
 
   const updateSubwayLine = async data => {
     const id = $activeSubwayLineItem.dataset.lineId;
-    const { ok } = await api.line.update(data, id);
-    if (!ok) {
-      alert(ERROR_MESSAGE.NOT_EXIST);
-      return;
+    try {
+      await api.line.update(data, id);
+      const $newSubwayLineParent = document.createElement("div");
+      $newSubwayLineParent.innerHTML = subwayLinesTemplate({
+        id,
+        ...data
+      });
+      $subwayLineList.insertBefore($newSubwayLineParent.firstElementChild, $activeSubwayLineItem);
+      $activeSubwayLineItem.remove();
+      subwayLineModal.toggle();
+    } catch (e) {
+      alert(e);
     }
-    const $newSubwayLineParent = document.createElement("div");
-    $newSubwayLineParent.innerHTML = subwayLinesTemplate({
-      id,
-      ...data
-    });
-    $subwayLineList.insertBefore($newSubwayLineParent.firstElementChild, $activeSubwayLineItem);
-    $activeSubwayLineItem.remove();
-    subwayLineModal.toggle();
   };
 
   const onDeleteSubwayLine = async event => {
@@ -58,11 +54,12 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const $subwayLineItem = $target.closest(".subway-line-item");
-      const { ok } = await api.line.delete($subwayLineItem.dataset.lineId);
-      if (!ok) {
-        alert(ERROR_MESSAGE.FAIL);
+      try {
+        await api.line.delete($subwayLineItem.dataset.lineId);
+        $subwayLineItem.remove();
+      } catch (e) {
+        alert(e);
       }
-      $subwayLineItem.remove();
     }
   };
 
@@ -70,8 +67,12 @@ function AdminLine() {
     const $target = event.target;
     const isSubwayLineItem = $target.classList.contains("subway-line-item");
     if (isSubwayLineItem) {
-      const line = await api.line.get($target.dataset.lineId);
-      $linesInfo.innerHTML = detailSubwayLineTemplate(line);
+      try {
+        const line = await api.line.get($target.dataset.lineId);
+        $linesInfo.innerHTML = detailSubwayLineTemplate(line);
+      } catch (e) {
+        alert(e);
+      }
     }
   }
 
@@ -80,20 +81,28 @@ function AdminLine() {
     const isEditButton = $target.classList.contains("mdi-pencil");
     if (isEditButton) {
       $activeSubwayLineItem = $target.closest(".subway-line-item");
-      const line = await api.line.get($activeSubwayLineItem.dataset.lineId);
-      subwayLineModal.toggle();
-      subwayLineModal.setData(line);
+      try {
+        const line = await api.line.get($activeSubwayLineItem.dataset.lineId);
+        subwayLineModal.toggle();
+        subwayLineModal.setData(line);
+      } catch (e) {
+        alert(e);
+      }
     }
   };
 
   const initDefaultSubwayLines = async () => {
-    const lines = await api.line.get();
-    lines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
+    try {
+      const lines = await api.line.get();
+      lines.map(line => {
+        $subwayLineList.insertAdjacentHTML(
+          "beforeend",
+          subwayLinesTemplate(line)
+        );
+      });
+    } catch (e) {
+      alert(e);
+    }
   };
 
   const initEventListeners = () => {

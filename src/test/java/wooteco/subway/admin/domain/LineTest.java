@@ -22,6 +22,19 @@ public class LineTest {
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
 
+    @DisplayName("구간을 추가한다")
+    @Test
+    void addLineStation() {
+        line.addLineStation(new LineStation(null, 4L, 10, 10));
+
+        assertThat(line.getStations()).hasSize(4);
+        LineStation lineStation = line.getStations().stream()
+                .filter(it -> it.isEqualToPreStationId(4L))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        assertThat(lineStation.getStationId()).isEqualTo(1L);
+    }
+
     @DisplayName("출발역에서 종착역을 순서대로 반환한다")
     @Test
     void getLineStations() {

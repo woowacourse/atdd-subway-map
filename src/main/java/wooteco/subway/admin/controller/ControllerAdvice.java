@@ -1,31 +1,24 @@
 package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.admin.exception.*;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
     public ResponseEntity<String> requestHandle(MethodArgumentNotValidException e) {
-        StringBuilder stringBuilder = new StringBuilder();
-        BindingResult bindingResult = e.getBindingResult();
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            stringBuilder.append(fieldError.getDefaultMessage())
-                    .append("\n");
-        }
         return ResponseEntity.badRequest()
-                .body(stringBuilder.toString());
+                .body("잘못된 요청입니다.");
     }
 
-
-    @ExceptionHandler({RuntimeException.class})
+    @ExceptionHandler({ NotFoundLineException.class, NotFoundLineStationException.class, NotFoundStationException.class,
+            DuplicatedLineException.class, DuplicatedLineStationException.class, DuplicatedStationException.class,
+            InvalidStationNameException.class })
     public ResponseEntity<String> runtimeHandle(RuntimeException e) {
         return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
-
 }
