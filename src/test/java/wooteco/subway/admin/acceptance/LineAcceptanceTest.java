@@ -19,8 +19,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.controller.advice.ApiError;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.resopnse.ApiError;
+import wooteco.subway.admin.dto.resopnse.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")

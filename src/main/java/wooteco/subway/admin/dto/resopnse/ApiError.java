@@ -1,4 +1,4 @@
-package wooteco.subway.admin.controller.advice;
+package wooteco.subway.admin.dto.resopnse;
 
 import org.springframework.http.HttpStatus;
 

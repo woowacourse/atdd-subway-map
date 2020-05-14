@@ -67,13 +67,9 @@ public class LineStation {
     }
 
     public boolean hasSameStations(LineStation lineStation) {
-        if (Objects.isNull(this.preStationId)) {
-            return Objects.isNull(lineStation.getPreStationId()) && this.stationId.equals(
-                lineStation.stationId);
-        }
-        return (stationId.equals(lineStation.stationId) && preStationId.equals(
+        return (Objects.equals(stationId, lineStation.stationId) && Objects.equals(preStationId,
             lineStation.preStationId)) ||
-            (preStationId.equals(lineStation.stationId) && stationId.equals(
+            (Objects.equals(preStationId, lineStation.stationId) && Objects.equals(stationId,
                 lineStation.preStationId));
     }
 

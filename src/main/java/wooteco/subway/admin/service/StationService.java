@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.dto.request.StationCreateRequest;
+import wooteco.subway.admin.dto.resopnse.StationResponse;
 import wooteco.subway.admin.exception.DuplicateNameException;
 import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.repository.StationRepository;

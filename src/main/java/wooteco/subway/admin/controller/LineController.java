@@ -6,15 +6,20 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.dto.LineRequest;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.request.LineRequest;
+import wooteco.subway.admin.dto.resopnse.ApiError;
+import wooteco.subway.admin.dto.resopnse.LineResponse;
+import wooteco.subway.admin.exception.DuplicateNameException;
+import wooteco.subway.admin.exception.NotFoundException;
 import wooteco.subway.admin.service.LineService;
 
 @RestController
@@ -44,7 +49,8 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> update(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -53,5 +59,17 @@ public class LineController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError notFoundException(NotFoundException exception) {
+        return new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateNameException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError duplicateNameException(DuplicateNameException exception) {
+        return new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 }

@@ -1,13 +1,13 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.resopnse;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 
-public class LineDetailResponse {
+public class LineResponse {
     private Long id;
     private String name;
     private String color;
@@ -19,15 +19,11 @@ public class LineDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private List<StationResponse> stations;
-
-    private LineDetailResponse() {
+    private LineResponse() {
     }
 
-    public LineDetailResponse(Long id, String name, String color, LocalTime startTime,
-        LocalTime endTime,
-        int intervalTime,
-        LocalDateTime createdAt, LocalDateTime updatedAt, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, LocalTime startTime,
+        LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -36,14 +32,11 @@ public class LineDetailResponse {
         this.intervalTime = intervalTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stations = stations;
     }
 
-    public static LineDetailResponse of(Line line, List<StationResponse> stations) {
-        return new LineDetailResponse(line.getId(), line.getName(), line.getColor(),
-            line.getStartTime(),
-            line.getEndTime(),
-            line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+    public static LineResponse from(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(),
+            line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt());
     }
 
     public Long getId() {
@@ -70,15 +63,31 @@ public class LineDetailResponse {
         return intervalTime;
     }
 
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineResponse that = (LineResponse)o;
+        return intervalTime == that.intervalTime &&
+            Objects.equals(id, that.id) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(color, that.color) &&
+            Objects.equals(startTime, that.startTime) &&
+            Objects.equals(endTime, that.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, startTime, endTime, intervalTime);
     }
 }
