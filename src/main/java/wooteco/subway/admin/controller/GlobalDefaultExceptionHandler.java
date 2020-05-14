@@ -20,10 +20,16 @@ public class GlobalDefaultExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({BusinessException.class, DataAccessException.class})
+    @ExceptionHandler({DataAccessException.class})
+    protected ResponseEntity<ErrorResponse> handleDataException(final Exception e) {
+        final ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({BusinessException.class})
     protected ResponseEntity<ErrorResponse> handleBusinessException(final Exception e) {
         final ErrorResponse response = new ErrorResponse(e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
