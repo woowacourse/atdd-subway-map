@@ -67,7 +67,7 @@ public class LineController {
         @RequestBody LineStationCreateRequest request) {
         service.addLineStation(lineId, request);
         return ResponseEntity
-            .created(URI.create("/api/lines/{lineId}/stations"))
+            .created(URI.create("/api/lines/" + lineId + "/stations"))
             .build();
     }
 

@@ -1,7 +1,6 @@
 package wooteco.subway.admin.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -67,7 +66,8 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         final Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
-        return LineResponse.convert(line, new HashSet(line.findLineStationsId()));
+        return LineResponse.convert(line,
+            findStationsByLineId(line.findLineStationsId())); // List<Long>
     }
 
     public Set<Station> findStationsByLineId(List<Long> stationIds) {

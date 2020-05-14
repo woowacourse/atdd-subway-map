@@ -148,7 +148,7 @@ public class LineStationAcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/api/lines/" + lineId + "/stations/" + stationId).
+            post("/api/lines/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
