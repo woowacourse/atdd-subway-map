@@ -154,7 +154,7 @@ public class Line {
 
     private void validateHavingSame(LineStation lineStation) {
         for (LineStation station : lineStations.getStations()) {
-            if (station.isSameStation(lineStation)) {
+            if (station.hasSameStations(lineStation)) {
                 throw new LineStationException("이미 등록된 구간입니다.");
             }
         }

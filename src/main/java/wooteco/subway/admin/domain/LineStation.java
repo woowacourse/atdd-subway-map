@@ -66,7 +66,7 @@ public class LineStation {
         return this.preStationId.equals(preStationId);
     }
 
-    public boolean isSameStation(LineStation lineStation) {
+    public boolean hasSameStations(LineStation lineStation) {
         if (Objects.isNull(this.preStationId)) {
             return Objects.isNull(lineStation.getPreStationId()) && this.stationId.equals(
                 lineStation.stationId);

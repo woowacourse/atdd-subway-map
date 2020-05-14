@@ -40,15 +40,17 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
-        // when
+        // when 지하철 노선 n개 추가 요청을 한다.
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
         ApiError error = createLineException("1호선");
         assertThat(error.getMessage()).contains("이미 존재하는 이름");
-        // then
+        // when 지하철 노선 목록 조회 요청을 한다.
+        // then 지하철 노선 목록을 응답 받는다.
         List<LineResponse> lines = getLines();
+        // and 지하철 노선 목록은 4개이다.
         assertThat(lines.size()).isEqualTo(4);
 
         // when
@@ -60,19 +62,22 @@ public class LineAcceptanceTest {
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
 
-        // when
+        // when 지하철 노선 수정 요청을 한다.
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
-        //then
+        //then 지하철 노선이 수정 되었다.
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-        // when
+        // when 지하철 노선 제거 요청을 한다.
+        // then 지하철 노선이 제거 되었다.
         deleteLine(line.getId());
-        // then
+        // when 지하철 노선 목록 조회를 요청을 한다.
+        // then 지하철 노선 목록을 응답 받는다.
         List<LineResponse> linesAfterDelete = getLines();
+        // and 지하철 노선 목록은 3개이다.
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
