@@ -20,7 +20,7 @@ public class StationService {
 	public StationResponse findBy(Long id) {
 		Station persistStation = stationRepository.findById(id)
 				.orElseThrow(() ->
-						new IllegalArgumentException("해당 이름의 역을 찾을 수 없습니다."));
+						new IllegalArgumentException("해당 id의 역을 찾을 수 없습니다."));
 		return StationResponse.of(persistStation);
 	}
 
