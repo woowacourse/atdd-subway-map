@@ -141,40 +141,39 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        int index = lineStations.stream()
-                .filter(lineStation -> lineStation.isSameStationId(stationId))
-                .map(lineStation -> lineStations.indexOf(lineStation))
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
+        int index = findLineStationIndex(stationId);
         LineStation preLineStation;
         LineStation nextLineStation;
 
-        if (isRemoveStationUnNormalCase(index)){
+        if(index == FIRST_INDEX && index == lineStations.size() - 1){
+            lineStations.remove(index);
             return;
         }
+
+        if(index == FIRST_INDEX) {
+            nextLineStation = lineStations.get(SECOND_INDEX);
+            nextLineStation.updatePreLineStationId(null);
+            lineStations.remove(index);
+            return;
+        }
+
+        if(index == lineStations.size() -1)  {
+            lineStations.remove(index);
+            return;
+        }
+
         nextLineStation = lineStations.get(index+ NEXT_INDEX);
         preLineStation = lineStations.get(index- BEFORE_INDEX);
         nextLineStation.updatePreLineStationId(preLineStation.getStationId());
         lineStations.remove(index);
     }
 
-    private boolean isRemoveStationUnNormalCase(int index) {
-        LineStation nextLineStation;
-        if(index == FIRST_INDEX && index == lineStations.size() - 1){
-            lineStations.remove(index);
-            return true;
-        }
-        if(index == FIRST_INDEX) {
-            nextLineStation = lineStations.get(SECOND_INDEX);
-            nextLineStation.updatePreLineStationId(null);
-            lineStations.remove(index);
-            return true;
-        }
-        if(index == lineStations.size() -1)  {
-            lineStations.remove(index);
-            return true;
-        }
-        return false;
+    private int findLineStationIndex(Long stationId) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isSameStationId(stationId))
+                .map(lineStation -> lineStations.indexOf(lineStation))
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public List<Long> getLineStationsId() {

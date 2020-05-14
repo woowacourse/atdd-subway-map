@@ -2,13 +2,19 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public class LineRequest {
+    @NotNull
     private String title;
+    @NotNull
     private LocalTime startTime;
+    @NotNull
     private LocalTime endTime;
+    @NotNull
     private int intervalTime;
+    @NotNull
     private String bgColor;
 
     public LineRequest() {
