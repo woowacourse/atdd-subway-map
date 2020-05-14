@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 public class Line {
+    private static final String DEFAULT_BACKGROUND_COLOR = "bg-blue-500";
     private static final String ERROR_MESSAGE_NO_CONTACT_STATION = "연결할 수 있는 역이 없습니다.";
 
     @Id
@@ -36,7 +37,7 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.backgroundColor = "bg-blue-500";
+        this.backgroundColor = DEFAULT_BACKGROUND_COLOR;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
