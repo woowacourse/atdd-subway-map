@@ -33,8 +33,6 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.bgColor = bgColor;
         this.stations = new LineStations(new LinkedHashSet<>());
     }
@@ -59,8 +57,6 @@ public class Line {
         if (line.getBgColor() != null) {
             this.bgColor = line.getBgColor();
         }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
