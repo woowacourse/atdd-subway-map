@@ -2,37 +2,22 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
-import wooteco.subway.admin.exception.InvalidStationNameException;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 public class Station {
-    private static final String NUMBER_REGEX = ".*[0-9].*";
-    private static final String BLANK = " ";
-
     @Id
     private Long id;
-    private String name;
+    @Embedded.Nullable
+    private StationName name;
     private LocalDateTime createdAt;
 
     public Station() {
     }
 
     public Station(Long id, String name) {
-        validateName(name);
         this.id = id;
-        this.name = name;
+        this.name = new StationName(name);
         this.createdAt = LocalDateTime.now();
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new InvalidStationNameException("빈 이름");
-        }
-        if (name.contains(BLANK)) {
-            throw new InvalidStationNameException("이름에 공백이 포함");
-        }
-        if (name.matches(NUMBER_REGEX)) {
-            throw new InvalidStationNameException("이름에 숫자가 포함");
-        }
     }
 
     public Station(String name) {
@@ -43,8 +28,8 @@ public class Station {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String name() {
+        return name.getName();
     }
 
     public LocalDateTime getCreatedAt() {

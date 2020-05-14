@@ -12,7 +12,7 @@ public class StationResponse {
     private LocalDateTime createdAt;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
+        return new StationResponse(station.getId(), station.name(), station.getCreatedAt());
     }
 
     public static List<StationResponse> listOf(Set<Station> stations) {

@@ -20,8 +20,8 @@ public class StationService {
     }
 
     private void checkExistStation(Station station) {
-        if (stationRepository.existsByName(station.getName())) {
-            throw new DuplicatedStationException(station.getName());
+        if (stationRepository.existsByName(station.name())) {
+            throw new DuplicatedStationException(station.name());
         }
     }
 
