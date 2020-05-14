@@ -66,8 +66,7 @@ public class LineService {
 	@Transactional
 	public void addEdge(Long id, EdgeCreateRequest request) {
 		Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-		Edge edge = new Edge(request.getPreStationId(), request.getStationId(),
-			request.getDistance(), request.getDuration());
+		Edge edge = request.toEdge();
 		line.addEdge(edge);
 		lineRepository.save(line);
 	}

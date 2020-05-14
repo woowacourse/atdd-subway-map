@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 
 public class Edge {
+	private static final int STARTER_DEFAULT_VALUE = 0;
+
 	@Id
 	private Long id;
 	@NotNull
@@ -28,23 +30,16 @@ public class Edge {
 		this.duration = duration;
 	}
 
+	public static Edge starter(Long stationId) {
+		return new Edge(stationId, stationId, STARTER_DEFAULT_VALUE, STARTER_DEFAULT_VALUE);
+	}
+
 	public void updatePreStationId(Long preStationId) {
 		this.preStationId = preStationId;
 	}
 
-	public void update(Edge edge) {
-		stationId = edge.getStationId();
-		preStationId = edge.getPreStationId();
-		distance = edge.distance;
-		duration = edge.duration;
-	}
-
 	public boolean stationIdEquals(final Long stationId) {
 		return Objects.equals(this.stationId, stationId);
-	}
-
-	public boolean preStationIdEquals(Long preStationId) {
-		return Objects.equals(this.preStationId, preStationId);
 	}
 
 	public boolean isNotStartEdge() {

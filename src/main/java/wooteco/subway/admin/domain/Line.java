@@ -60,7 +60,7 @@ public class Line {
 
 	public void addEdge(Edge edge) {
 		if (edges.isEmpty() && edge.isNotStartEdge()) {
-			edges.add(new Edge(edge.getPreStationId(), edge.getPreStationId(), 0, 0));
+			edges.add(Edge.starter(edge.getPreStationId()));
 			edges.add(edge);
 			return;
 		}

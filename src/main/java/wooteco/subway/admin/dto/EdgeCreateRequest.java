@@ -2,36 +2,42 @@ package wooteco.subway.admin.dto;
 
 import javax.validation.constraints.NotNull;
 
+import wooteco.subway.admin.domain.Edge;
+
 public class EdgeCreateRequest {
-    private Long preStationId;
-    @NotNull
-    private Long stationId;
-    private int distance;
-    private int duration;
+	private Long preStationId;
+	@NotNull
+	private Long stationId;
+	private int distance;
+	private int duration;
 
-    private EdgeCreateRequest() {
-    }
+	private EdgeCreateRequest() {
+	}
 
-    public EdgeCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
-    }
+	public EdgeCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
+		this.preStationId = preStationId;
+		this.stationId = stationId;
+		this.distance = distance;
+		this.duration = duration;
+	}
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
+	public Long getPreStationId() {
+		return preStationId;
+	}
 
-    public Long getStationId() {
-        return stationId;
-    }
+	public Long getStationId() {
+		return stationId;
+	}
 
-    public int getDistance() {
-        return distance;
-    }
+	public int getDistance() {
+		return distance;
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public int getDuration() {
+		return duration;
+	}
+
+	public Edge toEdge() {
+		return new Edge(preStationId, stationId, distance, duration);
+	}
 }
