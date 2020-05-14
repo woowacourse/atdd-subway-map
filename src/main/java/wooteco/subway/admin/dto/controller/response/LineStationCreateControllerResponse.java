@@ -1,6 +1,6 @@
 package wooteco.subway.admin.dto.controller.response;
 
-import wooteco.subway.admin.dto.response.LineStationCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineStationCreateServiceResponse;
 import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
 
 public class LineStationCreateControllerResponse {
