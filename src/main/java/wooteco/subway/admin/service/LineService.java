@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
@@ -27,6 +28,9 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if (existsByName(line.getName())) {
+            throw new DuplicateKeyException("중복되는 값을 생성하실 수 없습니다.");
+        }
         return lineRepository.save(line);
     }
 

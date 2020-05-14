@@ -86,9 +86,9 @@ function AdminLine() {
                     color: data.color
                 };
 
+                deleteLineListById(updateLineId);
                 $subwayLineList.innerHTML = "";
                 initDefaultSubwayLines();
-                //todo : 추후 변경된 값만 삭제하는 로직 구현 목표
 
                 const selectedSubwayInfo = {
                     startTime: data.startTime,
@@ -147,17 +147,16 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-            Api.line.get()
-                .then((response) => response.json())
-                .then((data) => {
-                    data.map(line => {
-                        $subwayLineList.insertAdjacentHTML(
-                            "beforeend",
-                            subwayLinesTemplate(line));
-                    })
+        Api.line.get()
+            .then((response) => response.json())
+            .then((data) => {
+                data.map(line => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(line));
                 })
-        }
-    ;
+            })
+    };
 
     const initEventListeners = () => {
             $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
@@ -194,6 +193,18 @@ function AdminLine() {
             );
         }
     ;
+    const deleteLineListById = id => {
+        console.log($subwayLineList);
+        Api.line.get()
+            .then((response) => response.json())
+            .then((data) => {
+                data.map(line => {
+                    $subwayLineList.insertAdjacentHTML(
+                        "beforeend",
+                        subwayLinesTemplate(line));
+                })
+            })
+    }
 
     this.init = () => {
         initDefaultSubwayLines();
