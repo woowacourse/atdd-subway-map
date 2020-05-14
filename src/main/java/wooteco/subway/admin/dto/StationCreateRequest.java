@@ -1,11 +1,11 @@
 package wooteco.subway.admin.dto;
 
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import wooteco.subway.admin.domain.Station;
 
 public class StationCreateRequest {
-    @NotEmpty(message = "역 이름을 입력해야 한다.")
+    @Pattern(regexp = "^(?=^\\D+$)\\S+$", message = "이름은 공백 및 숫자를 포함할 수 없다.")
     private String name;
 
     public StationCreateRequest() {

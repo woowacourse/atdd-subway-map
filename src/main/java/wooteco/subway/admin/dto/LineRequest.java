@@ -2,19 +2,21 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import org.springframework.format.annotation.DateTimeFormat;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
-    @NotEmpty(message = "노선 이름을 입력해야 한다.")
+    @Pattern(regexp = "^\\S+$", message = "이름은 공백을 포함할 수 없다.")
     private String name;
-    @NotEmpty(message = "노선 색상을 입력해야 한다.")
+    @NotEmpty(message = "색상을 입력해야 한다.")
     private String color;
-    @NotNull(message = "첫차 시간을 입력해야 한다.")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
-    @NotNull(message = "막차 시간을 입력해야 한다.")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
-    @NotNull(message = "간격을 입력해야 한다.")
+    @Positive(message = "간격은 1 미만의 값이 올 수 없다.")
     private Integer intervalTime;
 
     public LineRequest() {
