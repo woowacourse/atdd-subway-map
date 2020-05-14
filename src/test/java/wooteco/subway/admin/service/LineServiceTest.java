@@ -1,6 +1,7 @@
 package wooteco.subway.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -52,10 +53,12 @@ public class LineServiceTest {
 
     @Test
     void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        lineService.addLineStation(line.getId(), request);
+        when(lineRepository.save(any())).thenReturn(line);
+
+        lineService.addLineStation(line.getId(), lineStationCreateRequest);
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
@@ -69,6 +72,8 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(any())).thenReturn(line);
+
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -83,6 +88,8 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(any())).thenReturn(line);
+
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);

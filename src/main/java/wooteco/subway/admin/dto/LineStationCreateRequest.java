@@ -6,7 +6,6 @@ import javax.validation.constraints.Positive;
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
-    @NotBlank
     private Long preStationId;
     @NotBlank
     private Long stationId;

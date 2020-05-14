@@ -25,30 +25,34 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineResponse save(Line line) {
+        Line persistLine = lineRepository.save(line);
+        return LineResponse.of(persistLine);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+        return LineResponse.listOf(lines);
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        lineRepository.save(persistLine);
+        return LineResponse.of(persistLine);
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public Line addLineStation(Long lineId, LineStationCreateRequest request) {
-        Line persistLine = lineRepository.findById(lineId)
+    public LineResponse addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineRepository.findById(lineId)
                 .orElseThrow(LineNotFoundException::new);
-        persistLine.addLineStation(request.toLineStation());
-        return lineRepository.save(persistLine);
+        line.addLineStation(lineStationCreateRequest.toLineStation());
+        Line persistLine = lineRepository.save(line);
+        return LineResponse.of(persistLine);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
