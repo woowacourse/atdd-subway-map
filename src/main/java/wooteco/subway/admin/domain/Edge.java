@@ -69,10 +69,10 @@ public class Edge {
 	@Override
 	public String toString() {
 		return "Edge{" +
-				"stationId=" + stationId +
-				", preStationId=" + preStationId +
-				", distance=" + distance +
-				", duration=" + duration +
-				'}';
+			"stationId=" + stationId +
+			", preStationId=" + preStationId +
+			", distance=" + distance +
+			", duration=" + duration +
+			'}';
 	}
 }

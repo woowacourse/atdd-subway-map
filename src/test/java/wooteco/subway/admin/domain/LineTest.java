@@ -11,30 +11,30 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class LineTest {
-    private Line line;
+	private Line line;
 
-    @BeforeEach
-    void setUp() {
-        line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
-        line.addEdge(new Edge(1L, 2L, 10, 10));
-        line.addEdge(new Edge(2L, 3L, 10, 10));
-        System.out.println(line);
-    }
+	@BeforeEach
+	void setUp() {
+		line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
+		line.addEdge(new Edge(1L, 2L, 10, 10));
+		line.addEdge(new Edge(2L, 3L, 10, 10));
+		System.out.println(line);
+	}
 
-    @Test
-    void getLineStations() {
-        List<Long> stationIds = line.getEdgesId();
+	@Test
+	void getLineStations() {
+		List<Long> stationIds = line.getEdgesId();
 
-        assertThat(stationIds.size()).isEqualTo(3);
-        assertThat(stationIds.get(0)).isEqualTo(1L);
-        assertThat(stationIds.get(2)).isEqualTo(3L);
-    }
+		assertThat(stationIds.size()).isEqualTo(3);
+		assertThat(stationIds.get(0)).isEqualTo(1L);
+		assertThat(stationIds.get(2)).isEqualTo(3L);
+	}
 
-    @ParameterizedTest
-    @ValueSource(longs = {1L, 2L, 3L})
-    void removeLineStation(Long stationId) {
-        line.removeEdgeById(stationId);
+	@ParameterizedTest
+	@ValueSource(longs = {1L, 2L, 3L})
+	void removeLineStation(Long stationId) {
+		line.removeEdgeById(stationId);
 
-        assertThat(line.getEdges()).hasSize(2);
-    }
+		assertThat(line.getEdges()).hasSize(2);
+	}
 }

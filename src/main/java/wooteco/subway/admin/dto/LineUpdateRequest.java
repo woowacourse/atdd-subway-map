@@ -47,7 +47,7 @@ public class LineUpdateRequest {
 		return color;
 	}
 
-    public Line toLine() {
-        return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.color);
-    }
+	public Line toLine() {
+		return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.color);
+	}
 }
