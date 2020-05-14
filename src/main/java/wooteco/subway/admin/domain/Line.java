@@ -1,97 +1,96 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
+import wooteco.subway.admin.domain.vo.BgColor;
+import wooteco.subway.admin.domain.vo.LineTimeTable;
+import wooteco.subway.admin.domain.vo.Name;
+import wooteco.subway.admin.domain.vo.Stations;
 
 public class Line {
+
     @Id
     private Long id;
-    private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
-    private Set<LineStation> stations;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @Embedded.Nullable
+    private Name name;
+    @Embedded.Nullable
+    private LineTimeTable lineTimeTable;
+    @Embedded.Empty
+    private Stations stations;
+    @Embedded.Nullable
+    private BgColor bgColor;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, Name name, LineTimeTable lineTimeTable,
+        Stations stations, BgColor bgColor) {
+        this.id = id;
         this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.lineTimeTable = lineTimeTable;
+        this.stations = stations;
+        this.bgColor = bgColor;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(Long id, String name,
+        LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
+        this(id, new Name(name),
+            new LineTimeTable(startTime, endTime, intervalTime),
+            new Stations(new LinkedList<>()),
+            new BgColor(bgColor));
+    }
+
+    public Line(String name,
+        LocalTime startTime, LocalTime endTime, int intervalTime,
+        String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public LineTimeTable getLineTimeTable() {
+        return lineTimeTable;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public Set<LineStation> getStations() {
+    public Stations getStations() {
         return stations;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public BgColor getBgColor() {
+        return bgColor;
     }
 
     public void update(Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
         }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
+        if (line.getLineTimeTable() != null) {
+            this.lineTimeTable = line.getLineTimeTable();
         }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
         }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        stations.addLineStation(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        stations.removeLineStationById(stationId);
     }
 
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public List<Long> getStationIds() {
+        return stations.getStationIds();
     }
 }
