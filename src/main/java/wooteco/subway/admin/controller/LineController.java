@@ -46,7 +46,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showStation(@PathVariable Long id) {
-        return ResponseEntity.ok().body(service.findLineWithStationsById(id));
+        return ResponseEntity.ok().body(service.findLineWithStationsByLineId(id));
     }
 
     @PutMapping("/{id}")

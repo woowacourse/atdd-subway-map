@@ -123,7 +123,7 @@ public class LineServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        LineResponse lineResponse = lineService.findLineWithStationsByLineId(1L);
         assertThat(lineResponse.getStations()).hasSize(3);
     }
 }
