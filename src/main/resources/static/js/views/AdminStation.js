@@ -13,16 +13,16 @@ function AdminStation() {
 
   const validate = stationName => {
     if (!stationName) {
-      throw ERROR_MESSAGE.NOT_EMPTY;
+      throw new Error(ERROR_MESSAGE.NOT_EMPTY);
     }
     if (stationName.includes(" ")) {
-      throw ERROR_MESSAGE.NOT_BLANK;
+      throw new Error(ERROR_MESSAGE.NOT_BLANK);
     }
     if (stationName.match(/[0-9]/)) {
-      throw ERROR_MESSAGE.NOT_NUMBER;
+      throw new Error(ERROR_MESSAGE.NOT_NUMBER);
     }
     if (state.stations.some(({name}) => name === stationName)) {
-      throw ERROR_MESSAGE.NOT_EXIST;
+      throw new Error(ERROR_MESSAGE.NOT_EXIST);
     }
   };
 
@@ -49,7 +49,6 @@ function AdminStation() {
       addStation({ id, name: stationName });
       $stationNameInput.value = "";
     } catch (e) {
-    console.log(e);
       alert(e.message);
     }
   };

@@ -49,7 +49,7 @@ function AdminEdge() {
       return station.id;
     }
     if (required) {
-      throw ERROR_MESSAGE.NOT_FOUND;
+      throw new Error(ERROR_MESSAGE.NOT_FOUND);
     }
   };
 
