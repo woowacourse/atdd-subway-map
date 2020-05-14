@@ -37,6 +37,113 @@ public class Line {
         this(null, name, startTime, endTime, intervalTime, bgColor);
     }
 
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (lineStation == null) {
+            throw new NullPointerException("지하철역이 없슴니다.");
+        }
+        if (stations.isEmpty()) {
+            addStartStation(lineStation);
+        }
+        if (Objects.isNull(lineStation.getPreStationId())) {
+            addInFirst(lineStation);
+            return;
+        }
+        addInMiddle(lineStation);
+        stations.add(lineStation);
+    }
+
+    private void addInFirst(LineStation lineStation) {
+        stations.stream()
+                .filter(station -> Objects.isNull(station.getPreStationId()))
+                .findFirst()
+                .ifPresent(station -> {
+                    if(Objects.equals(lineStation.getPreStationId(), station.getStationId())){
+                        station.updatePreLineStation(lineStation.getPreStationId());
+                        addStartStation(lineStation);
+                        return;
+                    }
+                    station.updatePreLineStation(lineStation.getStationId());
+                    stations.add(lineStation);
+                });
+    }
+
+    private void addInMiddle(LineStation lineStation) {
+        stations.stream()
+                .filter(station -> Objects.equals(lineStation.getStationId(), station.getStationId()))
+                .findFirst()
+                .ifPresent(station -> {
+                    if (Objects.isNull(station.getStationId())) {
+                        addStartStation(lineStation);
+                    }
+                    station.updatePreLineStation(lineStation.getStationId());
+                });
+    }
+
+    private void addStartStation(LineStation lineStation) {
+        if (!Objects.isNull(lineStation.getPreStationId())) {
+            stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
+        }
+    }
+
+    public void removeLineStationById(Long stationId) {
+        LineStation deleteTarget = stations.stream()
+                .filter(station -> station.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+        stations.stream()
+                .filter(station -> stationId.equals(station.getPreStationId()))
+                .findFirst()
+                .ifPresent(station -> station.updatePreLineStation(deleteTarget.getPreStationId()));
+        stations.remove(deleteTarget);
+    }
+
+    public List<Long> findLineStationsId() {
+        List<Long> linesStationsId = new ArrayList<>();
+        if (stations.isEmpty()) {
+            return linesStationsId;
+        }
+        LineStation startStation = stations.stream()
+                .filter(station -> Objects.isNull(station.getPreStationId()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        linesStationsId.add(startStation.getStationId());
+
+        while (linesStationsId.size() != stations.size()) {
+            linesStationsId.add(stations.stream()
+                    .filter(station -> Objects.equals(linesStationsId.get(linesStationsId.size() - 1),
+                            station.getPreStationId()))
+                    .findFirst()
+                    .map(lineStation -> lineStation.getStationId())
+                    .orElseThrow(NoSuchElementException::new));
+        }
+        return linesStationsId;
+    }
+
+    public boolean isStationsEmpty() {
+        return stations.isEmpty();
+    }
+
     public Long getId() {
         return id;
     }
@@ -71,74 +178,5 @@ public class Line {
 
     public String getBgColor() {
         return bgColor;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        if (lineStation == null) {
-            throw new NullPointerException("지하철역이 없슴니다.");
-        }
-
-        stations.stream()
-                .filter(existLineStation -> Objects.equals(existLineStation.getPreStationId()
-                        , lineStation.getPreStationId()))
-                .findFirst()
-                .ifPresent(existLineStation -> existLineStation.updatePreLineStation(
-                        lineStation.getStationId()));
-        stations.add(lineStation);
-    }
-
-    public void removeLineStationById(Long stationId) {
-        LineStation deleteTarget = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-        stations.stream()
-                .filter(station -> stationId.equals(station.getPreStationId()))
-                .findFirst()
-                .ifPresent(station -> station.updatePreLineStation(deleteTarget.getPreStationId()));
-        stations.remove(deleteTarget);
-    }
-
-    public List<Long> findLineStationsId() {
-        List<Long> linesStationsId = new ArrayList<>();
-        if (stations.isEmpty()) {
-            return linesStationsId;
-        }
-        LineStation startStation = stations.stream()
-                .filter(station -> station.getPreStationId() == null)
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-
-        linesStationsId.add(startStation.getStationId());
-
-        while (linesStationsId.size() != stations.size()) {
-            linesStationsId.add(stations.stream()
-                    .filter(station -> Objects.equals(linesStationsId.get(linesStationsId.size() - 1),
-                            station.getPreStationId()))
-                    .findFirst()
-                    .map(LineStation::getStationId)
-                    .orElseThrow(NoSuchElementException::new));
-        }
-        return linesStationsId;
     }
 }

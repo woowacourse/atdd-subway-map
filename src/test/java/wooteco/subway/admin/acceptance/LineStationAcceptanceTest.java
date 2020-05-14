@@ -20,6 +20,7 @@ import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.repository.StationRepository;
 
 @Sql({"/truncate.sql", "/schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -62,6 +63,7 @@ public class LineStationAcceptanceTest {
         StationResponse station1 = createStation("잠실역");
         StationResponse station2 = createStation("강남역");
         StationResponse station3 = createStation("삼성역");
+        StationResponse station4 = createStation("선릉역");
 
         LineResponse line = createLine("2호선");
 
@@ -73,11 +75,15 @@ public class LineStationAcceptanceTest {
         LineResponse lineStation = getLine(line.getId());
         assertThat(lineStation.getStations().size()).isEqualTo(3);
 
+        addLineStation(line.getId(), null, station4.getId());
+        lineStation = getLine(line.getId());
+        assertThat(lineStation.getStations().size()).isEqualTo(4);
+
         //when
         deleteLineStation(line.getId(), station2.getId());
         //then
         LineResponse lineStationAfterDelete = getLine(line.getId());
-        assertThat(lineStationAfterDelete.getStations().size()).isEqualTo(2);
+        assertThat(lineStationAfterDelete.getStations().size()).isEqualTo(3);
     }
 
     private StationResponse createStation(String name) {

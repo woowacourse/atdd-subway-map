@@ -57,7 +57,7 @@ function AdminEdge() {
       departInput = null;
     }
     else {
-      departInput = subwayStations.find(station => station.name === departInput).id
+      departInput = subwayStations.find(station => station.name === $departStationInput.value.trim()).id
     }
     console.log(departInput);
       const newLineStation = {

@@ -11,6 +11,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,8 +35,10 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public Line showLine(Long id) {
-        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    public LineResponse showLine(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> showLines() {
@@ -45,10 +48,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line updateLine(Long id, Line line) {
+    public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return lineRepository.save(persistLine);
+        lineRepository.save(persistLine);
+        return LineResponse.of(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -58,19 +62,14 @@ public class LineService {
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
-        if (line.getStations().isEmpty() && request.getPreStationId() != null) {
-            LineStation initialLineStation = new LineStation(null, request.getPreStationId(), 0, 0);
-            line.addLineStation(initialLineStation);
-        }
         LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
                 request.getDistance(), request.getDuration());
-
         line.addLineStation(lineStation);
         Line persistLine = lineRepository.save(line);
         if (line.getId() == null) {
             return LineResponse.of(line);
         }
-        return findLineWithStationsById(persistLine.getId());
+        return LineResponse.of(persistLine, stationRepository.findAllById(persistLine.findLineStationsId()));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
