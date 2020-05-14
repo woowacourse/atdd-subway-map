@@ -2,7 +2,6 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.exception.DuplicationNameException;
-import wooteco.subway.admin.domain.exception.NotFoundLineException;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -85,10 +82,5 @@ public class LineController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(value = {NotFoundLineException.class, DuplicationNameException.class})
-    public ResponseEntity<String> exceptionHandler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
