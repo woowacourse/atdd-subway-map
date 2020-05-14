@@ -1,7 +1,6 @@
 package wooteco.subway.admin.dto;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
 public class LineStationCreateRequest {

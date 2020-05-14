@@ -38,14 +38,14 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity findLineById(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.showLine(id));
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
-        Line line = lineService.updateLine(id, view.toLine());
-        return ResponseEntity.ok().body(line);
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest view) {
+        LineResponse lineResponse = lineService.updateLine(id, view.toLine());
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @DeleteMapping("/lines/{id}")
@@ -55,15 +55,15 @@ public class LineController {
     }
 
     @PostMapping("/lines/{id}/stations")
-    public ResponseEntity addLineStation(@PathVariable Long id,
-                                         @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+    public ResponseEntity<LineResponse> addLineStation(@PathVariable Long id,
+                                                       @RequestBody LineStationCreateRequest lineStationCreateRequest) {
         LineResponse lineResponse = lineService.addLineStation(id, lineStationCreateRequest);
         return ResponseEntity.created(URI.create("/line/" + id + "/stations"))
                 .body(lineResponse);
     }
 
     @GetMapping("/lines/{id}/stations")
-    public ResponseEntity findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.findLineWithStationsById(id);
         return ResponseEntity.ok()
                 .body(lineResponse);

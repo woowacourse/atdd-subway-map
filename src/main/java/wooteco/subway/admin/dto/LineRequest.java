@@ -1,6 +1,5 @@
 package wooteco.subway.admin.dto;
 
-import org.springframework.beans.factory.annotation.Value;
 import wooteco.subway.admin.domain.Line;
 
 import javax.validation.constraints.NotEmpty;
