@@ -38,6 +38,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return Line.of(this);
+        return new Line(name, backgroundColor, startTime, endTime, intervalTime);
     }
 }

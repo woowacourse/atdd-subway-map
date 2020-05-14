@@ -10,17 +10,17 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/adminLine")
+    @GetMapping("/admin-line")
     public String line() {
         return "admin-line";
     }
 
-    @GetMapping("adminStation")
+    @GetMapping("admin-station")
     public String station() {
         return "admin-station";
     }
 
-    @GetMapping("/adminLineStation")
+    @GetMapping("/admin-line-station")
     public String lineStation() {
         return "admin-edge";
     }

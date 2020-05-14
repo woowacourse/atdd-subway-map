@@ -34,7 +34,7 @@ public class LineStationController {
     }
 
     @DeleteMapping("/{lineId}/{stationId}")
-    public ResponseEntity<Object> deleteById(@PathVariable("lineId") Long lineId,
+    public ResponseEntity<Void> deleteById(@PathVariable("lineId") Long lineId,
         @PathVariable("stationId") Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

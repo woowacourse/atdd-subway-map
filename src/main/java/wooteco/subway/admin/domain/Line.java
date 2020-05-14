@@ -3,11 +3,10 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
-
-import wooteco.subway.admin.dto.req.LineRequest;
 
 public class Line {
     @Id
@@ -37,15 +36,6 @@ public class Line {
         this.lineStations = LineStations.createEmpty();
     }
 
-    public static Line of(LineRequest lineRequest) {
-        return new Line(
-            lineRequest.getName(),
-            lineRequest.getBgColor(),
-            lineRequest.getStartTime(),
-            lineRequest.getEndTime(),
-            lineRequest.getIntervalTime());
-    }
-
     public void addLineStation(LineStation lineStation) {
         lineStations.add(lineStation);
     }
@@ -59,9 +49,7 @@ public class Line {
     }
 
     public void update(Line line) {
-        if (line == null) {
-            throw new AssertionError();
-        }
+        Objects.requireNonNull(line);
         if (line.getName() != null) {
             this.name = line.getName();
         }

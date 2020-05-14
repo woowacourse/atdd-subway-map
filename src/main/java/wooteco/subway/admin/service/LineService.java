@@ -45,8 +45,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         Line line = findById(id);
-        List<Station> stations = findStations(line);
-        return LineResponse.of(line, stations);
+        return lineResponse(line);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
@@ -54,11 +53,15 @@ public class LineService {
             Line line = findById(id);
             line.update(lineRequest.toLine());
             lineRepository.save(line);
-            List<Station> stations = findStations(line);
-            return LineResponse.of(line, stations);
+            return lineResponse(line);
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("중복된 노선 이름은 허용되지 않습니다.");
         }
+    }
+
+    private LineResponse lineResponse(Line line) {
+        List<Station> stations = findStations(line);
+        return LineResponse.of(line, stations);
     }
 
     public void deleteLineById(Long id) {
@@ -69,8 +72,7 @@ public class LineService {
         Line line = findById(id);
         line.addLineStation(request.toLineStation());
         lineRepository.save(line);
-        List<Station> stations = findStations(line);
-        return LineResponse.of(line, stations);
+        return lineResponse(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
@@ -82,8 +84,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineByStationId(Long stationId) {
         Line line = findById(stationId);
-        List<Station> stations = findStations(line);
-        return LineResponse.of(line, stations);
+        return lineResponse(line);
     }
 
     private Line findById(Long id) {
