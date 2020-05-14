@@ -2,19 +2,16 @@ package wooteco.subway.admin.dto.request;
 
 import wooteco.subway.admin.domain.LineStation;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
 
 public class LineStationCreateRequest {
-    @NotBlank
-    @NotNull
+    @Min(value = 1)
     private Long preStationId;
-    @NotBlank
-    @NotNull
+    @Min(value = 1)
     private Long stationId;
-    @NotBlank
+    @Min(value = 0)
     private int distance;
-    @NotBlank
+    @Min(value = 0)
     private int duration;
 
     private LineStationCreateRequest() {

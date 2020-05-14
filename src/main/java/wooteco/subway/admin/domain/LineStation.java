@@ -15,7 +15,7 @@ public class LineStation {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private LineStation() {
+    public LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {

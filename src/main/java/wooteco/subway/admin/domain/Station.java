@@ -11,7 +11,7 @@ public class Station {
     private String name;
     private LocalDateTime createdAt;
 
-    private Station() {
+    public Station() {
     }
 
     public Station(String name) {

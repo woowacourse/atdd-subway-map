@@ -58,7 +58,7 @@ public class LineStationAcceptanceTest {
 		addStationOnLine("1", stationResponse3.getId(), stationResponse4.getId());
 		// Then 지하철역이 노선에 추가 되었다.
 		LineWithStationsResponse persistLine  = getLineBy(lineResponse.getId());
-		assertEquals(persistLine.getStations().size(), 4);
+		assertEquals(4, persistLine.getStations().size());
 
 		// When 지하철 노선의 지하철역 목록 조회 요청을 한다.
 		// Then 지하철역 목록을 응답 받는다.

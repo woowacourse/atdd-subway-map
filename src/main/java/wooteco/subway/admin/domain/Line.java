@@ -23,7 +23,7 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Line() {
+    public Line() {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
