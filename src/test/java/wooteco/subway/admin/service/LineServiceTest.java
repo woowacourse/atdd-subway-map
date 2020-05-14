@@ -49,8 +49,7 @@ public class LineServiceTest {
     @Test
     void saveLinesWhenHaveSameNames() {
         Line duplicatedLine = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
-        when(lineRepository.findLineWithStationsByName(line.getName())).thenReturn(Optional.ofNullable(line));
-
+        when(lineRepository.save(duplicatedLine)).thenThrow(new IllegalArgumentException("중복된 지하철 역입니다. name = " + duplicatedLine.getName()));
         assertThatThrownBy(() -> lineService.save(duplicatedLine))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("중복된 지하철 역입니다. name = " + duplicatedLine.getName());
@@ -61,11 +60,9 @@ public class LineServiceTest {
     void updateLineWhenExistSameName() {
         Line initial = new Line(2L, "3호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
         Line updated = new Line(2L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "", new HashSet<>());
-
         when(lineRepository.findById(initial.getId())).thenReturn(Optional.of(initial));
-
-        when(lineRepository.findLineWithStationsByName(line.getName())).thenReturn(Optional.of(line));
-
+        initial.update(updated);
+        when(lineRepository.save(initial)).thenThrow(new IllegalArgumentException("중복된 지하철 역입니다. name = " + updated.getName()));
         assertThatThrownBy(() -> lineService.updateLine(initial.getId(), updated))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("중복된 지하철 역입니다. name = " + updated.getName());
