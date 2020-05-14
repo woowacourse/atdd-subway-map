@@ -34,7 +34,6 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
@@ -101,6 +100,7 @@ public class LineAcceptanceTest {
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("name", "잠실");
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");

@@ -1,11 +1,18 @@
 package wooteco.subway.admin.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
+    @NotBlank
     private Long preStationId;
+    @NotBlank
     private Long stationId;
+    @Positive
     private int distance;
+    @Positive
     private int duration;
 
     private LineStationCreateRequest() {
