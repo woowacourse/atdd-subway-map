@@ -34,7 +34,7 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public void validateTitle(Line line) {
+    private void validateTitle(Line line) {
         lineRepository.findByTitle(line.getTitle())
                 .ifPresent(x -> {
                     throw new DuplicationNameException();
@@ -48,7 +48,7 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    public void validateTitleWhenUpdateInfo(Long id, Line line) {
+    private void validateTitleWhenUpdateInfo(Long id, Line line) {
         if (isNotChangeTitle(id, line)) {
             return;
         }

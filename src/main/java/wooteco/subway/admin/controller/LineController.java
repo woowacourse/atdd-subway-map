@@ -88,7 +88,7 @@ public class LineController {
     }
 
     @ExceptionHandler(value = {NotFoundLineException.class, DuplicationNameException.class})
-    public ResponseEntity<String> exceptionHandler(Exception e) {
+    public ResponseEntity<String> exceptionHandler(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

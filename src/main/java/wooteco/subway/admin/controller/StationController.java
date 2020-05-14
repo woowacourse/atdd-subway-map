@@ -30,8 +30,8 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station persistStation = stationService.save(stationRequest.getName());
         return ResponseEntity
-            .created(URI.create("/stations/" + persistStation.getId()))
-            .body(StationResponse.of(persistStation));
+                .created(URI.create("/stations/" + persistStation.getId()))
+                .body(StationResponse.of(persistStation));
     }
 
     @GetMapping("/stations")
