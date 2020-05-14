@@ -6,37 +6,46 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import wooteco.subway.admin.domain.Line;
 
 public class LineUpdateRequest {
-    @JsonAlias("title")
-    private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private Integer intervalTime;
+	@JsonAlias("title")
+	private String name;
+	private LocalTime startTime;
+	private LocalTime endTime;
+	private Integer intervalTime;
 
-    @JsonAlias("bgColor")
-    private String color;
+	@JsonAlias("bgColor")
+	private String color;
 
-    private LineUpdateRequest() {
-    }
+	private LineUpdateRequest() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	public LineUpdateRequest(String name, LocalTime startTime, LocalTime endTime, Integer intervalTime,
+		String color) {
+		this.name = name;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.intervalTime = intervalTime;
+		this.color = color;
+	}
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
+	public LocalTime getStartTime() {
+		return startTime;
+	}
 
-    public Integer getIntervalTime() {
-        return intervalTime;
-    }
+	public LocalTime getEndTime() {
+		return endTime;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public Integer getIntervalTime() {
+		return intervalTime;
+	}
+
+	public String getColor() {
+		return color;
+	}
 
     public Line toLine() {
         return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.color);

@@ -24,6 +24,18 @@ public class LineCreateRequest {
     private LineCreateRequest() {
     }
 
+    public LineCreateRequest(String name,
+        LocalTime startTime,
+        LocalTime endTime,
+        Integer intervalTime,
+        String bgColor) {
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
+    }
+
     public String getName() {
         return name;
     }

@@ -9,6 +9,10 @@ public class StationCreateRequest {
     private StationCreateRequest() {
     }
 
+    public StationCreateRequest(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
