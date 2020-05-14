@@ -1,5 +1,6 @@
 package wooteco.subway.admin.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -13,7 +14,9 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
     private int intervalTime;
     private LocalDateTime createdAt;
