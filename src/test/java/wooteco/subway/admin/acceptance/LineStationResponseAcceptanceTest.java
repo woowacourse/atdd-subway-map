@@ -120,18 +120,18 @@ public class LineStationResponseAcceptanceTest {
         //And 새로 추가한 지하철역을 목록에서 찾는다.
 
         //When 지하철역 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-//        deleteStationByLineId(1L, 3L);
-//        LineResponse deleteLineStationsByLineId = findLineStationsByLineId(1L);
+        deleteStationByLineId(2L, 6L);
+        LineResponse deleteLineStationsByLineId = findLineStationsByLineId(2L);
         //Then 지하철역이 노선에서 제거 되었다.
-//        assertThat(deleteLineStationsByLineId.getStations()).hasSize(2);
+        assertThat(deleteLineStationsByLineId.getStations()).hasSize(2);
 
         //When 지하철 노선의 자하철역 목록 조회 요청을 한다.
         //Then 지하철역 목록을 응답 받는다.
-//        List<Station> deleteStations = deleteLineStationsByLineId.getStations();
+        List<Station> deleteStations = deleteLineStationsByLineId.getStations();
         //ANd 제외한 지하철역이 목록에 존재하지 않는다.
-//        for (Station deleteStation : deleteStations) {
-//            assertThat(deleteStation.getId()).isNotEqualTo(3L);
-//        }
+        for (Station deleteStation : deleteStations) {
+            assertThat(deleteStation.getId()).isNotEqualTo(3L);
+        }
 
     }
 
