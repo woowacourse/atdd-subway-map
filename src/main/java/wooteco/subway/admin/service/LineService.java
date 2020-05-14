@@ -8,6 +8,7 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.AlreadyExistDataException;
+import wooteco.subway.admin.exception.NotExistDataException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -45,7 +46,7 @@ public class LineService {
     }
 
     public Line addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NotExistDataException::new);
         LineStation lineStation = request.toLineStation();
         line.addLineStation(lineStation);
         return lineRepository.save(line);
@@ -108,7 +109,7 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(id).orElseThrow(NotExistDataException::new);
     }
 
     public void deleteLineById(Long id) {

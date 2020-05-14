@@ -102,12 +102,13 @@ function AdminLine() {
     const createLine = (data, onCompleteCreateLine) => {
         api.line.create(data)
             .then(response => {
-                if (response.status === HTTP_STATUS.CONFLICT) {
-                    alert("이미 등록된 노선입니다!");
-                } else if (response.status === HTTP_STATUS.CREATED) {
+                if (response.status === HTTP_STATUS.CREATED) {
                     response.json()
                         .then(line => onCompleteCreateLine(line))
                         .catch(() => alert(TRANSFER_ERROR_MESSAGE.WARN))
+                } else {
+                    response.text()
+                        .then(errorMessage => alert(errorMessage));
                 }
             })
     };

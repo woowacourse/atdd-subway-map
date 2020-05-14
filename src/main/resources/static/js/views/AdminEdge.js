@@ -119,10 +119,10 @@ function AdminEdge() {
         api.line
             .registerLineStation(lineId, lineStation)
             .then(response => {
-                if (response.status === HTTP_STATUS.CONFLICT) {
-                    alert("대상역이 중복되거나, 이전역에 입력된 역이 존재하지 않네요!");
-                } else if (response.status === HTTP_STATUS.CREATED) {
+                if (response.status === HTTP_STATUS.CREATED) {
                     response.json().then(() => onCompleteCreateLineStation());
+                } else {
+                    response.text().then(errorMessage => alert(errorMessage));
                 }
             })
     };

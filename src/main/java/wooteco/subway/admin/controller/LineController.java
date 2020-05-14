@@ -7,6 +7,9 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.AlreadyExistDataException;
+import wooteco.subway.admin.exception.InvalidDataException;
+import wooteco.subway.admin.exception.NotExistDataException;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
@@ -23,16 +26,11 @@ public class LineController {
 
     @PostMapping("")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            Line line = lineRequest.toLine();
-            Line persistLine = lineService.save(line);
-            return ResponseEntity
-                    .created(URI.create("/lines/" + persistLine.getId()))
-                    .body(LineResponse.from(line));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(null);
-        }
+        Line line = lineRequest.toLine();
+        Line persistLine = lineService.save(line);
+        return ResponseEntity
+                .created(URI.create("/lines/" + persistLine.getId()))
+                .body(LineResponse.from(line));
     }
 
     @GetMapping("")
@@ -43,12 +41,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
-        try {
-            LineResponse lineResponse = lineService.findStationsByLineId(id);
-            return ResponseEntity.ok().body(lineResponse);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        LineResponse lineResponse = lineService.findStationsByLineId(id);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @GetMapping("/{id}/stations")
@@ -59,13 +53,9 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            Line line = lineRequest.toLine();
-            lineService.updateLine(id, line);
-            return ResponseEntity.ok().body(LineResponse.from(line));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
+        Line line = lineRequest.toLine();
+        lineService.updateLine(id, line);
+        return ResponseEntity.ok().body(LineResponse.from(line));
     }
 
     @DeleteMapping("/{id}")
@@ -77,19 +67,33 @@ public class LineController {
     @PostMapping("/{id}/line-stations")
     public ResponseEntity registerStation(@PathVariable Long id,
                                           @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        try {
-            Line line = lineService.addLineStation(id, lineStationCreateRequest);
-            return ResponseEntity
-                    .created(URI.create("/lines/" + id))
-                    .body(LineResponse.from(line));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
+        Line line = lineService.addLineStation(id, lineStationCreateRequest);
+        return ResponseEntity
+                .created(URI.create("/lines/" + id))
+                .body(LineResponse.from(line));
     }
 
     @DeleteMapping("/{lineId}/line-stations/{stationId}")
     public ResponseEntity deleteLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(AlreadyExistDataException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String aedException(AlreadyExistDataException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(NotExistDataException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String nedException(NotExistDataException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String idException(InvalidDataException e) {
+        return e.getMessage();
     }
 }

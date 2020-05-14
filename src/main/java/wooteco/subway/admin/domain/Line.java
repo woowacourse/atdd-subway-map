@@ -164,7 +164,7 @@ public class Line {
 		boolean hasAnyLineStations = !this.stations.isEmpty();
 		if (hasAnyLineStations) {
 			LineStation previousDepartureLineStation = findDepartureLineStation()
-					.orElseThrow(IllegalArgumentException::new);
+					.orElseThrow(NotExistDataException::new);
 			previousDepartureLineStation.updatePreLineStation(newLineStation.getStationId());
 		}
 
