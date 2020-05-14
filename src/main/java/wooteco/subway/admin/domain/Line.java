@@ -2,13 +2,7 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.data.annotation.Id;
 
@@ -110,11 +104,8 @@ public class Line {
         Long preStationId = lineStation.getPreStationId();
         Long stationId = lineStation.getStationId();
 
-        Iterator iterator = lineStations.iterator();
-        while (iterator.hasNext()) {
-            LineStation selectedLineStation = (LineStation)iterator.next();
-            if (selectedLineStation.getPreStationId().equals(preStationId)
-                && !selectedLineStation.getStationId().equals(stationId)) {
+        for (LineStation selectedLineStation : lineStations) {
+            if (selectedLineStation.isSamePreStationId(preStationId) && !selectedLineStation.isSameStationId(stationId)) {
                 selectedLineStation.setPreStationId(stationId);
                 break;
             }
@@ -122,31 +113,22 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        Long preStationId = 0L;
-        Iterator iterator = lineStations.iterator();
-        while (iterator.hasNext()) {
-            LineStation selectedLineStation = (LineStation)iterator.next();
-            if (selectedLineStation.getStationId().equals(stationId)) {
-                preStationId = selectedLineStation.getPreStationId();
-                break;
-            }
-        }
-        lineStations.removeIf(lineStation -> lineStation.getStationId().equals(stationId));
-        iterator = lineStations.iterator();
-        while (iterator.hasNext()) {
-            LineStation selectedLineStation = (LineStation)iterator.next();
-            if (selectedLineStation.getPreStationId().equals(stationId)) {
-                selectedLineStation.setPreStationId(preStationId);
-                break;
-            }
-        }
+        LineStation targetLineStation = lineStations.stream()
+                .filter(it -> it.isSameStationId(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        lineStations.stream()
+                .filter(it -> it.isSamePreStationId(stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
+
+        lineStations.remove(targetLineStation);
     }
 
     public List<Long> findLineStationsId() {
         Map<Long, Long> idMap = new HashMap<>();
-        Iterator iterator = lineStations.iterator();
-        while (iterator.hasNext()) {
-            LineStation lineStation = (LineStation)iterator.next();
+        for (LineStation lineStation : lineStations) {
             idMap.put(lineStation.getPreStationId(), lineStation.getStationId());
         }
         List<Long> stations = new ArrayList<>();
