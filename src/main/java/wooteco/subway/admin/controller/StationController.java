@@ -36,7 +36,7 @@ public class StationController {
 
     @GetMapping("/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> responses = StationResponse.toList(stationRepository.findAll());
+        List<StationResponse> responses = StationResponse.listOf(stationRepository.findAll());
         return ResponseEntity.ok().body(responses);
     }
 

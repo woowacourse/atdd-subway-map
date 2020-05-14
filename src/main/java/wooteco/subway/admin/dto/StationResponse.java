@@ -24,7 +24,7 @@ public class StationResponse {
         this.createdAt = createdAt;
     }
 
-    public static List<StationResponse> toList(List<Station> stations) {
+    public static List<StationResponse> listOf(List<Station> stations) {
         return stations.stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());

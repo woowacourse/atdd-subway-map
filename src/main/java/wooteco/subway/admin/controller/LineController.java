@@ -1,7 +1,5 @@
 package wooteco.subway.admin.controller;
 
-import static java.util.stream.Collectors.*;
-
 import java.net.URI;
 import java.util.List;
 
@@ -82,10 +80,6 @@ public class LineController {
     @GetMapping("/lines/{id}/stations")
     public ResponseEntity<List<StationResponse>> getStations(@PathVariable Long id) {
         LineResponse response = lineService.findLineWithStationsById(id);
-        List<StationResponse> stationResponses = response.getStations()
-            .stream()
-            .map(StationResponse::of)
-            .collect(toList());
-        return ResponseEntity.ok(stationResponses);
+        return ResponseEntity.ok(response.getStations());
     }
 }
