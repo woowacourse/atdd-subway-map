@@ -1,12 +1,14 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicateLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class LineService {
     final private LineRepository lineRepository;
@@ -28,8 +31,16 @@ public class LineService {
     public LineResponse save(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getTitle(), lineRequest.getStartTime(), lineRequest.getEndTime(),
                 lineRequest.getIntervalTime(), lineRequest.getBgColor());
+        lineRepository.findByTitle(line.getTitle())
+                .ifPresent(this::throwDuplicateException);
+
         Line saveLine = lineRepository.save(line);
         return LineResponse.of(saveLine);
+    }
+
+    private void throwDuplicateException(Line line) {
+        System.out.println("중복 발생");
+        throw new DuplicateLineException(line.getTitle());
     }
 
     public Station save(Station station) {
@@ -68,7 +79,7 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        if(request.hasNotAnyId()) {
+        if (request.hasNotAnyId()) {
             convertNameToId(request);
         }
         Line line = lineRepository.findById(id)
@@ -82,7 +93,7 @@ public class LineService {
     }
 
     private void convertNameToId(LineStationCreateRequest request) {
-        if(!request.getPreStationName().isEmpty()) {
+        if (!request.getPreStationName().isEmpty()) {
             Station preStation = stationRepository.findByName(request.getPreStationName())
                     .orElseThrow(IllegalArgumentException::new);
             request.setPreStationId(preStation.getId());
@@ -120,7 +131,7 @@ public class LineService {
     }
 
     private void checkSameId(List<Station> stations, LineStation lineStation, Station station) {
-        if(station.getId() == lineStation.getStationId()) {
+        if (station.getId() == lineStation.getStationId()) {
             stations.add(station);
         }
     }

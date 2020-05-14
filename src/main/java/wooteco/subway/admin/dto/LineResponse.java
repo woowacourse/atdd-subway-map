@@ -46,12 +46,8 @@ public class LineResponse {
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(it -> LineResponse.of(it))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
-    }
-
-    public static LineResponse listOf(Line line, List<Station> stations) {
-        return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations, line.getBgColor());
     }
 
     public Long getId() {
