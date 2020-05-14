@@ -94,7 +94,7 @@ function AdminEdge() {
       .then(data => {
         const listItem = listItemTemplate(data);
         $subwayLinesSlider.insertAdjacentHTML("beforeend", listItem);
-      });
+      }).catch(error => alert(error));
     createSubwayEdgeModal.toggle();
     location.href = location.href;
   };

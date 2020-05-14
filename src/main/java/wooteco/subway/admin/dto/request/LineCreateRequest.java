@@ -3,21 +3,24 @@ package wooteco.subway.admin.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public class LineCreateRequest {
+    @NotNull
+    @NotBlank
     private String name;
-    @Pattern(regexp = "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)\n", message = "hh:mm:ss 의 형태가 아닙니다.")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime startTime;
-    @Pattern(regexp = "(?:[01]\\d|2[0123]):(?:[012345]\\d):(?:[012345]\\d)\n", message = "hh:mm:ss 의 형태가 아닙니다.")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime endTime;
     private int intervalTime;
+    @NotNull
+    @NotBlank
     private String lineColor;
 
-    public LineCreateRequest() {
+    private LineCreateRequest() {
     }
 
     public String getName() {

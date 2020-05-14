@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
@@ -22,10 +23,12 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
+        validate(name, lineColor);
+
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -37,6 +40,16 @@ public class Line {
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
         this(null, name, startTime, endTime, intervalTime, lineColor);
+    }
+
+    private void validate(String name, String lineColor) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("노선 이름이 입력되지 않았습니다.");
+        }
+
+        if (StringUtils.isBlank(lineColor)) {
+            throw new IllegalArgumentException("노선 색상이 입력되지 않았습니다.");
+        }
     }
 
     public void addLineStationOnFirst(LineStation inputLineStation) {
