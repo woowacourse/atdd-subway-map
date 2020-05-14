@@ -10,10 +10,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.request.LineStationCreateRequest;
 import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
+import wooteco.subway.admin.dto.view.request.LineStationCreateViewRequest;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -100,8 +100,8 @@ public class LineStationAcceptanceTest {
 	}
 
 	private void addStationOnLine(String lineId, Long preStationId, Long stationId) {
-		LineStationCreateRequest lineStationCreateRequest =
-				new LineStationCreateRequest(preStationId, stationId, 10, 10);
+		LineStationCreateViewRequest lineStationCreateRequest =
+				new LineStationCreateViewRequest(preStationId, stationId, 10, 10);
 
 		given().
 				body(lineStationCreateRequest).

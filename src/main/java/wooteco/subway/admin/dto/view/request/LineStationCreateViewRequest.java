@@ -1,10 +1,8 @@
-package wooteco.subway.admin.dto.request;
-
-import wooteco.subway.admin.domain.LineStation;
+package wooteco.subway.admin.dto.view.request;
 
 import javax.validation.constraints.Min;
 
-public class LineStationCreateRequest {
+public class LineStationCreateViewRequest {
     @Min(value = 1)
     private Long preStationId;
     @Min(value = 1)
@@ -14,18 +12,14 @@ public class LineStationCreateRequest {
     @Min(value = 0)
     private int duration;
 
-    private LineStationCreateRequest() {
+    private LineStationCreateViewRequest() {
     }
 
-    public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStationCreateViewRequest(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
-    }
-
-    public LineStation toLineStation() {
-        return new LineStation(preStationId, stationId, distance, duration);
     }
 
     public Long getPreStationId() {

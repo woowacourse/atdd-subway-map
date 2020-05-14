@@ -6,7 +6,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.controller.request.LineCreateControllerRequest;
-import wooteco.subway.admin.dto.request.LineStationCreateRequest;
+import wooteco.subway.admin.dto.controller.request.LineStationCreateControllerRequest;
 import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 import wooteco.subway.admin.repository.LineRepository;
@@ -33,19 +33,19 @@ public class LineService {
 	}
 
 	@Transactional
-	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
+	public void addLineStation(Long lineId, LineStationCreateControllerRequest lineStationCreateControllerRequest) {
 		Line persistLine = lineRepository.findById(lineId)
 				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
 
-		LineStation lineStation = lineStationCreateRequest.toLineStation();
+		LineStation lineStation = lineStationCreateControllerRequest.toLineStation();
 
 		if (lineStation.isFirstLineStation()) {
-			persistLine.addLineStationOnFirst(lineStationCreateRequest.toLineStation());
+			persistLine.addLineStationOnFirst(lineStationCreateControllerRequest.toLineStation());
 			lineRepository.save(persistLine);
 			return;
 		}
 
-		persistLine.addLineStation(lineStationCreateRequest.toLineStation());
+		persistLine.addLineStation(lineStationCreateControllerRequest.toLineStation());
 		lineRepository.save(persistLine);
 	}
 
