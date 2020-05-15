@@ -95,47 +95,41 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
+    public void addLineStation(LineStation newLineStation) {
         List<Long> ids = this.findLineStationsId();
-        if (ids.size() == 0 || ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
-            stations.add(lineStation);
+        if (isLineStationEmpty(ids) || isNewLineStationLastLineStation(newLineStation, ids)) {
+            stations.add(newLineStation);
             return;
         }
-        if (lineStation.isStartStation()) {
+        if (newLineStation.isStartStation()) {
             stations.stream()
-                .filter(station -> station.isStartStation())
+                .filter(LineStation::isStartStation)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("출발역이 존재하지 않습니다."))
-                .updatePreLineStation(lineStation.getStationId());
-            stations.add(lineStation);
+                .updatePreStationIdWithIdOf(newLineStation);
+            stations.add(newLineStation);
             return;
         }
         stations.stream()
-            .filter(station -> lineStation.getPreStationId().equals(station.getPreStationId()))
+            .filter(newLineStation::hasSamePreStationIdWith)
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 없습니다."))
-            .updatePreLineStation(lineStation.getStationId());
-        stations.add(lineStation);
+            .updatePreStationIdWithIdOf(newLineStation);
+        stations.add(newLineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        Long previousId = null;
-        for (LineStation station : stations) {
-            if (stationId.equals(station.getStationId())) {
-                previousId = station.getPreStationId();
-                stations.remove(station);
-                break;
-            }
-        }
-        for (LineStation station : stations) {
-            if (stationId.equals(station.getPreStationId())) {
-                stations.add(
-                    new LineStation(previousId, station.getStationId(), station.getDistance(),
-                        station.getDuration()));
-                stations.remove(station);
-                break;
-            }
-        }
+        LineStation stationToBeRemoved = stations.stream()
+            .filter(station -> stationId.equals(station.getStationId()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 지하철 역이 없습니다."));
+        Long previousId = stationToBeRemoved.getPreStationId();
+        stations.remove(stationToBeRemoved);
+
+        stations.stream()
+            .filter(station -> stationId.equals(station.getPreStationId()))
+            .findFirst()
+            .ifPresent(station -> station.updatePreLineStation(previousId));
     }
 
     public List<Long> findLineStationsId() {
@@ -143,18 +137,25 @@ public class Line {
         if (stations.size() == 0) {
             return Collections.emptyList();
         }
-        for (LineStation station : stations) {
-            if (station.getPreStationId() == null) {
-                ids.add(station.getStationId());
-            }
-        }
-        for (int i = 0; i < stations.size() - 1; i++) {
-            for (LineStation lineStation : stations) {
-                if (ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
-                    ids.add(lineStation.getStationId());
-                }
-            }
+        stations.stream()
+            .filter(LineStation::isStartStation)
+            .findFirst()
+            .map(station -> ids.add(station.getStationId()));
+
+        while (ids.size() != stations.size()) {
+            stations.stream()
+                .filter(station -> isNewLineStationLastLineStation(station, ids))
+                .findFirst()
+                .map(station -> ids.add(station.getStationId()));
         }
         return ids;
+    }
+
+    private boolean isLineStationEmpty(List<Long> ids) {
+        return ids.size() == 0;
+    }
+
+    private boolean isNewLineStationLastLineStation(LineStation newLineStation, List<Long> ids) {
+        return ids.get(ids.size() - 1).equals(newLineStation.getPreStationId());
     }
 }

@@ -39,7 +39,19 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
+    public void updatePreStationIdWithIdOf(LineStation lineStation) {
+        this.preStationId = lineStation.stationId;
+    }
+
     public boolean isStartStation() {
         return (this.preStationId == null);
+    }
+
+    public boolean hasSamePreStationIdWith(LineStation lineStation) {
+        return this.preStationId.equals(lineStation.getPreStationId());
+    }
+
+    public boolean hasPreStationIdSameWith(Long id) {
+        return id.equals(this.preStationId);
     }
 }
