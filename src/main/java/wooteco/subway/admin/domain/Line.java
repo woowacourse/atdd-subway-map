@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Line {
+    private static final int ADD_ON_FIRST_INDEX = 0;
+    private static final int FIRST_INDEX = 0;
+    private static final int ONE_STATION = 1;
     @Id
     private Long id;
     private String name;
@@ -60,7 +63,7 @@ public class Line {
         validateFirstLineStationFormat(inputLineStation);
 
         if (stations.isEmpty()) {
-            stations.add(0, inputLineStation);
+            stations.add(ADD_ON_FIRST_INDEX, inputLineStation);
             return;
         }
 
@@ -70,7 +73,7 @@ public class Line {
                 .orElseThrow(() -> new NoStationExistException("처음 역이 없습니다."));
 
         lineStation.updatePreStationId(inputLineStation.getStationId());
-        stations.add(0, inputLineStation);
+        stations.add(ADD_ON_FIRST_INDEX, inputLineStation);
     }
 
     public void update(Line line) {
@@ -125,8 +128,8 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        if (stations.size() == 1) {
-            stations.remove(0);
+        if (stations.size() == ONE_STATION) {
+            stations.remove(FIRST_INDEX);
             return;
         }
 
