@@ -34,7 +34,6 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {

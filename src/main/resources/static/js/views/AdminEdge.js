@@ -54,8 +54,8 @@ function AdminEdge() {
     .getAttribute("data-line-id");
     const data = {
       preStationId: ($subwayDepartStation.value === "") ? null : await api.station.getByName(
-        $subwayDepartStation.value),
-      stationId: await api.station.getByName($subwayArrivalStation.value),
+        $subwayDepartStation.value).id,
+      stationId: await api.station.getByName($subwayArrivalStation.value).id,
       distance: $subwayDistance.value,
       duration: $subwayDuration.value
     };

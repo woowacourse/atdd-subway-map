@@ -8,6 +8,6 @@ import wooteco.subway.admin.domain.Station;
 
 public interface StationRepository extends CrudRepository<Station, Long> {
 
-    @Query("SELECT id FROM STATION WHERE name = :name")
-    Long findIdByName(@Param("name") String name);
+    @Query("SELECT * FROM STATION WHERE name = :name")
+    Station findIdByName(@Param("name") String name);
 }
