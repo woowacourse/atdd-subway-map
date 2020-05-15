@@ -3,6 +3,10 @@ package wooteco.subway.admin.domain;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.controller.exception.InvalidLineFieldException;
+import wooteco.subway.admin.controller.exception.LineStationCreateException;
+import wooteco.subway.admin.controller.exception.NoLineExistException;
+import wooteco.subway.admin.controller.exception.NoStationExistException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,11 +48,11 @@ public class Line {
 
     private void validate(String name, String lineColor) {
         if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("노선 이름이 입력되지 않았습니다.");
+            throw new InvalidLineFieldException("노선 이름이 입력되지 않았습니다.");
         }
 
         if (StringUtils.isBlank(lineColor)) {
-            throw new IllegalArgumentException("노선 색상이 입력되지 않았습니다.");
+            throw new InvalidLineFieldException("노선 색상이 입력되지 않았습니다.");
         }
     }
 
@@ -63,7 +67,7 @@ public class Line {
         LineStation lineStation = stations.stream()
                 .filter(LineStation::isFirstLineStation)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
+                .orElseThrow(() -> new NoStationExistException("처음 역이 없습니다."));
 
         lineStation.updatePreStationId(inputLineStation.getStationId());
         stations.add(0, inputLineStation);
@@ -91,7 +95,7 @@ public class Line {
 
     private void validateFirstLineStationFormat(LineStation inputLineStation) {
         if (inputLineStation.isNotFirstLineStation()) {
-            throw new IllegalArgumentException("처음에 추가할 수 없는 구간 형태입니다.");
+            throw new LineStationCreateException("처음에 추가할 수 없는 구간 형태입니다.");
         }
     }
 
@@ -99,7 +103,7 @@ public class Line {
         LineStation preLineStation = stations.stream()
                 .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
+                .orElseThrow(() -> new LineStationCreateException("연결될 수 없는 역을 입력하셨습니다."));
 
         if (isLastStation(preLineStation)) {
             addLineStationOnLast(inputLineStation);
@@ -133,7 +137,7 @@ public class Line {
         LineStation targetLineStation = stations.stream()
                 .filter(station -> station.is(stationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
+                .orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
 
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);

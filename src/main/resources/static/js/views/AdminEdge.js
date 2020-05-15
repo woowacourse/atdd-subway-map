@@ -76,7 +76,7 @@ function AdminEdge() {
     const preStation = await stations.find(station => station.name === preStationName);
     const station = await stations.find(station => station.name === stationName);
     const preStationId = preStationName === "" ? null : preStation ? preStation["id"] : undefined;
-    const stationId = stationName ? station["id"] : undefined;
+    const stationId = station ? station["id"] : undefined;
 
     if (!lineId || preStationId === undefined || !stationId) {
       alert('유효한 값을 입력해주세요');
@@ -94,7 +94,7 @@ function AdminEdge() {
       .then(data => {
         const listItem = listItemTemplate(data);
         $subwayLinesSlider.insertAdjacentHTML("beforeend", listItem);
-      }).catch(error => alert(error));
+      });
     createSubwayEdgeModal.toggle();
     location.href = location.href;
   };

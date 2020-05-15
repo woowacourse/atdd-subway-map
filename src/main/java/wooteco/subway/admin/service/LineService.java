@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.controller.exception.NoLineExistException;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
@@ -35,7 +36,7 @@ public class LineService {
 	@Transactional
 	public void addLineStation(Long lineId, LineStationCreateControllerRequest lineStationCreateControllerRequest) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
 
 		LineStation lineStation = lineStationCreateControllerRequest.toLineStation();
 
@@ -58,7 +59,7 @@ public class LineService {
 
 	public LineWithStationsServiceResponse findLineWithStationsBy(Long lineId) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
 
 		List<Long> stationIds = persistLine.getLineStationsId();
 		Iterable<Station> lineStations = stationRepository.findAllById(stationIds);
@@ -69,7 +70,7 @@ public class LineService {
 	@Transactional
 	public void updateLine(Long id, LineCreateControllerRequest request) {
 		Line persistLine = lineRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
 
 		persistLine.update(request.toLine());
 		lineRepository.save(persistLine);
@@ -82,7 +83,7 @@ public class LineService {
 	@Transactional
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
+				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
 
 		persistLine.removeLineStationById(stationId);
 		lineRepository.save(persistLine);

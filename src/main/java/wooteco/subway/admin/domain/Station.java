@@ -2,6 +2,7 @@ package wooteco.subway.admin.domain;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.controller.exception.InvalidStationFieldException;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +23,7 @@ public class Station {
 
     private void validateName(String name) {
         if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("역 이름이 입력되지 않았습니다.");
+            throw new InvalidStationFieldException("역 이름이 입력되지 않았습니다.");
         }
     }
 

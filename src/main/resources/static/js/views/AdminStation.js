@@ -1,4 +1,4 @@
-import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
 import {listItemTemplate} from "../../utils/templates.js";
 import api from "../../api/index.js";
 
@@ -9,6 +9,12 @@ function AdminStation() {
 
   const initDefaultStations = () => {
     api.station.get()
+      .then(data => {
+        if (!(data instanceof Error)) {
+          return data;
+        }
+        return;
+      })
       .then(data => {
         data.forEach(station => {
           $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
@@ -23,15 +29,11 @@ function AdminStation() {
     event.preventDefault();
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
-    if (!stationName) {
-      alert(ERROR_MESSAGE.NOT_EMPTY);
-      return;
-    }
     api.station.create({name: stationName})
       .then(data => {
         $stationNameInput.value = "";
         $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data));
-      })
+      });
   };
 
   const onRemoveStationHandler = event => {
@@ -40,7 +42,13 @@ function AdminStation() {
     if (isDeleteButton) {
       const stationId = $target.closest("div").dataset.stationId;
       api.station
-        .delete(stationId);
+        .delete(stationId)
+        .then(data => {
+          if (!(data instanceof Error)) {
+            return data;
+          }
+          return;
+        });
       $target.closest(".list-item").remove();
     }
   };

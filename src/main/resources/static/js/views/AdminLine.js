@@ -55,6 +55,12 @@ function AdminLine() {
 
     api.line
       .getBy(targetId)
+      .then(data => {
+        if (!(data instanceof Error)) {
+          return data;
+        }
+        return;
+      })
       .then(data => showLineDetail(data));
   };
 
@@ -133,9 +139,11 @@ function AdminLine() {
 
     await fetch(`/lines/${updatingId}`, {method: "GET"})
       .then(response => response.json())
-      .then(data => {
-        convertLineItemBy(data);
-        closeAndResetModalValue()
+      .then(async data => {
+        if (!(data instanceof Error)) {
+          await convertLineItemBy(data);
+          await closeAndResetModalValue();
+        }
       });
   };
 
@@ -156,8 +164,6 @@ function AdminLine() {
       alert("값을 입력해야합니다.");
       return false;
     }
-
-    // todo 시간 유효성 검사
 
     if (!/\d/.test($subwayLineIntervalTimeInput.value)) {
       alert("숫자만 입력해주세요");
@@ -203,7 +209,10 @@ function AdminLine() {
           $subwayLineIntervalTimeInput.value = data.intervalTime;
           $subwayLineColorInput.value = data.lineColor;
           updatingId = lineId;
-        });
+        }).then(data => {
+        if (!(data instanceof Error)) {
+        }
+      });
       closeAndResetModalValue();
     }
   };
@@ -233,6 +242,12 @@ function AdminLine() {
 
   const initDefaultSubwayLines = () => {
     api.line.get()
+      .then(data => {
+        if (!(data instanceof Error)) {
+          return data;
+        }
+        return;
+      })
       .then(data => {
         if (data.length === 0) {
           return;
