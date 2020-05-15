@@ -35,7 +35,14 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime().toString(), line.getEndTime().toString(), line.getIntervalTime(), line.getCreatedAt().toString(), line.getUpdatedAt().toString(), new String[0], line.getBgColor());
+        return new LineResponse(line.getId(),
+                line.getName(),
+                line.getStartTime().toString(),
+                line.getEndTime().toString(),
+                line.getIntervalTime(),
+                line.getCreatedAt().toString(),
+                line.getUpdatedAt().toString(),
+                new String[0], line.getBgColor());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
