@@ -3,12 +3,14 @@ package wooteco.subway.admin.acceptance;
 import static org.assertj.core.api.Assertions.*;
 import static wooteco.subway.admin.acceptance.Request.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
@@ -51,34 +53,45 @@ public class LineStationAcceptanceTest {
 	 *     Then 지하철역 목록을 응답 받는다.
 	 *     And 제외한 지하철역이 목록에 존재하지 않는다.
 	 */
-	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
-	@Test
-	void manageLineStation() {
-		Long 신촌Id = createStation("신촌");
-		Long 잠실Id = createStation("잠실");
+	@DisplayName("지하철 노선에서의 지하철역 추가 / 삭제 / 조회 테스트")
+	@TestFactory
+	public List<DynamicTest> lineStationScenarioTest() {
+		DynamicTest createLineAndStationTest = DynamicTest.dynamicTest("지하철 라인을 생성한다.", () -> {
+			createStation("신촌");
+			createStation("잠실");
+			createLine("1호선");
+			createLine("2호선");
+		});
 
-		Long 호선1Id = createLine("1호선");
-		Long 호선2Id = createLine("2호선");
+		DynamicTest createLineStationTest = DynamicTest.dynamicTest("지하철 노선에 두 지하철역을 통해 구간을 등록하는 요청을 한다.", () -> {
+			addLineStation(1L, null, 1L);
+			addLineStation(1L, 1L, 2L);
+			LineResponse line = getLine(1L);
+			assertThat(line.getStations()).hasSize(2);
+		});
 
-		addLineStation(호선1Id, null, 신촌Id);
-		addLineStation(호선1Id, 신촌Id, 잠실Id);
-		LineResponse line = getLine(호선1Id);
-		assertThat(line.getStations()).hasSize(2);
+		DynamicTest findLineWithStationTest = DynamicTest.dynamicTest("지하철 노선에서 새로 추가한 지하철이 있는지 확인한다.", () -> {
+			List<String> stationNames = getStations(1L).stream()
+				.map(StationResponse::getName)
+				.collect(Collectors.toList());
+			assertThat(stationNames).contains("잠실", "신촌");
+		});
 
-		List<String> stationNames = getStations(line.getId()).stream()
-			.map(StationResponse::getName)
-			.collect(Collectors.toList());
-		assertThat(stationNames).contains("잠실", "신촌");
+		DynamicTest deleteLineTest = DynamicTest.dynamicTest("지하철 노선에서 특정 노선을 지우는 요청을 보내고 확인한다.", () -> {
+			deleteLineStation(1L, 1L);
 
-		deleteLineStation(호선1Id, 신촌Id);
+			assertThat(getLine(1L).getStations()).hasSize(1);
+		});
 
-		line = getLine(호선1Id);
-		assertThat(line.getStations()).hasSize(1);
+		DynamicTest deleteLineAndFindStationTest = DynamicTest.dynamicTest("지하철 노선에서 특정 노선이 잘 지워졌는지 확인한다.", () -> {
+			List<String> stationNames = getStations(1L).stream()
+				.map(StationResponse::getName)
+				.collect(Collectors.toList());
+			assertThat(stationNames).contains("잠실");
+			assertThat(stationNames).doesNotContain("신촌");
+		});
 
-		stationNames = getStations(line.getId()).stream()
-			.map(StationResponse::getName)
-			.collect(Collectors.toList());
-		assertThat(stationNames).contains("잠실");
-		assertThat(stationNames).doesNotContain("신촌");
+		return Arrays.asList(createLineAndStationTest, createLineStationTest, findLineWithStationTest, deleteLineTest,
+			deleteLineAndFindStationTest);
 	}
 }
