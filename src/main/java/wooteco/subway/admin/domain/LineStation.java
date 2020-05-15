@@ -1,5 +1,6 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -35,7 +36,7 @@ public class LineStation {
         this.preStationId = newPreStationId;
     }
 
-    public boolean isStart() {
+    public boolean isArrivalStationStart() {
         return this.preStationId == null;
     }
 
@@ -44,8 +45,9 @@ public class LineStation {
     }
 
     public boolean isPreStationId(Long preStationId) {
-        if (this.isStart() && preStationId == null) {
-            return true;
+        if (Objects.isNull(preStationId)) {
+            throw new IllegalArgumentException("preStationID 가 null 입니다." +
+                "도착역이 시작역인지 알고싶으면 isArrivalStationStart 메서드를 활용해보세요.");
         }
         return preStationId != null && preStationId.equals(this.preStationId);
     }

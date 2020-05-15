@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,15 +16,17 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "test-color");
+        line = new Line("2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "test-color");
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
     }
 
+    @DisplayName("line 에 시작역이 없는데 중간역부터 추가할 경우 예외처리")
     @Test
-    void validateAddLineStation() {
+    void validateAddLineStationInOrder() {
+        Line emptyLine = new Line("5호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "test-color");
         assertThatThrownBy(() -> {
-            line.addLineStation(new LineStation(1L, 3L, 10, 10));
+            emptyLine.addLineStation(new LineStation(1L, 3L, 10, 10));
         }).isInstanceOf(IllegalArgumentException.class)
             .hasMessage("라인에 역 등록은 시작역부터 순서대로 해주세요.");
     }

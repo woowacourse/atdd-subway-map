@@ -115,19 +115,24 @@ public class Line {
     }
 
     private boolean isInOrder(LineStation lineStation) {
-        return (lineStations.isEmpty() && lineStation.isStart())
-            || lineStation.isPreStationId(lineStations.get(this.lineStations.size() - 1).getStationId());
+        if (lineStations.isEmpty()) {
+            return lineStation.isArrivalStationStart();
+        }
+        return lineStation.isPreStationId(
+            lineStations.get(this.lineStations.size() - 1)
+                .getStationId()
+        );
     }
 
     public void removeLineStationByStationId(Long stationId) {
-        Optional<LineStation> preStationId = this.lineStations.stream()
+        Optional<LineStation> preStation = this.lineStations.stream()
                 .filter(lineStation -> lineStation.isStationId(stationId))
                 .findFirst();
-        Optional<LineStation> nextStationId = this.lineStations.stream()
+        Optional<LineStation> arrivalStation = this.lineStations.stream()
                 .filter(lineStation -> lineStation.isPreStationId(stationId))
                 .findFirst();
-        if (nextStationId.isPresent() && preStationId.isPresent()) {
-            updatePreOfLineStation(nextStationId.get().getStationId(), preStationId.get().getPreStationId());
+        if (arrivalStation.isPresent() && preStation.isPresent()) {
+            updatePreOfLineStation(arrivalStation.get().getStationId(), preStation.get().getPreStationId());
         }
         this.lineStations.removeIf(lineStation -> lineStation.isStationId(stationId));
     }
