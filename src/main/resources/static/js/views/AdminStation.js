@@ -1,6 +1,6 @@
-import { ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE } from "../../utils/constants.js";
-import { listItemTemplate } from "../../utils/templates.js";
-import Api from "../../api/index.js";
+import {ERROR_MESSAGE, EVENT_TYPE, KEY_TYPE} from "../../utils/constants.js";
+import {listItemTemplate} from "../../utils/templates.js";
+import api from "../../api/index.js";
 
 function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
@@ -23,8 +23,7 @@ function AdminStation() {
       name: $stationNameInput.value
     }
 
-    Api.station.create(stationRequest)
-    .then(response => response.json())
+    api.station.create(stationRequest)
     .then(data => {
       const stationResponse = {
         id: data.id,
@@ -47,7 +46,7 @@ function AdminStation() {
       const listItem = $target.closest(".list-item")
       const stationId = listItem.querySelector(".station-id").textContent;
 
-      Api.station.delete(stationId);
+      api.station.delete(stationId);
       listItem.remove();
     }
     }

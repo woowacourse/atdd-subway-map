@@ -1,8 +1,9 @@
-import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
-import { defaultSubwayLines } from "../../utils/subwayMockData.js";
+import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
+import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
+import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -24,6 +25,13 @@ function AdminEdge() {
       edgePadding: 25
     });
   };
+
+    const initSubwayLineViews = () => {
+        api.line.get()
+            .then(() => {
+
+            })
+    }
 
   const initSubwayLineOptions = () => {
     const subwayLineOptionTemplate = defaultSubwayLines

@@ -1,12 +1,8 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
-import {
-  colorSelectOptionTemplate,
-  subwayLineInfoTemplate,
-  subwayLinesTemplate
-} from "../../utils/templates.js";
-import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
+import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} from "../../utils/templates.js";
+import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
-import Api from "../../api/index.js";
+import api from "../../api/index.js";
 
 function AdminLine() {
   const $subwayLineList = document.querySelector("#subway-line-list");
@@ -31,9 +27,8 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTimeInput.value,
       color: $subwayLineColorInput.value
     };
-    Api.line.create(lineRequest)
-    .then((response) => response.json())
-    .then((data) => {
+    api.line.create(lineRequest)
+        .then(data => {
       const selectedSubwayLine = {
         id: data.id,
         name: data.name,
@@ -64,9 +59,8 @@ function AdminLine() {
     const isNameDiv = $target.classList.contains("line-name");
     if (isNameDiv) {
       const lineId = $target.closest(".subway-line-item").querySelector(".line-id").textContent;
-      Api.line.getDetail(lineId)
-      .then((response) => response.json())
-      .then((data) => {
+      api.line.getDetail(lineId)
+          .then(data => {
         const selectedSubwayInfo = {
           startTime: data.startTime,
           endTime: data.endTime,
@@ -85,8 +79,7 @@ function AdminLine() {
       $createSubwayLineButton.classList.add("update-button");
 
       lineId = $target.closest(".subway-line-item").querySelector(".line-id").textContent;
-      Api.line.getDetail(lineId)
-      .then(response => response.json())
+      api.line.getDetail(lineId)
       .then(data => {
         $subwayLineNameInput.value = data.name;
         $subwayLineColorInput.value = data.color;
@@ -108,9 +101,8 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTimeInput.value,
       color: $subwayLineColorInput.value
     };
-    Api.line.update(lineRequest, lineId)
-    .then((response) => response.json())
-    .then((data) => {
+    api.line.update(lineRequest, lineId)
+        .then(data => {
       const selectedSubwayLine = {
         id: data.id,
         name: data.name,
@@ -142,15 +134,14 @@ function AdminLine() {
     const isDeleteButton = $target.classList.contains("mdi-delete");
     if (isDeleteButton) {
       const lineId = $target.closest(".subway-line-item").querySelector(".line-id").textContent;
-      Api.line.delete(lineId);
+      api.line.delete(lineId);
       $target.closest(".subway-line-item").remove();
     }
   };
 
   const initDefaultSubwayLines = () => {
-      Api.line.get()
-      .then((response) => response.json())
-      .then((data) => {
+    api.line.get()
+        .then(data => {
         data.map(line => {
           $subwayLineList.insertAdjacentHTML(
             "beforeend",
