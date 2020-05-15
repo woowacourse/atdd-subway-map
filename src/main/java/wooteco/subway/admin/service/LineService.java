@@ -10,6 +10,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.exception.NotFoundLineIdException;
+import wooteco.subway.admin.exception.NotFoundStationIdException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -41,7 +42,7 @@ public class LineService {
         return line.makeLineStationsIds()
             .stream()
             .map(stationRepository::findById)
-            .map(optional -> optional.orElseThrow(NotFoundLineIdException::new))
+            .map(optional -> optional.orElseThrow(NotFoundStationIdException::new))
             .collect(Collectors.toList());
     }
 
@@ -52,7 +53,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findLineById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }

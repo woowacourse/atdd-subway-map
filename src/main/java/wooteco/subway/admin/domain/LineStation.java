@@ -45,6 +45,10 @@ public class LineStation {
         return Objects.equals(preStationId, id);
     }
 
+    public boolean isBaseStation(Long id) {
+        return Objects.equals(stationId, id);
+    }
+
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
         this.updatedAt = LocalDateTime.now();
