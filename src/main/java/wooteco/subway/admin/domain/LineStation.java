@@ -42,10 +42,6 @@ public class LineStation {
         this.preStationId = preStationId;
     }
 
-    public void setStationId(Long stationId) {
-        this.stationId = stationId;
-    }
-
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }
