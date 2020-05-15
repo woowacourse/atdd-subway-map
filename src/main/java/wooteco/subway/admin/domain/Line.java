@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Line {
+    private static final Long INIT_STATION = 0L;
+
     @Id
     private Long id;
     private String name;
@@ -119,7 +121,6 @@ public class Line {
         for (LineStation lineStation : stations) {
             addToNewLineStations(lineStation, newLineStation, newLineStations);
         }
-
         if (notAddedYet(newLineStations)) {
             newLineStations.add(newLineStation);
         }
@@ -131,6 +132,7 @@ public class Line {
             newStations.add(newLineStation);
             newStations.add(lineStation);
             lineStation.updatePreLineStation(newLineStation.getStationId());
+            newLineStation.updatePreLineStation(INIT_STATION);
             return;
         }
         newStations.add(lineStation);
@@ -138,7 +140,7 @@ public class Line {
 
     private boolean shouldAdd(LineStation newLineStation, LineStation lineStation) {
         Long newLinePreStationId = newLineStation.getPreStationId();
-        if (newLinePreStationId == null || newLinePreStationId == 0) {
+        if (newLinePreStationId == null) {
             return true;
         }
         return newLinePreStationId.equals(lineStation.getPreStationId());
