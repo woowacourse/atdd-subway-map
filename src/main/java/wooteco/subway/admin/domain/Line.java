@@ -137,7 +137,7 @@ public class Line {
         LineStation targetLineStation = stations.stream()
                 .filter(station -> station.is(stationId))
                 .findFirst()
-                .orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
+                .orElseThrow(NoLineExistException::new);
 
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);

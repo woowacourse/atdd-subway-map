@@ -10,9 +10,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
-import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.StationServiceResponse;
 import wooteco.subway.admin.dto.view.request.LineStationCreateViewRequest;
 
 import java.time.LocalTime;
@@ -45,12 +45,12 @@ public class LineStationAcceptanceTest {
 		// @formatter:off
 
 		// Given 지하철역이 여러 개 추가되어있다.
-		StationCreateServiceResponse stationResponse1 = createStation("신림");
-		StationCreateServiceResponse stationResponse2 = createStation("설입");
-		StationCreateServiceResponse stationResponse3 = createStation("사당");
-		StationCreateServiceResponse stationResponse4 = createStation("서초");
+		StationServiceResponse stationResponse1 = createStation("신림");
+		StationServiceResponse stationResponse2 = createStation("설입");
+		StationServiceResponse stationResponse3 = createStation("사당");
+		StationServiceResponse stationResponse4 = createStation("서초");
 		// And 지하철 노선이 추가되어있다.
-		LineCreateServiceResponse lineResponse = createLine("2호선");
+		LineServiceResponse lineResponse = createLine("2호선");
 		// When 지하철 노선에 지하철역을 등록하는 요청을 한다.
 		addStationOnLine("1", null, stationResponse1.getId());
 		addStationOnLine("1", stationResponse1.getId(), stationResponse2.getId());
@@ -113,7 +113,7 @@ public class LineStationAcceptanceTest {
 				log().all();
 	}
 
-	private LineCreateServiceResponse createLine(String name) {
+	private LineServiceResponse createLine(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -129,10 +129,10 @@ public class LineStationAcceptanceTest {
 					post("/lines").
 				then().
 					log().all().
-					extract().as(LineCreateServiceResponse.class);
+					extract().as(LineServiceResponse.class);
 	}
 
-	private StationCreateServiceResponse createStation(String stationName) {
+	private StationServiceResponse createStation(String stationName) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", stationName);
 
@@ -144,7 +144,7 @@ public class LineStationAcceptanceTest {
 				post("/stations").
 		then().
 				log().all().
-				extract().as(StationCreateServiceResponse.class);
+				extract().as(StationServiceResponse.class);
 	}
 	// @formatter:on
 }

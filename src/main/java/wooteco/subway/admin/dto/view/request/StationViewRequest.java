@@ -1,10 +1,10 @@
 package wooteco.subway.admin.dto.view.request;
 
 
-public class StationCreateViewRequest {
+public class StationViewRequest {
     private String name;
 
-    private StationCreateViewRequest() {
+    private StationViewRequest() {
     }
 
     public String getName() {

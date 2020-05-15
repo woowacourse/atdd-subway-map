@@ -50,7 +50,6 @@ public class SubwayControllerAdvice {
 
 	@ExceptionHandler(DuplicateKeyException.class)
 	public ResponseEntity<ExceptionResponse> getDuplicateKeyException(DuplicateKeyException e) {
-		e.printStackTrace();
 		LOGGER.error(e);
 		return new ResponseEntity<>(ExceptionResponse.of("입력값이 중복됩니다."), HttpStatus.BAD_REQUEST);
 	}
@@ -63,14 +62,12 @@ public class SubwayControllerAdvice {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ExceptionResponse> getMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		e.printStackTrace();
 		LOGGER.error(e.getMessage());
 		return new ResponseEntity<>(ExceptionResponse.of("모든 정보가 입력되지 않았습니다."), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(DbActionExecutionException.class)
 	public ResponseEntity<ExceptionResponse> getDbActionExecutionException(DbActionExecutionException e) {
-		e.printStackTrace();
 		LOGGER.error(e.getMessage());
 		return new ResponseEntity<>(ExceptionResponse.of("데이터베이스 문제 발생"), HttpStatus.BAD_REQUEST);
 	}

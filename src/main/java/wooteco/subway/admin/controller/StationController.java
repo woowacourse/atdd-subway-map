@@ -2,10 +2,10 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.admin.dto.controller.request.StationCreateControllerRequest;
-import wooteco.subway.admin.dto.controller.response.StationCreateControllerResponse;
-import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
-import wooteco.subway.admin.dto.view.request.StationCreateViewRequest;
+import wooteco.subway.admin.dto.controller.request.StationControllerRequest;
+import wooteco.subway.admin.dto.controller.response.StationControllerResponse;
+import wooteco.subway.admin.dto.service.response.StationServiceResponse;
+import wooteco.subway.admin.dto.view.request.StationViewRequest;
 import wooteco.subway.admin.service.StationService;
 
 import javax.validation.Valid;
@@ -23,23 +23,23 @@ public class StationController {
 	}
 
 	@PostMapping
-	public ResponseEntity<StationCreateControllerResponse> createStation(@RequestBody @Valid StationCreateViewRequest view) {
-		StationCreateServiceResponse stationResponse = stationService.save(StationCreateControllerRequest.of(view));
+	public ResponseEntity<StationControllerResponse> createStation(@RequestBody @Valid StationViewRequest view) {
+		StationServiceResponse stationResponse = stationService.save(StationControllerRequest.of(view));
 
 		return ResponseEntity
 				.created(URI.create("/stations/" + stationResponse.getId()))
-				.body(StationCreateControllerResponse.of(stationResponse));
+				.body(StationControllerResponse.of(stationResponse));
 	}
 
 	@GetMapping
-	public ResponseEntity<List<StationCreateControllerResponse>> showStations() {
-		List<StationCreateControllerResponse> stationCreateControllerResponses = stationService.findAll().stream()
-				.map(StationCreateControllerResponse::of)
+	public ResponseEntity<List<StationControllerResponse>> showStations() {
+		List<StationControllerResponse> stationControllerRespons = stationService.findAll().stream()
+				.map(StationControllerResponse::of)
 				.collect(Collectors.toList());
 
 		return ResponseEntity
 				.ok()
-				.body(stationCreateControllerResponses);
+				.body(stationControllerRespons);
 	}
 
 	@DeleteMapping("{id}")

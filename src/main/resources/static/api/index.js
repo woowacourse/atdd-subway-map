@@ -1,5 +1,3 @@
-const BASE_URL = "localhost:8080";
-
 const METHOD = {
   PUT(data) {
     return {

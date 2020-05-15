@@ -2,12 +2,12 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.admin.dto.controller.request.LineCreateControllerRequest;
-import wooteco.subway.admin.dto.controller.response.LineCreateControllerResponse;
+import wooteco.subway.admin.dto.controller.request.LineControllerRequest;
+import wooteco.subway.admin.dto.controller.response.LineControllerResponse;
 import wooteco.subway.admin.dto.controller.response.LineWithStationsControllerResponse;
-import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
-import wooteco.subway.admin.dto.view.request.LineCreateViewRequest;
+import wooteco.subway.admin.dto.view.request.LineViewRequest;
 import wooteco.subway.admin.service.LineService;
 
 import javax.validation.Valid;
@@ -46,17 +46,17 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity<LineCreateControllerResponse> createLine(@RequestBody @Valid LineCreateViewRequest view) {
-		LineCreateServiceResponse lineCreateServiceResponse = lineService.save(LineCreateControllerRequest.of(view));
+	public ResponseEntity<LineControllerResponse> createLine(@RequestBody @Valid LineViewRequest view) {
+		LineServiceResponse lineServiceResponse = lineService.save(LineControllerRequest.of(view));
 
 		return ResponseEntity
-				.created(URI.create("/lines/" + lineCreateServiceResponse.getId()))
-				.body(LineCreateControllerResponse.of(lineCreateServiceResponse));
+				.created(URI.create("/lines/" + lineServiceResponse.getId()))
+				.body(LineControllerResponse.of(lineServiceResponse));
 	}
 
 	@PutMapping("{id}")
-	public ResponseEntity<Void> updateLineBy(@PathVariable(name = "id") Long id, @RequestBody @Valid LineCreateViewRequest view) {
-		lineService.updateLine(id, LineCreateControllerRequest.of(view));
+	public ResponseEntity<Void> updateLineBy(@PathVariable(name = "id") Long id, @RequestBody @Valid LineViewRequest view) {
+		lineService.updateLine(id, LineControllerRequest.of(view));
 
 		return ResponseEntity
 				.noContent()

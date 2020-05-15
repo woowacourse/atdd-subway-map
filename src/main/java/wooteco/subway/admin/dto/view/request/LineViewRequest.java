@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
-public class LineCreateViewRequest {
+public class LineViewRequest {
 	@NotNull
 	@NotBlank
 	private String name;
@@ -19,7 +19,7 @@ public class LineCreateViewRequest {
 	@NotBlank
 	private String lineColor;
 
-	private LineCreateViewRequest() {
+	private LineViewRequest() {
 	}
 
 	public String getName() {

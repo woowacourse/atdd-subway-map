@@ -1,13 +1,13 @@
 package wooteco.subway.admin.dto.controller.response;
 
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineServiceResponse;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public class LineCreateControllerResponse {
+public class LineControllerResponse {
 	private Long id;
 	private String name;
 	private LocalTime startTime;
@@ -18,9 +18,9 @@ public class LineCreateControllerResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private LineCreateControllerResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-										 String lineColor, List<LineStation> stations, LocalDateTime createdAt,
-										 LocalDateTime updatedAt) {
+	private LineControllerResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+								   String lineColor, List<LineStation> stations, LocalDateTime createdAt,
+								   LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
@@ -32,8 +32,8 @@ public class LineCreateControllerResponse {
 		this.updatedAt = updatedAt;
 	}
 
-	public static LineCreateControllerResponse of(LineCreateServiceResponse response) {
-		return new LineCreateControllerResponse(response.getId(), response.getName(), response.getStartTime(),
+	public static LineControllerResponse of(LineServiceResponse response) {
+		return new LineControllerResponse(response.getId(), response.getName(), response.getStartTime(),
 				response.getEndTime(), response.getIntervalTime(), response.getLineColor(), response.getStations(),
 				response.getCreatedAt(), response.getUpdatedAt());
 	}

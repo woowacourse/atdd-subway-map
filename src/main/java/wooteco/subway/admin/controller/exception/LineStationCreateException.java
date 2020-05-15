@@ -4,5 +4,4 @@ public class LineStationCreateException extends IllegalArgumentException {
 	public LineStationCreateException(String message) {
 		super(message);
 	}
-
 }

@@ -4,22 +4,22 @@ import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 
-public class StationCreateServiceResponse {
+public class StationServiceResponse {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
 
-    public StationCreateServiceResponse() {
+    public StationServiceResponse() {
     }
 
-    public StationCreateServiceResponse(Long id, String name, LocalDateTime createdAt) {
+    private StationServiceResponse(Long id, String name, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
     }
 
-    public static StationCreateServiceResponse of(Station station) {
-        return new StationCreateServiceResponse(station.getId(), station.getName(), station.getCreatedAt());
+    public static StationServiceResponse of(Station station) {
+        return new StationServiceResponse(station.getId(), station.getName(), station.getCreatedAt());
     }
 
     public Long getId() {

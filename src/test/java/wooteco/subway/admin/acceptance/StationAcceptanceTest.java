@@ -10,7 +10,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.dto.service.response.StationCreateServiceResponse;
+import wooteco.subway.admin.dto.service.response.StationServiceResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +41,12 @@ public class StationAcceptanceTest {
         createStation("선릉역");
         createStation("강남역");
 
-        List<StationCreateServiceResponse> stations = getStations();
+        List<StationServiceResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
 
         deleteStation(stations.get(0).getId());
 
-        List<StationCreateServiceResponse> stationsAfterDelete = getStations();
+        List<StationServiceResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
@@ -65,14 +65,14 @@ public class StationAcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    private List<StationCreateServiceResponse> getStations() {
+    private List<StationServiceResponse> getStations() {
         return given().
                 when().
                 get("/stations").
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", StationCreateServiceResponse.class);
+                jsonPath().getList(".", StationServiceResponse.class);
     }
 
     private void deleteStation(Long id) {

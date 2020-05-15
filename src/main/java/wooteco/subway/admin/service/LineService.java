@@ -6,9 +6,9 @@ import wooteco.subway.admin.controller.exception.NoLineExistException;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.controller.request.LineCreateControllerRequest;
-import wooteco.subway.admin.dto.controller.request.LineStationCreateControllerRequest;
-import wooteco.subway.admin.dto.service.response.LineCreateServiceResponse;
+import wooteco.subway.admin.dto.controller.request.LineControllerRequest;
+import wooteco.subway.admin.dto.controller.request.LineStationControllerRequest;
+import wooteco.subway.admin.dto.service.response.LineServiceResponse;
 import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -27,26 +27,26 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineCreateServiceResponse save(LineCreateControllerRequest request) {
+	public LineServiceResponse save(LineControllerRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 
-		return LineCreateServiceResponse.of(persistLine);
+		return LineServiceResponse.of(persistLine);
 	}
 
 	@Transactional
-	public void addLineStation(Long lineId, LineStationCreateControllerRequest lineStationCreateControllerRequest) {
+	public void addLineStation(Long lineId, LineStationControllerRequest lineStationControllerRequest) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
+				.orElseThrow(NoLineExistException::new);
 
-		LineStation lineStation = lineStationCreateControllerRequest.toLineStation();
+		LineStation lineStation = lineStationControllerRequest.toLineStation();
 
 		if (lineStation.isFirstLineStation()) {
-			persistLine.addLineStationOnFirst(lineStationCreateControllerRequest.toLineStation());
+			persistLine.addLineStationOnFirst(lineStationControllerRequest.toLineStation());
 			lineRepository.save(persistLine);
 			return;
 		}
 
-		persistLine.addLineStation(lineStationCreateControllerRequest.toLineStation());
+		persistLine.addLineStation(lineStationControllerRequest.toLineStation());
 		lineRepository.save(persistLine);
 	}
 
@@ -59,7 +59,7 @@ public class LineService {
 
 	public LineWithStationsServiceResponse findLineWithStationsBy(Long lineId) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
+				.orElseThrow(NoLineExistException::new);
 
 		List<Long> stationIds = persistLine.getLineStationsId();
 		Iterable<Station> lineStations = stationRepository.findAllById(stationIds);
@@ -68,9 +68,9 @@ public class LineService {
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineCreateControllerRequest request) {
+	public void updateLine(Long id, LineControllerRequest request) {
 		Line persistLine = lineRepository.findById(id)
-				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
+				.orElseThrow(NoLineExistException::new);
 
 		persistLine.update(request.toLine());
 		lineRepository.save(persistLine);
@@ -83,7 +83,7 @@ public class LineService {
 	@Transactional
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line persistLine = lineRepository.findById(lineId)
-				.orElseThrow(() -> new NoLineExistException("해당 id의 line이 없습니다."));
+				.orElseThrow(NoLineExistException::new);
 
 		persistLine.removeLineStationById(stationId);
 		lineRepository.save(persistLine);
