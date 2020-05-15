@@ -67,24 +67,19 @@ function AdminLine() {
       intervalTime: $subwayLineIntervalTime.value,
       bgColor: $subwayLineColorInput.value
     };
-    api.line.create(newSubwayLineData).then((response) => {
-      if (!response.ok) {
-        alert("???????????");
-        let receivedErrorMessage = "";
-        response.text().then(errorMessage =>  receivedErrorMessage = errorMessage);
-        throw new Error(receivedErrorMessage);
+    const create = api.line.create(newSubwayLineData);
+    create.then(value => {
+      if(value != null){
+        console.log(create);
+        $subwayLineList.innerHTML = "";
+        initDefaultSubwayLines();
+        subwayLineModal.toggle();
+        $subwayLineNameInput.value = "";
+        $subwayLineColorInput.value = "";
+        $subwayLineFirstTime.value = "";
+        $subwayLineLastTime.value = "";
+        $subwayLineIntervalTime.value = "";
       }
-      $subwayLineList.innerHTML = "";
-      initDefaultSubwayLines();
-      subwayLineModal.toggle();
-      $subwayLineNameInput.value = "";
-      $subwayLineColorInput.value = "";
-      $subwayLineFirstTime.value = "";
-      $subwayLineLastTime.value = "";
-      $subwayLineIntervalTime.value = "";
-    }).catch(error => {
-//      console.log(error);
-//      alert(error);
     });
   };
   const onDeleteSubwayLine = event => {

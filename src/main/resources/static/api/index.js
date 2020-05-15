@@ -25,7 +25,16 @@ const METHOD = {
   },
 };
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config).then(async response => {
+    if(await response.ok){
+      return response.json()
+    }
+    throw new Error(await response.text());
+  }).catch(error => {
+    alert(error);
+    return null;
+  });
+
   const station = {
     get() {
       return request(`/stations`);
@@ -51,7 +60,7 @@ const api = (() => {
       return request(`/lines/${id}`);
     },
     create(data) {
-      return fetch(`/lines`, METHOD.POST(data));
+      return request(`/lines`, METHOD.POST(data));
     },
     update(data, id) {
       return request(`/lines/${id}`, METHOD.PUT(data));
