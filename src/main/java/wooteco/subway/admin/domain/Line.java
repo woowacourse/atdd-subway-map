@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("LINE")
@@ -25,7 +26,7 @@ public class Line {
     private LocalTime endTime;
     @Column("interval_time")
     private int intervalTime;
-    @Column("line")
+    @MappedCollection(idColumn = "line", keyColumn = "subway_operating_sequence")
     private List<LineStation> lineStations = new LinkedList<>();
     @Column("created_at")
     private LocalDateTime createdAt;
