@@ -29,17 +29,17 @@ public class StationController {
 	}
 
 	@PostMapping
-	public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationCreateRequest view) {
-		Station savedStation = stationService.create(view.toStation());
+	public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationCreateRequest request) {
+		StationResponse savedStation = stationService.create(request.toStation());
 
 		return ResponseEntity
 			.created(URI.create("/stations/" + savedStation.getId()))
-			.body(StationResponse.of(savedStation));
+			.body(savedStation);
 	}
 
 	@GetMapping
 	public ResponseEntity<List<StationResponse>> showStations() {
-		return ResponseEntity.ok().body(StationResponse.ofList(stationService.findAll()));
+		return ResponseEntity.ok().body(stationService.findAll());
 	}
 
 	@DeleteMapping("/{id}")

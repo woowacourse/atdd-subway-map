@@ -32,6 +32,7 @@ class StationServiceTest {
 		Station newStation = new Station("상계");
 		boolean isSameName = newStation.getName().equals(station.getName());
 		when(stationRepository.existsByName(newStation.getName())).thenReturn(isSameName);
+		when(stationRepository.save(newStation)).thenReturn(newStation);
 		assertThatCode(() -> stationService.create(newStation)).doesNotThrowAnyException();
 	}
 

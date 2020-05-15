@@ -129,14 +129,6 @@ public class LineServiceTest {
 	}
 
 	@Test
-	void findLineById() {
-		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
-		Line line = lineService.findLine(1L);
-
-		assertThat(line.getStations()).hasSize(3);
-	}
-
-	@Test
 	void saveNewLineWithExistingName() {
 		Line newLine = new Line(null, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
@@ -148,6 +140,7 @@ public class LineServiceTest {
 	void saveNewLineWithNewName() {
 		Line newLine = new Line(null, "3호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
+		when(lineRepository.save(newLine)).thenReturn(newLine);
 		assertThatCode(() -> lineService.save(newLine))
 			.doesNotThrowAnyException();
 	}

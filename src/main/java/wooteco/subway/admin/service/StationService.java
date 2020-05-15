@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.exception.DuplicateStationNameException;
 import wooteco.subway.admin.exception.NotFoundStationException;
 import wooteco.subway.admin.repository.StationRepository;
@@ -20,20 +21,15 @@ public class StationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Station> findAll() {
-		return stationRepository.findAll();
+	public List<StationResponse> findAll() {
+		return StationResponse.ofList(stationRepository.findAll());
 	}
 
-	@Transactional(readOnly = true)
-	public List<Station> findAllByLineId(Long lineId) {
-		return stationRepository.findStations(lineId);
-	}
-
-	public Station create(Station station) {
+	public StationResponse create(Station station) {
 		if (stationRepository.existsByName(station.getName())) {
 			throw new DuplicateStationNameException();
 		}
-		return stationRepository.save(station);
+		return StationResponse.of(stationRepository.save(station));
 	}
 
 	public void delete(Long id) {

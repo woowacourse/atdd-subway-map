@@ -25,6 +25,7 @@ const method = {
 };
 
 const api = (() => {
+  //이거 때매 예외 메시지 파싱 안돼 
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
   const station = {
@@ -62,7 +63,7 @@ const api = (() => {
       return request(`/lines/${lineId}/stations`, method.post(data));
     },
     delete(lineId, stationId) {
-      return requestWithEmptyResponse(`/lines/${lineId}/stations/${stationId}`, method.delete());
+      return fetch(`/lines/${lineId}/stations/${stationId}`, method.delete());
     }
   };
   return {

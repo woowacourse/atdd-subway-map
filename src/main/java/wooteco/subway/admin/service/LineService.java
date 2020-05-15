@@ -1,5 +1,8 @@
 package wooteco.subway.admin.service;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -7,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.exception.DuplicateLineNameException;
 import wooteco.subway.admin.exception.NotFoundLineException;
 import wooteco.subway.admin.exception.NotFoundStationException;
@@ -25,26 +30,30 @@ public class LineService {
 	}
 
 	@Transactional(readOnly = true)
-	public Line findLine(Long id) {
-		return findLineById(id);
+	public LineResponse findLine(Long lineId) {
+		return LineResponse.of(findLineById(lineId), stationRepository.findStations(lineId));
 	}
 
 	@Transactional(readOnly = true)
-	public List<LineStation> findLineStations(Long id) {
-		Line line = findLineById(id);
+	public List<LineStation> findLineStations(Long lineId) {
+		Line line = findLineById(lineId);
 		return line.getStations();
 	}
 
 	@Transactional(readOnly = true)
-	public List<Line> findAllLines() {
-		return lineRepository.findAll();
+	public List<LineResponse> findAllLines() {
+		List<Line> lines = lineRepository.findAll();
+		List<Station> allStations = stationRepository.findAll();
+		return lines.stream()
+			.map(line -> LineResponse.of(line, line.findContainingStationsFrom(allStations)))
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
-	public Line save(Line line) {
+	public LineResponse save(Line line) {
 		if (lineRepository.existsByName(line.getName())) {
 			throw new DuplicateLineNameException();
 		}
-		return lineRepository.save(line);
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	public void updateLine(Long id, Line updatedLine) {
