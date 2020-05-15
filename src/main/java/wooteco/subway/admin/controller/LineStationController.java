@@ -30,8 +30,8 @@ public class LineStationController {
 
 	@PostMapping
 	public ResponseEntity<LineStationResponse> createLineStation(@PathVariable Long lineId,
-		@Valid @RequestBody LineStationCreateRequest view) {
-		LineStation lineStation = view.toLineStation();
+		@Valid @RequestBody LineStationCreateRequest request) {
+		LineStation lineStation = request.toLineStation();
 		lineService.addLineStation(lineId, lineStation);
 
 		return ResponseEntity

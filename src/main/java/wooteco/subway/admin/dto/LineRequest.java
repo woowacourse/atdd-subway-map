@@ -12,23 +12,23 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
-	@NotNull
-	@NotBlank
+	@NotNull(message = "null값은 허용되지 않습니다.")
+	@NotBlank(message = "노선명을 입력해주세요.")
 	private String name;
 
-	@NotNull
+	@NotNull(message = "출발시간을 입력해주세요.")
 	@DateTimeFormat(pattern = "HH:mm:ss")
 	private LocalTime startTime;
 
-	@NotNull
+	@NotNull(message = "도착시간을 입력해주세요.")
 	@DateTimeFormat(pattern = "HH:mm:ss")
 	private LocalTime endTime;
 
-	@Min(1)
+	@Min(value = 1, message = "배차 간격에 양수를 입력해주세요.")
 	private int intervalTime;
 
-	@NotNull
-	@NotBlank
+	@NotNull(message = "null값은 허용되지 않습니다.")
+	@NotBlank(message = "노선의 배경색을 입력해주세요.")
 	private String bgColor;
 
 	private LineRequest() {
