@@ -15,6 +15,9 @@ public class Station {
 
     public Station(Long id, String name) {
         this.id = id;
+        if (name.isEmpty() || name.contains(" ") || name.matches(".*[0-9].*")) {
+            throw new IllegalArgumentException("잘못된 역이름입니다.");
+        }
         this.name = name;
         this.createdAt = LocalDateTime.now();
     }

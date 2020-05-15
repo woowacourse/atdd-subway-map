@@ -13,7 +13,7 @@ public class Line {
     private String bgColor;
     private LocalTime startTime;
     private LocalTime endTime;
-    private int intervalTime;
+    private Integer intervalTime;
     private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -21,7 +21,7 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, Integer intervalTime) {
         this.id = id;
         this.name = name;
         this.bgColor = bgColor;
