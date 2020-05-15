@@ -20,7 +20,7 @@ public class Edge {
 		this.duration = duration;
 	}
 
-	public void updatePreLineStation(Long preStationId) {
+	public void updatePreEdge(Long preStationId) {
 		this.preStationId = preStationId;
 	}
 

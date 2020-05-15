@@ -68,7 +68,7 @@ public class Line {
 		stations.stream()
 				.filter(st -> Objects.equals(st.getPreStationId(), edge.getPreStationId()))
 				.findFirst()
-				.ifPresent(st -> st.updatePreLineStation(edge.getStationId()));
+				.ifPresent(st -> st.updatePreEdge(edge.getStationId()));
 		stations.add(edge);
 	}
 
@@ -81,7 +81,7 @@ public class Line {
 		stations.stream()
 				.filter(st -> st.isEqualsWithPreStationId(stationId))
 				.findFirst()
-				.ifPresent(st -> st.updatePreLineStation(target.getPreStationId()));
+				.ifPresent(st -> st.updatePreEdge(target.getPreStationId()));
 
 		stations.remove(target);
 		return target;

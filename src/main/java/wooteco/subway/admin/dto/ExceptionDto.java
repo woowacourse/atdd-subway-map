@@ -1,4 +1,4 @@
-package wooteco.subway.admin.controller.advice.dto;
+package wooteco.subway.admin.dto;
 
 public class ExceptionDto {
 	private String message;

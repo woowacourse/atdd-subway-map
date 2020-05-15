@@ -28,7 +28,7 @@ function AdminLine() {
 
   const subwayLineModal = new Modal();
 
-  const onSubmitSubwayLine = event => {
+  const onSubmitSubwayLine = async event => {
     event.preventDefault();
     let inputSubwayLine = {
       name: $subwayLineNameInput.value,
@@ -42,10 +42,10 @@ function AdminLine() {
     }
 
     if (isEdit) {
-      api.line.update(inputSubwayLine.id, inputSubwayLine);
+      await api.line.update(inputSubwayLine.id, inputSubwayLine);
     }
-    api.line.create(inputSubwayLine)
-    .then(line => $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line)));
+    const created = await api.line.create(inputSubwayLine);
+    $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(created));
 
     const newLineTemplate = subwayLinesTemplate(inputSubwayLine);
 

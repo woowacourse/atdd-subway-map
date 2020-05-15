@@ -1,17 +1,19 @@
 package wooteco.subway.admin.dto;
 
+import java.util.Objects;
+
 import wooteco.subway.admin.domain.Edge;
 
 public class EdgeResponse {
-	private Long line;
+	private Long lineId;
 	private Long preStationId;
 	private Long stationId;
 	private int distance;
 	private int duration;
 
-	public EdgeResponse(Long line, Long preStationId, Long stationId, int distance,
+	public EdgeResponse(Long lineId, Long preStationId, Long stationId, int distance,
 			int duration) {
-		this.line = line;
+		this.lineId = lineId;
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
@@ -23,12 +25,8 @@ public class EdgeResponse {
 				edge.getStationId(), edge.getDistance(), edge.getDuration());
 	}
 
-	public String getCustomId() {
-		return "" + line + preStationId + stationId;
-	}
-
-	public Long getLine() {
-		return line;
+	public Long getLineId() {
+		return lineId;
 	}
 
 	public Long getPreStationId() {
@@ -45,5 +43,24 @@ public class EdgeResponse {
 
 	public int getDuration() {
 		return duration;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		EdgeResponse that = (EdgeResponse)o;
+		return distance == that.distance &&
+				duration == that.duration &&
+				Objects.equals(lineId, that.lineId) &&
+				Objects.equals(preStationId, that.preStationId) &&
+				Objects.equals(stationId, that.stationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(lineId, preStationId, stationId, distance, duration);
 	}
 }

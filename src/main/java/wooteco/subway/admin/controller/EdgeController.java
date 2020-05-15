@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.EdgeRequest;
 import wooteco.subway.admin.dto.EdgeResponse;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.service.EdgeService;
 
 @RestController
@@ -27,7 +27,7 @@ public class EdgeController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<LineResponse>> lineStations() {
+	public ResponseEntity<List<LineResponse>> edges() {
 		return ResponseEntity.ok(edgeService.findAll());
 	}
 
@@ -36,7 +36,7 @@ public class EdgeController {
 			@RequestBody EdgeRequest request) {
 		EdgeResponse created = edgeService.create(request);
 		return ResponseEntity
-				.created(URI.create("/edges/" + created.getCustomId()))
+				.created(URI.create("/edges/" + created.getLineId()))
 				.body(created);
 	}
 

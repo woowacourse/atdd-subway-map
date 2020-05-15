@@ -19,10 +19,12 @@ public class LineService {
 		this.lineRepository = lineRepository;
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> findAll() {
 		return LineResponse.listOf(lineRepository.findAll());
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse findById(Long id) {
 		return LineResponse.of(lineRepository.findById(id)
 				.orElseThrow(NoSuchElementException::new));

@@ -13,7 +13,7 @@ function AdminEdge() {
   const createSubwayEdgeModal = new Modal();
 
   const initSubwayLinesSlider = async () => {
-    const lines = await api.lineStation.get();
+    const lines = await api.edge.get();
 
     $subwayLinesSlider.innerHTML = lines
     .map(line => subwayLinesItemTemplate(line))
@@ -50,7 +50,7 @@ function AdminEdge() {
       stationName: stationName
     };
 
-    api.lineStation.create(data).then(() => {
+    api.edge.create(data).then(() => {
       location.reload();
       createSubwayEdgeModal.toggle();
     });
@@ -65,7 +65,7 @@ function AdminEdge() {
       const stationId = $listItem.dataset.stationId;
 
       $listItem.remove();
-      api.lineStation.delete(lineId, stationId);
+      api.edge.delete(lineId, stationId);
     }
   };
 

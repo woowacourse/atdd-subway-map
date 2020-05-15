@@ -18,6 +18,7 @@ public class StationService {
 		this.stationRepository = stationRepository;
 	}
 
+	@Transactional(readOnly = true)
 	public List<StationResponse> findAll() {
 		return StationResponse.listOf(stationRepository.findAll());
 	}
@@ -34,7 +35,7 @@ public class StationService {
 		if (stationRepository.findByName(name).isPresent()) {
 			throw new IllegalArgumentException("역 이름은 중복될수 없습니다.");
 		}
-	 }
+	}
 
 	@Transactional
 	public void delete(Long id) {

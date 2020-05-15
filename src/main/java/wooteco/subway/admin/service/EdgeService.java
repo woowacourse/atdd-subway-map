@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Edge;
+import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.EdgeRequest;
 import wooteco.subway.admin.dto.EdgeResponse;
+import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -27,6 +27,7 @@ public class EdgeService {
 		this.stationRepository = stationRepository;
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> findAll() {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
@@ -35,7 +36,8 @@ public class EdgeService {
 				.collect(Collectors.toList());
 	}
 
-	public Set<Edge> findLineStation(long lineId) {
+	@Transactional(readOnly = true)
+	public Set<Edge> findEdge(long lineId) {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(NoSuchElementException::new);
 		return line.getStations();
@@ -46,7 +48,7 @@ public class EdgeService {
 		Line line = lineRepository.findByName(request.getLineName())
 				.orElseThrow(NoSuchElementException::new);
 		Station preStation = stationRepository.findByName(request.getPreStationName())
-				.orElseThrow(NoSuchElementException::new);
+				.orElseGet(() -> new Station(null, request.getPreStationName()));
 		Station station = stationRepository.findByName(request.getStationName())
 				.orElseThrow(NoSuchElementException::new);
 

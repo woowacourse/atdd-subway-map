@@ -27,14 +27,13 @@ const METHOD = {
 
 const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(async res => {
-    switch (res.status) {
-      case 400:
-        const error = await res.json();
-        throw new Error(error.message);
-      case 200:
-        return await res.json();
+    console.log(res);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message);
     }
-  }).catch(alert);
+    return await res.json();
+  }).catch(console.log);
 
   const station = {
     get() {
@@ -66,7 +65,7 @@ const api = (() => {
     }
   };
 
-  const lineStation = {
+  const edge = {
     get() {
       return request(`/edges`);
     },
@@ -79,8 +78,9 @@ const api = (() => {
   }
 
   return {
-    station, line, lineStation
+    station, line, edge
   };
-})();
+})
+();
 
 export default api;

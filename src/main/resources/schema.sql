@@ -21,7 +21,7 @@ create table if not exists LINE
 
 create table if not exists EDGE
 (
-    line           bigint references line (id),
+    line        bigint references line (id),
     pre_station_id bigint,
     station_id     bigint not null,
     distance       integer,
