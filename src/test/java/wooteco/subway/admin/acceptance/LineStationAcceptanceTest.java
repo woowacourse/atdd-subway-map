@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -64,33 +63,33 @@ public class LineStationAcceptanceTest {
         createStation("일원역");
         createStation("이대역");
         createStation("삼성역");
-        createLine("55호선");
-        final LineResponse line = getLines().get(0);
-        final StationResponse station = getStations().get(0);
+        createLine("10호선");
+        LineResponse lineTen = getLines().get(0);
+        StationResponse stationOne = getStations().get(0);
 
         //when
-        addLineStation(line.getId(), station.getId());
+        addLineStation(lineTen.getId(), stationOne.getId());
         //then
-        List<StationResponse> stationResponse = findLineStationsById(line.getId());
-        assertThat(stationResponse.size()).isEqualTo(1);
+        List<StationResponse> lineStationsOfLineTen = findLineStationsById(lineTen.getId());
+        assertThat(lineStationsOfLineTen.size()).isEqualTo(1);
 
         //when
-        addLineStation(line.getId(), getStations().get(1).getId());
-        List<StationResponse> stationResponses = findLineStationsById(line.getId());
+        StationResponse stationTwo = getStations().get(1);
+        addLineStation(lineTen.getId(), stationTwo.getId());
+        lineStationsOfLineTen = findLineStationsById(lineTen.getId());
         //then
-        assertThat(stationResponses).isNotNull();
-        assertThat(stationResponses).contains(StationResponse.of(new Station("이대역")));
+        assertThat(lineStationsOfLineTen).isNotNull();
+        assertThat(lineStationsOfLineTen).contains(stationTwo);
 
         //when
-        deleteLineStation(line.getId(), getStations().get(0).getId());
+        deleteLineStation(lineTen.getId(), stationOne.getId());
         //then
-        assertThat(findLineStationsById(line.getId()).size()).isEqualTo(1);
+        assertThat(findLineStationsById(lineTen.getId()).size()).isEqualTo(1);
 
         //when
-        List<StationResponse> stationResponsesAfterDelete = findLineStationsById(line.getId());
+        List<StationResponse> stationResponsesAfterDelete = findLineStationsById(lineTen.getId());
         //then
-        assertThat(stationResponsesAfterDelete).doesNotContain(
-            StationResponse.of(new Station("일원역")));
+        assertThat(stationResponsesAfterDelete).doesNotContain(stationOne);
     }
 
     private List<StationResponse> findLineStationsById(Long id) {
