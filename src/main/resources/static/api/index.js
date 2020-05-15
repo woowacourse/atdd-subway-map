@@ -40,7 +40,7 @@ const api = (() => {
       return request(`/stations`);
     },
     getByName(name) {
-      return request(`/stations/id/${name}`);
+      return request(`/stations/id/?name=${name}`);
     },
     create(data) {
       return request(`/stations`, METHOD.POST(data));

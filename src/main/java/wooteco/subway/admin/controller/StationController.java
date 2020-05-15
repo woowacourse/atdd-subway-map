@@ -7,12 +7,15 @@ import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.StationService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class StationController {
+    private static long NO_ID = 0L;
+
     private StationService stationService;
 
     public StationController(StationService stationService) {
@@ -35,12 +38,11 @@ public class StationController {
     }
 
     @GetMapping("/stations/id/")
-    public ResponseEntity<Long> findIdByNullName() {
-        return ResponseEntity.ok().body(0L);
-    }
-
-    @GetMapping("/stations/id/{name}")
-    public ResponseEntity<Long> findIdByName(@PathVariable String name) {
+    public ResponseEntity<Long> findIdByName(HttpServletRequest request) {
+        String name = request.getParameter("name");
+        if (name.equals("")) {
+            return ResponseEntity.ok().body(NO_ID);
+        }
         return ResponseEntity.ok().body(stationService.findIdByName(name));
     }
 
