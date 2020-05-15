@@ -1,50 +1,58 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
-public class LineStationAcceptanceTest {
-    @LocalServerPort
-    int port;
+public class LineStationAcceptanceTest extends AcceptanceTest {
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
-
-    /**
-     *     Given 지하철역이 여러 개 추가되어있다.
-     *     And 지하철 노선이 추가되어있다.
-     *
-     *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     *     Then 지하철역이 노선에 추가 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *
-     *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     *     Then 지하철역이 노선에서 제거 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        // given : line 테이블에는 '5호선' 이라는 노선이,
+        // station 테이블에는 다음 네개의 역이 저장되어있다.
+        createStation("마장역");
+        createStation("왕십리역");
+        createStation("행당역");
+        createStation("몽촌토성역");
+        createLine("5호선");
 
+        List<StationResponse> stations = getStations();
+        List<LineResponse> lines = getLines();
+
+        // when : 5호선에 마장역 -> 왕십리역 -> 행당역 순서로 lineStation 을 등록한다.
+        createLineStation(lines.get(0).getId(), stations.get(0).getId(), null);
+        createLineStation(lines.get(0).getId(), stations.get(1).getId(), stations.get(0).getId());
+        createLineStation(lines.get(0).getId(), stations.get(2).getId(), stations.get(1).getId());
+
+        // then : 5호선에 대하여 세개의 역이 정상적으로 등록되었는가?
+        LineWithOrderedStationsResponse lineWithStations = getLineWithStations(lines.get(0).getId());
+        assertThat(lineWithStations.getOrderedStations().size()).isEqualTo(3);
+
+        // when : 5호선의 행당역(기존의 마지막 역) 다음에 몽촌토성역을 등록한다.
+        createLineStation(lines.get(0).getId(), stations.get(3).getId(), stations.get(2).getId());
+        // then : 마지막 역이 몽촌토성역인가?
+        List<Station> orderedStations = getLineWithStations(lines.get(0).getId()).getOrderedStations();
+        assertThat(orderedStations.get(orderedStations.size() - 1).getName()).isEqualTo("몽촌토성역");
+
+        // when : 5호선 마지막 역(= 몽촌토성역)을 5호선에서 삭제한다.
+        deleteLineStation(lines.get(0).getId(),orderedStations.get(orderedStations.size() - 1).getId());
+        // then (1) : 5호선의 역 갯수가 세개인가? (4개에서 3개로 줄었는가?)
+        assertThat(lineWithStations.getOrderedStations().size()).isEqualTo(3);
+        // then (2) : 5호선에 몽촌토성역이 정상적으로 삭제되었는가?
+        orderedStations = getLineWithStations(lines.get(0).getId()).getOrderedStations();
+        assertThat(orderedStations.stream()
+                .anyMatch(orderedStation -> orderedStation.getName().equals("몽촌토성역"))
+        ).isFalse();
     }
+
+
 }

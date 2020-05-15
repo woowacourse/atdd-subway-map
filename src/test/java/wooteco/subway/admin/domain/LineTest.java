@@ -1,39 +1,47 @@
 package wooteco.subway.admin.domain;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class LineTest {
     private Line line;
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line("2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "test-color");
+        line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+    }
+
+    @DisplayName("line 에 시작역이 없는데 중간역부터 추가할 경우 예외처리")
+    @Test
+    void validateAddLineStationInOrder() {
+        Line emptyLine = new Line("5호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "test-color");
+        assertThatThrownBy(() -> {
+            emptyLine.addLineStation(new LineStation(1L, 3L, 10, 10));
+        }).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("라인에 역 등록은 시작역부터 순서대로 해주세요.");
     }
 
     @Test
-    void getLineStations() {
-        List<Long> stationIds = line.getLineStationsId();
-
-        assertThat(stationIds.size()).isEqualTo(3);
-        assertThat(stationIds.get(0)).isEqualTo(1L);
-        assertThat(stationIds.get(2)).isEqualTo(3L);
+    void getStationIds() {
+        List<Long> stationIds = line.getStationIds();
+        assertThat(stationIds.size()).isEqualTo(2);
     }
 
     @ParameterizedTest
-    @ValueSource(longs = {1L, 2L, 3L})
+    @ValueSource(longs = {1L, 2L})
     void removeLineStation(Long stationId) {
-        line.removeLineStationById(stationId);
+        line.removeLineStationByStationId(stationId);
 
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getLineStations()).hasSize(1);
     }
 }

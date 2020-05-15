@@ -1,17 +1,20 @@
 package wooteco.subway.admin.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineWithOrderedStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
-import java.util.Set;
-
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -25,8 +28,8 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public List<LineResponse> showLines() {
+        return LineResponse.listOf(lineRepository.findAll());
     }
 
     public void updateLine(Long id, Line line) {
@@ -40,15 +43,47 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        line.addLineStation(request.toLineStation());
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        line.removeLineStationByStationId(stationId);
+        lineRepository.save(line);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+    public LineResponse findLineById(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return LineResponse.of(line);
+    }
+
+    public LineWithOrderedStationsResponse findLineWithOrderedStationsById(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return findLineWithOrderedStations(line);
+    }
+
+    public List<LineWithOrderedStationsResponse> showLinesWithStations() {
+        List<Line> lines = lineRepository.findAll();
+        return Collections.unmodifiableList(
+            lines.stream()
+                .map(this::findLineWithOrderedStations)
+                .collect(Collectors.toList()));
+    }
+
+    private LineWithOrderedStationsResponse findLineWithOrderedStations(Line line) {
+        List<LineStation> orderedLineStations = line.getLineStations();
+        List<Station> stations = stationRepository.findAllById(line.getStationIds());
+        List<Station> orderedStations = new ArrayList<>();
+
+        for (LineStation lineStation : orderedLineStations) {
+            Station stationByOrder = stations.stream()
+                .filter(station -> station.isId(lineStation.getId()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("있을수 없는 상황..."));
+            orderedStations.add(stationByOrder);
+        }
+        return LineWithOrderedStationsResponse.of(line, orderedStations);
     }
 }

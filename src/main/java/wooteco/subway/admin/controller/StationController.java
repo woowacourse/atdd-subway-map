@@ -1,40 +1,43 @@
 package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.StationService;
 
 import java.net.URI;
 
+@RequestMapping("/stations")
 @RestController
 public class StationController {
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping()
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
         Station station = view.toStation();
-        Station persistStation = stationRepository.save(station);
+        Station persistStation = stationService.save(station);
 
         return ResponseEntity
                 .created(URI.create("/stations/" + persistStation.getId()))
                 .body(StationResponse.of(persistStation));
     }
 
-    @GetMapping("/stations")
+    @GetMapping()
     public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
+        return ResponseEntity.ok().body(stationService.showStations());
     }
 
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
+    @DeleteMapping("/{name}")
+    public ResponseEntity deleteStation(@PathVariable String name) {
+        stationService.deleteStationByName(name);
         return ResponseEntity.noContent().build();
     }
 }
