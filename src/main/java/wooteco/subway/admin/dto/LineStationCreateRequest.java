@@ -2,10 +2,15 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.LineStation;
 
+import javax.validation.constraints.NotNull;
+
 public class LineStationCreateRequest {
     private Long preStationId;
+    @NotNull(message = "역명이 있어야 합니다.")
     private Long stationId;
+    @NotNull(message = "거리가 있어야 합니다.")
     private int distance;
+    @NotNull(message = "소요시간이 있어야 합니다.")
     private int duration;
 
     public LineStationCreateRequest() {

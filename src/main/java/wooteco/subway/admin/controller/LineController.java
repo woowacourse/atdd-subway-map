@@ -13,6 +13,7 @@ import wooteco.subway.admin.exception.StartStationNotFoundException;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
@@ -69,7 +70,7 @@ public class LineController {
 
     @PutMapping("/lines/{id}/stations")
     public ResponseEntity<LineResponse> createLineStation(@PathVariable Long id,
-                                                          @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+                                                          @RequestBody @Valid LineStationCreateRequest lineStationCreateRequest) {
         lineService.addLineStation(id, lineStationCreateRequest.toLineStation());
         return ResponseEntity.ok()
                 .body(findLineWithStationsById(id));

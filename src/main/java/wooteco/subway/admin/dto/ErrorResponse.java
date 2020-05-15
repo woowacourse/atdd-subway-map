@@ -1,17 +1,17 @@
 package wooteco.subway.admin.dto;
 
 public class ErrorResponse {
-    private final String error;
+    private final String message;
 
-    public ErrorResponse(String error) {
-        this.error = error;
+    public ErrorResponse(String message) {
+        this.message = message;
     }
 
     public static ErrorResponse of(String error) {
         return new ErrorResponse(error);
     }
 
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 }

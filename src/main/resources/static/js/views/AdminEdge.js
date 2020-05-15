@@ -8,6 +8,11 @@ function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $createLineStationButton = document.querySelector("#submit-button");
     const $stationSelectOptions = document.querySelector("#station-select-options");
+    const $departStationName = document.querySelector("#depart-station-name");
+    const $arrivalStationName = document.querySelector("#arrival-station-name");
+    const $distanceField = document.querySelector("#distance");
+    const $durationField = document.querySelector("#duration");
+
     const createSubwayEdgeModal = new Modal();
 
     const initSubwayLinesSlider = () => {
@@ -48,22 +53,20 @@ function AdminEdge() {
     const onCreateLineStationHandler = async event => {
         event.preventDefault();
         const stations = await api.station.get();
-        const preStation = stations.find(station => station.name === document.querySelector("#depart-station-name").value);
-        const station = stations.find(station => station.name === document.querySelector("#arrival-station-name").value);
+        const preStation = stations.find(station => station.name === $departStationName.value);
+        const station = stations.find(station => station.name === $arrivalStationName.value);
         const request = {
-          preStationId: preStation ? preStation.id : null,
-          stationId: station ? station.id : null,
-          distance: document.querySelector("#distance").value,
-          duration: document.querySelector("#duration").value
+            preStationId: preStation ? preStation.id : null,
+            stationId: station ? station.id : null,
+            distance: $distanceField.value,
+            duration: $durationField.value
         }
         api.lineStation.create($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
-            console.log(data);
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
+            if (data.error) throw data;
             createSubwayEdgeModal.toggle();
             location.reload();
+        }).catch(e => {
+            alert("올바르지 않은 요청입니다.");
         })
     };
 
