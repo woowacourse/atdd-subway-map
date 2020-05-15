@@ -1,12 +1,18 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import wooteco.subway.admin.exceptions.StationNotFoundOnSuchLine;
 
 public class Line {
     private static final int FIRST = 0;
@@ -149,9 +155,9 @@ public class Line {
 
     private LineStation findStationBy(Long stationId) {
         return stations.stream()
-                .filter(lineStation -> lineStation.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당 노선에 등록되지 않은 역입니다."));
+            .filter(lineStation -> lineStation.getStationId().equals(stationId))
+            .findFirst()
+            .orElseThrow(StationNotFoundOnSuchLine::new);
     }
 
     public List<Long> getLineStationsId() {
