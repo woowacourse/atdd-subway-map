@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.dto.domain.LineDto;
@@ -50,12 +51,12 @@ public class LineService {
     }
 
     @Transactional
-    public Line updateLine(Long id, Line line) {
+    public LineDto updateLine(Long id, LineRequest line) {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
 
-        persistLine.update(line);
-        return lineRepository.save(persistLine);
+        persistLine.update(line.toLine());
+        return LineDto.of(lineRepository.save(persistLine));
     }
 
     @Transactional

@@ -2,7 +2,6 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
@@ -51,7 +50,7 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLineBy(@PathVariable(name = "id") Long id, @RequestBody LineRequest view) {
-        Line persistLine = lineService.updateLine(id, view.toLine());
+        LineDto persistLine = lineService.updateLine(id, view);
         return ResponseEntity
                 .ok()
                 .body(LineResponse.of(persistLine));
