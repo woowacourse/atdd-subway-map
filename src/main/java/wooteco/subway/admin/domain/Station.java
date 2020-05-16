@@ -24,6 +24,11 @@ public class Station {
     public Station() {
     }
 
+    public boolean is(Long id) {
+        return this.id.equals(id);
+    }
+
+
     public Long getId() {
         return id;
     }
