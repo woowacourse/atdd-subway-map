@@ -1,11 +1,19 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import org.springframework.data.relational.core.mapping.Column;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Long stationId;
+    @Column("pre_station")
     private Long preStationId;
+    @Column("station")
+    private Long stationId;
     private int distance;
     private int duration;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public LineStation() {
     }
@@ -15,6 +23,8 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getPreStationId() {
@@ -31,6 +41,36 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public boolean isFirstLineStation() {
+        return Objects.isNull(preStationId);
+    }
+
+    public boolean isBaseStation(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean samePreStation(Long preStationId) {
+        if (Objects.isNull(this.preStationId)) {
+            return Objects.isNull(preStationId);
+        }
+        return this.preStationId.equals(preStationId);
+    }
+
+    public boolean hasSameStations(LineStation lineStation) {
+        return (Objects.equals(stationId, lineStation.stationId) && Objects.equals(preStationId,
+            lineStation.preStationId)) ||
+            (Objects.equals(preStationId, lineStation.stationId) && Objects.equals(stationId,
+                lineStation.preStationId));
     }
 
     public void updatePreLineStation(Long preStationId) {

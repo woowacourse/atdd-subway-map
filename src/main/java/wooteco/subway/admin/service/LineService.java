@@ -1,54 +1,65 @@
 package wooteco.subway.admin.service;
 
-import org.springframework.stereotype.Service;
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
-import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
-
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.resopnse.LineResponse;
+import wooteco.subway.admin.exception.DuplicateNameException;
+import wooteco.subway.admin.exception.NotFoundException;
+import wooteco.subway.admin.repository.LineRepository;
+
+@Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    @Transactional
+    public List<LineResponse> findAllWithoutStations() {
+        return lineRepository.findAll().stream()
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    @Transactional
+    public LineResponse findLineWithoutStations(Long id) {
+        Line line = findById(id);
+        return LineResponse.from(line);
     }
 
+    @Transactional
+    public Long save(Line line) {
+        validateDuplicateName(line);
+        return lineRepository.save(line).getId();
+    }
+
+    @Transactional
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+    private void validateDuplicateName(Line lineToCreate) {
+        boolean exist = lineRepository.existsLineBy(lineToCreate.getName().trim());
+        if (exist) {
+            throw new DuplicateNameException(lineToCreate.getName());
+        }
     }
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(id));
     }
 }

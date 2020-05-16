@@ -1,5 +1,4 @@
-package wooteco.subway.admin.dto;
-
+package wooteco.subway.admin.dto.request;
 
 import wooteco.subway.admin.domain.Station;
 
@@ -11,6 +10,6 @@ public class StationCreateRequest {
     }
 
     public Station toStation() {
-        return new Station(name);
+        return Station.of(name);
     }
 }
