@@ -27,8 +27,7 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime,
-        int intervalTime) {
+    public Line(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this.name = name;
         this.bgColor = bgColor;
         this.startTime = startTime;
@@ -147,17 +146,17 @@ public class Line {
         if (stations.size() == 0) {
             return Collections.EMPTY_LIST;
         }
-        for (LineStation station : stations) {
-            if (station.getPreStationId() == null) {
-                ids.add(station.getStationId());
-            }
-        }
+
+        stations.stream()
+            .filter(station -> station.getPreStationId() == null)
+            .findFirst()
+            .ifPresent(station -> ids.add(station.getStationId()));
+
         for (int i = 0; i < stations.size() - 1; i++) {
-            for (LineStation lineStation : stations) {
-                if (ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
-                    ids.add(lineStation.getStationId());
-                }
-            }
+            stations.stream()
+                .filter(lineStation -> ids.get(ids.size() - 1).equals(lineStation.getPreStationId()))
+                .findFirst()
+                .ifPresent(lineStation -> ids.add(lineStation.getStationId()));
         }
         return ids;
     }
