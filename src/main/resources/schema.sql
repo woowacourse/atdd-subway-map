@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS STATION
+CREATE TABLE IF NOT EXISTS station
 (
     id         bigint auto_increment not null,
     name       varchar(255)          not null,
@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS STATION
     primary key (id)
 );
 
-CREATE TABLE IF NOT EXISTS LINE
+CREATE TABLE IF NOT EXISTS line
 (
     id            bigint auto_increment not null,
     name          varchar(255)          not null,
@@ -19,14 +19,14 @@ CREATE TABLE IF NOT EXISTS LINE
     primary key (id)
 );
 
-CREATE TABLE IF NOT EXISTS EDGE
+CREATE TABLE IF NOT EXISTS edge
 (
-    id             bigint auto_increment not null,
-    line_id        bigint                not null,
+    line           bigint                not null,
     station_id     bigint                not null,
     pre_station_id bigint                ,
     distance       int                   not null,
     duration       int                   not null,
     sequence       int                   not null,
-    primary key (id)
+    created_at     datetime,
+    updated_at     datetime
 );

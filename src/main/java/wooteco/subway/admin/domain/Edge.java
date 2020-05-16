@@ -1,41 +1,44 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
+import java.time.LocalDateTime;
 
 public class Edge {
 	public static final int ID_MINIMUM_VALUE = 1;
 	private static final int DISTANCE_MINIMUM_VALUE = 0;
 	private static final int DURATION_MINIMUM_VALUE = 0;
 
-	@Id
-	private Long id;
 	private final long stationId;
 	private final long preStationId;
 	private final int distance;
 	private final int duration;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime updatedAt;
 
-	Edge(final Long id, final long preStationId, final long stationId, final int distance,
-		final int duration) {
+	Edge(final long preStationId, final long stationId, final int distance,
+		final int duration, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		validate(preStationId, stationId, distance, duration);
 
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 
 	public static Edge of(final long preStationId, final long stationId,
 		final int distance, final int duration) {
-		return new Edge(null, preStationId, stationId, distance, duration);
+		LocalDateTime currentTime = LocalDateTime.now();
+
+		return new Edge(preStationId, stationId, distance, duration, currentTime,
+			currentTime);
 	}
 
 	public static Edge starter(long stationId) {
-		return new Edge(null, stationId, stationId, DISTANCE_MINIMUM_VALUE,
-			DURATION_MINIMUM_VALUE);
-	}
+		LocalDateTime currentTime = LocalDateTime.now();
 
-	public Edge withId(final Long id) {
-		return new Edge(id, stationId, preStationId, distance, duration);
+		return new Edge(stationId, stationId, DISTANCE_MINIMUM_VALUE,
+			DURATION_MINIMUM_VALUE, currentTime, currentTime);
 	}
 
 	private void validate(long preStationId, long stationId, int distance, int duration) {
@@ -55,8 +58,8 @@ public class Edge {
 	}
 
 	public Edge updatePreStationId(final long preStationId) {
-		return new Edge(this.id, preStationId, this.stationId, this.distance,
-			this.duration);
+		return new Edge(preStationId, this.stationId, this.distance, this.duration,
+			createdAt, LocalDateTime.now());
 	}
 
 	public boolean equalsStationId(final long stationId) {
@@ -85,6 +88,14 @@ public class Edge {
 
 	public int getDuration() {
 		return duration;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
 
 	@Override

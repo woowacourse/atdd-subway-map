@@ -20,10 +20,11 @@ public class Line {
 	private final LocalTime endTime;
 	private final int intervalTime;
 	private final String color;
-	@MappedCollection(idColumn = "line_id", keyColumn = "sequence")
-	private final List<Edge> edges;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime updatedAt;
+
+	@MappedCollection(idColumn = "line", keyColumn = "sequence")
+	private final List<Edge> edges;
 
 	Line(final Long id, final String name, final LocalTime startTime,
 		final LocalTime endTime, final int intervalTime, final String color,
