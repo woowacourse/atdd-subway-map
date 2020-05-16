@@ -61,20 +61,6 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-//    public void addLineStationOnFirst(LineStation inputLineStation) {
-//        if (stations.isEmpty()) {
-//            stations.add(0, inputLineStation);
-//            return;
-//        }
-//        LineStation lineStation = stations.stream()
-//                .filter(LineStation::isFirstLineStation)
-//                .findFirst()
-//                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-//        lineStation.updatePreStationId(inputLineStation.getStationId());
-//
-//        stations.add(0, inputLineStation);
-//    }
-
     public void addLineStation(LineStation inputLineStation) {
         if (stations.isEmpty()) {
             stations.add(inputLineStation);
@@ -120,10 +106,6 @@ public class Line {
 
     private boolean isNotLastStation(LineStation lineStation) {
         return !isLastStation(lineStation);
-    }
-
-    public void addLineStationOnLast(LineStation lineStation) {
-        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
