@@ -78,7 +78,7 @@ function AdminEdge() {
             stationName: stationName
         };
 
-        fetch(`/line-stations`, {
+        fetch(`/lines/line-stations`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

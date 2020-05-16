@@ -9,9 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.*;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -86,8 +86,8 @@ public class LineStationAcceptanceTest {
 
 	private void deleteStationBy(Long lineId, Long stationId) {
 		given().
-				when().
-				delete("/line-stations/" + "?lineId=" + lineId + "&stationId=" + stationId)
+				when()
+				.delete("/lines/" + lineId +"/line-stations/" + stationId)
 				.then()
 				.log().all();
 	}
@@ -112,7 +112,7 @@ public class LineStationAcceptanceTest {
 				contentType(MediaType.APPLICATION_JSON_VALUE).
 				accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
-				post("/line-stations").
+				post("/lines/line-stations").
 			then().
 				log().all();
 	}

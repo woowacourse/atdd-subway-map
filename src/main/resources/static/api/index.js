@@ -30,6 +30,7 @@ const api = (() => {
   const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
   const station = {
+
     get() {
       return request(`/stations`);
     },
@@ -63,17 +64,11 @@ const api = (() => {
   };
 
   const lineStation = {
-    get() {
-      return request(`/line-stations`);
-    },
     create(data) {
-      return request(`/line-stations`, METHOD.POST(data));
-    },
-    update(id, data) {
-      return request(`/line-stations/${id}`, METHOD.PUT(data));
+      return request(`/lines/line-stations`, METHOD.POST(data));
     },
     delete(lineId, stationId) {
-      return request(`/line-stations/${lineId}/${stationId}`, METHOD.DELETE());
+      return request(`/lines/${lineId}/line-stations/${stationId}`, METHOD.DELETE());
     }
   };
 

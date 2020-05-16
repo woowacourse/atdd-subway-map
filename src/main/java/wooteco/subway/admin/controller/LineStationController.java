@@ -18,7 +18,7 @@ public class LineStationController {
         this.stationService = stationService;
     }
 
-    @PostMapping("/line-stations")
+    @PostMapping("/lines/line-stations")
     public ResponseEntity<Void> createLineStation(@RequestBody LineStationRequest view) {
         lineService.addLineStation(view);
 
@@ -27,8 +27,8 @@ public class LineStationController {
                 .build();
     }
 
-    @DeleteMapping("/line-stations/{lineId}/{stationId}")
-    public ResponseEntity<Void> deleteLineStation(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
+    @DeleteMapping("/lines/{lineId}/line-stations/{stationId}")
+    public ResponseEntity<Void> deleteLineStation(@RequestParam("lineId") Long lineId, @RequestParam("stationId") Long stationId) {
         lineService.removeLineStation(lineId, stationId);
 
         return ResponseEntity
