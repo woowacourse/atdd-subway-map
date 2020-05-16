@@ -15,6 +15,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.exception.NoLineWithSuchIdException;
 
 @Service
 public class LineService {
@@ -32,26 +33,26 @@ public class LineService {
 		Map<Line, List<Station>> lineWithStations = persistLines.stream()
 			.collect(Collectors.toMap(
 				Function.identity(),
-				persistLine -> toStations(persistLine.getLineStationsId())
+				persistLine -> toStations(persistLine.getAllStationIds())
 			));
 
 		return LineResponse.listOf(lineWithStations);
 	}
 
 	public LineResponse showLine(Long id) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		Line persistLine = lineRepository.findById(id).orElseThrow(NoLineWithSuchIdException::new);
 
-		List<Station> stations = toStations(persistLine.getLineStationsId());
+		List<Station> stations = toStations(persistLine.getAllStationIds());
 
 		return LineResponse.of(persistLine, stations);
 	}
 
 	public LineResponse updateLine(Long id, LineRequest lineRequest) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		Line persistLine = lineRepository.findById(id).orElseThrow(NoLineWithSuchIdException::new);
 		persistLine.update(lineRequest.toLine());
 		Line updatedLine = lineRepository.save(persistLine);
 
-		List<Station> stations = toStations(updatedLine.getLineStationsId());
+		List<Station> stations = toStations(updatedLine.getAllStationIds());
 
 		return LineResponse.of(updatedLine, stations);
 	}
@@ -61,16 +62,16 @@ public class LineService {
 	}
 
 	public LineResponse addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
-		Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+		Line line = lineRepository.findById(lineId).orElseThrow(NoLineWithSuchIdException::new);
 		LineStation lineStation = lineStationCreateRequest.toLineStation();
 		line.addLineStation(lineStation);
 		Line persistLine = lineRepository.save(line);
-		List<Station> stations = toStations(persistLine.getLineStationsId());
+		List<Station> stations = toStations(persistLine.getAllStationIds());
 		return LineResponse.of(persistLine, stations);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+		Line line = lineRepository.findById(lineId).orElseThrow(NoLineWithSuchIdException::new);
 		line.removeLineStationById(stationId);
 		lineRepository.save(line);
 	}
@@ -81,7 +82,7 @@ public class LineService {
 
 	public LineResponse createLine(LineRequest lineRequest) {
 		Line persistLine = lineRepository.save(lineRequest.toLine());
-		List<Station> stations = toStations(persistLine.getLineStationsId());
+		List<Station> stations = toStations(persistLine.getAllStationIds());
 
 		return LineResponse.of(persistLine, stations);
 	}

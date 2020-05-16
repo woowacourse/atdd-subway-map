@@ -162,7 +162,7 @@ public class Line {
 			.ifPresent(lineStation -> lineStation.updatePreStationId(preStationIdToUpdate));
 	}
 
-	public List<Long> getLineStationsId() {
+	public List<Long> getAllStationIds() {
 		return lineStations.stream()
 			.mapToLong(LineStation::getStationId)
 			.boxed()
