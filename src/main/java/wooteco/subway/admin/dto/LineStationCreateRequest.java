@@ -1,34 +1,27 @@
 package wooteco.subway.admin.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class LineStationCreateRequest {
-    private Long preStationId;
-    private Long stationId;
-    private int distance;
-    private int duration;
+
+    private String preStationName;
+
+    @NotBlank(message = "대상역은 필수입력 항목입니다.")
+    private String stationName;
 
     public LineStationCreateRequest() {
     }
 
-    public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
+    public LineStationCreateRequest(String preStationName, String stationName) {
+        this.preStationName = preStationName;
+        this.stationName = stationName;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public String getPreStationName() {
+        return preStationName;
     }
 
-    public Long getStationId() {
-        return stationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public int getDuration() {
-        return duration;
+    public String getStationName() {
+        return stationName;
     }
 }
