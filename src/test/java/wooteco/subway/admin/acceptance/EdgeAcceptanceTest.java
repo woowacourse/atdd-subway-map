@@ -45,14 +45,12 @@ public class EdgeAcceptanceTest {
 	void manageLineStation() {
 		// * Given 지하철역이 여러 개 추가되어있다.
 		// * And 지하철 노선이 추가되어있다.
-		createStation("선릉역");
-		createStation("강남역");
-		createLine("2호선");
+		Long station1 = createStation("선릉역");
+		Long station2 = createStation("강남역");
+		Long line = createLine("2호선");
 
-		Long lineId = 1L;
-		Long preStationId = 1L;
-		Long stationId = 2L;
-		EdgeCreateRequest edgeCreateRequest = new EdgeCreateRequest(preStationId, stationId, 10, 10);
+		EdgeCreateRequest edgeCreateRequest = new EdgeCreateRequest(station1,
+			station2, 10, 10);
 
 		// * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
 		// * Then 지하철역이 노선에 추가 되었다.
@@ -61,7 +59,7 @@ public class EdgeAcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post("/lines/{id}/edges", lineId)
+			.post("/lines/{id}/edges", line)
 			.then()
 			.log().all()
 			.statusCode(HttpStatus.CREATED.value());
@@ -89,14 +87,15 @@ public class EdgeAcceptanceTest {
 
 		// * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
 		// * Then 지하철역이 노선에서 제거 되었다.
-		EdgeDeleteRequest edgeDeleteRequest = new EdgeDeleteRequest(preStationId, stationId);
+		EdgeDeleteRequest edgeDeleteRequest = new EdgeDeleteRequest(station1,
+			station2);
 
 		given()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.body(edgeDeleteRequest)
 			.when()
-			.delete("/lines/{id}/edges", lineId)
+			.delete("/lines/{id}/edges", line)
 			.then()
 			.log().all()
 			.statusCode(HttpStatus.NO_CONTENT.value());
@@ -119,18 +118,20 @@ public class EdgeAcceptanceTest {
 			.collect(Collectors.toList());
 
 		assertThat(stationIds.size()).isEqualTo(1);
-		assertThat(stationIds.get(0)).isEqualTo(preStationId);
+		assertThat(stationIds.get(0)).isEqualTo(station1);
 	}
 
-	private void createLine(String name) {
+	private Long createLine(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
-		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+		params.put("startTime",
+			LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
+		params.put("endTime",
+			LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("intervalTime", "10");
 		params.put("bgColor", "bg-red-200");
 
-		given().
+		return given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
@@ -138,14 +139,15 @@ public class EdgeAcceptanceTest {
 			post("/lines").
 			then().
 			log().all().
-			statusCode(HttpStatus.CREATED.value());
+			statusCode(HttpStatus.CREATED.value())
+			.extract().as(Long.class);
 	}
 
-	private void createStation(String name) {
+	private Long createStation(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 
-		given().
+		return given().
 			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
@@ -153,7 +155,8 @@ public class EdgeAcceptanceTest {
 			post("/stations").
 			then().
 			log().all().
-			statusCode(HttpStatus.CREATED.value());
+			statusCode(HttpStatus.CREATED.value())
+			.extract().as(Long.class);
 	}
 
 }

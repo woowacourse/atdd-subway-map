@@ -20,7 +20,8 @@ public class LineService {
 	private final LineRepository lineRepository;
 	private final StationRepository stationRepository;
 
-	public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+	public LineService(final LineRepository lineRepository,
+		final StationRepository stationRepository) {
 		this.lineRepository = lineRepository;
 		this.stationRepository = stationRepository;
 	}
@@ -44,7 +45,8 @@ public class LineService {
 
 		// TODO 로직 개선
 		return lines.stream()
-			.map(line -> LineResponse.of(line, stationRepository.findAllById(line.getEdgesId())))
+			.map(line -> LineResponse.of(line,
+				stationRepository.findAllById(line.getEdgesId())))
 			.collect(Collectors.toList());
 	}
 
@@ -64,8 +66,7 @@ public class LineService {
 		Line line = findLineById(id);
 		Edge edge = request.toEdge();
 		line.addEdge(edge);
-		lineRepository.save(line);
-		return id;
+		return lineRepository.save(line).getId();
 	}
 
 	private Line findLineById(Long id) {

@@ -24,11 +24,8 @@ public class LineCreateRequest {
 	private LineCreateRequest() {
 	}
 
-	public LineCreateRequest(String name,
-		LocalTime startTime,
-		LocalTime endTime,
-		Integer intervalTime,
-		String bgColor) {
+	public LineCreateRequest(String name, LocalTime startTime, LocalTime endTime,
+		Integer intervalTime, String bgColor) {
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -57,6 +54,7 @@ public class LineCreateRequest {
 	}
 
 	public Line toLine() {
-		return Line.of(this.name, this.startTime, this.endTime, this.intervalTime, this.bgColor);
+		return Line.of(this.name, this.startTime, this.endTime, this.intervalTime,
+			this.bgColor);
 	}
 }

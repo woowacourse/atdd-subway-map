@@ -18,9 +18,10 @@ public class LineTest {
 
 	@BeforeEach
 	void setUp() {
-		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
-		line.addEdge(new Edge(1L, 2L, 10, 10));
-		line.addEdge(new Edge(2L, 3L, 10, 10));
+		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5,
+			"bg-red-500");
+		line.addEdge(Edge.of(1L, 2L, 10, 10));
+		line.addEdge(Edge.of(2L, 3L, 10, 10));
 	}
 
 	@DisplayName("구간 목록을 조회한다.")
@@ -79,7 +80,7 @@ public class LineTest {
 	@DisplayName("구간을 중간에 추가한다.")
 	@Test
 	void addEdge_Middle() {
-		Edge middle = new Edge(1L, 4L, 10, 10);
+		Edge middle = Edge.of(1L, 4L, 10, 10);
 		line.addEdge(middle);
 
 		List<Long> stations = line.getEdgesId();
@@ -90,7 +91,7 @@ public class LineTest {
 	@DisplayName("구간을 끝에 추가한다.")
 	@Test
 	void addEdge_Back() {
-		Edge back = new Edge(3L, 4L, 10, 10);
+		Edge back = Edge.of(3L, 4L, 10, 10);
 		line.addEdge(back);
 
 		List<Long> stations = line.getEdgesId();
@@ -102,7 +103,7 @@ public class LineTest {
 	@ParameterizedTest
 	@CsvSource(value = {"1,2", "1,1"})
 	void addEdge_Invalid(Long preStationId, Long stationId) {
-		Edge invalid = new Edge(preStationId, stationId, 10, 10);
+		Edge invalid = Edge.of(preStationId, stationId, 10, 10);
 
 		assertThatThrownBy(() -> {
 			line.addEdge(invalid);
@@ -112,7 +113,7 @@ public class LineTest {
 	@DisplayName("역에 이전 역을 하나 더 추가한다.")
 	@Test
 	void addEdge_SameStationDifferentPreStation() {
-		Edge invalid = new Edge(4L, 2L, 10, 10);
+		Edge invalid = Edge.of(4L, 2L, 10, 10);
 
 		assertThatThrownBy(() -> {
 			line.addEdge(invalid);
@@ -122,7 +123,7 @@ public class LineTest {
 	@DisplayName("역 방향 역을 추가한다.")
 	@Test
 	void addEdge_reversedEdge() {
-		Edge invalid = new Edge(2L, 1L, 10, 10);
+		Edge invalid = Edge.of(2L, 1L, 10, 10);
 
 		assertThatThrownBy(() -> {
 			line.addEdge(invalid);
@@ -132,7 +133,7 @@ public class LineTest {
 	@DisplayName("본래와 끊어진 구간을 추가한다.")
 	@Test
 	void addEdge_CutoffEdge() {
-		Edge invalid = new Edge(4L, 5L, 10, 10);
+		Edge invalid = Edge.of(4L, 5L, 10, 10);
 
 		assertThatThrownBy(() -> {
 			line.addEdge(invalid);

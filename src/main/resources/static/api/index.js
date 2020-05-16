@@ -38,8 +38,10 @@ const resolver = (response) => {
     return new Promise((resolve, reject) => {
         let func;
         response.status < 400 ? func = resolve : func = reject;
-        response.status != 204 ? response.json().then(data => func({'status': response.status, 'body': data}))
-            : func({});
+        response.status != 204 ? response.json().then(data => func({
+            'status': response.status,
+            'body': data
+        })) : func({});
     });
 };
 

@@ -35,12 +35,13 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "#000000");
+		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "#000000")
+			.withId(1L);
 		lineService = new LineService(lineRepository, stationRepository);
 
-		line.addEdge(new Edge(1L, 1L, 10, 10));
-		line.addEdge(new Edge(1L, 2L, 10, 10));
-		line.addEdge(new Edge(2L, 3L, 10, 10));
+		line.addEdge(Edge.of(1L, 1L, 10, 10));
+		line.addEdge(Edge.of(1L, 2L, 10, 10));
+		line.addEdge(Edge.of(2L, 3L, 10, 10));
 	}
 
 	@Test
@@ -117,7 +118,8 @@ public class LineServiceTest {
 
 	@Test
 	void findLineWithStationsById() {
-		Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+		Set<Station> stations = Sets.newLinkedHashSet(Station.of("강남역"),
+			Station.of("역삼역"), Station.of("삼성역"));
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 		when(stationRepository.findAllById(anyList())).thenReturn(stations);
 

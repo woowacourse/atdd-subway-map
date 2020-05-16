@@ -25,13 +25,14 @@ public class StationController {
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity<StationResponse> createStation(@RequestBody final StationCreateRequest view) {
+	public ResponseEntity<Long> createStation(
+		@RequestBody final StationCreateRequest view) {
 		Station station = view.toStation();
 		Station persistStation = stationService.save(station);
 
 		return ResponseEntity
 			.created(URI.create("/stations/" + persistStation.getId()))
-			.body(StationResponse.of(persistStation));
+			.body(persistStation.getId());
 	}
 
 	@GetMapping("/stations")

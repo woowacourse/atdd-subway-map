@@ -72,7 +72,8 @@ public class Line {
 		edges.add(index, edge);
 
 		if (index < getEndIndexOfEdges()) {
-			edges.get(index + ONE).updatePreStationId(edge.getStationId());
+			edges.set(index + ONE, edges.get(index + ONE)
+				.updatePreStationId(edge.getStationId()));
 		}
 	}
 
@@ -115,13 +116,15 @@ public class Line {
 		}
 
 		if (removeEdge.isStartEdge()) {
-			Edge newFirstEdge = edges.get(FIRST_INDEX);
-			newFirstEdge.updatePreStationId(newFirstEdge.getStationId());
+			Edge firstEdge = edges.get(FIRST_INDEX);
+			edges.set(FIRST_INDEX,
+				firstEdge.updatePreStationId(firstEdge.getStationId()));
 			return;
 		}
 
 		if (index < edges.size() - ONE) {
-			edges.get(index).updatePreStationId(edges.get(index - ONE).getStationId());
+			edges.set(index, edges.get(index)
+				.updatePreStationId(edges.get(index - ONE).getStationId()));
 		}
 	}
 
@@ -132,7 +135,7 @@ public class Line {
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public String getName() {

@@ -21,9 +21,9 @@ function AdminLine() {
     );
     const subwayLineModal = new Modal();
 
-    function collectMessages(errorDtos) {
+    function collectMessages(error) {
         const messages = [];
-        for (let errorDto of errorDtos) {
+        for (let errorDto of error) {
             messages.push(errorDto.message);
         }
         return messages;

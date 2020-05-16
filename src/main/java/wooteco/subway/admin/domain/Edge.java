@@ -9,15 +9,13 @@ public class Edge {
 
 	@Id
 	private Long id;
-	private long stationId;
-	private long preStationId;
-	private int distance;
-	private int duration;
+	private final long stationId;
+	private final long preStationId;
+	private final int distance;
+	private final int duration;
 
-	private Edge() {
-	}
-
-	public Edge(long preStationId, long stationId, int distance, int duration) {
+	Edge(final Long id, final long preStationId, final long stationId, final int distance,
+		final int duration) {
 		validate(preStationId, stationId, distance, duration);
 
 		this.preStationId = preStationId;
@@ -26,9 +24,18 @@ public class Edge {
 		this.duration = duration;
 	}
 
+	public static Edge of(final long preStationId, final long stationId,
+		final int distance, final int duration) {
+		return new Edge(null, preStationId, stationId, distance, duration);
+	}
+
 	public static Edge starter(long stationId) {
-		return new Edge(stationId, stationId, DISTANCE_MINIMUM_VALUE,
+		return new Edge(null, stationId, stationId, DISTANCE_MINIMUM_VALUE,
 			DURATION_MINIMUM_VALUE);
+	}
+
+	public Edge withId(final Long id) {
+		return new Edge(id, stationId, preStationId, distance, duration);
 	}
 
 	private void validate(long preStationId, long stationId, int distance, int duration) {
@@ -47,11 +54,12 @@ public class Edge {
 		}
 	}
 
-	public void updatePreStationId(long preStationId) {
-		this.preStationId = preStationId;
+	public Edge updatePreStationId(final long preStationId) {
+		return new Edge(this.id, preStationId, this.stationId, this.distance,
+			this.duration);
 	}
 
-	public boolean equalsStationId(long stationId) {
+	public boolean equalsStationId(final long stationId) {
 		return this.stationId == stationId;
 	}
 

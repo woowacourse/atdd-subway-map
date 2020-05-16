@@ -38,6 +38,6 @@ public class EdgeCreateRequest {
 	}
 
 	public Edge toEdge() {
-		return new Edge(preStationId, stationId, distance, duration);
+		return Edge.of(preStationId, stationId, distance, duration);
 	}
 }

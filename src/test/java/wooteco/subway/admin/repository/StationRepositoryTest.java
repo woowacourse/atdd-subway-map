@@ -15,7 +15,7 @@ public class StationRepositoryTest {
 
 	@Test
 	void save() {
-		Station station = new Station("강남역");
+		Station station = Station.of("강남역");
 
 		Station persistStation = stationRepository.save(station);
 
