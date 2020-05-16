@@ -2,12 +2,13 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.util.StringUtils;
 
 import wooteco.subway.admin.exception.InvalidStationInsertionException;
 import wooteco.subway.admin.exception.LineStationNotFoundException;
@@ -20,7 +21,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String bgColor;
-    private List<LineStation> stations = new ArrayList<>();
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -29,6 +30,7 @@ public class Line {
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
         String bgColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -44,19 +46,19 @@ public class Line {
     }
 
     public void update(Line line) {
-        if (line.getName() != null) {
+        if (!StringUtils.isEmpty(line.getName())) {
             this.name = line.getName();
         }
-        if (line.getStartTime() != null) {
+        if (!StringUtils.isEmpty(line.getStartTime())) {
             this.startTime = line.getStartTime();
         }
-        if (line.getEndTime() != null) {
+        if (!StringUtils.isEmpty(line.getEndTime())) {
             this.endTime = line.getEndTime();
         }
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-        if (line.getBgColor() != null) {
+        if (!StringUtils.isEmpty(line.getBgColor())) {
             this.bgColor = line.getBgColor();
         }
 
@@ -75,10 +77,12 @@ public class Line {
         LineStation preStation = stations.stream()
             .filter(station -> station.isPreviousOf(newLineStation))
             .findFirst()
-            .orElseThrow(() -> new InvalidStationInsertionException(newLineStation.getPreStationId()));
+            .orElseThrow(
+                () -> new InvalidStationInsertionException(newLineStation.getPreStationId()));
 
         Optional<LineStation> maybeNextStation = nextOf(preStation);
-        maybeNextStation.ifPresent(station -> station.updatePreLineStation(newLineStation.getStationId()));
+        maybeNextStation.ifPresent(
+            station -> station.updatePreLineStation(newLineStation.getStationId()));
 
         stations.add(stations.indexOf(preStation) + 1, newLineStation);
     }

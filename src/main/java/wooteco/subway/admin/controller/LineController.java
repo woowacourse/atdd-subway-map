@@ -2,8 +2,10 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,10 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.DuplicateLineException;
+import wooteco.subway.admin.exception.InvalidStationInsertionException;
+import wooteco.subway.admin.exception.LineNotFoundException;
+import wooteco.subway.admin.exception.LineStationNotFoundException;
 import wooteco.subway.admin.service.LineService;
 
 @RequestMapping("/lines")
@@ -66,10 +72,21 @@ public class LineController {
             .body(lineService.addLineStation(id, request));
     }
 
-    @DeleteMapping("/{lineId}/{stationId}")
+    @DeleteMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity deleteStationFromLine(@PathVariable("lineId") Long lineId,
         @PathVariable("stationId") Long stationId) {
         lineService.removeLineStation(lineId, stationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(value = {DuplicateLineException.class,
+        InvalidStationInsertionException.class})
+    public ResponseEntity badRequestHandler(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(value = {LineNotFoundException.class, LineStationNotFoundException.class})
+    public ResponseEntity notFoundHandler(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

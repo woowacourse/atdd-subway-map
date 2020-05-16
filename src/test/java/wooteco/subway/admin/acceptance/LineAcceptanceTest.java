@@ -41,37 +41,38 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
-        // when
+        // when 노선을 추가하는 요청을 한다.
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
         createLine("3호선");
-        // then
+        // and 노선 목록을 요청한다.
         List<LineResponse> lines = getLines();
+        // then 노선이 추가되었다.
         assertThat(lines.size()).isEqualTo(4);
 
-        // when
+        // when 노선 목록을 요청하고, 첫 번째 노선을 불러온다.
         LineResponse line = getLine(lines.get(0).getId());
-        // then
+        // then 추가한 노선과 일치한다.
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
 
-        // when
+        // when 노선 정보 수정을 요청한다.
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
-        // then
+        // then 노선이 수정되었다.
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-        // when
+        // when 노선 삭제를 요청한다.
         deleteLine(line.getId());
-        // then
+        // then 노선이 삭제되었다.
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }

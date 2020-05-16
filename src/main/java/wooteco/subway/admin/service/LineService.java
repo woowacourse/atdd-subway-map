@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -14,6 +15,7 @@ import wooteco.subway.admin.exception.LineNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+@Transactional
 @Service
 public class LineService {
     private LineRepository lineRepository;
@@ -33,10 +35,6 @@ public class LineService {
 
     private boolean isDistinct(String name) {
         return lineRepository.countDistinctByName(name) == 0;
-    }
-
-    public List<Line> findLines() {
-        return lineRepository.findAll();
     }
 
     public List<LineResponse> findAllLinesWithStationsById() {
@@ -69,8 +67,8 @@ public class LineService {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(id));
         persistLine.addLineStation(request.toLineStation());
-        Long savedId = lineRepository.save(persistLine).getId();
-        return findLineWithStationsById(savedId);
+        lineRepository.save(persistLine);
+        return findLineWithStationsById(id);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
