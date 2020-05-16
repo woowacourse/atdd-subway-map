@@ -13,7 +13,7 @@ public class Station {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
