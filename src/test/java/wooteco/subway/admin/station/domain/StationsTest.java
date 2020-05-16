@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.admin.common.exception.SubwayException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,7 @@ class StationsTest {
 
         //then
         assertThatThrownBy(() -> stations.checkCreatableEdge(list))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("%s : 생성할수 없는 구간 값 입니다.", list);
     }
 }

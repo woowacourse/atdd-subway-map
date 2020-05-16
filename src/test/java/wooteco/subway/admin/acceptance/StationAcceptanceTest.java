@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import wooteco.subway.admin.common.response.DefaultResponse;
 import wooteco.subway.admin.station.service.dto.StationResponse;
 
 import java.util.HashMap;
@@ -70,7 +72,8 @@ public class StationAcceptanceTest {
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", StationResponse.class);
+                as(new TypeRef<DefaultResponse<List<StationResponse>>>() {
+                }).getData();
     }
 
     private void deleteStation(Long id) {

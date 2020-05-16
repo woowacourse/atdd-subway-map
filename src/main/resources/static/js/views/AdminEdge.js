@@ -30,19 +30,10 @@ function AdminEdge() {
 
         api.edge.create(lineId, data)
             .then(response => {
-                api.edge.findByLineId(lineId)
-                    .then(response => {
-                        initSubwayLinesSlider();
-                        subwayEdgeModal.toggle(event);
-                    })
-                    .catch(alert);
+                initSubwayLinesSlider();
+                subwayEdgeModal.toggle(event);
             })
             .catch(error => {
-                if (error.status === 400) {
-                    const messages = collectMessages(error.body);
-                    alert(messages.join("\n"));
-                    return;
-                }
                 alert(error.body.message)
             });
     };
@@ -68,7 +59,7 @@ function AdminEdge() {
     const initSubwayLinesSlider = () => {
         api.edge.getLineEdge()
             .then(response => {
-                $subwayLinesSlider.innerHTML = response.body
+                $subwayLinesSlider.innerHTML = response.body.data
                     .map(line => subwayLinesItemTemplate(line))
                     .join("");
             })
@@ -92,7 +83,7 @@ function AdminEdge() {
     const initSubwayLineOptions = () => {
         api.line.get()
             .then(response => {
-                const subwayLineOptionTemplate = response.body
+                const subwayLineOptionTemplate = response.body.data
                     .map(line => optionTemplate(line.title, line.id))
                     .join("");
                 const $lineSelectOptions = document.querySelector(
@@ -108,7 +99,7 @@ function AdminEdge() {
     const initSubwayStationOptions = () => {
         api.station.get()
             .then(response => {
-                const subwayStationOptionTemplate = response.body
+                const subwayStationOptionTemplate = response.body.data
                     .map(station => optionTemplate(station.name, station.id))
                     .join("");
                 const $beforeStationSelectOptions = document.querySelector(
@@ -126,14 +117,6 @@ function AdminEdge() {
                     subwayStationOptionTemplate
                 );
             })
-    };
-
-    const collectMessages = (errorDtos) => {
-        const messages = [];
-        for (let errorDto of errorDtos) {
-            messages.push(errorDto.message);
-        }
-        return messages;
     };
 
     const initEventListeners = () => {

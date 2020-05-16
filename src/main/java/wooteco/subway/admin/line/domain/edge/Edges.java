@@ -1,6 +1,7 @@
 package wooteco.subway.admin.line.domain.edge;
 
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.common.exception.SubwayException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class Edges {
 
     public void removeByStationId(final Long stationId) {
         Edge beforeEdge = findByStationId(edge -> edge.isSameStationId(stationId))
-                .orElseThrow(() -> new IllegalArgumentException(stationId + " : 지우려는 역이 존재하지 않습니다."));
+                .orElseThrow(() -> new SubwayException(stationId + " : 지우려는 역이 존재하지 않습니다."));
         findByStationId(edge -> edge.isSamePreStationId(stationId))
                 .ifPresent(edge -> edge.replacePreStation(beforeEdge));
         this.edges.remove(beforeEdge);

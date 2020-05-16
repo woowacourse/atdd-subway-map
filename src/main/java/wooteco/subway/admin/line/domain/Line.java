@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Embedded;
+import wooteco.subway.admin.common.exception.SubwayException;
 import wooteco.subway.admin.line.domain.edge.Edge;
 import wooteco.subway.admin.line.domain.edge.Edges;
 
@@ -72,7 +73,7 @@ public class Line {
 
     public void addEdge(Edge edge) {
         if (edges.contain(edge)) {
-            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+            throw new SubwayException("이미 존재하는 구간입니다.");
         }
         edges.add(edge);
     }

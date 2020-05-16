@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.common.response.DefaultResponse;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 import java.time.LocalTime;
@@ -77,7 +79,8 @@ public class LineAcceptanceTest {
                 get("/lines/" + id).
                 then().
                 log().all().
-                extract().as(LineResponse.class);
+                extract().as(new TypeRef<DefaultResponse<LineResponse>>() {
+        }).getData();
     }
 
     private void createLine(String name) {
@@ -117,14 +120,15 @@ public class LineAcceptanceTest {
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
-                        when().
-                        get("/lines").
-                        then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+        DefaultResponse<List<LineResponse>> response = given().
+                when().
+                get("/lines").
+                then().
+                log().all().
+                extract().
+                body().as(new TypeRef<DefaultResponse<List<LineResponse>>>() {
+        });
+        return response.getData();
     }
 
     private void deleteLine(Long id) {

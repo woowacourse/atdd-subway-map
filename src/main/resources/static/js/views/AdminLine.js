@@ -24,14 +24,6 @@ function AdminLine() {
         $subwayLineColorInput.value = '';
     };
 
-    function collectMessages(errorDtos) {
-        const messages = [];
-        for (let errorDto of errorDtos) {
-            messages.push(errorDto.message);
-        }
-        return messages;
-    }
-
     const onCreateSubwayLine = event => {
         event.preventDefault();
         if ($subwayLineId.value) {
@@ -55,11 +47,6 @@ function AdminLine() {
                 modalClear();
             })
             .catch(error => {
-                if (error.status === 400) {
-                    const messages = collectMessages(error.body);
-                    alert(messages.join("\n"));
-                    return;
-                }
                 alert(error.body.message)
             })
             .finally(() => {
@@ -89,7 +76,7 @@ function AdminLine() {
             const subwayLineId = $target.closest("div").id.split("subway-")[1];
             api.line.findById(subwayLineId)
                 .then(response => {
-                    const info = response.body;
+                    const info = response.body.data;
                     $subwayFirstTime.value = info.startTime;
                     $subwayLastTime.value = info.endTime;
                     $subwayIntervalTime.value = info.intervalTime;
@@ -118,7 +105,7 @@ function AdminLine() {
             event.preventDefault();
             const subwayLineId = $target.closest("div").id.split("subway-")[1];
             api.line.findById(subwayLineId)
-                .then(response => renderInfo(response.body))
+                .then(response => renderInfo(response.body.data))
                 .catch(alert)
         }
     };
@@ -150,17 +137,12 @@ function AdminLine() {
                 modalClear();
             })
             .catch(error => {
-                if (error.status === 400) {
-                    const messages = collectMessages(error.body);
-                    alert(messages.join("\n"));
-                    return;
-                }
                 alert(error.body.message)
             });
     };
 
     const initDefaultSubwayLines = () => {
-        api.line.get().then(savedLines => savedLines.body.map(line => {
+        api.line.get().then(savedLines => savedLines.body.data.map(line => {
             $subwayLineList.insertAdjacentHTML(
                 "beforeend",
                 subwayLinesTemplate(line)

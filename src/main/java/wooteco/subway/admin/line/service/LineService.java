@@ -2,6 +2,8 @@ package wooteco.subway.admin.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.common.exception.AlreadySavedException;
+import wooteco.subway.admin.common.exception.NotSavedException;
 import wooteco.subway.admin.line.domain.Line;
 import wooteco.subway.admin.line.domain.Lines;
 import wooteco.subway.admin.line.domain.edge.Edge;
@@ -17,7 +19,6 @@ import wooteco.subway.admin.station.domain.Stations;
 import wooteco.subway.admin.station.domain.repository.StationRepository;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,14 +36,14 @@ public class LineService {
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getStartTime(),
                 lineCreateRequest.getEndTime(), lineCreateRequest.getIntervalTime(), lineCreateRequest.getBgColor());
         lineRepository.findByName(line.getName())
-                .ifPresent(this::throwAlreadyExistNameException);
+                .ifPresent(savedLine -> alreadySavedException(line));
 
         Line persistLine = lineRepository.save(line);
         return persistLine.getId();
     }
 
-    public void throwAlreadyExistNameException(Line line) {
-        throw new IllegalArgumentException(String.format("%s 이미 존재하는 노선 이름입니다.", line.getName()));
+    private void alreadySavedException(final Line line) {
+        throw new AlreadySavedException("노선명 : " + line.getName());
     }
 
     @Transactional(readOnly = true)
@@ -62,10 +63,6 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    private Supplier<IllegalArgumentException> throwNotExistEntityException(final Long id) {
-        return () -> new IllegalArgumentException(id + "존재하지 않는 id 값 입니다.");
-    }
-
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
@@ -83,7 +80,7 @@ public class LineService {
 
     private Line findLineById(final Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(throwNotExistEntityException(lineId));
+                .orElseThrow(() -> new NotSavedException(String.format("노선(%d)", lineId)));
     }
 
     @Transactional

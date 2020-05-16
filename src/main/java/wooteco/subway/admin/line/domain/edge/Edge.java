@@ -2,6 +2,7 @@ package wooteco.subway.admin.line.domain.edge;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import wooteco.subway.admin.common.exception.SubwayException;
 
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class Edge {
 
     private void validate(final Long preStationId, final Long stationId) {
         if (Objects.equals(preStationId, stationId)) {
-            throw new IllegalArgumentException(stationId + " : 이전역 값과 대상역 값이 같습니다.");
+            throw new SubwayException(stationId + " : 이전역 값과 대상역 값이 같습니다.");
         }
     }
 

@@ -1,7 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
+import io.restassured.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.common.response.DefaultResponse;
 import wooteco.subway.admin.line.service.dto.edge.EdgeCreateRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeDeleteRequest;
 import wooteco.subway.admin.line.service.dto.edge.EdgeResponse;
@@ -68,18 +69,18 @@ public class EdgeAcceptanceTest {
         // 지하철 노선의 지하철역 목록 조회 요청을 한다.
         // 지하철역 목록을 응답 받는다.
         //새로 추가한 지하철역을 목록에서 찾는다.
-        JsonPath edgeJsonPathByLineId = given()
+        List<EdgeResponse> edgeResponses1 = given()
                 .when()
                 .get("/lines/" + lineId + "/edges")
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath();
+                .as(new TypeRef<DefaultResponse<List<EdgeResponse>>>() {
+                }).getData();
 
-        assertThat((Object) edgeJsonPathByLineId.get("[1].preStationId")).isEqualTo(1);
-        assertThat((Object) edgeJsonPathByLineId.get("[1].stationId")).isEqualTo(2);
-
+        assertThat(edgeResponses1.get(0).getStationId()).isEqualTo(1);
+        assertThat(edgeResponses1.get(1).getStationId()).isEqualTo(2);
 
         EdgeDeleteRequest edgeDeleteRequest = new EdgeDeleteRequest(stationId);
 
@@ -105,8 +106,8 @@ public class EdgeAcceptanceTest {
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath()
-                .getList(".", EdgeResponse.class);
+                .as(new TypeRef<DefaultResponse<List<EdgeResponse>>>() {
+                }).getData();
 
         assertThat(edgeResponses).hasSize(1);
         assertThat(edgeResponses.get(0).getStationId()).isEqualTo(1);

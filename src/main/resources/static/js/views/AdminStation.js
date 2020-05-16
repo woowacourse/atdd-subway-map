@@ -25,7 +25,7 @@ function AdminStation() {
                 $stationNameInput.value = "";
                 $stationList.insertAdjacentHTML("beforeend", listItemTemplate(response.body, stationName));
             })
-            .catch(alert);
+            .catch(error => alert(error.body.message));
     };
 
     const onRemoveStationHandler = event => {
@@ -49,7 +49,7 @@ function AdminStation() {
     const initSavedStations = () => {
         api.station.get()
             .then(response => {
-                response.body.map(station => {
+                response.body.data.map(station => {
                     $stationList.insertAdjacentHTML(
                         "beforeend",
                         listItemTemplate(station.id, station.name)

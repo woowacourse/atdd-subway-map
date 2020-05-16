@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.admin.common.response.DefaultResponse;
 import wooteco.subway.admin.station.service.StationService;
 import wooteco.subway.admin.station.service.dto.StationCreateRequest;
 import wooteco.subway.admin.station.service.dto.StationResponse;
@@ -26,15 +27,15 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createStation(@RequestBody @Valid StationCreateRequest request) {
+    public ResponseEntity<Void> createStation(@RequestBody @Valid StationCreateRequest request) {
         Long id = stationService.save(request);
 
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(id);
+        return ResponseEntity.created(URI.create("/stations/" + id)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(StationResponse.listOf(stationService.findAll()));
+    public ResponseEntity<DefaultResponse<List<StationResponse>>> showStations() {
+        return ResponseEntity.ok().body(DefaultResponse.of(StationResponse.listOf(stationService.findAll())));
     }
 
     @DeleteMapping("/{id}")
