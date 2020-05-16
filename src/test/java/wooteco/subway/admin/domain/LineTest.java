@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class LineTest {
@@ -50,7 +51,8 @@ public class LineTest {
 
 	@DisplayName("라인 정보를 갱신한다.")
 	@Test
-	void update() {
+	void update() throws InterruptedException {
+		Thread.sleep(100L);
 		Line updated = line.update(Line.of("그니역", LocalTime.of(10, 0),
 			LocalTime.of(17, 0), 10, "bg-blue-600"));
 
@@ -94,5 +96,46 @@ public class LineTest {
 		List<Long> stations = line.getEdgesId();
 		assertThat(stations).hasSize(4);
 		assertThat(stations).isEqualTo(Arrays.asList(1L, 2L, 3L, 4L));
+	}
+
+	@DisplayName("이미 존재하는 구간을 추가한다.")
+	@ParameterizedTest
+	@CsvSource(value = {"1,2", "1,1"})
+	void addEdge_Invalid(Long preStationId, Long stationId) {
+		Edge invalid = new Edge(preStationId, stationId, 10, 10);
+
+		assertThatThrownBy(() -> {
+			line.addEdge(invalid);
+		}).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역에 이전 역을 하나 더 추가한다.")
+	@Test
+	void addEdge_SameStationDifferentPreStation() {
+		Edge invalid = new Edge(4L, 2L, 10, 10);
+
+		assertThatThrownBy(() -> {
+			line.addEdge(invalid);
+		}).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역 방향 역을 추가한다.")
+	@Test
+	void addEdge_reversedEdge() {
+		Edge invalid = new Edge(2L, 1L, 10, 10);
+
+		assertThatThrownBy(() -> {
+			line.addEdge(invalid);
+		}).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("본래와 끊어진 구간을 추가한다.")
+	@Test
+	void addEdge_CutoffEdge() {
+		Edge invalid = new Edge(4L, 5L, 10, 10);
+
+		assertThatThrownBy(() -> {
+			line.addEdge(invalid);
+		}).isInstanceOf(IllegalArgumentException.class);
 	}
 }

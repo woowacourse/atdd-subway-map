@@ -56,6 +56,8 @@ public class Line {
 	}
 
 	public void addEdge(Edge edge) {
+		validateDuplication(edge);
+
 		if (edges.isEmpty() && edge.isNotStartEdge()) {
 			edges.add(Edge.starter(edge.getPreStationId()));
 			edges.add(edge);
@@ -70,6 +72,16 @@ public class Line {
 		}
 	}
 
+	private void validateDuplication(Edge edge) {
+		boolean isDuplicated = edges.stream()
+			.anyMatch(item -> item.equalsStationId(edge.getStationId()));
+
+		if (isDuplicated) {
+			throw new IllegalArgumentException("구간은 중복될 수 없고, "
+				+ "하나의 역은 두 개의 이전역을 가질 수 없습니다.");
+		}
+	}
+
 	private int findIndex(Edge edge) {
 		if (edge.isStartEdge()) {
 			return 0;
@@ -78,7 +90,7 @@ public class Line {
 			.filter(item -> item.equalsStationId(edge.getPreStationId()))
 			.findFirst()
 			.map(item -> edges.indexOf(item) + ONE)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new IllegalArgumentException("이전 역이 존재하지 않습니다."));
 	}
 
 	private int getEndIndexOfEdges() {
