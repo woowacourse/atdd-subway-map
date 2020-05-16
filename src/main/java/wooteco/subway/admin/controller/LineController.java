@@ -36,12 +36,6 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toLine();
 
-        if (lineService.existsByName(line.getName())) {
-            return ResponseEntity
-                .badRequest()
-                .build();
-        }
-
         Line persistLine = lineService.save(line);
         Set<Station> stations = lineService.toStations(persistLine.findLineStationsId());
 

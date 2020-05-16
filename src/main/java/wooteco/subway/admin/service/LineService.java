@@ -27,10 +27,6 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public boolean existsByName(String name) {
-        return lineRepository.existsByName(name);
-    }
-
     public List<Line> showLines() {
         return lineRepository.findAll();
     }
