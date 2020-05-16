@@ -8,10 +8,11 @@ function AdminStation() {
   const $stationList = document.querySelector("#station-list");
 
   const onAddStationHandler = event => {
+    event.preventDefault();
     if (event.key !== KEY_TYPE.ENTER && event.type !== EVENT_TYPE.CLICK) {
       return;
     }
-    event.preventDefault();
+
     const $stationNameInput = document.querySelector("#station-name");
     const stationName = $stationNameInput.value;
     if (!stationName) {

@@ -1,24 +1,24 @@
 const api = (() => {
     const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
-  const METHOD = {
-    PUT(data) {
+    const method = {
+        put(data) {
       return {
-        method: "PUT",
+          method: "put",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
       };
     },
-    DELETE() {
+        delete() {
       return {
-        method: "DELETE"
+          method: "delete"
       };
     },
-    POST(data) {
+        post(data) {
       return {
-        method: "POST",
+          method: "post",
         headers: {
           "Content-Type": "application/json"
         },
@@ -32,13 +32,13 @@ const api = (() => {
       return request(`/stations`);
     },
     create(data) {
-      return request(`/stations`, METHOD.POST(data));
+        return request(`/stations`, method.post(data));
     },
     update(data, stationId) {
-      return request(`/stations/${stationId}`, METHOD.PUT(data));
+        return request(`/stations/${stationId}`, method.put(data));
     },
     delete(stationId) {
-      return request(`/stations/${stationId}`, METHOD.DELETE());
+        return request(`/stations/${stationId}`, method.delete());
     }
   };
 
@@ -50,19 +50,19 @@ const api = (() => {
       return request(`/lines/${lienId}`);
     },
     create(data) {
-      return request(`/lines`, METHOD.POST(data));
+        return request(`/lines`, method.post(data));
     },
     update(data, lineId) {
-      return request(`/lines/${lineId}`, METHOD.PUT(data));
+        return request(`/lines/${lineId}`, method.put(data));
     },
     delete(lineId) {
-      return request(`/lines/${lineId}`, METHOD.DELETE());
+        return request(`/lines/${lineId}`, method.delete());
     },
     createLineStation(data, lineId) {
-      return request(`/line/${lineId}/stations`, METHOD.POST(data));
+        return request(`/line/${lineId}/stations`, method.post(data));
     },
       deleteLineStation(lineId, stationId) {
-          return request(`/line/${lineId}/stations/${stationId}`, METHOD.DELETE());
+          return request(`/line/${lineId}/stations/${stationId}`, method.delete());
       }
   };
 
