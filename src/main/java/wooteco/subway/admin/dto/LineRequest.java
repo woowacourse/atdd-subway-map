@@ -1,6 +1,7 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.dto.domain.LineDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -17,6 +18,20 @@ public class LineRequest {
     private String lineColor;
 
     public LineRequest() {
+    }
+
+    public LineDto toLineDto() {
+        return new LineDto.LineDtoBuilder()
+                .setName(name)
+                .setStartTime(startTime)
+                .setEndTime(endTime)
+                .setIntervalTime(intervalTime)
+                .setLineColor(lineColor)
+                .build();
+    }
+
+    public Line toLine() {
+        return new Line(name, startTime, endTime, intervalTime, lineColor);
     }
 
     public String getName() {
@@ -37,9 +52,5 @@ public class LineRequest {
 
     public String getLineColor() {
         return lineColor;
-    }
-
-    public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime, lineColor);
     }
 }

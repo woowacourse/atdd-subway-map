@@ -6,10 +6,10 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
+import wooteco.subway.admin.dto.domain.LineDto;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +25,9 @@ public class LineService {
     }
 
     @Transactional
-    public Line save(Line line) {
-        return lineRepository.save(line);
+    public LineDto save(LineDto lineDto) {
+        Line save = lineRepository.save(lineDto.toLine());
+        return LineDto.of(save);
     }
 
     public List<LineWithStationsResponse> showLines() {

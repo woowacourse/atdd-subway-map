@@ -142,14 +142,17 @@ function AdminLine() {
             updatingId = 0;
             return;
         }
-        let savedLine = saveLine();
-        savedLine.then(data => {
-            if (data.status === 201) {
-                addLineInView(data);
-            } else {
-                errorHandle(data);
-            }
-        });
+        fetch(`/lines`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name: $subwayLineNameInput.value,
+                startTime: $subwayLineFirstTimeInput.value,
+                endTime: $subwayLineLastTimeInput.value,
+                intervalTime: $subwayLineIntervalTimeInput.value,
+                lineColor: $subwayLineColorInput.value
+            })
+        }).then(async data => addLineInView(await data.json()));
     };
 
     const errorHandle = response => {

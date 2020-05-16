@@ -2,11 +2,11 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.domain.LineDto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class LineWithStationsResponse {
@@ -36,12 +36,20 @@ public class LineWithStationsResponse {
         this.stations = stations;
     }
 
-    public static LineWithStationsResponse of(Line line) {
-        return of(line, new ArrayList<>());
+    public static LineWithStationsResponse of(LineDto lineDto) {
+        return of(lineDto, new ArrayList<>());
     }
 
     public static LineWithStationsResponse of(Line line, List<Station> stations) {
-        return new LineWithStationsResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getLineColor(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+        return new LineWithStationsResponse(line.getId(), line.getName(), line.getStartTime(),
+                line.getEndTime(), line.getIntervalTime(), line.getLineColor(),
+                line.getCreatedAt(), line.getUpdatedAt(), stations);
+    }
+
+    public static LineWithStationsResponse of(LineDto lineDto, List<Station> stations) {
+        return new LineWithStationsResponse(lineDto.getId(), lineDto.getName(), lineDto.getStartTime(),
+                lineDto.getEndTime(), lineDto.getIntervalTime(), lineDto.getLineColor(),
+                lineDto.getCreatedAt(), lineDto.getUpdatedAt(), stations);
     }
 
     public Long getId() {
