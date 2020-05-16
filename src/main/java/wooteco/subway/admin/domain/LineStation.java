@@ -4,7 +4,6 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table("LINE_STATION")
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     private Long stationId;
     private Long preStationId;
     private int distance;

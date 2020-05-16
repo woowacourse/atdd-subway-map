@@ -100,7 +100,6 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
         List<Long> ids = this.findLineStationsId();
         if (ids.size() == 0 || ids.get(ids.size() - 1).equals(lineStation.getPreStationId())) {
             stations.add(lineStation);
@@ -124,7 +123,6 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
         Long previousId = null;
         for (LineStation station : stations) {
             if (stationId.equals(station.getStationId())) {
@@ -145,7 +143,6 @@ public class Line {
     }
 
     public List<Long> findLineStationsId() {
-        // TODO: 구현
         List<Long> ids = new ArrayList<>();
         if (stations.size() == 0)
             return Collections.EMPTY_LIST;
