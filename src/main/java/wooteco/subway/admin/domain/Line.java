@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO : add 로직 리팩토링
 public class Line {
     @Id
     private Long id;
@@ -86,20 +85,6 @@ public class Line {
         stations.add(index + 1, inputLineStation);
     }
 
-    private LineStation getPreStationOf(LineStation inputLineStation) {
-        return stations.stream()
-                .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
-    }
-
-    private LineStation getFirstLineStation() {
-        return stations.stream()
-                .filter(LineStation::isFirstLineStation)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-    }
-
     private boolean isLastStation(LineStation lineStation) {
         return stations.indexOf(lineStation) == stations.size() - 1;
     }
@@ -109,10 +94,7 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation targetLineStation = stations.stream()
-                .filter(station -> station.is(stationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
+        LineStation targetLineStation = getStationBy(stationId);
 
         if (stations.size() == 1) {
             stations.remove(0);
@@ -125,8 +107,6 @@ public class Line {
             return;
         }
 
-        targetLineStation.getPreStationId();
-
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);
             LineStation nextByTargetStation = stations.get(index + 1);
@@ -134,6 +114,27 @@ public class Line {
         }
 
         stations.remove(targetLineStation);
+    }
+
+    private LineStation getStationBy(Long stationId) {
+        return stations.stream()
+                .filter(station -> station.is(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 노선에 존재하지 않습니다."));
+    }
+
+    private LineStation getPreStationOf(LineStation inputLineStation) {
+        return stations.stream()
+                .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
+    }
+
+    private LineStation getFirstLineStation() {
+        return stations.stream()
+                .filter(LineStation::isFirstLineStation)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
     }
 
     public List<Long> getLineStationsId() {
