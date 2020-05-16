@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -77,14 +76,7 @@ public class LineService {
 	}
 
 	public List<Station> toStations(List<Long> lineStationsId) {
-
-		List<Station> stations = new ArrayList<>();
-		for (Long id : lineStationsId) {
-			Station station = stationRepository.findById(id)
-				.orElseThrow(RuntimeException::new);
-			stations.add(station);
-		}
-		return stations;
+		return stationRepository.findAllById(lineStationsId);
 	}
 
 	public LineResponse createLine(LineRequest lineRequest) {

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -150,6 +151,7 @@ public class LineServiceTest {
         when(stationRepository.findById(1L)).thenReturn(Optional.of(station1));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(station2));
         when(stationRepository.findById(3L)).thenReturn(Optional.of(station3));
+        when(stationRepository.findAllById(anyList())).thenReturn(Arrays.asList(station1, station2, station3));
 
         LineResponse lineResponse = lineService.showLine(1L);
 
