@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -50,22 +51,48 @@ public class LineTest {
 	@DisplayName("라인 정보를 갱신한다.")
 	@Test
 	void update() {
+		Line updated = line.update(Line.of("그니역", LocalTime.of(10, 0),
+			LocalTime.of(17, 0), 10, "bg-blue-600"));
+
+		assertThat(updated.getName()).isEqualTo("그니역");
+		assertThat(updated.getStartTime()).isEqualTo(LocalTime.of(10, 0));
+		assertThat(updated.getEndTime()).isEqualTo(LocalTime.of(17, 0));
+		assertThat(updated.getIntervalTime()).isEqualTo(10);
+		assertThat(updated.getColor()).isEqualTo("bg-blue-600");
+		assertThat(updated.getCreatedAt()).isEqualTo(line.getCreatedAt());
+		assertThat(updated.getUpdatedAt()).isNotEqualTo(line.getUpdatedAt());
 	}
 
 	@DisplayName("구간을 맨 앞에 추가한다.")
 	@Test
 	void addEdge_Front() {
+		Edge front = Edge.starter(4L);
+		line.addEdge(front);
+
+		List<Long> stations = line.getEdgesId();
+		assertThat(stations).hasSize(4);
+		assertThat(stations).isEqualTo(Arrays.asList(4L, 1L, 2L, 3L));
 	}
 
 	@DisplayName("구간을 중간에 추가한다.")
 	@Test
 	void addEdge_Middle() {
+		Edge middle = new Edge(1L, 4L, 10, 10);
+		line.addEdge(middle);
 
+		List<Long> stations = line.getEdgesId();
+		assertThat(stations).hasSize(4);
+		assertThat(stations).isEqualTo(Arrays.asList(1L, 4L, 2L, 3L));
 	}
 
 	@DisplayName("구간을 끝에 추가한다.")
 	@Test
 	void addEdge_Back() {
+		Edge back = new Edge(3L, 4L, 10, 10);
+		line.addEdge(back);
 
+		List<Long> stations = line.getEdgesId();
+		assertThat(stations).hasSize(4);
+		assertThat(stations).isEqualTo(Arrays.asList(1L, 2L, 3L, 4L));
 	}
 }
