@@ -37,7 +37,7 @@ export const optionTemplate = value =>
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
       <a href="/" class="mr-2">
-        <img src="../images/logo_small.png" class="w-6">
+        <img src="../images/logo_small.png" class="w-6"lint-title>
       </a>
     <div class="flex justify-start">
       <div class="hover:bg-yellow-400 px-2 py-1 rounded">
@@ -65,7 +65,7 @@ export const subwayLinesItemTemplate = line => {
     .join("");
     return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.color} lint-title px-4 py-1">${line.name}</div>
+              <div class="border ${line.color} line-name px-4 py-1" data-id="${line.id}">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>

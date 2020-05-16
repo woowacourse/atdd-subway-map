@@ -60,7 +60,10 @@ const api = (() => {
     },
     createLineStation(data, lineId) {
       return request(`/line/${lineId}/stations`, METHOD.POST(data));
-    }
+    },
+      deleteLineStation(lineId, stationId) {
+          return request(`/line/${lineId}/stations/${stationId}`, METHOD.DELETE());
+      }
   };
 
   return {

@@ -10,9 +10,7 @@ function AdminEdge() {
     const $subwayEdgeAddButton = document.querySelector('#subway-edge-add-btn');
     const $departStationOptions = document.querySelector('#depart-station-options');
     const $arrivalStationOptions = document.querySelector('#arrival-station-options');
-    const $createSubwayEdgeButton = document.querySelector(
-        "#submit-button"
-    );
+    const $createSubwayEdgeButton = document.querySelector("#submit-button");
     const createSubwayEdgeModal = new Modal();
     let subwayLines = [];
 
@@ -30,7 +28,24 @@ function AdminEdge() {
         };
 
         api.line.createLineStation(lineStationCreateRequest, lineId)
-            .then(() => initSubwayLineView());
+            .then(() => initSubwayLinesView());
+    };
+
+    const onRemoveStationHandler = event => {
+        const $target = event.target;
+        const isDeleteButton = $target.classList.contains("mdi-delete");
+        if (isDeleteButton) {
+            const sliderList = $target.closest(".slider-list");
+            const lineId = sliderList.querySelector(".line-name").dataset.id;
+
+            const listItemToDelete = $target.closest(".list-item");
+            const stationId = listItemToDelete.querySelector(".station-id").textContent;
+
+            api.line.deleteLineStation(lineId, stationId)
+                .then(() => initSubwayLinesView());
+
+            listItemToDelete.remove();
+        }
     };
 
     const initCreateEdgeForm = async event => {
@@ -67,7 +82,7 @@ function AdminEdge() {
             .catch(() => alert(ERROR_MESSAGE.COMMON))
     };
 
-    const initSubwayLineView = () => {
+    const initSubwayLinesView = () => {
         api.line.get()
             .then(data => {
                 subwayLines = data;
@@ -93,21 +108,13 @@ function AdminEdge() {
         });
     };
 
-    const onRemoveStationHandler = event => {
-        const $target = event.target;
-        const isDeleteButton = $target.classList.contains("mdi-delete");
-        if (isDeleteButton) {
-            $target.closest(".list-item").remove();
-        }
-    };
-
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
         $subwayEdgeAddButton.addEventListener(EVENT_TYPE.CLICK, initCreateEdgeForm);
     };
 
     this.init = async () => {
-        await initSubwayLineView();
+        await initSubwayLinesView();
         await initLineOptions(subwayLines);
         await initEventListeners();
     };
