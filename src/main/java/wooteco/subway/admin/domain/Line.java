@@ -114,10 +114,11 @@ public class Line {
     }
 
     private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
-        if(lineStations.size() > ONE_SIZE && lineStations.size() > index) {
+        if (lineStations.size() > ONE_SIZE && lineStations.size() > index) {
             LineStation nextLineStation = lineStations.get(index);
-            if (isInputFirstIndex(requestLineStation, index, nextLineStation)) return true;
-
+            if (isInputFirstIndex(requestLineStation, index, nextLineStation)) {
+                return true;
+            }
             LineStation preLineStation = lineStations.get(index - 1);
             requestLineStation.updatePreLineStationId(preLineStation.getStationId());
             nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
@@ -128,7 +129,7 @@ public class Line {
     }
 
     private boolean isInputFirstIndex(LineStation requestLineStation, int index, LineStation nextLineStation) {
-        if(index == 0) {
+        if (index == 0) {
             nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
             lineStations.add(index, requestLineStation);
             return true;
@@ -146,25 +147,25 @@ public class Line {
         LineStation nextLineStation;
 
         if (isRemoveStationUnNormalCase(index)) return;
-        nextLineStation = lineStations.get(index+ NEXT_INDEX);
-        preLineStation = lineStations.get(index- BEFORE_INDEX);
+        nextLineStation = lineStations.get(index + NEXT_INDEX);
+        preLineStation = lineStations.get(index - BEFORE_INDEX);
         nextLineStation.updatePreLineStationId(preLineStation.getStationId());
         lineStations.remove(index);
     }
 
     private boolean isRemoveStationUnNormalCase(int index) {
         LineStation nextLineStation;
-        if(index == FIRST_INDEX && index == lineStations.size() - 1){
+        if (index == FIRST_INDEX && index == lineStations.size() - 1) {
             lineStations.remove(index);
             return true;
         }
-        if(index == FIRST_INDEX) {
+        if (index == FIRST_INDEX) {
             nextLineStation = lineStations.get(SECOND_INDEX);
             nextLineStation.updatePreLineStationId(null);
             lineStations.remove(index);
             return true;
         }
-        if(index == lineStations.size() -1)  {
+        if (index == lineStations.size() - 1) {
             lineStations.remove(index);
             return true;
         }
