@@ -36,6 +36,7 @@ public class LineServiceTest {
     private Station station1;
     private Station station2;
     private Station station3;
+    private Station station4;
 
     @BeforeEach
     void setUp() {
@@ -50,6 +51,7 @@ public class LineServiceTest {
         station1 = new Station("강남역");
         station2 = new Station("역삼역");
         station3 = new Station("삼성역");
+        station4 = new Station("구로역");
     }
 
     @Test
@@ -57,6 +59,11 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(0L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(station4));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(station1));
+        when(stationRepository.findById(3L)).thenReturn(Optional.of(station2));
+        when(stationRepository.findById(4L)).thenReturn(Optional.of(station3));
 
         lineService.addLineStation(line.getId(), request);
 
@@ -72,6 +79,12 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(station1));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(station4));
+        when(stationRepository.findById(3L)).thenReturn(Optional.of(station2));
+        when(stationRepository.findById(4L)).thenReturn(Optional.of(station3));
+
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getLineStations()).hasSize(4);
@@ -86,6 +99,12 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(station1));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(station2));
+        when(stationRepository.findById(3L)).thenReturn(Optional.of(station3));
+        when(stationRepository.findById(4L)).thenReturn(Optional.of(station4));
+
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getLineStations()).hasSize(4);

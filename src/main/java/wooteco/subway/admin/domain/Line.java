@@ -3,15 +3,16 @@ package wooteco.subway.admin.domain;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
+	private static final Long PRESTATION_ID_OF_FIRST_LINESTATION = 0L;
+	private static final int INDEX_OF_FIRST_LINESTATION = 0;
+	private static final int GAP_TO_NEXT_INDEX = 1;
 	@Id
 	private Long id;
 	private String name;
@@ -104,68 +105,68 @@ public class Line {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void addLineStation(LineStation lineStation) {
-		if (lineStations.isEmpty()) {
-			validateFirstLineStation(lineStation);
-		}
-		lineStations.add(lineStation);
-
-		Long preStationId = lineStation.getPreStationId();
-		Long stationId = lineStation.getStationId();
-
-		Iterator iterator = lineStations.iterator();
-		while (iterator.hasNext()) {
-			LineStation selectedLineStation = (LineStation)iterator.next();
-			if (selectedLineStation.getPreStationId().equals(preStationId)
-				&& !selectedLineStation.getStationId().equals(stationId)) {
-				selectedLineStation.setPreStationId(stationId);
-				break;
+	public void addLineStation(LineStation lineStationToAdd) {
+		if (lineStationToAdd.isFirstLineStation()) {
+			if (!lineStations.isEmpty()) {
+				updateNextLineStationWhenAdd(lineStationToAdd);
 			}
+			lineStations.add(INDEX_OF_FIRST_LINESTATION, lineStationToAdd);
+			return;
 		}
+
+		updateNextLineStationWhenAdd(lineStationToAdd);
+		LineStation preLineStation = findPreLineStation(lineStationToAdd);
+
+		int indexToAdd = lineStations.indexOf(preLineStation) + GAP_TO_NEXT_INDEX;
+		lineStations.add(indexToAdd, lineStationToAdd);
 	}
 
-	private void validateFirstLineStation(LineStation lineStation) {
-		if (lineStation.getPreStationId() != 0L) {
-			throw new IllegalArgumentException("처음 추가된 역의 preStationId는 0L이어야 합니다.");
-		}
+	private void updateNextLineStationWhenAdd(LineStation lineStationToAdd) {
+		lineStations.stream()
+			.filter(lineStation -> lineStation.ifAfter(lineStationToAdd))
+			.findFirst()
+			.ifPresent(lineStation -> lineStation.updatePreStationId(lineStationToAdd.getStationId()));
+	}
+
+	private LineStation findPreLineStation(LineStation lineStationToAdd) {
+		return lineStations.stream()
+			.filter(lineStation -> lineStation.isBefore(lineStationToAdd))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("추가할 구간의 preStationId와 자신의 StationId가 같은 구간이 존재하지 않습니다."));
 	}
 
 	public void removeLineStationById(Long stationId) {
-		Long preStationId = 0L;
-		Iterator iterator = lineStations.iterator();
-		while (iterator.hasNext()) {
-			LineStation selectedLineStation = (LineStation)iterator.next();
-			if (selectedLineStation.getStationId().equals(stationId)) {
-				preStationId = selectedLineStation.getPreStationId();
-				break;
-			}
+		LineStation lineStationToRemove = lineStations.stream()
+			.filter(lineStation -> lineStation.equalsStationId(stationId))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("주어진 StationId를 가진 구간이 존재하지 않습니다."));
+
+		if (lineStationToRemove.isFirstLineStation()) {
+			updateNextLineStationWhenRemove(lineStationToRemove, PRESTATION_ID_OF_FIRST_LINESTATION);
+			lineStations.remove(lineStationToRemove);
+			return;
 		}
-		lineStations.removeIf(lineStation -> lineStation.getStationId().equals(stationId));
-		iterator = lineStations.iterator();
-		while (iterator.hasNext()) {
-			LineStation selectedLineStation = (LineStation)iterator.next();
-			if (selectedLineStation.getPreStationId().equals(stationId)) {
-				selectedLineStation.setPreStationId(preStationId);
-				break;
-			}
-		}
+
+		int indexOfPreLineStation = lineStations.indexOf(lineStationToRemove) - GAP_TO_NEXT_INDEX;
+		LineStation preLineStation = lineStations.get(indexOfPreLineStation);
+
+		updateNextLineStationWhenRemove(lineStationToRemove, preLineStation.getStationId());
+
+		lineStations.remove(lineStationToRemove);
+	}
+
+	private void updateNextLineStationWhenRemove(LineStation lineStationToRemove, Long preStationIdToUpdate) {
+		lineStations.stream()
+			.filter(lineStation -> lineStation.ifAfter(lineStationToRemove))
+			.findFirst()
+			.ifPresent(lineStation -> lineStation.updatePreStationId(preStationIdToUpdate));
 	}
 
 	public List<Long> getLineStationsId() {
-		Map<Long, Long> idMap = new HashMap<>();
-		Iterator iterator = lineStations.iterator();
-		while (iterator.hasNext()) {
-			LineStation lineStation = (LineStation)iterator.next();
-			idMap.put(lineStation.getPreStationId(), lineStation.getStationId());
-		}
-		List<Long> stations = new ArrayList<>();
-		Long preStationId = 0L;
-		while (idMap.containsKey(preStationId)) {
-			Long stationId = idMap.get(preStationId);
-			stations.add(stationId);
-			preStationId = stationId;
-		}
-		return stations;
+		return lineStations.stream()
+			.mapToLong(LineStation::getStationId)
+			.boxed()
+			.collect(Collectors.toList());
 	}
 
 	@Override

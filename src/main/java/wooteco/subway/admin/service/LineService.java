@@ -1,9 +1,8 @@
 package wooteco.subway.admin.service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public class LineService {
 	public List<LineResponse> showLines() {
 		List<Line> persistLines = lineRepository.findAll();
 
-		Map<Line, Set<Station>> lineWithStations = persistLines.stream()
+		Map<Line, List<Station>> lineWithStations = persistLines.stream()
 			.collect(Collectors.toMap(
 				Function.identity(),
 				persistLine -> toStations(persistLine.getLineStationsId())
@@ -43,7 +42,7 @@ public class LineService {
 	public LineResponse showLine(Long id) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 
-		Set<Station> stations = toStations(persistLine.getLineStationsId());
+		List<Station> stations = toStations(persistLine.getLineStationsId());
 
 		return LineResponse.of(persistLine, stations);
 	}
@@ -53,7 +52,7 @@ public class LineService {
 		persistLine.update(lineRequest.toLine());
 		Line updatedLine = lineRepository.save(persistLine);
 
-		Set<Station> stations = toStations(updatedLine.getLineStationsId());
+		List<Station> stations = toStations(updatedLine.getLineStationsId());
 
 		return LineResponse.of(updatedLine, stations);
 	}
@@ -62,11 +61,13 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
+	public LineResponse addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
 		Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
 		LineStation lineStation = lineStationCreateRequest.toLineStation();
 		line.addLineStation(lineStation);
-		lineRepository.save(line);
+		Line persistLine = lineRepository.save(line);
+		List<Station> stations = toStations(persistLine.getLineStationsId());
+		return LineResponse.of(persistLine, stations);
 	}
 
 	public void removeLineStation(Long lineId, Long stationId) {
@@ -75,8 +76,9 @@ public class LineService {
 		lineRepository.save(line);
 	}
 
-	public Set<Station> toStations(List<Long> lineStationsId) {
-		Set<Station> stations = new LinkedHashSet<>();
+	public List<Station> toStations(List<Long> lineStationsId) {
+
+		List<Station> stations = new ArrayList<>();
 		for (Long id : lineStationsId) {
 			Station station = stationRepository.findById(id)
 				.orElseThrow(RuntimeException::new);
@@ -87,7 +89,7 @@ public class LineService {
 
 	public LineResponse createLine(LineRequest lineRequest) {
 		Line persistLine = lineRepository.save(lineRequest.toLine());
-		Set<Station> stations = toStations(persistLine.getLineStationsId());
+		List<Station> stations = toStations(persistLine.getLineStationsId());
 
 		return LineResponse.of(persistLine, stations);
 	}

@@ -1,8 +1,12 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 import org.springframework.data.relational.core.mapping.Column;
 
 public class LineStation {
+	private static final Long PRESTATION_ID_OF_FIRST_LINESTATION = 0L;
+
     @Column("station")
     private Long stationId;
     @Column("pre_station")
@@ -20,32 +24,58 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+	public void updatePreStationId(Long preStationId) {
+		this.preStationId = preStationId;
+	}
+
+	public boolean isBefore(LineStation another) {
+		return this.stationId.equals(another.preStationId);
+	}
+
+	public boolean ifAfter(LineStation another) {
+		return this.preStationId.equals(another.stationId);
     }
 
-    public Long getStationId() {
-        return stationId;
-    }
+	public boolean isFirstLineStation() {
+		return preStationId.equals(PRESTATION_ID_OF_FIRST_LINESTATION);
+	}
 
-    public int getDistance() {
-        return distance;
-    }
+	public boolean equalsStationId(Long stationId) {
+		return this.stationId.equals(stationId);
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public Long getPreStationId() {
+		return preStationId;
+	}
 
-    public void setPreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
+	public Long getStationId() {
+		return stationId;
+	}
 
-    public void setStationId(Long stationId) {
-        this.stationId = stationId;
-    }
+	public int getDistance() {
+		return distance;
+	}
 
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
+	public int getDuration() {
+		return duration;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		LineStation that = (LineStation)o;
+		return distance == that.distance &&
+			duration == that.duration &&
+			Objects.equals(stationId, that.stationId) &&
+			Objects.equals(preStationId, that.preStationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(stationId, preStationId, distance, duration);
     }
 
     @Override
