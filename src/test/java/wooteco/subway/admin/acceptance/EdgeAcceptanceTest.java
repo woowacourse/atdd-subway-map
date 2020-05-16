@@ -47,11 +47,9 @@ public class EdgeAcceptanceTest {
 	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
 	@Test
 	void manageEdge() {
-		EdgeRequest request = new EdgeRequest("8호선", "잠실", "석촌");
+		EdgeRequest request = new EdgeRequest(1L, 2L, 3L);
 
-		when(lineRepository.findByName("8호선")).thenReturn(Optional.of(line));
-		when(stationRepository.findByName("잠실")).thenReturn(Optional.of(preStation));
-		when(stationRepository.findByName("석촌")).thenReturn(Optional.of(station));
+		when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
 		EdgeResponse created = edgeService.create(request);
 		assertThat(created.getLineId()).isEqualTo(line.getId());
