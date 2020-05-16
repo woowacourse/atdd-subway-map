@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     @Autowired
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
@@ -27,7 +27,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line save(Line line) {
+    public Line save(final Line line) {
         if (lineRepository.existsByName(line.getName())) {
             throw new IllegalArgumentException("중복된 이름입니다.");
         }
@@ -43,17 +43,17 @@ public class LineService {
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public void updateLine(Long id, Line line) {
+    public void updateLine(final Long id, final Line line) {
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
+    public void addLineStation(final Long id, final LineStationCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
@@ -63,7 +63,7 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public void removeLineStation(Long lineId, Long stationId) {
+    public void removeLineStation(final Long lineId, final Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
         line.removeLineStationById(stationId);
