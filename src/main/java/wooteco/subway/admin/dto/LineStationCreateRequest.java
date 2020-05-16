@@ -38,4 +38,5 @@ public class LineStationCreateRequest {
     public int getDuration() {
         return duration;
     }
+
 }

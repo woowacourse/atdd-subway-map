@@ -50,12 +50,14 @@ function AdminEdge() {
   /* 구간 추가 버튼 */
   const onAddLineStationHandler = async event => {
     event.preventDefault();
-    const $lineId = $subwayLineSelection.querySelector("option:checked")
-    .getAttribute("data-line-id");
-    const data = {
-      preStationId: ($subwayDepartStation.value === "") ? null : await api.station.getByName(
-        $subwayDepartStation.value).id,
-      stationId: await api.station.getByName($subwayArrivalStation.value).id,
+    const $lineId = $subwayLineSelection.querySelector("option:checked").getAttribute("data-line-id");
+
+    const preStation = ($subwayDepartStation.value === "") ? null : await api.station.getByName($subwayDepartStation.value);
+    const arrivalStation = await api.station.getByName($subwayArrivalStation.value);
+
+    const lineStationData = {
+      preStationId: preStation ? preStation.id : null,
+      stationId: arrivalStation.id,
       distance: $subwayDistance.value,
       duration: $subwayDuration.value
     };
@@ -88,6 +90,7 @@ function AdminEdge() {
 
   const initState = async () => {
     subwayLines = await api.line.get();
+    console.log(subwayLines);
   };
 
   this.init = async () => {

@@ -1,6 +1,8 @@
 package wooteco.subway.admin.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Station;
@@ -47,8 +50,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<StationResponse> getStationIdByName(@PathVariable String name) {
+    @GetMapping("/stationInfo")
+    public ResponseEntity<StationResponse> getStationIdByName(@RequestParam(name = "name") String name) {
         Station station = stationRepository.findIdByName(name);
         return ResponseEntity
             .ok()
