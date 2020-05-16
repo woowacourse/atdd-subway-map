@@ -16,7 +16,6 @@ import org.springframework.test.context.jdbc.Sql;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -26,13 +25,13 @@ public class AcceptanceTest {
 	@LocalServerPort
 	int port;
 
+	static RequestSpecification given() {
+		return RestAssured.given().log().all();
+	}
+
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = port;
-	}
-
-	static RequestSpecification given() {
-		return RestAssured.given().log().all();
 	}
 
 	LineResponse getLine(Long id) {
@@ -42,6 +41,7 @@ public class AcceptanceTest {
 			get("/lines/" + id).
 			then().
 			log().all().
+			statusCode(HttpStatus.OK.value()).
 			extract().as(LineResponse.class);
 	}
 
@@ -91,6 +91,7 @@ public class AcceptanceTest {
 				get("/lines").
 				then().
 				log().all().
+				statusCode(HttpStatus.OK.value()).
 				extract().
 				jsonPath().getList(".", LineResponse.class);
 	}
@@ -134,6 +135,7 @@ public class AcceptanceTest {
 			get("/stations").
 			then().
 			log().all().
+			statusCode(HttpStatus.OK.value()).
 			extract().
 			jsonPath().getList(".", StationResponse.class);
 	}
@@ -141,11 +143,14 @@ public class AcceptanceTest {
 	void createLineStation(Long preStationId, Long stationId, Long lineId) {
 		int distance = 10;
 		int duration = 2;
-		LineStationCreateRequest lineStationRequest = new LineStationCreateRequest(preStationId, stationId, distance,
-			duration);
+		Map<String, Object> params = new HashMap<>();
+		params.put("preStationId", preStationId);
+		params.put("stationId", stationId);
+		params.put("distance", distance);
+		params.put("duration", duration);
 
 		given().
-			body(lineStationRequest).
+			body(params).
 			contentType(MediaType.APPLICATION_JSON_VALUE).
 			accept(MediaType.APPLICATION_JSON_VALUE).
 			when().
@@ -163,6 +168,7 @@ public class AcceptanceTest {
 				get("/lines/" + lineId + "/stations").
 				then().
 				log().all().
+				statusCode(HttpStatus.OK.value()).
 				extract().
 				jsonPath().getList(".", LineStationResponse.class);
 	}

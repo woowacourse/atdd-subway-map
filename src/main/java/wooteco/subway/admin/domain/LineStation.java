@@ -1,13 +1,10 @@
 package wooteco.subway.admin.domain;
 
 public class LineStation {
-	private Long stationId;
 	private Long preStationId;
+	private Long stationId;
 	private int distance;
 	private int duration;
-
-	private LineStation() {
-	}
 
 	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
 		this.preStationId = preStationId;
@@ -16,12 +13,24 @@ public class LineStation {
 		this.duration = duration;
 	}
 
-	public void updatePreLineStation(Long preStationId) {
-		this.preStationId = preStationId;
+	public void updatePreStationIdToTargetsStationId(LineStation target) {
+		this.preStationId = target.getStationId();
+	}
+
+	public void updatePreStationIdToTargetsPreStationId(LineStation target) {
+		this.preStationId = target.getPreStationId();
 	}
 
 	public boolean hasSameStationId(LineStation lineStation) {
 		return this.stationId.equals(lineStation.stationId);
+	}
+
+	public boolean hasSameStationId(Long stationId) {
+		return this.stationId.equals(stationId);
+	}
+
+	public boolean isPreStationOf(LineStation lineStation) {
+		return stationId.equals(lineStation.getPreStationId());
 	}
 
 	public Long getPreStationId() {

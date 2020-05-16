@@ -1,8 +1,11 @@
 package wooteco.subway.admin.acceptance;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,62 +15,90 @@ import wooteco.subway.admin.dto.LineStationResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
 public class LineStationAcceptanceTest extends AcceptanceTest {
-	@DisplayName("지하철 노선에서 지하철역 추가 / 제외")
+
+	private static final long NOT_EXIST_STATION_ID = Long.MAX_VALUE;
+	private static final String STATION_NAME_GANGBYUN = "강변";
+	private static final String STATION_NAME_JAMSILNARU = "잠실나루";
+	private static final String STATION_NAME_JAMSIL = "잠실";
+	private static final String STATION_NAME_SINDANG = "신당";
+	private static final String LINE_NAME_TWO = "2호선";
+
+	@DisplayName("지하철 노선에서 지하철역 추가/제외")
 	@Test
 	void manageLineStation() {
 		//given
-		createStation("강변");
-		createStation("잠실나루");
-		createStation("잠실");
+		createStation(STATION_NAME_GANGBYUN);
+		createStation(STATION_NAME_JAMSILNARU);
+		createStation(STATION_NAME_JAMSIL);
+		createStation(STATION_NAME_SINDANG);
 
-		createLine("2호선");
+		createLine(LINE_NAME_TWO);
+
 		List<StationResponse> stations = getStations();
+		Long firstStationId = stations.get(0).getId();
+		Long secondStationId = stations.get(1).getId();
+		Long thirdStationId = stations.get(2).getId();
+		Long newStationId = stations.get(3).getId();
+
 		List<LineResponse> lines = getLines();
-		LineResponse line = getLine(lines.get(0).getId());
+		Long firstLineId = lines.get(0).getId();
 
 		//when
-		createLineStation(null, stations.get(1).getId(), line.getId());
-		createLineStation(stations.get(1).getId(), stations.get(2).getId(), line.getId());
-		createLineStation(stations.get(2).getId(), stations.get(0).getId(), line.getId());
+		createLineStation(null, secondStationId, firstLineId);
+		createLineStation(secondStationId, thirdStationId, firstLineId);
+		createLineStation(thirdStationId, firstStationId, firstLineId);
+		LineResponse firstLine = getLine(firstLineId);
+		List<LineStationResponse> firstLineStations = getLineStations(firstLineId);
 		//then
-		List<LineStationResponse> lineStations = getLineStations(line.getId());
-		assertThat(lineStations.size()).isEqualTo(3);
+		assertThat(firstLineStations.size()).isEqualTo(3);
 
-		assertThat(getLine(lines.get(0).getId()).getStations().stream().map(StationResponse::getName))
-			.containsExactly("잠실나루", "잠실", "강변");
+		assertThat(getStationNamesFrom(firstLine))
+			.containsExactly(STATION_NAME_JAMSILNARU, STATION_NAME_JAMSIL, STATION_NAME_GANGBYUN);
 
 		//when
-		LineStationResponse lineStationResponse = lineStations.get(0);
+		LineStationResponse firstLineStationResponse = firstLineStations.get(0);
 		//then
-		assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
-		assertThat(lineStationResponse.getStationId()).isEqualTo(stations.get(1).getId());
+		assertThat(firstLineStationResponse.getLineId()).isEqualTo(firstLineId);
+		assertThat(firstLineStationResponse.getStationId()).isEqualTo(secondStationId);
 
 		//given
-		createStation("테스트역");
 
-		//when //then
-		assertThatThrownBy(() -> createLineStation(null, stations.get(0).getId(), line.getId()));
-		//when //then
-		assertThatThrownBy(() -> createLineStation(null, stations.get(3).getId(), null));
-		//when //then
-		assertThatThrownBy(() -> createLineStation(null, Long.MAX_VALUE, line.getId()));
-		//when //then
-		assertThatThrownBy(() -> createLineStation(Long.MAX_VALUE, stations.get(3).getId(), line.getId()));
 
 		//when
-		deleteLineStation(line.getId(), stations.get(1).getId());
+		Long alreadyExistStationId = firstStationId;
 		//then
-		List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());
+		assertThatThrownBy(() -> createLineStation(null, alreadyExistStationId, firstLineId));
+
+		//when
+		Long nonExistLineId = null;
+		//then
+		assertThatThrownBy(() -> createLineStation(null, newStationId, nonExistLineId));
+
+		//when //then
+		assertThatThrownBy(() -> createLineStation(null, NOT_EXIST_STATION_ID, firstLineId));
+		//when //then
+		assertThatThrownBy(() -> createLineStation(NOT_EXIST_STATION_ID, newStationId, firstLineId));
+
+		//when
+		deleteLineStation(firstLineId, secondStationId);
+		//then
+		List<LineStationResponse> lineStationsAfterDelete = getLineStations(firstLineId);
 		assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
 		//and
-		boolean isExistLineStation = isExistLineStation(lineStationResponse, lineStationsAfterDelete);
+		boolean isExistLineStation = isExistLineStation(firstLineStationResponse, lineStationsAfterDelete);
 		assertThat(isExistLineStation).isFalse();
 
 		//when //then
-		assertThatThrownBy(() -> deleteLineStation(Long.MAX_VALUE, stations.get(0).getId()));
+		assertThatThrownBy(() -> deleteLineStation(NOT_EXIST_STATION_ID, firstStationId));
 
 		//when //then
-		assertThatThrownBy(() -> deleteLineStation(line.getId(), Long.MAX_VALUE));
+		assertThatThrownBy(() -> deleteLineStation(firstLineId, NOT_EXIST_STATION_ID));
+	}
+
+	private List<String> getStationNamesFrom(LineResponse lineResponse) {
+		return lineResponse.getStations().stream()
+			.map(StationResponse::getName)
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 	private boolean isExistLineStation(LineStationResponse lineStationResponse,

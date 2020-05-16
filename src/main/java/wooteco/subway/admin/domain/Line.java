@@ -26,11 +26,10 @@ public class Line {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private Line() {
-	}
-
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+		String backgroundColor) {
 		LocalDateTime createdTime = LocalDateTime.now();
+		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -76,7 +75,7 @@ public class Line {
 
 	private void updateNextAndInsertNode(int index, LineStation newNode) {
 		LineStation nextNode = stations.get(index);
-		nextNode.updatePreLineStationIdToNewStationId(newNode);
+		nextNode.updatePreStationIdToTargetsStationId(newNode);
 		stations.add(index, newNode);
 	}
 
@@ -95,26 +94,26 @@ public class Line {
 
 	private LineStation findPrevLineStationFrom(LineStation node) {
 		return stations.stream()
-			.filter(station -> station.getStationId().equals(node.getPreStationId()))
+			.filter(lineStation -> lineStation.isPreStationOf(node))
 			.findFirst()
 			.orElseThrow(NotFoundPreStationException::new);
 	}
 
 	public void removeLineStationById(Long targetStationId) {
-		LineStation target = findLineStationWithStationId(targetStationId);
+		LineStation target = findLineStationByStationId(targetStationId);
 		int targetIndex = stations.indexOf(target);
 		if (isStationLastIndex(targetIndex)) {
 			stations.remove(target);
 			return;
 		}
 		LineStation nextNode = stations.get(targetIndex + 1);
-		nextNode.updatePreLineStationIdToNewPreStationId(target);
+		nextNode.updatePreStationIdToTargetsPreStationId(target);
 		stations.remove(target);
 	}
 
-	private LineStation findLineStationWithStationId(Long stationId) {
+	private LineStation findLineStationByStationId(Long stationId) {
 		return stations.stream()
-			.filter(station -> station.getStationId().equals(stationId))
+			.filter(lineStation -> lineStation.hasSameStationId(stationId))
 			.findFirst()
 			.orElseThrow(NotFoundStationException::new);
 	}
@@ -123,14 +122,14 @@ public class Line {
 		return index == stations.size() - 1;
 	}
 
+	public boolean isNotSameName(Line otherLine) {
+		return !name.equals(otherLine.name);
+	}
+
 	public List<Long> findLineStationIds() {
 		return stations.stream()
 			.map(LineStation::getStationId)
 			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
-	}
-
-	public boolean isNotSameName(Line otherLine) {
-		return !name.equals(otherLine.name);
 	}
 
 	public List<Station> findContainingStationsFrom(List<Station> allStations) {

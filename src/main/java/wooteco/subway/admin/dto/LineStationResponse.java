@@ -17,7 +17,7 @@ public class LineStationResponse {
 	private LineStationResponse() {
 	}
 
-	public LineStationResponse(Long lineId, Long stationId, Long preStationId, int distance, int duration) {
+	private LineStationResponse(Long lineId, Long stationId, Long preStationId, int distance, int duration) {
 		this.lineId = lineId;
 		this.stationId = stationId;
 		this.preStationId = preStationId;

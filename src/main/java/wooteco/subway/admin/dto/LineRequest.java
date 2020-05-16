@@ -30,9 +30,6 @@ public class LineRequest {
 	@NotBlank(message = "노선의 배경색을 입력해주세요.")
 	private String backgroundColor;
 
-	private LineRequest() {
-	}
-
 	public Line toLine() {
 		return new Line(null, name, startTime, endTime, intervalTime, backgroundColor);
 	}

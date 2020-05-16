@@ -23,7 +23,7 @@ public class LineResponse {
 	private LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
+	private LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
 		LocalDateTime createdAt, LocalDateTime updatedAt, String backgroundColor, List<StationResponse> stations) {
 		this.id = id;
 		this.name = name;
