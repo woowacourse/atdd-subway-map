@@ -1,6 +1,6 @@
-import { optionTemplate, subwayLinesItemTemplate } from "../../utils/templates.js";
+import {optionTemplate, subwayLinesItemTemplate} from "../../utils/templates.js";
 import tns from "../../lib/slider/tiny-slider.js";
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import api from "../../api/index.js";
 import Modal from "../../ui/Modal.js";
 
@@ -90,7 +90,6 @@ function AdminEdge() {
 
   const initState = async () => {
     subwayLines = await api.line.get();
-    console.log(subwayLines);
   };
 
   this.init = async () => {

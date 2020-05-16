@@ -109,7 +109,7 @@ public class Line {
             stations.stream()
                 .filter(station -> station.getPreStationId() == null)
                 .findFirst()
-                .get()
+                .orElseThrow(() -> new IllegalArgumentException("출발역으로 지정된 LineStation이 없습니다."))
                 .updatePreLineStation(lineStation.getStationId());
             stations.add(lineStation);
             return;
@@ -117,7 +117,7 @@ public class Line {
         stations.stream()
             .filter(station -> lineStation.getPreStationId().equals(station.getPreStationId()))
             .findFirst()
-            .get()
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 LineStation이 없습니다."))
             .updatePreLineStation(lineStation.getStationId());
         stations.add(lineStation);
     }
@@ -144,8 +144,9 @@ public class Line {
 
     public List<Long> findLineStationsId() {
         List<Long> ids = new ArrayList<>();
-        if (stations.size() == 0)
+        if (stations.size() == 0) {
             return Collections.EMPTY_LIST;
+        }
         for (LineStation station : stations) {
             if (station.getPreStationId() == null) {
                 ids.add(station.getStationId());
