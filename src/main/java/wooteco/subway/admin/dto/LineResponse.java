@@ -1,11 +1,10 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,20 +12,26 @@ import java.util.stream.Collectors;
 public class LineResponse {
     private Long id;
     private String name;
+    private String color;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<Station> stations;
+    private Set<StationResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    public LineResponse(final Long id, final String name, final String color,
+                        final LocalTime startTime, final LocalTime endTime,
+                        final int intervalTime, final LocalDateTime createdAt,
+                        final LocalDateTime updatedAt, final Set<StationResponse> stations
+    ) {
         this.id = id;
         this.name = name;
+        this.color = color;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -36,12 +41,16 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new LinkedHashSet<>());
+    }
+
+    public static LineResponse of(Line line, Set<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(it -> LineResponse.of(it))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -51,6 +60,10 @@ public class LineResponse {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public LocalTime getStartTime() {
@@ -65,7 +78,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 

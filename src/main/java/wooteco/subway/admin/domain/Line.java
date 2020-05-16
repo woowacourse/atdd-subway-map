@@ -10,18 +10,22 @@ public class Line {
     @Id
     private Long id;
     private String name;
+    private String color;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Set<LineStation> stations = new LinkedHashSet<>();
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this.id = id;
         this.name = name;
+        this.color = color;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
@@ -29,8 +33,8 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this(null, name, color, startTime, endTime, intervalTime);
     }
 
     public Long getId() {
@@ -39,6 +43,10 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public LocalTime getStartTime() {
@@ -65,9 +73,12 @@ public class Line {
         return updatedAt;
     }
 
-    public void update(Line line) {
+    public void update(final Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
+        }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
@@ -82,16 +93,70 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+    public void removeLineStationById(final Long stationId) {
+        LineStation targetLineStation = stations.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
+
+        stations.remove(targetLineStation);
     }
 
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+    public void addLineStation(LineStation lineStation) {
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
+
+        stations.add(lineStation);
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        if (stations.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LineStation firstLineStation = stations.stream()
+                .filter(ls -> ls.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        List<Long> stationIds = new ArrayList<>();
+        stationIds.add(firstLineStation.getStationId());
+
+        while (true) {
+            Long lastStationId = stationIds.get(stationIds.size() - 1);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(ls -> Objects.equals(ls.getPreStationId(), lastStationId))
+                    .findFirst();
+
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+
+            stationIds.add(nextLineStation.get().getStationId());
+        }
+
+        return stationIds;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", intervalTime=" + intervalTime +
+                ", stations=" + stations +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

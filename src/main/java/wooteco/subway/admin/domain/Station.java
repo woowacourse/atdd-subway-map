@@ -10,6 +10,14 @@ public class Station {
     private String name;
     private LocalDateTime createdAt;
 
+    public Station() {
+    }
+
+    public Station(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Station(String name) {
         this.name = name;
         this.createdAt = LocalDateTime.now();
@@ -25,5 +33,14 @@ public class Station {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

@@ -2,28 +2,33 @@ package wooteco.subway.admin.service;
 
 import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exceptions.DuplicationNameException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@Sql("/truncate.sql")
 public class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
@@ -35,12 +40,22 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "bg-red-500", "1호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addLineStation(new LineStation(1L, null, 1L, 10, 10));
+        line.addLineStation(new LineStation(1L, 1L, 2L, 10, 10));
+        line.addLineStation(new LineStation(1L, 2L, 3L, 10, 10));
+    }
+
+    @DisplayName("Line 추가 시 중복된 이름일 경우 예외 발생")
+    @Test
+    void notAddDuplicatedLineName() {
+        assertThatThrownBy(() -> {
+            when(lineRepository.existsByName(any())).thenReturn(true);
+            Line newLine = new Line(2L, "1호선", "bg-red-500", LocalTime.of(6, 30), LocalTime.of(10, 30), 10);
+            lineService.saveLine(newLine);
+        }).isInstanceOf(DuplicationNameException.class);
     }
 
     @Test
@@ -117,11 +132,13 @@ public class LineServiceTest {
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        Set<Station> stations = Sets.newLinkedHashSet(new Station(1L, "강남역"), new Station(2L, "역삼역"), new Station(3L, "삼성역"));
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        when(stationRepository.findAllById(anyList())).thenReturn(new ArrayList<>(stations));
+
+        LineResponse lineResponse = lineService.getLineWithStationsById(1L);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }

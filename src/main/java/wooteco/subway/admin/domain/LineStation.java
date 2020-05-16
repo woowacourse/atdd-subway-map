@@ -1,20 +1,28 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Long stationId;
+    private Long line;
     private Long preStationId;
+    private Long stationId;
     private int distance;
     private int duration;
 
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStation(final Long line, final Long preStationId, final Long stationId,
+                       final int distance, final int duration) {
+        this.line = line;
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public Long getLine() {
+        return line;
     }
 
     public Long getPreStationId() {
@@ -35,5 +43,35 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineStation that = (LineStation)o;
+        return distance == that.distance &&
+                duration == that.duration &&
+                Objects.equals(line, that.line) &&
+                Objects.equals(preStationId, that.preStationId) &&
+                Objects.equals(stationId, that.stationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, preStationId, stationId, distance, duration);
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+                "line=" + line +
+                ", preStationId=" + preStationId +
+                ", stationId=" + stationId +
+                ", distance=" + distance +
+                ", duration=" + duration +
+                '}';
     }
 }
