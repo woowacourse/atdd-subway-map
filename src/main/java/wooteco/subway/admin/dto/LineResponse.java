@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
 
@@ -21,13 +20,13 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<Station> stations;
+    private Set<StationResponse> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(Long id, String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime,
-        LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+        LocalDateTime createdAt, LocalDateTime updatedAt, Set<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.bgColor = bgColor;
@@ -45,14 +44,15 @@ public class LineResponse {
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
     }
 
-    public static LineResponse convert(Line line, Set<Station> stationsByLineId) {
-        final LineResponse lineResponse = LineResponse.of(line);
-        lineResponse.setStations(stationsByLineId);
-        return lineResponse;
+    public static LineResponse of(Line line, Set<StationResponse> stationResponses) {
+        return new LineResponse(line.getId(), line.getName(), line.getBgColor(),
+            line.getStartTime(), line.getEndTime(),
+            line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stationResponses);
     }
 
-    public void setStations(Set<Station> stations) {
-        this.stations = stations;
+    public static LineResponse convert(Line line, Set<StationResponse> stationsByLineId) {
+        final LineResponse lineResponse = LineResponse.of(line, stationsByLineId);
+        return lineResponse;
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
@@ -85,7 +85,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 

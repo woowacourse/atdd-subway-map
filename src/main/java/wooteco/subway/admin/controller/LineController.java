@@ -1,6 +1,5 @@
 package wooteco.subway.admin.controller;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
@@ -77,11 +75,9 @@ public class LineController {
     @GetMapping("/{lineId}/stations")
     public ResponseEntity<List<StationResponse>> getStations(@PathVariable Long lineId) {
         final LineResponse lineResponse = service.findLineWithStationsById(lineId);
-        final Set<Station> stations = lineResponse.getStations();
-        List<StationResponse> stationResponses = new ArrayList<>();
-        for (Station station : stations) {
-            stationResponses.add(StationResponse.of(station));
-        }
+        final Set<StationResponse> stations = lineResponse.getStations();
+        List<StationResponse> stationResponses = new ArrayList<>(stations);
+
         return ResponseEntity
             .ok()
             .body(stationResponses);

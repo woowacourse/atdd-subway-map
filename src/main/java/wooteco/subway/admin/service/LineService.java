@@ -12,6 +12,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -67,7 +68,11 @@ public class LineService {
         return LineResponse.convert(line, findStationsByLineId(line.findLineStationsId()));
     }
 
-    public Set<Station> findStationsByLineId(List<Long> stationIds) {
-        return Sets.newHashSet(stationRepository.findAllById(stationIds));
+    public Set<StationResponse> findStationsByLineId(List<Long> stationIds) {
+        Set<StationResponse> stationResponses = new HashSet<>();
+        for (Station station : stationRepository.findAllById(stationIds)) {
+            stationResponses.add(StationResponse.of(station));
+        }
+        return Sets.newHashSet(stationResponses);
     }
 }
