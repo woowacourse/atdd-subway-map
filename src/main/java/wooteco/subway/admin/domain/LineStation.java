@@ -1,26 +1,23 @@
 package wooteco.subway.admin.domain;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class LineStation {
-    private static final long START_STATION = -1L;
     private Long stationId;
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    private LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
-        if (Objects.nonNull(preStationId)) {
-            this.preStationId = preStationId;
-            return;
-        }
-        this.preStationId = START_STATION;
+        this.preStationId = Optional.ofNullable(preStationId)
+            .orElse(Line.START_STATION);
     }
 
     public Long getPreStationId() {

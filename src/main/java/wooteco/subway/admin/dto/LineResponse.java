@@ -3,7 +3,6 @@ package wooteco.subway.admin.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,16 +17,14 @@ public class LineResponse {
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String bgColor;
 
-    private Set<Station> stations;
+    private Set<StationResponse> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime,
-        LocalDateTime createdAt, LocalDateTime updatedAt, String bgColor,
-        Set<Station> stations) {
+        LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;
@@ -35,18 +32,18 @@ public class LineResponse {
         this.intervalTime = intervalTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.bgColor = bgColor;
-        this.stations = stations;
+        this.stations = StationResponse.listOf(stations);
     }
 
     public static LineResponse of(Line line, Set<Station> stations) {
         return new LineResponse(line.getId(), line.getTitle(), line.getStartTime(), line.getEndTime(),
-            line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), line.getBgColor(), stations);
+            line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines, Map<Long, Set<Station>> mappingLineStation) {
-        return lines.stream()
-            .map(it -> LineResponse.of(it, mappingLineStation.get(it.getId())))
+    public static List<LineResponse> listOf(List<LineResponseCreateDto> lineResponseCreateDtos) {
+        return lineResponseCreateDtos.stream()
+            .map(lineResponseCreateDto -> LineResponse.of(lineResponseCreateDto.getLine(),
+                lineResponseCreateDto.getStations()))
             .collect(Collectors.toList());
     }
 
@@ -70,10 +67,6 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
-        return stations;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -82,14 +75,7 @@ public class LineResponse {
         return updatedAt;
     }
 
-    public String getBgColor() {
-        return bgColor;
-    }
-
-    @Override
-    public String toString() {
-        return "LineResponse{" +
-            "stations=" + stations.toString() +
-            '}';
+    public Set<StationResponse> getStations() {
+        return stations;
     }
 }

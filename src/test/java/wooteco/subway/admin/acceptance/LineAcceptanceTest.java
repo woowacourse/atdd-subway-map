@@ -77,11 +77,11 @@ public class LineAcceptanceTest {
     }
 
     private LineResponse getLine(Long id) {
-        return given().when().
-            get("/lines/" + id).
-            then().
-            log().all().
-            extract().as(LineResponse.class);
+        return
+            given().when().get("/lines/" + id).
+                then().
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {

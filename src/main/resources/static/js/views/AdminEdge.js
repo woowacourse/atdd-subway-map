@@ -40,7 +40,7 @@ function AdminEdge() {
                 "#station-select-options"
             );
 
-            let url = "/lines/addStation/" + $stationSelectOptions.value;
+            let url = "/lines/" + $stationSelectOptions.value + "/station/";
             let createRequest = {
                 headers: {
                     'Content-Type': 'application/json'
@@ -142,7 +142,7 @@ function AdminEdge() {
         if (isDeleteButton && confirm("정말로 지우시겠습니까?")) {
             let lineId = $targetList.closest(".slider-list").id;
             stationId = $targetList.dataset.stationId;
-            fetch("/lines/" + lineId + "/" + stationId, {
+            fetch("/lines/" + lineId + "/station/" + stationId, {
                 method: 'delete'
             }).then(res => {
                 if (res.ok) {

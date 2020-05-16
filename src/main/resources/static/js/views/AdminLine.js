@@ -35,7 +35,7 @@ function AdminLine() {
                 startTime: $subwayStartTimeInput.value,
                 endTime: $subwayLastTimeInput.value,
                 intervalTime: $intervalTimeInput.value,
-                bgColor: $subwayLineColorInput.value
+                backgroundColor: $subwayLineColorInput.value
             })
         };
 
@@ -91,7 +91,7 @@ function AdminLine() {
                     if (res.ok) {
                         res.json().then(data => {
                             $subwayLineNameInput.value = data.title;
-                            $subwayLineColorInput.value = data.bgColor;
+                            $subwayLineColorInput.value = data.backgroundColor;
                             $subwayStartTimeInput.value = data.startTime;
                             $subwayLastTimeInput.value = data.endTime;
                             $intervalTimeInput.value = data.intervalTime;
@@ -115,7 +115,7 @@ function AdminLine() {
                 startTime: $subwayStartTimeInput.value,
                 endTime: $subwayLastTimeInput.value,
                 intervalTime: $intervalTimeInput.value,
-                bgColor: $subwayLineColorInput.value
+                backgroundColor: $subwayLineColorInput.value
             })
         };
         fetch(url, editRequest)

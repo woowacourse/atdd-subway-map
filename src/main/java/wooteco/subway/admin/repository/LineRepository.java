@@ -13,6 +13,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
 
-    @Query("select * from line where title = :title")
+    @Query("SELECT * FROM LINE WHERE title = :title")
     Optional<Line> findByTitle(@Param("title") String title);
 }
