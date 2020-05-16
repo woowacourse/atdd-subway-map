@@ -30,7 +30,7 @@ function AdminLine() {
     event.preventDefault();
     const newSubwayLine = {
       name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value,
+      backgroundColor: $subwayLineColorInput.value,
       startTime: $subwayLineStartTimeInput.value,
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalInput.value
@@ -68,7 +68,7 @@ function AdminLine() {
     event.preventDefault();
     const updatedLine = {
       name: $subwayLineNameInput.value,
-      bgColor: $subwayLineColorInput.value,
+      backgroundColor: $subwayLineColorInput.value,
       startTime: $subwayLineStartTimeInput.value,
       endTime: $subwayLineEndTimeInput.value,
       intervalTime: $subwayLineIntervalInput.value
@@ -122,7 +122,7 @@ function AdminLine() {
       $subwayLineStartTimeInput.value = selectedLine["startTime"];
       $subwayLineEndTimeInput.value = selectedLine["endTime"];
       $subwayLineIntervalInput.value = selectedLine["intervalTime"];
-      $subwayLineColorInput.value = selectedLine["bgColor"];
+      $subwayLineColorInput.value = selectedLine["backgroundColor"];
       selectedSubwayId = selectedLine["id"];
       changeEvent();
       subwayLineModal.toggle();

@@ -21,7 +21,7 @@ public class Line {
 	private LocalTime startTime;
 	private LocalTime endTime;
 	private int intervalTime;
-	private String bgColor;
+	private String backgroundColor;
 	private List<LineStation> stations = new LinkedList<>();
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -29,13 +29,13 @@ public class Line {
 	private Line() {
 	}
 
-	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+	public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
 		LocalDateTime createdTime = LocalDateTime.now();
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
-		this.bgColor = bgColor;
+		this.backgroundColor = backgroundColor;
 		this.createdAt = createdTime;
 		this.updatedAt = createdTime;
 	}
@@ -45,7 +45,7 @@ public class Line {
 		this.startTime = line.getStartTime();
 		this.endTime = line.getEndTime();
 		this.intervalTime = line.getIntervalTime();
-		this.bgColor = line.getBgColor();
+		this.backgroundColor = line.getBackgroundColor();
 		this.updatedAt = LocalDateTime.now();
 	}
 
@@ -76,7 +76,7 @@ public class Line {
 
 	private void updateNextAndInsertNode(int index, LineStation newNode) {
 		LineStation nextNode = stations.get(index);
-		nextNode.updatePreLineStation(newNode.getStationId());
+		nextNode.updatePreLineStationIdToNewStationId(newNode);
 		stations.add(index, newNode);
 	}
 
@@ -108,7 +108,7 @@ public class Line {
 			return;
 		}
 		LineStation nextNode = stations.get(targetIndex + 1);
-		nextNode.updatePreLineStation(target.getPreStationId());
+		nextNode.updatePreLineStationIdToNewPreStationId(target);
 		stations.remove(target);
 	}
 
@@ -178,7 +178,7 @@ public class Line {
 		return updatedAt;
 	}
 
-	public String getBgColor() {
-		return bgColor;
+	public String getBackgroundColor() {
+		return backgroundColor;
 	}
 }

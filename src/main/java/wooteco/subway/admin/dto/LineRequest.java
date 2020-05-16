@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
@@ -29,13 +28,13 @@ public class LineRequest {
 
 	@NotNull(message = "null값은 허용되지 않습니다.")
 	@NotBlank(message = "노선의 배경색을 입력해주세요.")
-	private String bgColor;
+	private String backgroundColor;
 
 	private LineRequest() {
 	}
 
 	public Line toLine() {
-		return new Line(null, name, startTime, endTime, intervalTime, bgColor);
+		return new Line(null, name, startTime, endTime, intervalTime, backgroundColor);
 	}
 
 	public String getName() {
@@ -54,7 +53,7 @@ public class LineRequest {
 		return intervalTime;
 	}
 
-	public String getBgColor() {
-		return bgColor;
+	public String getBackgroundColor() {
+		return backgroundColor;
 	}
 }
