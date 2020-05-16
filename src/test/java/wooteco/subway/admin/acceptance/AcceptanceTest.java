@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
@@ -18,21 +19,22 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class AcceptanceTest {
 
     @LocalServerPort
     int port;
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
     }
 
-    protected LineResponse getLine(Long id) {
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
+
+    LineResponse getLine(Long id) {
         return given().
                 when().
                 get("/lines/" + id).
@@ -41,7 +43,7 @@ public class AcceptanceTest {
                 extract().as(LineResponse.class);
     }
 
-    protected void createLine(String name) {
+    void createLine(String name) {
         LineRequest lineRequest = new LineRequest(
                 name,
                 "bg-red-500",
@@ -60,7 +62,7 @@ public class AcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    protected void updateLine(Long id, String name, String color, String startTime, String endTime, int intervalTime) {
+    void updateLine(Long id, String name, String color, String startTime, String endTime, int intervalTime) {
         LineRequest lineRequest = new LineRequest(
                 name,
                 color,
@@ -80,7 +82,7 @@ public class AcceptanceTest {
                 statusCode(HttpStatus.OK.value());
     }
 
-    protected List<LineResponse> getLines() {
+    List<LineResponse> getLines() {
         return
                 given().
                         when().
@@ -91,7 +93,7 @@ public class AcceptanceTest {
                         jsonPath().getList(".", LineResponse.class);
     }
 
-    protected void deleteLine(Long id) {
+    void deleteLine(Long id) {
         given().
                 when().
                 delete("/lines/" + id).
@@ -99,7 +101,7 @@ public class AcceptanceTest {
                 log().all();
     }
 
-    protected void createStation(String name) {
+    void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -114,7 +116,7 @@ public class AcceptanceTest {
                 statusCode(HttpStatus.CREATED.value());
     }
 
-    protected List<StationResponse> getStations() {
+    List<StationResponse> getStations() {
         return given().
                 when().
                 get("/stations").
@@ -124,7 +126,7 @@ public class AcceptanceTest {
                 jsonPath().getList(".", StationResponse.class);
     }
 
-    protected void deleteStation(Long id) {
+    void deleteStation(Long id) {
         given().
                 when().
                 delete("/stations/" + id).
