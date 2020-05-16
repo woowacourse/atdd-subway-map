@@ -15,6 +15,10 @@ public class LineStation {
     public LineStation() {
     }
 
+    public LineStation(Long preStationId, Long stationId) {
+        this(preStationId, stationId, 10, 10);
+    }
+
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
@@ -28,6 +32,14 @@ public class LineStation {
 
     public boolean isPreStationOf(LineStation lineStation) {
         return this.stationId.equals(lineStation.getPreStationId());
+    }
+
+    public void updatePreStationId(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public boolean is(Long stationId) {
+        return this.stationId.equals(stationId);
     }
 
     public Long getPreStationId() {
@@ -46,14 +58,6 @@ public class LineStation {
         return duration;
     }
 
-    public void updatePreStationId(Long preStationId) {
-        this.preStationId = preStationId;
-    }
-
-    public boolean is(Long stationId) {
-        return this.stationId.equals(stationId);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,5 +70,15 @@ public class LineStation {
     @Override
     public int hashCode() {
         return Objects.hash(stationId, preStationId);
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+                "stationId=" + stationId +
+                ", preStationId=" + preStationId +
+                ", distance=" + distance +
+                ", duration=" + duration +
+                '}';
     }
 }

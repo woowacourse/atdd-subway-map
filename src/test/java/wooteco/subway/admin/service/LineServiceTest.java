@@ -9,18 +9,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.LineStationRequest;
 import wooteco.subway.admin.dto.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
-import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,27 +26,38 @@ public class LineServiceTest {
 	@Mock
 	private LineRepository lineRepository;
 	@Mock
-	private StationRepository stationRepository;
+	private StationService stationService;
 
 	private Line line;
 	private LineService lineService;
+	private Station station1;
+	private Station station2;
+	private Station station3;
 
 	@BeforeEach
 	void setUp() {
 		line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-pink-700");
-		lineService = new LineService(lineRepository, stationRepository);
+		lineService = new LineService(lineRepository, stationService);
 
 		line.addLineStationOnLast(new LineStation(null, 1L, 10, 10));
 		line.addLineStationOnLast(new LineStation(1L, 2L, 10, 10));
 		line.addLineStationOnLast(new LineStation(2L, 3L, 10, 10));
+
+		station1 = new Station(1L, "일번역");
+		station2 = new Station(2L, "이번역");
+		station3 = new Station(3L, "삼번역");
 	}
 
 	@Test
 	void addLineStationAtTheFirstOfLine() {
-		LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
+		LineStationRequest lineStationRequest = new LineStationRequest(line.getId(), ""
+				, "처음에들어갈역");
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-		lineService.addLineStation(line.getId(), request);
+		when(stationService.findByName(anyString())).thenReturn(new Station(4L, "처음에들어갈역"));
+		lineService.addLineStation(lineStationRequest);
+
+		System.out.println(line.getStations());
 
 		assertThat(line.getStations()).hasSize(4);
 		assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
@@ -59,10 +68,14 @@ public class LineServiceTest {
 
 	@Test
 	void addLineStationBetweenTwo() {
-		LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
+		LineStationRequest lineStationRequest = new LineStationRequest(line.getId(), "일번역",
+				"중간에들어갈역");
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-		lineService.addLineStation(line.getId(), request);
+		when(stationService.findByName(lineStationRequest.getPreStationName())).thenReturn(station1);
+		when(stationService.findByName(lineStationRequest.getStationName()))
+				.thenReturn(new Station(4L, "중간에들어갈역"));
+		lineService.addLineStation(lineStationRequest);
 
 		assertThat(line.getStations()).hasSize(4);
 		assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -73,10 +86,14 @@ public class LineServiceTest {
 
 	@Test
 	void addLineStationAtTheEndOfLine() {
-		LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
+		LineStationRequest lineStationRequest = new LineStationRequest(line.getId(), "삼번역",
+				"마지막에들어갈역");
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-		lineService.addLineStation(line.getId(), request);
+		when(stationService.findByName(lineStationRequest.getPreStationName())).thenReturn(station3);
+		when(stationService.findByName(lineStationRequest.getStationName()))
+				.thenReturn(new Station(4L, "마지막에들어갈역"));
+		lineService.addLineStation(lineStationRequest);
 
 		assertThat(line.getStations()).hasSize(4);
 		assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
@@ -119,7 +136,7 @@ public class LineServiceTest {
 	void findLineWithStationsById() {
 		List<Station> stations = Lists.newArrayList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
 		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
-		when(stationRepository.findAllById(anyList())).thenReturn(stations);
+		when(stationService.findAllById(anyList())).thenReturn(stations);
 
 		LineWithStationsResponse lineWithStationsResponse = lineService.findLineWithStationsBy(1L);
 

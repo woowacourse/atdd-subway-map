@@ -1,17 +1,15 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO : add 로직 리팩토링
 public class Line {
     @Id
     private Long id;
@@ -29,6 +27,7 @@ public class Line {
     }
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -40,42 +39,6 @@ public class Line {
 
     public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String lineColor) {
         this(null, name, startTime, endTime, intervalTime, lineColor);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public String getLineColor() {
-        return lineColor;
-    }
-
-    public List<LineStation> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public void update(Line line) {
@@ -98,29 +61,36 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStationOnFirst(LineStation inputLineStation) {
+//    public void addLineStationOnFirst(LineStation inputLineStation) {
+//        if (stations.isEmpty()) {
+//            stations.add(0, inputLineStation);
+//            return;
+//        }
+//        LineStation lineStation = stations.stream()
+//                .filter(LineStation::isFirstLineStation)
+//                .findFirst()
+//                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
+//        lineStation.updatePreStationId(inputLineStation.getStationId());
+//
+//        stations.add(0, inputLineStation);
+//    }
+
+    public void addLineStation(LineStation inputLineStation) {
         if (stations.isEmpty()) {
+            stations.add(inputLineStation);
+            return;
+        }
+
+        if (inputLineStation.isFirstLineStation()) {
+            LineStation lineStation = getFirstLineStation();
+            lineStation.updatePreStationId(inputLineStation.getStationId());
             stations.add(0, inputLineStation);
             return;
         }
-        LineStation lineStation = stations.stream()
-                .filter(LineStation::isFirstLineStation)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
-        lineStation.updatePreStationId(inputLineStation.getStationId());
 
-        stations.add(0, inputLineStation);
-
-    }
-
-    public void addLineStation(LineStation inputLineStation) {
-        LineStation preLineStation = stations.stream()
-                .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
-
+        LineStation preLineStation = getPreStationOf(inputLineStation);
         if (isLastStation(preLineStation)) {
-            addLineStationOnLast(inputLineStation);
+            stations.add(inputLineStation);
             return;
         }
 
@@ -128,6 +98,20 @@ public class Line {
         LineStation nextByInputLineStation = stations.get(index + 1);
         nextByInputLineStation.updatePreStationId(inputLineStation.getStationId());
         stations.add(index + 1, inputLineStation);
+    }
+
+    private LineStation getPreStationOf(LineStation inputLineStation) {
+        return stations.stream()
+                .filter(lineStation -> lineStation.isPreStationOf(inputLineStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("연결될 수 없는 역을 입력하셨습니다."));
+    }
+
+    private LineStation getFirstLineStation() {
+        return stations.stream()
+                .filter(LineStation::isFirstLineStation)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("처음 역이 없습니다."));
     }
 
     private boolean isLastStation(LineStation lineStation) {
@@ -174,5 +158,41 @@ public class Line {
         return stations.stream()
                 .map(LineStation::getStationId)
                 .collect(Collectors.toList());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public String getLineColor() {
+        return lineColor;
+    }
+
+    public List<LineStation> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
