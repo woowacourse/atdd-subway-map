@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import wooteco.subway.admin.acceptance.handler.LineHandler;
 import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -41,12 +43,6 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> lines = lineHandler.getLines();
         assertThat(lines.size()).isEqualTo(4);
-
-        //when
-        lineHandler.createDuplicatedLine("신분당선", "blue");
-        //then
-        List<LineResponse> linesAfterDuplication = lineHandler.getLines();
-        assertThat(linesAfterDuplication.size()).isEqualTo(4);
 
         // when
         LineResponse line = lineHandler.getLine(lines.get(0).getId());

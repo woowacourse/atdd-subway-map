@@ -85,13 +85,6 @@ public class LineStationAcceptanceTest {
         LineResponse lineResponse = lineHandler.getLine(1L);
         //then
         stations = lineResponse.getStations();
-        //and
-        // Iterator<Station> iterator = stations.iterator();
-        // while (iterator.hasNext()) {
-        //     Assertions.assertThat(iterator.next().getName()).isEqualTo("잠실역");
-        //     Assertions.assertThat(iterator.next().getName()).isEqualTo("종합운동장역");
-        // }
-        // TODO: 2020-05-09 Set 순서 문제(추정)으로 순서가 다르게 나옴. 이 부분은 테스트 추후 작성 예정
 
         //when
         lineHandler.deleteLineStation(1L, 2L);

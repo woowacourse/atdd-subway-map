@@ -50,25 +50,6 @@ public class LineHandler {
             statusCode(HttpStatus.CREATED.value());
     }
 
-    public void createDuplicatedLine(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-        params.put("color", color);
-
-        given().
-            body(params).
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            accept(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            post("/lines").
-            then().
-            log().all().
-            statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
     public void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
