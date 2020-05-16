@@ -109,7 +109,9 @@ public class Line {
                 .map(lineStation -> lineStations.indexOf(lineStation) + 1)
                 .findAny()
                 .orElse(0);
-        if (isAlreadyInputStations(requestLineStation, index)) return;
+        if (isAlreadyInputStations(requestLineStation, index)) {
+            return;
+        }
         lineStations.add(index, requestLineStation);
     }
 
@@ -146,7 +148,9 @@ public class Line {
         LineStation preLineStation;
         LineStation nextLineStation;
 
-        if (isRemoveStationUnNormalCase(index)) return;
+        if (isRemoveStationUnNormalCase(index)) {
+            return;
+        }
         nextLineStation = lineStations.get(index + NEXT_INDEX);
         preLineStation = lineStations.get(index - BEFORE_INDEX);
         nextLineStation.updatePreLineStationId(preLineStation.getStationId());
