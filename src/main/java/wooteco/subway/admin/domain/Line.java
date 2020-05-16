@@ -1,12 +1,10 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-
-import org.springframework.data.annotation.Id;
-
-import javax.validation.ValidationException;
 
 public class Line {
     @Id
@@ -108,7 +106,7 @@ public class Line {
 
         for (LineStation selectedLineStation : lineStations) {
             if (selectedLineStation.isSamePreStationId(preStationId) && !selectedLineStation.isSameStationId(stationId)) {
-                selectedLineStation.setPreStationId(stationId);
+                selectedLineStation.changePreStationById(stationId);
                 break;
             }
         }
@@ -139,9 +137,6 @@ public class Line {
             Long stationId = idMap.get(preStationId);
             stations.add(stationId);
             preStationId = stationId;
-        }
-        if(stations.isEmpty()) {
-            throw new ValidationException("노선의 출발역을 찾을 수 없습니다.");
         }
         return stations;
     }
