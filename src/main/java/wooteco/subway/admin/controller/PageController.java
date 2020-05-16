@@ -5,24 +5,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PageController {
-    @GetMapping("/admin-station.html")
+    @GetMapping("/")
+    public String station() {
+        return "index";
+    }
+
+    @GetMapping("/admin-station")
     public String index() {
         return "admin-station";
     }
 
-    @GetMapping("/admin-edge.html")
+    @GetMapping("/admin-edge")
     public String edge() {
         return "admin-edge";
     }
 
-    @GetMapping("/admin-line.html")
+    @GetMapping("/admin-line")
     public String line() {
         return "admin-line";
-    }
-
-    @GetMapping("/")
-    public String station() {
-        return "index";
     }
 
 }
