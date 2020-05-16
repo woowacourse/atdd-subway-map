@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Station;
@@ -14,7 +13,6 @@ import java.util.List;
 public class StationService {
     private final StationRepository stationRepository;
 
-    @Autowired
     public StationService(final StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
@@ -23,8 +21,8 @@ public class StationService {
         return StationResponse.listOf(stationRepository.findAll());
     }
 
-    public Station create(final Station station) {
-        return stationRepository.save(station);
+    public StationResponse create(final Station station) {
+        return StationResponse.of(stationRepository.save(station));
     }
 
     public void deleteStationById(final Long id) {

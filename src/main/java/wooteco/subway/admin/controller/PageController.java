@@ -46,7 +46,7 @@ public class PageController {
         ModelAndView mv = new ModelAndView("admin-edge");
 
         List<LineResponse> lines = lineService.findAllLines().stream()
-                .map(line -> lineService.findLineWithStationsById(line.getId()))
+                .map(line -> lineService.getLineWithStationsById(line.getId()))
                 .collect(Collectors.toList());
 
         List<StationResponse> stations = stationService.findAllStations();

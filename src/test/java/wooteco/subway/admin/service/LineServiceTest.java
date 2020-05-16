@@ -13,6 +13,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exceptions.DuplicationNameException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -53,8 +54,8 @@ public class LineServiceTest {
         assertThatThrownBy(() -> {
             when(lineRepository.existsByName(any())).thenReturn(true);
             Line newLine = new Line(2L, "1호선", "bg-red-500", LocalTime.of(6, 30), LocalTime.of(10, 30), 10);
-            lineService.save(newLine);
-        }).isInstanceOf(IllegalArgumentException.class);
+            lineService.saveLine(newLine);
+        }).isInstanceOf(DuplicationNameException.class);
     }
 
     @Test
@@ -137,7 +138,7 @@ public class LineServiceTest {
 
         when(stationRepository.findAllById(anyList())).thenReturn(new ArrayList<>(stations));
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        LineResponse lineResponse = lineService.getLineWithStationsById(1L);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }

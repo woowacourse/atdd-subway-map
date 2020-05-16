@@ -2,11 +2,10 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 
 import javax.validation.Valid;
@@ -35,8 +34,8 @@ public class LineController {
             @Valid @RequestBody LineRequest lineRequest
     ) throws URISyntaxException {
 
-        final Line created = lineService.save(lineRequest.toLine());
-        final URI url = new URI("/lines/" + created.getId());
+        final LineResponse response = lineService.saveLine(lineRequest.toLine());
+        final URI url = new URI("/lines/" + response.getId());
         return ResponseEntity.created(url).body("{}");
     }
 
@@ -44,7 +43,7 @@ public class LineController {
     public LineResponse showLine(
             @PathVariable("id") Long id
     ) {
-        return LineResponse.of(lineService.findLineById(id));
+        return lineService.getLineWithStationsById(id);
     }
 
     @PutMapping("/{id}")
@@ -60,7 +59,7 @@ public class LineController {
     public ResponseEntity<?> delete(
             @PathVariable("id") Long id
     ) {
-        lineService.deleteLineById(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -68,8 +67,8 @@ public class LineController {
     public ResponseEntity<?> showLineWithStations(
             @PathVariable("lineId") Long lineId
     ) {
-        LineResponse lineResponse = lineService.findLineWithStationsById(lineId);
-        List<Station> lineStations = new ArrayList<>(lineResponse.getStations());
+        LineResponse lineResponse = lineService.getLineWithStationsById(lineId);
+        List<StationResponse> lineStations = new ArrayList<>(lineResponse.getStations());
         return ResponseEntity.ok().body(lineStations);
     }
 

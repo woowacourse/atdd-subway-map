@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
@@ -8,6 +7,8 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
+import wooteco.subway.admin.exceptions.DuplicationNameException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -23,35 +24,34 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    @Autowired
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-    }
-
-    public Line save(final Line line) {
-        if (lineRepository.existsByName(line.getName())) {
-            throw new IllegalArgumentException("중복된 이름입니다.");
-        }
-        return lineRepository.save(line);
     }
 
     public List<LineResponse> findAllLines() {
         return LineResponse.listOf(lineRepository.findAll());
     }
 
-    public Line findLineById(final Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+    public LineResponse saveLine(final Line line) {
+        if (lineRepository.existsByName(line.getName())) {
+            throw new DuplicationNameException(line.getName());
+        }
+        return LineResponse.of(lineRepository.save(line));
     }
 
     public void updateLine(final Long id, final Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = getLineWithoutStations(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
-    public void deleteLineById(final Long id) {
+    private Line getLineWithoutStations(final Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public void deleteLine(final Long id) {
         lineRepository.deleteById(id);
     }
 
@@ -72,23 +72,15 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public LineResponse findLineWithStationsById(final Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
-
+    public LineResponse getLineWithStationsById(final Long id) {
+        Line line = getLineWithoutStations(id);
         List<Station> listStations = stationRepository.findAllById(line.getLineStationsId());
 
-        Set<Station> stations = new LinkedHashSet<>(
-                line.getLineStationsId().stream()
-                        .map(stationId -> listStations.stream()
-                                .filter(station -> station.getId().equals(stationId))
-                                .findFirst()
-                                .orElseThrow(NoSuchElementException::new))
+        Set<StationResponse> stations = new LinkedHashSet<>(
+                listStations.stream()
+                        .map(StationResponse::of)
                         .collect(Collectors.toList())
         );
-
-        LineResponse lineResponse = LineResponse.of(line);
-        lineResponse.updateStations(stations);
-        return lineResponse;
+        return LineResponse.of(line, stations);
     }
 }

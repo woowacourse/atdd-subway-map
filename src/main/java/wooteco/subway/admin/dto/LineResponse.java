@@ -1,7 +1,6 @@
 package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,12 +19,16 @@ public class LineResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Set<Station> stations;
+    private Set<StationResponse> stations;
 
     public LineResponse() {
     }
 
-    public LineResponse(final Long id, final String name, final String color, final LocalTime startTime, final LocalTime endTime, final int intervalTime, final LocalDateTime createdAt, final LocalDateTime updatedAt, final Set<Station> stations) {
+    public LineResponse(final Long id, final String name, final String color,
+                        final LocalTime startTime, final LocalTime endTime,
+                        final int intervalTime, final LocalDateTime createdAt,
+                        final LocalDateTime updatedAt, final Set<StationResponse> stations
+    ) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -41,14 +44,14 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new LinkedHashSet<>());
     }
 
+    public static LineResponse of(Line line, Set<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stations);
+    }
+
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
-    }
-
-    public void updateStations(final Set<Station> stations) {
-        this.stations = stations;
     }
 
     public Long getId() {
@@ -75,7 +78,7 @@ public class LineResponse {
         return intervalTime;
     }
 
-    public Set<Station> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 
