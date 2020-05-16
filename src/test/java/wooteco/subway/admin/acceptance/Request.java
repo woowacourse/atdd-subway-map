@@ -118,6 +118,16 @@ public class Request {
 			.jsonPath().getList(".", StationResponse.class);
 	}
 
+	public static List<StationResponse> getStations() {
+		return given()
+			.when()
+			.get("/stations")
+			.then()
+			.log().all()
+			.extract()
+			.jsonPath().getList(".", StationResponse.class);
+	}
+
 	public static void addLineStation(Long lineId, Long preStationId, Long stationId) {
 		Map<String, String> params = new HashMap<>();
 		params.put("preStationId", String.valueOf(preStationId));
