@@ -6,9 +6,9 @@ import api from '../../api/index.js';
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const $stationSelectOptions = document.querySelector('#station-select-options');
-  const $departStationName = document.querySelector('#depart-station-name');
-  const $arrivalStationName = document.querySelector('#arrival-station-name');
+  const $lineSelectOptions = document.querySelector('#line-select-options');
+  const $departSelectOptions = document.querySelector('#depart-select-options');
+  const $arrivalSelectOptions = document.querySelector('#arrival-select-options');
   const $submitButton = document.querySelector('#submit-button');
   const createSubwayEdgeModal = new Modal();
 
@@ -32,22 +32,32 @@ function AdminEdge() {
     });
   };
 
+  const initStationOptions = async () => {
+    const stations = await api.station.get();
+    const stationOptionTemplate = stations
+    .map(station => optionTemplate(station.id, station.name))
+    .join("");
+
+    $departSelectOptions.insertAdjacentHTML("afterbegin", optionTemplate(null, ""));
+    $departSelectOptions.insertAdjacentHTML("beforeend", stationOptionTemplate);
+    $arrivalSelectOptions.insertAdjacentHTML("beforeend", stationOptionTemplate);
+  }
+
   const initSubwayLineOptions = async () => {
     const subwayLines = await api.line.get();
     const subwayLineOptionTemplate = subwayLines
-    .map(line => optionTemplate(line.name))
+    .map(line => optionTemplate(line.id, line.name))
     .join("");
 
-    $stationSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);
+    $lineSelectOptions.insertAdjacentHTML("afterbegin", subwayLineOptionTemplate);
   };
 
   const onAddStationHandler = event => {
     event.preventDefault();
-    const stationName = $arrivalStationName.value;
     const data = {
-      lineName: $stationSelectOptions.value,
-      preStationName: $departStationName.value,
-      stationName: stationName
+      lineId: $lineSelectOptions.selectedOptions[0].dataset.id,
+      preStationId: $departSelectOptions.selectedOptions[0].dataset.id,
+      stationId: $arrivalSelectOptions.selectedOptions[0].dataset.id
     };
 
     api.edge.create(data).then(() => {
@@ -77,6 +87,7 @@ function AdminEdge() {
   this.init = () => {
     initSubwayLinesSlider();
     initSubwayLineOptions();
+    initStationOptions();
     initEventListeners();
   };
 }

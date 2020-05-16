@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.EdgeRequest;
 import wooteco.subway.admin.dto.EdgeResponse;
 import wooteco.subway.admin.dto.LineResponse;
@@ -45,14 +44,10 @@ public class EdgeService {
 
 	@Transactional
 	public EdgeResponse create(EdgeRequest request) {
-		Line line = lineRepository.findByName(request.getLineName())
-				.orElseThrow(NoSuchElementException::new);
-		Station preStation = stationRepository.findByName(request.getPreStationName())
-				.orElseGet(() -> new Station(null, request.getPreStationName()));
-		Station station = stationRepository.findByName(request.getStationName())
+		Line line = lineRepository.findById(request.getLineId())
 				.orElseThrow(NoSuchElementException::new);
 
-		Edge edge = new Edge(line.getId(), preStation.getId(), station.getId(),
+		Edge edge = new Edge(line.getId(), request.getPreStationId(), request.getStationId(),
 				request.getDistance(), request.getDuration());
 
 		line.addEdge(edge);

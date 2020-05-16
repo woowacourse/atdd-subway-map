@@ -1,40 +1,40 @@
 package wooteco.subway.admin.dto;
 
 public class EdgeRequest {
-	private String lineName;
-	private String preStationName;
-	private String stationName;
+	private Long lineId;
+	private Long preStationId;
+	private Long stationId;
 	private int distance;
 	private int duration;
 
 	public EdgeRequest() {
 	}
 
-	public EdgeRequest(String lineName, String preStationName, String stationName) {
-		this.lineName = lineName;
-		this.preStationName = preStationName;
-		this.stationName = stationName;
+	public EdgeRequest(Long lineId, Long preStationId, Long stationId) {
+		this.lineId = lineId;
+		this.preStationId = preStationId;
+		this.stationId = stationId;
 	}
 
-	public EdgeRequest(String lineName, String preStationName, String stationName,
+	public EdgeRequest(Long lineId, Long preStationId, Long stationId,
 			int distance, int duration) {
-		this.lineName = lineName;
-		this.preStationName = preStationName;
-		this.stationName = stationName;
+		this.lineId = lineId;
+		this.preStationId = preStationId;
+		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
 	}
 
-	public String getLineName() {
-		return lineName;
+	public Long getLineId() {
+		return lineId;
 	}
 
-	public String getPreStationName() {
-		return preStationName;
+	public Long getPreStationId() {
+		return preStationId;
 	}
 
-	public String getStationName() {
-		return stationName;
+	public Long getStationId() {
+		return stationId;
 	}
 
 	public int getDistance() {
