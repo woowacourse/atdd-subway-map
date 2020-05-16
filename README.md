@@ -231,4 +231,29 @@ public class LineTest {
 
 - 목록 우측 제거 버튼을 통해 제거
 
+# 이번 미션을 통해 도달한 내 입장들.
 
+ - view <-> controller <-> service 간에는 DTO를 사용해야한다.
+ 
+ - controller <-> service 사이는 최대한 도메인을 간단하게 감싼 DTO로 값을
+  주고 받되 Request, Response라는 이름을 가진 view와 직접적으로 연관이 있는
+  DTO가 들어가지 못하는 것은 아니다.
+  - 즉, 뷰와 직접적으로 관계있는 DTO도 Service에 침투해도 된다.
+  - 결론적으로 도메인 객체가 레이어 이동을 하는 것은 기피한다.
+   - 그렇게 생각하는 이유는 도메인의 변경은 오직 Service에서만 관리하여
+    **Controller가 도메인과 관련된 비즈니스 로직에 최대한 관여하지 못하게**하는 것과 
+    최대한 **뷰 DTO와 Service DTO간의 직접적인 연결을 제거**하여 뷰의 변화가 
+    Controller까지만 영향을 미치게끔 하는 것.
+    
+ - 동급의 Layer가 동급의 Layer를 사용하는 것은 문제 없다. Service간의 연관도 가능하다는 의미.
+ 
+ - Line과 LineStation이 연결되있지만 LineStation은 Station과 Line의 관계테이블이므로
+  굳이 LineStationService를 두지 않았다. 그 이유는 LineStation은 오직 Line으로만 관리할 수
+  있기 때문. 이 관계를 파악하기 위해서는 Line이 삭제되면 LineStation이 삭제되어야하는 지와
+  같이 A의 삭제가 B의 영향을 주는 **종속 관계**인지를 체크하면 된다. 앞으로는 종속 관계인지를 기준으로
+  Service를 분리해보자.
+  
+ - ControllerAdvice 혹은 ExceptionHandler로 현명하게 예외처리를 해보자.
+ 
+ - Valid로 여러 유효성 검사를 쉽게 할 수 있다.
+  
