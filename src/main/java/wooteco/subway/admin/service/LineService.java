@@ -61,11 +61,11 @@ public class LineService {
 	}
 
 	@Transactional
-	public void addEdge(Long id, EdgeCreateRequest request) {
+	public Long addEdge(Long id, EdgeCreateRequest request) {
 		Line line = findLineById(id);
 		Edge edge = request.toEdge();
 		line.addEdge(edge);
-		lineRepository.save(line);
+		return lineRepository.save(line).getId();
 	}
 
 	private Line findLineById(Long id) {

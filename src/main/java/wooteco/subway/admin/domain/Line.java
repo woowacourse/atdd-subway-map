@@ -78,7 +78,7 @@ public class Line {
 			return 0;
 		}
 		return edges.stream()
-			.filter(item -> item.stationIdEquals(edge.getPreStationId()))
+			.filter(item -> item.equalsStationId(edge.getPreStationId()))
 			.findFirst()
 			.map(item -> edges.indexOf(item) + ONE)
 			.orElseThrow(IllegalArgumentException::new);
@@ -90,7 +90,7 @@ public class Line {
 
 	public void removeEdgeById(Long stationId) {
 		int index = edges.stream()
-			.filter(edge -> edge.stationIdEquals(stationId))
+			.filter(edge -> edge.equalsStationId(stationId))
 			.findFirst()
 			.map(edge -> edges.indexOf(edge))
 			.orElseThrow(() -> new IllegalArgumentException("지우려는 역이 존재하지 않습니다."));

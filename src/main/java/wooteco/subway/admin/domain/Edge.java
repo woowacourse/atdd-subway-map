@@ -38,7 +38,7 @@ public class Edge {
 		this.preStationId = preStationId;
 	}
 
-	public boolean stationIdEquals(final Long stationId) {
+	public boolean equalsStationId(final Long stationId) {
 		return Objects.equals(this.stationId, stationId);
 	}
 

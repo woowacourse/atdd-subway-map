@@ -1,8 +1,9 @@
 package wooteco.subway.admin.controller;
 
+import java.net.URI;
+
 import javax.validation.Valid;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class EdgeController {
 	public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId,
 		@RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
 		lineService.addEdge(lineId, edgeCreateRequest);
-		return new ResponseEntity<>(1L, HttpStatus.CREATED);
+		return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
 	}
 
 	@DeleteMapping
