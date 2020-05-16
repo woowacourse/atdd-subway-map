@@ -14,48 +14,45 @@ public class Line {
 	private static final int FIRST_INDEX = 0;
 
 	@Id
-	private Long id;
-	private String name;
-	private LocalTime startTime;
-	private LocalTime endTime;
-	private int intervalTime;
-	private String color;
+	private final Long id;
+	private final String name;
+	private final LocalTime startTime;
+	private final LocalTime endTime;
+	private final int intervalTime;
+	private final String color;
 	@MappedCollection(idColumn = "line_id", keyColumn = "sequence")
-	private List<Edge> edges = new LinkedList<>();
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private final List<Edge> edges;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime updatedAt;
 
-	private Line() {
-	}
-
-	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color) {
+	Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color,
+		List<Edge> edges, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
 		this.color = color;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
+		this.edges = edges;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 
-	public void update(Line line) {
-		if (line.getName() != null) {
-			this.name = line.getName();
-		}
-		if (line.getStartTime() != null) {
-			this.startTime = line.getStartTime();
-		}
-		if (line.getEndTime() != null) {
-			this.endTime = line.getEndTime();
-		}
-		if (line.getIntervalTime() != 0) {
-			this.intervalTime = line.getIntervalTime();
-		}
-		if (line.getColor() != null) {
-			this.color = line.getColor();
-		}
+	public static Line of(String name, LocalTime startTime, LocalTime endTime, int intervalTime
+		, String color) {
+		LocalDateTime localDateTime = LocalDateTime.now();
+		return new Line(null, name, startTime, endTime, intervalTime, color, new LinkedList<>(),
+			localDateTime, localDateTime);
+	}
 
-		this.updatedAt = LocalDateTime.now();
+	public Line withId(Long id) {
+		return new Line(id, this.name, this.startTime, this.endTime, this.intervalTime, this.color,
+			this.edges, this.createdAt, this.updatedAt);
+	}
+
+	public Line update(Line line) {
+		return new Line(this.id, line.name, line.startTime, line.endTime, line.intervalTime, line.color,
+			line.edges, this.createdAt, line.updatedAt);
 	}
 
 	public void addEdge(Edge edge) {

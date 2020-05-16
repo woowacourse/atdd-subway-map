@@ -57,6 +57,6 @@ public class LineCreateRequest {
 	}
 
 	public Line toLine() {
-		return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.bgColor);
+		return Line.of(this.name, this.startTime, this.endTime, this.intervalTime, this.bgColor);
 	}
 }

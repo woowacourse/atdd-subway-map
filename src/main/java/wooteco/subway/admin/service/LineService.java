@@ -50,8 +50,7 @@ public class LineService {
 
 	@Transactional
 	public void updateLine(Long id, Line line) {
-		Line persistLine = findLineById(id);
-		persistLine.update(line);
+		Line persistLine = findLineById(id).update(line);
 		lineRepository.save(persistLine);
 	}
 
@@ -65,7 +64,8 @@ public class LineService {
 		Line line = findLineById(id);
 		Edge edge = request.toEdge();
 		line.addEdge(edge);
-		return lineRepository.save(line).getId();
+		lineRepository.save(line);
+		return id;
 	}
 
 	private Line findLineById(Long id) {

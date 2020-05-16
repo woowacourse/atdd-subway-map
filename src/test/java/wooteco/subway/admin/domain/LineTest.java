@@ -15,7 +15,7 @@ public class LineTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
+		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-red-500");
 		line.addEdge(new Edge(1L, 2L, 10, 10));
 		line.addEdge(new Edge(2L, 3L, 10, 10));
 		System.out.println(line);

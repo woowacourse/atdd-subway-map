@@ -48,6 +48,6 @@ public class LineUpdateRequest {
 	}
 
 	public Line toLine() {
-		return new Line(this.name, this.startTime, this.endTime, this.intervalTime, this.color);
+		return Line.of(this.name, this.startTime, this.endTime, this.intervalTime, this.color);
 	}
 }

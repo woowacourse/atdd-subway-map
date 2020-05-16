@@ -28,8 +28,8 @@ public class EdgeController {
 	@PostMapping
 	public ResponseEntity<Long> createEdge(@PathVariable(name = "id") final Long lineId,
 		@RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
-		lineService.addEdge(lineId, edgeCreateRequest);
-		return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
+		Long savedLineId = lineService.addEdge(lineId, edgeCreateRequest);
+		return ResponseEntity.created(URI.create("/lines/" + savedLineId)).build();
 	}
 
 	@DeleteMapping

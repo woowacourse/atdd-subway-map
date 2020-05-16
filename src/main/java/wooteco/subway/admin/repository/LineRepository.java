@@ -19,4 +19,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
 	@Override
 	Optional<Line> findById(Long id);
 
+	@Override
+	<S extends Line> S save(S entity);
 }
