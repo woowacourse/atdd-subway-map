@@ -16,14 +16,14 @@ public class LineTest {
 	@BeforeEach
 	void setUp() {
 		line = new Line(1L, "bg-red-500", "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
-		line.addLineStation(new LineStation(1L, null, 1L, 10, 10));
-		line.addLineStation(new LineStation(1L, 1L, 2L, 10, 10));
-		line.addLineStation(new LineStation(1L, 2L, 3L, 10, 10));
+		line.addEdge(new Edge(1L, null, 1L, 10, 10));
+		line.addEdge(new Edge(1L, 1L, 2L, 10, 10));
+		line.addEdge(new Edge(1L, 2L, 3L, 10, 10));
 	}
 
 	@Test
 	void getLineStations() {
-		List<Long> stationIds = line.getLineStationsId();
+		List<Long> stationIds = line.getEdgesId();
 
 		assertThat(stationIds.size()).isEqualTo(3);
 		assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -33,7 +33,7 @@ public class LineTest {
 	@ParameterizedTest
 	@ValueSource(longs = {1L, 2L, 3L})
 	void removeLineStation(Long stationId) {
-		line.removeLineStationById(stationId);
+		line.removeEdgeById(stationId);
 
 		assertThat(line.getStations()).hasSize(2);
 	}
