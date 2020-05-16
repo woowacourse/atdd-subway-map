@@ -5,12 +5,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 
 public class Line {
 	@Id
@@ -20,7 +19,8 @@ public class Line {
 	private LocalTime endTime;
 	private int intervalTime;
 	private String color;
-	private Set<LineStation> lineStations;
+	@MappedCollection
+	private List<LineStation> lineStations;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
@@ -37,7 +37,7 @@ public class Line {
 		this.color = color;
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
-		this.lineStations = new LinkedHashSet<>();
+		this.lineStations = new ArrayList<>();
 	}
 
 	public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
@@ -69,7 +69,7 @@ public class Line {
 		return color;
 	}
 
-	public Set<LineStation> getLineStations() {
+	public List<LineStation> getLineStations() {
 		return lineStations;
 	}
 
