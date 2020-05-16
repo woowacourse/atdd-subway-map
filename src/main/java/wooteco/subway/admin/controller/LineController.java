@@ -27,7 +27,7 @@ public class LineController {
 	}
 
 	@PostMapping("/lines")
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse lineResponse = lineService.createLine(lineRequest);
 
 		return ResponseEntity
@@ -36,7 +36,7 @@ public class LineController {
 	}
 
 	@GetMapping("/lines")
-	public ResponseEntity showLines() {
+	public ResponseEntity<List<LineResponse>> showLines() {
 		List<LineResponse> lineResponses = lineService.showLines();
 
 		return ResponseEntity
@@ -45,7 +45,7 @@ public class LineController {
 	}
 
 	@GetMapping("/lines/{id}")
-	public ResponseEntity showLine(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 		LineResponse lineResponse = lineService.showLine(id);
 
 		return ResponseEntity
@@ -54,7 +54,7 @@ public class LineController {
 	}
 
 	@PutMapping("/lines/{id}")
-	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
 		LineResponse lineResponse = lineService.updateLine(id, lineRequest);
 
 		return ResponseEntity
@@ -69,7 +69,7 @@ public class LineController {
 	}
 
 	@PostMapping("/line/{lineId}/stations")
-	public ResponseEntity addLineStation(@PathVariable Long lineId, @RequestBody
+	public ResponseEntity<LineStationResponse> addLineStation(@PathVariable Long lineId, @RequestBody
 		LineStationCreateRequest lineStationCreateRequest) {
 		lineService.addLineStation(lineId, lineStationCreateRequest);
 

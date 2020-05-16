@@ -24,7 +24,7 @@ public class StationController {
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity createStation(@RequestBody StationCreateRequest stationCreateRequest) {
+	public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest stationCreateRequest) {
 		StationResponse stationResponse = stationService.createStation(stationCreateRequest);
 
 		return ResponseEntity
@@ -33,7 +33,7 @@ public class StationController {
 	}
 
 	@GetMapping("/stations")
-	public ResponseEntity showStations() {
+	public ResponseEntity<List<StationResponse>> showStations() {
 		List<StationResponse> stationResponses = stationService.showStations();
 		return ResponseEntity
 			.ok()
