@@ -84,7 +84,7 @@
                     <div class="relative">
                         <select
                                 class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                                id="station-select-options"
+                                id="line-select-options"
                         >
                         </select>
                         <div
@@ -107,33 +107,29 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">
                             이전역
                         </label>
-                        <input
+                        <select
                                 class="appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
-                                id="depart-station-name"
+                                id="depart-station-options"
                                 placeholder="선릉역"
                                 type="text"
-                                value="선릉역"
-                        />
+                                value="선릉역">
+                        </select>
                     </div>
-                    <div
-                            class="w-1/3 h-12 text-center text-gray-800 flex justify-center items-center relative top-28px"
-                    >
-                        <img
-                                class="relative bottom-6px w-2/4"
-                                src="https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-03-31T09%3A21%3A26.173image.png"
-                        />️
+                    <div class="w-1/3 h-12 text-center text-gray-800 flex justify-center items-center relative top-28px">
+                        <img class="relative bottom-6px w-2/4"
+                             src="https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/2020-03-31T09%3A21%3A26.173image.png"/>️
                     </div>
                     <div class="w-1/3 h-12 text-gray-800">
                         <label class="block text-gray-700 text-sm font-bold mb-2">
                             대상역
                         </label>
-                        <input
+                        <select
                                 class="appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
-                                id="arrival-station-name"
+                                id="arrival-station-options"
                                 placeholder="삼성역"
                                 type="text"
-                                value="삼성역"
-                        />
+                                value="삼성역">
+                        </select>
                     </div>
                 </div>
 
