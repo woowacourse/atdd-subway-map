@@ -1,7 +1,11 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,15 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.Request;
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -51,14 +55,15 @@ public class StationAcceptanceTest {
     private void createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
+        Request<Map<String, String>> param = new Request<>(params);
 
         given().
-                body(params).
+                body(param).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/stations").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -66,18 +71,18 @@ public class StationAcceptanceTest {
     private List<StationResponse> getStations() {
         return given().
                 when().
-                    get("/stations").
+                get("/stations").
                 then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
+                log().all().
+                extract().
+                jsonPath().getList(".", StationResponse.class);
     }
 
     private void deleteStation(Long id) {
         given().
-        when().
+                when().
                 delete("/stations/" + id).
-        then().
+                then().
                 log().all();
     }
 }
