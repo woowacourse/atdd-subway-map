@@ -35,7 +35,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "red");
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -50,7 +50,7 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
-        assertThat(line.getStations()).hasSize(4);
+        assertThat(line.getLineStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
@@ -64,7 +64,7 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
-        assertThat(line.getStations()).hasSize(4);
+        assertThat(line.getLineStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
         assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
@@ -78,7 +78,7 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
 
-        assertThat(line.getStations()).hasSize(4);
+        assertThat(line.getLineStations()).hasSize(4);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
         assertThat(line.getLineStationsId().get(2)).isEqualTo(3L);
@@ -90,7 +90,7 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 1L);
 
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getLineStations()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
     }
@@ -100,7 +100,7 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 2L);
 
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getLineStations()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
     }
@@ -110,18 +110,19 @@ public class LineServiceTest {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 3L);
 
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getLineStations()).hasSize(2);
         assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
         assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
     }
 
     @Test
     void findLineWithStationsById() {
-        Set<Station> stations = Sets.newLinkedHashSet(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
+        Set<Station> stations = Sets.newLinkedHashSet(new Station(2L, "강남역"), new Station(3L, "역삼역"), new Station(1L,
+                                                                                                                  "삼성역"));
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
-        LineResponse lineResponse = lineService.findLineWithStationsById(1L);
+        LineResponse lineResponse = lineService.findStationsByLineId(1L);
 
         assertThat(lineResponse.getStations()).hasSize(3);
     }
