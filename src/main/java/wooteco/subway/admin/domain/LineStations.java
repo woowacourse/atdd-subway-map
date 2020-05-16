@@ -44,10 +44,6 @@ public class LineStations {
         changeNextStationInfo(targetIndex, lineStation.getStationId());
     }
 
-    private boolean isNotLast(int index) {
-        return stations.size() > index + 1;
-    }
-
     void remove(Long stationId) {
         int targetIndex = findRemoveIndex(stationId);
         LineStation station = stations.get(targetIndex);
@@ -60,6 +56,10 @@ public class LineStations {
             int shouldUpdateIndex = targetIndex + NEXT_STATION_INDEX;
             stations.get(shouldUpdateIndex).updatePreLineStation(id);
         }
+    }
+
+    private boolean isNotLast(int index) {
+        return stations.size() > index + 1;
     }
 
     private int findRemoveIndex(Long stationId) {
