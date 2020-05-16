@@ -30,7 +30,13 @@ const METHOD = {
 
 const api = (() => {
   const request = (uri, config) => fetch(uri, config)
-  const requestWithJsonData = (uri, config) => fetch(uri, config).then(data => data.json())
+  const requestWithJsonData = (uri, config) => fetch(uri, config).then(async data => {
+    if (!data.ok) {
+      // alert(await data.text());
+      throw new Error(await data.text())
+    }
+    return data.json()
+  });
 
   const station = {
     get(id) {

@@ -52,6 +52,9 @@ function AdminLine() {
                 $subwayLineFirstTimeInput.value = "";
                 $subwayLineLastTimeInput.value = "";
                 $subwayLineIntervalTimeInput.value = "";
+            })
+            .catch(error => {
+                alert(error);
             });
     };
     const onReadSubwayLine = event => {
@@ -68,6 +71,9 @@ function AdminLine() {
                     };
                     $subwayLineInfoContainer.innerHTML = subwayLineInfoTemplate(selectedSubwayInfo);
                 })
+                .catch(error => {
+                    alert(error);
+                });
         }
     };
     const initSubwayLineUpdateModal = event => {
@@ -87,6 +93,9 @@ function AdminLine() {
                     $subwayLineLastTimeInput.value = data.endTime;
                     $subwayLineIntervalTimeInput.value = data.intervalTime;
                 })
+                .catch(error => {
+                    alert(error);
+                });
         }
     };
 
@@ -126,6 +135,9 @@ function AdminLine() {
                 $subwayLineFirstTimeInput.value = "";
                 $subwayLineLastTimeInput.value = "";
                 $subwayLineIntervalTimeInput.value = "";
+            })
+            .catch(error => {
+                alert(error);
             });
     };
 
@@ -140,7 +152,7 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-            api.line.getAll()
+            api.line.get()
                 .then(data => {
                     data.map(line => {
                         $subwayLineList.insertAdjacentHTML(
@@ -148,6 +160,9 @@ function AdminLine() {
                             subwayLinesTemplate(line));
                     })
                 })
+                .catch(error => {
+                    alert(error);
+                });
         }
     ;
     const initEventListeners = () => {

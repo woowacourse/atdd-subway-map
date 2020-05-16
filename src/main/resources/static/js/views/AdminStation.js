@@ -27,9 +27,9 @@ function AdminStation() {
           $stationNameInput.value = ''
           $stationList.insertAdjacentHTML('beforeend', listItemTemplate(data))
         })
-        .catch(() => {
-          alert('에러가 발생했습니다.')
-        })
+        .catch(error => {
+          alert(error);
+        });
   }
 
   const onRemoveStationHandler = event => {
@@ -43,7 +43,9 @@ function AdminStation() {
         .then(() => {
           $target.closest('.list-item').remove()
         })
-        .catch(() => alert(ERROR_MESSAGE.COMMON))
+        .catch(error => {
+          alert(error);
+        });
   }
 
   const initStations = () => {
@@ -52,7 +54,9 @@ function AdminStation() {
         .then(stations => {
           $stationList.innerHTML = stations.map(station => listItemTemplate(station)).join('')
         })
-        .catch(() => alert(ERROR_MESSAGE.COMMON))
+        .catch(error => {
+          alert(error);
+        });
   }
 
   const initEventListeners = () => {

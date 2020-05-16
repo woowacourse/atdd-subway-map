@@ -15,6 +15,6 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
     List<Station> findAll();
 
-    @Query("SELECT EXISTS (SELECT * FROM line WHERE name = :name)")
+    @Query("SELECT EXISTS (SELECT * FROM station WHERE name = :name)")
     Boolean existsByName(@Param("name") String name);
 }
