@@ -1,8 +1,6 @@
 package wooteco.subway.admin.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,12 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<Void> createStation(@RequestBody StationCreateRequest view) {
+        List<Station> stations = (List<Station>)stationRepository.findAll();
+        for (Station station : stations) {
+            if (station.getName().equals(view.getName())) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
 
