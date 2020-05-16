@@ -17,7 +17,7 @@ public class LineRequest {
     @NotNull(message = "색을 선택해주세요.")
     private String bgColor;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {

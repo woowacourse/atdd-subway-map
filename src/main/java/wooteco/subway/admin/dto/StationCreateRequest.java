@@ -9,7 +9,7 @@ public class StationCreateRequest {
     @Pattern(regexp = "[^\\s]*", message = "공백이 입력될 수 없습니다.")
     private String name;
 
-    public StationCreateRequest() {
+    private StationCreateRequest() {
     }
 
     public StationCreateRequest(String name) {

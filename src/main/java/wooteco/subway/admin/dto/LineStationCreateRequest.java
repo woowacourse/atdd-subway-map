@@ -14,7 +14,7 @@ public class LineStationCreateRequest {
     @PositiveOrZero(message = "소요 시간을 정확히 입력해주세요.")
     private int duration;
 
-    public LineStationCreateRequest() {
+    private LineStationCreateRequest() {
     }
 
     public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
