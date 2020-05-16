@@ -12,7 +12,7 @@ import wooteco.subway.admin.service.LineService;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestControllerAdvice
+@RestController
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
@@ -78,15 +78,5 @@ public class LineController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandler(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> methodArgumentNotValidExceptionHandler(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
