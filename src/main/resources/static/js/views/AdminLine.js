@@ -1,4 +1,4 @@
-import {EVENT_TYPE, ERROR_MESSAGE} from "../../utils/constants.js";
+import {ERROR_MESSAGE, EVENT_TYPE} from "../../utils/constants.js";
 import {colorSelectOptionTemplate, subwayLineInfoTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
@@ -144,7 +144,6 @@ function AdminLine() {
     }
 
     const initEventListeners = () => {
-        // document.querySelector("#submit-button").addEventListener(EVENT_TYPE.CLICK, clearModal);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
         $subwayLineList.addEventListener(EVENT_TYPE.CLICK, showSubwayLineInfo);
@@ -176,7 +175,6 @@ function AdminLine() {
     };
 
     this.init = () => {
-        // initDefaultSubwayLines();
         initSubwayLines();
         initEventListeners();
         initCreateSubwayLineForm();

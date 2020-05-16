@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Line;
@@ -30,7 +31,11 @@ public class LineService {
 			throw new DuplicatedValueException(line.getTitle());
 		}
 
-		return lineRepository.save(line);
+		try {
+			return lineRepository.save(line);
+		} catch (DbActionExecutionException e) {
+			throw new DuplicatedValueException(line.getTitle());
+		}
 	}
 
 	public Line findLine(Long id) {
@@ -50,7 +55,12 @@ public class LineService {
 		}
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
-		lineRepository.save(persistLine);
+
+		try {
+			lineRepository.save(line);
+		} catch (DbActionExecutionException e) {
+			throw new DuplicatedValueException(line.getTitle());
+		}
 	}
 
 	public void deleteLineById(Long id) {

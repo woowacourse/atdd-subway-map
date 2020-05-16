@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.Set;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.admin.domain.Station;
@@ -26,8 +27,11 @@ public class StationService {
 		if (isDuplicated) {
 			throw new DuplicatedValueException(station.getName());
 		}
-
-		return stationRepository.save(station);
+		try {
+			return stationRepository.save(station);
+		} catch (DbActionExecutionException e) {
+			throw new DuplicatedValueException(station.getName());
+		}
 	}
 
 	public void delete(Long id) {
