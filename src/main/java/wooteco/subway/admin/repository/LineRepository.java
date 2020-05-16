@@ -11,9 +11,6 @@ public interface LineRepository extends CrudRepository<Line, Long> {
     @Override
     List<Line> findAll();
 
-    @Override
-    Line save(Line line);
-
     @Query("SELECT COUNT(*) > 0 FROM LINE WHERE name = :name")
     boolean existsByName(@Param("name") String name);
 }
