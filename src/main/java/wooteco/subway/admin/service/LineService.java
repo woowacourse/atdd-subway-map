@@ -31,6 +31,7 @@ public class LineService {
         return LineDto.of(save);
     }
 
+    @Transactional(readOnly = true)
     public List<LineWithStationsResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -72,32 +73,20 @@ public class LineService {
         Station station = stationService.findByName(view.getStationName());
 
         if (view.getPreStationName().isEmpty()) {
-            LineStation lineStation = new LineStation(null, station.getId());
-            persistLine.addLineStation(lineStation);
-            lineRepository.save(persistLine);
+            addLineStationToLine(persistLine, station, null);
             return;
         }
 
         Station preStation = stationService.findByName(view.getPreStationName());
-        LineStation lineStation = new LineStation(preStation.getId(), station.getId());
+        addLineStationToLine(persistLine, station, preStation.getId());
+    }
+
+    @Transactional
+    public void addLineStationToLine(Line persistLine, Station station, Long o) {
+        LineStation lineStation = new LineStation(o, station.getId());
         persistLine.addLineStation(lineStation);
         lineRepository.save(persistLine);
     }
-
-//    @Transactional
-//    public void addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
-//        Line persistLine = lineRepository.findById(lineId)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
-//
-//        if (lineStationCreateRequest.getPreStationId() == null) {
-//            persistLine.addLineStation(lineStationCreateRequest.toLineStation());
-//            lineRepository.save(persistLine);
-//            return;
-//        }
-//
-//        persistLine.addLineStation(lineStationCreateRequest.toLineStation());
-//        lineRepository.save(persistLine);
-//    }
 
     @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
@@ -108,7 +97,7 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LineWithStationsResponse findLineWithStationsBy(Long lineId) {
         Line persistLine = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 line이 없습니다."));
