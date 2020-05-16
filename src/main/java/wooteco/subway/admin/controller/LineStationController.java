@@ -28,21 +28,21 @@ public class LineStationController {
 		this.lineService = lineService;
 	}
 
+	@GetMapping
+	public ResponseEntity<List<LineStationResponse>> getLineStations(@PathVariable Long lineId) {
+		List<LineStation> lineStations = lineService.findLineStations(lineId);
+		return ResponseEntity.ok().body(LineStationResponse.ofList(lineId, lineStations));
+	}
+
 	@PostMapping
-	public ResponseEntity<LineStationResponse> createLineStation(@PathVariable Long lineId,
+	public ResponseEntity<Void> createLineStation(@PathVariable Long lineId,
 		@Valid @RequestBody LineStationCreateRequest request) {
 		LineStation lineStation = request.toLineStation();
 		lineService.addLineStation(lineId, lineStation);
 
 		return ResponseEntity
 			.created(URI.create("/lines/" + lineId + "/stations/" + lineStation.getStationId()))
-			.body(LineStationResponse.of(lineId, lineStation));
-	}
-
-	@GetMapping
-	public ResponseEntity<List<LineStationResponse>> getLineStations(@PathVariable Long lineId) {
-		List<LineStation> lineStations = lineService.findLineStations(lineId);
-		return ResponseEntity.ok().body(LineStationResponse.ofList(lineId, lineStations));
+			.build();
 	}
 
 	@DeleteMapping("/{stationId}")

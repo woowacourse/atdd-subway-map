@@ -25,11 +25,12 @@ public class StationService {
 		return StationResponse.ofList(stationRepository.findAll());
 	}
 
-	public StationResponse create(Station station) {
+	public Long create(Station station) {
 		if (stationRepository.existsByName(station.getName())) {
 			throw new DuplicateStationNameException();
 		}
-		return StationResponse.of(stationRepository.save(station));
+		Station createdStation = stationRepository.save(station);
+		return createdStation.getId();
 	}
 
 	public void delete(Long id) {

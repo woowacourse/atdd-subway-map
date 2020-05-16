@@ -39,12 +39,12 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity<LineResponse> createLines(@Valid @RequestBody LineRequest request) {
-		LineResponse savedLine = lineService.save(request.toLine());
+	public ResponseEntity<Void> createLines(@Valid @RequestBody LineRequest request) {
+		Long createdLineId = lineService.createLine(request.toLine());
 
 		return ResponseEntity
-			.created(URI.create("/lines/" + savedLine.getId()))
-			.body(savedLine);
+			.created(URI.create("/lines/" + createdLineId))
+			.build();
 	}
 
 	@PutMapping("/{id}")

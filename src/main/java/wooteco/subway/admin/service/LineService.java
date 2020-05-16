@@ -49,11 +49,12 @@ public class LineService {
 			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
-	public LineResponse save(Line line) {
+	public Long createLine(Line line) {
 		if (lineRepository.existsByName(line.getName())) {
 			throw new DuplicateLineNameException();
 		}
-		return LineResponse.of(lineRepository.save(line));
+		Line createdLine = lineRepository.save(line);
+		return createdLine.getId();
 	}
 
 	public void updateLine(Long id, Line updatedLine) {

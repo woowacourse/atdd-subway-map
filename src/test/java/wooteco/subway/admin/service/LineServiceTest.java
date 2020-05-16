@@ -37,6 +37,7 @@ public class LineServiceTest {
 	@BeforeEach
 	void setUp() {
 		line = new Line(1L, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
+
 		lineService = new LineService(lineRepository, stationRepository);
 
 		line.addLineStation(new LineStation(null, 1L, 10, 10));
@@ -132,7 +133,7 @@ public class LineServiceTest {
 	void saveNewLineWithExistingName() {
 		Line newLine = new Line(null, "2호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
-		assertThatThrownBy(() -> lineService.save(newLine))
+		assertThatThrownBy(() -> lineService.createLine(newLine))
 			.isInstanceOf(DuplicateLineNameException.class);
 	}
 
@@ -141,7 +142,7 @@ public class LineServiceTest {
 		Line newLine = new Line(null, "3호선", LocalTime.of(5, 30), LocalTime.of(22, 30), 5, "");
 		when(lineRepository.existsByName(newLine.getName())).thenReturn(line.getName().equals(newLine.getName()));
 		when(lineRepository.save(newLine)).thenReturn(newLine);
-		assertThatCode(() -> lineService.save(newLine))
+		assertThatCode(() -> lineService.createLine(newLine))
 			.doesNotThrowAnyException();
 	}
 
