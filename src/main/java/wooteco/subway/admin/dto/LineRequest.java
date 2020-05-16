@@ -2,20 +2,27 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class LineRequest {
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
+    @NotNull
     private LocalTime startTime;
+    @NotNull
     private LocalTime endTime;
+    @NotNull
     private Integer intervalTime;
 
     public LineRequest() {
     }
 
-    public LineRequest(final String name, final String color, final String startTime, final String endTime, final int intervalTime) {
+    public LineRequest(String name, String color, String startTime, String endTime, Integer intervalTime) {
         this.name = name;
         this.color = color;
         this.startTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME);
@@ -44,9 +51,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        if (name.isEmpty() | color.isEmpty() | startTime == null | endTime == null | intervalTime == null) {
-            throw new IllegalArgumentException("요청이 올바르지 않습니다.");
-        }
         return new Line(name, color, startTime, endTime, intervalTime);
     }
 }

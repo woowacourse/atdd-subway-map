@@ -1,36 +1,37 @@
 package wooteco.subway.admin.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
-import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.StationService;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
 @RequestMapping("/stations")
 public class StationController {
 
-    @Autowired
-    private StationService stationService;
+    private final StationService stationService;
 
-    @PostMapping
-    public ResponseEntity<?> createStation(
-            @RequestBody StationCreateRequest request) {
-        Station station = request.toStation();
-        Station persistStation = stationService.create(station);
-
-        return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
-                .body(StationResponse.of(persistStation));
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
     }
 
     @GetMapping
     public ResponseEntity<?> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createStation(
+            @Valid @RequestBody StationCreateRequest stationRequest) {
+        Station persistStation = stationService.create(stationRequest.toStation());
+
+        return ResponseEntity
+                .created(URI.create("/stations/" + persistStation.getId()))
+                .body("{}");
     }
 
     @DeleteMapping("/{id}")

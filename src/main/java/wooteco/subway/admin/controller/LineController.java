@@ -1,6 +1,5 @@
 package wooteco.subway.admin.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
@@ -10,6 +9,7 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -19,27 +19,29 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
 
-    @Autowired
-    private LineService lineService;
+    private final LineService lineService;
+
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
+    }
+
+    @GetMapping
+    public List<LineResponse> showLines() {
+        return lineService.findAllLines();
+    }
 
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestBody LineRequest lineRequest
+            @Valid @RequestBody LineRequest lineRequest
     ) throws URISyntaxException {
 
-        Line created = lineService.save(lineRequest.toLine());
-
+        final Line created = lineService.save(lineRequest.toLine());
         final URI url = new URI("/lines/" + created.getId());
         return ResponseEntity.created(url).body("{}");
     }
 
-    @GetMapping
-    public List<LineResponse> lines() {
-        return lineService.findAllLines();
-    }
-
     @GetMapping("/{id}")
-    public LineResponse line(
+    public LineResponse showLine(
             @PathVariable("id") Long id
     ) {
         return LineResponse.of(lineService.findLineById(id));
@@ -48,11 +50,10 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable("id") Long id,
-            @RequestBody LineRequest lineRequest
+            @Valid @RequestBody LineRequest lineRequest
     ) {
-        Line line = lineRequest.toLine();
-        lineService.updateLine(id, line);
-        return ResponseEntity.ok(line);
+        lineService.updateLine(id, lineRequest.toLine());
+        return ResponseEntity.ok("{}");
     }
 
     @DeleteMapping("/{id}")
@@ -64,7 +65,7 @@ public class LineController {
     }
 
     @GetMapping("/{lineId}/stations")
-    public ResponseEntity<?> stations(
+    public ResponseEntity<?> showLineWithStations(
             @PathVariable("lineId") Long lineId
     ) {
         LineResponse lineResponse = lineService.findLineWithStationsById(lineId);
@@ -75,7 +76,7 @@ public class LineController {
     @PostMapping("/{lineId}/stations")
     public ResponseEntity<?> create(
             @PathVariable("lineId") Long lineId,
-            @RequestBody LineStationCreateRequest request
+            @Valid @RequestBody LineStationCreateRequest request
     ) throws URISyntaxException {
 
         lineService.addLineStation(lineId, request);
