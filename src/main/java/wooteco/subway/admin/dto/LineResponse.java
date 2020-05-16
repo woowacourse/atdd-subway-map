@@ -2,6 +2,7 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.dto.domain.LineDto;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,6 +38,10 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getLineColor(), line.getCreatedAt(), line.getUpdatedAt(), line.getStations());
+    }
+
+    public static LineResponse of(LineDto lineDto) {
+        return new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getStartTime(), lineDto.getEndTime(), lineDto.getIntervalTime(), lineDto.getLineColor(), lineDto.getCreatedAt(), lineDto.getUpdatedAt(), lineDto.getStations());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {

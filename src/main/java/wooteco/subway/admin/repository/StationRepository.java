@@ -9,21 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// TODO : 과연 Repository에서 LineStation을 Station으로 변환해주는 로직이 맞을까 ?
 public interface StationRepository extends CrudRepository<Station, Long> {
-	@Override
-	default List<Station> findAllById(Iterable<Long> lineStationIds) {
-		List<Station> stations = new ArrayList<>();
+    @Override
+    default List<Station> findAllById(Iterable<Long> lineStationIds) {
+        List<Station> stations = new ArrayList<>();
 
-		for (Long lineStationId : lineStationIds) {
-			Station station = findById(lineStationId)
-					.orElseThrow(() -> new IllegalArgumentException("해당하는 로우가 없습니다."));
-			stations.add(station);
-		}
+        for (Long lineStationId : lineStationIds) {
+            Station station = findById(lineStationId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당하는 로우가 없습니다."));
+            stations.add(station);
+        }
 
-		return stations;
-	}
+        return stations;
+    }
 
-	@Query("select * from station where name = :name")
-	Optional<Station> findByName(@Param("name") String name);
+    @Query("select * from station where name = :name")
+    Optional<Station> findByName(@Param("name") String name);
 }
