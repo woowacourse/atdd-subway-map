@@ -7,8 +7,7 @@ const METHOD = {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data
-            )
+            body: JSON.stringify(data)
         };
     },
     DELETE() {
@@ -22,23 +21,23 @@ const METHOD = {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data
-            )
+            body: JSON.stringify(data)
         };
     }
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => data.json());
+    const requestWithData = (uri, config) => fetch(uri, config).then(data => data.json());
+    const requestWithNoData = (uri, config) => fetch(uri, config);
     const station = {
         get() {
-            return request(`/stations`);
+            return requestWithData(`/stations`);
         },
         create(data) {
-            return request(`/stations`, METHOD.POST(data));
+            return requestWithNoData(`/stations`, METHOD.POST(data));
         },
         update(data, id) {
-            return request(`/stations/${id}`, METHOD.PUT(data));
+            return requestWithData(`/stations/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             return fetch(`/stations/${id}`, METHOD.DELETE()).then()
@@ -47,18 +46,18 @@ const api = (() => {
     };
     const line = {
         get(path = "") {
-            return request(`/lines` + path);
+            return requestWithData(`/lines` + path);
         },
 
         getById(id) {
-            return request(`/lines/${id}`);
+            return requestWithData(`/lines/${id}`);
         },
         create(data, path = "",) {
             return fetch(`/lines${path}`, METHOD.POST(data)).then()
             // return request(`/lines${path}` , METHOD.POST(data));
         },
         update(id, data) {
-            return request(`/lines/${id}`, METHOD.PUT(data));
+            return requestWithNoData(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
             return fetch(`/lines/${id}`, METHOD.DELETE()).then()

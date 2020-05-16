@@ -52,12 +52,12 @@ public class LineService {
         return LineResponse.listOf(lines);
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = new Line(lineRequest.getTitle(), lineRequest.getStartTime(), lineRequest.getEndTime(),
                 lineRequest.getIntervalTime(), lineRequest.getBgColor());
         Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(line);
-        return LineResponse.of(lineRepository.save(persistLine));
+        lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {

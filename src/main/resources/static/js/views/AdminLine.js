@@ -1,11 +1,11 @@
-import { EVENT_TYPE } from "../../utils/constants.js";
+import {EVENT_TYPE} from "../../utils/constants.js";
 import api from "../../api/index.js";
 import {
     subwayLinesTemplate,
     colorSelectOptionTemplate,
     lineInformationTemplate
 } from "../../utils/templates.js";
-import { subwayLineColorOptions } from "../../utils/defaultSubwayData.js";
+import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
 import Modal from "../../ui/Modal.js";
 
 function AdminLine() {
@@ -44,7 +44,7 @@ function AdminLine() {
         const $subwayLineItem = $target.closest(".subway-line-item");
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            api.line.delete($subwayLineItem.dataset.lineId).then(() =>{
+            api.line.delete($subwayLineItem.dataset.lineId).then(() => {
                 $subwayLineItem.remove();
             })
         }
@@ -54,7 +54,7 @@ function AdminLine() {
         const $target = event.target;
         const $subwayLineItem = $target.closest(".subway-line-item")
         $activeSubwayLineItem = $subwayLineItem
-        const $submitButton =  document.querySelector('#submit-button')
+        const $submitButton = document.querySelector('#submit-button')
         const isUpdateButton = $target.classList.contains("mdi-pencil");
         if (!isUpdateButton) {
             return
@@ -73,7 +73,7 @@ function AdminLine() {
         })
     }
 
-    const onUpdateSubwayLine = () => {
+    const onUpdateSubwayLine = async () => {
         const updatedSubwayLine = {
             title: $subwayLineNameInput.value,
             startTime: $subwayLineFirstTimeInput.value,
@@ -81,10 +81,16 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) =>{
-            subwayLineModal.toggle();
-            subwayLinesTemplate(line);
+        await api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then(response => {
+            if (response.status === 400) {
+                alert("업데이트 중 오류가 발생했습니다.");
+            }
         })
+
+        await api.line.getById($activeSubwayLineItem.dataset.lineId).then(response => {
+            subwayLinesTemplate(response);
+        })
+        subwayLineModal.toggle();
     };
 
     const onSubmitHandler = (event) => {
