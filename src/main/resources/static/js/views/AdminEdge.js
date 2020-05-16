@@ -7,19 +7,40 @@ import api from "../../api/index.js";
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $lineSelectOptions = document.querySelector('#line-select-options');
-    const $subwayLineAddButton = document.querySelector('#subway-line-add-btn');
+    const $subwayEdgeAddButton = document.querySelector('#subway-edge-add-btn');
     const $departStationOptions = document.querySelector('#depart-station-options');
-    const $ArrivalStationOptions = document.querySelector('#arrival-station-options');
+    const $arrivalStationOptions = document.querySelector('#arrival-station-options');
+    const $createSubwayEdgeButton = document.querySelector(
+        "#submit-button"
+    );
     const createSubwayEdgeModal = new Modal();
-
     let subwayLines = [];
 
-    const initCreateEdgeForm = event => {
-        event.preventDefault()
-        initLineOptions(subwayLines)
-        initPreviousStationOptions()
-        initNextStationOptions()
-    }
+    const onCreateSubwayEdge = event => {
+        event.preventDefault();
+
+        const lineId = $lineSelectOptions.options[$lineSelectOptions.selectedIndex].dataset.id;
+        const preStationId = $departStationOptions.options[$departStationOptions.selectedIndex].dataset.id;
+        const stationId = $arrivalStationOptions.options[$arrivalStationOptions.selectedIndex].dataset.id;
+        const lineStationCreateRequest = {
+            preStationId: preStationId,
+            stationId: stationId,
+            distance: 10,
+            duration: 10
+        };
+
+        api.line.createLineStation(lineStationCreateRequest, lineId)
+            .then(() => initSubwayLineView());
+    };
+
+    const initCreateEdgeForm = async event => {
+        await event.preventDefault()
+        await initLineOptions(subwayLines)
+        await initPreviousStationOptions()
+        await initNextStationOptions()
+
+        await $createSubwayEdgeButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayEdge);
+    };
 
     const initLineOptions = subwayLines => {
         const subwayLineOptionTemplate = subwayLines
@@ -35,37 +56,41 @@ function AdminEdge() {
                 $departStationOptions.innerHTML = stations.map(station => optionTemplate(station)).join('')
             }
         })
-    }
+    };
 
     const initNextStationOptions = () => {
         api.station
             .get()
             .then(stations => {
-                $ArrivalStationOptions.innerHTML = stations.map(station => optionTemplate(station)).join('')
+                $arrivalStationOptions.innerHTML = stations.map(station => optionTemplate(station)).join('')
             })
             .catch(() => alert(ERROR_MESSAGE.COMMON))
-    }
+    };
 
-
-    const initSubwayLinesSlider = () => {
+    const initSubwayLineView = () => {
         api.line.get()
             .then(data => {
                 subwayLines = data;
                 $subwayLinesSlider.innerHTML = data.map(line => subwayLinesItemTemplate(line))
                     .join("");
-                tns({
-                    container: ".subway-lines-slider",
-                    loop: true,
-                    slideBy: "page",
-                    speed: 400,
-                    autoplayButtonOutput: false,
-                    mouseDrag: true,
-                    lazyload: true,
-                    controlsContainer: "#slider-controls",
-                    items: 1,
-                    edgePadding: 25
-                });
+
             })
+            .then(() => initSubwayLinesSlider());
+    };
+
+    const initSubwayLinesSlider = () => {
+        tns({
+            container: ".subway-lines-slider",
+            loop: true,
+            slideBy: "page",
+            speed: 400,
+            autoplayButtonOutput: false,
+            mouseDrag: true,
+            lazyload: true,
+            controlsContainer: "#slider-controls",
+            items: 1,
+            edgePadding: 25
+        });
     };
 
     const onRemoveStationHandler = event => {
@@ -78,11 +103,11 @@ function AdminEdge() {
 
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
-        $subwayLineAddButton.addEventListener(EVENT_TYPE.CLICK, initCreateEdgeForm)
+        $subwayEdgeAddButton.addEventListener(EVENT_TYPE.CLICK, initCreateEdgeForm);
     };
 
     this.init = async () => {
-        await initSubwayLinesSlider();
+        await initSubwayLineView();
         await initLineOptions(subwayLines);
         await initEventListeners();
     };
