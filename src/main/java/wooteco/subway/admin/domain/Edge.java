@@ -1,45 +1,58 @@
 package wooteco.subway.admin.domain;
 
-import java.util.Objects;
-
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.Id;
 
 public class Edge {
-	private static final int STARTER_DEFAULT_VALUE = 0;
+	public static final int ID_MINIMUM_VALUE = 1;
+	private static final int DISTANCE_MINIMUM_VALUE = 0;
+	private static final int DURATION_MINIMUM_VALUE = 0;
 
 	@Id
 	private Long id;
-	@NotNull
-	private Long stationId;
-	@NotNull
-	private Long preStationId;
-	@NotNull
-	private Integer distance;
-	@NotNull
-	private Integer duration;
+	private long stationId;
+	private long preStationId;
+	private int distance;
+	private int duration;
 
 	private Edge() {
 	}
 
-	public Edge(Long preStationId, Long stationId, int distance, int duration) {
+	public Edge(long preStationId, long stationId, int distance, int duration) {
+		validate(preStationId, stationId, distance, duration);
+
 		this.preStationId = preStationId;
 		this.stationId = stationId;
 		this.distance = distance;
 		this.duration = duration;
 	}
 
-	public static Edge starter(Long stationId) {
-		return new Edge(stationId, stationId, STARTER_DEFAULT_VALUE, STARTER_DEFAULT_VALUE);
+	public static Edge starter(long stationId) {
+		return new Edge(stationId, stationId, DISTANCE_MINIMUM_VALUE,
+			DURATION_MINIMUM_VALUE);
 	}
 
-	public void updatePreStationId(Long preStationId) {
+	private void validate(long preStationId, long stationId, int distance, int duration) {
+		if (preStationId < ID_MINIMUM_VALUE) {
+			throw new IllegalArgumentException(
+				"적절하지 않은 preStationId 값입니다.: " + preStationId);
+		}
+		if (stationId < ID_MINIMUM_VALUE) {
+			throw new IllegalArgumentException("적절하지 않은 stationId 값입니다.: " + stationId);
+		}
+		if (distance < DISTANCE_MINIMUM_VALUE) {
+			throw new IllegalArgumentException("적절하지 않은 distance 값입니다.: " + distance);
+		}
+		if (duration < DURATION_MINIMUM_VALUE) {
+			throw new IllegalArgumentException("적절하지 않은 duration 값입니다.: " + duration);
+		}
+	}
+
+	public void updatePreStationId(long preStationId) {
 		this.preStationId = preStationId;
 	}
 
-	public boolean equalsStationId(final Long stationId) {
-		return Objects.equals(this.stationId, stationId);
+	public boolean equalsStationId(long stationId) {
+		return this.stationId == stationId;
 	}
 
 	public boolean isNotStartEdge() {
@@ -47,14 +60,14 @@ public class Edge {
 	}
 
 	public boolean isStartEdge() {
-		return preStationId.equals(stationId);
+		return preStationId == stationId;
 	}
 
-	public Long getStationId() {
+	public long getStationId() {
 		return stationId;
 	}
 
-	public Long getPreStationId() {
+	public long getPreStationId() {
 		return preStationId;
 	}
 

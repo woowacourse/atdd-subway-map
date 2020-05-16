@@ -25,8 +25,11 @@ public class Line {
 	private final LocalDateTime createdAt;
 	private final LocalDateTime updatedAt;
 
-	Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, final String color,
-		List<Edge> edges, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	Line(final Long id, final String name, final LocalTime startTime,
+		final LocalTime endTime, final int intervalTime, final String color,
+		final List<Edge> edges, final LocalDateTime createdAt,
+		final LocalDateTime updatedAt) {
+
 		this.id = id;
 		this.name = name;
 		this.startTime = startTime;
@@ -38,21 +41,22 @@ public class Line {
 		this.updatedAt = updatedAt;
 	}
 
-	public static Line of(String name, LocalTime startTime, LocalTime endTime, int intervalTime
-		, String color) {
+	public static Line of(String name, LocalTime startTime, LocalTime endTime,
+		int intervalTime, String color) {
 		LocalDateTime localDateTime = LocalDateTime.now();
-		return new Line(null, name, startTime, endTime, intervalTime, color, new LinkedList<>(),
-			localDateTime, localDateTime);
+
+		return new Line(null, name, startTime, endTime, intervalTime, color,
+			new LinkedList<>(), localDateTime, localDateTime);
 	}
 
 	public Line withId(Long id) {
-		return new Line(id, this.name, this.startTime, this.endTime, this.intervalTime, this.color,
-			this.edges, this.createdAt, this.updatedAt);
+		return new Line(id, this.name, this.startTime, this.endTime, this.intervalTime,
+			this.color, this.edges, this.createdAt, this.updatedAt);
 	}
 
 	public Line update(Line line) {
-		return new Line(this.id, line.name, line.startTime, line.endTime, line.intervalTime, line.color,
-			line.edges, this.createdAt, line.updatedAt);
+		return new Line(this.id, line.name, line.startTime, line.endTime,
+			line.intervalTime, line.color, line.edges, this.createdAt, line.updatedAt);
 	}
 
 	public void addEdge(Edge edge) {

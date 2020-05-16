@@ -20,10 +20,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.dto.EdgeDeleteRequest;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -80,7 +80,7 @@ public class EdgeAcceptanceTest {
 			.getList(".", LineResponse.class);
 
 		List<String> stationNames = lineResponses.get(0).getStations().stream()
-			.map(Station::getName)
+			.map(StationResponse::getName)
 			.collect(Collectors.toList());
 
 		assertThat(stationNames.size()).isEqualTo(2);
@@ -115,7 +115,7 @@ public class EdgeAcceptanceTest {
 			.getList(".", LineResponse.class);
 
 		List<Long> stationIds = lineResponsesAfterDelete.get(0).getStations().stream()
-			.map(Station::getId)
+			.map(StationResponse::getId)
 			.collect(Collectors.toList());
 
 		assertThat(stationIds.size()).isEqualTo(1);
