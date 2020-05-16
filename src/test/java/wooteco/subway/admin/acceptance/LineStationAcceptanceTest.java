@@ -72,7 +72,7 @@ public class LineStationAcceptanceTest {
         StationResponse jamsilnaru = stations.get(1);
         StationResponse jamsil = stations.get(2);
 
-        createLineStation(null, gangbyun.getId(), line.getId());
+        createLineStation(gangbyun.getId(), gangbyun.getId(), line.getId());
         createLineStation(gangbyun.getId(), jamsilnaru.getId(), line.getId());
         createLineStation(jamsilnaru.getId(), jamsil.getId(), line.getId());
 
@@ -82,7 +82,7 @@ public class LineStationAcceptanceTest {
         LineStationResponse lineStationResponse = lineStations.get(0);
         assertThat(lineStationResponse.getLineId()).isEqualTo(line.getId());
         assertThat(lineStationResponse.getStationId()).isEqualTo(gangbyun.getId());
-        assertThat(lineStationResponse.getPreStationId()).isNull();
+        assertThat(lineStationResponse.getPreStationId()).isEqualTo(gangbyun.getId());
 
         deleteLineStation(line.getId(), gangbyun.getId());
         List<LineStationResponse> lineStationsAfterDelete = getLineStations(line.getId());

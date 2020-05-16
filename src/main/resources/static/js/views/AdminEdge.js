@@ -22,7 +22,7 @@ function AdminEdge() {
     stations = [...stations, ...savedStations];
     for (let i = 0; i < lines.length; i++) {
       const targetLine = lines[i];
-      const lineStations = targetLine["stations"];
+      const lineStations = targetLine["stationResponses"];
       const lineStationsIds = lineStations.map(lineStation => lineStation["id"]);
       const targetLineStationNames = lineStationsIds.map(id => stations.find(station => station["id"] === id))
           .map(station => station["name"]);
@@ -123,7 +123,8 @@ function AdminEdge() {
     const lineName = select.options[select.selectedIndex].value;
     const lineId = subwayLines.find(subwayLine => subwayLine["title"] === lineName)["lineId"];
     const preStationName = document.querySelector("#depart-station-name").value;
-    const preStationId = stations.find(station => station["name"] === preStationName)["id"];
+    const preStationId = preStationName === "출발역" ? lineId
+        : stations.find(station => station["name"] === preStationName)["id"];
     const targetStationName = document.querySelector("#arrival-station-name").value;
     const targetStationId = stations.find(station => station["name"] === targetStationName)["id"];
 

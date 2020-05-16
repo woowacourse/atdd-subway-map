@@ -79,7 +79,7 @@ public class Line {
             return;
         }
 
-        if (isFirstLineStation(lineStation)) {
+        if (lineStation.isFirstLineStation()) {
             LineStation firstLineStation = lineStations.get(0);
             firstLineStation.modifyPreStationId(lineStation.getStationId());
             lineStations.add(0, lineStation);
@@ -98,10 +98,6 @@ public class Line {
         }
 
         lineStations.add(lineStation);
-    }
-
-    private boolean isFirstLineStation(LineStation lineStation) {
-        return lineStation.getPreStationId() == null;
     }
 
     private int getNextLineStationIndex(LineStation targetLineStation) {
@@ -123,9 +119,9 @@ public class Line {
         LineStation targetLineStation = getLineStationBy(stationId);
         int nextLineStationIndex = getNextLineStationIndex(targetLineStation);
 
-        if (isFirstLineStation(targetLineStation)) {
+        if (targetLineStation.isFirstLineStation()) {
             LineStation nextLineStation = lineStations.get(nextLineStationIndex);
-            nextLineStation.modifyPreStationId(null);
+            nextLineStation.modifyPreStationId(nextLineStation.getStationId());
             lineStations.set(nextLineStationIndex, nextLineStation);
             lineStations.remove(targetLineStation);
             return;
