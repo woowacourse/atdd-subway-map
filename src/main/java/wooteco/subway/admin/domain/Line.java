@@ -18,7 +18,7 @@ public class Line {
     private int intervalTime;
     private String lineColor;
     @MappedCollection
-    private List<LineStation> stations = new LinkedList<>();
+    private LinkedList<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -86,7 +86,7 @@ public class Line {
     }
 
     private boolean isLastStation(LineStation lineStation) {
-        return stations.indexOf(lineStation) == stations.size() - 1;
+        return stations.getLast().equals(lineStation);
     }
 
     private boolean isNotLastStation(LineStation lineStation) {
@@ -96,24 +96,13 @@ public class Line {
     public void removeLineStationById(Long stationId) {
         LineStation targetLineStation = getStationBy(stationId);
 
-        if (stations.size() == 1) {
-            stations.remove(0);
-            return;
-        }
-
-        if (targetLineStation.isFirstLineStation()) {
-            stations.remove(0);
-            stations.get(0).updatePreStationId(null);
-            return;
-        }
-
         if (isNotLastStation(targetLineStation)) {
             int index = stations.indexOf(targetLineStation);
             LineStation nextByTargetStation = stations.get(index + 1);
             nextByTargetStation.updatePreStationId(targetLineStation.getPreStationId());
         }
 
-        stations.remove(targetLineStation);
+        stations.removeIf(lineStation -> lineStation.is(stationId));
     }
 
     private LineStation getStationBy(Long stationId) {
