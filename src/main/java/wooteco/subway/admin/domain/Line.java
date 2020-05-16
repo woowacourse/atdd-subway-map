@@ -89,7 +89,7 @@ public class Line {
 		int index = edges.stream()
 			.filter(edge -> edge.equalsStationId(stationId))
 			.findFirst()
-			.map(edge -> edges.indexOf(edge))
+			.map(edges::indexOf)
 			.orElseThrow(() -> new IllegalArgumentException("지우려는 역이 존재하지 않습니다."));
 
 		Edge removeEdge = edges.remove(index);

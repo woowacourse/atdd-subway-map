@@ -70,18 +70,18 @@ public class LineService {
 
 	private Line findLineById(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(() -> throwNotFoundException(id));
-	}
-
-	private NotFoundException throwNotFoundException(Long id) {
-		return new NotFoundException("데이터를 찾을 수 없습니다. id: " + id);
+			.orElseThrow(() -> new NotFoundException(id));
 	}
 
 	@Transactional
 	public void removeEdge(Long lineId, Long stationId) {
-		Line line = findLineById(lineId);
-		line.removeEdgeById(stationId);
-		lineRepository.save(line);
+		try {
+			Line line = findLineById(lineId);
+			line.removeEdgeById(stationId);
+			lineRepository.save(line);
+		} catch (IllegalArgumentException e) {
+			throw new NotFoundException(e.getMessage());
+		}
 	}
 
 	@Transactional(readOnly = true)
