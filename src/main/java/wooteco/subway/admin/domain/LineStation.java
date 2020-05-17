@@ -1,6 +1,5 @@
 package wooteco.subway.admin.domain;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public class LineStation {
@@ -41,12 +40,12 @@ public class LineStation {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(this.getStationId());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return ((LineStation)obj).getStationId().equals(this.stationId);
+    public String toString() {
+        return "LineStation{" +
+            "stationId=" + stationId +
+            ", preStationId=" + preStationId +
+            ", distance=" + distance +
+            ", duration=" + duration +
+            '}';
     }
 }

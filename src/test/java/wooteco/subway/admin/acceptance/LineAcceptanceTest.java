@@ -62,7 +62,7 @@ public class LineAcceptanceTest {
         // when
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
-        updateLine(line.getId(), startTime, endTime);
+        updateLine(line.getId(), line.getTitle(), startTime, endTime);
         //then
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
@@ -90,7 +90,7 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("bgColor", "white");
+        params.put("backgroundColor", "white");
 
         given().
             body(params).
@@ -103,8 +103,9 @@ public class LineAcceptanceTest {
             statusCode(HttpStatus.CREATED.value());
     }
 
-    private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
+    private void updateLine(Long id, String title, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("title", title);
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");

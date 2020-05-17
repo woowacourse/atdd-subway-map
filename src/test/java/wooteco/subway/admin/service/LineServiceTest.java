@@ -39,7 +39,7 @@ public class LineServiceTest {
     @BeforeEach
     void setUp() {
         line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-gray-300");
-        lineService = new LineService(lineRepository, lineStationRepository, stationRepository);
+        lineService = new LineService(lineRepository, stationRepository);
 
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
@@ -52,6 +52,7 @@ public class LineServiceTest {
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addLineStation(line.getId(), request);
+        System.out.println(line.getStations().toString());
 
         assertThat(line.getStations()).hasSize(4);
         assertThat(line.getLineStationIds().get(0)).isEqualTo(4L);

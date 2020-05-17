@@ -102,7 +102,7 @@ public class LineStationAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("bgColor", "white");
+        params.put("backgroundColor", "white");
 
         given().
             body(params).

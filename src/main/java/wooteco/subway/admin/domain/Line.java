@@ -21,20 +21,20 @@ public class Line {
     private int intervalTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String bgColor;
+    private String backgroundColor;
     private Set<LineStation> stations;
 
     private Line() {
     }
 
-    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.bgColor = bgColor;
+        this.backgroundColor = backgroundColor;
         stations = new HashSet<>();
     }
 
@@ -51,8 +51,8 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
+        if (line.getBackgroundColor() != null) {
+            this.backgroundColor = line.getBackgroundColor();
         }
 
         this.updatedAt = LocalDateTime.now();
@@ -84,15 +84,16 @@ public class Line {
         this.stations.remove(LineStation);
     }
 
-    public void addLineStation(LineStation lineStation) {
-        if (findByPreStationId(lineStation.getPreStationId()).isPresent()) {
-            LineStation nextLineStation = findByPreStationId(
-                lineStation.getStationId()).orElseThrow(
-                () -> new IllegalArgumentException("nextStation을 찾을 수 없어 LineStation을 add 할 수 없습니다."));
+    public void addLineStation(LineStation addLineStation) {
+        Optional<LineStation> lineStation = findByPreStationId(addLineStation.getPreStationId());
 
-            nextLineStation.updatePreLineStation(lineStation.getStationId());
+        if (lineStation.isPresent()) {
+            LineStation updateLineStation = lineStation.orElseThrow(
+                () -> new IllegalArgumentException("add할 station을 preStation으로 갖는 역을 찾을 수 없어 add 할 수 없습니다."));
+
+            updateLineStation.updatePreLineStation(addLineStation.getStationId());
         }
-        this.stations.add(lineStation);
+        this.stations.add(addLineStation);
     }
 
     public boolean isStationsEmpty() {
@@ -107,13 +108,13 @@ public class Line {
         stationIds.add(firstLineStation.getStationId());
 
         Long lastStationId = stationIds.get(stationIds.size() - 1);
-        Optional<LineStation> nextLineStation = findById(lastStationId);
+        Optional<LineStation> nextLineStation = findByPreStationId(lastStationId);
 
         while (nextLineStation.isPresent()) {
             stationIds.add(nextLineStation.get().getStationId());
 
             lastStationId = stationIds.get(stationIds.size() - 1);
-            nextLineStation = findById(lastStationId);
+            nextLineStation = findByPreStationId(lastStationId);
         }
         return stationIds;
     }
@@ -150,8 +151,8 @@ public class Line {
         return updatedAt;
     }
 
-    public String getBgColor() {
-        return bgColor;
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 
     @Override
@@ -165,7 +166,7 @@ public class Line {
             ", stations=" + stations +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
-            ", bgColor='" + bgColor + '\'' +
+            ", bgColor='" + backgroundColor + '\'' +
             '}';
     }
 }
