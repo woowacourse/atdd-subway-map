@@ -33,4 +33,10 @@ public class ControllerAdvice {
 	public ResponseEntity<SubwayErrorMessage> getDefinedSQLException(DefinedSqlException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new SubwayErrorMessage(e.getMessage()));
 	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<SubwayErrorMessage> getUnExpectedException(Exception e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(new SubwayErrorMessage("예기치 못한 에러가 발생했습니다.\n" + e.getMessage()));
+	}
 }
