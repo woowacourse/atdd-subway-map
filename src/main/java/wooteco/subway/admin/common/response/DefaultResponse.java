@@ -20,6 +20,10 @@ public class DefaultResponse<T> {
         return new DefaultResponse<>(data, null);
     }
 
+    public static <Void> DefaultResponse<Void> empty() {
+        return new DefaultResponse<>(null, null);
+    }
+
     public T getData() {
         return data;
     }

@@ -36,9 +36,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
+    public ResponseEntity<DefaultResponse<Void>> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest) {
         Long id = lineService.save(lineCreateRequest);
-        return ResponseEntity.created(URI.create("/line/" + id)).build();
+        return ResponseEntity.created(URI.create("/lines/" + id)).body(DefaultResponse.empty());
     }
 
     @GetMapping
@@ -52,14 +52,14 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId,
-                                           @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<DefaultResponse<Void>> updateLine(@PathVariable("id") @Valid @NotNull(message = "노선 고유 값이 없습니다.") Long lineId,
+                                                            @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(lineId, lineUpdateRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable("id") Long lineId) {
+    public ResponseEntity<DefaultResponse<Void>> deleteLine(@PathVariable("id") Long lineId) {
         lineService.deleteLineById(lineId);
         return ResponseEntity.ok().build();
     }
@@ -70,13 +70,13 @@ public class LineController {
     }
 
     @PostMapping("/{id}/edges")
-    public ResponseEntity<Void> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
+    public ResponseEntity<DefaultResponse<Void>> createEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeCreateRequest edgeCreateRequest) {
         lineService.addEdge(lineId, edgeCreateRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}/edges")
-    public ResponseEntity<Void> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
+    public ResponseEntity<DefaultResponse<Void>> deleteEdge(@PathVariable(name = "id") final Long lineId, @RequestBody @Valid final EdgeDeleteRequest edgeDeleteRequest) {
         lineService.removeEdge(lineId, edgeDeleteRequest);
         return ResponseEntity.noContent().build();
     }
