@@ -1,15 +1,21 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.springframework.data.annotation.Id;
+import wooteco.subway.admin.exception.DuplicatedLineStationException;
+import wooteco.subway.admin.exception.NotFoundLineStationException;
 
 public class Line {
     @Id
     private Long id;
     private String name;
+    private String color;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -20,17 +26,16 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, String color, LocalTime startTime, LocalTime endTime,
+            int intervalTime) {
         this.name = name;
+        this.color = color;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.stations = new HashSet<>();
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+        this.updatedAt = createdAt;
     }
 
     public Long getId() {
@@ -39,6 +44,10 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public LocalTime getStartTime() {
@@ -69,6 +78,9 @@ public class Line {
         if (line.getName() != null) {
             this.name = line.getName();
         }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
+        }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
         }
@@ -83,15 +95,67 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        checkExistLineStation(lineStation);
+
+        if (lineStation.isNotStarting()) {
+            findLineStationByStationId(lineStation.getPreStationId())
+                    .orElseThrow(NotFoundLineStationException::new);
+        }
+
+        updatePreLineStation(lineStation.getPreStationId(), lineStation.getStationId());
+        stations.add(lineStation);
+    }
+
+    private void checkExistLineStation(LineStation lineStation) {
+        findLineStationByStationId(lineStation.getStationId())
+                .ifPresent(station -> {
+                    if (station.isEqualToPreStationId(lineStation.getPreStationId())) {
+                        throw new DuplicatedLineStationException(station);
+                    }
+                });
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = findLineStationByStationId(stationId)
+                .orElseThrow(NotFoundLineStationException::new);
+
+        updatePreLineStation(stationId, lineStation.getPreStationId());
+        stations.remove(lineStation);
+    }
+
+    private void updatePreLineStation(Long oldId, Long newId) {
+        findNextLineStationByStationId(oldId)
+                .ifPresent(station -> station.updatePreLineStation(newId));
+    }
+
+    private Optional<LineStation> findLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(station -> station.isEqualToStationId(stationId))
+                .findFirst();
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        List<Long> lineStationsId = new ArrayList<>();
+        Optional<LineStation> optionalLineStation = findStartLineStation();
+
+        while (optionalLineStation.isPresent()) {
+            Long stationId = optionalLineStation.get().getStationId();
+            lineStationsId.add(stationId);
+            optionalLineStation = findNextLineStationByStationId(stationId);
+        }
+
+        return lineStationsId;
+    }
+
+    private Optional<LineStation> findStartLineStation() {
+        return stations.stream()
+                .filter(LineStation::isStarting)
+                .findFirst();
+    }
+
+    private Optional<LineStation> findNextLineStationByStationId(Long stationId) {
+        return stations.stream()
+                .filter(station -> station.isEqualToPreStationId(stationId))
+                .findFirst();
     }
 }
