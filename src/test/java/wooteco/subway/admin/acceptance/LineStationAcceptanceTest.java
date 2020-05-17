@@ -58,9 +58,9 @@ public class LineStationAcceptanceTest {
                 createLineStation(2L, 3L);
                 createLineStation(3L, 4L);
                 // When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-                // Then 지하철역이 노선에 추가 되었다.
                 appendStationToLine();
             }),
+            // Then 지하철역이 노선에 추가 되었다.
             dynamicTest("지하철 역 목록 조회", () -> {
                 // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
                 List<StationResponse> responses = getStations();
@@ -71,9 +71,9 @@ public class LineStationAcceptanceTest {
             }),
             dynamicTest("지하철 역 제거", () -> {
                 // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-                // Then 지하철역이 노선에서 제거 되었다.
                 excludeStationFromLine();
             }),
+            // Then 지하철역이 노선에서 제거 되었다.
             dynamicTest("지하철 역 제거 후 목록 조회", () -> {
                 // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
                 // Then 지하철역 목록을 응답 받는다.
