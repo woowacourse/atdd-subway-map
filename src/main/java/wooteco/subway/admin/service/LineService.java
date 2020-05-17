@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 
@@ -57,9 +58,12 @@ public class LineService {
 		persistLine.update(line);
 
 		try {
-			lineRepository.save(line);
-		} catch (DbActionExecutionException e) {
-			throw new DuplicatedValueException(line.getTitle());
+			lineRepository.save(persistLine);
+		} catch (DuplicateKeyException e) {
+			if (e.getCause() instanceof DuplicateKeyException) {
+				throw new DuplicatedValueException(persistLine.getTitle());
+			}
+			throw e;
 		}
 	}
 

@@ -2,6 +2,7 @@ package wooteco.subway.admin.service;
 
 import java.util.Set;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,13 @@ public class StationService {
 	}
 
 	public Station save(Station station) {
-		boolean isDuplicated = stationRepository.findByName(station.getName())
-			.isPresent();
-		if (isDuplicated) {
-			throw new DuplicatedValueException(station.getName());
-		}
 		try {
 			return stationRepository.save(station);
 		} catch (DbActionExecutionException e) {
-			throw new DuplicatedValueException(station.getName());
+			if (e.getCause() instanceof DuplicateKeyException) {
+				throw new DuplicatedValueException(station.getName());
+			}
+			throw e;
 		}
 	}
 
