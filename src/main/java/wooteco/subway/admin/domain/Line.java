@@ -103,7 +103,7 @@ public class Line {
 
 		Optional<LineStation> startStation = findStart();
 		if (!startStation.isPresent()) {
-			throw new UnsupportedOperationException("출발역이 없습니다.");
+			return lineStationsId;
 		}
 
 		Long currentId = startStation.get().getStationId();
