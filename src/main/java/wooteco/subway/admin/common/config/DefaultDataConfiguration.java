@@ -37,7 +37,7 @@ public class DefaultDataConfiguration {
 		private void configureLines() {
 			lineRepository.save(new Line("1호선", LocalTime.of(5, 10), LocalTime.of(23, 30), 10, "bg-blue-700"));
 			lineRepository.save(new Line("2호선", LocalTime.of(5, 10), LocalTime.of(23, 30), 10, "bg-green-500"));
-			lineRepository.save(new Line("2호선", LocalTime.of(5, 10), LocalTime.of(23, 30), 10, "bg-blue-500"));
+			lineRepository.save(new Line("4호선", LocalTime.of(5, 10), LocalTime.of(23, 30), 10, "bg-blue-500"));
 		}
 
 		private void configureStations() {

@@ -3,25 +3,22 @@ package wooteco.subway.admin.acceptance;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
+@Sql("/truncate.sql")
+public class LineAcceptanceTest extends AcceptanceTest {
+
 	@LocalServerPort
 	int port;
 
@@ -30,108 +27,47 @@ public class LineAcceptanceTest {
 		RestAssured.port = port;
 	}
 
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
-	}
-
 	@DisplayName("지하철 노선을 관리한다")
 	@Test
 	void manageLine() {
-		// when
+		// when 노선을 생성한다.
 		createLine("신분당선");
 		createLine("1호선");
 		createLine("2호선");
 		createLine("3호선");
-		// then
+		// then 노선이 생성되었고 총 라인의 수가 4개이다.
 		List<LineResponse> lines = getLines();
 		assertThat(lines.size()).isEqualTo(4);
 
-		// when
+		// when 첫번째 노선인 신분당선을 가져온다.
 		LineResponse line = getLine(lines.get(0).getId());
-		// then
+		// then 노선이 정상적으로 저장되었다.
 		assertThat(line.getId()).isNotNull();
 		assertThat(line.getName()).isNotNull();
 		assertThat(line.getStartTime()).isNotNull();
 		assertThat(line.getEndTime()).isNotNull();
 		assertThat(line.getIntervalTime()).isNotNull();
 
-		// when
+		// when 첫번째 노선인 신분당선의 시작시간과 종료시간을 수정한다.
 		LocalTime startTime = LocalTime.of(8, 00);
 		LocalTime endTime = LocalTime.of(22, 00);
 		updateLine(line.getId(), startTime, endTime);
-		//then
+		//then 변경 사항이 정상적으로 수정되었다.
 		LineResponse updatedLine = getLine(line.getId());
 		assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
 		assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-		// when
+		// when 첫번재 노선인 신분당선을 삭제하였다.
 		deleteLine(line.getId());
-		// then
+		// then 노선에서 삭제가 되어서 3개의 노선만 존재한다.
 		List<LineResponse> linesAfterDelete = getLines();
 		assertThat(linesAfterDelete.size()).isEqualTo(3);
+
+		// when 기존에 존재하는 노선과 중복되는 노선을 저장하였다.
+		createDuplicatedLine("1호선");
+		// then Bad_Request가 발생하고 기존과 변함없이 3개의 노선만 존재한다.
+		lines = getLines();
+		assertThat(lines).hasSize(3);
 	}
 
-	private LineResponse getLine(Long id) {
-		return given().when().
-			get("/lines/" + id).
-			              then().
-			              log().all().
-			              extract().as(LineResponse.class);
-	}
-
-	private void createLine(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("bgColor", "bg-red-400");
-		params.put("intervalTime", "10");
-
-		given().
-			       body(params).
-			       contentType(MediaType.APPLICATION_JSON_VALUE).
-			       accept(MediaType.APPLICATION_JSON_VALUE).
-			       when().
-			       post("/lines").
-			       then().
-			       log().all().
-			       statusCode(HttpStatus.CREATED.value());
-	}
-
-	private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-		Map<String, String> params = new HashMap<>();
-		params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-		params.put("bgColor", "bg-red-600");
-		params.put("intervalTime", "10");
-
-		given().
-			       body(params).
-			       contentType(MediaType.APPLICATION_JSON_VALUE).
-			       accept(MediaType.APPLICATION_JSON_VALUE).
-			       when().
-			       put("/lines/" + id).
-			       then().
-			       log().all().
-			       statusCode(HttpStatus.NO_CONTENT.value());
-	}
-
-	private List<LineResponse> getLines() {
-		return
-			given().
-				       when().
-				       get("/lines").
-				       then().
-				       log().all().
-				       extract().
-				       jsonPath().getList(".", LineResponse.class);
-	}
-
-	private void deleteLine(Long id) {
-		given().
-			       when().
-			       delete("/lines/" + id).
-			       then().
-			       log().all();
-	}
 }
