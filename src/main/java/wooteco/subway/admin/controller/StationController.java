@@ -33,8 +33,7 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<Void> createStation(@RequestBody @Valid StationCreateRequest view) {
-        Station station = new Station(view.getName());
-        Station persistStation = lineService.save(station);
+        StationResponse persistStation = stationService.save(view);
         return ResponseEntity
                 .created(URI.create(String.valueOf(persistStation.getId())))
                 .build();

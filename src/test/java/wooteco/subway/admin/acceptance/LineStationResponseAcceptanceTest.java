@@ -43,7 +43,7 @@ public class LineStationResponseAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-        params.put("bgColor","yellow");
+        params.put("bgColor", "yellow");
 
         given().
                 body(params).
@@ -57,7 +57,7 @@ public class LineStationResponseAcceptanceTest {
     }
 
     private void createStation(String name) {
-        Station station = stationRepository.save(new Station(name));
+        Station station = new Station(name);
 
         given().
                 body(station).
@@ -75,22 +75,22 @@ public class LineStationResponseAcceptanceTest {
     }
 
     /**
-     *     Given 지하철역이 여러 개 추가되어있다.
-     *     And 지하철 노선이 추가되어있다.
-     *
-     *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     *     Then 지하철역이 노선에 추가 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *
-     *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     *     Then 지하철역이 노선에서 제거 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
+     * Given 지하철역이 여러 개 추가되어있다.
+     * And 지하철 노선이 추가되어있다.
+     * <p>
+     * When 지하철 노선에 지하철역을 등록하는 요청을 한다.
+     * Then 지하철역이 노선에 추가 되었다.
+     * <p>
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+     * Then 지하철역 목록을 응답 받는다.
+     * And 새로 추가한 지하철역을 목록에서 찾는다.
+     * <p>
+     * When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+     * Then 지하철역이 노선에서 제거 되었다.
+     * <p>
+     * When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+     * Then 지하철역 목록을 응답 받는다.
+     * And 제외한 지하철역이 목록에 존재하지 않는다.
      */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
@@ -103,9 +103,9 @@ public class LineStationResponseAcceptanceTest {
         createLine("2호선");
 
         //When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-        addLineStation(1L, null, 1L, 10, 10);
-        addLineStation(1L, 1L, 2L, 10, 10);
-        addLineStation(1L, 2L, 3L, 10, 10);
+        addLineStation(1L, "", "잠실", 10, 10);
+        addLineStation(1L, "잠실", "잠실새내", 10, 10);
+        addLineStation(1L, "잠실새내", "신도림", 10, 10);
 
         //Then 지하철역이 노선에 추가 되었다.
         LineResponse lineStationsByLineId = findLineStationsByLineId(1L);
@@ -136,27 +136,28 @@ public class LineStationResponseAcceptanceTest {
     private void deleteStationByLineId(long lineId, long stationId) {
         given().
                 when()
-                    .delete("/lines/" + lineId + "/stations/" + stationId).
+                .delete("/lines/" + lineId + "/stations/" + stationId).
                 then()
-                    .log().all();
+                .log().all();
     }
 
-    private LineStationCreateRequest addLineStation(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
+    private LineStationCreateRequest addLineStation(Long lineId, String preStationName, String stationName, int distance, int duration) {
         LineStationCreateRequest lineStationCreateRequest =
-                new LineStationCreateRequest(preStationId, stationId, distance,duration);
+                new LineStationCreateRequest(preStationName, stationName, distance, duration);
         Map<String, String> params = new HashMap<>();
-        params.put("preStationId",String.valueOf(preStationId));
-        params.put("stationId",String.valueOf(stationId));
-        params.put("distance",String.valueOf(distance));
-        params.put("duration",String.valueOf(duration));
+        params.put("preStationName", preStationName);
+        params.put("stationName", stationName);
+        params.put("distance", String.valueOf(distance));
+        params.put("duration", String.valueOf(duration));
+
         given().
                 body(params).
-                    contentType(MediaType.APPLICATION_JSON_VALUE).
-                    accept(MediaType.APPLICATION_JSON_VALUE).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    post("/lines/" + lineId + "/stations").
+                post("/lines/" + lineId + "/stations").
                 then().
-                    log().all().statusCode(HttpStatus.CREATED.value());
+                log().all().statusCode(HttpStatus.CREATED.value());
 
 
         return lineStationCreateRequest;
@@ -165,9 +166,9 @@ public class LineStationResponseAcceptanceTest {
     private LineResponse findLineStationsByLineId(long lineId) {
         return given().
                 when().
-                    get("/lines/" + lineId + "/stations").
+                get("/lines/" + lineId + "/stations").
                 then().
-                    log().all()
-                    .extract().as(LineResponse.class);
+                log().all()
+                .extract().as(LineResponse.class);
     }
 }

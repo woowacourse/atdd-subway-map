@@ -42,10 +42,6 @@ public class LineService {
         throw new DuplicateLineException(line.getTitle());
     }
 
-    public Station save(Station station) {
-        return stationRepository.save(station);
-    }
-
     public List<LineResponse> showLines() {
         List<Line> lines = lineRepository.findAll();
         return LineResponse.listOf(lines);
@@ -95,33 +91,8 @@ public class LineService {
                     new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
             line.addLineStation(lineStation);
         }
-
         lineRepository.save(line);
-
-//        if (request.hasNotAnyId()) {
-//            convertNameToId(request);
-//        }
-//        Line line = lineRepository.findById(id)
-//                .orElseThrow(NoSuchElementException::new);
-//
-//        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
-//                request.getDistance(), request.getDuration());
-//
-//        line.addLineStation(lineStation);
-//        lineRepository.save(line);
     }
-
-//    private void convertNameToId(LineStationCreateRequest request) {
-//        if (!request.getPreStationName().isEmpty()) {
-//            Station preStation = stationRepository.findByName(request.getPreStationName())
-//                    .orElseThrow(IllegalArgumentException::new);
-//            request.setPreStationId(preStation.getId());
-//        }
-//        Station station = stationRepository.findByName(request.getStationName())
-//                .orElseThrow(IllegalArgumentException::new);
-//        request.setStationId(station.getId());
-//
-//    }
 
     public List<LineResponse> findAllStationsWithLine() {
         List<Line> lines = lineRepository.findAll();
