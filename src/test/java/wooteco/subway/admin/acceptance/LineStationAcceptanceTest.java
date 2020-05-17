@@ -16,7 +16,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -31,33 +30,31 @@ public class LineStationAcceptanceTest {
 		RestAssured.port = port;
 	}
 
-	public static RequestSpecification given() {
-		return RestAssured.given().log().all();
-	}
-
 	@DisplayName("지하철 노선에서의 지하철역 추가 / 삭제 / 조회 테스트")
 	@TestFactory
 	public List<DynamicTest> lineStationScenarioTest() {
-		DynamicTest createLineAndStationTest = DynamicTest.dynamicTest("지하철 라인을 생성한다.", () -> {
-			//Given 지하철 노선이 여러 개 추가되어있다.
+		DynamicTest createLineTest = DynamicTest.dynamicTest("지하철 라인을 생성한다.", () -> {
+			//Given 지하철 노선을 여러개 추가한다.
 			createLine("1호선");
 			createLine("2호선");
 
-			//Given 지하철역이 여러 개 추가되어있다.
-			createStation("신촌");
-			createStation("잠실");
-
 			//When 지하철 노선목록 조회요청한다.
 			List<LineResponse> lines = getLines();
-
-			//When 지하철 역목록 조회요청한다.
-			List<StationResponse> stations = getStations();
 
 			//Then 추가한 지하철노선이 잘 들어있다.
 			List<String> lineNames = lines.stream()
 				.map(LineResponse::getTitle)
 				.collect(Collectors.toList());
 			assertThat(lineNames).contains("1호선", "2호선");
+		});
+
+		DynamicTest createStationTest = DynamicTest.dynamicTest("지하철 역을 생성한다.", () -> {
+			//Given 지하철역을 여러개 추가한다.
+			createStation("신촌");
+			createStation("잠실");
+
+			//When 지하철 역목록 조회요청한다.
+			List<StationResponse> stations = getStations();
 
 			//Then 추가한 지하철역이 잘 들어있다.
 			List<String> stationNames = stations.stream()
@@ -114,7 +111,7 @@ public class LineStationAcceptanceTest {
 			assertThat(stationNames).contains("잠실");
 		});
 
-		return Arrays.asList(createLineAndStationTest, createLineStationTest, findLineWithStationTest, deleteLineTest,
-			deleteLineAndFindStationTest);
+		return Arrays.asList(createLineTest, createStationTest, createLineStationTest, findLineWithStationTest,
+			deleteLineTest, deleteLineAndFindStationTest);
 	}
 }
