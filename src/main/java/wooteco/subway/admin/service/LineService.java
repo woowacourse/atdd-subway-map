@@ -9,7 +9,6 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -24,9 +23,9 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(Line line) {
-        Line saveLine = lineRepository.save(line);
-        return LineResponse.of(saveLine);
+    public Line save(Line line) {
+        return lineRepository.save(line);
+
     }
 
     public Station save(Station station) {
@@ -86,41 +85,28 @@ public class LineService {
 
     }
 
-    public List<LineResponse> findAllStationsWithLine() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
-                .map(Line::getId)
-                .map(this::findStationsByLineId)
-                .collect(Collectors.toList());
-    }
-
-    public LineResponse findStationsByLineId(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        List<Station> stations = new ArrayList<>();
-
-        List<LineStation> lineStations = line.getLineStations();
-        for (LineStation lineStation : lineStations) {
-            checkAllStationById(line, stations, lineStation);
-        }
-        return LineResponse.of(line, stations);
-    }
-
-    private void checkAllStationById(Line line, List<Station> stations, LineStation lineStation) {
-        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
-            checkSameId(stations, lineStation, station);
-        }
-    }
-
-    private void checkSameId(List<Station> stations, LineStation lineStation, Station station) {
-        if(station.getId() == lineStation.getStationId()) {
-            stations.add(station);
-        }
+    public Line findLineById(long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public void deleteStationByLineIdAndStationId(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
+    }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
+
+    public List<Long> findAllLineId(List<Line> lines) {
+        return lines.stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<Station> findAllById(List<Long> allLineId) {
+        return stationRepository.findAllById(allLineId);
     }
 }

@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 
 @Table("LINE")
 public class Line {
-    private static final int ONE_SIZE = 1;
+    private static final int NO_SIZE = 0;
     private static final int FIRST_INDEX = 0;
     private static final int SECOND_INDEX = 1;
     private static final int NEXT_INDEX = 1;
     private static final int BEFORE_INDEX = 1;
+    private static final int MINIMUM_SIZE_VALUE = 1;
+
     @Id
     private Long id;
     private String title;
@@ -104,45 +106,47 @@ public class Line {
     }
 
     public void addLineStation(LineStation requestLineStation) {
-        int index = lineStations.stream()
-                .filter(lineStation -> lineStation.isPreStationOf(requestLineStation))
-                .map(lineStation -> lineStations.indexOf(lineStation) + 1)
-                .findAny()
-                .orElse(0);
-        if (isAlreadyInputStations(requestLineStation, index)){
+        int index = findIndex(requestLineStation);
+
+        if(isAddFirstIndex(index)) {
+            LineStation nextLineStation = lineStations.get(index);
+            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
+            lineStations.add(index, requestLineStation);
+            return;
+        }
+        if (isAddMiddleIndex(index)) {
+            LineStation nextLineStation = lineStations.get(index);
+            addLineStationInMiddleIndex(requestLineStation, index, nextLineStation);
             return;
         }
         lineStations.add(index, requestLineStation);
     }
 
-    private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
-        if(lineStations.size() > ONE_SIZE && lineStations.size() > index) {
-            LineStation nextLineStation = lineStations.get(index);
-            if (isInputFirstIndex(requestLineStation, index, nextLineStation)){
-                return true;
-            }
-
-            LineStation preLineStation = lineStations.get(index - 1);
-            requestLineStation.updatePreLineStationId(preLineStation.getStationId());
-            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
-            lineStations.add(index, requestLineStation);
-            return true;
-        }
-        return false;
+    private Integer findIndex(LineStation requestLineStation) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isPreStationOf(requestLineStation))
+                .map(lineStation -> lineStations.indexOf(lineStation) + 1)
+                .findAny()
+                .orElse(0);
     }
 
-    private boolean isInputFirstIndex(LineStation requestLineStation, int index, LineStation nextLineStation) {
-        if(index == 0) {
-            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
-            lineStations.add(index, requestLineStation);
-            return true;
-        }
-        return false;
+    private boolean isAddMiddleIndex(int index) {
+        return lineStations.size() > MINIMUM_SIZE_VALUE && lineStations.size() > index;
+    }
+
+    private boolean isAddFirstIndex(int index) {
+        return lineStations.size() > MINIMUM_SIZE_VALUE && lineStations.size() > index && index == NO_SIZE;
+    }
+
+    private void addLineStationInMiddleIndex(LineStation requestLineStation, int index, LineStation nextLineStation) {
+        LineStation preLineStation = lineStations.get(index - 1);
+        requestLineStation.updatePreLineStationId(preLineStation.getStationId());
+        nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
+        lineStations.add(index, requestLineStation);
     }
 
     public void removeLineStationById(Long stationId) {
         int index = findLineStationIndex(stationId);
-        LineStation preLineStation;
         LineStation nextLineStation;
 
         if(index == FIRST_INDEX && index == lineStations.size() - 1){
@@ -161,7 +165,12 @@ public class Line {
             lineStations.remove(index);
             return;
         }
+        removeLineStationOnMiddleIndex(index);
+    }
 
+    private void removeLineStationOnMiddleIndex(int index) {
+        LineStation nextLineStation;
+        LineStation preLineStation;
         nextLineStation = lineStations.get(index+ NEXT_INDEX);
         preLineStation = lineStations.get(index- BEFORE_INDEX);
         nextLineStation.updatePreLineStationId(preLineStation.getStationId());
@@ -182,5 +191,4 @@ public class Line {
                 .boxed()
                 .collect(Collectors.toList());
     }
-
 }

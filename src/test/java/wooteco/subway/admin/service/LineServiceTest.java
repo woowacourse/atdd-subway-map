@@ -121,7 +121,10 @@ public class LineServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
-        LineResponse lineResponse = lineService.findStationsByLineId(1L);
+        Line line = lineService.findLineById(1L);
+        List<Station> allById = lineService.findAllById(line.getLineStationsId());
+
+        LineResponse lineResponse = LineResponse.of(line, allById);
         System.out.println(lineResponse.toString());
 
         assertThat(lineResponse.getTitle()).isEqualTo("비내리는호남선");

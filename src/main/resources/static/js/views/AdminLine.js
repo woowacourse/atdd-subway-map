@@ -28,6 +28,7 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
+
         api.line.create(newSubwayLine)
             .then(line => {
                 $subwayLineList.insertAdjacentHTML(
@@ -35,7 +36,7 @@ function AdminLine() {
                     subwayLinesTemplate(line)
                 );
                 subwayLineModal.toggle();
-            })
+            }).catch(() => alert("노선 생성에 실패 했습니다."));
         window.location.reload();
     };
 
@@ -46,7 +47,7 @@ function AdminLine() {
         if (isDeleteButton) {
             api.line.delete($subwayLineItem.dataset.lineId).then(() =>{
                 $subwayLineItem.remove();
-            })
+            }).catch( () => alert("삭제에 실패 했습니다."))
         }
     };
 
@@ -101,7 +102,7 @@ function AdminLine() {
         if (isSelectSubwayLineItem) {
             api.line.getById($subwayLineItem.dataset.lineId).then(data => {
                 document.querySelector(".lines-info").innerHTML = lineInformationTemplate(data);
-            })
+            }).catch(() => alert("노선 선택에 실패 했습니다."));
         }
     }
 
@@ -113,7 +114,7 @@ function AdminLine() {
                     subwayLinesTemplate(line)
                 );
             });
-        });
+        }).catch( () => alert("초기화에 실패 했습니다."))
     };
 
     const initEventListeners = () => {
@@ -132,7 +133,6 @@ function AdminLine() {
         if ($target.classList.contains("color-select-option")) {
             document.querySelector("#subway-line-color").value =
                 $target.dataset.color;
-
         }
     };
 
@@ -140,9 +140,11 @@ function AdminLine() {
         const $colorSelectContainer = document.querySelector(
             "#subway-line-color-select-container"
         );
+
         const colorSelectTemplate = subwayLineColorOptions
             .map((option, index) => colorSelectOptionTemplate(option, index))
             .join("");
+
         $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
         $colorSelectContainer.addEventListener(
             EVENT_TYPE.CLICK,
