@@ -1,35 +1,50 @@
 package wooteco.subway.admin.dto;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import wooteco.subway.admin.domain.Line;
 
-import java.time.LocalTime;
-
 public class LineRequest {
-    private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
+	private String name;
+	private String color;
+	private LocalTime startTime;
+	private LocalTime endTime;
+	private int intervalTime;
 
-    public LineRequest() {
-    }
+	public LineRequest() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	public LineRequest(String name, String color, String startTime, String endTime,
+			int intervalTime) {
+		this.name = name;
+		this.color = color;
+		this.startTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		this.endTime = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		this.intervalTime = intervalTime;
+	}
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+	public Line toLine() {
+		return new Line(name, color, startTime, endTime, intervalTime);
+	}
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public int getIntervalTime() {
-        return intervalTime;
-    }
+	public String getColor() {
+		return color;
+	}
 
-    public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
-    }
+	public LocalTime getStartTime() {
+		return startTime;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime;
+	}
+
+	public int getIntervalTime() {
+		return intervalTime;
+	}
 }
