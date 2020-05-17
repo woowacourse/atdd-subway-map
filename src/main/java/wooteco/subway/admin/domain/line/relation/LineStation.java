@@ -18,16 +18,16 @@ public class LineStation {
         this.duration = duration;
     }
 
-
     public void updatePreStationIdTo(Long preStationId) {
         this.preStationId = preStationId;
-    }
-    public boolean isNotFirstNode() {
-        return !Objects.isNull(preStationId);
     }
 
     public boolean isFirstNode() {
         return Objects.isNull(preStationId);
+    }
+
+    public boolean isNotFirstNode() {
+        return !isFirstNode();
     }
 
     public boolean isPreNodeOf(LineStation lineStation) {

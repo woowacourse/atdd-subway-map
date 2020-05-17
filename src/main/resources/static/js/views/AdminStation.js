@@ -7,6 +7,7 @@ function AdminStation() {
   const $addForm = document.querySelector("#add-form");
 
   const isValidate = stationName => {
+
     if (!stationName) {
       alert(ERROR_MESSAGE.NOT_EMPTY);
       return false;
