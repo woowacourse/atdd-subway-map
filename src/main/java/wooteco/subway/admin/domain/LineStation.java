@@ -1,39 +1,83 @@
 package wooteco.subway.admin.domain;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Long stationId;
-    private Long preStationId;
-    private int distance;
-    private int duration;
+	@Column("pre_station")
+	private final Long preStationId;
+	@Column("station")
+	private final Long stationId;
+	private final int distance;
+	private final int duration;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime updatedAt;
 
-    public LineStation() {
-    }
+	LineStation(Long preStationId, Long stationId, int distance, int duration, LocalDateTime createdAt,
+		LocalDateTime updatedAt) {
+		this.preStationId = preStationId;
+		this.stationId = stationId;
+		this.distance = distance;
+		this.duration = duration;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
-    }
+	public static LineStation of(Long preStationId, Long stationId, int distance, int duration) {
+		LocalDateTime currentTime = LocalDateTime.now();
+		return new LineStation(preStationId, stationId, distance, duration, currentTime, currentTime);
+	}
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
+	public LineStation updatePreLineStation(Long preStationId) {
+		return new LineStation(preStationId, this.stationId, this.distance, this.duration, this.createdAt,
+			LocalDateTime.now());
+	}
 
-    public Long getStationId() {
-        return stationId;
-    }
+	public boolean isStartStation() {
+		return preStationId == null;
+	}
 
-    public int getDistance() {
-        return distance;
-    }
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		final LineStation that = (LineStation)o;
+		return Objects.equals(preStationId, that.preStationId) &&
+			stationId.equals(that.stationId);
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(preStationId, stationId);
+	}
 
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public Long getPreStationId() {
+		return preStationId;
+	}
+
+	public Long getStationId() {
+		return stationId;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
 }
