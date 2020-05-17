@@ -17,7 +17,8 @@ const method = {
     return {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Control-Expose-Headers": "Location"
       },
       body: JSON.stringify(data)
     };
@@ -25,45 +26,61 @@ const method = {
 };
 
 const api = (() => {
-  //이거 때매 예외 메시지 파싱 안돼 
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const parseJsonIfStatusOk = async data =>  {
+    if (!data.ok) {
+      const errorObject = await data.json();
+      throw new Error(errorObject.message)
+    }
+    return data.json()
+  }
+
+  const throwErrorIfStatusNotOk = async data =>  {
+    if (!data.ok) {
+      const errorObject = await data.json();
+      throw new Error(errorObject.message)
+    }
+    return data
+  }
+
+  const requestGetData = (uri, config) => fetch(uri, config).then(data => parseJsonIfStatusOk(data));
+  const requestOther = (uri, config) => fetch(uri, config).then(data => throwErrorIfStatusNotOk(data));
 
   const station = {
     get() {
-      return request(`/stations`);
+      return requestGetData(`/stations`);
     },
     create(data) {
-      return request(`/stations`, method.post(data));
+      return requestGetData(`/stations`, method.post(data));
     },
     delete(id) {
-      return fetch(`/stations/${id}`, method.delete());
+      return requestOther(`/stations/${id}`, method.delete());
     }
   };
 
   const line = {
     get() {
-      return request(`/lines`);
+      return requestGetData(`/lines`);
     },
     create(data) {
-      return request(`/lines`, method.post(data));
+      return requestGetData(`/lines`, method.post(data));
     },
     update(data, id) {
-      return fetch(`/lines/${id}`, method.put(data));
+      return requestOther(`/lines/${id}`, method.put(data));
     },
     delete(id) {
-      return fetch(`/lines/${id}`, method.delete());
+      return requestOther(`/lines/${id}`, method.delete());
     }
   };
 
   const edge = {
     get(lineId) {
-      return request(`/lines/${lineId}/stations`);
+      return requestGetData(`/lines/${lineId}/stations`);
     },
     create(lineId, data) {
-      return request(`/lines/${lineId}/stations`, method.post(data));
+      return requestOther(`/lines/${lineId}/stations`, method.post(data));
     },
     delete(lineId, stationId) {
-      return fetch(`/lines/${lineId}/stations/${stationId}`, method.delete());
+      return requestOther(`/lines/${lineId}/stations/${stationId}`, method.delete());
     }
   };
   return {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.admin.dto.StationCreateRequest;
+import wooteco.subway.admin.dto.StationIdResponse;
 import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.StationService;
 
@@ -33,12 +34,12 @@ public class StationController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createStation(@Valid @RequestBody StationCreateRequest request) {
+	public ResponseEntity<StationIdResponse> createStation(@Valid @RequestBody StationCreateRequest request) {
 		Long createdStationId = stationService.create(request.toStation());
 
 		return ResponseEntity
 			.created(URI.create("/stations/" + createdStationId))
-			.build();
+			.body(new StationIdResponse(createdStationId));
 	}
 
 	@DeleteMapping("/{id}")

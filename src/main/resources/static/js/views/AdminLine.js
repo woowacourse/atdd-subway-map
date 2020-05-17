@@ -14,19 +14,19 @@ function AdminLine() {
   let subwayLines = [];
   let selectedSubwayId = null;
 
-  const $createSubwayLineButton = document.querySelector(
-    "#subway-line-create-form #submit-button"
-  );
+  const $createSubwayLineAddButton = document.querySelector("#subway-line-add-btn");
+  const $createSubwayLineFormSubmitButton = document.querySelector("#subway-line-create-form #submit-button");
   const subwayLineModal = new Modal();
 
-  function componentClear() {
+  const onCreateLineFormInitHandler = () => {
     $subwayLineNameInput.value = "";
     $subwayLineStartTimeInput.value = "";
     $subwayLineEndTimeInput.value = "";
     $subwayLineColorInput.value = "";
+    $subwayLineIntervalInput.value = "";
   }
 
-  const onCreateSubwayLine = async event => {
+  const onCreateSubwayLineHandler = async event => {
     event.preventDefault();
     const newSubwayLine = {
       name: $subwayLineNameInput.value,
@@ -42,14 +42,13 @@ function AdminLine() {
           "beforeend",
           subwayLinesTemplate(newSubwayLine)
       );
-      subwayLineModal.toggle();
-      componentClear();
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
+    subwayLineModal.toggle();
   };
 
-  const onDeleteSubwayLine = async event => {
+  const onDeleteSubwayLineHandler = async event => {
     event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -64,7 +63,7 @@ function AdminLine() {
     }
   };
 
-  const onUpdateSubwayLine = async event => {
+  const onUpdateSubwayLineHandler = async event => {
     event.preventDefault();
     const updatedLine = {
       name: $subwayLineNameInput.value,
@@ -79,14 +78,13 @@ function AdminLine() {
           .indexOf(selectedSubwayId);
       subwayLines.splice(index, 1, updatedLine[selectedSubwayId]);
       subwayLineModal.toggle();
-      componentClear();
       changeEvent();
     } catch (e) {
       alert(e);
     }
   }
 
-  const onSelectSubwayLine = event => {
+  const onSelectSubwayLineHandler = event => {
     event.preventDefault();
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
@@ -103,15 +101,15 @@ function AdminLine() {
 
   function changeEvent() {
     if ($subwayLineNameInput.value === "") {
-      $createSubwayLineButton.removeEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
-      $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
+      $createSubwayLineFormSubmitButton.removeEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLineHandler);
+      $createSubwayLineFormSubmitButton.addEventListener(EVENT_TYPE.CLICK, onCreateSubwayLineHandler);
       return;
     }
-    $createSubwayLineButton.removeEventListener(EVENT_TYPE.CLICK, onCreateSubwayLine);
-    $createSubwayLineButton.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLine);
+    $createSubwayLineFormSubmitButton.removeEventListener(EVENT_TYPE.CLICK, onCreateSubwayLineHandler);
+    $createSubwayLineFormSubmitButton.addEventListener(EVENT_TYPE.CLICK, onUpdateSubwayLineHandler);
   }
 
-  const onEditSubwayLine = event => {
+  const onEditSubwayLineHandler = event => {
     event.preventDefault();
     const $target = event.target;
     const isModifyButton = $target.classList.contains("mdi-pencil");
@@ -131,18 +129,14 @@ function AdminLine() {
 
   const initDefaultSubwayLines = async () => {
     subwayLines = await api.line.get();
-    subwayLines.map(line => {
-      $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-        subwayLinesTemplate(line)
-      );
-    });
+    subwayLines.map(line => $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line)));
   };
 
   const initEventListeners = () => {
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLine);
-    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLine);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onSelectSubwayLineHandler);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onDeleteSubwayLineHandler);
+    $subwayLineList.addEventListener(EVENT_TYPE.CLICK, onEditSubwayLineHandler);
+    $createSubwayLineAddButton.addEventListener(EVENT_TYPE.CLICK, onCreateLineFormInitHandler);
     changeEvent();
   };
 
@@ -150,8 +144,7 @@ function AdminLine() {
     event.preventDefault();
     const $target = event.target;
     if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
-        $target.dataset.color;
+      document.querySelector("#subway-line-color").value = $target.dataset.color;
     }
   };
 
@@ -163,10 +156,7 @@ function AdminLine() {
       .map((option, index) => colorSelectOptionTemplate(option, index))
       .join("");
     $colorSelectContainer.insertAdjacentHTML("beforeend", colorSelectTemplate);
-    $colorSelectContainer.addEventListener(
-      EVENT_TYPE.CLICK,
-      onSelectColorHandler
-    );
+    $colorSelectContainer.addEventListener(EVENT_TYPE.CLICK, onSelectColorHandler);
   };
 
   this.init = () => {

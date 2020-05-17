@@ -6,20 +6,20 @@ function AdminStation() {
   const $stationInput = document.querySelector("#station-name");
   const $stationList = document.querySelector("#station-list");
   const $addStationButton = document.querySelector("#station-add-btn");
-  let stationNames = [];
+  let stations = [];
 
   const validateStationName = name => {
     if (!name) {
-      throw ERROR_MESSAGE.NOT_EMPTY;
+      throw new Error(ERROR_MESSAGE.NOT_EMPTY);
     }
     if (REGEX_PATTERN.INTEGER.exec(name)) {
-      throw ERROR_MESSAGE.NOT_INTEGER;
+      throw new Error(ERROR_MESSAGE.NOT_INTEGER);
     }
     if (REGEX_PATTERN.SPACE.exec(name)) {
-      throw ERROR_MESSAGE.NOT_WHITE_SPACE;
+      throw new Error(ERROR_MESSAGE.NOT_WHITE_SPACE);
     }
-    if (stationNames.find(station => station.name === name)) {
-      throw ERROR_MESSAGE.ALREADY_EXIST_STATION;
+    if (stations.find(station => station.name === name)) {
+      throw new Error(ERROR_MESSAGE.ALREADY_EXIST_STATION);
     }
   };
 
@@ -32,39 +32,41 @@ function AdminStation() {
     const stationName = $stationNameInput.value;
     try {
       validateStationName(stationName);
-      const savedStation = await api.station.create({"name": stationName});
-      stationNames = [...stationNames, savedStation];
+      const savedStationId = await api.station.create({name: stationName});
+      const addedStation = {name: stationName, id: savedStationId};
+      stations = [...stations, addedStation];
       $stationNameInput.value = "";
-      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(stationName));
+      $stationList.insertAdjacentHTML("beforeend", listItemTemplate(addedStation));
     } catch (e) {
-      alert(e);
+      alert(e.message);
     }
   };
 
   const onRemoveStationHandler = async event => {
     const $target = event.target;
     const isDeleteButton = $target.classList.contains("mdi-delete");
-    if (isDeleteButton && confirm(CONFIRM_MESSAGE.DELETE)) {
-      const targetName = $target.closest(".list-item").innerText;
-      const targetId = stationNames.find(station => station.name === targetName)["id"];
-      try {
-        await api.station.delete(targetId);
-        $target.closest(".list-item").remove();
-        const index = stationNames.map(subway => subway["id"])
-            .indexOf(targetId);
-        stationNames.splice(index, 1);
-      } catch (e) {
-        alert(e);
-      }
+    if (!isDeleteButton || !confirm(CONFIRM_MESSAGE.DELETE)) {
+      return;
+    }
+    try {
+      const $targetNode = $target.closest(".list-item");
+      const targetName = $targetNode.innerText;
+      const targetId = $targetNode.dataset.stationId;
+      await api.station.delete(targetId);
+      const target = stations.find(station => station === {id: targetId, name: targetName});
+      stations = stations.filter(station => station !== target)
+      $target.closest(".list-item").remove();
+    } catch (e) {
+      alert(e.message);
     }
   };
 
   const initDefaultSubwayLines = async () => {
-    stationNames = await api.station.get();
-    stationNames.map(station => {
+    stations = await api.station.get();
+    stations.map(station => {
       $stationList.insertAdjacentHTML(
           "beforeend",
-          listItemTemplate(station.name)
+          listItemTemplate(station)
       );
     });
   };

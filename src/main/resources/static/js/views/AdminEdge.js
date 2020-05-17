@@ -6,21 +6,20 @@ import api from "../../api/index.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
-  const $addSubwayEdgeButton = document.querySelector("#submit-button");
+  const $addSubwayEdgeSubmitButton = document.querySelector("#submit-button");
   const $selectStationInput = document.querySelector("#station-select-options");
   const $departStationInput = document.querySelector("#depart-station-name");
   const $arriveStationInput = document.querySelector("#arrival-station-name");
-
+  const $addSubwayEdgeButton = document.querySelector("#subway-line-add-btn");
   const createSubwayEdgeModal = new Modal();
 
   let stations = [];
   let lines = [];
 
   const initSubwayLinesSlider = async () => {
-    const subwayLines = await api.line.get();
-    lines = subwayLines;
+    lines = await api.line.get();
     stations = await api.station.get();
-    $subwayLinesSlider.innerHTML = subwayLines
+    $subwayLinesSlider.innerHTML = lines
       .map(line => subwayLinesItemTemplate(line))
       .join("");
     tns({
@@ -37,9 +36,8 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = async () => {
-    const subwayLines = await api.line.get().then();
-    const subwayLineOptionTemplate = subwayLines
+  const initSubwayLineOptions = () => {
+    const subwayLineOptionTemplate = lines
       .map(line => optionTemplate(line.name))
       .join("");
     const $stationSelectOptions = document.querySelector(
@@ -51,17 +49,23 @@ function AdminEdge() {
     );
   };
 
+  const onCreateStationFormHandler = () => {
+    $selectStationInput.value = "";
+    $departStationInput.value = "";
+    $arriveStationInput.value = "";
+  }
+
   const onCreateStationHandler = async event => {
     event.preventDefault();
-    const selectLineName = $selectStationInput.value;
-    const selectDepartStation = $departStationInput.value;
-    const selectArriveStation = $arriveStationInput.value;
+    const lineName = $selectStationInput.value;
+    const preStationName = $departStationInput.value;
+    const stationName = $arriveStationInput.value;
 
-    const lineId = lines.find(line => line.name === selectLineName)["id"];
-    const arriveStation = stations.find(station => station.name === selectArriveStation);
-    const departStation = stations.find(station => station.name === selectDepartStation);
+    const lineId = lines.find(line => line.name === lineName)["id"];
+    const arriveStation = stations.find(station => station.name === stationName);
+    const departStation = stations.find(station => station.name === preStationName);
     const arriveStationId = arriveStation ? arriveStation["id"] : undefined;
-    const departStationId = selectDepartStation === "" ? null : departStation ? departStation["id"] : undefined;
+    const departStationId = preStationName === "" ? null : departStation ? departStation["id"] : undefined;
     if (!lineId || departStationId === undefined || !arriveStationId) {
       alert('유효한 값을 입력해주세요');
       return;
@@ -75,18 +79,11 @@ function AdminEdge() {
 
     try {
       await api.edge.create(lineId, requestData);
-      initSubwayLinesSlider().then();
+      await initSubwayLinesSlider();
       createSubwayEdgeModal.toggle();
-      cleanComponent();
     } catch(e) {
-      alert(e);
+      alert(e.message);
     }
-  };
-
-  const cleanComponent = () => {
-    $selectStationInput.value = "";
-    $departStationInput.value = "";
-    $arriveStationInput.value = "";
   };
 
   const onRemoveStationHandler = async event => {
@@ -108,12 +105,13 @@ function AdminEdge() {
 
   const initEventListeners = () => {
     $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
-    $addSubwayEdgeButton.addEventListener(EVENT_TYPE.CLICK, onCreateStationHandler);
+    $addSubwayEdgeSubmitButton.addEventListener(EVENT_TYPE.CLICK, onCreateStationHandler);
+    $addSubwayEdgeButton.addEventListener(EVENT_TYPE.CLICK, onCreateStationFormHandler)
   };
 
-  this.init = () => {
-    initSubwayLinesSlider().then();
-    initSubwayLineOptions().then();
+  this.init = async () => {
+    await initSubwayLinesSlider();
+    initSubwayLineOptions();
     initEventListeners();
   };
 }
