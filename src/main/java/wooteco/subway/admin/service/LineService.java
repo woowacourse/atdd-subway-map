@@ -65,7 +65,7 @@ public class LineService {
     public LineResponse findLineWithStationsById(Long id) {
         final Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
-        return LineResponse.convert(line, findStationsByLineId(line.findLineStationsId()));
+        return LineResponse.of(line, findStationsByLineId(line.findLineStationsId()));
     }
 
     public Set<StationResponse> findStationsByLineId(List<Long> stationIds) {

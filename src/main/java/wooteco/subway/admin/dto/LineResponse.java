@@ -50,11 +50,6 @@ public class LineResponse {
             line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), stationResponses);
     }
 
-    public static LineResponse convert(Line line, Set<StationResponse> stationsByLineId) {
-        final LineResponse lineResponse = LineResponse.of(line, stationsByLineId);
-        return lineResponse;
-    }
-
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
             .map(it -> LineResponse.of(it))

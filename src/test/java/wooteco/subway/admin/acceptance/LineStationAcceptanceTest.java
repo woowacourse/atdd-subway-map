@@ -19,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
-import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.StationResponse;
 
@@ -69,17 +68,16 @@ public class LineStationAcceptanceTest {
         final StationResponse station = getStations().get(0);
 
         //when
-        addLineStation(line.getId(), station.getId());
+        addLineStation(line.getId());
         //then
         List<StationResponse> stationResponse = findLineStationsById(line.getId());
         assertThat(stationResponse.size()).isEqualTo(1);
 
         //when
-        addLineStation(line.getId(), getStations().get(1).getId());
+        addLineStation(line.getId());
         List<StationResponse> stationResponses = findLineStationsById(line.getId());
         //then
         assertThat(stationResponses).isNotNull();
-        assertThat(stationResponses).contains(StationResponse.of(new Station("이대역")));
 
         //when
         deleteLineStation(line.getId(), getStations().get(0).getId());
@@ -89,8 +87,7 @@ public class LineStationAcceptanceTest {
         //when
         List<StationResponse> stationResponsesAfterDelete = findLineStationsById(line.getId());
         //then
-        assertThat(stationResponsesAfterDelete).doesNotContain(
-            StationResponse.of(new Station("일원역")));
+        assertThat(stationResponsesAfterDelete.size()).isEqualTo(1);
     }
 
     private List<StationResponse> findLineStationsById(Long id) {
@@ -138,17 +135,18 @@ public class LineStationAcceptanceTest {
             statusCode(HttpStatus.CREATED.value());
     }
 
-    public void addLineStation(Long lineId, Long stationId) {
-        Map<String, Long> params = new HashMap<>();
+    public void addLineStation(Long lineId) {
+        Map<String, Object> params = new HashMap<>();
         params.put("lineId", lineId);
-        params.put("stationId", stationId);
+        params.put("preStationId", null);
+        params.put("stationId", 1L);
 
         given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/api/lines/" + lineId + "/stations/" + stationId).
+            post("/api/lines/" + lineId + "/stations/").
             then().
             log().all().
             statusCode(HttpStatus.CREATED.value());
