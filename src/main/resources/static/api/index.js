@@ -30,38 +30,43 @@ const api = (() => {
     const requestWithData = (uri, config) => fetch(uri, config).then(data => data.json());
     const requestWithNoData = (uri, config) => fetch(uri, config);
     const station = {
-        get() {
+        getAll() {
             return requestWithData(`/stations`);
+        },
+        getById(id) {
+            return requestWithData(`/stations/${id}`);
         },
         create(data) {
             return requestWithNoData(`/stations`, METHOD.POST(data));
         },
-        update(data, id) {
-            return requestWithData(`/stations/${id}`, METHOD.PUT(data));
-        },
         delete(id) {
-            return fetch(`/stations/${id}`, METHOD.DELETE()).then()
-            // return request(`/stations/${id}`, METHOD.DELETE());
+            return requestWithNoData(`/stations/${id}`, METHOD.DELETE());
         }
     };
     const line = {
-        get(path = "") {
-            return requestWithData(`/lines` + path);
+        getAll() {
+            return requestWithData(`/lines`);
         },
-
+        getLinesWithStations() {
+            return requestWithData(`/lines/stations`);
+        },
         getById(id) {
             return requestWithData(`/lines/${id}`);
         },
-        create(data, path = "",) {
-            return fetch(`/lines${path}`, METHOD.POST(data)).then()
-            // return request(`/lines${path}` , METHOD.POST(data));
+        create(data) {
+            return requestWithNoData(`/lines`, METHOD.POST(data))
+        },
+        createLineStation(lineId, data) {
+            return requestWithNoData(`/lines/${lineId}/stations`, METHOD.POST(data));
         },
         update(id, data) {
             return requestWithNoData(`/lines/${id}`, METHOD.PUT(data));
         },
         delete(id) {
-            return fetch(`/lines/${id}`, METHOD.DELETE()).then()
-            // return request(`/lines/${id}`, METHOD.DELETE());
+            return requestWithNoData(`/lines/${id}`, METHOD.DELETE());
+        },
+        deleteLineStation(lineId, stationId){
+            return requestWithNoData(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
     return {

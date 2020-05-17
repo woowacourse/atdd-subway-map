@@ -2,7 +2,6 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
@@ -10,6 +9,7 @@ import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,14 +28,16 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody @Valid LineRequest view) {
+    public ResponseEntity<Void> createLine(@RequestBody @Valid LineRequest view) {
         LineResponse persistLine = lineService.save(view);
-        return new ResponseEntity(persistLine, HttpStatus.CREATED);
+        return ResponseEntity
+                .created(URI.create(String.valueOf(persistLine.getId())))
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity showLine(@PathVariable Long id) {
-        return new ResponseEntity(lineService.findById(id), HttpStatus.OK);
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        return new ResponseEntity<>(lineService.findById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -47,9 +49,11 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @GetMapping("/stations")
@@ -62,7 +66,7 @@ public class LineController {
     public ResponseEntity<Void> addStationByLineId(@PathVariable Long lineId, @RequestBody @Valid LineStationCreateRequest request) {
         lineService.addLineStation(lineId, request);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .created(URI.create("/lines/" + lineId))
                 .build();
     }
 
@@ -73,10 +77,10 @@ public class LineController {
     }
 
     @DeleteMapping("{lineId}/stations/{stationId}")
-    public ResponseEntity deleteStationByLineId(@PathVariable Long lineId, @PathVariable Long stationId) {
+    public ResponseEntity<Void> deleteStationByLineId(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.deleteStationByLineIdAndStationId(lineId, stationId);
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .noContent()
                 .build();
     }
 }

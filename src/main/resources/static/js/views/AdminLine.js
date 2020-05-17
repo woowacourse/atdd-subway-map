@@ -20,7 +20,7 @@ function AdminLine() {
 
     const subwayLineModal = new Modal();
 
-    const onCreateSubwayLine = () => {
+    const onCreateSubwayLine = async () => {
         let newSubwayLine = {
             title: $subwayLineNameInput.value,
             startTime: $subwayLineFirstTimeInput.value,
@@ -28,15 +28,19 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.create(newSubwayLine)
-            .then(line => {
+        await api.line.create(newSubwayLine).then(response => {
+            if (response.status !== 201) {
+                alert("새로운 노선을 추가하지 못했습니다.")
+            }
+            let location = response.headers.get('Location');
+            api.line.getById(location).then(response => {
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
-                    subwayLinesTemplate(line)
+                    subwayLinesTemplate(response)
                 );
                 subwayLineModal.toggle();
             })
-        window.location.reload();
+        })
     };
 
     const onDeleteSubwayLine = event => {
@@ -44,8 +48,10 @@ function AdminLine() {
         const $subwayLineItem = $target.closest(".subway-line-item");
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            api.line.delete($subwayLineItem.dataset.lineId).then(() => {
-                $subwayLineItem.remove();
+            api.line.delete($subwayLineItem.dataset.lineId).then((response) => {
+                if (response.status === 204) {
+                    $subwayLineItem.remove();
+                }
             })
         }
     };
@@ -82,15 +88,16 @@ function AdminLine() {
             bgColor: $subwayLineColorInput.value
         };
         await api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then(response => {
-            if (response.status === 400) {
+            if (response.status !== 204) {
                 alert("업데이트 중 오류가 발생했습니다.");
+                return;
             }
+            api.line.getById($activeSubwayLineItem.dataset.lineId).then(line => {
+                subwayLineModal.toggle();
+                subwayLinesTemplate(line);
+                window.location.reload();
+            })
         })
-
-        await api.line.getById($activeSubwayLineItem.dataset.lineId).then(response => {
-            subwayLinesTemplate(response);
-        })
-        subwayLineModal.toggle();
     };
 
     const onSubmitHandler = (event) => {
@@ -112,7 +119,7 @@ function AdminLine() {
     }
 
     const initDefaultSubwayLines = () => {
-        api.line.get().then(lines => {
+        api.line.getAll().then(lines => {
             lines.map(line => {
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",

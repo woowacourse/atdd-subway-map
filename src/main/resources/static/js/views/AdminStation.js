@@ -6,7 +6,7 @@ function AdminStation() {
     const $stationInput = document.querySelector("#station-name");
     const $stationList = document.querySelector("#station-list");
     const $stationAddButton = document.querySelector("#station-add-btn");
-    const onAddStationHandler = event => {
+    const onAddStationHandler = async event => {
         if (event.key !== KEY_TYPE.ENTER && event.type !== 'click') {
             return;
         }
@@ -34,11 +34,16 @@ function AdminStation() {
             return;
         }
         $stationNameInput.value = "";
-        api.station
-            .create({'name': stationName})
-            .then(data => $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data))
-            )
-            .catch(error => alert("에러가 발생했습니다."));
+        await api.station
+            .create({'name': stationName}).then(response => {
+                if (response.status !== 201) {
+                    alert("역이 추가되지 않았습니다.");
+                    return;
+                }
+                let location = response.headers.get('Location');
+                api.station.getById(location).then(data =>
+                    $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data)))
+            })
     };
     const onRemoveStationHandler = event => {
         const $target = event.target;
@@ -58,7 +63,7 @@ function AdminStation() {
         $stationList.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     };
     const initStations = () => {
-        api.station.get()
+        api.station.getAll()
             .then(res => res.forEach(data =>
                 $stationList.insertAdjacentHTML("beforeend", listItemTemplate(data))
             ))

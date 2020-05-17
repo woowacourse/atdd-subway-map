@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class LineService {
-    final private LineRepository lineRepository;
-    final private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -39,7 +39,6 @@ public class LineService {
     }
 
     private void throwDuplicateException(Line line) {
-        System.out.println("중복 발생");
         throw new DuplicateLineException(line.getTitle());
     }
 
@@ -78,31 +77,51 @@ public class LineService {
         return stationRepository.findAll();
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        if (request.hasNotAnyId()) {
-            convertNameToId(request);
-        }
-        Line line = lineRepository.findById(id)
+    public void addLineStation(Long lineId, LineStationCreateRequest request) {
+        Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
-
-        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
-                request.getDistance(), request.getDuration());
-
-        line.addLineStation(lineStation);
-        lineRepository.save(line);
-    }
-
-    private void convertNameToId(LineStationCreateRequest request) {
-        if (!request.getPreStationName().isEmpty()) {
+        if (request.getPreStationName().isEmpty()) {
+            Station station = stationRepository.findByName(request.getStationName())
+                    .orElseThrow(NoSuchElementException::new);
+            LineStation lineStation =
+                    new LineStation(null, station.getId(), request.getDistance(), request.getDuration());
+            line.addLineStation(lineStation);
+        } else {
             Station preStation = stationRepository.findByName(request.getPreStationName())
-                    .orElseThrow(IllegalArgumentException::new);
-            request.setPreStationId(preStation.getId());
+                    .orElseThrow(NoSuchElementException::new);
+            Station station = stationRepository.findByName(request.getStationName())
+                    .orElseThrow(NoSuchElementException::new);
+            LineStation lineStation =
+                    new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
+            line.addLineStation(lineStation);
         }
-        Station station = stationRepository.findByName(request.getStationName())
-                .orElseThrow(IllegalArgumentException::new);
-        request.setStationId(station.getId());
 
+        lineRepository.save(line);
+
+//        if (request.hasNotAnyId()) {
+//            convertNameToId(request);
+//        }
+//        Line line = lineRepository.findById(id)
+//                .orElseThrow(NoSuchElementException::new);
+//
+//        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
+//                request.getDistance(), request.getDuration());
+//
+//        line.addLineStation(lineStation);
+//        lineRepository.save(line);
     }
+
+//    private void convertNameToId(LineStationCreateRequest request) {
+//        if (!request.getPreStationName().isEmpty()) {
+//            Station preStation = stationRepository.findByName(request.getPreStationName())
+//                    .orElseThrow(IllegalArgumentException::new);
+//            request.setPreStationId(preStation.getId());
+//        }
+//        Station station = stationRepository.findByName(request.getStationName())
+//                .orElseThrow(IllegalArgumentException::new);
+//        request.setStationId(station.getId());
+//
+//    }
 
     public List<LineResponse> findAllStationsWithLine() {
         List<Line> lines = lineRepository.findAll();

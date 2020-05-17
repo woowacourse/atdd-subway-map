@@ -3,6 +3,7 @@ import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js";
+
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
     const $subwayLinesSubmitButton = document.querySelector("#submit-button");
@@ -45,7 +46,7 @@ function AdminEdge() {
         const lineId = $target.closest(".slider-list").querySelector(
             ".lint-title").dataset.lineId;
         const stationId = $target.closest(".list-item").dataset.stationId;
-        api.line.delete(`/${lineId}/stations/${stationId}`)
+        api.line.deleteLineStation(lineId, stationId)
             .then(() =>
                 $target.closest(".list-item").remove()
             ).catch(err => alert(err));
@@ -67,12 +68,15 @@ function AdminEdge() {
             duration: 0,
         };
         console.log(lineStationInfo);
-        api.line.create(lineStationInfo, `/${lineId}/stations`).then(res => {
-            if (res.status === 201) {
-                window.location.reload();
+        api.line.createLineStation(lineId, lineStationInfo).then(res => {
+            if (res.status !== 201) {
+                alert("추가 중 오류가 발생했습니다.");
+                return;
             }
+            window.location.reload();
         });
     };
+
     const initEventListeners = () => {
         $subwayLinesSlider.addEventListener(
             EVENT_TYPE.CLICK,
@@ -84,11 +88,12 @@ function AdminEdge() {
         )
     };
     this.init = async () => {
-        const lines = await api.line.get("/stations").then(res => res);
+        const lines = await api.line.getLinesWithStations().then(res => res);
         initSubwayLinesSlider(lines);
         initSubwayLineOptions(lines);
         initEventListeners();
     };
 }
+
 const adminEdge = new AdminEdge();
 adminEdge.init();
