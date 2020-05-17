@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.admin.common.exception.SubwayException;
 import wooteco.subway.admin.station.domain.Station;
 import wooteco.subway.admin.station.repository.StationRepository;
 import wooteco.subway.admin.station.service.dto.StationResponse;
@@ -21,7 +22,7 @@ public class StationService {
 	@Transactional
 	public StationResponse save(final Station station) {
 		if (stationRepository.findByName(station.getName()).isPresent()) {
-			throw new IllegalArgumentException("중복된 이름의 역이 존재합니다.");
+			throw new SubwayException("중복된 이름의 역이 존재합니다.");
 		}
 
 		return StationResponse.of(stationRepository.save(station));

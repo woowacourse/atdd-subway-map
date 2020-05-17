@@ -2,13 +2,10 @@ package wooteco.subway.admin.line.service.dto.edge;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.lang.Nullable;
-
 import wooteco.subway.admin.line.domain.edge.LineStation;
 
 public class LineStationCreateRequest {
 
-	@Nullable
 	private Long preStationId;
 
 	@NotNull

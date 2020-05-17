@@ -42,21 +42,21 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
-		                        line.getEndTime(), line.getIntervalTime(), line.getBgColor(),
-		                        line.getCreatedAt(), line.getUpdatedAt(), new LinkedList<>());
+			line.getEndTime(), line.getIntervalTime(), line.getBgColor(),
+			line.getCreatedAt(), line.getUpdatedAt(), new LinkedList<>());
 	}
 
 	public static LineResponse of(Line line, List<Station> stations) {
 		return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
-		                        line.getEndTime(), line.getIntervalTime(), line.getBgColor(),
-		                        line.getCreatedAt(), line.getUpdatedAt(),
-		                        StationResponse.listOf(stations));
+			line.getEndTime(), line.getIntervalTime(), line.getBgColor(),
+			line.getCreatedAt(), line.getUpdatedAt(),
+			StationResponse.listOf(stations));
 	}
 
 	public static List<LineResponse> listOf(List<Line> lines) {
 		return lines.stream()
-		            .map(LineResponse::of)
-		            .collect(Collectors.toList());
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
 	}
 
 	public Long getId() {

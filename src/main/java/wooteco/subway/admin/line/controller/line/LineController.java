@@ -31,36 +31,41 @@ public class LineController {
 
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> get() {
-		return ResponseEntity.ok()
-		                     .body(lineService.findAll());
+		return ResponseEntity
+			.ok()
+			.body(lineService.findAll());
 	}
 
 	@PostMapping
 	public ResponseEntity<LineResponse> save(@RequestBody @Valid LineRequest request) {
 		final LineResponse response = lineService.save(request.toLine());
-		return ResponseEntity.created(URI.create("/lines/" + response.getId()))
-		                     .body(response);
+		return ResponseEntity
+			.created(URI.create("/lines/" + response.getId()))
+			.body(response);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> getById(@PathVariable Long id) {
-		return ResponseEntity.ok()
-		                     .body(lineService.findLineWithStationsById(id));
+		return ResponseEntity
+			.ok()
+			.body(lineService.findLineWithStationsById(id));
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<LineResponse> modify(@PathVariable Long id,
 		@RequestBody LineRequest request) {
 		lineService.update(id, request.toLine());
-		return ResponseEntity.noContent()
-		                     .build();
+		return ResponseEntity
+			.noContent()
+			.build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> remove(@PathVariable Long id) {
 		lineService.delete(id);
-		return ResponseEntity.noContent()
-		                     .build();
+		return ResponseEntity
+			.noContent()
+			.build();
 	}
 
 }

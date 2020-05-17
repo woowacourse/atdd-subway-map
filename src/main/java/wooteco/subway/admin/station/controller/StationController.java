@@ -40,7 +40,7 @@ public class StationController {
 		final StationResponse response = stationService.save(request.toStation());
 
 		return ResponseEntity.created(URI.create("/stations/" + response.getId()))
-		                     .body(response);
+			.body(response);
 	}
 
 	@DeleteMapping("/{id}")
@@ -48,7 +48,7 @@ public class StationController {
 		stationService.delete(id);
 
 		return ResponseEntity.noContent()
-		                     .build();
+			.build();
 	}
 
 }

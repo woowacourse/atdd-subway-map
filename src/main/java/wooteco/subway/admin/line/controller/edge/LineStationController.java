@@ -28,16 +28,20 @@ public class LineStationController {
 	public ResponseEntity<LineResponse> save(@PathVariable Long lineId,
 		@RequestBody @Valid LineStationCreateRequest request) {
 		lineService.save(lineId, request);
-		return ResponseEntity.noContent()
-		                     .build();
+
+		return ResponseEntity
+			.noContent()
+			.build();
 	}
 
 	@DeleteMapping("/{lineId}/stations/{stationId}")
 	public ResponseEntity<Void> deleteLineStation(@PathVariable Long lineId,
 		@PathVariable Long stationId) {
 		lineService.delete(lineId, stationId);
-		return ResponseEntity.noContent()
-		                     .build();
+
+		return ResponseEntity
+			.noContent()
+			.build();
 	}
 
 }

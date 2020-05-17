@@ -15,12 +15,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 
+import wooteco.subway.admin.common.exception.SubwayException;
 import wooteco.subway.admin.line.domain.edge.LineStation;
 
 public class Line {
-
-	public static final int HEAD_LINE_STATION_INDEX = 0;
-	public static final Long HEAD_STATION_ID = null;
 
 	@Id
 	@Column("id")
@@ -155,7 +153,7 @@ public class Line {
 
 	private void checkHeadStationByPreStationId(Long preStationId) {
 		if (Objects.nonNull(preStationId)) {
-			throw new IllegalArgumentException("출발역이 존재하지 않습니다.");
+			throw new SubwayException("출발역이 존재하지 않습니다.");
 		}
 	}
 
@@ -164,25 +162,25 @@ public class Line {
 			findLineStationByStationId(lineStation.getStationId());
 
 		if (foundLineStation.isPresent()) {
-			throw new IllegalArgumentException("이미 존재하는 역입니다.");
+			throw new SubwayException("이미 존재하는 역입니다.");
 		}
 	}
 
 	private Optional<LineStation> findLineStationByStationId(Long stationId) {
 		return stations.stream()
-		               .filter(lineStation -> lineStation.isSameStation(stationId))
-		               .findFirst();
+			.filter(lineStation -> lineStation.isSameStation(stationId))
+			.findFirst();
 	}
 
 	private Optional<LineStation> findLineStationByPreStationId(Long preStationId) {
 		return stations.stream()
-		               .filter(lineStation -> lineStation.isSamePreStation(preStationId))
-		               .findFirst();
+			.filter(lineStation -> lineStation.isSamePreStation(preStationId))
+			.findFirst();
 	}
 
 	public void removeLineStationById(Long stationId) {
 		final LineStation targetLineStation = findLineStationByStationId(stationId)
-			.orElseThrow(() -> new IllegalArgumentException("삭제하려는 역이 존재하지 않습니다."));
+			.orElseThrow(() -> new SubwayException("삭제하려는 역이 존재하지 않습니다."));
 
 		stations.remove(targetLineStation);
 		findLineStationByPreStationId(stationId)
@@ -191,7 +189,7 @@ public class Line {
 
 	public List<Long> getLineStationsId() {
 		return stations.stream()
-		               .map(LineStation::getStationId)
-		               .collect(toList());
+			.map(LineStation::getStationId)
+			.collect(toList());
 	}
 }
