@@ -2,10 +2,10 @@ package wooteco.subway.admin.controller;
 
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class Advice {
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity handler(Exception e) {

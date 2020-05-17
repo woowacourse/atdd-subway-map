@@ -8,6 +8,9 @@ public class StationCreateRequest {
 	@NotBlank
 	private String name;
 
+	private StationCreateRequest() {
+	}
+
 	public String getName() {
 		return name;
 	}

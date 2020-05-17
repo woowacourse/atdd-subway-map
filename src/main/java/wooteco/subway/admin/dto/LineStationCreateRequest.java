@@ -14,7 +14,7 @@ public class LineStationCreateRequest {
 	@Min(1)
 	private int duration;
 
-	public LineStationCreateRequest() {
+	private LineStationCreateRequest() {
 	}
 
 	public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {

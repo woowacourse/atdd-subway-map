@@ -32,7 +32,6 @@ function AdminLine() {
         if (res.status !== statusCode) {
             res.json().then(data => {
                 let errors = "";
-                console.log(data["errors"]);
                 data["errors"].forEach(
                     err => errors += err['defaultMessage']
                 );

@@ -12,7 +12,7 @@ public class LineStationCreateByNameRequest {
 	@Min(1)
 	private int duration;
 
-	public LineStationCreateByNameRequest() {
+	private LineStationCreateByNameRequest() {
 	}
 
 	public LineStationCreateByNameRequest(String preStationName, String stationName, int distance, int duration) {

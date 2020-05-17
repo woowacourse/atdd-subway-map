@@ -25,7 +25,6 @@ import wooteco.subway.admin.service.LineService;
 @RestController
 @RequestMapping("/api/lines")
 public class LineController {
-
 	private final LineService lineService;
 
 	public LineController(LineService lineService) {
