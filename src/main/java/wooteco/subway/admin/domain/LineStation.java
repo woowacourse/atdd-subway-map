@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -38,6 +39,22 @@ public class LineStation {
 
 	public boolean isStartStation() {
 		return preStationId == null;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		final LineStation that = (LineStation)o;
+		return Objects.equals(preStationId, that.preStationId) &&
+			stationId.equals(that.stationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(preStationId, stationId);
 	}
 
 	public LocalDateTime getCreatedAt() {

@@ -72,15 +72,8 @@ public class Line {
 	}
 
 	private boolean alreadyExists(LineStation lineStation) {
-		for (LineStation station : stations) {
-			if (Objects.isNull(lineStation.getPreStationId()) || Objects.isNull(station.getPreStationId())) {
-				return Objects.isNull(lineStation.getPreStationId()) && Objects.isNull(station.getPreStationId())
-					&& lineStation.getStationId().equals(station.getStationId());
-			}
-			return lineStation.getPreStationId().equals(station.getPreStationId())
-				&& lineStation.getStationId().equals(station.getStationId());
-		}
-		return false;
+		return stations.stream()
+			.anyMatch(station -> Objects.equals(station, lineStation));
 	}
 
 	public void removeLineStationById(Long stationId) {
