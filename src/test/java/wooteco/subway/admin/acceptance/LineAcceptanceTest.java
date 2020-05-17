@@ -1,15 +1,8 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,9 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -33,50 +38,54 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
-        // when
+        // when 노선을 추가하는 요청을 한다.
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
         createLine("3호선");
-        // then
+        createLine("3호선");
+        // and 노선 목록을 요청한다.
         List<LineResponse> lines = getLines();
+        // then 노선이 추가되었다.
         assertThat(lines.size()).isEqualTo(4);
 
-        // when
+        // when 노선 목록을 요청하고, 첫 번째 노선을 불러온다.
         LineResponse line = getLine(lines.get(0).getId());
-        // then
+        // then 추가한 노선과 일치한다.
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
 
-        // when
+        // when 노선 정보 수정을 요청한다.
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
-        //then
+        // then 노선이 수정되었다.
         LineResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-        // when
+        // when 노선 삭제를 요청한다.
         deleteLine(line.getId());
-        // then
+        // then 노선이 삭제되었다.
         List<LineResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
     private LineResponse getLine(Long id) {
-        return given().when().
-                        get("/lines/" + id).
-                then().
-                        log().all().
-                        extract().as(LineResponse.class);
+        // @formatter:off
+        return given()
+        .when()
+            .get("/lines/" + id)
+        .then()
+            .log().all()
+            .extract().as(LineResponse.class);
+        // @formatter:on
     }
 
     private void createLine(String name) {
@@ -85,16 +94,21 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-
-        given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
+        params.put("bgColor", "bg-gray-100");
+        // @formatter:off
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .post("/lines")
+        .then()
+            .log().all()
+            .statusCode(anyOf(
+                is(HttpStatus.CREATED.value()),
+                is(HttpStatus.BAD_REQUEST.value()))
+            );
+        // @formatter:on
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
@@ -102,34 +116,38 @@ public class LineAcceptanceTest {
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
-
-        given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                put("/lines/" + id).
-        then().
-                log().all().
-                statusCode(HttpStatus.OK.value());
+        // @formatter:off
+        given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+            .put("/lines/" + id)
+        .then()
+            .log().all()
+            .statusCode(HttpStatus.OK.value());
+        // @formatter:on
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
-                when().
-                        get("/lines").
-                then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+        // @formatter:off
+        return given().
+            when().
+                get("/lines").
+            then().
+                log().all().
+                extract().
+                jsonPath().getList(".", LineResponse.class);
+        // @formatter:on
     }
 
     private void deleteLine(Long id) {
-        given().
-                when().
-                delete("/lines/" + id).
-                then().
-                log().all();
+        // @formatter:off
+        given()
+        .when()
+            .delete("/lines/" + id)
+        .then()
+            .log().all();
+        // @formatter:on
     }
 }
