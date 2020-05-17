@@ -18,6 +18,7 @@ import wooteco.subway.admin.dto.ErrorResponse;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exception.LineStationNotFoundException;
 import wooteco.subway.admin.service.LineService;
 
 /**
@@ -88,8 +89,8 @@ public class LineController {
 		return ResponseEntity.ok(lineService.findAllLineWithStations());
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity handleException(Exception e) {
+	@ExceptionHandler(LineStationNotFoundException.class)
+	public ResponseEntity handleException(LineStationNotFoundException e) {
 		return ResponseEntity.badRequest().body(ErrorResponse.of(e.getMessage()));
 	}
 }

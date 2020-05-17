@@ -25,12 +25,17 @@ const METHOD = {
 };
 
 const api = (() => {
-    const request = (uri, config) => fetch(uri, config).then(data => {
-        if (data.status === 400) {
-            throw data.json();
+    const request = (uri, config) => fetch(uri, config).then(async data => {
+        if (!data.ok) {
+            let error = null;
+            await data.json().then(message => {
+                error = new Error(message.errorMessage);
+            });
+            throw error;
+        } else {
+            return data.json();
         }
-        return data.json();
-    }).catch(e => e.then(message => alert(message.errorMessage)));
+    }).catch(e => alert(e.message));
 
     const station = {
         get() {
