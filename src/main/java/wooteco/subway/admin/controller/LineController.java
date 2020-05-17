@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,7 +37,7 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLine(@RequestBody final LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
 		Line line = lineRequest.toLine();
 		LineResponse lineResponse = lineService.save(line);
 
@@ -46,51 +47,51 @@ public class LineController {
 	}
 
 	@GetMapping
-	public ResponseEntity showLines() {
+	public ResponseEntity<List<LineResponse>> showLines() {
 		return ResponseEntity.ok(lineService.showLines());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity showLine(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 		return ResponseEntity.ok(lineService.findById(id));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
 		return ResponseEntity.ok(lineService.updateLine(id, lineRequest.toLine()));
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity deleteLine(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
 		lineService.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{id}/stations")
-	public ResponseEntity addLineStation(@PathVariable Long id,
+	public ResponseEntity<Void> addLineStation(@PathVariable Long id,
 		@RequestBody LineStationCreateRequest lineStationCreateRequest) {
 		lineService.addLineStation(id, lineStationCreateRequest);
 		return ResponseEntity.created(URI.create("/lines/" + id + "/stations")).build();
 	}
 
 	@DeleteMapping("/{lineId}/stations/{stationId}")
-	public ResponseEntity removeLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+	public ResponseEntity<Void> removeLineStation(@PathVariable Long lineId, @PathVariable Long stationId) {
 		lineService.removeLineStation(lineId, stationId);
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/{id}/stations")
-	public ResponseEntity findLineWithStationsById(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> findLineWithStationsById(@PathVariable Long id) {
 		return ResponseEntity.ok(lineService.findLineWithStationsById(id));
 	}
 
 	@GetMapping("/stations")
-	public ResponseEntity findAllLineWithStations() {
+	public ResponseEntity<List<LineResponse>> findAllLineWithStations() {
 		return ResponseEntity.ok(lineService.findAllLineWithStations());
 	}
 
 	@ExceptionHandler(LineStationNotFoundException.class)
-	public ResponseEntity handleException(LineStationNotFoundException e) {
+	public ResponseEntity<ErrorResponse> handleException(LineStationNotFoundException e) {
 		return ResponseEntity.badRequest().body(ErrorResponse.of(e.getMessage()));
 	}
 }
