@@ -1,4 +1,4 @@
-package wooteco.subway.admin.common.controller;
+package wooteco.subway.admin.common.advice;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
