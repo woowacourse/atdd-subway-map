@@ -37,8 +37,8 @@ public class Line {
 
 	public static Line of(String name, String color, LocalTime startTime, LocalTime endTime, int intervalTime,
 		Set<LineStation> stations) {
-		return new Line(null, name, color, startTime, endTime, intervalTime, stations, LocalDateTime.now(),
-			LocalDateTime.now());
+		LocalDateTime currentTime = LocalDateTime.now();
+		return new Line(null, name, color, startTime, endTime, intervalTime, stations, currentTime, currentTime);
 	}
 
 	public Line update(Line line) {
