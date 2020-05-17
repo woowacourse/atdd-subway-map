@@ -10,7 +10,7 @@ import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.exception.LineStationNotFound;
+import wooteco.subway.admin.exception.LineStationNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -49,7 +49,7 @@ public class LineService {
 
 	public void addLineStation(Long id, LineStationCreateRequest lineStationCreateRequest) {
 		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new LineStationNotFound("찾는 LineStation이 없습니다!"));
+			.orElseThrow(() -> new LineStationNotFoundException("찾는 LineStation이 없습니다!"));
 		line.addLineStation(lineStationCreateRequest.toLineStation());
 		lineRepository.save(line);
 	}

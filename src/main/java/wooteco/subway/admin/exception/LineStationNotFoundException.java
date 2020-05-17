@@ -5,8 +5,8 @@ package wooteco.subway.admin.exception;
  *
  *    @author HyungJu An
  */
-public class LineStationNotFound extends RuntimeException {
-	public LineStationNotFound(final String message) {
+public class LineStationNotFoundException extends RuntimeException {
+	public LineStationNotFoundException(final String message) {
 		super(message);
 	}
 }
