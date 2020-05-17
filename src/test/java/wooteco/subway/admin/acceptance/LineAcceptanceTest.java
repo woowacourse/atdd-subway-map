@@ -5,11 +5,14 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineWithStationsResponse;
+import wooteco.subway.admin.repository.LineRepository;
+import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -21,11 +24,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
+    @Autowired
+    private LineRepository lineRepository;
+    @Autowired
+    private StationRepository stationRepository;
+
     @LocalServerPort
     int port;
 
     @BeforeEach
     void setUp() {
+        lineRepository.deleteAll();
+        stationRepository.deleteAll();
         RestAssured.port = port;
     }
 
@@ -33,6 +43,7 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
+    // @formatter:off
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -43,40 +54,41 @@ public class LineAcceptanceTest {
         createLine("2호선");
         createLine("3호선");
         // then
-        List<LineResponse> lines = getLines();
+        List<LineWithStationsResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
         // when
-        LineResponse line = getLine(lines.get(0).getId());
+        LineWithStationsResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
         assertThat(line.getName()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
+        assertThat(line.getLineColor()).isNotNull();
 
         // when
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
         //then
-        LineResponse updatedLine = getLine(line.getId());
+        LineWithStationsResponse updatedLine = getLine(line.getId());
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
         // when
         deleteLine(line.getId());
         // then
-        List<LineResponse> linesAfterDelete = getLines();
+        List<LineWithStationsResponse> linesAfterDelete = getLines();
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
+    private LineWithStationsResponse getLine(Long id) {
         return given().when().
                         get("/lines/" + id).
                 then().
                         log().all().
-                        extract().as(LineResponse.class);
+                        extract().as(LineWithStationsResponse.class);
     }
 
     private void createLine(String name) {
@@ -85,6 +97,7 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("lineColor", "bg-pink-700");
 
         given().
                 body(params).
@@ -114,7 +127,7 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineResponse> getLines() {
+    private List<LineWithStationsResponse> getLines() {
         return
                 given().
                 when().
@@ -122,7 +135,7 @@ public class LineAcceptanceTest {
                 then().
                         log().all().
                         extract().
-                        jsonPath().getList(".", LineResponse.class);
+                        jsonPath().getList(".", LineWithStationsResponse.class);
     }
 
     private void deleteLine(Long id) {
@@ -132,4 +145,6 @@ public class LineAcceptanceTest {
                 then().
                 log().all();
     }
+    // @formatter:on
+
 }
