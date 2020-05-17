@@ -46,25 +46,36 @@ public class LineStationAcceptanceTest {
     @TestFactory
     Collection<DynamicTest> dynamicTests() {
         return Arrays.asList(
-            dynamicTest("add line and stations", () -> {
-                // Given 지하철역이 여러 개 추가되어있다.
-                createStation("잠실역");
-                createStation("종합운동장역");
-                createStation("선릉역");
-                createStation("강남역");
-                // And 지하철 노선이 추가되어있다.
-                createLine("신분당선");
+            dynamicTest("add stations", () -> {
+                // given
+                List<String> stationNames = Arrays.asList("잠실역", "종합운동장역", "선릉역", "강남역");
+
+                // when
+                for (String stationName : stationNames) {
+                    createStation(stationName);
+                }
+
+                // then
                 List<StationResponse> stations = getStations();
-                List<LineResponse> lines = getLines();
-                // Then 지하철과 노선이 등록되었다.
                 assertThat(stations.size()).isEqualTo(4);
+            }),
+            dynamicTest("add line", () -> {
+                // given
+                String lineName = "신분당선";
+
+                // when
+                createLine(lineName);
+
+                // then
+                List<LineResponse> lines = getLines();
                 assertThat(lines.size()).isEqualTo(1);
             }),
             dynamicTest("add stations to line", () -> {
-                // Given 지하철역 목록을 조회한다.
+                // given
                 List<StationResponse> stations = getStations();
-                // When 지하철 노선에 지하철역을 등록하는 요청을 한다.
                 LineResponse line = getLines().get(0);
+
+                // when
                 addLineStation(String.valueOf(line.getId()), null,
                     String.valueOf(stations.get(0).getId()),
                     "10", "10");
@@ -76,44 +87,53 @@ public class LineStationAcceptanceTest {
                     String.valueOf(stations.get(2).getId()), "10", "10");
                 addLineStation(String.valueOf(line.getId()), null,
                     String.valueOf(stations.get(3).getId()), "10", "10");
+
+                // then
                 LineStationsResponse lineStations = getLineStations(line.getId());
-                // Then 지하철역이 노선에 추가 되었다.
                 assertThat(lineStations.getStations().size()).isEqualTo(4);
             }),
             dynamicTest("search added stations to line", () -> {
-                // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
+                // given
                 LineResponse line = getLines().get(0);
                 List<StationResponse> stations = getStations();
                 LineStationsResponse lineStationsResponse = getLineStations(line.getId());
+
+                // when
                 List<LineStationResponse> lineStationResponses = lineStationsResponse.getStations();
+
+                // then
                 List<Long> lineStationIds = convertToStationIds(lineStationResponses);
-                // Then 지하철역 목록을 응답 받는다.
                 assertThat(lineStationIds.get(0)).isEqualTo(stations.get(3).getId());
                 assertThat(lineStationIds.get(1)).isEqualTo(stations.get(0).getId());
                 assertThat(lineStationIds.get(2)).isEqualTo(stations.get(1).getId());
                 assertThat(lineStationIds.get(3)).isEqualTo(stations.get(2).getId());
             }),
             dynamicTest("delete specific station in line", () -> {
-                // When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
+                // given
                 LineResponse line = getLines().get(0);
                 LineStationsResponse lineStationsResponse = getLineStations(line.getId());
                 LineStationResponse lineStationResponse = lineStationsResponse.getStations().get(1);
+
+                // when
                 deleteLineStation(String.valueOf(line.getId()),
                     String.valueOf(lineStationResponse.getId()));
-                // Then 지하철역이 노선에서 제거 되었다
+
+                // then
                 List<LineStationResponse> lineStations = getLineStations(
                     line.getId()).getStations();
                 assertThat(lineStations.size()).isEqualTo(3);
             }),
             dynamicTest("search deleted station in line", () -> {
-                // Given 지하철 노선과 등록되어 있는 지하철 목록을 조회한다.
+                // given
                 LineResponse line = getLines().get(0);
                 List<StationResponse> stations = getStations();
-                // When 지하철 노선의 지하철역 목록 조회 요청을 한다.
                 LineStationsResponse lineStationsResponse = getLineStations(line.getId());
+
+                // when
                 List<LineStationResponse> lineStations = lineStationsResponse.getStations();
+
+                // then
                 List<Long> lineStationIds = convertToStationIds(lineStations);
-                // Then 제외한 지하철역이 목록에 존재하지 않는다.
                 assertThat(lineStationIds).doesNotContain(stations.get(0).getId());
                 assertThat(lineStationIds.get(0)).isEqualTo(stations.get(3).getId());
                 assertThat(lineStationIds.get(1)).isEqualTo(stations.get(1).getId());
