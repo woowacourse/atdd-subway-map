@@ -30,13 +30,27 @@ public class LineService {
 	public List<LineResponse> showLines() {
 		List<Line> persistLines = lineRepository.findAll();
 
+		List<Long> stationIds = persistLines.stream()
+			.flatMap(line -> line.getAllStationIds().stream())
+			.collect(Collectors.toList());
+
+		List<Station> stations = stationRepository.findAllById(stationIds);
+
+
+
 		Map<Line, List<Station>> lineWithStations = persistLines.stream()
 			.collect(Collectors.toMap(
 				Function.identity(),
-				persistLine -> toStations(persistLine.getAllStationIds())
+				line -> mapStations(line.getAllStationIds(), stations)
 			));
 
 		return LineResponse.listOf(lineWithStations);
+	}
+
+	private List<Station> mapStations(List<Long> lineStationsId, List<Station> stations) {
+		return stations.stream()
+			.filter(station -> lineStationsId.contains(station.getId()))
+			.collect(Collectors.toList());
 	}
 
 	public LineResponse showLine(Long id) {
