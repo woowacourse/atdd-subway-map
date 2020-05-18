@@ -1,7 +1,8 @@
-package wooteco.subway.admin.domain;
+package wooteco.subway.admin.domain.line.relation;
+
+import java.util.Objects;
 
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     private Long stationId;
     private Long preStationId;
     private int distance;
@@ -15,6 +16,26 @@ public class LineStation {
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public void updatePreStationIdTo(Long preStationId) {
+        this.preStationId = preStationId;
+    }
+
+    public boolean isFirstNode() {
+        return Objects.isNull(preStationId);
+    }
+
+    public boolean isNotFirstNode() {
+        return !isFirstNode();
+    }
+
+    public boolean isPreNodeOf(LineStation lineStation) {
+        return stationId.equals(lineStation.preStationId);
+    }
+
+    public boolean isEqualStationId(Long stationId) {
+        return this.stationId.equals(stationId);
     }
 
     public Long getPreStationId() {
@@ -31,9 +52,5 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
     }
 }
