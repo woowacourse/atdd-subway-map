@@ -94,7 +94,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("station 에 새로운 역을 넣는 경우")
+    @DisplayName("station(대상역) 에 새로운 역을 넣는 경우")
     void addLineStationBetweenTwoWhenStationNew() {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
@@ -110,7 +110,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("preStation 에 새로운 역을 넣는 경우")
+    @DisplayName("preStation(이전역) 에 새로운 역을 넣는 경우")
     void addLineStationBetweenTwoWhenPreStationNew() {
         LineStationCreateRequest request = new LineStationCreateRequest(4L, 2L, 10, 10);
 
