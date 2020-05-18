@@ -1,6 +1,7 @@
 package wooteco.subway.admin.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.mapper.TypeRef;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.common.response.DefaultResponse;
+import wooteco.subway.admin.line.service.dto.line.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -20,19 +23,19 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     public static RequestSpecification given() {
         return RestAssured.given().log().all();
     }
 
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @DisplayName("지하철 노선을 관리한다")
     @Test
@@ -50,7 +53,7 @@ public class LineAcceptanceTest {
         LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
-        assertThat(line.getName()).isNotNull();
+        assertThat(line.getTitle()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
@@ -73,10 +76,11 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
+                get("/lines/" + id).
                 then().
-                        log().all().
-                        extract().as(LineResponse.class);
+                log().all().
+                extract().as(new TypeRef<DefaultResponse<LineResponse>>() {
+        }).getData();
     }
 
     private void createLine(String name) {
@@ -85,14 +89,15 @@ public class LineAcceptanceTest {
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("bgColor", "bg-red-200");
 
         given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -107,22 +112,23 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
+        DefaultResponse<List<LineResponse>> response = given().
                 when().
-                        get("/lines").
+                get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+                log().all().
+                extract().
+                body().as(new TypeRef<DefaultResponse<List<LineResponse>>>() {
+        });
+        return response.getData();
     }
 
     private void deleteLine(Long id) {
