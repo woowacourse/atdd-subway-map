@@ -3,7 +3,8 @@ package wooteco.subway.admin.controller.advice.dto;
 public class ExceptionDto {
     private String message;
 
-    public ExceptionDto() {}
+    private ExceptionDto() {
+    }
 
     public ExceptionDto(String message) {
         this.message = message;

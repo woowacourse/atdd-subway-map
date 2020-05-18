@@ -12,14 +12,14 @@ public class StationResponse {
     private StationResponse() {
     }
 
-    public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
-    }
-
     public StationResponse(Long id, String name, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
+    }
+
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
     }
 
     public Long getId() {

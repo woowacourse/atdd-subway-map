@@ -5,18 +5,15 @@ import wooteco.subway.admin.domain.exception.NoSuchStationException;
 import wooteco.subway.admin.domain.exception.RequireFirstStationException;
 import wooteco.subway.admin.domain.exception.RequireStationNameException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Edges implements Iterable<Edge> {
     @MappedCollection(idColumn = "line_id", keyColumn = "line_key")
     private List<Edge> edges = new ArrayList<>();
 
-    public Edges() {}
+    public Edges() {
+    }
 
     public void addEdge(Edge edge) {
         if (edges.isEmpty()) {
@@ -68,7 +65,7 @@ public class Edges implements Iterable<Edge> {
     }
 
     private void validateEdge(Edge edge) {
-        if (edge.getStationId() == null) {
+        if (Objects.isNull(edge.getStationId())) {
             throw new RequireStationNameException();
         }
     }

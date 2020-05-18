@@ -32,14 +32,46 @@ public class Line {
         this.edges = new Edges();
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public static Line toLine(String name, String bgColor, LocalTime startTime, LocalTime endTime, int intervalTime) {
         return new Line(null, name, bgColor, startTime, endTime, intervalTime);
     }
 
-    public static Line updateLine(LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public static Line toUpdatedLine(LocalTime startTime, LocalTime endTime, int intervalTime) {
         return new Line(null, null, null, startTime, endTime, intervalTime);
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != null) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addEdge(Edge edge) {
+        edges.addEdge(edge);
+    }
+
+    public void removeEdge(Long id) {
+        edges.removeEdge(id);
+    }
+
+    public List<Long> findStationsId() {
+        return edges.findStationsId();
     }
 
     public Long getId() {
@@ -76,36 +108,5 @@ public class Line {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getBgColor() != null) {
-            this.bgColor = line.getBgColor();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != null) {
-            this.intervalTime = line.getIntervalTime();
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addEdge(Edge edge) {
-        edges.addEdge(edge);
-    }
-
-    public void removeEdge(Long id) {
-        edges.removeEdge(id);
-    }
-
-    public List<Long> findStationsId() {
-        return edges.findStationsId();
     }
 }

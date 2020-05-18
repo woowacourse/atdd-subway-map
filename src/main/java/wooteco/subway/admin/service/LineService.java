@@ -5,10 +5,9 @@ import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Edges;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.domain.exception.DuplicatedStationException;
+import wooteco.subway.admin.domain.exception.DuplicatedLineException;
 import wooteco.subway.admin.domain.exception.NoSuchLineException;
 import wooteco.subway.admin.domain.exception.NoSuchStationException;
-import wooteco.subway.admin.domain.exception.RequireLineNameException;
 import wooteco.subway.admin.domain.exception.RequireStationNameException;
 import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.dto.request.LineRequest;
@@ -19,15 +18,13 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String REQUIRE_LINE_NAME_EXCEPTION_MESSAGE = "노선의 이름을 입력해주세요.";
-
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -36,21 +33,13 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse save(LineRequest response) {
-        Line line = response.toLine();
-        validateLine(line);
-        return LineResponse.of(lineRepository.save(line), findStationsAtLine(line));
-    }
-
-    private void validateLine(Line line) {
-        if (line.getName() == null) {
-            throw new RequireLineNameException();
-        }
-
+    public LineResponse save(LineRequest request) {
+        Line line = request.toLine();
         lineRepository.findByName(line.getName())
-                .ifPresent(value -> {
-                    throw new DuplicatedStationException();
+                .ifPresent(val -> {
+                    throw new DuplicatedLineException();
                 });
+        return LineResponse.of(lineRepository.save(line), findStationsAtLine(line));
     }
 
     public LineResponse showLine(Long id) {
@@ -77,7 +66,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public StationsAtLineResponse addEdge(Long lineId, @Valid EdgeCreateRequest request) {
+    public StationsAtLineResponse addEdge(Long lineId, EdgeCreateRequest request) {
         Line line = findLine(lineId);
         Edge edge = toEdge(request);
         line.addEdge(edge);
@@ -124,19 +113,14 @@ public class LineService {
                 .orElseThrow(RequireStationNameException::new);
     }
 
-    private Edge toEdge(EdgeCreateRequest request) {
-        if (request.getStationId() == null) {
-            throw new RequireStationNameException();
-        }
+    private Edge toEdge(@Valid EdgeCreateRequest request) {
         Station station = stationRepository.findById(request.getStationId())
                 .orElseThrow(NoSuchStationException::new);
-
-        if (request.getPreStationId() == null) {
-            return new Edge(null, station.getId(), request.getDistance(), request.getDuration(), LocalDateTime.now(), LocalDateTime.now());
+        if (Objects.isNull(request.getPreStationId())) {
+            return Edge.ofFirst(station.getId(), request.getDistance(), request.getDuration());
         }
         Station preStation = stationRepository.findById(request.getPreStationId())
                 .orElseThrow(NoSuchStationException::new);
-        return new Edge(preStation.getId(), station.getId(), request.getDistance(),
-                request.getDuration(), LocalDateTime.now(), LocalDateTime.now());
+        return Edge.of(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
     }
 }

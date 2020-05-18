@@ -16,13 +16,21 @@ public class Edge {
     private Edge() {
     }
 
-    public Edge(Long preStationId, Long stationId, Integer distance, Integer duration, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Edge(Long preStationId, Long stationId, Integer distance, Integer duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public static Edge ofFirst(Long stationId, Integer distance, Integer duration) {
+        return new Edge(null, stationId, distance, duration);
+    }
+
+    public static Edge of(Long preStationId, Long stationId, Integer distance, Integer duration) {
+        return new Edge(preStationId, stationId, distance, duration);
     }
 
     public void updatePreStationId(Long preStationId) {

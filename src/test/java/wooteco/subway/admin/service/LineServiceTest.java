@@ -13,13 +13,8 @@ import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -66,9 +61,9 @@ public class LineServiceTest {
         lenient().when(stationRepository.findById(4L)).thenReturn(Optional.of(station4));
         lenient().when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 
-        line.addEdge(new Edge(null, 1L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
-        line.addEdge(new Edge(1L, 2L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
-        line.addEdge(new Edge(2L, 3L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
+        line.addEdge(Edge.ofFirst(1L, 10, 10));
+        line.addEdge(Edge.of(1L, 2L, 10, 10));
+        line.addEdge(Edge.of(2L, 3L, 10, 10));
     }
 
     @Test
