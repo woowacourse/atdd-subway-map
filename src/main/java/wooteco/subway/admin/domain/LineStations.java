@@ -23,7 +23,7 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
         validateHavingSame(lineStation);
-        int stationsSize = lineStations.size();
+        int stationsSize = size();
         int insertIndex = IntStream.range(0, stationsSize)
             .filter(index -> isPreStation(index, lineStation.getPreStationId()))
             .findAny()
@@ -38,29 +38,32 @@ public class LineStations {
         }
     }
 
-    private boolean isPreStation(int index, Long preStationId) {
-        return lineStations.get(index).isPreStation(preStationId);
-    }
-
     private boolean isExistLineStation(LineStation lineStation) {
         return lineStations.stream()
             .anyMatch(station -> station.isSameStation(lineStation));
     }
 
+    private boolean isPreStation(int index, Long preStationId) {
+        return lineStations.get(index).isPreStation(preStationId);
+    }
+
     private void updatePreLineStation(int index, Long stationId) {
-        if (lineStations.size() - 1 == index) {
-            return;
+        if (isNotLastIndex(index)) {
+            LineStation lineStation = lineStations.get(index + 1);
+            lineStation.updatePreLineStation(stationId);
         }
-        LineStation lineStation = lineStations.get(index + 1);
-        lineStation.updatePreLineStation(stationId);
+    }
+
+    private boolean isNotLastIndex(int index) {
+        return (size() - 1) != index;
     }
 
     public void removeLineStationById(Long stationId) {
-        int removeIndex = IntStream.range(0, lineStations.size())
+        int removeIndex = IntStream.range(0, size())
             .filter(index -> isBaseStation(index, stationId))
             .findAny()
             .orElseThrow(() -> new InvalidLineStationException("id를 찾을 수 없습니다."));
-        if (lineStations.size() - 1 != removeIndex) {
+        if (isNotLastIndex(removeIndex)) {
             LineStation lineStation = lineStations.get(removeIndex);
             updatePreLineStation(removeIndex + 1, lineStation.getPreStationId());
         }
