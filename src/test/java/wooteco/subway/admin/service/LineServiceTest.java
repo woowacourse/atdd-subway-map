@@ -31,6 +31,7 @@ public class LineServiceTest {
     private StationRepository stationRepository;
 
     private Line line;
+    @Mock
     private LineService lineService;
 
     @BeforeEach
@@ -48,6 +49,7 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(null, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -62,6 +64,7 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(1L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);
@@ -76,6 +79,7 @@ public class LineServiceTest {
         LineStationCreateRequest request = new LineStationCreateRequest(3L, 4L, 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
         lineService.addLineStation(line.getId(), request);
 
         assertThat(line.getStations()).hasSize(4);

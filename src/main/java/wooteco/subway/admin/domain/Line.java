@@ -100,7 +100,7 @@ public class Line {
     }
 
     private void addStartStation(LineStation lineStation) {
-        if (!Objects.isNull(lineStation.getPreStationId())) {
+        if (Objects.nonNull(lineStation.getPreStationId())) {
             stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
         }
     }
@@ -138,10 +138,6 @@ public class Line {
                     .orElseThrow(NoSuchElementException::new));
         }
         return linesStationsId;
-    }
-
-    public boolean isStationsEmpty() {
-        return stations.isEmpty();
     }
 
     public Long getId() {
