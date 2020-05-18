@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.exception.StationNotFoundException;
+import wooteco.subway.admin.exception.EntityNotFoundException;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
@@ -34,7 +34,7 @@ public class StationService {
 
     public StationResponse findById(Long stationId) {
         Station station = stationRepository.findById(stationId)
-                .orElseThrow(StationNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("역을 찾을 수 없습니다."));
         return StationResponse.of(station);
     }
 }

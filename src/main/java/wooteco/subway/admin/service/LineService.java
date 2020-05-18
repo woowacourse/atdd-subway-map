@@ -11,12 +11,13 @@ import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationsResponse;
-import wooteco.subway.admin.exception.LineNotFoundException;
+import wooteco.subway.admin.exception.EntityNotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
+    private static final String LINE_NOT_FOUND_EXCEPTION = "노선을 찾을 수 없습니다.";
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -37,7 +38,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id)
-                .orElseThrow(LineNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_EXCEPTION));
         persistLine.update(line);
         lineRepository.save(persistLine);
         return LineResponse.of(persistLine);
@@ -49,7 +50,7 @@ public class LineService {
 
     public LineResponse addLineStation(Long lineId, LineStationCreateRequest lineStationCreateRequest) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(LineNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_EXCEPTION));
         line.addLineStation(lineStationCreateRequest.toLineStation());
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
@@ -57,14 +58,14 @@ public class LineService {
 
     public void removeLineStation(Long lineId, Long stationId) {
         Line persistLine = lineRepository.findById(lineId)
-                .orElseThrow(LineNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_EXCEPTION));
         persistLine.removeLineStationById(stationId);
         lineRepository.save(persistLine);
     }
 
     public LineResponse findLineById(Long id) {
         Line persistLine = lineRepository.findById(id)
-                .orElseThrow(LineNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_EXCEPTION));
         return LineResponse.of(persistLine);
     }
 
@@ -79,14 +80,14 @@ public class LineService {
 
     private List<Long> generateStationIds(List<Line> lines) {
         return lines.stream()
-                .flatMap(line -> line.getLineStationsId().stream())
+                .flatMap(line -> line.getLineStationIds().stream())
                 .collect(Collectors.toList());
     }
 
     public LineStationsResponse findLineStationsById(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(LineNotFoundException::new);
-        Map<Long, Station> stations = generateStationMapper(line.getLineStationsId());
+                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_EXCEPTION));
+        Map<Long, Station> stations = generateStationMapper(line.getLineStationIds());
         return LineStationsResponse.of(line, stations);
     }
 
