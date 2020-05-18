@@ -148,7 +148,7 @@ public class Line {
 
     private boolean notAddedYet(Set<LineStation> newStations) {
         return stations.size() == newStations.size()
-                || stations.size() == 0;
+                || stations.isEmpty();
     }
 
     public void removeLineStationById(Long stationId) {
