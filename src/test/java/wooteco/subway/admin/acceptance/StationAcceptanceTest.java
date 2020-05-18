@@ -1,83 +1,54 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
+import static java.util.stream.Collectors.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+
 import wooteco.subway.admin.dto.StationResponse;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public class StationAcceptanceTest extends AcceptanceTest {
+	private static final String STATION_NAME_JAMSIL = "잠실역";
+	private static final String STATION_NAME_UNDONGJANG = "종합운동장역";
+	private static final String STATION_NAME_SUNLEUNG = "선릉역";
+	private static final String STATION_NAME_GANGNAM = "강남역";
+	private static final long NON_EXIST_STATION_ID = Long.MAX_VALUE;
 
-import static org.assertj.core.api.Assertions.assertThat;
+	@DisplayName("지하철 역 추가/삭제/목록 조회 기능. 이미 존재하는 역 추가 하거나, 존재하지 않는 역 삭제시 예외 발생")
+	@Test
+	void manageStation() {
+		//given
+		createStation(STATION_NAME_JAMSIL);
+		createStation(STATION_NAME_UNDONGJANG);
+		createStation(STATION_NAME_SUNLEUNG);
+		createStation(STATION_NAME_GANGNAM);
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
+		//when
+		List<StationResponse> stations = getStations();
+		//then
+		assertThat(stations.size()).isEqualTo(4);
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+		//when	//then
+		assertThatThrownBy(() -> createStation(STATION_NAME_SUNLEUNG));
 
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
+		//when
+		StationResponse stationJamsil = stations.get(0);
+		Long jamsilStationId = stationJamsil.getId();
+		deleteStation(jamsilStationId);
 
-    @DisplayName("지하철역을 관리한다")
-    @Test
-    void manageStation() {
-        createStation("잠실역");
-        createStation("종합운동장역");
-        createStation("선릉역");
-        createStation("강남역");
+		//then
+		List<StationResponse> stationsAfterDelete = getStations();
+		assertThat(findRemainStationNames(stationsAfterDelete)).containsExactly(STATION_NAME_UNDONGJANG,
+			STATION_NAME_SUNLEUNG, STATION_NAME_GANGNAM);
 
-        List<StationResponse> stations = getStations();
-        assertThat(stations.size()).isEqualTo(4);
+		//when	//then
+		assertThatThrownBy(() -> deleteStation(NON_EXIST_STATION_ID));
+	}
 
-        deleteStation(stations.get(0).getId());
-
-        List<StationResponse> stationsAfterDelete = getStations();
-        assertThat(stationsAfterDelete.size()).isEqualTo(3);
-    }
-
-    private void createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/stations").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
-    }
-
-    private List<StationResponse> getStations() {
-        return given().
-                when().
-                    get("/stations").
-                then().
-                    log().all().
-                    extract().
-                    jsonPath().getList(".", StationResponse.class);
-    }
-
-    private void deleteStation(Long id) {
-        given().
-        when().
-                delete("/stations/" + id).
-        then().
-                log().all();
-    }
+	private List<String> findRemainStationNames(List<StationResponse> stationsAfterDelete) {
+		return stationsAfterDelete.stream().map(StationResponse::getName).collect(toList());
+	}
 }

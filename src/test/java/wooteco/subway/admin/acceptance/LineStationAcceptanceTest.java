@@ -1,50 +1,110 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
+import static java.util.stream.Collectors.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.jdbc.Sql;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/truncate.sql")
-public class LineStationAcceptanceTest {
-    @LocalServerPort
-    int port;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationResponse;
+import wooteco.subway.admin.dto.StationResponse;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+public class LineStationAcceptanceTest extends AcceptanceTest {
 
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
+	private static final long NOT_EXIST_STATION_ID = Long.MAX_VALUE;
+	private static final String STATION_NAME_GANGBYUN = "강변";
+	private static final String STATION_NAME_JAMSILNARU = "잠실나루";
+	private static final String STATION_NAME_JAMSIL = "잠실";
+	private static final String STATION_NAME_SINDANG = "신당";
+	private static final String LINE_NAME_TWO = "2호선";
 
-    /**
-     *     Given 지하철역이 여러 개 추가되어있다.
-     *     And 지하철 노선이 추가되어있다.
-     *
-     *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     *     Then 지하철역이 노선에 추가 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *
-     *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     *     Then 지하철역이 노선에서 제거 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
-    @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
-    @Test
-    void manageLineStation() {
+	@DisplayName("지하철 노선에서 지하철역 추가/제외")
+	@Test
+	void manageLineStation() {
+		//given
+		createStation(STATION_NAME_GANGBYUN);
+		createStation(STATION_NAME_JAMSILNARU);
+		createStation(STATION_NAME_JAMSIL);
+		createStation(STATION_NAME_SINDANG);
 
-    }
+		createLine(LINE_NAME_TWO);
+
+		List<StationResponse> stations = getStations();
+		Long firstStationId = stations.get(0).getId();
+		Long secondStationId = stations.get(1).getId();
+		Long thirdStationId = stations.get(2).getId();
+		Long newStationId = stations.get(3).getId();
+
+		List<LineResponse> lines = getLines();
+		Long firstLineId = lines.get(0).getId();
+
+		//when
+		createLineStation(null, secondStationId, firstLineId);
+		createLineStation(secondStationId, thirdStationId, firstLineId);
+		createLineStation(thirdStationId, firstStationId, firstLineId);
+		LineResponse firstLine = getLine(firstLineId);
+		List<LineStationResponse> firstLineStations = getLineStations(firstLineId);
+		//then
+		assertThat(firstLineStations.size()).isEqualTo(3);
+
+		assertThat(getStationNamesFrom(firstLine))
+			.containsExactly(STATION_NAME_JAMSILNARU, STATION_NAME_JAMSIL, STATION_NAME_GANGBYUN);
+
+		//when
+		LineStationResponse firstLineStationResponse = firstLineStations.get(0);
+		//then
+		assertThat(firstLineStationResponse.getLineId()).isEqualTo(firstLineId);
+		assertThat(firstLineStationResponse.getStationId()).isEqualTo(secondStationId);
+
+		//given
+
+
+		//when
+		Long alreadyExistStationId = firstStationId;
+		//then
+		assertThatThrownBy(() -> createLineStation(null, alreadyExistStationId, firstLineId));
+
+		//when
+		Long nonExistLineId = null;
+		//then
+		assertThatThrownBy(() -> createLineStation(null, newStationId, nonExistLineId));
+
+		//when //then
+		assertThatThrownBy(() -> createLineStation(null, NOT_EXIST_STATION_ID, firstLineId));
+		//when //then
+		assertThatThrownBy(() -> createLineStation(NOT_EXIST_STATION_ID, newStationId, firstLineId));
+
+		//when
+		deleteLineStation(firstLineId, secondStationId);
+		//then
+		List<LineStationResponse> lineStationsAfterDelete = getLineStations(firstLineId);
+		assertThat(lineStationsAfterDelete.size()).isEqualTo(2);
+		//and
+		boolean isExistLineStation = isExistLineStation(firstLineStationResponse, lineStationsAfterDelete);
+		assertThat(isExistLineStation).isFalse();
+
+		//when //then
+		assertThatThrownBy(() -> deleteLineStation(NOT_EXIST_STATION_ID, firstStationId));
+
+		//when //then
+		assertThatThrownBy(() -> deleteLineStation(firstLineId, NOT_EXIST_STATION_ID));
+	}
+
+	private List<String> getStationNamesFrom(LineResponse lineResponse) {
+		return lineResponse.getStations().stream()
+			.map(StationResponse::getName)
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
+	}
+
+	private boolean isExistLineStation(LineStationResponse lineStationResponse,
+		List<LineStationResponse> lineStationsAfterDelete) {
+		return lineStationsAfterDelete.stream()
+			.filter(response -> response.getLineId().equals(lineStationResponse.getLineId()))
+			.anyMatch(response -> response.getStationId().equals(lineStationResponse.getStationId()));
+	}
 }

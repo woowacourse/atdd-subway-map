@@ -1,135 +1,74 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static java.util.stream.Collectors.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
+import wooteco.subway.admin.dto.LineResponse;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+public class LineAcceptanceTest extends AcceptanceTest {
 
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
+	private static final String LINE_NAME_NEW_BUNDANG = "신분당선";
+	private static final String LINE_NAME_ONE = "1호선";
+	private static final String LINE_NAME_TWO = "2호선";
+	private static final String LINE_NAME_THREE = "3호선";
+	private static final long NOT_EXIST_LINE_ID = Long.MAX_VALUE;
 
+	@DisplayName("노선 추가/정보수정/삭제/목록조회/상세조회를 수행한다. 존재하는 노선을 추가, 존재하지 않는 노선을 삭제시, 예외발생")
+	@Test
+	void manageLine() {
+		//when
+		createLine(LINE_NAME_NEW_BUNDANG);
+		createLine(LINE_NAME_ONE);
+		createLine(LINE_NAME_TWO);
+		createLine(LINE_NAME_THREE);
+		//then
+		List<LineResponse> lines = getLines();
+		assertThat(lines.size()).isEqualTo(4);
 
-    @DisplayName("지하철 노선을 관리한다")
-    @Test
-    void manageLine() {
-        // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
-        // then
-        List<LineResponse> lines = getLines();
-        assertThat(lines.size()).isEqualTo(4);
+		//when
+		LineResponse firstLineResponse = getLine(lines.get(0).getId());
+		Long firstLineId = firstLineResponse.getId();
+		//then
+		assertThat(firstLineResponse.getId()).isNotNull();
+		assertThat(firstLineResponse.getName()).isNotNull();
+		assertThat(firstLineResponse.getStartTime()).isNotNull();
+		assertThat(firstLineResponse.getEndTime()).isNotNull();
+		assertThat(firstLineResponse.getIntervalTime()).isNotNull();
 
-        // when
-        LineResponse line = getLine(lines.get(0).getId());
-        // then
-        assertThat(line.getId()).isNotNull();
-        assertThat(line.getName()).isNotNull();
-        assertThat(line.getStartTime()).isNotNull();
-        assertThat(line.getEndTime()).isNotNull();
-        assertThat(line.getIntervalTime()).isNotNull();
+		//when 	//then
+		assertThatThrownBy(() -> createLine(LINE_NAME_THREE));
 
-        // when
-        LocalTime startTime = LocalTime.of(8, 00);
-        LocalTime endTime = LocalTime.of(22, 00);
-        updateLine(line.getId(), startTime, endTime);
-        //then
-        LineResponse updatedLine = getLine(line.getId());
-        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
-        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
+		// when
+		LocalTime updateStartTime = LocalTime.of(8, 0);
+		LocalTime updateEndTime = LocalTime.of(22, 0);
+		updateLine(firstLineId, updateStartTime, updateEndTime);
+		//then
+		LineResponse updatedLine = getLine(firstLineResponse.getId());
+		Long updatedLineId = firstLineResponse.getId();
+		assertThat(updatedLine.getStartTime()).isEqualTo(updateStartTime);
+		assertThat(updatedLine.getEndTime()).isEqualTo(updateEndTime);
 
-        // when
-        deleteLine(line.getId());
-        // then
-        List<LineResponse> linesAfterDelete = getLines();
-        assertThat(linesAfterDelete.size()).isEqualTo(3);
-    }
+		// when
+		deleteLine(updatedLineId);
+		List<LineResponse> linesAfterDelete = getLines();
+		//then
+		assertThat(linesAfterDelete.size()).isEqualTo(3);
+		assertThat(getLineNames(linesAfterDelete)).containsExactly("1호선", "2호선", "3호선");
 
-    private LineResponse getLine(Long id) {
-        return given().when().
-                        get("/lines/" + id).
-                then().
-                        log().all().
-                        extract().as(LineResponse.class);
-    }
+		//when	//then
+		assertThatThrownBy(() -> deleteLine(NOT_EXIST_LINE_ID));
+	}
 
-    private void createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-
-        given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                post("/lines").
-        then().
-                log().all().
-                statusCode(HttpStatus.CREATED.value());
-    }
-
-    private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
-
-        given().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
-                put("/lines/" + id).
-        then().
-                log().all().
-                statusCode(HttpStatus.OK.value());
-    }
-
-    private List<LineResponse> getLines() {
-        return
-                given().
-                when().
-                        get("/lines").
-                then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
-    }
-
-    private void deleteLine(Long id) {
-        given().
-                when().
-                delete("/lines/" + id).
-                then().
-                log().all();
-    }
+	private List<String> getLineNames(List<LineResponse> linesAfterDelete) {
+		return linesAfterDelete.stream()
+			.map(LineResponse::getName)
+			.collect(collectingAndThen(toList(), Collections::unmodifiableList));
+	}
 }
