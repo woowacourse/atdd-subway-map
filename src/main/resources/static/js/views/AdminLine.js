@@ -31,13 +31,20 @@ function AdminLine() {
 
         api.line.create(newSubwayLine)
             .then(line => {
+                if(!line.ok) {
+                    throw (line.json());
+                }
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(line)
                 );
                 subwayLineModal.toggle();
-            }).catch(() => alert("노선 생성에 실패 했습니다."));
-        window.location.reload();
+            }).catch((line) => {
+            line.then(data => {
+                alert(data.message);
+            })
+        });
+        // window.location.reload();
     };
 
     const onDeleteSubwayLine = event => {
@@ -45,9 +52,18 @@ function AdminLine() {
         const $subwayLineItem = $target.closest(".subway-line-item");
         const isDeleteButton = $target.classList.contains("mdi-delete");
         if (isDeleteButton) {
-            api.line.delete($subwayLineItem.dataset.lineId).then(() =>{
+            api.line.delete($subwayLineItem.dataset.lineId)
+                .then(() =>{
+                    if(!line.ok) {
+                        throw (line.json());
+                    }
                 $subwayLineItem.remove();
-            }).catch( () => alert("삭제에 실패 했습니다."))
+            })
+                .catch((line) => {
+                    line.then(data => {
+                        alert(data.message);
+                    })
+                })
         }
     };
 
@@ -62,6 +78,9 @@ function AdminLine() {
         }
         const lineId = $subwayLineItem.dataset.lineId;
         api.line.getById(lineId).then((line) => {
+            if(!line.ok) {
+                throw (line.json());
+            }
             $subwayLineNameInput.value = line.title
             $subwayLineFirstTimeInput.value = line.startTime
             $subwayLineLastTImeInput.value = line.endTime
@@ -69,8 +88,9 @@ function AdminLine() {
             $subwayLineColorInput.value = line.bgColor
             subwayLineModal.toggle();
             $submitButton.classList.add('update-submit-button')
-        }).catch(() => {
-            alert('데이터를 불러올 수 없습니다.')
+        }).catch((line) => {
+            line.then
+                .alert(line.message);
         })
     }
 
@@ -82,9 +102,16 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine).then((line) =>{
+        api.line.update($activeSubwayLineItem.dataset.lineId, updatedSubwayLine)
+            .then((line) =>{
+                if(!line.ok) {
+                    throw (line.json());
+                }
             subwayLineModal.toggle();
             subwayLinesTemplate(line);
+        }).catch((line) => {
+            line.then
+                .alert(line.message);
         })
     };
 
@@ -101,20 +128,32 @@ function AdminLine() {
         const isSelectSubwayLineItem = $target.classList.contains("subway-line-item");
         if (isSelectSubwayLineItem) {
             api.line.getById($subwayLineItem.dataset.lineId).then(data => {
+                if(!data.ok) {
+                    throw (data.json());
+                }
                 document.querySelector(".lines-info").innerHTML = lineInformationTemplate(data);
-            }).catch(() => alert("노선 선택에 실패 했습니다."));
+            }).catch(data => {
+                data.then
+                    .alert(data.message);
+            });
         }
     }
 
     const initDefaultSubwayLines = () => {
         api.line.get().then(lines => {
+            if(!lines.ok) {
+                throw (lines.json())
+            }
             lines.map(line => {
                 $subwayLineList.insertAdjacentHTML(
                     "beforeend",
                     subwayLinesTemplate(line)
                 );
             });
-        }).catch( () => alert("초기화에 실패 했습니다."))
+        }).catch(lines => {
+            lines.then
+                .alert(lines.message);
+        })
     };
 
     const initEventListeners = () => {

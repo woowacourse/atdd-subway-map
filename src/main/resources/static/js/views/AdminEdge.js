@@ -65,12 +65,18 @@ function AdminEdge() {
             stationName: stationName,
             distance: 0,
             duration: 0,
-        };
-        console.log(lineStationInfo);
-        api.line.create(lineStationInfo, `/${lineId}/stations`).then(res => {
+        }
+        api.line.create(lineStationInfo, `/${lineId}/stations`)
+            .then(res => {
+                if(!res.ok) {
+                    throw (res.json());
+                }
+
             if (res.status === 201) {
                 window.location.reload();
             }
+        }).catch(res => {
+            res.then.alert(res.message);
         });
     };
     const initEventListeners = () => {

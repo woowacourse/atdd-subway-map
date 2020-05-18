@@ -122,7 +122,7 @@ public class LineServiceTest {
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
 
         Line line = lineService.findLineById(1L);
-        List<Station> allById = lineService.findAllById(line.getLineStationsId());
+        List<Station> allById = lineService.findAllById(line);
 
         LineResponse lineResponse = LineResponse.of(line, allById);
         System.out.println(lineResponse.toString());

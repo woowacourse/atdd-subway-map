@@ -54,7 +54,7 @@ const api = (() => {
             return request(`/lines/${id}`);
         },
         create(data, path = "",) {
-            return fetch(`/lines${path}`, METHOD.POST(data)).then()
+            return fetch(`/lines${path}`, METHOD.POST(data))
             // return request(`/lines${path}` , METHOD.POST(data));
         },
         update(id, data) {
