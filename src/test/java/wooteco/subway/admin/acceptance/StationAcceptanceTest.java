@@ -51,11 +51,11 @@ public class StationAcceptanceTest {
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
-    static void createStation(String name) {
+    static String createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        given().
+        return given().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
@@ -63,7 +63,9 @@ public class StationAcceptanceTest {
                 post("/stations").
         then().
                 log().all().
-                statusCode(HttpStatus.CREATED.value());
+                statusCode(HttpStatus.CREATED.value())
+            .extract()
+            .headers().getValue("location");
     }
 
     private List<StationResponse> getStations() {

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.DynamicTest.*;
 import static wooteco.subway.admin.acceptance.LineAcceptanceTest.*;
 import static wooteco.subway.admin.acceptance.StationAcceptanceTest.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,20 +44,21 @@ public class LineStationAcceptanceTest {
     @TestFactory
     Stream<DynamicTest> manageLineStation() {
         // Given 지하철역이 여러 개 추가되어있다.
-        createStation("잠실역");
-        createStation("종합운동장역");
-        createStation("선릉역");
-        createStation("강남역");
-        createStation("석촌역");
+        Long 잠실역 = extractId(createStation("잠실역"));
+        Long 종합운동장역 = extractId(createStation("종합운동장역"));
+        Long 선릉역 = extractId(createStation("선릉역"));
+        Long 강남역 = extractId(createStation("강남역"));
+        Long 석촌역 = extractId(createStation("석촌역"));
+
         // And 지하철 노선이 추가되어있다.
         createLine("2호선");
 
         return Stream.of(
             dynamicTest("지하철 노선 추가", () -> {
-                createLineStation(null, 1L);
-                createLineStation(1L, 2L);
-                createLineStation(2L, 3L);
-                createLineStation(3L, 4L);
+                createLineStation(null, 잠실역);
+                createLineStation(잠실역, 종합운동장역);
+                createLineStation(종합운동장역, 선릉역);
+                createLineStation(선릉역, 강남역);
                 // When 지하철 노선에 지하철역을 등록하는 요청을 한다.
                 appendStationToLine();
             }),
@@ -136,5 +138,11 @@ public class LineStationAcceptanceTest {
             then().
             log().all().
             statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Long extractId(String location) {
+        List<String> paths = Arrays.asList(location.split("/"));
+        int lastElement = paths.size() - 1;
+        return Long.parseLong(paths.get(lastElement));
     }
 }
