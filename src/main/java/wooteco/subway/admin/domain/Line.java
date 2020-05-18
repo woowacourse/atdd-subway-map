@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Embedded;
 
-import wooteco.subway.admin.exception.InvalidLineStationException;
 import wooteco.subway.admin.utils.Validator;
 
 public class Line {
@@ -20,8 +18,8 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    @MappedCollection(idColumn = "line_id", keyColumn = "index")
-    private List<LineStation> stations;
+    @Embedded.Nullable
+    LineStations lineStations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -37,7 +35,7 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.stations = new LinkedList<>();
+        this.lineStations = new LineStations(new LinkedList<>());
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -68,51 +66,15 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        validateHavingSame(lineStation);
-        int stationsSize = stations.size();
-        int insertIndex = IntStream.range(0, stationsSize)
-            .filter(index -> stations.get(index).isPreStation(lineStation.getPreStationId()))
-            .findAny()
-            .orElse(stationsSize);
-        stations.add(insertIndex, lineStation);
-        updatePreLineStation(insertIndex, lineStation.getStationId());
-    }
-
-    private void validateHavingSame(LineStation lineStation) {
-        boolean isExistLineStation = stations.stream()
-            .anyMatch(station -> station.isSameStation(lineStation));
-        if (isExistLineStation) {
-            throw new InvalidLineStationException("이미 등록된 구간입니다");
-        }
-    }
-
-    public void updatePreLineStation(int index, Long stationId) {
-        if (stations.size() - 1 == index) {
-            return;
-        }
-        LineStation lineStation = stations.get(index + 1);
-        lineStation.updatePreLineStation(stationId);
+        lineStations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        int removeIndex = IntStream.range(0, stations.size())
-            .filter(index -> stations.get(index).isBaseStation(stationId))
-            .findAny()
-            .orElseThrow(() -> new InvalidLineStationException("id를 찾을 수 없습니다."));
-
-        if (stations.size() - 1 != removeIndex) {
-            LineStation lineStation = stations.get(removeIndex);
-            stations.get(removeIndex + 1).updatePreLineStation(lineStation.getPreStationId());
-        }
-        stations.remove(removeIndex);
+        lineStations.removeLineStationById(stationId);
     }
 
     public List<Long> makeLineStationsIds() {
-        LinkedList<Long> stations = new LinkedList<>();
-        for (LineStation lineStation : this.stations) {
-            stations.add(lineStation.getStationId());
-        }
-        return stations;
+        return lineStations.makeLineStationsIds();
     }
 
     public Long getId() {
@@ -139,8 +101,8 @@ public class Line {
         return intervalTime;
     }
 
-    public List<LineStation> getStations() {
-        return stations;
+    public LineStations getStations() {
+        return lineStations;
     }
 
     public LocalDateTime getCreatedAt() {

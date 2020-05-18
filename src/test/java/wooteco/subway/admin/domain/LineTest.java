@@ -15,7 +15,7 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "2호선", "bg-green-700", LocalTime.of(5, 30), LocalTime.of(22, 30), 5);
         line.addLineStation(new LineStation(null, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
@@ -49,6 +49,6 @@ public class LineTest {
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations().size()).isEqualTo(2);
     }
 }

@@ -30,7 +30,7 @@ create table if not exists LINE_STATION
     updated_at datetime,
     index int
 );
-
+--
 -- INSERT INTO STATION(ID, NAME)
 -- VALUES (1, '강남');
 --

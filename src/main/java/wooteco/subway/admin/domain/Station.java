@@ -26,7 +26,6 @@ public class Station {
         this.createdAt = LocalDateTime.now();
     }
 
-
     private void validateNotContainsNumber(String name) {
         if (name.matches(NOT_CONTAINS_NUMBER_REGEX)) {
             throw new InvalidNameException("이름에 숫자가 포함될 수 없습니다.");

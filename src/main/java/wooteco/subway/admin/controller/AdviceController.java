@@ -33,7 +33,14 @@ public class AdviceController {
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DbActionExecutionException.class)
-    public String handleDuplicatedNameException(DbActionExecutionException e) {
+    public String handleDuplicatedNameException() {
         return "중복된 이름이 존재합니다.";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public String handleException(Exception e) {
+        e.printStackTrace();
+        return "알 수 없는 에러입니다.";
     }
 }
