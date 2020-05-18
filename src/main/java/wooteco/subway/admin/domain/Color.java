@@ -4,8 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Color {
-	private final static String FORMAT_HEAD = "bg";
-	private final static String FORMAT_TAIL = "-%s";
+	private static final String FORMAT_HEAD = "bg";
+	private static final String FORMAT_TAIL = "-%s";
+	private static final int NON_VALUE_SIZE = 2;
+	private static final int DEFAULT_SIZE = 3;
+	private static final int TYPE_INDEX = 1;
+	private static final int VALUE_INDEX = 2;
+	private static final String EMPTY = "";
 
 	private final String type;
 	private final String value;
@@ -22,12 +27,12 @@ public class Color {
 	public static Color ofBgColor(String bgColor) {
 		List<String> tokens = Arrays.asList(bgColor.split("-"));
 
-		if (tokens.size() == 2) {
-			return new Color(tokens.get(1), "");
+		if (tokens.size() == NON_VALUE_SIZE) {
+			return new Color(tokens.get(TYPE_INDEX), EMPTY);
 		}
 
-		if (tokens.size() == 3) {
-			return new Color(tokens.get(1), tokens.get(2));
+		if (tokens.size() == DEFAULT_SIZE) {
+			return new Color(tokens.get(TYPE_INDEX), tokens.get(VALUE_INDEX));
 		}
 
 		throw new IllegalArgumentException("적절하지 않은 형식입니다.");
