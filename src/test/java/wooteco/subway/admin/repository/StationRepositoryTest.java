@@ -20,4 +20,12 @@ public class StationRepositoryTest {
 
         assertThat(persistStation.getId()).isNotNull();
     }
+
+    @Test
+    void findByName() {
+        Station station = new Station("회룡역");
+        stationRepository.save(station);
+
+        assertThat(stationRepository.findByName("회룡역").isPresent()).isTrue();
+    }
 }

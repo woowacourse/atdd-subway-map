@@ -1,10 +1,14 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class Line {
     @Id
@@ -13,24 +17,62 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    @Embedded.Empty
+    private LineStations stations;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
+    private String bgColor;
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.bgColor = bgColor;
+        this.stations = new LineStations(new LinkedHashSet<>());
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor);
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        stations.addLineStation(lineStation);
+    }
+
+    public void removeLineStationById(Long stationId) {
+        stations.removeLineStationById(stationId);
+    }
+
+    public List<Long> getLineStationsId() {
+        return stations.getLineStationsId();
+    }
+
+    public List<Station> createSortedStations(List<Station> unsortedStations) {
+        return stations.createSortedStations(unsortedStations);
     }
 
     public Long getId() {
@@ -53,7 +95,7 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public LineStations getStations() {
         return stations;
     }
 
@@ -65,33 +107,7 @@ public class Line {
         return updatedAt;
     }
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
-    }
-
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
-    }
-
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public String getBgColor() {
+        return bgColor;
     }
 }
