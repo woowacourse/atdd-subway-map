@@ -41,7 +41,12 @@ public class Line {
     public void addLineStation(LineStation newLineStation) {
         List<Long> ids = this.findLineStationsId();
         if (isLineStationEmpty(ids)) {
+            if (newLineStation.getPreStationId() == null) {
+                stations.add(newLineStation);
+                return;
+            }
             stations.add(newLineStation);
+            stations.add(new LineStation(null, newLineStation.getPreStationId(), 0, 0));
             return;
         }
         if (isNewLineStationLastLineStation(newLineStation, ids)) {

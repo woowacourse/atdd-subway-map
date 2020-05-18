@@ -1,5 +1,7 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("LINE_STATION")
@@ -49,5 +51,21 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineStation station = (LineStation)o;
+        return Objects.equals(stationId, station.stationId) &&
+            Objects.equals(preStationId, station.preStationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stationId, preStationId);
     }
 }
