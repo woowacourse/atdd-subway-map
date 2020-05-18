@@ -106,7 +106,8 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> findAllById(List<Long> allLineId) {
-        return stationRepository.findAllById(allLineId);
+    public List<Station> findAllById(Line line) {
+        List<Long> lineStationsId = line.getLineStationsId();
+        return stationRepository.findAllById(lineStationsId);
     }
 }

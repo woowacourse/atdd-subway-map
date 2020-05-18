@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     @MappedCollection(idColumn = "line", keyColumn = "sequence")
-    private List<LineStation> lineStations = new ArrayList<>();
+    private List<LineStation> lineStations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String bgColor;

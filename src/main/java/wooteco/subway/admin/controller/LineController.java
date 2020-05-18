@@ -55,10 +55,10 @@ public class LineController {
     @GetMapping("/stations")
     public ResponseEntity<List<LineResponse>> findLinesWithStations() {
         List<Line> lines = lineService.findAll();
-        List<Long> allLineId = lineService.findAllLineId(lines);
         List<LineResponse> lineResponses = lines.stream()
-                .map(line -> LineResponse.of(line, lineService.findAllById(allLineId)))
+                .map(line -> LineResponse.of(line, lineService.findAllById(line)))
                 .collect(Collectors.toList());
+        System.out.println(lineResponses);
         return new ResponseEntity<>(lineResponses, HttpStatus.OK);
     }
 
@@ -73,7 +73,7 @@ public class LineController {
     @GetMapping("{lineId}/stations")
     public ResponseEntity<LineResponse> findStationsByLineId(@PathVariable Long lineId) {
         Line line = lineService.findLineById(lineId);
-        LineResponse lineResponse = LineResponse.of(line, lineService.findAllById(line.getLineStationsId()));
+        LineResponse lineResponse = LineResponse.of(line, lineService.findAllById(line));
         return ResponseEntity.ok(lineResponse);
     }
 
