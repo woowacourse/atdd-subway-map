@@ -34,8 +34,7 @@ public class LineService {
     }
 
     public LineResponse showLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+        Line line = findLineBy(id);
         return LineResponse.of(line);
     }
 
@@ -47,7 +46,7 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findLineBy(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
         return LineResponse.of(persistLine);
@@ -58,30 +57,29 @@ public class LineService {
     }
 
     public LineResponse addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+        Line line = findLineBy(id);
         LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(),
                 request.getDistance(), request.getDuration());
         line.addLineStation(lineStation);
         Line persistLine = lineRepository.save(line);
-        if (line.getId() == null) {
-            return LineResponse.of(line);
-        }
         return LineResponse.of(persistLine, findStations(persistLine));
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+        Line line = findLineBy(lineId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+        Line line = findLineBy(id);
         Set<Station> stations = findStations(line);
         return LineResponse.of(line, stations);
+    }
+
+    private Line findLineBy(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
     }
 
     private Set<Station> findStations(Line line) {
