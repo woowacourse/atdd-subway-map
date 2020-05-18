@@ -14,9 +14,9 @@ public class LineWithStationsControllerResponse {
 	private LocalTime endTime;
 	private int intervalTime;
 	private String lineColor;
+	private List<Station> stations;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private List<Station> stations;
 
 	private LineWithStationsControllerResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
 											   int intervalTime, String lineColor, LocalDateTime createdAt,

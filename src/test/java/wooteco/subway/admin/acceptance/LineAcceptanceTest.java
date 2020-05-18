@@ -122,14 +122,14 @@ public class LineAcceptanceTest {
     }
 
     private List<LineServiceResponse> getLines() {
-        return
-                given().
+        return  given().
                 when().
-                        get("/lines").
+                    get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineServiceResponse.class);
+                    log().all().
+                    extract().
+                    jsonPath().getList(".", LineServiceResponse.class);
+
     }
 
     private void deleteLine(Long id) {
