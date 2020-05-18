@@ -7,7 +7,6 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Sets;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
@@ -75,7 +74,7 @@ public class LineService {
     }
 
     public Set<Station> findStationsByStationIds(List<Long> stationIds) {
-        return Sets.newHashSet(stationRepository.findAllById(stationIds));
+        return stationRepository.findAllById(stationIds);
     }
 
     public List<StationResponse> findStationResponsesWithLineId(Long lineId) {

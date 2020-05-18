@@ -28,8 +28,7 @@ public class Line {
     }
 
     public Line(Long id, String name, String backgroundColor, LocalTime startTime,
-        LocalTime endTime,
-        int intervalTime) {
+        LocalTime endTime, int intervalTime) {
         this.name = name;
         this.backgroundColor = backgroundColor;
         this.startTime = startTime;
@@ -39,65 +38,13 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public int getIntervalTime() {
-        return intervalTime;
-    }
-
-    public Set<LineStation> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getBackgroundColor() != null) {
-            this.backgroundColor = line.getBackgroundColor();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public void addLineStation(LineStation newLineStation) {
         List<Long> ids = this.findLineStationsId();
-        if (isLineStationEmpty(ids) || isNewLineStationLastLineStation(newLineStation, ids)) {
+        if (isLineStationEmpty(ids)) {
+            stations.add(newLineStation);
+            return;
+        }
+        if (isNewLineStationLastLineStation(newLineStation, ids)) {
             stations.add(newLineStation);
             return;
         }
@@ -157,5 +104,61 @@ public class Line {
 
     private boolean isNewLineStationLastLineStation(LineStation newLineStation, List<Long> ids) {
         return ids.get(ids.size() - 1).equals(newLineStation.getPreStationId());
+    }
+
+    public void update(Line line) {
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getBackgroundColor() != null) {
+            this.backgroundColor = line.getBackgroundColor();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public Set<LineStation> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

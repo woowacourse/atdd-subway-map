@@ -7,8 +7,7 @@ import java.util.Objects;
 
 import wooteco.subway.admin.domain.Station;
 
-public class
-StationResponse {
+public class StationResponse {
 
     private Long id;
     private String name;

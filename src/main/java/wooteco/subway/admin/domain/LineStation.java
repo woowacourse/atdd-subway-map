@@ -19,22 +19,6 @@ public class LineStation {
         this.duration = duration;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
-
-    public Long getStationId() {
-        return stationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
     }
@@ -51,7 +35,19 @@ public class LineStation {
         return this.preStationId.equals(lineStation.getPreStationId());
     }
 
-    public boolean hasPreStationIdSameWith(Long id) {
-        return id.equals(this.preStationId);
+    public Long getPreStationId() {
+        return preStationId;
+    }
+
+    public Long getStationId() {
+        return stationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

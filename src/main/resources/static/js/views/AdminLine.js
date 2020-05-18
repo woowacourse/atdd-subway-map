@@ -11,6 +11,7 @@ function AdminLine() {
   const $subwayLineStartTimeInput = document.querySelector("#first-time");
   const $subwayLineEndTimeInput = document.querySelector("#last-time");
   const $subwayLineIntervalTimeInput = document.querySelector("#interval-time");
+  const $modalUpdateConditionInput = document.querySelector("#modal-update-condition");
 
   const $createSubwayLineButton = document.querySelector(
     "#subway-line-create-form #submit-button"
@@ -26,7 +27,7 @@ function AdminLine() {
       endTime: $subwayLineEndTimeInput.value + ":00",
       intervalTime: $subwayLineIntervalTimeInput.value
     };
-    let $id = document.querySelector('#modal-update-condition').getAttribute("value");
+    let $id = $modalUpdateConditionInput.getAttribute("value");
     if ($id !== "") {
       fetch(`/api/lines/${$id}`, {
         method: "PUT",
@@ -40,13 +41,8 @@ function AdminLine() {
         headers: { "Content-Type": "application/json" }
       })
       .then(data => {
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineStartTimeInput.value = "";
-        $subwayLineEndTimeInput.value = "";
-        $subwayLineIntervalTimeInput.value = "";
-        document.querySelector('#modal-update-condition').value = "";
+        toggleAndInitializeInputs();
+        $modalUpdateConditionInput.value = "";
       })
 
     } else {
@@ -55,12 +51,7 @@ function AdminLine() {
           "beforeend",
           subwayLinesTemplate(data)
         );
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineStartTimeInput.value = "";
-        $subwayLineEndTimeInput.value = "";
-        $subwayLineIntervalTimeInput.value = "";
+        toggleAndInitializeInputs();
       });
     }
   };
@@ -86,27 +77,26 @@ function AdminLine() {
     if (isUpdateButton) {
       event.stopPropagation();
       event.preventDefault();
-      document.querySelector('#modal-update-condition').value = $id;
+      $modalUpdateConditionInput.value = $id;
       api.line.getOneLine($id).then(data => {
-        document.querySelector('#subway-line-name').value = data.name;
-        document.querySelector('#first-time').value = data.startTime.substring(0, 5);
-        document.querySelector('#last-time').value = data.endTime.substring(0, 5);
-        document.querySelector('#interval-time').value = data.intervalTime;
-        document.querySelector('#subway-line-color').value = data.backgroundColor;
+        $subwayLineNameInput.value = data.name;
+        $subwayLineStartTimeInput.value = data.startTime.substring(0, 5);
+        $subwayLineEndTimeInput.value = data.endTime.substring(0, 5);
+        $subwayLineIntervalTimeInput.value = data.intervalTime;
+        $subwayLineColorInput.value = data.backgroundColor;
       });
-      subwayLineModal.toggle();
-      document.querySelector('#subway-line-name').value = "";
-      document.querySelector('#first-time').value = "";
-      document.querySelector('#last-time').value = "";
-      document.querySelector('#interval-time').value = data.intervalTime;
-      document.querySelector('#subway-line-color').value = data.backgroundColor;
+      toggleAndInitializeInputs();
     }
   };
 
-  const onEditSubwayLine = event => {
-    const $target = event.target;
-    const isDeleteButton = $target.classList.contains("mdi-pencil");
-  };
+  const toggleAndInitializeInputs = () => {
+    subwayLineModal.toggle();
+    $subwayLineNameInput.value = "";
+    $subwayLineStartTimeInput.value = "";
+    $subwayLineEndTimeInput.value = "";
+    $subwayLineIntervalTimeInput.value = "";
+    $subwayLineColorInput.value = "";
+  }
 
   /* 처음 지하철 정보들 뿌려주는 */
   const initDefaultSubwayLines = () => {
@@ -147,7 +137,7 @@ function AdminLine() {
     event.preventDefault();
     const $target = event.target;
     if ($target.classList.contains("color-select-option")) {
-      document.querySelector("#subway-line-color").value =
+      $subwayLineColorInput.value =
         $target.dataset.color;
     }
   };
