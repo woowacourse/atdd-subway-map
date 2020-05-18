@@ -146,35 +146,28 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        int index = findLineStationIndex(stationId);
-        LineStation nextLineStation;
+        int removeIndex = findLineStationIndex(stationId);
+        Long preLineStationId = getPreLineStationId(removeIndex);
 
-        if(index == FIRST_INDEX && index == lineStations.size() - 1){
-            lineStations.remove(index);
-            return;
-        }
-
-        if(index == FIRST_INDEX) {
-            nextLineStation = lineStations.get(SECOND_INDEX);
-            nextLineStation.updatePreLineStationId(null);
-            lineStations.remove(index);
-            return;
-        }
-
-        if(index == lineStations.size() -1)  {
-            lineStations.remove(index);
-            return;
-        }
-        removeLineStationOnMiddleIndex(index);
+        updateLineStationId(removeIndex + NEXT_INDEX, preLineStationId);
+        lineStations.remove(removeIndex);
     }
 
-    private void removeLineStationOnMiddleIndex(int index) {
-        LineStation nextLineStation;
-        LineStation preLineStation;
-        nextLineStation = lineStations.get(index+ NEXT_INDEX);
-        preLineStation = lineStations.get(index- BEFORE_INDEX);
-        nextLineStation.updatePreLineStationId(preLineStation.getStationId());
-        lineStations.remove(index);
+    private void updateLineStationId(int nextIndex, Long preLineStationId) {
+        if(lineStations.size() <= nextIndex) {
+            return;
+        }
+
+        LineStation lineStation = lineStations.get(nextIndex);
+        lineStation.updatePreLineStationId(preLineStationId);
+    }
+
+    private Long getPreLineStationId(int removeIndex) {
+        if(removeIndex == FIRST_INDEX) {
+            return null;
+        }
+
+        return lineStations.get(removeIndex-1).getPreStationId();
     }
 
     private int findLineStationIndex(Long stationId) {
