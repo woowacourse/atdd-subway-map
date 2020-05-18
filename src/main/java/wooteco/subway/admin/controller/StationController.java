@@ -2,7 +2,7 @@ package wooteco.subway.admin.controller;
 
 import java.net.URI;
 
-import org.springframework.data.relational.core.conversion.DbActionExecutionException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,7 +38,7 @@ public class StationController {
             .build();
     }
 
-    @ExceptionHandler(DbActionExecutionException.class)
+    @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<Void> catchException() {
         return ResponseEntity.badRequest().build();
     }
