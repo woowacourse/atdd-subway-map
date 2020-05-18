@@ -43,7 +43,7 @@ public class LineResponse {
 			.collect(Collectors.toSet());
 
 		return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
-			line.getEndTime(), line.getIntervalTime(), line.getColor(),
+			line.getEndTime(), line.getIntervalTime(), line.getBgColor(),
 			line.getCreatedAt(), line.getUpdatedAt(), stationResponses);
 	}
 

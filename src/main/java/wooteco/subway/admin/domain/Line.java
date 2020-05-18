@@ -19,16 +19,17 @@ public class Line {
 	private final LocalTime startTime;
 	private final LocalTime endTime;
 	private final int intervalTime;
-	private final String color;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime updatedAt;
+	private final String colorType;
+	private final String colorValue;
 
 	@MappedCollection(idColumn = "line", keyColumn = "sequence")
 	private final List<Edge> edges;
 
 	Line(final Long id, final String name, final LocalTime startTime,
-		final LocalTime endTime, final int intervalTime, final String color,
-		final List<Edge> edges, final LocalDateTime createdAt,
+		final LocalTime endTime, final int intervalTime, final String colorType,
+		final String colorValue, final List<Edge> edges, final LocalDateTime createdAt,
 		final LocalDateTime updatedAt) {
 
 		this.id = id;
@@ -36,28 +37,31 @@ public class Line {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.intervalTime = intervalTime;
-		this.color = color;
+		this.colorType = colorType;
+		this.colorValue = colorValue;
 		this.edges = edges;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
 
 	public static Line of(String name, LocalTime startTime, LocalTime endTime,
-		int intervalTime, String color) {
+		int intervalTime, String bgColor) {
 		LocalDateTime localDateTime = LocalDateTime.now();
+		Color color = Color.ofBgColor(bgColor);
 
-		return new Line(null, name, startTime, endTime, intervalTime, color,
-			new LinkedList<>(), localDateTime, localDateTime);
+		return new Line(null, name, startTime, endTime, intervalTime, color.getType(),
+			color.getValue(), new LinkedList<>(), localDateTime, localDateTime);
 	}
 
 	public Line withId(Long id) {
 		return new Line(id, this.name, this.startTime, this.endTime, this.intervalTime,
-			this.color, this.edges, this.createdAt, this.updatedAt);
+			this.colorType, this.colorValue, this.edges, this.createdAt, this.updatedAt);
 	}
 
 	public Line update(Line line) {
 		return new Line(this.id, line.name, line.startTime, line.endTime,
-			line.intervalTime, line.color, line.edges, this.createdAt, line.updatedAt);
+			line.intervalTime, line.colorType, line.colorValue, line.edges,
+			this.createdAt, line.updatedAt);
 	}
 
 	public void addEdge(Edge edge) {
@@ -135,8 +139,12 @@ public class Line {
 			.collect(Collectors.toList());
 	}
 
+	public String getBgColor() {
+		return Color.ofBgColor(colorType, colorValue).toBgColor();
+	}
+
 	public Long getId() {
-		return this.id;
+		return id;
 	}
 
 	public String getName() {
@@ -167,8 +175,12 @@ public class Line {
 		return updatedAt;
 	}
 
-	public String getColor() {
-		return color;
+	public String getColorType() {
+		return colorType;
+	}
+
+	public String getColorValue() {
+		return colorValue;
 	}
 
 	@Override
@@ -179,10 +191,11 @@ public class Line {
 			", startTime=" + startTime +
 			", endTime=" + endTime +
 			", intervalTime=" + intervalTime +
-			", color='" + color + '\'' +
-			", edges=" + edges +
 			", createdAt=" + createdAt +
 			", updatedAt=" + updatedAt +
+			", colorType='" + colorType + '\'' +
+			", colorValue='" + colorValue + '\'' +
+			", edges=" + edges +
 			'}';
 	}
 }

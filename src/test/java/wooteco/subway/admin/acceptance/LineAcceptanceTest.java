@@ -106,7 +106,7 @@ public class LineAcceptanceTest {
 		params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 		params.put("intervalTime", "10");
 		params.put("name", "");
-		params.put("color", "");
+		params.put("bgColor", "bg-red-500");
 
 		given().
 			body(params).

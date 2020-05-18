@@ -35,7 +35,7 @@ public class LineServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "#000000")
+		line = Line.of("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-black")
 			.withId(1L);
 		lineService = new LineService(lineRepository, stationRepository);
 

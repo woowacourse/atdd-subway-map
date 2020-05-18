@@ -61,7 +61,7 @@ public class LineTest {
 		assertThat(updated.getStartTime()).isEqualTo(LocalTime.of(10, 0));
 		assertThat(updated.getEndTime()).isEqualTo(LocalTime.of(17, 0));
 		assertThat(updated.getIntervalTime()).isEqualTo(10);
-		assertThat(updated.getColor()).isEqualTo("bg-blue-600");
+		assertThat(updated.getBgColor()).isEqualTo("bg-blue-600");
 		assertThat(updated.getCreatedAt()).isEqualTo(line.getCreatedAt());
 		assertThat(updated.getUpdatedAt()).isNotEqualTo(line.getUpdatedAt());
 	}
