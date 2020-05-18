@@ -33,13 +33,13 @@ public class StationController {
 
 	@GetMapping
 	public ResponseEntity<List<StationControllerResponse>> showStations() {
-		List<StationControllerResponse> stationControllerRespons = stationService.findAll().stream()
+		List<StationControllerResponse> stationControllerResponses = stationService.findAll().stream()
 				.map(StationControllerResponse::of)
 				.collect(Collectors.toList());
 
 		return ResponseEntity
 				.ok()
-				.body(stationControllerRespons);
+				.body(stationControllerResponses);
 	}
 
 	@DeleteMapping("{id}")

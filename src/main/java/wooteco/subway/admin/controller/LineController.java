@@ -26,11 +26,10 @@ public class LineController {
 
 	@GetMapping
 	public ResponseEntity<List<LineWithStationsControllerResponse>> showLines() {
-		List<LineWithStationsServiceResponse> lineWithStationsResponses = lineService.findLines();
-
-		List<LineWithStationsControllerResponse> lineWithStationsControllerResponses = lineWithStationsResponses.stream()
+		List<LineWithStationsControllerResponse> lineWithStationsControllerResponses = lineService.findLines().stream()
 				.map(LineWithStationsControllerResponse::of)
 				.collect(Collectors.toList());
+
 		return ResponseEntity
 				.ok()
 				.body(lineWithStationsControllerResponses);

@@ -41,7 +41,7 @@ public class LineService {
 		LineStation lineStation = lineStationControllerRequest.toLineStation();
 
 		if (lineStation.isFirstLineStation()) {
-			persistLine.addLineStationOnFirst(lineStationControllerRequest.toLineStation());
+			persistLine.addLineStationOnFirst(lineStation);
 			lineRepository.save(persistLine);
 			return;
 		}
