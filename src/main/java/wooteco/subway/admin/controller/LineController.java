@@ -32,18 +32,18 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest view) {
         Line line = lineService.save(view.toLine());
-        return new ResponseEntity(LineResponse.of(line), HttpStatus.CREATED);
+        return new ResponseEntity<>(LineResponse.of(line), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        return new ResponseEntity(lineService.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(lineService.findById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest view) {
         LineResponse line = lineService.updateLine(id, view.toLine());
-        return new ResponseEntity(line, HttpStatus.OK);
+        return new ResponseEntity<>(line, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
