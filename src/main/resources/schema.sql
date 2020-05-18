@@ -26,5 +26,7 @@ create table if not exists EDGE
     pre_station_id bigint,
     station_id bigint not null,
     distance int not null,
-    duration int not null
+    duration int not null,
+    created_at datetime,
+    updated_at datetime
 );

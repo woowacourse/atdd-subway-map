@@ -64,13 +64,13 @@ public class LineController {
                 .body(response);
     }
 
-    @GetMapping("/lines/edges")
+    @GetMapping("/lines/stations")
     public ResponseEntity<List<StationsAtLineResponse>> showEdges() {
         List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping("/lines/{lineId}/edges/{stationId}")
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
     public ResponseEntity<Void> deleteEdge(@PathVariable("lineId") Long lineId, @PathVariable("stationId") Long stationId) {
         lineService.removeEdge(lineId, stationId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

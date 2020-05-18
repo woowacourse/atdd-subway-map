@@ -5,6 +5,11 @@ import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Edges;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.exception.DuplicatedStationException;
+import wooteco.subway.admin.domain.exception.NoSuchLineException;
+import wooteco.subway.admin.domain.exception.NoSuchStationException;
+import wooteco.subway.admin.domain.exception.RequireLineNameException;
+import wooteco.subway.admin.domain.exception.RequireStationNameException;
 import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.dto.request.LineRequest;
 import wooteco.subway.admin.dto.request.LineUpdateRequest;
@@ -14,16 +19,13 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String DUPLICATED_STATION_EXCEPTION_MESSAGE = "이미 동일한 역이 존재합니다.";
-    private static final String NO_SUCH_LINE_EXCEPTION_MESSAGE = "존재하지 않는 노선입니다.";
-    private static final String NO_SUCH_EDGE_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
-    private static final String REQUIRE_STATION_NAME_EXCEPTION_MESSAGE = "다음역의 이름을 입력해주세요.";
     private static final String REQUIRE_LINE_NAME_EXCEPTION_MESSAGE = "노선의 이름을 입력해주세요.";
 
     private LineRepository lineRepository;
@@ -42,12 +44,12 @@ public class LineService {
 
     private void validateLine(Line line) {
         if (line.getName() == null) {
-            throw new IllegalArgumentException(REQUIRE_LINE_NAME_EXCEPTION_MESSAGE);
+            throw new RequireLineNameException();
         }
 
         lineRepository.findByName(line.getName())
                 .ifPresent(value -> {
-                    throw new IllegalArgumentException(DUPLICATED_STATION_EXCEPTION_MESSAGE);
+                    throw new DuplicatedStationException();
                 });
     }
 
@@ -114,28 +116,27 @@ public class LineService {
 
     private Line findLine(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION_MESSAGE));
+                .orElseThrow(NoSuchLineException::new);
     }
 
     private Station findStation(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(REQUIRE_STATION_NAME_EXCEPTION_MESSAGE));
+                .orElseThrow(RequireStationNameException::new);
     }
 
     private Edge toEdge(EdgeCreateRequest request) {
-        Long preStationId = stationRepository.findIdByName(request.getPreStationName());
-        Long stationId = stationRepository.findIdByName(request.getStationName());
-
-        if (isValidStationFormat(request.getPreStationName()) && preStationId == null) {
-            throw new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE);
+        if (request.getStationId() == null) {
+            throw new RequireStationNameException();
         }
-        if (stationId == null) {
-            throw new IllegalArgumentException(REQUIRE_STATION_NAME_EXCEPTION_MESSAGE);
-        }
-        return new Edge(preStationId, stationId, request.getDistance(), request.getDuration());
-    }
+        Station station = stationRepository.findById(request.getStationId())
+                .orElseThrow(NoSuchStationException::new);
 
-    private boolean isValidStationFormat(String name) {
-        return name != null && !name.isEmpty();
+        if (request.getPreStationId() == null) {
+            return new Edge(null, station.getId(), request.getDistance(), request.getDuration(), LocalDateTime.now(), LocalDateTime.now());
+        }
+        Station preStation = stationRepository.findById(request.getPreStationId())
+                .orElseThrow(NoSuchStationException::new);
+        return new Edge(preStation.getId(), station.getId(), request.getDistance(),
+                request.getDuration(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

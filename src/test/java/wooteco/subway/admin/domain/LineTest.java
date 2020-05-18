@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class LineTest {
         Station station2 = new Station(2L, "강변역");
         Station station3 = new Station(3L, "구의역");
 
-        line.addEdge(new Edge(null, 1L, 10, 10));
-        line.addEdge(new Edge(1L, 2L, 10, 10));
-        line.addEdge(new Edge(2L, 3L, 10, 10));
+        line.addEdge(new Edge(null, 1L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
+        line.addEdge(new Edge(1L, 2L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
+        line.addEdge(new Edge(2L, 3L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
     }
 
     @Test

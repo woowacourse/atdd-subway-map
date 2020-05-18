@@ -10,6 +10,7 @@ function AdminEdge() {
     const $selectedLine = document.querySelector("#station-select-options");
     const $preStationNameInput = document.querySelector("#depart-station-name");
     const $stationNameInput = document.querySelector("#arrival-station-name");
+    let stations = [];
 
     const createSubwayEdgeModal = new Modal();
 
@@ -17,6 +18,8 @@ function AdminEdge() {
         $subwayLinesSlider.innerHTML = "";
         let subwayLineInfos = await api.edge.get()
             .then(data => data);
+        stations = await api.station.get();
+
         $subwayLinesSlider.innerHTML = subwayLineInfos
             .map(subwayLineInfo => subwayLinesItemTemplate(subwayLineInfo))
             .join("");
@@ -33,7 +36,7 @@ function AdminEdge() {
             items: 1,
             edgePadding: 25
         });
-    };
+    }
 
     async function initSubwayLineOptions() {
         let subwayLineInfos = await api.edge.get()
@@ -49,16 +52,33 @@ function AdminEdge() {
             "afterbegin",
             subwayLineOptionTemplate
         );
-    };
+    }
 
     const onCreateEdgeHandler = async event => {
         event.preventDefault();
         const selectedIndex = $selectedLine.selectedIndex;
         const lineId = $selectedLine.options[selectedIndex].getAttribute("data-line-id");
+        const preStationName = $preStationNameInput.value;
+        const stationName = $stationNameInput.value;
+        let preStationId = null;
+        let stationId = null;
+
+        for (let i = 0; i < stations.length; i++) {
+            if (stations[i].name === preStationName) {
+                preStationId = stations[i].id;
+            }
+            if (stations[i].name === stationName) {
+                stationId = stations[i].id;
+            }
+        }
+
+        if (preStationId === stationId) {
+            alert("서로 다른 역을 입력해주세요.");
+        }
 
         const newEdge = {
-            preStationName: $preStationNameInput.value,
-            stationName: $stationNameInput.value,
+            preStationId: preStationId,
+            stationId: stationId,
             distance: 0,
             duration: 0
         };
@@ -66,12 +86,6 @@ function AdminEdge() {
         await api.edge.post(newEdge, lineId);
         createSubwayEdgeModal.toggle();
         initSubwayLinesSlider();
-
-        // api.edge.post(newEdge, lineId)
-        //     .then(() => {
-        //         createSubwayEdgeModal.toggle();
-        //         initSubwayLinesSlider();
-        //     })
     };
 
     const onRemoveStationHandler = event => {

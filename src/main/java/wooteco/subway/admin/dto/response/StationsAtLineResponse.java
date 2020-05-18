@@ -6,17 +6,18 @@ import wooteco.subway.admin.domain.Station;
 import java.util.List;
 
 public class StationsAtLineResponse {
-    private Long id;        // lineId
-    private String name;    // lineName
+    private Long lineId;
+    private String lineName;
     private String bgColor;
     private List<Station> stations;
 
     private StationsAtLineResponse() {
     }
 
-    private StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {
-        this.id = id;
-        this.name = name;
+    private StationsAtLineResponse(Long lineId, String lineName, String bgColor,
+                                   List<Station> stations) {
+        this.lineId = lineId;
+        this.lineName = lineName;
         this.bgColor = bgColor;
         this.stations = stations;
     }
@@ -25,12 +26,12 @@ public class StationsAtLineResponse {
         this(line.getId(), line.getName(), line.getBgColor(), stations);
     }
 
-    public Long getId() {
-        return id;
+    public Long getLineId() {
+        return lineId;
     }
 
-    public String getName() {
-        return name;
+    public String getLineName() {
+        return lineName;
     }
 
     public String getBgColor() {

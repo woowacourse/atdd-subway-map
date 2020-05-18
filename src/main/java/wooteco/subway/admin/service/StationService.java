@@ -2,6 +2,9 @@ package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.domain.exception.BlankNotAllowedInStationNameException;
+import wooteco.subway.admin.domain.exception.NumberNotAllowedInStationNameException;
+import wooteco.subway.admin.domain.exception.RequireStationNameException;
 import wooteco.subway.admin.dto.request.StationCreateRequest;
 import wooteco.subway.admin.dto.response.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
@@ -39,13 +42,13 @@ public class StationService {
     private void validate(StationCreateRequest request) {
         String stationName = request.getName();
         if (stationName == null || stationName.isEmpty()) {
-            throw new IllegalArgumentException("값을 입력해주세요.");
+            throw new RequireStationNameException();
         }
         if (Pattern.compile(NUMBER_REGEX).matcher(stationName).find()) {
-            throw new IllegalArgumentException("역 이름에는 숫자가 포함될 수 없습니다.");
+            throw new NumberNotAllowedInStationNameException();
         }
         if (stationName.contains(BLANK_SPACE)) {
-            throw new IllegalArgumentException("역 이름에는 공백이 포함될 수 없습니다.");
+            throw new BlankNotAllowedInStationNameException();
         }
     }
 }

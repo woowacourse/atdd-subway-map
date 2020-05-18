@@ -13,6 +13,7 @@ import wooteco.subway.admin.dto.request.EdgeCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -65,14 +66,14 @@ public class LineServiceTest {
         lenient().when(stationRepository.findById(4L)).thenReturn(Optional.of(station4));
         lenient().when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
 
-        line.addEdge(new Edge(null, 1L, 10, 10));
-        line.addEdge(new Edge(1L, 2L, 10, 10));
-        line.addEdge(new Edge(2L, 3L, 10, 10));
+        line.addEdge(new Edge(null, 1L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
+        line.addEdge(new Edge(1L, 2L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
+        line.addEdge(new Edge(2L, 3L, 10, 10, LocalDateTime.now(), LocalDateTime.now()));
     }
 
     @Test
     void addEdgeAtTheFirstOfLine() {
-        EdgeCreateRequest request = new EdgeCreateRequest(null, "구의역", 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(null, stations.get("구의역"), 10, 10);
 
         lineService.addEdge(line.getId(), request);
 
@@ -85,7 +86,7 @@ public class LineServiceTest {
 
     @Test
     void addEdgeBetweenTwo() {
-        EdgeCreateRequest request = new EdgeCreateRequest("잠실역", "구의역", 10, 10);
+        EdgeCreateRequest request = new EdgeCreateRequest(stations.get("잠실역"), stations.get("구의역"), 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request);
@@ -104,7 +105,7 @@ public class LineServiceTest {
 
     @Test
     void addEdgeAtTheEndOfLine() {
-        EdgeCreateRequest request2 = new EdgeCreateRequest("강변역", "구의역", 10, 10);
+        EdgeCreateRequest request2 = new EdgeCreateRequest(stations.get("강변역"), stations.get("구의역"), 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.addEdge(line.getId(), request2);

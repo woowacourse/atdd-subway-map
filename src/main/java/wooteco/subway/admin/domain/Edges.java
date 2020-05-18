@@ -1,6 +1,9 @@
 package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import wooteco.subway.admin.domain.exception.NoSuchStationException;
+import wooteco.subway.admin.domain.exception.RequireFirstStationException;
+import wooteco.subway.admin.domain.exception.RequireStationNameException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,10 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Edges implements Iterable<Edge> {
-    private static final String VALIDATE_FIRST_EDGE_EXCEPTION_MESSAGE = "시작역부터 입력해주세요.";
-    private static final String NO_SUCH_EDGE_EXCEPTION_MESSAGE = "존재하지 않는 역입니다.";
-    private static final String REQUIRE_STATION_EXCEPTION_MESSAGE = "다음 역을 입력해주세요.";
-
     @MappedCollection(idColumn = "line_id", keyColumn = "line_key")
     private List<Edge> edges = new ArrayList<>();
 
@@ -53,7 +52,7 @@ public class Edges implements Iterable<Edge> {
         return edges.stream()
                 .filter(value -> id.equals(value.getStationId()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_EDGE_EXCEPTION_MESSAGE));
+                .orElseThrow(NoSuchStationException::new);
     }
 
     public List<Long> findStationsId() {
@@ -64,13 +63,13 @@ public class Edges implements Iterable<Edge> {
 
     private void validateFirstEdge(Edge edge) {
         if (edge.getPreStationId() != null) {
-            throw new IllegalArgumentException(VALIDATE_FIRST_EDGE_EXCEPTION_MESSAGE);
+            throw new RequireFirstStationException();
         }
     }
 
     private void validateEdge(Edge edge) {
         if (edge.getStationId() == null) {
-            throw new IllegalArgumentException(REQUIRE_STATION_EXCEPTION_MESSAGE);
+            throw new RequireStationNameException();
         }
     }
 

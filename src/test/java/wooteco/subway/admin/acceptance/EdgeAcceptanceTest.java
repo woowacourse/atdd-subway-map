@@ -67,16 +67,16 @@ public class EdgeAcceptanceTest {
         LineResponse lineResponse = createLine("2호선");
 
         //when 노선 추가
-        EdgeCreateRequest edgeCreateRequest1 = new EdgeCreateRequest(null, "잠실역", 10, 10);
-        EdgeCreateRequest edgeCreateRequest2 = new EdgeCreateRequest("잠실역", "삼성역", 10, 10);
-        EdgeCreateRequest edgeCreateRequest3 = new EdgeCreateRequest("삼성역", "강변역", 10, 10);
+        EdgeCreateRequest edgeCreateRequest1 = new EdgeCreateRequest(null, station1.getId(), 10, 10);
+        EdgeCreateRequest edgeCreateRequest2 = new EdgeCreateRequest(station1.getId(), station2.getId(), 10, 10);
+        EdgeCreateRequest edgeCreateRequest3 = new EdgeCreateRequest(station2.getId(), station3.getId(), 10, 10);
 
         createEdge(lineResponse.getId(), edgeCreateRequest1);
         createEdge(lineResponse.getId(), edgeCreateRequest2);
         StationsAtLineResponse response = createEdge(lineResponse.getId(), edgeCreateRequest3);
 
         //then
-        assertThat(response.getId()).isEqualTo(lineResponse.getId());
+        assertThat(response.getLineId()).isEqualTo(lineResponse.getId());
         assertThat(response.getStations().size()).isEqualTo(3);
 
         //when 노선의 지하철역 조회
@@ -101,7 +101,7 @@ public class EdgeAcceptanceTest {
 
     private void deleteEdge(Long lineId, Long stationId) {
         given().when()
-                .delete("/lines/" + lineId + "/edges/" + stationId)
+                .delete("/lines/" + lineId + "/stations/" + stationId)
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
@@ -110,7 +110,7 @@ public class EdgeAcceptanceTest {
     private List<StationsAtLineResponse> findAllEdges() {
         return given().
                 when().
-                get("/lines/edges").
+                get("/lines/stations").
                 then().
                 log().all().
                 extract().
@@ -152,9 +152,6 @@ public class EdgeAcceptanceTest {
     }
 
     private StationsAtLineResponse createEdge(Long lineId, EdgeCreateRequest request) throws NoSuchMethodException {
-//        Constructor<StationsAtLineResponse> constructor = StationsAtLineResponse.class.getConstructor(null);
-//        constructor.setAccessible(true);
-
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

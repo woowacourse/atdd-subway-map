@@ -19,7 +19,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option data-line-id = "${value.id}">${value.name}</option>`;
+export const optionTemplate = value => `<option data-line-id = "${value.lineId}">${value.lineName}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -50,8 +50,8 @@ export const subwayLinesItemTemplate = line => {
         .map(station => listItemTemplate(station))
         .join("");
     return `<div class="inline-block w-1/2 px-2 ">
-            <div class="rounded-sm w-full slider-list line" data-line-id="${line.id}">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.name}</div>
+            <div class="rounded-sm w-full slider-list line" data-line-id="${line.lineId}">
+              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.lineName}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>

@@ -77,13 +77,13 @@ const api = (() => {
 
     const edge = {
         get() {
-            return request(`/lines/edges`);
+            return request(`/lines/stations`);
         },
         post(data, lineId) {
             return request(`/lines/${lineId}/edges`, METHOD.POST(data));
         },
         delete(lineId, stationId) {
-            return request(`/lines/${lineId}/edges/${stationId}`, METHOD.DELETE());
+            return request(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };
 
