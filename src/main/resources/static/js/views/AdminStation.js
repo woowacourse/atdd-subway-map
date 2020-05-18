@@ -17,9 +17,17 @@ function AdminStation() {
 
   const initDefaultSubwayStations = () => {
     const stations = api.station.get();
-    stations.then(data => data.map(station => {
+    stations.then(data => {
+      if(data.status == 400){
+        throw new Error(data.message);
+      }
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
+      data.map(station => {
         $stationList.insertAdjacentHTML("beforeend", listItemTemplate(station));
-    }))
+      })}
+    ).catch(error => alert(error))
   };
 
   const onAddStationHandler = event => {
@@ -58,11 +66,17 @@ function AdminStation() {
     const stationData = {
       name: $stationNameInput.value
     };
-    api.station.create(stationData).then(() => {
+    api.station.create(stationData).then(data => {
+      if(data.status == 400){
+        throw new Error(data.message);
+      }
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
       $stationNameInput.value = "";
       $stationList.innerHTML = "";
       initDefaultSubwayStations();
-    });
+    }).catch(error => alert(error));
   };
 
   const onRemoveStationHandler = event => {
@@ -73,7 +87,14 @@ function AdminStation() {
     if (isDeleteButton) {
       if(confirm("정말로 삭제하시겠습니까?")){
         $targetParent.remove();
-        api.station.delete(id);
+        api.station.delete(id).then(data => {
+          if(data.status == 400){
+            throw new Error(data.message);
+          }
+          if(data.status == 500){
+            throw new Error("Unexpected Internal Error");
+          }
+        }).catch(error => alert(error));
       }
     }
   };

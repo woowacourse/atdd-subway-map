@@ -25,15 +25,7 @@ const METHOD = {
   },
 };
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(async response => {
-    if(await response.ok){
-      return response.json()
-    }
-    throw new Error(await response.text());
-  }).catch(error => {
-    alert(error);
-    return null;
-  });
+  const request = (uri, config) => fetch(uri, config).then(data => data.json());
 
   const station = {
     get() {

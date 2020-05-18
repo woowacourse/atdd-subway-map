@@ -18,26 +18,38 @@ function AdminEdge() {
 
   const initSubwayLinesSlider = () => {
     api.line.get().then( data => {
-        $subwayLinesSlider.innerHTML = data
-          .map(line => subwayLinesItemTemplate(line))
-          .join("");
-          tns({
-            container: ".subway-lines-slider",
-            loop: true,
-            slideBy: "page",
-            speed: 400,
-            autoplayButtonOutput: false,
-            mouseDrag: true,
-            lazyload: true,
-            controlsContainer: "#slider-controls",
-            items: 1,
-            edgePadding: 25
-          });
-    });
+      if(data.status == 400){
+        throw new Error(data.message);
+      }
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
+      $subwayLinesSlider.innerHTML = data
+        .map(line => subwayLinesItemTemplate(line))
+        .join("");
+        tns({
+          container: ".subway-lines-slider",
+          loop: true,
+          slideBy: "page",
+          speed: 400,
+          autoplayButtonOutput: false,
+          mouseDrag: true,
+          lazyload: true,
+          controlsContainer: "#slider-controls",
+          items: 1,
+          edgePadding: 25
+        });
+    }).catch(error => alert(error));
   };
 
   const initSubwayLineOptions = () => {
     api.line.get().then(data => {
+      if(data.status == 400){
+        throw new Error(data.message);
+      }
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
       const subwayLineOptionTemplate = data
         .map(line => optionTemplate(line))
         .join("");
@@ -48,7 +60,7 @@ function AdminEdge() {
           "afterbegin",
           subwayLineOptionTemplate
         );
-    });
+    }).catch(error => alert(error));
   };
 
   const onCreateEdge = event => {
@@ -60,30 +72,49 @@ function AdminEdge() {
     var $arrivalStationId = null;
 
     api.station.getByName($departStation.value).then(departData => {
-        $departStationId = departData;
-        if($departStationId == null){
-            alert("이전역 이름이 올바르지 않습니다.");
+      if(departData.status == 400){
+        throw new Error(data.message);
+      }
+      if(departData.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
+      $departStationId = departData;
+      if($departStationId == null){
+          alert("이전역 이름이 올바르지 않습니다.");
+          return;
+      }
+      api.station.getByName($arrivalStation.value).then(arrivalData => {
+        if(arrivalData.status == 400){
+          throw new Error(data.message);
+        }
+        if(arrivalData.status == 500){
+          throw new Error("Unexpected Internal Error");
+        }
+        $arrivalStationId = arrivalData;
+        console.log(arrivalData);
+        if($arrivalStationId == null || $arrivalStationId == 0){
+        alert("다음역 이름이 올바르지 않습니다.");
             return;
         }
-        api.station.getByName($arrivalStation.value).then(arrivalData => {
-            $arrivalStationId = arrivalData;
-            if($arrivalStationId == null){
-            alert("다음역 이름이 올바르지 않습니다.");
-                return;
-            }
-            const newSubwayLineData = {
-              preStationId: $departStationId,
-              stationId: $arrivalStationId
-            };
-            api.lineStation.create(newSubwayLineData, lineId).then(() => {
-              initSubwayLinesSlider();
-              initSubwayLineOptions();
-              createSubwayEdgeModal.toggle();
-              $departStation.value = "";
-              $arrivalStation.value = "";
-            });
-        });
-    });
+        const newSubwayLineData = {
+          preStationId: $departStationId,
+          stationId: $arrivalStationId
+        };
+        api.lineStation.create(newSubwayLineData, lineId).then(data => {
+          if(arrivalData.status == 400){
+            throw new Error(data.message);
+          }
+          if(arrivalData.status == 500){
+            throw new Error("Unexpected Internal Error");
+          }
+          initSubwayLinesSlider();
+          initSubwayLineOptions();
+          createSubwayEdgeModal.toggle();
+          $departStation.value = "";
+          $arrivalStation.value = "";
+        }).catch(error => alert(error));
+      }).catch(error => alert(error));
+    }).catch(error => alert(error));
   };
 
   const onRemoveStationHandler = event => {
@@ -92,14 +123,27 @@ function AdminEdge() {
     const $targetParent = $target.closest(".list-item");
     const $name = $targetParent.innerText;
     const $lineId = $target.closest(".rounded-sm").querySelector(".station").dataset.subwayId;
-    api.station.getByName($name).then(stationId => {
+    api.station.getByName($name).then(getData => {
+      if(getData.status == 400){
+        throw new Error(data.message);
+      }
+      if(getData.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
       if (isDeleteButton) {
         if(confirm("정말로 삭제하시겠습니까?")){
           $targetParent.remove();
-          api.lineStation.delete($lineId ,stationId);
+          api.lineStation.delete($lineId ,stationId).then(deleteData => {
+            if(deleteData.status == 400){
+              throw new Error(data.message);
+            }
+            if(deleteData.status == 500){
+              throw new Error("Unexpected Internal Error");
+            }
+          }).catch(error => alert(error));
         }
       }
-    });
+    }).catch(error => alert(error));
   };
 
   const initEventListeners = () => {

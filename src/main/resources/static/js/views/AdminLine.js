@@ -24,13 +24,19 @@ function AdminLine() {
       const id = event.target.dataset.subwayId;
       const line = api.line.getBy(id);
       line.then(data => {
+        if(data.status == 400){
+          throw new Error(data.message);
+        }
+        if(data.status == 500){
+          throw new Error("Unexpected Internal Error");
+        }
         const $firstTime = document.querySelector("#selected-first-time");
         const $lastTime = document.querySelector("#selected-last-time");
         const $intervalTime = document.querySelector("#selected-interval-time");
         $firstTime.innerText = data.startTime;
         $lastTime.innerText = data.endTime;
         $intervalTime.innerText = data.intervalTime + "분";
-      });
+      }).catch(error => alert(error));
     }
   }
   const setSelectedData = event => {
@@ -41,21 +47,35 @@ function AdminLine() {
       const id = $targetParent.dataset.subwayId;
       const line = api.line.getBy(id);
       line.then(data => {
+        if(data.status == 400){
+          throw new Error(data.message);
+        }
+        if(data.status == 500){
+          throw new Error("Unexpected Internal Error");
+        }
         $subwayLineNameInput.value = data.name;
         $subwayLineColorInput.value = data.bgColor;
         $subwayLineFirstTime.value = data.startTime;
         $subwayLineLastTime.value = data.endTime;
         $subwayLineIntervalTime.value = data.intervalTime;
-      });
+      }).catch(error => alert(error));
     }
     ;
   }
 
   const initDefaultSubwayLines = () => {
     const lines = api.line.get();
-    lines.then(data => data.map(line => {
-      $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
-    }))
+    lines.then(data => {
+      if(data.status == 400){
+        throw new Error(data.message);
+      }
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
+      data.map(line => {
+        $subwayLineList.insertAdjacentHTML("beforeend", subwayLinesTemplate(line));
+      });
+    }).catch(error => alert(error));
   };
 
   const onCreateSubwayLine = event => {
@@ -68,19 +88,22 @@ function AdminLine() {
       bgColor: $subwayLineColorInput.value
     };
     const create = api.line.create(newSubwayLineData);
-    create.then(value => {
-      if(value != null){
-        console.log(create);
-        $subwayLineList.innerHTML = "";
-        initDefaultSubwayLines();
-        subwayLineModal.toggle();
-        $subwayLineNameInput.value = "";
-        $subwayLineColorInput.value = "";
-        $subwayLineFirstTime.value = "";
-        $subwayLineLastTime.value = "";
-        $subwayLineIntervalTime.value = "";
+    create.then(data => {
+      if(data.status == 400){
+        throw new Error(data.message);
       }
-    });
+      if(data.status == 500){
+        throw new Error("Unexpected Internal Error");
+      }
+      $subwayLineList.innerHTML = "";
+      initDefaultSubwayLines();
+      subwayLineModal.toggle();
+      $subwayLineNameInput.value = "";
+      $subwayLineColorInput.value = "";
+      $subwayLineFirstTime.value = "";
+      $subwayLineLastTime.value = "";
+      $subwayLineIntervalTime.value = "";
+    }).catch(error => alert(error));
   };
   const onDeleteSubwayLine = event => {
     const $target = event.target;
@@ -90,7 +113,14 @@ function AdminLine() {
     if (isDeleteButton) {
       if(confirm("정말로 삭제하시겠습니까?")){
         $target.closest(".subway-line-item").remove();
-        api.line.delete(id);
+        api.line.delete(id).then(data => {
+          if(data.status == 400){
+            throw new Error(data.message);
+          }
+          if(data.status == 500){
+            throw new Error("Unexpected Internal Error");
+          }
+        }).catch(error => alert(error));
       }
     }
   };
@@ -125,6 +155,12 @@ function AdminLine() {
     }
     api.line.update(modifiedSubwayLineData, id)
       .then(data => {
+        if(data.status == 400){
+          throw new Error(data.message);
+        }
+        if(data.status == 500){
+          throw new Error("Unexpected Internal Error");
+        }
         $subwayLineList.innerHTML = "";
         initDefaultSubwayLines();
         subwayLineModal.toggle();
@@ -133,7 +169,7 @@ function AdminLine() {
         $subwayLineFirstTime.value = "";
         $subwayLineLastTime.value = "";
         $subwayLineIntervalTime.value = "";
-      });
+      }).catch(error => alert(error));
   }
   const onEditSubwayLine = event => {
     const $target = event.target;
