@@ -18,32 +18,14 @@ import java.time.format.DateTimeParseException;
 public class SubwayControllerAdvice {
 	private static final Logger LOGGER = LogManager.getLogger("SubwayControllerAdvice");
 
-	@ExceptionHandler(InvalidLineFieldException.class)
-	public ResponseEntity<ExceptionResponse> getInvalidLineFieldException(InvalidLineFieldException e) {
-		LOGGER.error(e);
-		return new ResponseEntity<>(ExceptionResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(NoLineExistException.class)
-	public ResponseEntity<ExceptionResponse> getNoLineExistException(NoLineExistException e) {
-		LOGGER.error(e);
-		return new ResponseEntity<>(ExceptionResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(NoStationExistException.class)
-	public ResponseEntity<ExceptionResponse> getNoStationExistException(NoStationExistException e) {
-		LOGGER.error(e);
-		return new ResponseEntity<>(ExceptionResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(InvalidStationFieldException.class)
-	public ResponseEntity<ExceptionResponse> getInvalidStationFieldException(InvalidStationFieldException e) {
-		LOGGER.error(e);
-		return new ResponseEntity<>(ExceptionResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(LineStationCreateException.class)
-	public ResponseEntity<ExceptionResponse> getLineStationCreateException(LineStationCreateException e) {
+	@ExceptionHandler({
+			NoLineExistException.class,
+			InvalidLineFieldException.class,
+			NoStationExistException.class,
+			InvalidStationFieldException.class,
+			LineStationCreateException.class
+	})
+	public ResponseEntity<ExceptionResponse> getEntityLogicException(RuntimeException e) {
 		LOGGER.error(e);
 		return new ResponseEntity<>(ExceptionResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
 	}
