@@ -66,7 +66,6 @@ public class LineService {
 		Line line = findLineById(id);
 		Edge edge = request.toEdge();
 		line.addEdge(edge);
-		Line newLine = lineRepository.save(line);
 		return lineRepository.save(line).getId();
 	}
 

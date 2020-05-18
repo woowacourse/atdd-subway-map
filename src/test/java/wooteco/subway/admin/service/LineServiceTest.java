@@ -49,6 +49,7 @@ public class LineServiceTest {
 		EdgeCreateRequest request = new EdgeCreateRequest(4L, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(lineRepository.save(line)).thenReturn(line);
 		lineService.addEdge(line.getId(), request);
 
 		assertThat(line.getEdges()).hasSize(4);
@@ -63,6 +64,8 @@ public class LineServiceTest {
 		EdgeCreateRequest request = new EdgeCreateRequest(1L, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(lineRepository.save(line)).thenReturn(line);
+
 		lineService.addEdge(line.getId(), request);
 
 		assertThat(line.getEdges()).hasSize(4);
@@ -77,6 +80,8 @@ public class LineServiceTest {
 		EdgeCreateRequest request = new EdgeCreateRequest(3L, 4L, 10, 10);
 
 		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+		when(lineRepository.save(line)).thenReturn(line);
+
 		lineService.addEdge(line.getId(), request);
 
 		assertThat(line.getEdges()).hasSize(4);
