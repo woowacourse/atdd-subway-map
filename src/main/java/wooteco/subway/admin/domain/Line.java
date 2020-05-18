@@ -23,6 +23,7 @@ public class Line {
 
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
                 String bgColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -62,14 +63,30 @@ public class Line {
             throw new NullPointerException("지하철역이 없슴니다.");
         }
         if (stations.isEmpty()) {
-            addStartStation(lineStation);
+            addFirstStation(lineStation);
+            stations.add(lineStation);
+            return;
         }
         if (Objects.isNull(lineStation.getPreStationId())) {
             addInFirst(lineStation);
+            stations.add(lineStation);
             return;
         }
-        addInMiddle(lineStation);
-        stations.add(lineStation);
+        if (isAddableInMiddleIfNewStation(lineStation)) {
+            addInMiddleIfNewStation(lineStation);
+            return;
+        }
+        if (isAddableInMiddleIfNewPreStation(lineStation)) {
+            addInMiddleIfNewPreStation(lineStation);
+            return;
+        }
+        addInEndLocation(lineStation);
+    }
+
+    private void addFirstStation(LineStation lineStation) {
+        if (Objects.nonNull(lineStation.getPreStationId())) {
+            stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
+        }
     }
 
     private void addInFirst(LineStation lineStation) {
@@ -77,32 +94,53 @@ public class Line {
                 .filter(station -> Objects.isNull(station.getPreStationId()))
                 .findFirst()
                 .ifPresent(station -> {
-                    if(Objects.equals(lineStation.getPreStationId(), station.getStationId())){
+                    if (Objects.equals(lineStation.getStationId(), station.getStationId())) {
                         station.updatePreLineStation(lineStation.getPreStationId());
-                        addStartStation(lineStation);
+                        addFirstStation(lineStation);
                         return;
                     }
+                    station.updatePreLineStation(lineStation.getStationId());
+                });
+    }
+
+    private boolean isAddableInMiddleIfNewStation(LineStation lineStation) {
+        return stations.stream()
+                .anyMatch(station -> Objects.equals(lineStation.getPreStationId(), station.getPreStationId()));
+    }
+
+    private void addInMiddleIfNewStation(LineStation lineStation) {
+        stations.stream()
+                .filter(station -> Objects.equals(lineStation.getPreStationId(), station.getPreStationId()))
+                .findFirst()
+                .ifPresent(station -> {
                     station.updatePreLineStation(lineStation.getStationId());
                     stations.add(lineStation);
                 });
     }
 
-    private void addInMiddle(LineStation lineStation) {
+    private boolean isAddableInMiddleIfNewPreStation(LineStation lineStation) {
+        return stations.stream()
+                .anyMatch(station -> Objects.equals(lineStation.getStationId(), station.getStationId()));
+    }
+
+    private void addInMiddleIfNewPreStation(LineStation lineStation) {
         stations.stream()
-                .filter(station -> Objects.equals(lineStation.getPreStationId(), station.getPreStationId()))
+                .filter(station -> Objects.equals(lineStation.getStationId(), station.getStationId()))
                 .findFirst()
                 .ifPresent(station -> {
-                    if (Objects.isNull(station.getStationId())) {
-                        addStartStation(lineStation);
-                    }
-                    station.updatePreLineStation(lineStation.getStationId());
+                    Long newPreStationId = station.getPreStationId();
+                    station.updatePreLineStation(lineStation.getPreStationId());
+                    LineStation lineStationForSave = new LineStation(
+                            newPreStationId, lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDuration());
+                    stations.add(lineStationForSave);
                 });
     }
 
-    private void addStartStation(LineStation lineStation) {
-        if (Objects.nonNull(lineStation.getPreStationId())) {
-            stations.add(new LineStation(null, lineStation.getPreStationId(), 0, 0));
-        }
+    private void addInEndLocation(LineStation lineStation) {
+        stations.stream()
+                .filter(station -> Objects.equals(station.getStationId(), lineStation.getPreStationId()))
+                .findFirst()
+                .ifPresent(station -> stations.add(lineStation));
     }
 
     public void removeLineStationById(Long stationId) {
@@ -134,7 +172,7 @@ public class Line {
                     .filter(station -> Objects.equals(linesStationsId.get(linesStationsId.size() - 1),
                             station.getPreStationId()))
                     .findFirst()
-                    .map(lineStation -> lineStation.getStationId())
+                    .map(LineStation::getStationId)
                     .orElseThrow(NoSuchElementException::new));
         }
         return linesStationsId;
