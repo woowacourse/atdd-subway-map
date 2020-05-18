@@ -5,10 +5,11 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -34,21 +35,34 @@ public class StationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    @DisplayName("지하철역을 관리한다")
-    @Test
-    void manageStation() {
-        createStation("잠실역");
-        createStation("종합운동장역");
-        createStation("선릉역");
-        createStation("강남역");
+    @TestFactory
+    public Stream<DynamicTest> stationTest() {
+        return Stream.of(
+            DynamicTest.dynamicTest("create station Test", () -> {
+                //given
+                createStation("잠실역");
+                createStation("종합운동장역");
+                createStation("선릉역");
+                createStation("강남역");
 
-        List<StationResponse> stations = getStations();
-        assertThat(stations.size()).isEqualTo(4);
+                //when
+                List<StationResponse> stations = getStations();
 
-        deleteStation(stations.get(0).getId());
+                //then
+                assertThat(stations.size()).isEqualTo(4);
+            }),
+            DynamicTest.dynamicTest("delete station test", () -> {
+                //given
+                List<StationResponse> stations = getStations();
 
-        List<StationResponse> stationsAfterDelete = getStations();
-        assertThat(stationsAfterDelete.size()).isEqualTo(3);
+                //when
+                deleteStation(stations.get(0).getId());
+
+                //then
+                List<StationResponse> stationsAfterDelete = getStations();
+                assertThat(stationsAfterDelete.size()).isEqualTo(3);
+            })
+        );
     }
 
     private void createStation(String name) {

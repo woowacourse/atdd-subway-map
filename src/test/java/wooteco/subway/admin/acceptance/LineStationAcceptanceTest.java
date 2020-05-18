@@ -7,10 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -29,13 +30,13 @@ public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
     }
 
     /**
@@ -56,38 +57,43 @@ public class LineStationAcceptanceTest {
      *     Then 지하철역 목록을 응답 받는다.
      *     And 제외한 지하철역이 목록에 존재하지 않는다.
      */
-    @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
-    @Test
-    void manageLineStation() {
-        //given
-        createStation("일원역");
-        createStation("이대역");
-        createStation("삼성역");
-        createLine("55호선");
-        final LineResponse line = getLines().get(0);
-        final StationResponse station = getStations().get(0);
+    @TestFactory
+    public Stream<DynamicTest> lineStationTest() {
+        return Stream.of(
+            DynamicTest.dynamicTest("create lineStation Test", () -> {
+                //given
+                createStation("일원역");
+                createStation("이대역");
+                createStation("삼성역");
+                createLine("55호선");
+                final LineResponse line = getLines().get(0);
 
-        //when
-        addLineStation(line.getId());
-        //then
-        List<StationResponse> stationResponse = findLineStationsById(line.getId());
-        assertThat(stationResponse.size()).isEqualTo(1);
+                //when
+                addLineStation(line.getId());
 
-        //when
-        addLineStation(line.getId());
-        List<StationResponse> stationResponses = findLineStationsById(line.getId());
-        //then
-        assertThat(stationResponses).isNotNull();
+                //then
+                List<StationResponse> stationResponse = findLineStationsById(line.getId());
+                assertThat(stationResponse.size()).isEqualTo(1);
+            }),
+            DynamicTest.dynamicTest("add lineStation Test", () -> {
+                final LineResponse line = getLines().get(0);
 
-        //when
-        deleteLineStation(line.getId(), getStations().get(0).getId());
-        //then
-        assertThat(findLineStationsById(line.getId()).size()).isEqualTo(1);
+                //when
+                addLineStation(line.getId());
 
-        //when
-        List<StationResponse> stationResponsesAfterDelete = findLineStationsById(line.getId());
-        //then
-        assertThat(stationResponsesAfterDelete.size()).isEqualTo(1);
+                //then
+                List<StationResponse> stationResponse = findLineStationsById(line.getId());
+                assertThat(stationResponse.size()).isEqualTo(1);
+            }),
+            DynamicTest.dynamicTest("delete lineStation Test", () -> {
+                final LineResponse line = getLines().get(0);
+
+                //when
+                List<StationResponse> stationResponsesAfterDelete = findLineStationsById(line.getId());
+
+                //then
+                assertThat(stationResponsesAfterDelete.size()).isEqualTo(1);
+            }));
     }
 
     private List<StationResponse> findLineStationsById(Long id) {
