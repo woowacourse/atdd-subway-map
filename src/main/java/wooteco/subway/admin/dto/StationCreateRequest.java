@@ -3,10 +3,10 @@ package wooteco.subway.admin.dto;
 
 import wooteco.subway.admin.domain.Station;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 public class StationCreateRequest {
-    @NotEmpty
+    @NotBlank
     private String name;
 
     public String getName() {
