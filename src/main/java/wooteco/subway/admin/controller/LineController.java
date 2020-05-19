@@ -58,7 +58,6 @@ public class LineController {
         List<LineResponse> lineResponses = lines.stream()
                 .map(line -> LineResponse.of(line, lineService.findAllById(line)))
                 .collect(Collectors.toList());
-        System.out.println(lineResponses);
         return new ResponseEntity<>(lineResponses, HttpStatus.OK);
     }
 
