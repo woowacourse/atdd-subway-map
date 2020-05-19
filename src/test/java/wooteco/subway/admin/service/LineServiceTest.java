@@ -138,9 +138,9 @@ public class LineServiceTest {
     @Test
     void findLineWithStationsById() {
         List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"), new Station("삼성역"));
-        lenient().when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        lenient().when(stationRepository.findAllByIds(anyList())).thenReturn(stations);
 
         List<Station> stationsAtLine = lineService.findStationsAtLine(line);
-        assertThat(stationsAtLine).hasSize(3);
+        assertThat(lineService.findStationsAtLine(line)).hasSize(3);
     }
 }

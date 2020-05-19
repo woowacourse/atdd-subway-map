@@ -86,7 +86,6 @@ public class LineService {
                 .mapToLong(LineStation::getStationId)
                 .boxed()
                 .collect(Collectors.toList());
-
         return stationRepository.findAllByIds(ids);
     }
 
