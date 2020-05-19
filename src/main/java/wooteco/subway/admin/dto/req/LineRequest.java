@@ -1,12 +1,16 @@
-package wooteco.subway.admin.dto;
-
-import wooteco.subway.admin.domain.Line;
+package wooteco.subway.admin.dto.req;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import wooteco.subway.admin.domain.Line;
+
 public class LineRequest {
     private String name;
+    private String backgroundColor;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endTime;
     private int intervalTime;
 
@@ -29,7 +33,11 @@ public class LineRequest {
         return intervalTime;
     }
 
+    public String getBgColor() {
+        return backgroundColor;
+    }
+
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
+        return new Line(name, backgroundColor, startTime, endTime, intervalTime);
     }
 }
