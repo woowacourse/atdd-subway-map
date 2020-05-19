@@ -5,22 +5,27 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.StationService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class StationController {
-    private final StationRepository stationRepository;
+    private static long NO_ID = 0L;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    private StationService stationService;
+
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationCreateRequest view) {
         Station station = view.toStation();
-        Station persistStation = stationRepository.save(station);
+        Station persistStation = stationService.create(station);
 
         return ResponseEntity
                 .created(URI.create("/stations/" + persistStation.getId()))
@@ -28,13 +33,22 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
+    public ResponseEntity<List<Station>> showStations() {
+        return ResponseEntity.ok().body(stationService.showStations());
+    }
+
+    @GetMapping("/stations/id/")
+    public ResponseEntity<Long> findIdByName(HttpServletRequest request) {
+        String name = request.getParameter("name");
+        if (name.equals("")) {
+            return ResponseEntity.ok().body(NO_ID);
+        }
+        return ResponseEntity.ok().body(stationService.findIdByName(name));
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
 }

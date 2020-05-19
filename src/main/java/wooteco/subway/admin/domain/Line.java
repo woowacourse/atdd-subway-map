@@ -4,9 +4,14 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Line {
+    private static final Long INIT_STATION = 0L;
+
     @Id
     private Long id;
     private String name;
@@ -16,21 +21,43 @@ public class Line {
     private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String bgColor;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        validate(name, startTime, endTime, intervalTime, bgColor);
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.bgColor = bgColor;
+        this.stations = new LinkedHashSet<>();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor);
+    }
+
+    private void validate(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        if (name == null || name.equals("")) {
+            throw new IllegalArgumentException("노선 이름이 비었습니다.");
+        }
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("첫차 시간 / 막차 시간이 비었습니다.");
+        }
+        if (startTime.compareTo(endTime) >= 0) {
+            throw new IllegalArgumentException("종료 시간은 시작 시간보다 나중이어야 합니다.");
+        }
+        if (intervalTime <= 0) {
+            throw new IllegalArgumentException("간격 시간이 올바르지 않습니다.");
+        }
+        if (bgColor == null || bgColor.equals("")) {
+            throw new IllegalArgumentException("노선 색을 선택해 주세요.");
+        }
     }
 
     public Long getId() {
@@ -65,6 +92,10 @@ public class Line {
         return updatedAt;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public void update(Line line) {
         if (line.getName() != null) {
             this.name = line.getName();
@@ -78,20 +109,73 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+    public void addLineStation(LineStation newLineStation) {
+        Set<LineStation> newLineStations = new LinkedHashSet<>();
+        for (LineStation lineStation : stations) {
+            addToNewLineStations(lineStation, newLineStation, newLineStations);
+        }
+        if (notAddedYet(newLineStations)) {
+            newLineStations.add(newLineStation);
+        }
+        stations = newLineStations;
+    }
+
+    private void addToNewLineStations(LineStation lineStation, LineStation newLineStation, Set<LineStation> newStations) {
+        if (shouldAdd(newLineStation, lineStation)) {
+            newStations.add(newLineStation);
+            newStations.add(lineStation);
+            lineStation.updatePreLineStation(newLineStation.getStationId());
+            newLineStation.updatePreLineStation(INIT_STATION);
+            return;
+        }
+        newStations.add(lineStation);
+    }
+
+    private boolean shouldAdd(LineStation newLineStation, LineStation lineStation) {
+        Long newLinePreStationId = newLineStation.getPreStationId();
+        if (newLinePreStationId == null) {
+            return true;
+        }
+        return newLinePreStationId.equals(lineStation.getPreStationId());
+    }
+
+    private boolean notAddedYet(Set<LineStation> newStations) {
+        return stations.size() == newStations.size()
+                || stations.isEmpty();
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        Set<LineStation> newStations = new LinkedHashSet<>();
+        for (LineStation station : stations) {
+            Long prevLineStationId = addLineStationIfNotTarget(stationId, station, newStations);
+            checkAndUpdateLink(station, prevLineStationId, stationId);
+        }
+        stations = newStations;
+    }
+
+    private Long addLineStationIfNotTarget(Long stationId, LineStation station, Set<LineStation> newStations) {
+        if (!station.getStationId().equals(stationId)) {
+            newStations.add(station);
+        }
+        return station.getStationId();
+    }
+
+    private void checkAndUpdateLink(LineStation station, Long prevLineStationId, Long stationId) {
+        if (stationId.equals(prevLineStationId)) {
+            station.updatePreLineStation(prevLineStationId);
+        }
     }
 
     public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
     }
 }

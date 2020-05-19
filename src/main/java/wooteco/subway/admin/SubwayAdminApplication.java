@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SubwayAdminApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SubwayAdminApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(SubwayAdminApplication.class, args);
+    }
 }

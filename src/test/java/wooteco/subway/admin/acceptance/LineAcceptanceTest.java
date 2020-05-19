@@ -9,17 +9,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -61,8 +61,8 @@ public class LineAcceptanceTest {
         updateLine(line.getId(), startTime, endTime);
         //then
         LineResponse updatedLine = getLine(line.getId());
-        assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
-        assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
+        assertThat(updatedLine.getStartTime()).isEqualTo(startTime.toString());
+        assertThat(updatedLine.getEndTime()).isEqualTo(endTime.toString());
 
         // when
         deleteLine(line.getId());
@@ -71,23 +71,26 @@ public class LineAcceptanceTest {
         assertThat(linesAfterDelete.size()).isEqualTo(3);
     }
 
-    private LineResponse getLine(Long id) {
-        return given().when().
+    public static LineResponse getLine(Long id) {
+        return given().
+                when().
                         get("/lines/" + id).
                 then().
                         log().all().
                         extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+    public static void createLine(String name) {
+        LineRequest lineRequest = new LineRequest(
+                name,
+                LocalTime.of(5, 30),
+                LocalTime.of(23, 30),
+                10,
+                "5"
+        );
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
@@ -98,13 +101,16 @@ public class LineAcceptanceTest {
     }
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
-        params.put("intervalTime", "10");
+        LineRequest lineRequest = new LineRequest(
+                "2호선",
+                startTime,
+                endTime,
+                10,
+                "5"
+        );
 
         given().
-                body(params).
+                body(lineRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
@@ -114,7 +120,7 @@ public class LineAcceptanceTest {
                 statusCode(HttpStatus.OK.value());
     }
 
-    private List<LineResponse> getLines() {
+    public static List<LineResponse> getLines() {
         return
                 given().
                 when().
@@ -127,9 +133,9 @@ public class LineAcceptanceTest {
 
     private void deleteLine(Long id) {
         given().
-                when().
+        when().
                 delete("/lines/" + id).
-                then().
+        then().
                 log().all();
     }
 }

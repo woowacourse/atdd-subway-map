@@ -1,6 +1,7 @@
 package wooteco.subway.admin.domain;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,11 +16,13 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
+        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "5");
+        line.addLineStation(new LineStation(0L, 1L, 10, 10));
         line.addLineStation(new LineStation(1L, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
 
+    @DisplayName("구간 조회 테스트")
     @Test
     void getLineStations() {
         List<Long> stationIds = line.getLineStationsId();
@@ -29,11 +32,11 @@ public class LineTest {
         assertThat(stationIds.get(2)).isEqualTo(3L);
     }
 
+    @DisplayName("구간 삭제 테스트")
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L, 3L})
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
-
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getStations()).hasSize(2);
     }
 }
