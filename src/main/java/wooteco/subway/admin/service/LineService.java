@@ -6,7 +6,7 @@ import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationAddRequest;
 import wooteco.subway.admin.dto.response.LineResponse;
-import wooteco.subway.admin.dto.response.StationsAtLineResponse;
+import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -63,7 +63,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public StationsAtLineResponse addLineStation(Long id, LineStationAddRequest request) {
+    public LineWithStationsResponse addLineStation(Long id, LineStationAddRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         LineStation lineStation = createLineStation(request);
@@ -71,7 +71,7 @@ public class LineService {
 
         Line savedLine = lineRepository.save(line);
         List<Station> stations = findStationsAtLine(savedLine);
-        return new StationsAtLineResponse(savedLine, stations);
+        return new LineWithStationsResponse(savedLine, stations);
     }
 
     private LineStation createLineStation(LineStationAddRequest request) {
@@ -97,13 +97,13 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public List<StationsAtLineResponse> findAllLineStations() {
-        List<StationsAtLineResponse> response = new ArrayList<>();
+    public List<LineWithStationsResponse> findAllLineStations() {
+        List<LineWithStationsResponse> response = new ArrayList<>();
 
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
             List<Station> stations = findStationsAtLine(line);
-            response.add(new StationsAtLineResponse(line.getId(), line.getName(), line.getBgColor(), stations));
+            response.add(new LineWithStationsResponse(line.getId(), line.getName(), line.getBgColor(), stations));
         }
         return response;
     }

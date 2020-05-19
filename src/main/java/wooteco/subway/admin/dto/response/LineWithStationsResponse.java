@@ -5,23 +5,23 @@ import wooteco.subway.admin.domain.Station;
 
 import java.util.List;
 
-public class StationsAtLineResponse {
-    private Long id; // lineId
-    private String name; // lineName
+public class LineWithStationsResponse {
+    private Long id;
+    private String name;
     private String bgColor;
     private List<Station> stations;
 
-    public StationsAtLineResponse() {
+    public LineWithStationsResponse() {
     }
 
-    public StationsAtLineResponse(Long id, String name, String bgColor, List<Station> stations) {
+    public LineWithStationsResponse(Long id, String name, String bgColor, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.bgColor = bgColor;
         this.stations = stations;
     }
 
-    public StationsAtLineResponse(Line line, List<Station> stations) {
+    public LineWithStationsResponse(Line line, List<Station> stations) {
         this.id = line.getId();
         this.name = line.getName();
         this.bgColor = line.getBgColor();

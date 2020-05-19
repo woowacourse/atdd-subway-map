@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.request.LineStationAddRequest;
-import wooteco.subway.admin.dto.response.StationsAtLineResponse;
+import wooteco.subway.admin.dto.response.LineWithStationsResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -72,14 +72,14 @@ public class LineStationAcceptanceTest {
 
         addLineStation(line.getId(), lineStationAddRequest1);
         addLineStation(line.getId(), lineStationAddRequest2);
-        StationsAtLineResponse response = addLineStation(line.getId(), lineStationAddRequest3);
+        LineWithStationsResponse response = addLineStation(line.getId(), lineStationAddRequest3);
 
         //then
         assertThat(response.getId()).isEqualTo(line.getId());
         assertThat(response.getStations().size()).isEqualTo(3);
 
         //when 노선의 지하철역 조회
-        List<StationsAtLineResponse> allLineStations = findAllLineStations();
+        List<LineWithStationsResponse> allLineStations = findAllLineStations();
         //then
         List<Station> savedStations = allLineStations.get(0).getStations();
         List<String> savedStationNames = savedStations.stream()
@@ -92,7 +92,7 @@ public class LineStationAcceptanceTest {
         deleteLineStation(line.getId(), station3.getId());
 
         //then
-        List<StationsAtLineResponse> deletedLineStations = findAllLineStations();
+        List<LineWithStationsResponse> deletedLineStations = findAllLineStations();
         List<Station> deletedStations = deletedLineStations.get(0).getStations();
         assertThat(deletedStations.size()).isEqualTo(2);
 
@@ -106,14 +106,14 @@ public class LineStationAcceptanceTest {
                 .log().all();
     }
 
-    private List<StationsAtLineResponse> findAllLineStations() {
+    private List<LineWithStationsResponse> findAllLineStations() {
         return given().
                 when().
                 get("/line-stations").
                 then().
                 log().all().
                 extract().
-                jsonPath().getList(".", StationsAtLineResponse.class);
+                jsonPath().getList(".", LineWithStationsResponse.class);
     }
 
     private Station createStation(String name) {
@@ -150,7 +150,7 @@ public class LineStationAcceptanceTest {
                 extract().as(Line.class);
     }
 
-    private StationsAtLineResponse addLineStation(Long lineId, LineStationAddRequest request) {
+    private LineWithStationsResponse addLineStation(Long lineId, LineStationAddRequest request) {
         return given().body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -160,6 +160,6 @@ public class LineStationAcceptanceTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .log().all()
                 .extract()
-                .as(StationsAtLineResponse.class);
+                .as(LineWithStationsResponse.class);
     }
 }
