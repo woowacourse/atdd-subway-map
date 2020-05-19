@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Station {
-    private static final String NUMBER_REGEX = "[0-9]+";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
     private static final String BLANK_SPACE = " ";
 
     @Id
@@ -37,7 +37,7 @@ public class Station {
         if (Objects.isNull(stationName) || stationName.isEmpty()) {
             throw new RequireStationNameException();
         }
-        if (Pattern.compile(NUMBER_REGEX).matcher(stationName).find()) {
+        if (NUMBER_PATTERN.matcher(stationName).find()) {
             throw new NumberNotAllowedInStationNameException();
         }
         if (stationName.contains(BLANK_SPACE)) {
