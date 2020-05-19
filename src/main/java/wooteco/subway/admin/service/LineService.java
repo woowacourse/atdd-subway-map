@@ -45,7 +45,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> findLines() {
         return lineRepository.findAll()
                 .stream()
                 .map(LineResponse::of)

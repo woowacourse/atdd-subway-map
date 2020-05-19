@@ -38,7 +38,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.showLines());
+        return ResponseEntity.ok().body(lineService.findLines());
     }
 
     @PutMapping("/lines/{id}")
@@ -52,7 +52,6 @@ public class LineController {
         lineService.deleteLineById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
     @GetMapping("/line-stations")
     public ResponseEntity<List<LineWithStationsResponse>> showLineStations() {

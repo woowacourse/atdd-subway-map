@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Line {
     @Id
@@ -132,9 +133,9 @@ public class Line {
         }
 
         int removeIndex = stations.indexOf(lineStation);
-        LineStation nextLineStation = stations.get(removeIndex + 1);
-        LineStation modifiedStation = new LineStation(lineStation.getPreStationId(), nextLineStation.getStationId());
-        stations.removeAll(Arrays.asList(lineStation, nextLineStation));
+        LineStation originNextLineStation = stations.get(removeIndex + 1);
+        LineStation modifiedStation = new LineStation(lineStation.getPreStationId(), originNextLineStation.getStationId());
+        stations.removeAll(Arrays.asList(lineStation, originNextLineStation));
         stations.add(removeIndex, modifiedStation);
     }
 
@@ -154,10 +155,9 @@ public class Line {
 
 
     public List<Long> findLineStationsId() {
-        List<Long> stationsIds = new ArrayList<>();
-        for (LineStation lineStation : stations) {
-            stationsIds.add(lineStation.getStationId());
-        }
-        return stationsIds;
+        return stations.stream()
+                .mapToLong(LineStation::getStationId)
+                .boxed()
+                .collect(Collectors.toList());
     }
 }
