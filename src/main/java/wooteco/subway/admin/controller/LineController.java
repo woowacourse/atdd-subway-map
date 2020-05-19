@@ -14,7 +14,7 @@ import wooteco.subway.admin.service.LineService;
 import java.net.URI;
 import java.util.List;
 
-@RestController
+@RestController()
 public class LineController {
     private final LineService lineService;
 
