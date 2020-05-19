@@ -11,13 +11,13 @@ public class LineTest {
     private Line line;
 
     @Test
-    void getLineStations() {
+    void getEdges() {
         line = new Line(1L,"비내리는호남선",  LocalTime.of(05, 30), LocalTime.of(22, 30),5, "bg-yellow-700");
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L,3L,10,10));
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L,3L,10,10));
 
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getEdgeIds();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -26,23 +26,23 @@ public class LineTest {
     }
 
     @Test
-    void removeOneLineStation() {
+    void removeOneEdge() {
         line = new Line(1L,"비내리는호남선",  LocalTime.of(05, 30), LocalTime.of(22, 30),5, "bg-yellow-700");
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L,3L,10,10));
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L,3L,10,10));
 
-        line.removeLineStationById(1L);
+        line.removeEdgeById(1L);
 
-        assertThat(line.getLineStationsId()).hasSize(2);
+        assertThat(line.getEdgeIds()).hasSize(2);
 
-        line.removeLineStationById(2L);
+        line.removeEdgeById(2L);
 
-        assertThat(line.getLineStationsId()).hasSize(1);
+        assertThat(line.getEdgeIds()).hasSize(1);
 
-        line.removeLineStationById(3L);
+        line.removeEdgeById(3L);
 
-        assertThat(line.getLineStationsId()).hasSize(0);
+        assertThat(line.getEdgeIds()).hasSize(0);
 
     }
 }

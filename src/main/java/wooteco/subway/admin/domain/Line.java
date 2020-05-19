@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Table("LINE")
@@ -27,7 +28,7 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     @MappedCollection(idColumn = "line", keyColumn = "sequence")
-    private List<LineStation> lineStations = new ArrayList<>();
+    private List<Edge> edges = new ArrayList<>();
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
@@ -69,8 +70,8 @@ public class Line {
         return intervalTime;
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations;
+    public List<Edge> getEdges() {
+        return edges;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -103,84 +104,56 @@ public class Line {
         }
     }
 
-    public void addLineStation(LineStation requestLineStation) {
-        int index = lineStations.stream()
-                .filter(lineStation -> lineStation.isPreStationOf(requestLineStation))
-                .map(lineStation -> lineStations.indexOf(lineStation) + 1)
+    public void addEdge(Edge requestEdge) {
+        edges.stream()
+                .filter(edge -> Objects.equals(edge.getPreStationId(), requestEdge.getPreStationId()))
                 .findAny()
-                .orElse(0);
-        if (isAlreadyInputStations(requestLineStation, index)) {
-            return;
-        }
-        lineStations.add(index, requestLineStation);
+                .ifPresent(edge -> edge.updatePreStationId(requestEdge.getStationId()));
+
+        edges.add(requestEdge);
     }
 
-    private boolean isAlreadyInputStations(LineStation requestLineStation, int index) {
-        if (lineStations.size() > ONE_SIZE && lineStations.size() > index) {
-            LineStation nextLineStation = lineStations.get(index);
-            if (isInputFirstIndex(requestLineStation, index, nextLineStation)) {
-                return true;
-            }
-            LineStation preLineStation = lineStations.get(index - 1);
-            requestLineStation.updatePreLineStationId(preLineStation.getStationId());
-            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
-            lineStations.add(index, requestLineStation);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isInputFirstIndex(LineStation requestLineStation, int index, LineStation nextLineStation) {
-        if (index == 0) {
-            nextLineStation.updatePreLineStationId(requestLineStation.getStationId());
-            lineStations.add(index, requestLineStation);
-            return true;
-        }
-        return false;
-    }
-
-    public void removeLineStationById(Long stationId) {
-        int index = lineStations.stream()
-                .filter(lineStation -> lineStation.isSameStationId(stationId))
-                .map(lineStation -> lineStations.indexOf(lineStation))
+    public void removeEdgeById(Long stationId) {
+        int index = edges.stream()
+                .filter(edge -> edge.isSameStationId(stationId))
+                .map(edge -> edges.indexOf(edge))
                 .findAny()
                 .orElseThrow(NoSuchElementException::new);
-        LineStation preLineStation;
-        LineStation nextLineStation;
+        Edge preEdge;
+        Edge nextEdge;
 
         if (isRemoveStationUnNormalCase(index)) {
             return;
         }
-        nextLineStation = lineStations.get(index + NEXT_INDEX);
-        preLineStation = lineStations.get(index - BEFORE_INDEX);
-        nextLineStation.updatePreLineStationId(preLineStation.getStationId());
-        lineStations.remove(index);
+        nextEdge = edges.get(index + NEXT_INDEX);
+        preEdge = edges.get(index - BEFORE_INDEX);
+        nextEdge.updatePreStationId(preEdge.getStationId());
+        edges.remove(index);
     }
 
     private boolean isRemoveStationUnNormalCase(int index) {
-        LineStation nextLineStation;
-        if (index == FIRST_INDEX && index == lineStations.size() - 1) {
-            lineStations.remove(index);
+        Edge nextEdge;
+        if (index == FIRST_INDEX && index == edges.size() - 1) {
+            edges.remove(index);
             return true;
         }
         if (index == FIRST_INDEX) {
-            nextLineStation = lineStations.get(SECOND_INDEX);
-            nextLineStation.updatePreLineStationId(null);
-            lineStations.remove(index);
+            nextEdge = edges.get(SECOND_INDEX);
+            nextEdge.updatePreStationId(null);
+            edges.remove(index);
             return true;
         }
-        if (index == lineStations.size() - 1) {
-            lineStations.remove(index);
+        if (index == edges.size() - 1) {
+            edges.remove(index);
             return true;
         }
         return false;
     }
 
-    public List<Long> getLineStationsId() {
-        return this.lineStations.stream()
-                .mapToLong(LineStation::getStationId)
+    public List<Long> getEdgeIds() {
+        return this.edges.stream()
+                .mapToLong(Edge::getStationId)
                 .boxed()
                 .collect(Collectors.toList());
     }
-
 }

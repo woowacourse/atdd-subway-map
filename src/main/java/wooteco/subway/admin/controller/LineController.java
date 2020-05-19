@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.service.LineService;
 
 import javax.validation.Valid;
@@ -63,8 +63,8 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/stations")
-    public ResponseEntity<Void> addStationByLineId(@PathVariable Long lineId, @RequestBody @Valid LineStationCreateRequest request) {
-        lineService.addLineStation(lineId, request);
+    public ResponseEntity<Void> addStationByLineId(@PathVariable Long lineId, @RequestBody @Valid EdgeCreateRequest request) {
+        lineService.addEdge(lineId, request);
         return ResponseEntity
                 .created(URI.create("/lines/" + lineId))
                 .build();

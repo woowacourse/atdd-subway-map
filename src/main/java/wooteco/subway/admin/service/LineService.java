@@ -3,11 +3,11 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.exception.DuplicateLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
@@ -73,23 +73,23 @@ public class LineService {
         return stationRepository.findAll();
     }
 
-    public void addLineStation(Long lineId, LineStationCreateRequest request) {
+    public void addEdge(Long lineId, EdgeCreateRequest request) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
         if (request.getPreStationName().isEmpty()) {
             Station station = stationRepository.findByName(request.getStationName())
                     .orElseThrow(NoSuchElementException::new);
-            LineStation lineStation =
-                    new LineStation(null, station.getId(), request.getDistance(), request.getDuration());
-            line.addLineStation(lineStation);
+            Edge edge =
+                    new Edge(null, station.getId(), request.getDistance(), request.getDuration());
+            line.addEdge(edge);
         } else {
             Station preStation = stationRepository.findByName(request.getPreStationName())
                     .orElseThrow(NoSuchElementException::new);
             Station station = stationRepository.findByName(request.getStationName())
                     .orElseThrow(NoSuchElementException::new);
-            LineStation lineStation =
-                    new LineStation(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
-            line.addLineStation(lineStation);
+            Edge edge =
+                    new Edge(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
+            line.addEdge(edge);
         }
         lineRepository.save(line);
     }
@@ -107,28 +107,28 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
         List<Station> stations = new ArrayList<>();
 
-        List<LineStation> lineStations = line.getLineStations();
-        for (LineStation lineStation : lineStations) {
-            checkAllStationById(line, stations, lineStation);
+        List<Edge> edges = line.getEdges();
+        for (Edge edge : edges) {
+            checkAllStationById(line, stations, edge);
         }
         return LineResponse.of(line, stations);
     }
 
-    private void checkAllStationById(Line line, List<Station> stations, LineStation lineStation) {
-        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
-            checkSameId(stations, lineStation, station);
+    private void checkAllStationById(Line line, List<Station> stations, Edge edge) {
+        for (Station station : stationRepository.findAllById(line.getEdgeIds())) {
+            checkSameId(stations, edge, station);
         }
     }
 
-    private void checkSameId(List<Station> stations, LineStation lineStation, Station station) {
-        if (station.getId() == lineStation.getStationId()) {
+    private void checkSameId(List<Station> stations, Edge edge, Station station) {
+        if (station.getId() == edge.getStationId()) {
             stations.add(station);
         }
     }
 
     public void deleteStationByLineIdAndStationId(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        line.removeLineStationById(stationId);
+        line.removeEdgeById(stationId);
         lineRepository.save(line);
     }
 }

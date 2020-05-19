@@ -2,7 +2,7 @@ package wooteco.subway.admin.domain;
 
 import org.springframework.data.relational.core.mapping.Column;
 
-public class LineStation {
+public class Edge {
 
     @Column("pre_station_id")
     private Long preStationId;
@@ -11,18 +11,18 @@ public class LineStation {
     private int distance;
     private int duration;
 
-    public LineStation() {
+    public Edge() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public Edge(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
     }
 
-    public boolean isPreStationOf(LineStation requestLineStation) {
-        return this.stationId == requestLineStation.getPreStationId();
+    public boolean isPreStationOf(Edge requestEdge) {
+        return this.stationId == requestEdge.getPreStationId();
     }
 
     public boolean isSameStationId(Long stationId) {
@@ -45,7 +45,7 @@ public class LineStation {
         return duration;
     }
 
-    public void updatePreLineStationId(Long preStationId) {
+    public void updatePreStationId(Long preStationId) {
         this.preStationId = preStationId;
     }
 }

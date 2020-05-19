@@ -1,36 +1,36 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Edge;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LineStationResponse {
+public class EdgeResponse {
     private Long stationId;
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStationResponse() {
+    public EdgeResponse() {
 
     }
 
-    public LineStationResponse(Long stationId, Long preStationId, int distance, int duration) {
+    public EdgeResponse(Long stationId, Long preStationId, int distance, int duration) {
         this.stationId = stationId;
         this.preStationId = preStationId;
         this.distance = distance;
         this.duration = duration;
     }
 
-    public static List<LineStationResponse> of(Set<LineStation> lineStations) {
-        return lineStations.stream()
-                .map(it -> LineStationResponse.of(it))
+    public static List<EdgeResponse> of(Set<Edge> edges) {
+        return edges.stream()
+                .map(it -> EdgeResponse.of(it))
                 .collect(Collectors.toList());
     }
 
-    public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getStationId(), lineStation.getPreStationId(), lineStation.getDistance(), lineStation.getDistance());
+    public static EdgeResponse of(Edge edge) {
+        return new EdgeResponse(edge.getStationId(), edge.getPreStationId(), edge.getDistance(), edge.getDistance());
     }
 
     public Long getStationId() {

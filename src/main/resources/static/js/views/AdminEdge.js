@@ -46,12 +46,12 @@ function AdminEdge() {
         const lineId = $target.closest(".slider-list").querySelector(
             ".lint-title").dataset.lineId;
         const stationId = $target.closest(".list-item").dataset.stationId;
-        api.line.deleteLineStation(lineId, stationId)
+        api.line.deleteEdge(lineId, stationId)
             .then(() =>
                 $target.closest(".list-item").remove()
             ).catch(err => alert(err));
     };
-    const onAddLineStationHandler = event => {
+    const onAddEdgeHandler = event => {
         event.preventDefault();
         const $lineSelectBox = document.querySelector(
             "#station-select-options");
@@ -61,14 +61,14 @@ function AdminEdge() {
             '#depart-station-name').value;
         const stationName = document.querySelector(
             '#arrival-station-name').value;
-        const lineStationInfo = {
+        const edgeInfo = {
             preStationName: preStationName,
             stationName: stationName,
             distance: 0,
             duration: 0,
         };
-        console.log(lineStationInfo);
-        api.line.createLineStation(lineId, lineStationInfo).then(res => {
+        console.log(edgeInfo);
+        api.line.createEdge(lineId, edgeInfo).then(res => {
             if (res.status !== 201) {
                 alert("추가 중 오류가 발생했습니다.");
                 return;
@@ -84,7 +84,7 @@ function AdminEdge() {
         );
         $subwayLinesSubmitButton.addEventListener(
             EVENT_TYPE.CLICK,
-            onAddLineStationHandler
+            onAddEdgeHandler
         )
     };
     this.init = async () => {

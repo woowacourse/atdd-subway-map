@@ -56,7 +56,7 @@ const api = (() => {
         create(data) {
             return requestWithNoData(`/lines`, METHOD.POST(data))
         },
-        createLineStation(lineId, data) {
+        createEdge(lineId, data) {
             return requestWithNoData(`/lines/${lineId}/stations`, METHOD.POST(data));
         },
         update(id, data) {
@@ -65,7 +65,7 @@ const api = (() => {
         delete(id) {
             return requestWithNoData(`/lines/${id}`, METHOD.DELETE());
         },
-        deleteLineStation(lineId, stationId){
+        deleteEdge(lineId, stationId){
             return requestWithNoData(`/lines/${lineId}/stations/${stationId}`, METHOD.DELETE());
         }
     };

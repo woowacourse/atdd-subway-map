@@ -7,10 +7,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -39,94 +39,94 @@ public class LineServiceTest {
         line = new Line(1L,"비내리는호남선",  LocalTime.of(05, 30), LocalTime.of(22, 30),5, "bg-yellow-700");
         lineService = new LineService(lineRepository, stationRepository);
 
-        line.addLineStation(new LineStation(null, 1L, 10, 10));
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line.addEdge(new Edge(null, 1L, 10, 10));
+        line.addEdge(new Edge(1L, 2L, 10, 10));
+        line.addEdge(new Edge(2L, 3L, 10, 10));
     }
 
     @DisplayName("노선 맨 앞에 역을 추가했을때")
     @Test
-    void addLineStationAtTheFirstOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest("", "까치산역", 10, 10);
+    void addEdgeAtTheFirstOfLine() {
+        EdgeCreateRequest request = new EdgeCreateRequest("", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getLineStationsId()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getEdgeIds()).hasSize(4);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(4L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(1L);
+        assertThat(line.getEdgeIds().get(2)).isEqualTo(2L);
+        assertThat(line.getEdgeIds().get(3)).isEqualTo(3L);
     }
 
     @DisplayName("노선 가운데에 역을 추가했을때")
     @Test
-    void addLineStationBetweenTwo() {
-        LineStationCreateRequest request = new LineStationCreateRequest("강남역", "까치산역", 10, 10);
+    void addEdgeBetweenTwo() {
+        EdgeCreateRequest request = new EdgeCreateRequest("강남역", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findByName("강남역")).thenReturn(Optional.of(new Station(1L, "강남역")));
         when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
 
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getLineStationsId()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(4L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(3L);
+        assertThat(line.getEdgeIds()).hasSize(4);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(1L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(4L);
+        assertThat(line.getEdgeIds().get(2)).isEqualTo(2L);
+        assertThat(line.getEdgeIds().get(3)).isEqualTo(3L);
     }
 
     @DisplayName("노선 맨 끝에 역을 추가했을때")
     @Test
-    void addLineStationAtTheEndOfLine() {
-        LineStationCreateRequest request = new LineStationCreateRequest("삼성역", "까치산역", 10, 10);
+    void addEdgeAtTheEndOfLine() {
+        EdgeCreateRequest request = new EdgeCreateRequest("삼성역", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         when(stationRepository.findByName("삼성역")).thenReturn(Optional.of(new Station(3L, "삼성역")));
         when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
 
-        lineService.addLineStation(line.getId(), request);
+        lineService.addEdge(line.getId(), request);
 
-        assertThat(line.getLineStationsId()).hasSize(4);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(2)).isEqualTo(3L);
-        assertThat(line.getLineStationsId().get(3)).isEqualTo(4L);
+        assertThat(line.getEdgeIds()).hasSize(4);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(1L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(2L);
+        assertThat(line.getEdgeIds().get(2)).isEqualTo(3L);
+        assertThat(line.getEdgeIds().get(3)).isEqualTo(4L);
     }
 
     @DisplayName("노선 맨 앞의 역을 제거했을때")
     @Test
-    void removeLineStationAtTheFirstOfLine() {
+    void removeEdgeAtTheFirstOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.deleteStationByLineIdAndStationId(line.getId(), 1L);
 
-        assertThat(line.getLineStationsId()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(2L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getEdgeIds()).hasSize(2);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(2L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(3L);
     }
 
     @DisplayName("노선 가운데 역을 제거했을때")
     @Test
-    void removeLineStationBetweenTwo() {
+    void removeEdgeBetweenTwo() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.deleteStationByLineIdAndStationId(line.getId(), 2L);
 
-        assertThat(line.getLineStationsId()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(3L);
+        assertThat(line.getEdgeIds()).hasSize(2);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(1L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(3L);
     }
 
     @DisplayName("노선 맨 끝의 역을 제거했을때")
     @Test
-    void removeLineStationAtTheEndOfLine() {
+    void removeEdgeAtTheEndOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.deleteStationByLineIdAndStationId(line.getId(), 3L);
 
-        assertThat(line.getLineStationsId()).hasSize(2);
-        assertThat(line.getLineStationsId().get(0)).isEqualTo(1L);
-        assertThat(line.getLineStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.getEdgeIds()).hasSize(2);
+        assertThat(line.getEdgeIds().get(0)).isEqualTo(1L);
+        assertThat(line.getEdgeIds().get(1)).isEqualTo(2L);
     }
 
     @DisplayName("노선id로 그 노선에 포함된 모든 정보(역 목록 등) 가져오기 테스트")
