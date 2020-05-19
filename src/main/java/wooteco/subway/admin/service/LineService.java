@@ -95,7 +95,6 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(NO_LINE_EXCEPTION));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
-        stationRepository.deleteById(stationId);
     }
 
     public List<StationsAtLineResponse> findAllLineStations() {
