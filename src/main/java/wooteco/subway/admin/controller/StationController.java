@@ -31,8 +31,7 @@ public class StationController {
     public ResponseEntity<Iterable<Station>> showStations() {
         Iterable<Station> response = stationService.findAll();
 
-        return ResponseEntity.ok()
-                .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
