@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -17,6 +18,7 @@ import wooteco.subway.admin.repository.StationRepository;
 
 @Service
 public class LineService {
+	private static final String LINE_DATA_NO_SUCH_MESSAGE = "라인이 없습니다.";
 
 	private final LineRepository lineRepository;
 	private final StationRepository stationRepository;
@@ -26,15 +28,18 @@ public class LineService {
 		this.stationRepository = stationRepository;
 	}
 
+	@Transactional
 	public LineResponse save(Line line) {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> showLines() {
 		List<Line> lines = lineRepository.findAll();
 		return LineResponse.listOf(lines);
 	}
 
+	@Transactional
 	public void updateLine(Long id, Line line) {
 		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
 		persistLine.update(line);
@@ -42,34 +47,39 @@ public class LineService {
 		lineRepository.save(persistLine);
 	}
 
+	@Transactional
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
 
+	@Transactional
 	public void addLineStation(Long lineId, LineStationCreateRequest request) {
 		Line line = lineRepository.findById(lineId)
-			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException(LINE_DATA_NO_SUCH_MESSAGE));
 		LineStation lineStation = request.toLineStation();
 		line.addLineStation(lineStation);
 
 		lineRepository.save(line);
 	}
 
+	@Transactional
 	public void removeLineStation(Long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId)
-			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException(LINE_DATA_NO_SUCH_MESSAGE));
 		line.removeLineStationById(stationId);
 
 		lineRepository.save(line);
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse findLineWithStationsById(Long id) {
 		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new NoSuchElementException("라인이 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException(LINE_DATA_NO_SUCH_MESSAGE));
 
 		return createLineResponse(line);
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> showLinesWithStations() {
 		List<Line> lines = lineRepository.findAll();
 
@@ -78,22 +88,15 @@ public class LineService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public LineStationCreateRequest findLineByName(LineStationCreateByNameRequest request) {
-		System.out.println(request.getPreStationName());
-		System.out.println(request.getStationName());
-
 		Long preStationId = stationRepository.findIdByName(request.getPreStationName());
 		Long stationId = stationRepository.findIdByName(request.getStationName());
-		System.out.println(preStationId);
-		System.out.println(stationId);
 		return new LineStationCreateRequest(preStationId, stationId, request.getDistance(), request.getDuration());
 	}
 
 	private LineResponse createLineResponse(Line line) {
 		List<Station> stations = stationRepository.findAllByIdOrderBy(line.getId());
-		// List<Long> lineStationsIds = line.getLineStationsId();
-		// List<Station> stations = stationRepository.findAllById(lineStationsIds);
-
 		return LineResponse.of(line, stations);
 	}
 }

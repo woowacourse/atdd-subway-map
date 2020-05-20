@@ -17,7 +17,7 @@ public class LineRequest {
 	@Min(message = "양수를 입력해주세요!", value = 1)
 	private int intervalTime;
 
-	public LineRequest() {
+	private LineRequest() {
 	}
 
 	public String getName() {

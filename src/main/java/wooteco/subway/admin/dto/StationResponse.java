@@ -12,7 +12,7 @@ public class StationResponse {
 	private String name;
 	private LocalDateTime createdAt;
 
-	public StationResponse() {
+	private StationResponse() {
 	}
 
 	public StationResponse(Long id, String name, LocalDateTime createdAt) {
