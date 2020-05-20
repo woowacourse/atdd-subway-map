@@ -1,54 +1,93 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.exceptions.AlreadySavedException;
+import wooteco.subway.admin.service.exceptions.NotFoundException;
 
-import java.util.List;
-import java.util.Set;
-
+@Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-    }
+	public LineService(final LineRepository lineRepository,
+		final StationRepository stationRepository) {
+		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+	}
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
-    }
+	@Transactional
+	public Long save(Line line) {
+		lineRepository.findByName(line.getName())
+			.ifPresent(this::throwAlreadySavedException);
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
-    }
+		Line persistLine = lineRepository.save(line);
+		return persistLine.getId();
+	}
 
-    public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(line);
-        lineRepository.save(persistLine);
-    }
+	private void throwAlreadySavedException(Line line) {
+		throw new AlreadySavedException("이미 존재하는 노선 이름입니다. name: " + line.getName());
+	}
 
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
+	@Transactional(readOnly = true)
+	public List<LineResponse> getLineResponses() {
+		List<Line> lines = lineRepository.findAll();
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
-    }
+		// TODO 로직 개선
+		return lines.stream()
+			.map(line -> LineResponse.of(line,
+				stationRepository.findAllById(line.getEdgesId())))
+			.collect(Collectors.toList());
+	}
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-    }
+	@Transactional
+	public void updateLine(Long id, Line line) {
+		Line persistLine = findLineById(id).update(line);
+		lineRepository.save(persistLine);
+	}
 
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
-    }
+	@Transactional
+	public void deleteLineById(Long id) {
+		lineRepository.deleteById(id);
+	}
+
+	@Transactional
+	public Long addEdge(Long id, EdgeCreateRequest request) {
+		Line line = findLineById(id);
+		Edge edge = request.toEdge();
+		line.addEdge(edge);
+		return lineRepository.save(line).getId();
+	}
+
+	private Line findLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(id));
+	}
+
+	@Transactional
+	public void removeEdge(Long lineId, Long stationId) {
+		try {
+			Line line = findLineById(lineId);
+			line.removeEdgeById(stationId);
+			lineRepository.save(line);
+		} catch (IllegalArgumentException e) {
+			throw new NotFoundException(e.getMessage());
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public LineResponse findLineWithStationsById(Long id) {
+		Line line = findLineById(id);
+		return LineResponse.of(line, stationRepository.findAllById(line.getEdgesId()));
+	}
 }

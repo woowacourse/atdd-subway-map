@@ -1,0 +1,13 @@
+spring:
+  h2:
+    console:
+      enabled: true
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: debug
+handlebars:
+  suffix: .html
