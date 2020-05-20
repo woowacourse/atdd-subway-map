@@ -11,12 +11,11 @@ import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -38,7 +37,8 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
         persistLine.update(line);
         return LineResponse.of(lineRepository.save(persistLine));
     }
@@ -49,7 +49,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
     }
 
@@ -98,12 +98,6 @@ public class LineService {
 
     public List<Line> findAll() {
         return lineRepository.findAll();
-    }
-
-    public List<Long> findAllLineId(List<Line> lines) {
-        return lines.stream()
-                .map(Line::getId)
-                .collect(Collectors.toList());
     }
 
     public List<Station> findAllById(Line line) {

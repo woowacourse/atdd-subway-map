@@ -15,9 +15,7 @@ import java.util.stream.Collectors;
 public class Line {
     private static final int NO_SIZE = 0;
     private static final int FIRST_INDEX = 0;
-    private static final int SECOND_INDEX = 1;
     private static final int NEXT_INDEX = 1;
-    private static final int BEFORE_INDEX = 1;
     private static final int MINIMUM_SIZE_VALUE = 1;
 
     @Id
