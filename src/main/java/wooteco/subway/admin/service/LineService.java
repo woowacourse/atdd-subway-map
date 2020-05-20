@@ -1,17 +1,23 @@
 package wooteco.subway.admin.service;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.exceptions.DuplicateLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
-import java.util.List;
-import java.util.Set;
-
+@Service
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -22,11 +28,21 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if (lineRepository.existsByName(line.getName())) {
+            throw new DuplicateLineException(line.getName());
+        }
         return lineRepository.save(line);
     }
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
+    public Line showLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    }
+
+    public List<LineResponse> showLines() {
+        List<Line> persistLines = lineRepository.findAll();
+        return persistLines.stream()
+            .map(line -> findLineWithStationsById(line.getId()))
+            .collect(Collectors.toList());
     }
 
     public void updateLine(Long id, Line line) {
@@ -40,15 +56,29 @@ public class LineService {
     }
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+
+        if (line.getStations().isEmpty() && !Objects.isNull(request.getPreStationId())) {
+            LineStation initialLineStation = new LineStation(null, request.getPreStationId(), 0, 0);
+            line.addLineStation(initialLineStation);
+        }
+
+        line.addLineStation(request.toLineStation());
+        lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+        line.removeLineStationById(stationId);
+        lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+        Set<Station> stations = stationRepository.findAllById(line.findLineStationsId());
+        return LineResponse.of(line, stations);
     }
 }
