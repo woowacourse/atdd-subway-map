@@ -1,54 +1,91 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.admin.controller.exception.NoLineExistException;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.controller.request.LineControllerRequest;
+import wooteco.subway.admin.dto.controller.request.LineStationControllerRequest;
+import wooteco.subway.admin.dto.service.response.LineServiceResponse;
+import wooteco.subway.admin.dto.service.response.LineWithStationsServiceResponse;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+@Service
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+	private LineRepository lineRepository;
+	private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-    }
+	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+	}
 
-    public Line save(Line line) {
-        return lineRepository.save(line);
-    }
+	@Transactional
+	public LineServiceResponse save(LineControllerRequest request) {
+		Line persistLine = lineRepository.save(request.toLine());
 
-    public List<Line> showLines() {
-        return lineRepository.findAll();
-    }
+		return LineServiceResponse.of(persistLine);
+	}
 
-    public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(line);
-        lineRepository.save(persistLine);
-    }
+	@Transactional
+	public void addLineStation(Long lineId, LineStationControllerRequest lineStationControllerRequest) {
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(NoLineExistException::new);
 
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
+		LineStation lineStation = lineStationControllerRequest.toLineStation();
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
-        // TODO: 구현
-    }
+		if (lineStation.isFirstLineStation()) {
+			persistLine.addLineStationOnFirst(lineStation);
+			lineRepository.save(persistLine);
+			return;
+		}
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        // TODO: 구현
-    }
+		persistLine.addLineStation(lineStationControllerRequest.toLineStation());
+		lineRepository.save(persistLine);
+	}
 
-    public LineResponse findLineWithStationsById(Long id) {
-        // TODO: 구현
-        return new LineResponse();
-    }
+	public List<LineWithStationsServiceResponse> findLines() {
+		return lineRepository.findAll()
+				.stream()
+				.map(line -> findLineWithStationsBy(line.getId()))
+				.collect(Collectors.toList());
+	}
+
+	public LineWithStationsServiceResponse findLineWithStationsBy(Long lineId) {
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(NoLineExistException::new);
+
+		List<Long> stationIds = persistLine.getLineStationsId();
+		Iterable<Station> lineStations = stationRepository.findAllById(stationIds);
+
+		return LineWithStationsServiceResponse.of(persistLine, lineStations);
+	}
+
+	@Transactional
+	public void updateLine(Long id, LineControllerRequest request) {
+		Line persistLine = lineRepository.findById(id)
+				.orElseThrow(NoLineExistException::new);
+
+		persistLine.update(request.toLine());
+		lineRepository.save(persistLine);
+	}
+
+	public void deleteLineBy(Long id) {
+		lineRepository.deleteById(id);
+	}
+
+	@Transactional
+	public void removeLineStation(Long lineId, Long stationId) {
+		Line persistLine = lineRepository.findById(lineId)
+				.orElseThrow(NoLineExistException::new);
+
+		persistLine.removeLineStationById(stationId);
+		lineRepository.save(persistLine);
+	}
 }
