@@ -1,17 +1,13 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Station;
-
 import java.time.LocalDateTime;
+
+import wooteco.subway.admin.domain.Station;
 
 public class StationResponse {
     private Long id;
     private String name;
     private LocalDateTime createdAt;
-
-    public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
-    }
 
     public StationResponse() {
     }
@@ -20,6 +16,14 @@ public class StationResponse {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
+    }
+
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedAt());
+    }
+
+    public Station toStation() {
+        return new Station(name);
     }
 
     public Long getId() {

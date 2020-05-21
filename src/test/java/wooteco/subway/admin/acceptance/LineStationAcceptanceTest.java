@@ -1,13 +1,25 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import static org.assertj.core.api.Assertions.*;
+import static wooteco.subway.admin.acceptance.AcceptanceTest.*;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -24,27 +36,65 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-    /**
-     *     Given 지하철역이 여러 개 추가되어있다.
-     *     And 지하철 노선이 추가되어있다.
-     *
-     *     When 지하철 노선에 지하철역을 등록하는 요청을 한다.
-     *     Then 지하철역이 노선에 추가 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 새로 추가한 지하철역을 목록에서 찾는다.
-     *
-     *     When 지하철 노선에 포함된 특정 지하철역을 제외하는 요청을 한다.
-     *     Then 지하철역이 노선에서 제거 되었다.
-     *
-     *     When 지하철 노선의 지하철역 목록 조회 요청을 한다.
-     *     Then 지하철역 목록을 응답 받는다.
-     *     And 제외한 지하철역이 목록에 존재하지 않는다.
-     */
     @DisplayName("지하철 노선에서 지하철역 추가 / 제외")
     @Test
     void manageLineStation() {
+        // given
+        StationResponse jamsil = createStation("잠실역");
+        StationResponse jamsilSaenae = createStation("잠실새내역");
+        StationResponse seoknam = createStation("석남역");
+        StationResponse sindorim = createStation("신도림역");
+        StationResponse bupeyong = createStation("부평역");
+        Long lineId = createLine("2호선");
 
+        // when
+        // then
+        register(lineId, null, jamsil.getId());
+        register(lineId, jamsil.getId(), jamsilSaenae.getId());
+        register(lineId, jamsilSaenae.getId(), seoknam.getId());
+        register(lineId, seoknam.getId(), sindorim.getId());
+        register(lineId, sindorim.getId(), bupeyong.getId());
+
+        // when
+        LineResponse line = getLine(lineId);
+        List<Station> stations = line.getStations();
+
+        // then
+        assertThat(stations.get(0).getId()).isEqualTo(jamsil.getId());
+        assertThat(stations.get(1).getId()).isEqualTo(jamsilSaenae.getId());
+        assertThat(stations.get(2).getId()).isEqualTo(seoknam.getId());
+        assertThat(stations.get(3).getId()).isEqualTo(sindorim.getId());
+        assertThat(stations.get(4).getId()).isEqualTo(bupeyong.getId());
+
+        // when
+        // then
+        deleteStationOnLine(lineId, jamsil);
+
+        // when
+        LineResponse deletedLineResponse = getLine(lineId);
+        List<Station> deletedStations = deletedLineResponse.getStations();
+        assertThat(deletedStations).doesNotContain(jamsil.toStation());
+    }
+
+    private void deleteStationOnLine(Long lineId, StationResponse jamsil) {
+        given().when()
+            .delete("lines/" + lineId + "/stations/" + jamsil.getId())
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void register(Long lineId, Long preStationId, Long stationId) {
+        LineStationCreateRequest lineStationCreateRequest =
+            new LineStationCreateRequest(preStationId, stationId, 10, 10);
+
+        given().
+            body(lineStationCreateRequest).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            post("lines/" + lineId + "/stations").
+            then().
+            log().all().
+            statusCode(HttpStatus.CREATED.value());
     }
 }
