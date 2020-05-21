@@ -10,7 +10,6 @@ import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class LineService {
@@ -24,7 +23,6 @@ public class LineService {
 
     public Line save(Line line) {
         return lineRepository.save(line);
-
     }
 
     public Station save(Station station) {
@@ -38,7 +36,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, Line line) {
         Line persistLine = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new EntityNotFoundException(id + "값이 존재하지 않습니다."));
         persistLine.update(line);
         return LineResponse.of(lineRepository.save(persistLine));
     }
@@ -49,7 +47,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new EntityNotFoundException(id + "값이 존재하지 않습니다."));
         return LineResponse.of(line);
     }
 
@@ -66,7 +64,7 @@ public class LineService {
             convertNameToId(request);
         }
         Line line = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new EntityNotFoundException(id + "값이 존재하지 않습니다."));
         LineStation lineStation = request.toLineStation();
 
         line.addLineStation(lineStation);
@@ -76,22 +74,23 @@ public class LineService {
     private void convertNameToId(LineStationCreateRequest request) {
         if(!request.getPreStationName().isEmpty()) {
             Station preStation = stationRepository.findByName(request.getPreStationName())
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new EntityNotFoundException(request.getPreStationName() + "값이 존재하지 않습니다."));
             request.setPreStationId(preStation.getId());
         }
         Station station = stationRepository.findByName(request.getStationName())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new EntityNotFoundException(request.getStationName() + "값이 존재하지 않습니다."));
         request.setStationId(station.getId());
 
     }
 
     public Line findLineById(long id) {
         return lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new EntityNotFoundException(id + "값이 존재하지 않습니다."));
     }
 
     public void deleteStationByLineIdAndStationId(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("노선 id: " + lineId + "값이 존재하지 않습니다."));
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }

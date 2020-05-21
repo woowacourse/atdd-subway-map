@@ -3,12 +3,12 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
+import wooteco.subway.admin.service.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Table("LINE")
@@ -173,7 +173,7 @@ public class Line {
                 .filter(lineStation -> lineStation.isSameStationId(stationId))
                 .map(lineStation -> lineStations.indexOf(lineStation))
                 .findAny()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new EntityNotFoundException("역 Id: " + stationId + "값이 존재하지 않습니다."));
     }
 
     public List<Long> getLineStationsId() {

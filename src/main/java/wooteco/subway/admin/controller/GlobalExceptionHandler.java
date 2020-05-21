@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> noSuchElementException(NoSuchElementException e) {
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage() + "요청 하신 값이 존재 하지 않습니다.");
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 }
