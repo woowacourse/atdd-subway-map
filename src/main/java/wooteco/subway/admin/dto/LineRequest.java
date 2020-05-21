@@ -1,16 +1,26 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-
 import java.time.LocalTime;
 
-public class LineRequest {
-    private String name;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private int intervalTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
-    public LineRequest() {
+import wooteco.subway.admin.domain.Line;
+
+public class LineRequest {
+    @NotBlank
+    private String name;
+    @NotNull
+    private LocalTime startTime;
+    @NotNull
+    private LocalTime endTime;
+    @Positive
+    private int intervalTime;
+    @NotBlank
+    private String bgColor;
+
+    private LineRequest() {
     }
 
     public String getName() {
@@ -29,7 +39,11 @@ public class LineRequest {
         return intervalTime;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
+        return new Line(name, startTime, endTime, intervalTime, bgColor);
     }
 }

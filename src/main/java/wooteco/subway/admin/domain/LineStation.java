@@ -1,13 +1,18 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
+import org.springframework.data.relational.core.mapping.Column;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
+    @Column("station")
     private Long stationId;
+    @Column("pre_station")
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    private LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
@@ -35,5 +40,17 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    public boolean hasPreStation() {
+        return Objects.nonNull(preStationId);
+    }
+
+    public boolean isSameStation(LineStation lineStation) {
+        return getStationId().equals(lineStation.getStationId());
+    }
+
+    public boolean isSameStationId(Long stationId) {
+        return getStationId().equals(stationId);
     }
 }
