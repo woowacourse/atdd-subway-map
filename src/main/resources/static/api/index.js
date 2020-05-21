@@ -42,7 +42,6 @@ const api = (() => {
         },
         delete(id) {
             return fetch(`/stations/${id}`, METHOD.DELETE()).then()
-            // return request(`/stations/${id}`, METHOD.DELETE());
         }
     };
     const line = {
