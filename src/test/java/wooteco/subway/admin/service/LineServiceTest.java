@@ -141,6 +141,21 @@ public class LineServiceTest {
     }
 
     @Test
+    @DisplayName("역이 등록되어 있는 경우 도착역, 출발역이 연결되어 있지 않을 때 등록 실패 테스트")
+    void addLineStationFail() {
+        LineStationCreateRequest request = new LineStationCreateRequest(5L, 7L, 10, 10);
+
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.save(line)).thenReturn(line);
+        lineService.addLineStation(line.getId(), request);
+        assertThat(line.getStations()).hasSize(3);
+        assertThat(line.findLineStationsId().get(0)).isEqualTo(1L);
+        assertThat(line.findLineStationsId().get(1)).isEqualTo(2L);
+        assertThat(line.findLineStationsId().get(2)).isEqualTo(3L);
+
+    }
+
+    @Test
     void removeLineStationAtTheFirstOfLine() {
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         lineService.removeLineStation(line.getId(), 1L);
