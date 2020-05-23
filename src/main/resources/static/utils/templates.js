@@ -18,7 +18,7 @@ export const subwayLinesTemplate = line =>
       </button>
     </div>`;
 
-export const optionTemplate = value => `<option>${value}</option>`;
+export const optionTemplate = data => `<option value="${data.id}">${data.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -45,7 +45,8 @@ const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-
 </nav>`;
 
 export const subwayLinesItemTemplate = line => {
-  const stationsTemplate = line.orderedStations
+    console.log(line)
+  const stationsTemplate = line.stations
     .map(station => listItemTemplate(station.name))
     .join("");
   return `<div class="inline-block w-1/2 px-2">

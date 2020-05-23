@@ -6,37 +6,35 @@ import tns from "../../lib/slider/tiny-slider.js";
 import { EVENT_TYPE } from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import {api} from "../../api/index.js";
-import {defaultSubwayLines} from "../../utils/subwayMockData.js";
 
 function AdminEdge() {
   const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
   const $openModalButton = document.querySelector(".modal-open");
-  const $lineStationPreStationId = document.querySelector("#depart-station-name");
-  const $lineStationStationId = document.querySelector("#arrival-station-name");
-  const $lineStationLine = document.querySelector("#station-select-options");
+  const $lineStationPreStation = document.querySelector("#depart-station-name");
+  const $lineStationStation = document.querySelector("#arrival-station-name");
+  const $lineStationLine = document.querySelector("#line-select-options");
+  const $lineStationCreateButton = document.querySelector('#submit-button')
   const createSubwayEdgeModal = new Modal();
-
-  const getLinesWithStations = async function () {
-    return await api.lineStation.getLines();
-  };
+  let subwayLines = []
 
   const onToggleModalForCreate = event => {
     createSubwayEdgeModal.toggle();
   }
 
-  const onCreatelineStation = async event => {
+  const onCreateLineStation = event => {
+    event.preventDefault()
     let data = {
-      preStationId: $lineStationPreStationId.value,
-      stationId: $lineStationLine.value,
+      preStationId: $lineStationPreStation.value,
+      stationId: $lineStationStation.value,
       distance: 10,
       duration: 10
     }
-    const response = await api.lineStation.create($lineStationLine.value, data);
-    console.log(response);
-    $subwayLineList.insertAdjacentHTML(
-        "beforeend",
-    );
-    subwayLineModal.toggle();
+    api.lineStation
+        .create($lineStationLine.value, data)
+        .then(() => {
+          createSubwayEdgeModal.toggle()
+          initSubwayLinesView()
+        })
   };
 
   const initSubwayLinesSlider = () => {
@@ -54,24 +52,30 @@ function AdminEdge() {
     });
   };
 
-  const initSubwayLineOptions = async () => {
-    const lines = await getLinesWithStations()
-    console.log(lines)
-    console.log(defaultSubwayLines)
-    $subwayLinesSlider.innerHTML = lines
-        .map(line => subwayLinesItemTemplate(line))
-        .join("");
-    const subwayLineOptionTemplate = lines
-      .map(line => optionTemplate(line.name))
-      .join("");
-    const $stationSelectOptions = document.querySelector(
-      "#station-select-options"
-    );
-    $stationSelectOptions.insertAdjacentHTML(
-      "afterbegin",
-      subwayLineOptionTemplate
-    );
-  };
+  const initSubwayLinesView = () => {
+    api.lineStation
+        .getLines()
+        .then(data => {
+          subwayLines = data
+          if (subwayLines.length > 0) {
+            $subwayLinesSlider.innerHTML = subwayLines.map(line => subwayLinesItemTemplate(line)).join('')
+            initSubwayLinesSlider()
+          }
+        })
+    const subwayLineOptionTemplate = subwayLines.map(line => optionTemplate(line)).join('')
+    const $lineSelectOption = document.querySelector('#line-select-options')
+    $lineSelectOption.innerHTML = subwayLineOptionTemplate
+    initStationOptions()
+  }
+
+  const initStationOptions = () => {
+    api.station
+        .get()
+        .then(stations => {
+          $lineStationPreStation.innerHTML = stations.map(station => optionTemplate(station)).join('')
+          $lineStationStation.innerHTML = stations.map(station => optionTemplate(station)).join('')
+        })
+  }
 
   const onRemoveStationHandler = event => {
     const $target = event.target;
@@ -82,16 +86,13 @@ function AdminEdge() {
   };
 
   const initEventListeners = () => {
-    $subwayLinesSlider.addEventListener(
-      EVENT_TYPE.CLICK,
-      onRemoveStationHandler
-    );
+    $subwayLinesSlider.addEventListener(EVENT_TYPE.CLICK, onRemoveStationHandler);
     $openModalButton.addEventListener(EVENT_TYPE.CLICK, onToggleModalForCreate);
+    $lineStationCreateButton.addEventListener(EVENT_TYPE.CLICK, onCreateLineStation);
   };
 
   this.init = () => {
-    initSubwayLinesSlider();
-    initSubwayLineOptions();
+    initSubwayLinesView();
     initEventListeners();
   };
 }
