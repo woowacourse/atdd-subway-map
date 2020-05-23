@@ -1,14 +1,30 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-
 import java.time.LocalTime;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import wooteco.subway.admin.domain.Line;
+
 public class LineRequest {
+    @NotBlank
     private String name;
+
+    @NotNull
+    @DateTimeFormat(pattern = "hh:mm:ss")
     private LocalTime startTime;
+
+    @NotNull
+    @DateTimeFormat(pattern = "hh:mm:ss")
     private LocalTime endTime;
+
+    @Positive
     private int intervalTime;
+
     private String bgColor;
 
     public LineRequest() {

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +36,12 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> createLines(@RequestBody @Valid LineRequest request) {
         Line line = lineService.save(request.toLine());
 
         return ResponseEntity
-                .created(URI.create("/lines/" + line.getId()))
-                .body(LineResponse.of(line, new HashSet<>()));
+            .created(URI.create("/lines/" + line.getId()))
+            .body(LineResponse.of(line, new HashSet<>()));
     }
 
     @GetMapping
@@ -51,7 +53,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+        @RequestBody @Valid LineRequest request) {
         Line updatedLine = lineService.updateLine(id, request.toLine());
 
         return ResponseEntity.ok()
@@ -73,13 +76,13 @@ public class LineController {
 
     @PostMapping("/{id}/stations")
     public ResponseEntity<StationResponse> addLineStation(
-            @PathVariable Long id,
-            @RequestBody LineStationCreateByNameRequest request) {
+        @PathVariable Long id,
+        @RequestBody @Valid LineStationCreateByNameRequest request) {
         Long stationId = lineService.addLineStationByName(id, request);
 
         return ResponseEntity
-                .created(URI.create("/lines/" + id + "/stations/" + stationId))
-                .build();
+            .created(URI.create("/lines/" + id + "/stations/" + stationId))
+            .build();
     }
 
     @GetMapping("/{id}/stations")

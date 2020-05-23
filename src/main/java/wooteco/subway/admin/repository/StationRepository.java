@@ -1,6 +1,5 @@
 package wooteco.subway.admin.repository;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.jdbc.repository.query.Query;
@@ -13,6 +12,6 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     @Query("SELECT id FROM station WHERE name = :stationName")
     Long findIdByName(@Param("stationName") String stationName);
 
-    @Query("SELECT * FROM station WHERE id = :id")
-    Set<Station> findAllById(@Param("id") List<Long> id);
+    @Override
+    Set<Station> findAllById(Iterable ids);
 }
