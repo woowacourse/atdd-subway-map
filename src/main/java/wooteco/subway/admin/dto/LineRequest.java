@@ -1,11 +1,12 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-
 import java.time.LocalTime;
+
+import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
     private String name;
+    private String backgroundColor;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
@@ -15,6 +16,10 @@ public class LineRequest {
 
     public String getName() {
         return name;
+    }
+
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 
     public LocalTime getStartTime() {
@@ -30,6 +35,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
+        return new Line(null, name, backgroundColor, startTime, endTime, intervalTime);
     }
 }
