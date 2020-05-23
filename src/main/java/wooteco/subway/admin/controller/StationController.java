@@ -8,6 +8,7 @@ import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 public class StationController {
@@ -19,6 +20,10 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
+        Optional<Station> duplicatedStation = stationRepository.findByName(view.getName());
+        if (duplicatedStation.isPresent()) {
+            return ResponseEntity.badRequest().body("역이름은 중복될 수 없습니다.");
+        }
         Station station = view.toStation();
         Station persistStation = stationRepository.save(station);
 
