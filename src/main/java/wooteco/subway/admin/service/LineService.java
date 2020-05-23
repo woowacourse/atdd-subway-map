@@ -1,6 +1,5 @@
 package wooteco.subway.admin.service;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -94,10 +93,6 @@ public class LineService {
     }
 
     private Set<Station> findStationsOf(Line line) {
-        Set<Station> stations = new LinkedHashSet<>();
-        for (Station station : stationRepository.findAllById(line.getLineStationsId())) {
-            stations.add(station);
-        }
-        return stations;
+        return stationRepository.findAllById(line.getLineStationsId());
     }
 }
