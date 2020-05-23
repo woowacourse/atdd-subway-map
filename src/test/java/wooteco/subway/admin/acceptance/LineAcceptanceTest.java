@@ -96,7 +96,6 @@ public class LineAcceptanceTest {
             post("/api/lines").
             then().
             log().all().
-
             statusCode(HttpStatus.CREATED.value());
     }
 

@@ -41,12 +41,7 @@ public class Line {
     public void addLineStation(LineStation newLineStation) {
         List<Long> ids = this.findLineStationsId();
         if (isLineStationEmpty(ids)) {
-            if (newLineStation.getPreStationId() == null) {
-                stations.add(newLineStation);
-                return;
-            }
-            stations.add(newLineStation);
-            stations.add(new LineStation(null, newLineStation.getPreStationId(), 0, 0));
+            addLineStationInEmptyLine(newLineStation);
             return;
         }
         if (isNewLineStationLastLineStation(newLineStation, ids)) {
@@ -68,6 +63,15 @@ public class Line {
             .orElseThrow(() -> new IllegalArgumentException("해당하는 구간이 없습니다."))
             .updatePreStationIdWithIdOf(newLineStation);
         stations.add(newLineStation);
+    }
+
+    private void addLineStationInEmptyLine(final LineStation newLineStation) {
+        if (newLineStation.isStartStation()) {
+            stations.add(newLineStation);
+            return;
+        }
+        stations.add(newLineStation);
+        stations.add(new LineStation(null, newLineStation.getPreStationId(), 0, 0));
     }
 
     public void removeLineStationById(Long stationId) {
