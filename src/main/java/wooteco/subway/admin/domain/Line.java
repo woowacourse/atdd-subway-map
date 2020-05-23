@@ -15,21 +15,13 @@ public class Line {
 
     @Id
     private Long id;
-    @Column("name")
     private String name;
-    @Column("start_time")
     private LocalTime startTime;
-    @Column("end_time")
     private LocalTime endTime;
-    @Column("interval_time")
     private int intervalTime;
-    @Column("line")
     private Set<LineStation> lineStations = new HashSet<>();
-    @Column("created_at")
     private LocalDateTime createdAt;
-    @Column("updated_at")
     private LocalDateTime updatedAt;
-    @Column("color")
     private String color;
 
     public Line() {
@@ -99,26 +91,27 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        Optional<LineStation> lineStationWithSamePreStation = this.lineStations.stream()
+        this.lineStations.stream()
                 .filter(anyLineStation -> anyLineStation.isPreStationId(lineStation.getPreStationId()))
-                .findFirst();
-        if (lineStationWithSamePreStation.isPresent()) {
-            updatePreOfLineStation(lineStationWithSamePreStation.get().getStationId(),
-                    lineStation.getStationId());
-        }
+                .findFirst()
+                .ifPresent(
+                        aLineStation -> {
+                            updatePreOfLineStation(aLineStation.getStationId(), lineStation.getStationId());
+                        });
         this.lineStations.add(lineStation);
     }
 
     public void removeLineStationByStationId(Long stationId) {
-        Optional<LineStation> preStationId = this.lineStations.stream()
-                .filter(lineStation -> lineStation.isStationId(stationId))
-                .findFirst();
-        Optional<LineStation> nextStationId = this.lineStations.stream()
+        this.lineStations.stream()
                 .filter(lineStation -> lineStation.isPreStationId(stationId))
-                .findFirst();
-        if (nextStationId.isPresent() && preStationId.isPresent()) {
-            updatePreOfLineStation(nextStationId.get().getStationId(), preStationId.get().getPreStationId());
-        }
+                .findFirst()
+                .ifPresent(nextStationId -> {
+                    this.lineStations.stream()
+                            .filter(lineStation -> lineStation.isStationId(stationId))
+                            .findFirst()
+                            .ifPresent(preStation ->
+                                    updatePreOfLineStation(nextStationId.getStationId(),preStation.getPreStationId()));
+                });
         this.lineStations.removeIf(lineStation -> lineStation.isStationId(stationId));
     }
 
@@ -128,10 +121,25 @@ public class Line {
                 .forEach(lineStation -> lineStation.updatePreStationId(newPreStationId));
     }
 
-    public List<Long> getStationsId() {
+    public List<Long> getStationIds() {
         Map<Long, Long> stationIdOrder = new HashMap<>();    // key: 전 역 ID, value: 현재 역 ID
         List<Long> orderedStations = new ArrayList<>();
 
+        makeStationIdOrder(stationIdOrder);
+
+        if (stationIdOrder.isEmpty()) {
+            return orderedStations;
+        }
+
+        Long now = PRE_ID_OF_FIRST_STATION;
+        for (int i = 0; i < stationIdOrder.size(); i++) {
+            now = stationIdOrder.get(now);
+            orderedStations.add(now);
+        }
+        return Collections.unmodifiableList(orderedStations);
+    }
+
+    private void makeStationIdOrder(Map<Long, Long> stationIdOrder) {
         lineStations.forEach(lineStation -> {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 stationIdOrder.put(PRE_ID_OF_FIRST_STATION, lineStation.getStationId());
@@ -139,19 +147,6 @@ public class Line {
                 stationIdOrder.put(lineStation.getPreStationId(), lineStation.getStationId());
             }
         });
-
-        Long now = PRE_ID_OF_FIRST_STATION;
-        if(stationIdOrder.isEmpty()) {
-            return orderedStations;
-        }
-        if(!stationIdOrder.containsKey(PRE_ID_OF_FIRST_STATION)) {
-            throw new IllegalArgumentException("순환 발생 했거나 시작 역이 없다 - 향후 수정");
-        }
-        for (int i = 0; i < stationIdOrder.size(); i++) {
-            now = stationIdOrder.get(now);
-            orderedStations.add(now);
-        }
-        return Collections.unmodifiableList(orderedStations);
     }
 
     public String getColor() {

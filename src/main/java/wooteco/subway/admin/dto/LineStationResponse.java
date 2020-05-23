@@ -4,6 +4,7 @@ import wooteco.subway.admin.domain.LineStation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineStationResponse {
 
@@ -27,9 +28,9 @@ public class LineStationResponse {
     }
 
     public static List<LineStationResponse> listOf(List<LineStation> lineStations) {
-        List<LineStationResponse> lineStationResponses = new ArrayList<>();
-        lineStations.forEach(lineStation -> lineStationResponses.add(of(lineStation)));
-        return lineStationResponses;
+        return lineStations.stream()
+                .map(LineStationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
