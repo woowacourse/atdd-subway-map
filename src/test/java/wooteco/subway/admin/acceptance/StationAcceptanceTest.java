@@ -42,7 +42,7 @@ public class StationAcceptanceTest {
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
 
-        deleteStation(stations.get(0).getName());
+        deleteStation(stations.get(0).getId());
 
         List<StationResponse> stationsAfterDelete = getStations();
          assertThat(stationsAfterDelete.size()).isEqualTo(3);
@@ -73,10 +73,10 @@ public class StationAcceptanceTest {
                     jsonPath().getList(".", StationResponse.class);
     }
 
-    private void deleteStation(String name) {
+    private void deleteStation(Long id) {
         given().
         when().
-                delete("/stations/" + name).
+                delete("/stations/" + id).
         then().
                 log().all();
     }

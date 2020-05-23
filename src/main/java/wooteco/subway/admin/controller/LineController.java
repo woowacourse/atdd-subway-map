@@ -8,18 +8,19 @@ import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
-public class LinesController {
+public class LineController {
     private LineService lineService;
 
-    public LinesController(LineService lineService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
         Line persistLine = lineService.save(lineRequest.toLine());
 
         return ResponseEntity
@@ -28,24 +29,24 @@ public class LinesController {
     }
 
     @GetMapping
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.showLines());
     }
 
-    @GetMapping("/{lineId}")
-    public ResponseEntity showLineById(@PathVariable Long lineId) {
-        return ResponseEntity.ok().body(lineService.findLineById(lineId));
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showLineById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
-    @PutMapping("/{lineId}")
-    public ResponseEntity update(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(lineId, lineRequest.toLine());
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{lineId}")
-    public ResponseEntity delete(@PathVariable Long lineId) {
-        lineService.deleteLineById(lineId);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -110,7 +110,7 @@ public class LineStationAcceptanceTest {
 
     private void createLineStation(Long lineId, Long stationId, Long preStationId) {
         Map<String, Object> params = new HashMap<>();
-        params.put("stationId", stationId.toString());
+        params.put("stationId", stationId);
         params.put("preStationId", preStationId);
         params.put("distance", "100");
         params.put("duration", "2");
@@ -120,16 +120,16 @@ public class LineStationAcceptanceTest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
         when().
-                post("/lineStations/" + lineId).
+                post("/line-stations/" + lineId).
         then().
                 log().all().
-                statusCode(HttpStatus.OK.value());
+                statusCode(HttpStatus.CREATED.value());
     }
 
     private void deleteLineStation(Long lineId, Long stationId) {
         given().
         when().
-                delete("/lineStations/" + lineId + "/" + stationId).
+                delete("/line-stations/" + lineId + "/" + stationId).
         then().
                 log().all();
     }
@@ -159,7 +159,7 @@ public class LineStationAcceptanceTest {
         return
                 given().
                 when().
-                       get("/lineStations/" + lineId).
+                       get("/line-stations/" + lineId).
                 then().
                         log().all().
                         extract().

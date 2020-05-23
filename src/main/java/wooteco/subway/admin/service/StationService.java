@@ -23,7 +23,7 @@ public class StationService {
         return StationResponse.listOf(stationRepository.findAll());
     }
 
-    public void deleteStationByName(String name) {
-        stationRepository.deleteByName(name);
+    public void deleteStationById(Long id) {
+        stationRepository.deleteById(id);
     }
 }

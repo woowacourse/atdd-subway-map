@@ -24,7 +24,7 @@ public class LineTest {
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getStationsId();
+        List<Long> stationIds = line.getStationIds();
 
         assertThat(stationIds.size()).isEqualTo(4);
         assertThat(stationIds.get(0)).isEqualTo(1L);

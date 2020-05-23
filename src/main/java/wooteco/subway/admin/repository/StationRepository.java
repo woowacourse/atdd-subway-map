@@ -17,10 +17,6 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     @Override
     List<Station> findAll();
 
-    @Modifying
-    @Query("DELETE FROM Station WHERE name = :name")
-    void deleteByName(@Param("name") String name);
-
     @Query("SELECT * FROM Station WHERE id IN (:ids)")
     List<Station> findByIds(List<Long> ids);
 }
