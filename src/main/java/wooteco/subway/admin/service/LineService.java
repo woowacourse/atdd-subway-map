@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateByNameRequest;
 import wooteco.subway.admin.exceptions.DuplicateLineException;
 import wooteco.subway.admin.exceptions.LineNotFoundException;
@@ -40,11 +39,10 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public LineResponse updateLine(Long id, Line line) {
+    public Line updateLine(Long id, Line line) {
         Line persistLine = getLineById(id);
         persistLine.update(line);
-        Line updatedLine = lineRepository.save(persistLine);
-        return LineResponse.of(updatedLine, findStationsOf(updatedLine));
+        return lineRepository.save(persistLine);
     }
 
     public void deleteLineById(Long id) {
@@ -76,9 +74,8 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = getLineById(id);
-        return LineResponse.of(line, findStationsOf(line));
+    public Line findLineWithStationsById(Long id) {
+        return getLineById(id);
     }
 
     public Set<Station> findStationsOf(Long id) {
@@ -86,7 +83,7 @@ public class LineService {
         return findStationsOf(line);
     }
 
-    private Set<Station> findStationsOf(Line line) {
+    public Set<Station> findStationsOf(Line line) {
         return stationRepository.findAllById(line.getLineStationsId());
     }
 

@@ -52,15 +52,16 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        LineResponse response = lineService.updateLine(id, request.toLine());
+        Line updatedLine = lineService.updateLine(id, request.toLine());
 
         return ResponseEntity.ok()
-                .body(response);
+            .body(LineResponse.of(updatedLine, lineService.findStationsOf(updatedLine)));
     }
 
     @GetMapping("/{id}")
     public LineResponse getLine(@PathVariable Long id) {
-        return lineService.findLineWithStationsById(id);
+        Line line = lineService.findLineWithStationsById(id);
+        return LineResponse.of(line, lineService.findStationsOf(line));
     }
 
     @DeleteMapping("/{id}")
