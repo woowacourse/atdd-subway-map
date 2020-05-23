@@ -41,22 +41,19 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+        Line persistLine = getLineById(id);
         persistLine.update(line);
         Line updatedLine = lineRepository.save(persistLine);
         return LineResponse.of(updatedLine, findStationsOf(updatedLine));
     }
 
     public void deleteLineById(Long id) {
-        lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+        getLineById(id);
         lineRepository.deleteById(id);
     }
 
     public void addLineStation(Long id, LineStation lineStation) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+        Line line = getLineById(id);
         line.addLineStation(lineStation);
         lineRepository.save(line);
     }
@@ -74,25 +71,27 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(LineNotFoundException::new);
+        Line line = getLineById(lineId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+        Line line = getLineById(id);
         return LineResponse.of(line, findStationsOf(line));
     }
 
     public Set<Station> findStationsOf(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+        Line line = getLineById(id);
         return findStationsOf(line);
     }
 
     private Set<Station> findStationsOf(Line line) {
         return stationRepository.findAllById(line.getLineStationsId());
+    }
+
+    private Line getLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
     }
 }
