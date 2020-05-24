@@ -17,8 +17,8 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionDto> handleSystemException(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDto> handleSystemException(Exception e) {
         return ResponseEntity.badRequest().body(new ExceptionDto("시스템 에러"));
     }
 

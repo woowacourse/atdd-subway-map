@@ -53,16 +53,14 @@ public class LineController {
 
     @PostMapping("/lines/{lineId}/edges")
     public ResponseEntity<StationsAtLineResponse> createEdge(@PathVariable("lineId") Long lineId, @RequestBody @Valid EdgeCreateRequest request) {
-        StationsAtLineResponse response = lineService.addEdge(lineId, request);
         return ResponseEntity
                 .created(URI.create("/edges/" + lineId))
-                .body(response);
+                .body(lineService.addEdge(lineId, request));
     }
 
     @GetMapping("/lines/stations")
     public ResponseEntity<List<StationsAtLineResponse>> showEdges() {
-        List<StationsAtLineResponse> response = lineService.findEveryLineAndStation();
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(lineService.findEveryLineAndStation());
     }
 
     @DeleteMapping("/lines/{lineId}/stations/{stationId}")
