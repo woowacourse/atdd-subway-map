@@ -1,4 +1,4 @@
-package wooteco.subway.admin.service;
+package wooteco.subway.admin.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

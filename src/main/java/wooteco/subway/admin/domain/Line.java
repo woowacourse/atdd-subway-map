@@ -3,7 +3,7 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
-import wooteco.subway.admin.service.EntityNotFoundException;
+import wooteco.subway.admin.exception.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
