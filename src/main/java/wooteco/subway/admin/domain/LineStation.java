@@ -1,39 +1,80 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Objects;
+
+import org.springframework.data.relational.core.mapping.Column;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Long stationId;
-    private Long preStationId;
-    private int distance;
-    private int duration;
+	@Column("station")
+	private Long stationId;
+	@Column("pre_station")
+	private Long preStationId;
+	private int distance;
+	private int duration;
 
-    public LineStation() {
-    }
+	public LineStation() {
+	}
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
-    }
+	public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+		validate(preStationId, stationId);
+		this.preStationId = preStationId;
+		this.stationId = stationId;
+		this.distance = distance;
+		this.duration = duration;
+	}
 
-    public Long getPreStationId() {
-        return preStationId;
-    }
+	private void validate(Long preStationId, Long stationId) {
+		Objects.requireNonNull(stationId, "대상역이 존재하지 않습니다.");
+		if (preStationId != null && preStationId.equals(stationId)) {
+			throw new IllegalArgumentException("이전역과 대상역이 같을 수 없습니다.");
+		}
+	}
 
-    public Long getStationId() {
-        return stationId;
-    }
+	public Long getPreStationId() {
+		return preStationId;
+	}
 
-    public int getDistance() {
-        return distance;
-    }
+	public Long getStationId() {
+		return stationId;
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public int getDistance() {
+		return distance;
+	}
 
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
-    }
+	public int getDuration() {
+		return duration;
+	}
+
+	public boolean isPreStationBy(LineStation other) {
+		return this.stationId.equals(other.preStationId);
+	}
+
+	public void updatePreStationId(Long preStationId) {
+		this.preStationId = preStationId;
+	}
+
+	public boolean isSameStationId(Long stationId) {
+		return this.stationId.equals(stationId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		LineStation that = (LineStation)o;
+		return distance == that.distance &&
+			duration == that.duration &&
+			Objects.equals(stationId, that.stationId) &&
+			Objects.equals(preStationId, that.preStationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(stationId, preStationId, distance, duration);
+	}
 }

@@ -1,40 +1,55 @@
 package wooteco.subway.admin.controller;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
-
-import java.net.URI;
+import wooteco.subway.admin.service.StationService;
 
 @RestController
+@RequestMapping("/api/stations")
 public class StationController {
-    private final StationRepository stationRepository;
+	private final StationService stationService;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+	public StationController(StationService stationService) {
+		this.stationService = stationService;
+	}
 
-    @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
-        Station station = view.toStation();
-        Station persistStation = stationRepository.save(station);
+	@PostMapping
+	public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationCreateRequest view) {
+		Station station = view.toStation();
+		StationResponse stationResponse = stationService.save(station);
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.body(stationResponse);
+	}
 
-        return ResponseEntity
-                .created(URI.create("/stations/" + persistStation.getId()))
-                .body(StationResponse.of(persistStation));
-    }
+	@GetMapping
+	public ResponseEntity<List<StationResponse>> showStations() {
+		List<StationResponse> stationResponses = stationService.findAll();
+		return ResponseEntity
+			.ok()
+			.body(stationResponses);
+	}
 
-    @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
-    }
-
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+		stationService.deleteById(id);
+		return ResponseEntity.
+			noContent()
+			.build();
+	}
 }
