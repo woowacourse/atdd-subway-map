@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
-import wooteco.subway.admin.dto.EdgeCreateRequest;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.time.LocalTime;
@@ -57,10 +56,11 @@ public class EdgeResponseAcceptanceTest {
     }
 
     private void createStation(String name) {
-        Station station = new Station(name);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
 
         given().
-                body(station).
+                body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
@@ -130,7 +130,6 @@ public class EdgeResponseAcceptanceTest {
         for (Station deleteStation : deleteStations) {
             assertThat(deleteStation.getId()).isNotEqualTo(3L);
         }
-
     }
 
     private void deleteStationByLineId(long lineId, long stationId) {
@@ -141,9 +140,7 @@ public class EdgeResponseAcceptanceTest {
                 .log().all();
     }
 
-    private EdgeCreateRequest addEdge(Long lineId, String preStationName, String stationName, int distance, int duration) {
-        EdgeCreateRequest edgeCreateRequest =
-                new EdgeCreateRequest(preStationName, stationName, distance, duration);
+    private void addEdge(Long lineId, String preStationName, String stationName, int distance, int duration) {
         Map<String, String> params = new HashMap<>();
         params.put("preStationName", preStationName);
         params.put("stationName", stationName);
@@ -158,9 +155,6 @@ public class EdgeResponseAcceptanceTest {
                 post("/lines/" + lineId + "/stations").
                 then().
                 log().all().statusCode(HttpStatus.CREATED.value());
-
-
-        return edgeCreateRequest;
     }
 
     private LineResponse findEdgesByLineId(long lineId) {

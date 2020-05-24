@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJdbcTest
 public class LineRepositoryTest {
@@ -43,5 +44,12 @@ public class LineRepositoryTest {
         assertThat(line1.getId()).isEqualTo(1L);
         assertThat(line2.getId()).isEqualTo(2L);
         assertThat(line3.getId()).isEqualTo(3L);
+    }
+
+    @DisplayName("해당하는 노선 이름이 검색되지 않을때 예외가 발생하는지 테스트")
+    @Test
+    void NoSuchElementExceptionTest() {
+        assertThatThrownBy(() -> lineRepository.findByTitle("존재하지않는노선").orElseThrow(NoSuchElementException::new))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

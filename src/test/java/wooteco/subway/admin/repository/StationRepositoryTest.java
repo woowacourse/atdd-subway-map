@@ -10,6 +10,7 @@ import wooteco.subway.admin.domain.Station;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,9 +47,9 @@ public class StationRepositoryTest {
     @DisplayName("이름으로 역을 찾을 수 있는지 테스트")
     @Test
     void findByNameTest() {
-        Station station1 = stationRepository.findByName("강남역").get();
-        Station station2 = stationRepository.findByName("잠실역").get();
-        Station station3 = stationRepository.findByName("신림역").get();
+        Station station1 = stationRepository.findByName("강남역").orElseThrow(NoSuchElementException::new);
+        Station station2 = stationRepository.findByName("잠실역").orElseThrow(NoSuchElementException::new);
+        Station station3 = stationRepository.findByName("신림역").orElseThrow(NoSuchElementException::new);
 
         assertThat(station1.getId()).isEqualTo(1L);
         assertThat(station2.getId()).isEqualTo(2L);

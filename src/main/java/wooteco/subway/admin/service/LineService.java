@@ -1,7 +1,6 @@
 package wooteco.subway.admin.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Station;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
 public class LineService {
     private final LineRepository lineRepository;
@@ -74,23 +72,10 @@ public class LineService {
     }
 
     public void addEdge(Long lineId, EdgeCreateRequest request) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(NoSuchElementException::new);
-        if (request.getPreStationName().isEmpty()) {
-            Station station = stationRepository.findByName(request.getStationName())
-                    .orElseThrow(NoSuchElementException::new);
-            Edge edge =
-                    new Edge(null, station.getId(), request.getDistance(), request.getDuration());
-            line.addEdge(edge);
-        } else {
-            Station preStation = stationRepository.findByName(request.getPreStationName())
-                    .orElseThrow(NoSuchElementException::new);
-            Station station = stationRepository.findByName(request.getStationName())
-                    .orElseThrow(NoSuchElementException::new);
-            Edge edge =
-                    new Edge(preStation.getId(), station.getId(), request.getDistance(), request.getDuration());
-            line.addEdge(edge);
-        }
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Long preStationId = stationRepository.findIdByName(request.getPreStationName()).orElse(null);
+        Long stationId = stationRepository.findIdByName(request.getStationName()).orElseThrow(NoSuchElementException::new);
+        line.addEdge(new Edge(preStationId, stationId, request.getDistance(), request.getDuration()));
         lineRepository.save(line);
     }
 
@@ -107,7 +92,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
         List<Station> stations = new ArrayList<>();
 
-        List<Edge> edges = line.getEdges();
+        List<Edge> edges = line.getSortedEdges();
         for (Edge edge : edges) {
             checkAllStationById(line, stations, edge);
         }

@@ -3,32 +3,22 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Table("LINE")
 public class Line {
-    private static final int ONE_SIZE = 1;
-    private static final int FIRST_INDEX = 0;
-    private static final int SECOND_INDEX = 1;
-    private static final int NEXT_INDEX = 1;
-    private static final int BEFORE_INDEX = 1;
     @Id
     private Long id;
     private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    @MappedCollection(idColumn = "line", keyColumn = "sequence")
-    private List<Edge> edges = new ArrayList<>();
+    private Set<Edge> edges = new HashSet<>();
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
@@ -70,8 +60,41 @@ public class Line {
         return intervalTime;
     }
 
-    public List<Edge> getEdges() {
-        return edges;
+    public List<Edge> getSortedEdges() {
+        if (edges.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Edge> sortedEdges = new ArrayList<>();
+        Edge pivotEdge = searchFirstEdge();
+        sortedEdges.add(pivotEdge);
+        while (isNotLastEdge(pivotEdge)) {
+            pivotEdge = searchNextEdgeOf(pivotEdge);
+            sortedEdges.add(pivotEdge);
+        }
+        return sortedEdges;
+    }
+
+    private Edge searchFirstEdge() {
+        return edges.stream()
+                .filter(edge -> edge.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private boolean isNotLastEdge(Edge edge) {
+        try {
+            searchNextEdgeOf(edge);
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private Edge searchNextEdgeOf(Edge pivotEdge) {
+        return edges.stream()
+                .filter(edge -> edge.getPreStationId() == pivotEdge.getStationId())
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public LocalDateTime getCreatedAt() {
@@ -114,46 +137,28 @@ public class Line {
     }
 
     public void removeEdgeById(Long stationId) {
-        int index = edges.stream()
-                .filter(edge -> edge.isSameStationId(stationId))
-                .map(edge -> edges.indexOf(edge))
-                .findAny()
+        Edge targetEdge = edges.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
+                .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        Edge preEdge;
-        Edge nextEdge;
 
-        if (isRemoveStationUnNormalCase(index)) {
-            return;
-        }
-        nextEdge = edges.get(index + NEXT_INDEX);
-        preEdge = edges.get(index - BEFORE_INDEX);
-        nextEdge.updatePreStationId(preEdge.getStationId());
-        edges.remove(index);
-    }
+        edges.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreStationId(targetEdge.getPreStationId()));
 
-    private boolean isRemoveStationUnNormalCase(int index) {
-        Edge nextEdge;
-        if (index == FIRST_INDEX && index == edges.size() - 1) {
-            edges.remove(index);
-            return true;
-        }
-        if (index == FIRST_INDEX) {
-            nextEdge = edges.get(SECOND_INDEX);
-            nextEdge.updatePreStationId(null);
-            edges.remove(index);
-            return true;
-        }
-        if (index == edges.size() - 1) {
-            edges.remove(index);
-            return true;
-        }
-        return false;
+        edges.remove(targetEdge);
     }
 
     public List<Long> getEdgeIds() {
-        return this.edges.stream()
+        return getSortedEdges()
+                .stream()
                 .mapToLong(Edge::getStationId)
                 .boxed()
                 .collect(Collectors.toList());
+    }
+
+    public Set<Edge> getEdges() {
+        return edges;
     }
 }

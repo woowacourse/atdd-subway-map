@@ -9,8 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Edge;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.dto.LineRequest;
 import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.EdgeCreateRequest;
+import wooteco.subway.admin.exception.DuplicateLineException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
@@ -20,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +38,7 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L,"비내리는호남선",  LocalTime.of(05, 30), LocalTime.of(22, 30),5, "bg-yellow-700");
+        line = new Line(1L, "비내리는호남선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-yellow-700");
         lineService = new LineService(lineRepository, stationRepository);
 
         line.addEdge(new Edge(null, 1L, 10, 10));
@@ -47,10 +49,12 @@ public class LineServiceTest {
     @DisplayName("노선 맨 앞에 역을 추가했을때")
     @Test
     void addEdgeAtTheFirstOfLine() {
-        EdgeCreateRequest request = new EdgeCreateRequest("", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
+        when(stationRepository.findIdByName("")).thenReturn(Optional.empty());
+        when(stationRepository.findIdByName("까치산역")).thenReturn(Optional.of(4L));
+
+        EdgeCreateRequest request = new EdgeCreateRequest("", "까치산역", 10, 10);
         lineService.addEdge(line.getId(), request);
 
         assertThat(line.getEdgeIds()).hasSize(4);
@@ -66,8 +70,8 @@ public class LineServiceTest {
         EdgeCreateRequest request = new EdgeCreateRequest("강남역", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findByName("강남역")).thenReturn(Optional.of(new Station(1L, "강남역")));
-        when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
+        when(stationRepository.findIdByName("강남역")).thenReturn(Optional.of(1L));
+        when(stationRepository.findIdByName("까치산역")).thenReturn(Optional.of(4L));
 
         lineService.addEdge(line.getId(), request);
 
@@ -84,8 +88,8 @@ public class LineServiceTest {
         EdgeCreateRequest request = new EdgeCreateRequest("삼성역", "까치산역", 10, 10);
 
         when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-        when(stationRepository.findByName("삼성역")).thenReturn(Optional.of(new Station(3L, "삼성역")));
-        when(stationRepository.findByName("까치산역")).thenReturn(Optional.of(new Station(4L, "까치산역")));
+        when(stationRepository.findIdByName("삼성역")).thenReturn(Optional.of(3L));
+        when(stationRepository.findIdByName("까치산역")).thenReturn(Optional.of(4L));
 
         lineService.addEdge(line.getId(), request);
 
@@ -139,5 +143,16 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.findStationsByLineId(1L);
 
         assertThat(lineResponse.getTitle()).isEqualTo("비내리는호남선");
+    }
+
+    @DisplayName("중복되는 이름의 노선을 추가하려고 하는 경우 예외가 발생하는지 테스트")
+    @Test
+    void lineDuplicationTest() {
+        when(lineRepository.findByTitle(any())).thenReturn(Optional.ofNullable(line));
+
+        LineRequest lineRequest = new LineRequest("비내리는호남선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-yellow-700");
+        assertThatThrownBy(() -> lineService.save(lineRequest))
+                .isInstanceOf(DuplicateLineException.class)
+                .hasMessageStartingWith("노선명이 중복됩니다");
     }
 }
