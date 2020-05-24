@@ -1,15 +1,18 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.request;
 
-public class LineStationCreateRequest {
+import javax.validation.constraints.NotNull;
+
+public class EdgeCreateRequest {
     private Long preStationId;
+    @NotNull(message = "다음 역을 입력해주세요.")
     private Long stationId;
     private int distance;
     private int duration;
 
-    public LineStationCreateRequest() {
+    private EdgeCreateRequest() {
     }
 
-    public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
+    public EdgeCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
@@ -31,4 +34,5 @@ public class LineStationCreateRequest {
     public int getDuration() {
         return duration;
     }
+
 }

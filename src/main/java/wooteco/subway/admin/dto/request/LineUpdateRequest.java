@@ -1,20 +1,15 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.request;
 
 import wooteco.subway.admin.domain.Line;
 
 import java.time.LocalTime;
 
-public class LineRequest {
-    private String name;
+public class LineUpdateRequest {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
 
-    public LineRequest() {
-    }
-
-    public String getName() {
-        return name;
+    private LineUpdateRequest() {
     }
 
     public LocalTime getStartTime() {
@@ -30,6 +25,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
+        return Line.toUpdatedLine(startTime, endTime, intervalTime);
     }
 }

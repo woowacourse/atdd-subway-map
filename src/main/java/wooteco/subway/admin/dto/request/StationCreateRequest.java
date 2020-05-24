@@ -1,10 +1,13 @@
-package wooteco.subway.admin.dto;
+package wooteco.subway.admin.dto.request;
 
 
 import wooteco.subway.admin.domain.Station;
 
 public class StationCreateRequest {
     private String name;
+
+    private StationCreateRequest() {
+    }
 
     public String getName() {
         return name;

@@ -9,7 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.admin.dto.response.LineResponse;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -20,24 +21,24 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+
+    public static RequestSpecification given() {
+        return RestAssured.given().log().all();
+    }
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
     }
 
-    public static RequestSpecification given() {
-        return RestAssured.given().log().all();
-    }
-
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
-        // when
+        // when : 추가요청
         createLine("신분당선");
         createLine("1호선");
         createLine("2호선");
@@ -46,7 +47,7 @@ public class LineAcceptanceTest {
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
 
-        // when
+        // when : 조회 요청
         LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
@@ -55,7 +56,7 @@ public class LineAcceptanceTest {
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
 
-        // when
+        // when : 수정 요청
         LocalTime startTime = LocalTime.of(8, 00);
         LocalTime endTime = LocalTime.of(22, 00);
         updateLine(line.getId(), startTime, endTime);
@@ -64,7 +65,7 @@ public class LineAcceptanceTest {
         assertThat(updatedLine.getStartTime()).isEqualTo(startTime);
         assertThat(updatedLine.getEndTime()).isEqualTo(endTime);
 
-        // when
+        // when : 제거
         deleteLine(line.getId());
         // then
         List<LineResponse> linesAfterDelete = getLines();
@@ -73,15 +74,16 @@ public class LineAcceptanceTest {
 
     private LineResponse getLine(Long id) {
         return given().when().
-                        get("/lines/" + id).
+                get("/lines/" + id).
                 then().
-                        log().all().
-                        extract().as(LineResponse.class);
+                log().all().
+                extract().as(LineResponse.class);
     }
 
     private void createLine(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
+        params.put("bgColor", "bg-green-500");
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
@@ -90,9 +92,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 post("/lines").
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
     }
@@ -107,9 +109,9 @@ public class LineAcceptanceTest {
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 accept(MediaType.APPLICATION_JSON_VALUE).
-        when().
+                when().
                 put("/lines/" + id).
-        then().
+                then().
                 log().all().
                 statusCode(HttpStatus.OK.value());
     }
@@ -117,9 +119,9 @@ public class LineAcceptanceTest {
     private List<LineResponse> getLines() {
         return
                 given().
-                when().
+                        when().
                         get("/lines").
-                then().
+                        then().
                         log().all().
                         extract().
                         jsonPath().getList(".", LineResponse.class);
