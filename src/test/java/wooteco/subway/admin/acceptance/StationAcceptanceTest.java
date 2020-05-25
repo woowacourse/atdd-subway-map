@@ -45,7 +45,7 @@ public class StationAcceptanceTest {
         deleteStation(stations.get(0).getId());
 
         List<StationResponse> stationsAfterDelete = getStations();
-        assertThat(stationsAfterDelete.size()).isEqualTo(3);
+         assertThat(stationsAfterDelete.size()).isEqualTo(3);
     }
 
     private void createStation(String name) {

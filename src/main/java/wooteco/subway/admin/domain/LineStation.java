@@ -1,20 +1,59 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.util.Objects;
+
+@Table("LineStation")
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
-    private Long stationId;
+    @Id
+    private Long id;
+    @Column("pre_station_id")
     private Long preStationId;
+    @Column("station_id")
+    private Long stationId;
+    @Column("distance")
     private int distance;
+    @Column("duration")
     private int duration;
 
     public LineStation() {
     }
 
-    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+    public LineStation(Long id, Long preStationId, Long stationId, int distance, int duration) {
+        this.id = id;
         this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public LineStation(Long preStationId, Long stationId, int distance, int duration) {
+        this(null, preStationId, stationId, distance, duration);
+    }
+
+    public void updatePreStationId(Long newPreStationId) {
+        this.preStationId = newPreStationId;
+    }
+
+    public boolean isStationId(Long stationId) {
+        return this.stationId.equals(stationId);
+    }
+
+    public boolean isPreStationId(Long preStationId) {
+        if (this.preStationId == null && preStationId == null) {
+            return true;
+        }
+        if (preStationId == null) {
+            return false;
+        }
+        return preStationId.equals(this.preStationId);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getPreStationId() {
@@ -31,9 +70,5 @@ public class LineStation {
 
     public int getDuration() {
         return duration;
-    }
-
-    public void updatePreLineStation(Long preStationId) {
-        this.preStationId = preStationId;
     }
 }
