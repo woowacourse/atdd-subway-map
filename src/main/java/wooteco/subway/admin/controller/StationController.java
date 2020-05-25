@@ -5,36 +5,36 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.StationCreateRequest;
 import wooteco.subway.admin.dto.StationResponse;
-import wooteco.subway.admin.repository.StationRepository;
+import wooteco.subway.admin.service.LineService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
-    private final StationRepository stationRepository;
+    private final LineService lineService;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationController(LineService lineService) {
+        this.lineService = lineService;
     }
 
-    @PostMapping("/stations")
-    public ResponseEntity createStation(@RequestBody StationCreateRequest view) {
-        Station station = view.toStation();
-        Station persistStation = stationRepository.save(station);
+    @GetMapping
+    public ResponseEntity<List<Station>> showStations() {
+        return ResponseEntity.ok().body(lineService.showStations());
+    }
 
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
+        Station persistStation = lineService.save(view.toStation());
         return ResponseEntity
                 .created(URI.create("/stations/" + persistStation.getId()))
                 .body(StationResponse.of(persistStation));
     }
 
-    @GetMapping("/stations")
-    public ResponseEntity showStations() {
-        return ResponseEntity.ok().body(stationRepository.findAll());
-    }
-
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationRepository.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        lineService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,7 +8,7 @@ import wooteco.subway.admin.domain.Station;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJdbcTest
-public class StationRepositoryTest {
+public class StationResponseRepositoryTest {
     @Autowired
     private StationRepository stationRepository;
 
