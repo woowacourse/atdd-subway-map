@@ -1,15 +1,6 @@
 package wooteco.subway.admin.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.admin.dto.LineResponse;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,8 +8,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
+import io.restassured.RestAssured;
+import io.restassured.specification.RequestSpecification;
+import wooteco.subway.admin.dto.LineResponse;
+
+@Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -33,15 +36,14 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all();
     }
 
-
     @DisplayName("지하철 노선을 관리한다")
     @Test
     void manageLine() {
         // when
-        createLine("신분당선");
-        createLine("1호선");
-        createLine("2호선");
-        createLine("3호선");
+        createLine("신분당선", "bg-blue-700");
+        createLine("경의선", "bg-red-200");
+        createLine("경춘선", "bg-yellow-300");
+        createLine("분당선", "bg-green-400");
         // then
         List<LineResponse> lines = getLines();
         assertThat(lines.size()).isEqualTo(4);
@@ -79,12 +81,13 @@ public class LineAcceptanceTest {
                         extract().as(LineResponse.class);
     }
 
-    private void createLine(String name) {
+    private void createLine(String name, String bgColor) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("bgColor", bgColor);
 
         given().
                 body(params).
@@ -99,6 +102,7 @@ public class LineAcceptanceTest {
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
