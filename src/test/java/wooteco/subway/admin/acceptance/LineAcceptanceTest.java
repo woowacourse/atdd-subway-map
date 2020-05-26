@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.LineResponse;
 
 import java.time.LocalTime;
@@ -20,6 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate.sql")
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -50,7 +52,7 @@ public class LineAcceptanceTest {
         LineResponse line = getLine(lines.get(0).getId());
         // then
         assertThat(line.getId()).isNotNull();
-        assertThat(line.getName()).isNotNull();
+        assertThat(line.getTitle()).isNotNull();
         assertThat(line.getStartTime()).isNotNull();
         assertThat(line.getEndTime()).isNotNull();
         assertThat(line.getIntervalTime()).isNotNull();
@@ -72,7 +74,8 @@ public class LineAcceptanceTest {
     }
 
     private LineResponse getLine(Long id) {
-        return given().when().
+        return given()
+                .when().
                         get("/lines/" + id).
                 then().
                         log().all().
@@ -81,10 +84,11 @@ public class LineAcceptanceTest {
 
     private void createLine(String name) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("title", name);
         params.put("startTime", LocalTime.of(5, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", LocalTime.of(23, 30).format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("bgColor", "bg-yellow-700");
 
         given().
                 body(params).
@@ -99,9 +103,11 @@ public class LineAcceptanceTest {
 
     private void updateLine(Long id, LocalTime startTime, LocalTime endTime) {
         Map<String, String> params = new HashMap<>();
+        params.put("title", "4호선");
         params.put("startTime", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("endTime", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
         params.put("intervalTime", "10");
+        params.put("bgColor", "bg-yellow-700");
 
         given().
                 body(params).
@@ -111,25 +117,24 @@ public class LineAcceptanceTest {
                 put("/lines/" + id).
         then().
                 log().all().
-                statusCode(HttpStatus.OK.value());
+                statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private List<LineResponse> getLines() {
-        return
-                given().
+        return given().
                 when().
-                        get("/lines").
+                    get("/lines").
                 then().
-                        log().all().
-                        extract().
-                        jsonPath().getList(".", LineResponse.class);
+                    log().all().
+                    extract().
+                    jsonPath().getList(".", LineResponse.class);
     }
 
     private void deleteLine(Long id) {
         given().
                 when().
-                delete("/lines/" + id).
+                    delete("/lines/" + id).
                 then().
-                log().all();
+                    log().all();
     }
 }

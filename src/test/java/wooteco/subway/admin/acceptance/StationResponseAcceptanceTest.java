@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+public class StationResponseAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -39,10 +39,10 @@ public class StationAcceptanceTest {
         createStation("선릉역");
         createStation("강남역");
 
-        List<StationResponse> stations = getStations();
-        assertThat(stations.size()).isEqualTo(4);
+        List<StationResponse> stationResponses = getStations();
+        assertThat(stationResponses.size()).isEqualTo(4);
 
-        deleteStation(stations.get(0).getId());
+        deleteStation(stationResponses.get(0).getId());
 
         List<StationResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);

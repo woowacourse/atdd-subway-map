@@ -1,44 +1,51 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Table("LINE")
 public class Line {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private Set<Edge> edges = new HashSet<>();
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
+    private String bgColor;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this.name = name;
+    public Line(Long id, String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.bgColor = bgColor;
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, title, startTime, endTime, intervalTime, bgColor);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -53,8 +60,41 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
-        return stations;
+    public List<Edge> getSortedEdges() {
+        if (edges.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Edge> sortedEdges = new ArrayList<>();
+        Edge pivotEdge = searchFirstEdge();
+        sortedEdges.add(pivotEdge);
+        while (isNotLastEdge(pivotEdge)) {
+            pivotEdge = searchNextEdgeOf(pivotEdge);
+            sortedEdges.add(pivotEdge);
+        }
+        return sortedEdges;
+    }
+
+    private Edge searchFirstEdge() {
+        return edges.stream()
+                .filter(edge -> edge.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private boolean isNotLastEdge(Edge edge) {
+        try {
+            searchNextEdgeOf(edge);
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private Edge searchNextEdgeOf(Edge pivotEdge) {
+        return edges.stream()
+                .filter(edge -> edge.getPreStationId() == pivotEdge.getStationId())
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public LocalDateTime getCreatedAt() {
@@ -65,9 +105,13 @@ public class Line {
         return updatedAt;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
+        if (line.getTitle() != null) {
+            this.title = line.getTitle();
         }
         if (line.getStartTime() != null) {
             this.startTime = line.getStartTime();
@@ -78,20 +122,43 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-
-        this.updatedAt = LocalDateTime.now();
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
     }
 
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+    public void addEdge(Edge requestEdge) {
+        edges.stream()
+                .filter(edge -> Objects.equals(edge.getPreStationId(), requestEdge.getPreStationId()))
+                .findAny()
+                .ifPresent(edge -> edge.updatePreStationId(requestEdge.getStationId()));
+
+        edges.add(requestEdge);
     }
 
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+    public void removeEdgeById(Long stationId) {
+        Edge targetEdge = edges.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+        edges.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst()
+                .ifPresent(it -> it.updatePreStationId(targetEdge.getPreStationId()));
+
+        edges.remove(targetEdge);
     }
 
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public List<Long> getEdgeIds() {
+        return getSortedEdges()
+                .stream()
+                .mapToLong(Edge::getStationId)
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    public Set<Edge> getEdges() {
+        return edges;
     }
 }
