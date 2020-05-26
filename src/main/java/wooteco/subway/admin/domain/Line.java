@@ -2,16 +2,13 @@ package wooteco.subway.admin.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 public class Line {
-    public static final long START_STATION = -1L;
-
     @Id
     private Long id;
     private String title;
@@ -21,7 +18,8 @@ public class Line {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String backgroundColor;
-    private Set<LineStation> stations;
+    @Embedded.Empty
+    private LineStations lineStations;
 
     private Line() {
     }
@@ -34,7 +32,7 @@ public class Line {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.backgroundColor = backgroundColor;
-        stations = new HashSet<>();
+        this.lineStations = new LineStations();
     }
 
     public void update(Line line) {
@@ -57,68 +55,24 @@ public class Line {
         this.updatedAt = LocalDateTime.now();
     }
 
-    private LineStation findByPreStationId(Long preStationId) {
-        return stations.stream()
-            .filter(lineStation -> lineStation.getPreStationId().equals(preStationId))
-            .findFirst()
-            .orElseThrow(
-                () -> new IllegalArgumentException("LineStation 을 PreStationId 로 찾을 수 없습니다."));
-    }
-
-    private LineStation findById(Long stationId) {
-        return stations.stream()
-            .filter(lineStation -> lineStation.getStationId().equals(stationId))
-            .findFirst()
-            .orElseThrow(
-                () -> new IllegalArgumentException("LineStation 을 StationId로 찾을 수 없습니다."));
-    }
-
     public void addLineStation(LineStation addLineStation) {
-        if (isSamePreStationIdWith(addLineStation.getPreStationId())) {
-            LineStation updateLineStation = findByPreStationId(addLineStation.getPreStationId());
-            updateLineStation.updatePreLineStation(addLineStation.getStationId());
-        }
-        this.stations.add(addLineStation);
+        lineStations.addLineStation(addLineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation LineStation = findById(stationId);
-
-        if (isSamePreStationIdWith(stationId)) {
-            LineStation nextLineStation = findByPreStationId(LineStation.getStationId());
-            nextLineStation.updatePreLineStation(LineStation.getPreStationId());
-        }
-        this.stations.remove(LineStation);
+        lineStations.removeLineStationById(stationId);
     }
 
     public List<Long> getLineStationIds() {
-        LineStation firstLineStation = findByPreStationId(START_STATION);
-
-        List<Long> stationIds = new ArrayList<>();
-        stationIds.add(firstLineStation.getStationId());
-
-        Long lastStationId = stationIds.get(stationIds.size() - 1);
-
-        while (isSamePreStationIdWith(lastStationId)) {
-            stationIds.add(findByPreStationId(lastStationId).getStationId());
-
-            lastStationId = stationIds.get(stationIds.size() - 1);
-        }
-
-        return stationIds;
+        return lineStations.getLineStationIds();
     }
 
-    private boolean isSamePreStationIdWith(Long stationId) {
-        return stations.stream()
-            .anyMatch(lineStation -> lineStation.getPreStationId().equals(stationId));
+    public boolean isStationsEmpty() {
+        return lineStations.isStationsEmpty();
     }
 
     public boolean isEqualTitle(String title) {
         return this.title.equals(title);
-    }
-
-    public boolean isStationsEmpty() {
-        return stations.isEmpty();
     }
 
     public Long getId() {
@@ -142,7 +96,7 @@ public class Line {
     }
 
     public Set<LineStation> getStations() {
-        return stations;
+        return lineStations.getStations();
     }
 
     public LocalDateTime getCreatedAt() {

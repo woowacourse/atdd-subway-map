@@ -16,7 +16,7 @@ public class LineStation {
         this.distance = distance;
         this.duration = duration;
         this.preStationId = Optional.ofNullable(preStationId)
-            .orElse(Line.START_STATION);
+            .orElse(LineStations.START_STATION);
     }
 
     public Long getPreStationId() {
