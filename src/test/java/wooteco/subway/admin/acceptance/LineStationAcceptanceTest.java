@@ -72,28 +72,29 @@ public class LineStationAcceptanceTest {
 
         List<StationResponse> stations = getStations();
         assertThat(stations.size()).isEqualTo(4);
-        StationResponse station1 = stations.get(0);
-        StationResponse station2 = stations.get(1);
-        StationResponse station3 = stations.get(2);
+        StationResponse mongchontoseong = stations.get(0);
+        StationResponse jamsil = stations.get(1);
+        StationResponse seokchon = stations.get(2);
 
-        addStation(lineEight.getId(), null, station1.getId());
-        addStation(lineEight.getId(), station1.getId(), station2.getId());
-        addStation(lineEight.getId(), station2.getId(), station3.getId());
+        addStation(lineEight.getId(), null, mongchontoseong.getId());
+        addStation(lineEight.getId(), mongchontoseong.getId(), jamsil.getId());
+        addStation(lineEight.getId(), jamsil.getId(), seokchon.getId());
 
-        LineResponse lineResponse = getLine(lineEight.getId());
+        assertThat(
+            isPresentIn(getLine(lineEight.getId()), jamsil.getId())
+        ).isTrue();
 
-        assertThat(lineResponse.getStations().stream()
+        removeStation(lineEight.getId(), jamsil.getId());
+
+        assertThat(
+            isPresentIn(getLine(lineEight.getId()), jamsil.getId())
+        ).isFalse();
+    }
+
+    private boolean isPresentIn(LineResponse lineResponse, Long stationId) {
+        return lineResponse.getStations().stream()
             .map(StationResponse::getId)
-            .anyMatch(id -> id.equals(station2.getId()))).isTrue();
-
-        removeStation(lineEight.getId(), station2.getId());
-        System.out.println("<<<<<4");
-
-        LineResponse lineStationsAfterDelete = getLine(lineEight.getId());
-
-        assertThat(lineStationsAfterDelete.getStations().stream()
-            .map(StationResponse::getId)
-            .anyMatch(id -> id.equals(station2.getId()))).isFalse();
+            .anyMatch(id -> id.equals(stationId));
     }
 
     private void createLine(String name) {

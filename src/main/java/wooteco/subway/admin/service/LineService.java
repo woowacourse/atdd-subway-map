@@ -2,11 +2,11 @@ package wooteco.subway.admin.service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
@@ -36,6 +36,7 @@ public class LineService {
         return lineRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         List<LineResponseCreateDto> lineResponseCreateDtos = showLines().stream().
             map(line -> LineResponseCreateDto.of(line, getStations(line)))
@@ -44,54 +45,63 @@ public class LineService {
         return LineResponse.listOf(lineResponseCreateDtos);
     }
 
+    @Transactional
     public void updateLine(Long id, Line line) {
         validateTitleWhenUpdate(id, line);
 
-        Line persistLine = findById(id).orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+        Line persistLine = findById(id);
+
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addLineStation(Long id, LineStationCreateRequest request) {
-        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존지하지 않습니다"));
+        Line line = findById(id);
         LineStation lineStation = request.toLineStation();
 
         line.addLineStation(lineStation);
         lineRepository.save(line);
     }
 
+    @Transactional
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
+        Line line = findById(lineId);
 
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLineWithStationsById(Long id) {
-        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("해당 라인아이디가 존지하지 않습니다"));
+        Line line = findById(id);
         return LineResponse.of(line, getStations(line));
     }
 
-    private Optional<Line> findById(Long id) {
-        return lineRepository.findById(id);
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다"));
     }
 
+    @Transactional(readOnly = true)
     public void validateTitle(Line requestLine) {
-        lineRepository.findByTitle(requestLine.getTitle()).ifPresent(line -> {
-            throw new IllegalArgumentException("존재하는 이름입니다");
-        });
+        lineRepository.findByTitle(requestLine.getTitle())
+            .ifPresent(line -> {
+                throw new IllegalArgumentException("존재하는 이름입니다");
+            });
     }
 
+    @Transactional(readOnly = true)
     public void validateTitleWhenUpdate(Long id, Line lineRequest) {
-        Line lineById = findById(id).orElseThrow(RuntimeException::new);
-        if (lineById.getTitle().equals(lineRequest.getTitle())) {
-            return;
+        Line line = findById(id);
+        if (!line.isEqualTitle(lineRequest.getTitle())) {
+            validateTitle(line);
         }
-        validateTitle(lineById);
     }
 
     private Set<Station> getStations(Line line) {
