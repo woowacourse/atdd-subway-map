@@ -96,6 +96,7 @@ public class LineController {
         LineStationCreateRequest lineStationCreateRequest) {
         lineService.addLineStation(id, lineStationCreateRequest);
 
+        System.out.println("TWICE!!! " + lineStationCreateRequest.toLineStation().toString());
         return ResponseEntity
             .ok()
             .body(LineStationResponse.of(lineStationCreateRequest.toLineStation()));

@@ -57,9 +57,6 @@ const api = (() => {
     getAll() {
       return requestWithJsonData(`/lines`)
     },
-    getAllDetail() {
-      return requestWithJsonData(`/lines/detail`)
-    },
     addLineStation(lineId, lineStationCreateRequestView) {
       return requestWithJsonData(`/lines/${lineId}/stations`, METHOD.POST(lineStationCreateRequestView))
     },

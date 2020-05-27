@@ -29,8 +29,8 @@ export const subwayLineInfoTemplate = line =>
     <div class="w-1/2 p-2 text-center text-gray-800 bg-gray-100">${line.intervalTime}분</div>
   </div>`;
 
-export const optionTemplate = value =>
-  `<option>${value}</option>`;
+export const optionTemplate = line =>
+  `<option data-id="${line.id}">${line.name}</option>`;
 
 const navTemplate = `<nav class="flex items-center justify-between flex-wrap bg-yellow-500 p-4">
   <div class="flex items-center flex-shrink-0 text-gray-800 w-full">
@@ -63,7 +63,7 @@ export const subwayLinesItemTemplate = line => {
     .join("");
     return `<div class="inline-block w-1/2 px-2">
             <div class="rounded-sm w-full slider-list">
-              <div class="border ${line.bgColor} lint-title px-4 py-1">${line.title}</div>
+              <div class="border ${line.color} lint-title px-4 py-1">${line.name}</div>
               <div class="overflow-y-auto height-90">
               ${stationsTemplate}
               </div>

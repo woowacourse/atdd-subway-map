@@ -53,14 +53,15 @@ function AdminEdge() {
   const onCreateLineStationHandler = async event => {
     event.preventDefault();
     const stations = await api.station.getAll();
-    const preStation = stations.find(station => station.name === $departStationName.value);
-    const station = stations.find(station => station.name === $arrivalStationName.value);
+    const preStationData = stations.find(station => station.name === $departStationName.value);
+    const stationData = stations.find(station => station.name === $arrivalStationName.value);
     const request = {
-      preStationId: preStation ? preStation.id : 0,
-      stationId: station ? station.id : 0,
+      preStation: preStationData ? preStationData.id : 0,
+      station: stationData ? stationData.id : 0,
       distance: $distanceField.value,
       duration: $durationField.value
     }
+    console.log($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset);
     api.line.addLineStation($stationSelectOptions.options[$stationSelectOptions.selectedIndex].dataset.id, request).then(data => {
       if (data.error) throw data;
       createSubwayEdgeModal.toggle();
