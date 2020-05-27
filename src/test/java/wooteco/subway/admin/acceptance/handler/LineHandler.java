@@ -106,8 +106,12 @@ public class LineHandler {
 
     public void addLineStation(Long lineId, Long preStationId, Long stationId) {
         Map<String, String> params = new HashMap<>();
-        params.put("preStationId", preStationId.toString());
-        params.put("stationId", stationId.toString());
+        if(preStationId == null) {
+            params.put("preStation",null);
+        }else {
+            params.put("preStation", preStationId.toString());
+        }
+        params.put("station", stationId.toString());
         params.put("distance", "10");
         params.put("duration", "10");
 
@@ -116,7 +120,7 @@ public class LineHandler {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             accept(MediaType.APPLICATION_JSON_VALUE).
             when().
-            post("/line/" + lineId + "/stations").
+            post("/lines/" + lineId + "/stations").
             then().
             log().all().
             statusCode(HttpStatus.OK.value());
@@ -125,7 +129,7 @@ public class LineHandler {
     public void deleteLineStation(Long lineId, Long stationId) {
         given().
                 when().
-                delete("/line/" + lineId + "/station/" + stationId).
+                delete("/lines/" + lineId + "/stations/" + stationId).
                 then().
                 log().all();
     }

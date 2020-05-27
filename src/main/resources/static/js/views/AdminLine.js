@@ -62,7 +62,7 @@ function AdminLine() {
         const isNameDiv = $target.classList.contains("line-name");
         if (isNameDiv) {
             const lineId = $target.closest(".subway-line-item").querySelector(".line-id").textContent;
-            api.line.getDetail(lineId)
+            api.line.get(lineId)
                 .then(data => {
                     const selectedSubwayInfo = {
                         startTime: data.startTime,
@@ -85,7 +85,7 @@ function AdminLine() {
             $createSubwayLineButton.classList.add("update-button");
 
             lineId = $target.closest(".subway-line-item").querySelector(".line-id").textContent;
-            api.line.getDetail(lineId)
+            api.line.get(lineId)
                 .then(data => {
                     $subwayLineNameInput.value = data.name;
                     $subwayLineColorInput.value = data.color;
@@ -152,7 +152,7 @@ function AdminLine() {
     };
 
     const initDefaultSubwayLines = () => {
-            api.line.get()
+            api.line.getAll()
                 .then(data => {
                     data.map(line => {
                         $subwayLineList.insertAdjacentHTML(

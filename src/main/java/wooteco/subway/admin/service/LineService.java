@@ -38,11 +38,11 @@ public class LineService {
         return lineRepository.existsByName(name);
     }
 
-    public List<Line> showLines() {
+    public List<Line> findLines() {
         return lineRepository.findAll();
     }
 
-    public Line showLine(Long id) {
+    public Line findLine(Long id) {
         return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
@@ -71,7 +71,7 @@ public class LineService {
 
      public LineResponse findLineWithStationsById(Long id) {
          Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-         Set<Station> stations = toStations(line.findLineStationsId());
+         Set<Station> stations = toStations(line.getStationIds());
          return LineResponse.of(line, stations);
      }
 

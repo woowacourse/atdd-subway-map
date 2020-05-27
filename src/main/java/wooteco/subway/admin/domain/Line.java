@@ -1,6 +1,9 @@
 package wooteco.subway.admin.domain;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -14,28 +17,25 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
     private String color;
-    private Set<LineStation> lineStations;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
+    @Embedded.Empty
+    private LineStations stations = LineStations.empty();
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-        String color) {
-        this.id = id;
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.color = color;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.lineStations = new LinkedHashSet<>();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime,
-        String color) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String color) {
         this(null, name, startTime, endTime, intervalTime, color);
     }
 
@@ -59,12 +59,8 @@ public class Line {
         return intervalTime;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public Set<LineStation> getLineStations() {
-        return lineStations;
+    public Set<LineStation> getStations() {
+        return stations.getStations();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -73,6 +69,10 @@ public class Line {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void update(Line line) {
@@ -88,56 +88,20 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
-        if (line.getColor() != null) {
+        if(line.getColor() != null) {
             this.color = line.getColor();
         }
-        if (line.getLineStations() != null) {
-            this.lineStations = line.getLineStations();
-        }
-
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-
-        Long preStationId = lineStation.getPreStationId();
-        Long stationId = lineStation.getStationId();
-
-        for (LineStation selectedLineStation : lineStations) {
-            if (selectedLineStation.isSamePreStationId(preStationId) && !selectedLineStation.isSameStationId(stationId)) {
-                selectedLineStation.changePreStationById(stationId);
-                break;
-            }
-        }
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation targetLineStation = lineStations.stream()
-                .filter(it -> it.isSameStationId(stationId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-
-        lineStations.stream()
-                .filter(it -> it.isSamePreStationId(stationId))
-                .findFirst()
-                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
-
-        lineStations.remove(targetLineStation);
+        stations.removeById(stationId);
     }
 
-    public List<Long> findLineStationsId() {
-        Map<Long, Long> idMap = new HashMap<>();
-        for (LineStation lineStation : lineStations) {
-            idMap.put(lineStation.getPreStationId(), lineStation.getStationId());
-        }
-        List<Long> stations = new ArrayList<>();
-        Long preStationId = 0L;
-        while (idMap.containsKey(preStationId)) {
-            Long stationId = idMap.get(preStationId);
-            stations.add(stationId);
-            preStationId = stationId;
-        }
-        return stations;
+    public List<Long> getStationIds() {
+        return stations.getStationIds();
     }
 }

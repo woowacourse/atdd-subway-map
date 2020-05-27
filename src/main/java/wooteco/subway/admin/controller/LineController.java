@@ -38,7 +38,7 @@ public class LineController {
         Line line = lineRequest.toLine();
         try {
             Line persistLine = lineService.save(line);
-            Set<Station> stations = lineService.toStations(persistLine.findLineStationsId());
+            Set<Station> stations = lineService.toStations(persistLine.getStationIds());
 
             return ResponseEntity
                     .created(URI.create("/lines/" + persistLine.getId()))
@@ -51,11 +51,11 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> persistLines = lineService.showLines();
+    public ResponseEntity<List<LineResponse>> findLines() {
+        List<Line> persistLines = lineService.findLines();
         Map<Line, Set<Station>> lineWithStations = persistLines.stream()
             .collect(Collectors.toMap(Function.identity(),
-                persistLine -> lineService.toStations(persistLine.findLineStationsId())));
+                persistLine -> lineService.toStations(persistLine.getStationIds())));
 
         return ResponseEntity
             .ok()
@@ -63,9 +63,9 @@ public class LineController {
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line persistLine = lineService.showLine(id);
-        Set<Station> stations = lineService.toStations(persistLine.findLineStationsId());
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        Line persistLine = lineService.findLine(id);
+        Set<Station> stations = lineService.toStations(persistLine.getStationIds());
 
         return ResponseEntity
             .ok()
@@ -74,10 +74,10 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineService.showLine(id);
+        Line line = lineService.findLine(id);
         line.update(lineRequest.toLine());
         lineService.updateLine(id, line);
-        Set<Station> stations = lineService.toStations(line.findLineStationsId());
+        Set<Station> stations = lineService.toStations(line.getStationIds());
 
 
         return ResponseEntity
@@ -101,7 +101,7 @@ public class LineController {
             .body(LineStationResponse.of(lineStationCreateRequest.toLineStation()));
     }
 
-    @DeleteMapping("/lines/{lineId}/station/{stationId}")
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
     public ResponseEntity<Void> deleteLineStation(@PathVariable Long lineId,
         @PathVariable Long stationId) {
         lineService.removeLineStation(lineId, stationId);

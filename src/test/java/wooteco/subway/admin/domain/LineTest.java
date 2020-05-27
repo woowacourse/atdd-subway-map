@@ -16,13 +16,13 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "blue");
-        line.addLineStation(new LineStation(0L, 2L, 10, 10));
+        line.addLineStation(new LineStation(null, 2L, 10, 10));
         line.addLineStation(new LineStation(2L, 3L, 10, 10));
     }
 
     @Test
     void getLineStations() {
-		List<Long> stationIds = line.findLineStationsId();
+		List<Long> stationIds = line.getStationIds();
 
         assertThat(stationIds.size()).isEqualTo(2);
         assertThat(stationIds.get(0)).isEqualTo(2L);
@@ -34,13 +34,13 @@ public class LineTest {
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getLineStations()).hasSize(1);
+        assertThat(line.getStations()).hasSize(1);
     }
 
     @Test
     void removeLineStationWithException() {
         line.removeLineStationById(1L);
 
-        assertThat(line.getLineStations()).hasSize(2);
+        assertThat(line.getStations()).hasSize(2);
     }
 }

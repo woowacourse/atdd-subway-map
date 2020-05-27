@@ -80,7 +80,7 @@ public class LineStationAcceptanceTest {
         lineHandler.createLine("3호선", "green");
 
         //when
-        lineHandler.addLineStation(1L, 0L, 1L);
+        lineHandler.addLineStation(1L, null, 1L);
         lineHandler.addLineStation(1L, 1L, 2L);
         //then
         Set<Station> stations = lineHandler.getLine(1L).getStations();
