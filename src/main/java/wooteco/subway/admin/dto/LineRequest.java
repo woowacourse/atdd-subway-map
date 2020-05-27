@@ -2,12 +2,20 @@ package wooteco.subway.admin.dto;
 
 import java.time.LocalTime;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.Range;
+
 import wooteco.subway.admin.domain.Line;
 
 public class LineRequest {
+    @NotEmpty(message = "Line title 값이 비었습니다.")
+    @Pattern(regexp = "\\S", message = "공백이 불가능합다")
     private String title;
     private LocalTime startTime;
     private LocalTime endTime;
+    @Range(min = 1, message = "최소 배차 간격은 1 이상입니다.")
     private int intervalTime;
     private String backgroundColor;
 

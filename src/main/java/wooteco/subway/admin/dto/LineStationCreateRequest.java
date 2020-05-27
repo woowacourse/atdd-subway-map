@@ -1,11 +1,20 @@
 package wooteco.subway.admin.dto;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Range;
+
 import wooteco.subway.admin.domain.LineStation;
 
 public class LineStationCreateRequest {
+
     private Long preStationId;
+    @NotNull
+    @Range(min = 1, message = "stationId 최솟값은 1 입니다")
     private Long stationId;
+    @Range(min = 1, message = "distance 최솟값은 1 입니다")
     private int distance;
+    @Range(min = 1, message = "duration 최솟값은 1 입니다")
     private int duration;
 
     public LineStationCreateRequest() {

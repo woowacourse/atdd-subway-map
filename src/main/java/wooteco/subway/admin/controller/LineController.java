@@ -3,6 +3,8 @@ package wooteco.subway.admin.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +32,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
+        System.out.println(lineRequest.toString() + lineRequest.getStartTime());
         Line line = lineService.save(lineRequest.toLine());
         LineResponse lineResponse = lineService.findLineWithStationsById(line.getId());
 
@@ -48,7 +51,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @Valid @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest.toLine());
 
         return ResponseEntity.ok().build();
@@ -63,7 +66,7 @@ public class LineController {
 
     @PostMapping("/{id}/station")
     public ResponseEntity<LineResponse> addStation(@PathVariable Long id,
-        @RequestBody LineStationCreateRequest LineStationCreateRequest) {
+        @Valid @RequestBody LineStationCreateRequest LineStationCreateRequest) {
         lineService.addLineStation(id, LineStationCreateRequest);
 
         return ResponseEntity.ok(lineService.findLineWithStationsById(id));

@@ -49,7 +49,9 @@ function AdminLine() {
                             )
                         })
                     } else {
-                        alert("중복된 이름입니다.");
+                        res.text().then(data => {
+                            alert(data)
+                        })
                     }
                 }
             );
@@ -121,7 +123,7 @@ function AdminLine() {
         fetch(url, editRequest)
             .then(res => {
                     if (!res.ok) {
-                        alert("중복된 이름입니다.");
+                        res.text().then(data => alert(data))
                     }
                 }
             );
