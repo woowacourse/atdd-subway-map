@@ -45,14 +45,12 @@ public class LineStation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineStation that = (LineStation) o;
-        return distance == that.distance &&
-                duration == that.duration &&
-                Objects.equals(preStation, that.preStation) &&
+        return Objects.equals(preStation, that.preStation) &&
                 Objects.equals(station, that.station);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(preStation, station, distance, duration);
+        return Objects.hash(preStation, station);
     }
 }
