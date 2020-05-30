@@ -19,18 +19,10 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationCreateRequest view) {
-        try {
-            Station station = stationService.save(view.getName());
-            return ResponseEntity
-                    .created(URI.create("/stations/" + station.getId()))
-                    .body(StationResponse.of(station));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .build();
-        }
-
-
+        Station station = stationService.save(view.getName());
+        return ResponseEntity
+                .created(URI.create("/stations/" + station.getId()))
+                .body(StationResponse.of(station));
     }
 
     @GetMapping("/stations")
@@ -42,13 +34,8 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        try {
-            stationService.deleteStationById(id);
-            return ResponseEntity.noContent()
-                    .build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .build();
-        }
+        stationService.deleteStationById(id);
+        return ResponseEntity.noContent()
+                .build();
     }
 }

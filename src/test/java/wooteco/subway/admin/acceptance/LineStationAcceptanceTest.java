@@ -57,9 +57,9 @@ public class LineStationAcceptanceTest {
         createStation("잠실역");
         createStation("잠실새내역");
         createStation("종합운동장역");
-        LineResponse line = createLine("2호선");
+        LineResponse line = createLine("1호선");
         // when
-        registerStation(line.getId());
+        registerStation();
         // then
         getLine(line.getId());
         //when & then
@@ -76,7 +76,7 @@ public class LineStationAcceptanceTest {
                 get("/lines/" + lineId)
                 .then()
                 .log().all().
-                statusCode(HttpStatus.NOT_FOUND.value());
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private void deleteStationOfLine(long lineId) {
@@ -134,11 +134,11 @@ public class LineStationAcceptanceTest {
                 .extract().as(LineResponse.class);
     }
 
-    private void registerStation(Long id) {
-
+    private void registerStation() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("preStationName", "종합운동장역");
+        params.put("arrivalStationName", "잠실새내역");
         params.put("distance", "10");
         params.put("duraction", "10");
         given().
@@ -146,7 +146,7 @@ public class LineStationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
 
         when().
-                post("/lines/" + id + "/stations").
+                post("/lines/stations?name=1호선").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
