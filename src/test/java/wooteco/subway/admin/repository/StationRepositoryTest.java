@@ -3,9 +3,13 @@ package wooteco.subway.admin.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import wooteco.subway.admin.domain.Station;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJdbcTest
 public class StationRepositoryTest {
@@ -14,10 +18,26 @@ public class StationRepositoryTest {
 
     @Test
     void save() {
-        Station station = new Station("강남역");
+        String name = "강남역";
+        Station station = new Station(name);
 
-        Station persistStation = stationRepository.save(station);
+        Station stationPersist = stationRepository.save(station);
 
-        assertThat(persistStation.getId()).isNotNull();
+        assertThat(stationPersist.getId()).isNotNull();
+    }
+
+    @Test
+    void saveAlreadyExists() {
+        String name = "강남역";
+        Station stationFirstSaved = stationRepository.save(new Station(name));
+        System.out.println(stationFirstSaved.getId());
+        assertThatThrownBy(() -> stationRepository.save(new Station(name)))
+                .isInstanceOf(DbActionExecutionException.class);
+    }
+
+    @Test
+    void findByNameNotExist() {
+        Station stationNotExist = stationRepository.findByName("존재하지않는역");
+        assertThat(stationNotExist).isNull();
     }
 }

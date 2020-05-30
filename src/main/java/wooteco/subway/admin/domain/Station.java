@@ -3,6 +3,7 @@ package wooteco.subway.admin.domain;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Station {
     @Id

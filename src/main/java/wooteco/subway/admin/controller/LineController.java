@@ -1,6 +1,7 @@
 package wooteco.subway.admin.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
@@ -32,12 +33,12 @@ public class LineController {
                 .body(LineResponse.of(line));
     }
 
+    @Transactional
     @PostMapping("/lines/stations")
     public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationDto lineStationDto, @RequestParam String name) {
         Line line = lineService.findByName(name);
         Station preStation = stationService.findByName(lineStationDto.getPreStationName());
-        //todo: check
-        Station arrivalStation = stationService.findByName(lineStationDto.getArrivalStationName());
+        Station arrivalStation = stationService.save(lineStationDto.getArrivalStationName());
         LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
 
         lineService.addLineStation(line.getId(), lineStationCreateRequest);

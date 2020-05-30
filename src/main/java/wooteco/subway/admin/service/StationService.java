@@ -1,12 +1,15 @@
 package wooteco.subway.admin.service;
 
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
+import wooteco.subway.admin.error.AlreadyExistException;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,8 +22,12 @@ public class StationService {
     }
 
     public Station save(String name) {
-        Station station = new Station(name);
-        return stationRepository.save(station);
+        try {
+            return stationRepository.save(new Station(name));
+        } catch (DbActionExecutionException e) {
+            throw new AlreadyExistException(String.format("역 이름 %s이 이미 저장돼있습니다.", name));
+        }
+
     }
 
     public Iterable<Station> findAllOfStations() {

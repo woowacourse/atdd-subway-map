@@ -54,12 +54,15 @@ public class LineStationAcceptanceTest {
     @Test
     void manageLineStation() {
         // given - and
-        createStation("잠실역");
-        createStation("잠실새내역");
-        createStation("종합운동장역");
-        LineResponse line = createLine("1호선");
+        String lineName = "1호선";
+        String stationNameFrist = "잠실역";
+        String stationNameSecond = "잠실새내역";
+        String stationNameThird = "종합운동장역";
+        createStation(stationNameFrist);
+        createStation(stationNameSecond);
+        LineResponse line = createLine(lineName);
         // when
-        registerStation();
+        registerStation(lineName, stationNameSecond, stationNameThird);
         // then
         getLine(line.getId());
         //when & then
@@ -134,11 +137,11 @@ public class LineStationAcceptanceTest {
                 .extract().as(LineResponse.class);
     }
 
-    private void registerStation() {
+    private void registerStation(String lineName, String preStationName, String arrivalStationName) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        params.put("preStationName", "종합운동장역");
-        params.put("arrivalStationName", "잠실새내역");
+        params.put("name", lineName);
+        params.put("preStationName", preStationName);
+        params.put("arrivalStationName", arrivalStationName);
         params.put("distance", "10");
         params.put("duraction", "10");
         given().
