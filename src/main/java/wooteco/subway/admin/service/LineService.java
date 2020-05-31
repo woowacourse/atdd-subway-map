@@ -29,7 +29,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, Line line) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = findById(id);
         persistLine.update(line);
         lineRepository.save(persistLine);
     }
@@ -42,7 +42,7 @@ public class LineService {
     }
 
     public void removeLineStation(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findById(lineId);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
     }
@@ -53,9 +53,5 @@ public class LineService {
 
     public void delete(Line line) {
         lineRepository.delete(line);
-    }
-
-    public Line findByName(String name) {
-        return lineRepository.findByName(name);
     }
 }
