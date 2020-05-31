@@ -37,20 +37,20 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse withoutStations(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getBgColor(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
     }
 
     public static List<LineResponse> listOf(List<Line> lines) {
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::withoutStations)
                 .collect(Collectors.toList());
     }
 
     public static LineResponse withStations(Line line, Set<Station> stations) {
-        LineResponse of = of(line);
-        of.stations = stations;
-        return of;
+        LineResponse lineResponse = withoutStations(line);
+        lineResponse.stations = stations;
+        return lineResponse;
     }
 
     public Long getId() {

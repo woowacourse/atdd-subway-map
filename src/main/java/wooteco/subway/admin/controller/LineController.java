@@ -30,11 +30,12 @@ public class LineController {
         line = lineService.save(line);
         return ResponseEntity
                 .created(URI.create("/lines/" + line.getId()))
-                .body(LineResponse.of(line));
+                .body(LineResponse.withoutStations(line));
     }
 
     @Transactional
     @PostMapping("/lines/stations")
+    //todo: change rdoto
     public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationDto lineStationDto, @RequestParam String name) {
         Line line = lineService.findByName(name);
         Station preStation = stationService.findByName(lineStationDto.getPreStationName());
@@ -51,14 +52,21 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = findLineWithStations();
+        List<LineResponse> lineResponses = new ArrayList<>();
+        List<Line> lines = lineService.getLines();
+        for (Line line : lines) {
+            Set<Station> stations = stationService.findAllOf(line);
+            LineResponse lineResponse = LineResponse.withStations(line, stations);
+            lineResponses.add(lineResponse);
+        }
+
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        return ResponseEntity.ok().body(LineResponse.withoutStations(line));
     }
 
     @GetMapping("/lines/{id}/stations")
@@ -77,7 +85,7 @@ public class LineController {
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toLine();
         lineService.updateLine(id, line);
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        return ResponseEntity.ok().body(LineResponse.withoutStations(line));
     }
 
     @DeleteMapping("/lines/{id}")
@@ -85,15 +93,5 @@ public class LineController {
         Line line = lineService.findById(id);
         lineService.delete(line);
         return ResponseEntity.noContent().build();
-    }
-
-    private List<LineResponse> findLineWithStations() {
-        List<Line> lines = lineService.getLines();
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Line line : lines) {
-            LineResponse lineResponse = lineService.findLineWithStationsById(line.getId());
-            lineResponses.add(lineResponse);
-        }
-        return lineResponses;
     }
 }

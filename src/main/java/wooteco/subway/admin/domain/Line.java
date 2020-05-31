@@ -4,12 +4,12 @@ import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Line {
+    private static final int MIN_INTERVAL_TIME = 1;
+
     @Id
     private Long id;
     private String name;
@@ -24,7 +24,11 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(name, startTime, endTime, intervalTime, bgColor, new LinkedHashSet<>());
+    }
+
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor, Set<LineStation> stations) {
         if (isNotValid(name, intervalTime, bgColor)) {
             throw new IllegalArgumentException("입력값이 잘못되었습니다.");
         }
@@ -33,22 +37,13 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.bgColor = bgColor;
-        this.stations = new LinkedHashSet<>();
+        this.stations = stations;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     private boolean isNotValid(String name, int intervalTime, String bgColor) {
-        if (name == null || bgColor == null) {
-            return true;
-        }
-
-        return intervalTime <= 0;
-    }
-
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
-        this(null, name, startTime, endTime, intervalTime, bgColor);
+        return (Objects.isNull(name)) || intervalTime < MIN_INTERVAL_TIME || Objects.isNull(bgColor);
     }
 
     public Long getId() {
@@ -108,72 +103,54 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (lineStation.isFirstStation()) {
-            addFirstStation(lineStation);
-            return;
-        }
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
+                .findAny()
+                .ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
 
-        Set<LineStation> tmpStations = new LinkedHashSet<>(this.stations);
-        if (lineStation.hasSamePreStation(tmpStations)) {
-            this.stations.clear();
-            updateStations(lineStation, tmpStations);
-            return;
-        }
-
-        this.stations.add(lineStation);
-    }
-
-    private void updateStations(LineStation lineStation, Set<LineStation> tmpStations) {
-        for (LineStation tmpStation : tmpStations) {
-            addStation(lineStation, tmpStation);
-        }
-    }
-
-    private void addStation(LineStation lineStation, LineStation tmpStation) {
-        if (lineStation.hasSamePrestation(tmpStation)) {
-            this.stations.add(lineStation);
-            tmpStation.updatePreLineStation(lineStation.getStationId());
-            this.stations.add(tmpStation);
-            return;
-        }
-
-        this.stations.add(tmpStation);
-    }
-
-    private void addFirstStation(LineStation lineStation) {
-        Set<LineStation> tmp = new LinkedHashSet<>(this.stations);
-        this.stations.clear();
-        this.stations.add(lineStation);
-        this.stations.addAll(tmp);
-        return;
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = getLineStationByStationId(stationId);
-        if (lineStation.inBetween(stations)) {
-            LineStation nextLineStation = getLineStationByPrestationId(stationId);
-            nextLineStation.updatePreLineStation(lineStation.getPreStationId());
-        }
-        stations.remove(lineStation);
-    }
-
-    private LineStation getLineStationByPrestationId(Long preStationId) {
-        return stations.stream()
-                .filter(lineStation -> lineStation.hasSamePrestationId(preStationId))
+        LineStation targetLineStation = stations.stream()
+                .filter(it -> Objects.equals(it.getStationId(), stationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-    }
+                .orElseThrow(RuntimeException::new);
 
-    private LineStation getLineStationByStationId(Long stationId) {
-        return stations.stream()
-                .filter(lineStation -> lineStation.hasSameId(stationId))
+        stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+                .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
+
+        stations.remove(targetLineStation);
     }
 
     public List<Long> getLineStationsId() {
-        return stations.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        LineStation firstLineStation = stations.stream()
+                .filter(it -> it.getPreStationId() == null)
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        List<Long> stationIds = new ArrayList<>();
+        stationIds.add(firstLineStation.getStationId());
+
+        return lineUpStationsId(stationIds);
+    }
+
+    private List<Long> lineUpStationsId(List<Long> stationIds) {
+        while (true) {
+            Long lastStationId = stationIds.get(stationIds.size() - 1);
+            Optional<LineStation> nextLineStation = stations.stream()
+                    .filter(it -> Objects.equals(it.getPreStationId(), lastStationId))
+                    .findFirst();
+
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+
+            stationIds.add(nextLineStation.get().getStationId());
+        }
+
+        return stationIds;
     }
 }

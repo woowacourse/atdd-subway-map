@@ -22,7 +22,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/truncate.sql")
+@Sql({"/schema-test.sql","/truncate.sql"})
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;

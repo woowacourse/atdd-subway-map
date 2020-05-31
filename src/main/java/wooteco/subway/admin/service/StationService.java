@@ -45,6 +45,7 @@ public class StationService {
         return stationRepository.findByName(name);
     }
 
+    //todo: refac
     public Set<Station> findAllOf(Line line) {
         List<Long> stationIds = line.getStations().stream()
                 .map(LineStation::getStationId)

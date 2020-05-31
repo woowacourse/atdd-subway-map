@@ -20,7 +20,7 @@ public class LineRepositoryTest {
 
     @Test
     void findByName() {
-        Line line = new Line(1L, "haha", LocalTime.now(), LocalTime.now(), 10, "red");
+        Line line = new Line("haha", LocalTime.now(), LocalTime.now(), 10, "red");
         Line save = lineRepository.save(line);
         assertThat(save.getName()).isEqualTo("haha");
         Line haha = lineRepository.findByName("haha");

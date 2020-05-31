@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/truncate.sql")
+@Sql({"/schema-test.sql","/truncate.sql"})
 public class LineStationAcceptanceTest {
     @LocalServerPort
     int port;

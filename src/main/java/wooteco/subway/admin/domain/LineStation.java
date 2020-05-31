@@ -52,32 +52,16 @@ public class LineStation {
     }
 
     boolean isNotFirstStatoin() {
-        return Objects.nonNull(preStationId);
-    }
-
-    boolean hasSamePrestation(LineStation other) {
-        if (Objects.isNull(preStationId) || Objects.isNull(other.preStationId)) {
-            return false;
-        }
-        return other.preStationId.equals(preStationId);
-    }
-
-    boolean hasSamePreStation(Set<LineStation> stations) {
-        return stations.stream()
-                .anyMatch(this::hasSamePrestation);
-    }
-
-    boolean inBetween(Set<LineStation> stations) {
-        return isNotFirstStatoin() && isNotLastStation(stations);
-    }
-
-    private boolean isNotLastStation(Set<LineStation> stations) {
-        return stations.stream()
-                .anyMatch(lineStation -> lineStation.hasSamePrestationId(stationId));
+        return !isFirstStation();
     }
 
     boolean hasSameId(Long stationId) {
         return this.stationId.equals(stationId);
+    }
+
+    boolean hasSamePreStation(Set<LineStation> stations) {
+        return stations.stream()
+                .anyMatch(station -> station.hasSamePrestationId(station.getPreStationId()));
     }
 
     boolean hasSamePrestationId(Long preStationId) {
@@ -85,5 +69,10 @@ public class LineStation {
             return false;
         }
         return this.preStationId.equals(preStationId);
+    }
+
+    private boolean isNotLastStation(Set<LineStation> stations) {
+        return stations.stream()
+                .anyMatch(lineStation -> lineStation.hasSamePrestationId(stationId));
     }
 }

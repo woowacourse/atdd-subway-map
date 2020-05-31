@@ -3,10 +3,9 @@ package wooteco.subway.admin.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import wooteco.subway.admin.domain.Station;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,7 +27,7 @@ public class StationRepositoryTest {
 
     @Test
     void saveAlreadyExists() {
-        String name = "강남역";
+        String name = "신촌역";
         Station stationFirstSaved = stationRepository.save(new Station(name));
         System.out.println(stationFirstSaved.getId());
         assertThatThrownBy(() -> stationRepository.save(new Station(name)))

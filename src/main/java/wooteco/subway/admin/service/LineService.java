@@ -3,16 +3,12 @@ package wooteco.subway.admin.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.LineStation;
-import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.LineResponse;
 import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.error.NotFoundException;
 import wooteco.subway.admin.repository.LineRepository;
 import wooteco.subway.admin.repository.StationRepository;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -40,7 +36,7 @@ public class LineService {
 
     public void addLineStation(Long id, LineStationCreateRequest request) {
         Line line = findById(id);
-        LineStation lineStation = request.toLineStation();
+        LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
         line.addLineStation(lineStation);
         lineRepository.save(line);
     }
@@ -49,18 +45,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         line.removeLineStationById(stationId);
         lineRepository.save(line);
-    }
-
-    public LineResponse findLineWithStationsById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalStateException::new);
-
-        List<Long> stationIds = line.getStations().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-
-        Set<Station> stations = stationRepository.findAllById(stationIds);
-        return LineResponse.withStations(line, stations);
     }
 
     public Line findById(Long id) {
