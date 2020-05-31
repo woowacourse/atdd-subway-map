@@ -1,7 +1,12 @@
 const METHOD = {
-  PUT() {
+  PUT(data) {
     return {
-      method: "PUT"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(data)
     };
   },
   DELETE() {
@@ -13,7 +18,8 @@ const METHOD = {
     return {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+          "Accept": "application/json"
       },
       body: JSON.stringify(data)
     };
@@ -21,7 +27,12 @@ const METHOD = {
 };
 
 const api = (() => {
-  const request = (uri, config) => fetch(uri, config).then(data => data.json());
+  const request = (uri, config) => fetch(uri, config).then(data => {
+      if (!data.ok) {
+          throw data;
+      }
+      return data.json()
+  });
 
   const station = {
     get() {

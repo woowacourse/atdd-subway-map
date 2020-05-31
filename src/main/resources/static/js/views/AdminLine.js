@@ -60,9 +60,7 @@ function AdminLine() {
             $subwayLineColor.value = data.bgColor;
             subwayLineModal.toggle();
             $submitButton.classList.add('update-submit-button');
-        }).catch(() => {
-            alert("데이터를 불러올 수 없습니다.");
-        });
+        }).catch(() => alert("데이터를 불러올 수 없습니다."));
     };
     const onCreateSubwayLine = event => {
         event.preventDefault();
@@ -80,9 +78,7 @@ function AdminLine() {
                     subwayLinesTemplate(subwayLine)
                 );
                 subwayLineModal.toggle();
-            }).catch(() => {
-            alert("에러가 발생하였습니다!");
-        });
+            }).catch(() => alert("노선 추가 중 에러가 발생했습니다"));
         $subwayLineNameInput.value = "";
         $subwayLineColorInput.value = "";
         $subwayLineFirstTimeInput.value = "";
@@ -113,11 +109,11 @@ function AdminLine() {
             intervalTime: $subwayLineIntervalTimeInput.value,
             bgColor: $subwayLineColorInput.value
         };
-        api.line.update(lineId, data).then((line) => {
+        api.line.update(lineId, data).then(line => {
             subwayLineModal.toggle();
             let activeSubwayLineItem = $activeSubwayLineItem.querySelector('.subway-line-title');
             activeSubwayLineItem.innerText = line.title;
-        });
+        }).catch(() => alert("노선 수정 중 에러가 발생했습니다."));
     };
     const initDefaultSubwayLines = () => {
         api.line.get().then(subwayLines => subwayLines.forEach(

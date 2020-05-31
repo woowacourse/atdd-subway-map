@@ -28,8 +28,7 @@ public class StationRepositoryTest {
     @Test
     void saveAlreadyExists() {
         String name = "신촌역";
-        Station stationFirstSaved = stationRepository.save(new Station(name));
-        System.out.println(stationFirstSaved.getId());
+        stationRepository.save(new Station(name));
         assertThatThrownBy(() -> stationRepository.save(new Station(name)))
                 .isInstanceOf(DbActionExecutionException.class);
     }

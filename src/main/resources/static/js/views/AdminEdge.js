@@ -34,7 +34,7 @@ function AdminEdge() {
                     edgePadding: 25
                 });
             }
-        );
+        ).catch(() => alert("노선 조회 중 에러가 발생했습니다."));
 
 
     };
@@ -54,7 +54,7 @@ function AdminEdge() {
                 "afterbegin",
                 subwayLineOptionTemplate
             );
-        });
+        }).catch(() => "노선 조회 중 에러가 발생했습니다.");
     };
 
     const onSubwayLineAddBtnClicked = event => {
@@ -77,7 +77,8 @@ function AdminEdge() {
 
         api.line
             .registerLineStation(lineStationDto)
-            .then(response => createSubwayEdgeModal.toggle());
+            .then(response => createSubwayEdgeModal.toggle())
+            .catch(() => alert("구간 등록 중 에러가 발생했습니다."));
     };
 
     const onRemoveStationHandler = event => {
@@ -87,7 +88,9 @@ function AdminEdge() {
 
             const $id = $target.dataset.stationId;
             $target.closest(".list-item").remove();
-            api.station.delete($id).then();
+            api.station.delete($id)
+                .then()
+                .catch(() => alert("역 삭제 중 에러가 발생했습니다."));
         }
     };
 
