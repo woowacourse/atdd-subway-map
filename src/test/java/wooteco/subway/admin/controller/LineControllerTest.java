@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
 import wooteco.subway.admin.dto.LineStationDto;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
@@ -26,20 +27,15 @@ class LineControllerTest {
 
     @Test
     void registerLineStation() {
-        String lineName = "1호선";
-        String preStationName = "잠실역";
-        String arrivalStationName = "잠실새내역";
-        when(lineService.findByName(lineName)).thenReturn(new Line(lineName, LocalTime.now(), LocalTime.now(), 10, "blue"));
-        when(stationService.findByName(preStationName)).thenReturn(new Station(preStationName));
-        when(stationService.save(arrivalStationName)).thenReturn(new Station(arrivalStationName));
+        Long lineId = 1L;
+
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(null, lineId, 10, 10);
         doThrow(IllegalStateException.class)
                 .when(lineService)
-                .addLineStation(eq(null), any());
+                .addLineStation(lineId, lineStationCreateRequest);
 
 
-
-        LineStationDto lineStationDto = new LineStationDto(lineName, preStationName, arrivalStationName);
-        assertThatThrownBy(() -> lineController.registerLineStation(lineStationDto, lineName))
+        assertThatThrownBy(() -> lineController.registerLineStation(lineId, lineStationCreateRequest))
                 .isInstanceOf(IllegalStateException.class);
 
     }

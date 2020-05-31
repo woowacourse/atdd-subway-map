@@ -34,11 +34,11 @@ public class LineService {
         lineRepository.save(persistLine);
     }
 
-    public void addLineStation(Long id, LineStationCreateRequest request) {
+    public Line addLineStation(Long id, LineStationCreateRequest request) {
         Line line = findById(id);
         LineStation lineStation = new LineStation(request.getPreStationId(), request.getStationId(), request.getDistance(), request.getDuration());
         line.addLineStation(lineStation);
-        lineRepository.save(line);
+        return lineRepository.save(line);
     }
 
     public void removeLineStation(Long lineId, Long stationId) {

@@ -41,16 +41,8 @@ public class StationService {
 
     }
 
-    public Station findByName(String name) {
-        return stationRepository.findByName(name);
-    }
-
-    //todo: refac
     public Set<Station> findAllOf(Line line) {
-        List<Long> stationIds = line.getStations().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-
+        List<Long> stationIds = line.getLineStationsId();
         return stationRepository.findAllById(stationIds);
     }
 }

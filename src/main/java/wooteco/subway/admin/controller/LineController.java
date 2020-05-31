@@ -34,15 +34,10 @@ public class LineController {
     }
 
     @Transactional
-    @PostMapping("/lines/stations")
+    @PostMapping("/lines/{id}/stations")
     //todo: change rdoto
-    public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationDto lineStationDto, @RequestParam String name) {
-        Line line = lineService.findByName(name);
-        Station preStation = stationService.findByName(lineStationDto.getPreStationName());
-        Station arrivalStation = stationService.save(lineStationDto.getArrivalStationName());
-        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(preStation.getId(), arrivalStation.getId(), 10, 10);
-
-        lineService.addLineStation(line.getId(), lineStationCreateRequest);
+    public ResponseEntity<LineResponse> registerLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineService.addLineStation(id, lineStationCreateRequest);
         Set<Station> stations = stationService.findAllOf(line);
         LineResponse lineResponse = LineResponse.withStations(line, stations);
         return ResponseEntity
