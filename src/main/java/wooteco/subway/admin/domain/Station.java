@@ -1,8 +1,8 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.Id;
 
 public class Station {
     @Id
@@ -25,5 +25,14 @@ public class Station {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", createdAt=" + createdAt +
+            '}';
     }
 }

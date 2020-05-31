@@ -1,44 +1,86 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
 
 public class Line {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String backgroundColor;
+    @Embedded.Empty
+    private LineStations lineStations;
 
-    public Line() {
+    private Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this.name = name;
+    public Line(String title, LocalTime startTime, LocalTime endTime, int intervalTime, String backgroundColor) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.backgroundColor = backgroundColor;
+        this.lineStations = new LineStations();
     }
 
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
+    public void update(Line line) {
+        if (line.getTitle() != null) {
+            this.title = line.getTitle();
+        }
+        if (line.getStartTime() != null) {
+            this.startTime = line.getStartTime();
+        }
+        if (line.getEndTime() != null) {
+            this.endTime = line.getEndTime();
+        }
+        if (line.getIntervalTime() != 0) {
+            this.intervalTime = line.getIntervalTime();
+        }
+        if (line.getBackgroundColor() != null) {
+            this.backgroundColor = line.getBackgroundColor();
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addLineStation(LineStation addLineStation) {
+        lineStations.addLineStation(addLineStation);
+    }
+
+    public void removeLineStationById(Long stationId) {
+        lineStations.removeLineStationById(stationId);
+    }
+
+    public List<Long> getLineStationIds() {
+        return lineStations.getLineStationIds();
+    }
+
+    public boolean isStationsEmpty() {
+        return lineStations.isStationsEmpty();
+    }
+
+    public boolean isEqualTitle(String title) {
+        return this.title.equals(title);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalTime getStartTime() {
@@ -54,7 +96,7 @@ public class Line {
     }
 
     public Set<LineStation> getStations() {
-        return stations;
+        return lineStations.getStations();
     }
 
     public LocalDateTime getCreatedAt() {
@@ -65,33 +107,7 @@ public class Line {
         return updatedAt;
     }
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
-        }
-        if (line.getStartTime() != null) {
-            this.startTime = line.getStartTime();
-        }
-        if (line.getEndTime() != null) {
-            this.endTime = line.getEndTime();
-        }
-        if (line.getIntervalTime() != 0) {
-            this.intervalTime = line.getIntervalTime();
-        }
-
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
-    }
-
-    public void removeLineStationById(Long stationId) {
-        // TODO: 구현
-    }
-
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public String getBackgroundColor() {
+        return backgroundColor;
     }
 }

@@ -1,20 +1,22 @@
 package wooteco.subway.admin.domain;
 
+import java.util.Optional;
+
 public class LineStation {
-    // TODO: 테이블 컬럼명과 변수명이 다른 경우
     private Long stationId;
     private Long preStationId;
     private int distance;
     private int duration;
 
-    public LineStation() {
+    private LineStation() {
     }
 
     public LineStation(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
         this.stationId = stationId;
         this.distance = distance;
         this.duration = duration;
+        this.preStationId = Optional.ofNullable(preStationId)
+            .orElse(LineStations.START_STATION);
     }
 
     public Long getPreStationId() {
@@ -35,5 +37,15 @@ public class LineStation {
 
     public void updatePreLineStation(Long preStationId) {
         this.preStationId = preStationId;
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+            "stationId=" + stationId +
+            ", preStationId=" + preStationId +
+            ", distance=" + distance +
+            ", duration=" + duration +
+            '}';
     }
 }
