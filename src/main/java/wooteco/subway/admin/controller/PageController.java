@@ -11,17 +11,17 @@ public class PageController {
         return "index";
     }
 
-    @GetMapping("/admin-line.html")
+    @GetMapping("/admin-line")
     public String adminLine() {
         return "admin-line";
     }
 
-    @GetMapping("/admin-edge.html")
+    @GetMapping("/admin-edge")
     public String adminEdge() {
         return "admin-edge";
     }
 
-    @GetMapping("/admin-station.html")
+    @GetMapping("/admin-station")
     public String adminStation() {
         return "admin-station";
     }
