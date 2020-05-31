@@ -1,14 +1,14 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.Station;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -16,6 +16,7 @@ public class LineResponse {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String color;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,25 +25,30 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, LocalDateTime createdAt, LocalDateTime updatedAt, Set<Station> stations) {
+    public LineResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+        int intervalTime, String color, LocalDateTime createdAt, LocalDateTime updatedAt,
+        Set<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.color = color;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), line.getCreatedAt(), line.getUpdatedAt(), new HashSet<>());
+    public static LineResponse of(Line line, Set<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getStartTime(),
+            line.getEndTime(), line.getIntervalTime(), line.getColor(), line.getCreatedAt(),
+            line.getUpdatedAt(), stations);
     }
 
-    public static List<LineResponse> listOf(List<Line> lines) {
-        return lines.stream()
-                .map(it -> LineResponse.of(it))
-                .collect(Collectors.toList());
+    public static List<LineResponse> listOf(Map<Line, Set<Station>> lineWithStations) {
+        return lineWithStations.entrySet().stream()
+            .map(lineSetEntry -> LineResponse.of(lineSetEntry.getKey(), lineSetEntry.getValue()))
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -63,6 +69,10 @@ public class LineResponse {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public Set<Station> getStations() {
