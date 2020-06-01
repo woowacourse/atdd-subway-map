@@ -3,7 +3,6 @@ package wooteco.subway.admin.service;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.admin.domain.Line;
-import wooteco.subway.admin.domain.LineStation;
 import wooteco.subway.admin.domain.Station;
 import wooteco.subway.admin.error.AlreadyExistException;
 import wooteco.subway.admin.repository.StationRepository;
@@ -11,7 +10,6 @@ import wooteco.subway.admin.repository.StationRepository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -44,5 +42,17 @@ public class StationService {
     public Set<Station> findAllOf(Line line) {
         List<Long> stationIds = line.getLineStationsId();
         return stationRepository.findAllById(stationIds);
+    }
+
+    public Station findByName(String name) {
+        return stationRepository.findByName(name);
+    }
+
+    public Station findOrRegister(String name) {
+        Station station = stationRepository.findByName(name);
+        if (Objects.isNull(station)) {
+            station = stationRepository.save(new Station(name));
+        }
+        return station;
     }
 }

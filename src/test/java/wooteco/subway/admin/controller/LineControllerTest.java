@@ -27,15 +27,18 @@ class LineControllerTest {
 
     @Test
     void registerLineStation() {
-        Long lineId = 1L;
+        Line line = new Line("1호선", LocalTime.now(), LocalTime.now(), 10, "blue");
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(line.getName(), null, "preStationName", 1L, "stationName", 10, 10);
 
-        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(null, lineId, 10, 10);
+        when(lineService.findByName(lineStationCreateRequest.getLineName())).thenReturn(line);
+        when(stationService.findByName(lineStationCreateRequest.getPreStationName())).thenReturn(new Station(lineStationCreateRequest.getPreStationName()));
+        when(stationService.findOrRegister(lineStationCreateRequest.getStationName())).thenReturn(new Station(lineStationCreateRequest.getStationName()));
         doThrow(IllegalStateException.class)
                 .when(lineService)
-                .addLineStation(lineId, lineStationCreateRequest);
+                .addLineStation(eq(line.getId()), any());
 
 
-        assertThatThrownBy(() -> lineController.registerLineStation(lineId, lineStationCreateRequest))
+        assertThatThrownBy(() -> lineController.registerLineStation(lineStationCreateRequest))
                 .isInstanceOf(IllegalStateException.class);
 
     }

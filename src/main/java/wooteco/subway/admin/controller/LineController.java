@@ -5,7 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.admin.domain.Line;
 import wooteco.subway.admin.domain.Station;
-import wooteco.subway.admin.dto.*;
+import wooteco.subway.admin.dto.LineRequest;
+import wooteco.subway.admin.dto.LineResponse;
+import wooteco.subway.admin.dto.LineStationCreateRequest;
+import wooteco.subway.admin.dto.StationResponse;
 import wooteco.subway.admin.service.LineService;
 import wooteco.subway.admin.service.StationService;
 
@@ -34,10 +37,12 @@ public class LineController {
     }
 
     @Transactional
-    @PostMapping("/lines/{id}/stations")
-    //todo: change rdoto
-    public ResponseEntity<LineResponse> registerLineStation(@PathVariable Long id, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        Line line = lineService.addLineStation(id, lineStationCreateRequest);
+    @PostMapping("/lines/stations")
+    public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineService.findByName(lineStationCreateRequest.getLineName());
+        Station preStation = stationService.findByName(lineStationCreateRequest.getPreStationName());
+        Station station = stationService.findOrRegister(lineStationCreateRequest.getStationName());
+        line = lineService.addLineStation(line.getId(), LineStationCreateRequest.of(line, preStation, station, lineStationCreateRequest.getDistance(), lineStationCreateRequest.getDuration()));
         Set<Station> stations = stationService.findAllOf(line);
         LineResponse lineResponse = LineResponse.withStations(line, stations);
         return ResponseEntity

@@ -1,21 +1,37 @@
 package wooteco.subway.admin.dto;
 
-import wooteco.subway.admin.domain.LineStation;
+import wooteco.subway.admin.domain.Line;
+import wooteco.subway.admin.domain.Station;
 
 public class LineStationCreateRequest {
-    private Long preStationId;
-    private Long stationId;
-    private int distance;
-    private int duration;
+    private String lineName;
 
+    private Long preStationId;
+    private String preStationName;
+    private Long stationId;
+    private String stationName;
+    private int distance;
+
+    public LineStationCreateRequest(String lineName, Long preStationId, String preStationName, Long stationId, String stationName, int distance, int duration) {
+        this.lineName = lineName;
+        this.preStationId = preStationId;
+        this.preStationName = preStationName;
+        this.stationId = stationId;
+        this.stationName = stationName;
+        this.distance = distance;
+        this.duration = duration;
+    }
+
+    private int duration;
     public LineStationCreateRequest() {
     }
 
     public LineStationCreateRequest(Long preStationId, Long stationId, int distance, int duration) {
-        this.preStationId = preStationId;
-        this.stationId = stationId;
-        this.distance = distance;
-        this.duration = duration;
+        this(null, preStationId, null, stationId, null, distance, duration);
+    }
+
+    public static LineStationCreateRequest of(Line line, Station preStation, Station station, int distance, int duration) {
+        return new LineStationCreateRequest(line.getName(), preStation.getId(), preStation.getName(), station.getId(), station.getName(), distance, duration);
     }
 
     public Long getPreStationId() {
@@ -34,7 +50,15 @@ public class LineStationCreateRequest {
         return duration;
     }
 
-    public LineStation toLineStation() {
-        return new LineStation(preStationId, stationId, distance, duration);
+    public String getLineName() {
+        return lineName;
+    }
+
+    public String getPreStationName() {
+        return preStationName;
+    }
+
+    public String getStationName() {
+        return stationName;
     }
 }

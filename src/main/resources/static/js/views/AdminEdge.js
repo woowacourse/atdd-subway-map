@@ -61,7 +61,7 @@ function AdminEdge() {
         $submitButton.classList.add('subway-line-add-button');
     };
 
-    const onSubmitClicked = event => {
+    const onSubmitClicked = async event => {
         const isSubwayLineAddButton = event.target.classList.contains("subway-line-add-button");
         if (!isSubwayLineAddButton) {
             return;
@@ -69,16 +69,19 @@ function AdminEdge() {
         const $selectOptions = document.querySelector("#station-select-options");
 
         const lineStationDto = {
-            name: $selectOptions[$selectOptions.selectedIndex].value,
+            lineName: $selectOptions[$selectOptions.selectedIndex].value,
             preStationName: document.querySelector("#depart-station-name").value,
-            arrivalStationName: document.querySelector("#arrival-station-name").value
-
+            stationName: document.querySelector("#arrival-station-name").value,
+            distance: "10",
+            duration: "10"
         };
-
-        api.line
+        try {
+          const response = await api.line
             .registerLineStation(lineStationDto)
-            .then(response => createSubwayEdgeModal.toggle())
-            .catch(() => alert("구간 등록 중 에러가 발생했습니다."));
+          createSubwayEdgeModal.toggle()
+        } catch (e) {
+          alert("구간 등록 중 에러가 발생했습니다.")
+        }
     };
 
     const onRemoveStationHandler = event => {

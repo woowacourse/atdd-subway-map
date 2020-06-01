@@ -1,9 +1,8 @@
 import Modal from "../../ui/Modal.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import api from "../../api/index.js";
-import {subwayLinesTemplate} from "../../utils/templates.js";
+import {colorSelectOptionTemplate, subwayLinesTemplate} from "../../utils/templates.js";
 import {subwayLineColorOptions} from "../../utils/defaultSubwayData.js";
-import {colorSelectOptionTemplate} from "../../utils/templates.js";
 
 function AdminLine() {
     const $subwayLineList = document.querySelector("#subway-line-list");

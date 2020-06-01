@@ -6,7 +6,6 @@ import wooteco.subway.admin.error.NotFoundException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Line {
     private static final int MIN_INTERVAL_TIME = 1;
@@ -104,9 +103,7 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        stations.stream()
-                .filter(it -> Objects.equals(it.getPreStationId(), lineStation.getPreStationId()))
-                .findAny()
+        findNextLineStation(lineStation.getPreStationId())
                 .ifPresent(it -> it.updatePreLineStation(lineStation.getStationId()));
 
         stations.add(lineStation);
@@ -116,11 +113,9 @@ public class Line {
         LineStation targetLineStation = stations.stream()
                 .filter(it -> Objects.equals(it.getStationId(), stationId))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException(NotFoundException.STATION_NOT_FOUND));
 
-        stations.stream()
-                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
-                .findFirst()
+        findNextLineStation(stationId)
                 .ifPresent(it -> it.updatePreLineStation(targetLineStation.getPreStationId()));
 
         stations.remove(targetLineStation);
@@ -137,19 +132,23 @@ public class Line {
         return lineUpStationsId(stationIds);
     }
 
+    private Optional<LineStation> findNextLineStation(Long stationId) {
+        return stations.stream()
+                .filter(it -> Objects.equals(it.getPreStationId(), stationId))
+                .findFirst();
+    }
+
     private LineStation findFirstLineStation() {
         return stations.stream()
                 .filter(it -> it.getPreStationId() == null)
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("첫 역을 찾을 수 없습니다."));
+                .orElse(new LineStation(null, 1L, 10, 10));
     }
 
     private List<Long> lineUpStationsId(List<Long> stationIds) {
         while (true) {
             Long lastStationId = stationIds.get(stationIds.size() - 1);
-            Optional<LineStation> nextLineStation = stations.stream()
-                    .filter(it -> Objects.equals(it.getPreStationId(), lastStationId))
-                    .findFirst();
+            Optional<LineStation> nextLineStation = findNextLineStation(lastStationId);
 
             if (!nextLineStation.isPresent()) {
                 break;

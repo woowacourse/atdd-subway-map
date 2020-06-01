@@ -48,10 +48,14 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("id에 해당하는 Line을 찾을 수 없습니다"));
+        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException(NotFoundException.LINE_NOT_FOUND));
     }
 
     public void delete(Line line) {
         lineRepository.delete(line);
+    }
+
+    public Line findByName(String name) {
+        return lineRepository.findByName(name);
     }
 }
