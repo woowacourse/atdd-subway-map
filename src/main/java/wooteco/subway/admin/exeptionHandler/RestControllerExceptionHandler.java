@@ -10,18 +10,13 @@ import wooteco.subway.admin.error.NotFoundException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class RestControllerExceptionHandler {
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handle(NotFoundException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = AlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> handle(AlreadyExistException e) {
+    @ExceptionHandler({
+            IllegalArgumentException.class,
+            NotFoundException.class,
+            AlreadyExistException.class,
+            RuntimeException.class
+    })
+    public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }
