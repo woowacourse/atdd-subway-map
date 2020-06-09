@@ -142,7 +142,7 @@ public class Line {
         return stations.stream()
                 .filter(it -> it.getPreStationId() == null)
                 .findFirst()
-                .orElse(new LineStation(null, 1L, 10, 10));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.FIRST_STATION_NOT_FOUND));
     }
 
     private List<Long> lineUpStationsId(List<Long> stationIds) {
