@@ -68,7 +68,7 @@ const line = {
         return fetch(`/lines/${id}`, METHOD.DELETE()).then();
     },
     async registerLineStation(data) {
-        return await requestAwait(`/lines/stations?name=${data.name}`, METHOD.POST(data));
+        return await requestAwait(`/lines/${data.id}/stations`, METHOD.POST(data));
     }
 };
 

@@ -3,6 +3,7 @@ import tns from "../../lib/slider/tiny-slider.js";
 import {EVENT_TYPE} from "../../utils/constants.js";
 import Modal from "../../ui/Modal.js";
 import api from "../../api/index.js"
+import {stationOptionTemplate} from "../../utils/templates.js";
 
 function AdminEdge() {
     const $subwayLinesSlider = document.querySelector(".subway-lines-slider");
@@ -43,7 +44,7 @@ function AdminEdge() {
         api.line.get().then(subwayLines => {
             const subwayLineOptionTemplate = subwayLines
                 .map(line => {
-                    return optionTemplate(line.title)
+                    return optionTemplate(line)
                 })
                 .join("");
 
@@ -57,6 +58,31 @@ function AdminEdge() {
         }).catch(() => "노선 조회 중 에러가 발생했습니다.");
     };
 
+    const initSubwayStationOptions = () => {
+        api.station
+            .get()
+            .then(stations => {
+                const stationsOptionTemplate = stations
+                    .map(station => stationOptionTemplate(station))
+                .join("");
+
+            const $stationSelectOptions = document.querySelectorAll(
+                ".station-select-options"
+            );
+
+            $stationSelectOptions.forEach(select => {
+                    select.insertAdjacentHTML(
+                    "beforeend",
+                    stationsOptionTemplate
+                );
+            });
+
+        })
+
+    }
+
+
+
     const onSubwayLineAddBtnClicked = event => {
         $submitButton.classList.add('subway-line-add-button');
     };
@@ -67,11 +93,19 @@ function AdminEdge() {
             return;
         }
         const $selectOptions = document.querySelector("#station-select-options");
+        const $selectedOption = $selectOptions[$selectOptions.selectedIndex];
+        const lineId = $selectedOption.dataset.lineId;
+        const $preStationOptions = document.querySelector("#pre-station-name");
+        const $stationOptions = document.querySelector("#station-name");
+        const $selectedPreStationOption = $preStationOptions[$preStationOptions.selectedIndex];
+        const $selectedStationOption = $stationOptions[$stationOptions.selectedIndex];
+        const preStationId = $selectedPreStationOption.dataset.stationId;
+        const stationId = $selectedStationOption.dataset.stationId;
 
         const lineStationDto = {
-            lineName: $selectOptions[$selectOptions.selectedIndex].value,
-            preStationName: document.querySelector("#depart-station-name").value,
-            stationName: document.querySelector("#arrival-station-name").value,
+            id: lineId,
+            preStationId: preStationId,
+            stationId: stationId,
             distance: "10",
             duration: "10"
         };
@@ -119,6 +153,7 @@ function AdminEdge() {
         initSubwayLinesSlider();
         initSubwayLineOptions();
         initEventListeners();
+        initSubwayStationOptions();
     };
 }
 

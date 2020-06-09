@@ -37,12 +37,9 @@ public class LineController {
     }
 
     @Transactional
-    @PostMapping("/lines/stations")
-    public ResponseEntity<LineResponse> registerLineStation(@RequestBody LineStationCreateRequest lineStationCreateRequest) {
-        Line line = lineService.findByName(lineStationCreateRequest.getLineName());
-        Station preStation = stationService.findByName(lineStationCreateRequest.getPreStationName());
-        Station station = stationService.findOrRegister(lineStationCreateRequest.getStationName());
-        line = lineService.addLineStation(line.getId(), LineStationCreateRequest.of(line, preStation, station, lineStationCreateRequest.getDistance(), lineStationCreateRequest.getDuration()));
+    @PostMapping("/lines/{lineId}/stations")
+    public ResponseEntity<LineResponse> registerLineStation(@PathVariable Long lineId, @RequestBody LineStationCreateRequest lineStationCreateRequest) {
+        Line line = lineService.addLineStation(lineId, lineStationCreateRequest);
         Set<Station> stations = stationService.findAllOf(line);
         LineResponse lineResponse = LineResponse.withStations(line, stations);
         return ResponseEntity

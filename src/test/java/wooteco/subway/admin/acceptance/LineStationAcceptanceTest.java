@@ -57,13 +57,12 @@ public class LineStationAcceptanceTest {
         String lineName = "1호선";
         String stationNameFrist = "잠실역";
         String stationNameSecond = "잠실새내역";
-        String stationNameThird = "종합운동장역";
         createStation(stationNameFrist);
         createStation(stationNameSecond);
         LineResponse line = createLine(lineName);
 
         // when
-        registerStation(line.getTitle(), stationNameSecond, stationNameThird);
+        registerStation(line.getId(), null, 1L);
         // then
         getLine(line.getId());
         //when & then
@@ -138,11 +137,10 @@ public class LineStationAcceptanceTest {
                 .extract().as(LineResponse.class);
     }
 
-    private void registerStation(String lineName, String preStationName, String arrivalStationName) {
+    private void registerStation(Long lineId, Long preStationId, Long stationId) {
         Map<String, String> params = new HashMap<>();
-        params.put("lineName", lineName);
-        params.put("preStationName", preStationName);
-        params.put("stationName", arrivalStationName);
+        params.put("preStationId", String.valueOf(preStationId));
+        params.put("stationId", String.valueOf(stationId));
         params.put("distance", "10");
         params.put("duration", "10");
         given().
@@ -150,7 +148,7 @@ public class LineStationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE).
 
         when().
-                post("/lines/stations").
+                post("/lines/" + lineId + "/stations").
         then().
                 log().all().
                 statusCode(HttpStatus.CREATED.value());
