@@ -11,8 +11,15 @@ public class Station {
     private LocalDateTime createdAt;
 
     public Station(String name) {
+        if (isNotValid(name)) {
+            throw new IllegalArgumentException("이름이 비어있습니다.");
+        }
         this.name = name;
         this.createdAt = LocalDateTime.now();
+    }
+
+    private boolean isNotValid(String name) {
+        return name == null;
     }
 
     public Long getId() {

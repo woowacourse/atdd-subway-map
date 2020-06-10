@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.admin.dto.StationResponse;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql({"/schema-test.sql","/truncate.sql"})
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -46,6 +48,18 @@ public class StationAcceptanceTest {
 
         List<StationResponse> stationsAfterDelete = getStations();
         assertThat(stationsAfterDelete.size()).isEqualTo(3);
+    }
+
+    @DisplayName("지하철역 이름 없이 지하철 생성 요청")
+    @Test
+    void createStationWithoutName() {
+        given().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+        when().
+                post("/stations").
+        then().log().all().
+                statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private void createStation(String name) {

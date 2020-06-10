@@ -9,9 +9,9 @@ public class LineRequest {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private String bgColor;
 
-    public LineRequest() {
-    }
+    public LineRequest() {}
 
     public String getName() {
         return name;
@@ -29,7 +29,11 @@ public class LineRequest {
         return intervalTime;
     }
 
+    public String getBgColor() {
+        return bgColor;
+    }
+
     public Line toLine() {
-        return new Line(name, startTime, endTime, intervalTime);
+        return new Line(name, startTime, endTime, intervalTime, bgColor);
     }
 }
