@@ -1,7 +1,6 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
-import wooteco.subway.admin.exception.WrongIdException;
+import static java.util.stream.Collectors.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,7 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
+import org.springframework.data.annotation.Id;
+
+import wooteco.subway.admin.exception.WrongIdException;
 
 public class Line {
 
@@ -102,12 +103,8 @@ public class Line {
     }
 
     public void addLineStation(LineStation lineStation) {
-        if (Objects.isNull(lineStation.getPreStationId())) {
-            stations.add(FIRST, lineStation);
-            return;
-        }
-
         Optional<LineStation> next = nextLineStation(lineStation);
+
         if (next.isPresent()) {
             LineStation realNext = next.get();
             realNext.updatePreLineStation(lineStation.getStationId());
@@ -134,6 +131,10 @@ public class Line {
     }
 
     private Optional<LineStation> nextLineStation(LineStation lineStation) {
+        if (Objects.isNull(lineStation.getPreStationId()) && !stations.isEmpty()) {
+            return Optional.of(stations.get(0));
+        }
+
         return stations.stream()
                 .filter(station -> Objects.nonNull(station.getPreStationId()))
                 .filter(station -> station.getPreStationId()
