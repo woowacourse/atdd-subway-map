@@ -11,8 +11,6 @@ import java.util.Optional;
 
 import org.springframework.data.annotation.Id;
 
-import wooteco.subway.admin.exception.WrongIdException;
-
 public class Line {
 
     public static final int FIRST = 0;
@@ -116,11 +114,7 @@ public class Line {
     }
 
     public void removeLineStationById(Long stationId) {
-        LineStation lineStation = stations.stream()
-                .filter(station -> station.getStationId().equals(stationId))
-                .findAny()
-                .orElseThrow(WrongIdException::new);
-
+        LineStation lineStation = LineStation.generateWithoutPre(stationId);
         stations.remove(lineStation);
     }
 
