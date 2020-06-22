@@ -15,14 +15,15 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line(1L, "2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5);
-        line.addLineStation(new LineStation(1L, 2L, 10, 10));
-        line.addLineStation(new LineStation(2L, 3L, 10, 10));
+        line = new Line("2호선", LocalTime.of(05, 30), LocalTime.of(22, 30), 5, "bg-orange-500");
+        line.addLineStation(new LineStation(null, 1L));
+        line.addLineStation(new LineStation(1L, 2L));
+        line.addLineStation(new LineStation(2L, 3L));
     }
 
     @Test
     void getLineStations() {
-        List<Long> stationIds = line.getLineStationsId();
+        List<Long> stationIds = line.getStationsIds();
 
         assertThat(stationIds.size()).isEqualTo(3);
         assertThat(stationIds.get(0)).isEqualTo(1L);
@@ -34,6 +35,6 @@ public class LineTest {
     void removeLineStation(Long stationId) {
         line.removeLineStationById(stationId);
 
-        assertThat(line.getStations()).hasSize(1);
+        assertThat(line.getStations()).hasSize(2);
     }
 }

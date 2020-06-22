@@ -1,36 +1,47 @@
 package wooteco.subway.admin.domain;
 
-import org.springframework.data.annotation.Id;
+import static java.util.stream.Collectors.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.data.annotation.Id;
 
 public class Line {
+
+    public static final int FIRST = 0;
+
     @Id
     private Long id;
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Set<LineStation> stations;
+    private String bgColor;
+    private List<LineStation> stations = new LinkedList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Line() {
     }
 
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this(null, name, startTime, endTime, intervalTime, bgColor);
+    }
+
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, String bgColor) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+        this.bgColor = bgColor;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this(null, name, startTime, endTime, intervalTime);
     }
 
     public Long getId() {
@@ -53,7 +64,11 @@ public class Line {
         return intervalTime;
     }
 
-    public Set<LineStation> getStations() {
+    public String getBgColor() {
+        return bgColor;
+    }
+
+    public List<LineStation> getStations() {
         return stations;
     }
 
@@ -78,20 +93,46 @@ public class Line {
         if (line.getIntervalTime() != 0) {
             this.intervalTime = line.getIntervalTime();
         }
+        if (line.getBgColor() != null) {
+            this.bgColor = line.getBgColor();
+        }
 
         this.updatedAt = LocalDateTime.now();
     }
 
     public void addLineStation(LineStation lineStation) {
-        // TODO: 구현
+        Optional<LineStation> next = nextLineStation(lineStation);
+
+        if (next.isPresent()) {
+            LineStation realNext = next.get();
+            realNext.updatePreLineStation(lineStation.getStationId());
+            stations.add(stations.indexOf(realNext), lineStation);
+            return;
+        }
+
+        stations.add(lineStation);
     }
 
     public void removeLineStationById(Long stationId) {
-        // TODO: 구현
+        LineStation lineStation = LineStation.generateWithoutPre(stationId);
+        stations.remove(lineStation);
     }
 
-    public List<Long> getLineStationsId() {
-        // TODO: 구현
-        return new ArrayList<>();
+    public List<Long> getStationsIds() {
+        return stations.stream()
+                .map(LineStation::getStationId)
+                .collect(toList());
+    }
+
+    private Optional<LineStation> nextLineStation(LineStation lineStation) {
+        if (Objects.isNull(lineStation.getPreStationId()) && !stations.isEmpty()) {
+            return Optional.of(stations.get(0));
+        }
+
+        return stations.stream()
+                .filter(station -> Objects.nonNull(station.getPreStationId()))
+                .filter(station -> station.getPreStationId()
+                        .equals(lineStation.getPreStationId()))
+                .findAny();
     }
 }
