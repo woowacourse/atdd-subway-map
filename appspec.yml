@@ -3,12 +3,12 @@ os: linux
 
 files:
   - source: /
-  destination: /opt/Deploy-App
+    destination: /opt/Deploy-App
 permissions:
-  - object: /opt/Deploy-App
-  - owner: ubuntu
-  - group: ubuntu
-  mode: 755
+  - object: /opt/Deploy-App/
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
 hooks:
   AfterInstall:
     - location: deploy.sh
