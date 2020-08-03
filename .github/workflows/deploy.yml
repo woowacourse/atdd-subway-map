@@ -3,8 +3,6 @@ name: Java CI / CD with Gradle
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 env:
   PROJECT_NAME: atdd-subway-admin
