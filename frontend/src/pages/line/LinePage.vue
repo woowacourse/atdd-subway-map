@@ -38,6 +38,8 @@
 
 <script>
 import LineCreateButton from "./components/LineCreateButton";
+import { SET_LINES } from "../../store/shared/mutationTypes";
+import { mapMutations } from "vuex";
 
 export default {
   name: "LinePage",
@@ -45,8 +47,10 @@ export default {
   created() {
     //TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
     this.lines = [];
+    this.setLines([...this.lines]);
   },
   methods: {
+    ...mapMutations([SET_LINES]),
     setLineDetail(line) {
       this.lineDetail = line;
     },
