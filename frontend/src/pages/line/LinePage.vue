@@ -8,7 +8,7 @@
         <v-card-text
           class="relative px-0 pb-0 mb-6 line-list-container d-flex flex-column"
         >
-          <div class="relative">
+          <div class="d-flex justify-end mr-4">
             <LineCreateButton />
           </div>
           <v-divider />
@@ -26,10 +26,7 @@
                     <span>{{ line.name }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
-                <v-list-item-action class="flex-row">
-                  <!--                  <LineEditButton :line="line" />-->
-                  <!--                  <LineDeleteButton :line="line" />-->
-                </v-list-item-action>
+                <v-list-item-action class="flex-row"> </v-list-item-action>
               </v-list-item>
             </v-list-item-group>
           </div>
@@ -41,13 +38,10 @@
 
 <script>
 import LineCreateButton from "./components/LineCreateButton";
-// import LineEditButton from "./components/LineEditButton";
-// import LineDeleteButton from "./components/LineDeleteButton";
 
 export default {
   name: "LinePage",
   components: { LineCreateButton },
-  // components: { LineCreateButton, LineEditButton, LineDeleteButton },
   created() {
     //TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
     this.lines = [];
@@ -55,15 +49,15 @@ export default {
   methods: {
     setLineDetail(line) {
       this.lineDetail = line;
-    }
+    },
   },
   data() {
     return {
       line: {},
       lines: [],
-      lineDetail: null
+      lineDetail: null,
     };
-  }
+  },
 };
 </script>
 
