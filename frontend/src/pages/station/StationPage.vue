@@ -62,7 +62,7 @@ import shortid from "shortid";
 export default {
   name: "StationPage",
   created() {
-    //TODO 초기 역 데이터를 불러오는 API를 추가해주세요.
+    // TODO 초기 역 데이터를 불러오는 API를 추가해주세요.
     this.stations = [];
   },
   methods: {
@@ -75,10 +75,10 @@ export default {
         return;
       }
       try {
-        //TODO 역을 추가하는 API를 추가해주세요.
+        // TODO 역을 추가하는 API를 추가해주세요.
         const newStation = {
           _id: shortid.generate(),
-          name: this.stationName
+          name: this.stationName,
         };
         this.stations.push(newStation);
         this.stationName = "";
@@ -91,25 +91,25 @@ export default {
     },
     async onDeleteStation(stationId) {
       try {
-        //TODO 역을 삭제하는 API를 추가해주세요.
+        // TODO 역을 삭제하는 API를 추가해주세요.
         const idx = this.stations.findIndex(
-          station => station._id === stationId
+          (station) => station._id === stationId
         );
         this.stations.splice(idx, 1);
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.DELETE.SUCCESS);
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.DELETE.FAIL);
       }
-    }
+    },
   },
   data() {
     return {
       rules: { ...validator },
       valid: false,
       stationName: "",
-      stations: []
+      stations: [],
     };
-  }
+  },
 };
 </script>
 
