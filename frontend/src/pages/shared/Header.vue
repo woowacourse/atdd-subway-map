@@ -19,34 +19,15 @@
 </template>
 
 <script>
+import { NAV_ITEMS } from "../../utils/constants";
+
 export default {
   name: "Header",
   data() {
     return {
-      navItems: [
-        {
-          _id: 1,
-          link: "/stations",
-          text: "역 관리"
-        },
-        {
-          _id: 2,
-          link: "/lines",
-          text: "노선 관리"
-        },
-        {
-          _id: 3,
-          link: "/sections",
-          text: "구간 관리"
-        },
-        {
-          _id: 4,
-          link: "/path",
-          text: "경로 검색"
-        }
-      ]
+      navItems: [...NAV_ITEMS],
     };
-  }
+  },
 };
 </script>
 

@@ -1,24 +1,44 @@
+import shortid from "shortid";
+
+export const NAV_ITEMS = [
+  {
+    _id: shortid.generate(),
+    link: "/stations",
+    text: "역 관리",
+  },
+  {
+    _id: shortid.generate(),
+    link: "/lines",
+    text: "노선 관리",
+  },
+  {
+    _id: shortid.generate(),
+    link: "/sections",
+    text: "구간 관리",
+  },
+];
+
 export const SNACKBAR_MESSAGES = {
   COMMON: {
     SUCCESS: "😀 성공적으로 변경하였습니다.",
-    FAIL: "😰 오류가 발생했습니다."
+    FAIL: "😰 오류가 발생했습니다.",
   },
   STATION: {
     CREATE: {
       SUCCESS: "😀 새로운 역을 생성했습니다.",
-      FAIL: "😰 새로운 역을 추가하는 도중에 오류가 발생했습니다."
+      FAIL: "😰 새로운 역을 추가하는 도중에 오류가 발생했습니다.",
     },
     DELETE: {
       SUCCESS: "😀 역을 성공적으로 삭제했습니다.",
-      FAIL: "😰 역을 삭제하는 도중에 오류가 발생했습니다."
-    }
-  }
+      FAIL: "😰 역을 삭제하는 도중에 오류가 발생했습니다.",
+    },
+  },
 };
 
 export const PATH_TYPE = {
   DISTANCE: "DISTANCE",
   DURATION: "DURATION",
-  ARRIVAL_TIME: "ARRIVAL_TIME"
+  ARRIVAL_TIME: "ARRIVAL_TIME",
 };
 
 export const LINE_COLORS = [
@@ -120,5 +140,5 @@ export const LINE_COLORS = [
   "pink darken-1",
   "pink darken-2",
   "pink darken-3",
-  "pink darken-4"
+  "pink darken-4",
 ];
