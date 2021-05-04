@@ -34,6 +34,14 @@ public class Line {
         return !name.endsWith(SUFFIX);
     }
 
+    public boolean isSameName(Line line) {
+        return this.name.equals(line.name);
+    }
+
+    public boolean isSameColor(Line line) {
+        return this.color.equals(line.color);
+    }
+
     public Long getId() {
         return id;
     }
