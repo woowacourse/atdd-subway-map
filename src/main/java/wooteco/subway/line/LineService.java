@@ -37,11 +37,21 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        validateLineName(lineRequest);
         Line currentLine = LineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
-        Line updatedLine = new Line(lineRequest.getName(), lineRequest.getColor());
+
+        if (validatesName(lineRequest, currentLine)) {
+            throw new IllegalArgumentException("변경할 수 없는 이름입니다.");
+        }
+
+        Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
         LineDao.update(currentLine, updatedLine);
+    }
+
+    private boolean validatesName(LineRequest lineRequest, Line currentLine) {
+        return LineDao.findAll().stream()
+                .filter(line -> !line.isSameName(currentLine.getName()))
+                .anyMatch(line -> line.isSameName(lineRequest.getName()));
     }
 
     public void deleteLine(Long id) {

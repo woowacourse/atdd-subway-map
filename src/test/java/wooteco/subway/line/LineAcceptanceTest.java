@@ -154,19 +154,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "신분당");
-        params2.put("color", "bg-blue-600");
+        params2.put("color", "bg-red-600");
 
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> originalResponse = RestAssured.given().log().all()
-                .when()
-                .get("/lines/1")
                 .then().log().all()
                 .extract();
 
@@ -179,9 +173,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        ExtractableResponse<Response> updatedResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(originalResponse.body()).isNotEqualTo(expectedResponse.body());
+        assertThat(updatedResponse.body().jsonPath().getString("name"))
+                .isEqualTo("신분당");
+        assertThat(updatedResponse.body().jsonPath().getString("color"))
+                .isEqualTo("bg-red-600");
     }
 
     @DisplayName("이미 존재하는 이름으로 수정 시 BAD_REQUEST를 응답한다.")

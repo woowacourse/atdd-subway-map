@@ -26,12 +26,23 @@ public class Line {
         this.stations = stations;
     }
 
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     public boolean isSameName(String name) {
         return this.name.equals(name);
     }
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
+    }
+
+    public void update(Line updatedLine) {
+        this.name = updatedLine.getName();
+        this.color = updatedLine.getColor();
     }
 
     public Long getId() {

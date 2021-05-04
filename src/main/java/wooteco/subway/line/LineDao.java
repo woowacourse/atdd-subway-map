@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -36,9 +35,10 @@ public class LineDao {
     }
 
     public static void update(Line currentLine, Line updatedLine) {
-        IntStream.range(0, lines.size())
-                .filter(i -> lines.get(i).equals(currentLine))
-                .mapToObj(i -> lines.set(i, updatedLine));
+        lines.stream()
+                .filter(currentLine::equals)
+                .findAny()
+                .ifPresent(line -> line.update(updatedLine));
     }
 
     public static void delete(Line line) {
