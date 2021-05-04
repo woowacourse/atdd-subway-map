@@ -3,10 +3,12 @@ package wooteco.subway.controller;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,6 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.StationResponse;
 
 class LineControllerTest extends AcceptanceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -30,12 +31,7 @@ class LineControllerTest extends AcceptanceTest {
         LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
         LineResponse lineResponse = new LineResponse(1L, "2호선", "red", new ArrayList<>());
 
-        RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .body(OBJECT_MAPPER.writeValueAsString(lineRequest))
-            .when().post("/lines")
-            .then().log().all()
+        postLineApi(lineRequest)
             .statusCode(HttpStatus.valueOf(201).value())
             .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
     }
@@ -44,23 +40,11 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void showLines() throws Exception {
         LineRequest lineRequest1 = new LineRequest("2호선", "red", 1L, 3L, 7);
-        ExtractableResponse<Response> lineResponse1 = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .body(OBJECT_MAPPER.writeValueAsString(lineRequest1))
-            .when()
-            .post("/lines")
-            .then().log().all()
+        ExtractableResponse<Response> lineResponse1 = postLineApi(lineRequest1)
             .extract();
 
         LineRequest lineRequest2 = new LineRequest("3호선", "blue", 2L, 3L, 4);
-        ExtractableResponse<Response> lineResponse2 = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .body(OBJECT_MAPPER.writeValueAsString(lineRequest2))
-            .when()
-            .post("/lines")
-            .then().log().all()
+        ExtractableResponse<Response> lineResponse2 = postLineApi(lineRequest2)
             .extract();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -77,5 +61,34 @@ class LineControllerTest extends AcceptanceTest {
             .map(lineResponse -> lineResponse.getId())
             .collect(Collectors.toList());
         Assertions.assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private ValidatableResponse postLineApi(LineRequest lineRequest) throws JsonProcessingException {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(lineRequest))
+            .when()
+            .post("/lines")
+            .then().log().all();
+    }
+
+    @DisplayName("아이디로 노선을 조회한다.")
+    @Test
+    void showLine() throws JsonProcessingException {
+        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse = postLineApi(lineRequest)
+            .extract();
+
+        long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        LineResponse getResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .body(is(OBJECT_MAPPER.writeValueAsString(getResponse)));
     }
 }

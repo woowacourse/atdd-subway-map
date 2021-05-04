@@ -20,4 +20,9 @@ public class LineService {
     public List<Line> findAll() {
         return LineDao.findAll();
     }
+
+    public Line findById(long id) {
+        return LineDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
+    }
 }
