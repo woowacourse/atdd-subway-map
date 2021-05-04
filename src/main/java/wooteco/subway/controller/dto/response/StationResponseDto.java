@@ -18,6 +18,10 @@ public class StationResponseDto {
         this(station.getId(), station.getName());
     }
 
+    public StationResponseDto(Long id, Station station) {
+        this(id, station.getName());
+    }
+
     public Long getId() {
         return id;
     }

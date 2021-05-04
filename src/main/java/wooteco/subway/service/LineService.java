@@ -24,8 +24,8 @@ public class LineService {
     public LineResponseDto createLine(LineRequestDto lineRequestDto) {
         validateLineNameDuplicate(lineRequestDto);
         Line newLine = new Line(lineRequestDto.getName(), lineRequestDto.getColor());
-        Line savedNewLine = lineDao.save(newLine);
-        return new LineResponseDto(savedNewLine);
+        Long id = lineDao.save(newLine);
+        return new LineResponseDto(id, newLine);
     }
 
     private void validateLineNameDuplicate(LineRequestDto lineRequestDto) {
@@ -48,11 +48,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public long updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
+    public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
         return lineDao.update(id, lineUpdateRequestDto.getColor(), lineUpdateRequestDto.getName());
     }
 
-    public long deleteLineById(Long id) {
+    public int deleteLineById(Long id) {
         return lineDao.deleteById(id);
     }
 }

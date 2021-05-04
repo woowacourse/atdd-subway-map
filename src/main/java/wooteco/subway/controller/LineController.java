@@ -42,9 +42,9 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponseDto>> showAllLines() {
-        List<LineResponseDto> lineResponses = lineService.getAllLines();
+        List<LineResponseDto> allLineResponses = lineService.getAllLines();
         return ResponseEntity.ok()
-            .body(lineResponses);
+            .body(allLineResponses);
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,7 +56,7 @@ public class LineController {
     }
 
     @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity deleteLinById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }

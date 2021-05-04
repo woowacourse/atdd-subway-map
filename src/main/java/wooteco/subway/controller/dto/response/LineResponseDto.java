@@ -20,6 +20,10 @@ public class LineResponseDto {
         this(line.getId(), line.getName(), line.getColor());
     }
 
+    public LineResponseDto(Long id, Line line) {
+        this(id, line.getName(), line.getColor());
+    }
+
     public Long getId() {
         return id;
     }

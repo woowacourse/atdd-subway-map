@@ -25,7 +25,7 @@ public class StationDao {
                 resultSet.getLong("id"),
                 resultSet.getString("name"));
 
-    public Station save(Station station) {
+    public Long save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -33,8 +33,7 @@ public class StationDao {
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
-        Long createdStationId = keyHolder.getKey().longValue();
-        return new Station(createdStationId, station.getName());
+        return keyHolder.getKey().longValue();
     }
 
     public Optional<Station> findByName(String name) {
@@ -50,8 +49,8 @@ public class StationDao {
         return jdbcTemplate.query(query, stationRowMapper);
     }
 
-    public long deleteById(Long stationId) {
+    public long deleteById(Long id) {
         String query = "DELETE FROM STATION WHERE id = ?";
-        return jdbcTemplate.update(query, stationId);
+        return jdbcTemplate.update(query, id);
     }
 }
