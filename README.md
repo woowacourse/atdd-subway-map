@@ -1,54 +1,33 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <img alt="npm" src="https://img.shields.io/badge/npm-%3E%3D%205.5.0-blue">
-  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D%209.3.0-blue">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacuorse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
+# 기능 요구사항
+- [ ] 지하철 노선 등록
+    - [ ] 중복 이름 생성 불가
+    
+- [ ] 지하철 역 삭제
+  
+- [ ] 지하철 역 이름 중복 금지
+  
+- [ ] 지하철 역 이름 끝에 '역' 포함
+  
+- [ ] 지하철 역 이름 길이 '역' 포함 3 ~ 12 글자 제한
 
-<br>
 
-# 지하철 노선도 미션
-스프링 과정 실습을 위한 지하철 노선도 애플리케이션
+- [ ] 노선 목록 조회
+    
+- [ ] 노선 조회
 
-<br>
+- [ ] 노선 수정
 
-## 🚀 Getting Started
+- [ ] 노선 삭제
 
-### Install
-#### npm 설치
-```
-cd frontend
-npm install
-```
-> `frontend` 디렉토리에서 수행해야 합니다.
+- [ ] 노선 이름 중복 금지
 
-### Usage
-#### webpack server 구동
-```
-npm run dev
-```
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+- [ ] 노선 역 이름 끝에 '선' 포함
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+- [ ] 노선 역 이름 길이 '선' 포함 3 ~ 12 글자 제한
 
-<br>
+- [ ] 노선 안 역 검증
+    - [ ] 상행 종점과 하행 종점 같은 역 금지
+    - [ ] 노선 내 중복 역 금지
 
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
+- [ ] 역 간 거리 & 추가 요금 양수만 가능
+- [ ] 역 간 거리 단위 'km'
