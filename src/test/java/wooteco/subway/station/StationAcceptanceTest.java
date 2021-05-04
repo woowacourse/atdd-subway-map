@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "잠실역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -134,5 +134,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        //TODO - body에 담긴 Response 확인하기
     }
 }

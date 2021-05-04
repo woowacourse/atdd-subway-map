@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,9 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<StationResponse> deleteStation(@PathVariable Long id) {
+        StationResponse stationResponse = StationService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(stationResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

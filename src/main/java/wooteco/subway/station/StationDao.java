@@ -32,4 +32,14 @@ public class StationDao {
         return stations.stream()
                 .anyMatch(station -> station.getName().equals(name));
     }
+
+    public static Optional<Station> findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst();
+    }
+
+    public static void delete(Station station) {
+        stations.remove(station);
+    }
 }
