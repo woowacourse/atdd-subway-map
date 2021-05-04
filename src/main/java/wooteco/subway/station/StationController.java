@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,7 +30,12 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<String> deleteStation(@PathVariable Long id) {
+        Optional<Station> station = StationDao.findById(id);
+        if(!station.isPresent()) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+        StationDao.delete(station.get());
         return ResponseEntity.noContent().build();
     }
 }

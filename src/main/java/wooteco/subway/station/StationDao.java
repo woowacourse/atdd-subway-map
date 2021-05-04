@@ -27,4 +27,14 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static Optional<Station> findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst();
+    }
+
+    public static void delete(Station station) {
+        stations.remove(station);
+    }
 }
