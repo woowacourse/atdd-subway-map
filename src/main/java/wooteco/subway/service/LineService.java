@@ -5,6 +5,7 @@ import wooteco.subway.controller.dto.request.LineEditRequest;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -14,8 +15,14 @@ import java.util.stream.Collectors;
 public class LineService {
     private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
 
+    private final LineJdbcDao lineJdbcDao;
+
+    public LineService(LineJdbcDao lineJdbcDao) {
+        this.lineJdbcDao = lineJdbcDao;
+    }
+
     public LineResponse createLine(LineRequest lineRequest) {
-        Line newLine = LineDao.save(lineRequest.getName(), lineRequest.getColor());
+        Line newLine = lineJdbcDao.save(lineRequest.getName(), lineRequest.getColor());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
