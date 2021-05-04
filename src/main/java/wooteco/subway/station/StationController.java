@@ -10,26 +10,33 @@ import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
+    private final StationService stationService;
+
+    public StationController() {
+        this.stationService = new StationService();
+    }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = stationService.createStation(stationRequest.getName());
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+                             .body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+                                                         .map(it -> new StationResponse(it.getId(), it.getName()))
+                                                         .collect(Collectors.toList());
+        return ResponseEntity.ok()
+                             .body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                             .build();
     }
 }
