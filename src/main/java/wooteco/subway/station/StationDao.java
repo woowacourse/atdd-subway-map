@@ -6,15 +6,28 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import wooteco.subway.exception.DuplicatedNameException;
 
 public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
+        validateDuplicatedName(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private static void validateDuplicatedName(Station station) {
+        if (isDuplicate(station)) {
+            throw new DuplicatedNameException();
+        }
+    }
+
+    private static boolean isDuplicate(Station newStation) {
+        return stations.stream()
+            .anyMatch(station -> station.isSameName(newStation));
     }
 
     public static List<Station> findAll() {
@@ -26,5 +39,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void deleteAll() {
+        stations.clear();
     }
 }
