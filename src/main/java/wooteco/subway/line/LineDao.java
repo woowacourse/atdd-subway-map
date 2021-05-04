@@ -53,6 +53,7 @@ public class LineDao {
     }
 
     public void updateById(Long id, Line line) {
+        validateToSave(line);
         List<Line> linesToUpdate = lines.stream()
                 .map(persistLine -> persistLine.getId().equals(id) ? line : persistLine)
                 .collect(Collectors.toList());
