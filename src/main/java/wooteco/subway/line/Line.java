@@ -35,4 +35,12 @@ public class Line {
     public String getColor() {
         return color;
     }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setColor(final String color) {
+        this.color = color;
+    }
 }

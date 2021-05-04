@@ -201,4 +201,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("특정 노선을 수정한다.")
+    @Test
+    public void updateLine() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-white-400");
+        params.put("name", "구미선");
+        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
+
+        //when
+        final String color = "bg-purple-406";
+        final String name = "대구선";
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("color", color);
+        updateParams.put("name", name);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/"+String.valueOf(responseId))
+            .then().log().all()
+            .extract();
+
+        ExtractableResponse<Response> checkLineResponse = RestAssured.given().log().all()
+            .when()
+            .get("/lines/"+String.valueOf(responseId))
+            .then().log().all()
+            .extract();
+
+        LineResponse lineResponse = checkLineResponse.jsonPath().getObject(".", LineResponse.class);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getColor()).isEqualTo(color);
+    }
 }

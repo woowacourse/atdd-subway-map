@@ -49,4 +49,14 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public static void update(int id, Line line) {
+        Line targetLine = lines.stream()
+            .filter(element -> element.getId() == id)
+            .findAny()
+            .orElseThrow(() -> new VoidLineException("[Error] 해당 노선이 존재하지 않습니다."));
+
+        targetLine.setColor(line.getColor());
+        targetLine.setName(line.getName());
+    }
 }

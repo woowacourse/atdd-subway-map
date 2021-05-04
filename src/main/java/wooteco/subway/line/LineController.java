@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.exception.DuplicatedLineNameException;
@@ -46,6 +47,18 @@ public class LineController {
             LineResponse lineResponse = new LineResponse(line.getId(), line.getName(),
                 line.getColor());
             return ResponseEntity.ok().body(lineResponse);
+        } catch (VoidLineException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest,
+        @PathVariable Long id) {
+        try {
+            Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+            LineDao.update(id.intValue(), line);
+            return ResponseEntity.ok().build();
         } catch (VoidLineException e) {
             return ResponseEntity.badRequest().build();
         }
