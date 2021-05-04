@@ -1,6 +1,10 @@
 package wooteco.subway.station;
 
+import wooteco.subway.exception.StationSuffixException;
+
 public class Station {
+    private static final String SUFFIX = "역";
+
     private Long id;
     private String name;
 
@@ -13,7 +17,18 @@ public class Station {
     }
 
     public Station(String name) {
+        validateSuffix(name);
         this.name = name;
+    }
+
+    private void validateSuffix(String name) {
+        if (isNotEndsWithStation(name)) {
+            throw new StationSuffixException();
+        }
+    }
+
+    private boolean isNotEndsWithStation(String name) {
+        return !name.endsWith(SUFFIX);
     }
 
     public Long getId() {
