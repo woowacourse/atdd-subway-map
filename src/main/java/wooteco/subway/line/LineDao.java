@@ -32,4 +32,8 @@ public class LineDao {
             .filter(line -> line.isSameName(name))
             .findAny();
     }
+
+    public static List<Line> findALl() {
+        return lines;
+}
 }

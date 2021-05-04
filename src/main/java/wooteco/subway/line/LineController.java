@@ -1,10 +1,14 @@
 package wooteco.subway.line;
 
 import java.net.URI;
+import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.station.StationResponse;
 
 @RestController
 public class LineController {
@@ -19,5 +23,10 @@ public class LineController {
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        return ResponseEntity.ok().body(lineService.findLines());
     }
 }

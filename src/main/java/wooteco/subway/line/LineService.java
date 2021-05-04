@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -27,5 +29,11 @@ public class LineService {
             .ifPresent(station -> {
                 throw new IllegalStateException("중복된 이름의 노선입니다.");
             });
+    }
+
+    public List<LineResponse> findLines() {
+        return LineDao.findALl().stream().
+            map(LineResponse::from).
+            collect(Collectors.toList());
     }
 }
