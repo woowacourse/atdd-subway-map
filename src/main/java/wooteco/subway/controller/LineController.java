@@ -26,10 +26,17 @@ public class LineController {
     }
 
     @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponseDto> createLine(@RequestBody LineRequestDto lineRequest) {
-        LineResponseDto lineResponseDto = lineService.createLine(lineRequest);
+    public ResponseEntity<LineResponseDto> createLine(@RequestBody LineRequestDto lineRequestDto) {
+        LineResponseDto lineResponseDto = lineService.createLine(lineRequestDto);
         return ResponseEntity
             .created(URI.create("/lines/" + lineResponseDto.getId()))
+            .body(lineResponseDto);
+    }
+
+    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponseDto> showOneLine(@PathVariable Long id) {
+        LineResponseDto lineResponseDto = lineService.getLineById(id);
+        return ResponseEntity.ok()
             .body(lineResponseDto);
     }
 
@@ -38,13 +45,6 @@ public class LineController {
         List<LineResponseDto> lineResponses = lineService.getAllLines();
         return ResponseEntity.ok()
             .body(lineResponses);
-    }
-
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponseDto> showOneLine(@PathVariable Long id) {
-        LineResponseDto lineResponseDto = lineService.getLineById(id);
-        return ResponseEntity.ok()
-            .body(lineResponseDto);
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

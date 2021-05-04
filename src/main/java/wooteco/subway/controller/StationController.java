@@ -17,28 +17,30 @@ import java.util.List;
 
 @RestController
 public class StationController {
-
     private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
-    public ResponseEntity<StationResponseDto> createStation(@RequestBody StationRequestDto stationRequest) {
-        StationResponseDto stationResponse = stationService.createStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+    @PostMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StationResponseDto> createStation(@RequestBody StationRequestDto stationRequestDto) {
+        StationResponseDto stationResponseDto = stationService.createStation(stationRequestDto);
+        return ResponseEntity
+            .created(URI.create("/stations/" + stationResponseDto.getId()))
+            .body(stationResponseDto);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponseDto>> showStations() {
-        List<StationResponseDto> stationResponses = stationService.showStations();
-        return ResponseEntity.ok().body(stationResponses);
+    public ResponseEntity<List<StationResponseDto>> showAllStations() {
+        List<StationResponseDto> allStationResponses = stationService.getAllStations();
+        return ResponseEntity.ok()
+            .body(allStationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationService.deleteStation(id);
+    @DeleteMapping(value = "/stations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteStationById(@PathVariable Long id) {
+        stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
 }

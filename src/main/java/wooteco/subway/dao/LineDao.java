@@ -26,17 +26,17 @@ public class LineDao {
                     resultSet.getString("name"),
                     resultSet.getString("color"));
 
-    public Line save(String name, String color) {
+    public Line save(Line line) {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, color);
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
         Long createdLineId = keyHolder.getKey().longValue();
-        return new Line(createdLineId, name, color);
+        return new Line(createdLineId, line);
     }
 
     public List<Line> findAll() {
@@ -60,7 +60,7 @@ public class LineDao {
         return Optional.ofNullable(result);
     }
 
-    public Long edit(Long lineId, String color, String name) {
+    public Long update(Long lineId, String color, String name) {
         String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
         return (long) jdbcTemplate.update(query, color, name, lineId);
     }

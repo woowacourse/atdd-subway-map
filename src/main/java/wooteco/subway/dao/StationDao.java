@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public class StationDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,19 +22,19 @@ public class StationDao {
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
             new Station(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"));
+                resultSet.getLong("id"),
+                resultSet.getString("name"));
 
-    public Station save(String name) {
+    public Station save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
+            ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
         Long createdStationId = keyHolder.getKey().longValue();
-        return new Station(createdStationId, name);
+        return new Station(createdStationId, station.getName());
     }
 
     public Optional<Station> findByName(String name) {
@@ -50,8 +50,8 @@ public class StationDao {
         return jdbcTemplate.query(query, stationRowMapper);
     }
 
-    public Long deleteById(Long stationId) {
+    public long deleteById(Long stationId) {
         String query = "DELETE FROM STATION WHERE id = ?";
-        return (long) jdbcTemplate.update(query, stationId);
+        return jdbcTemplate.update(query, stationId);
     }
 }
