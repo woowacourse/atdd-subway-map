@@ -11,24 +11,24 @@ public final class StationDao {
     private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(final Station station) {
-        if (isAlreadyExist(station)) {
+        Station persistStation = createNewObject(station);
+        if (isDuplicatedName(persistStation)) {
             throw new StationException("이미 존재하는 역 이름입니다.");
         }
-
-        Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
     }
 
-    private static boolean isAlreadyExist(final Station station) {
-        return stations.contains(station);
+    private static boolean isDuplicatedName(final Station other) {
+        return stations.stream()
+                .anyMatch(station -> station.sameName(other));
     }
 
     public static List<Station> findAll() {
         return stations;
     }
 
-    public static void delete(final Long id){
+    public static void delete(final Long id) {
         final Station station = findById(id);
         stations.remove(station);
     }

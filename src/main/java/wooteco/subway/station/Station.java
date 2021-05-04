@@ -27,7 +27,11 @@ public class Station {
     }
 
     public final boolean isId(final Long id) {
-        return this.id == id;
+        return this.id.equals(id);
+    }
+
+    public final boolean sameName(final Station other) {
+        return this.name.equals(other.name);
     }
 
     @Override
