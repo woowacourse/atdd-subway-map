@@ -32,10 +32,10 @@
     - [ ] 상행 종점과 하행 종점 같은 역 금지
     - [ ] 노선 내 중복 역 금지
 
-- [ ] Spring JDBC 의존성 추가
+- [x] Spring JDBC 의존성 추가
     - [x] LineDao JdbcTemplate 추가
-    - [ ] StationDao JdbcTemplate 추가
+    - [x] StationDao JdbcTemplate 추가
 
 - [x] H2 데이터베이스 설정
 
-- [ ] 스프링 빈 활용
+- [x] 스프링 빈 활용

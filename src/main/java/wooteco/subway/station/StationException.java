@@ -6,15 +6,15 @@ public final class StationException extends IllegalArgumentException {
         super("유효하지 않은 역입니다.");
     }
 
-    public StationException(String s) {
+    public StationException(final String s) {
         super(s);
     }
 
-    public StationException(String message, Throwable cause) {
+    public StationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public StationException(Throwable cause) {
+    public StationException(final Throwable cause) {
         super(cause);
     }
 }

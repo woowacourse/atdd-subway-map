@@ -9,29 +9,37 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/stations")
 public final class StationController {
 
-    @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        final Station station = new Station(stationRequest.getName());
-        final Station newStation = StationDao.save(station);
-        final StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
+    private final StationDao stationDao;
 
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    public StationController(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
+        final String name = stationRequest.getName();
+        final Long id = stationDao.save(name);
+
+        final StationResponse stationResponse = new StationResponse(id, name);
+        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        final List<Station> stations = StationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
+
         final List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        StationDao.delete(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteStation(@PathVariable final Long id) {
+        stationDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
