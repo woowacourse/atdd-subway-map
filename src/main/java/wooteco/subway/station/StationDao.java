@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.StationDuplicationException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,9 +13,21 @@ public class StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
+        validateDuplicatedStation(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    private static void validateDuplicatedStation(Station newStation) {
+        if (isDuplicated(newStation)) {
+            throw new StationDuplicationException();
+        }
+    }
+
+    private static boolean isDuplicated(Station newStation) {
+        return stations.stream()
+                .anyMatch(station -> station.equals(newStation));
     }
 
     public static List<Station> findAll() {
