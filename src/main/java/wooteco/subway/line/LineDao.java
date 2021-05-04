@@ -10,9 +10,9 @@ import java.util.List;
 
 public class LineDao {
 
-    private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
     private static LineDao instance;
+    private Long seq = 0L;
+    private final List<Line> lines = new ArrayList<>();
 
     private LineDao() {
     }
@@ -47,12 +47,12 @@ public class LineDao {
 
     private boolean isDuplicatedName(Line newLine) {
         return lines.stream()
-                .anyMatch(line -> line.isSameName(newLine));
+            .anyMatch(line -> line.isSameName(newLine));
     }
 
     private boolean isDuplicatedColor(Line newLine) {
         return lines.stream()
-                .anyMatch(line -> line.isSameColor(newLine));
+            .anyMatch(line -> line.isSameColor(newLine));
     }
 
     public List<Line> findAll() {

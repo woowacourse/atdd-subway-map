@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.StationResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -29,8 +28,8 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.lines();
         List<LineResponse> lineResponses = lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-                .collect(Collectors.toList());
+            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+            .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 

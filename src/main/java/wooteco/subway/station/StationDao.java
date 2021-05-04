@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StationDao {
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
     private static StationDao instance;
+    private Long seq = 0L;
+    private final List<Station> stations = new ArrayList<>();
 
     private StationDao() {
     }
@@ -38,7 +38,7 @@ public class StationDao {
 
     private boolean isDuplicated(Station newStation) {
         return stations.stream()
-                .anyMatch(station -> station.isSameName(newStation));
+            .anyMatch(station -> station.isSameName(newStation));
     }
 
     public List<Station> findAll() {

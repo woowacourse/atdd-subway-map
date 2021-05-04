@@ -4,8 +4,8 @@ import java.util.List;
 
 public class LineService {
 
-    private final LineDao lineDao;
     private static LineService instance;
+    private final LineDao lineDao;
 
     private LineService() {
         this.lineDao = LineDao.getInstance();
