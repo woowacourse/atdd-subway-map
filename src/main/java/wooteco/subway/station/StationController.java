@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 @RestController
 public class StationController {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StationResponse> exceptionHandler(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());

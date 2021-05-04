@@ -13,8 +13,17 @@ public class StationDao {
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
-        stations.add(persistStation);
+        if (isPersist(persistStation)) {
+            throw new IllegalArgumentException("이미 존재하는 역입니다.");
+        }
+        stations.add(station);
         return persistStation;
+    }
+
+    private static boolean isPersist(Station persistStation) {
+        return stations.stream()
+            .anyMatch(
+                persistedStation -> persistedStation.getName().equals(persistStation.getName()));
     }
 
     public static List<Station> findAll() {
@@ -26,5 +35,9 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void deleteAll() {
+        stations.clear();
     }
 }
