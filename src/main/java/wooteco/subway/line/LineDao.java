@@ -43,4 +43,15 @@ public class LineDao {
             .findFirst()
             .orElseThrow(NotExistItemException::new);
     }
+
+    public Line update(Line newLine) {
+        Line line = lines.stream()
+            .filter(it -> it.isSameId(newLine.getId()))
+            .findFirst()
+            .orElseThrow(NotExistItemException::new);
+
+        lines.remove(line);
+        lines.add(newLine);
+        return newLine;
+    }
 }

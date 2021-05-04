@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,5 +74,23 @@ class LineDaoTest {
     void notExistLineFindException() {
         assertThatThrownBy(() -> lineDao.findById(1L))
             .isInstanceOf(NotExistItemException.class);
+    }
+
+    @Test
+    @DisplayName("노선의 이름 또는 색상을 수정한다.")
+    void update() {
+        Line line2 = new Line("2호선", "bg-green-600");
+        Line newLine = new Line(1L, "3호선", "bg-orange-600");
+
+        lineDao.save(line2);
+        assertThat(lineDao.update(newLine)).isSameAs(newLine);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선의 이름 또는 색상을 수정하면, 오류가 발생한다.")
+    void notExistLineUpdateException() {
+        Line newLine = new Line(1L, "3호선", "bg-orange-600");
+
+        assertThatThrownBy(() -> lineDao.update(newLine)).isInstanceOf(NotExistItemException.class);
     }
 }
