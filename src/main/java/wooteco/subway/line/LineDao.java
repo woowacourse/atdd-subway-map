@@ -33,11 +33,21 @@ public class LineDao {
                 .findFirst();
     }
 
+    public static void update(Long id, String color, String name) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다.");
+        }
+        lines.add(new Line(id, color, name));
+    }
+
+    public static void delete(Line line) {
+        lines.remove(line);
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
-
 }

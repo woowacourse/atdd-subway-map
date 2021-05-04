@@ -24,4 +24,8 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다."));
         return new LineResponse(line);
     }
+
+    public static void updateById(Long id, String color, String name) {
+        LineDao.update(id, color, name);
+    }
 }

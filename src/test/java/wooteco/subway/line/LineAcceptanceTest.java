@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createLineWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -72,8 +72,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 조회한다.")
     @Test
-    void getStations() {
-        /// given
+    void getLines() {
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "1호선");
@@ -116,8 +116,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("특정 노선을 조회한다.")
     @Test
-    void getStation() {
-        /// given
+    void getLine() {
+        // given
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "1호선");
@@ -152,5 +152,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().get("id").toString()).isEqualTo("1");
         assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("1호선");
         assertThat(response.body().jsonPath().get("color").toString()).isEqualTo("bg-red-600");
+    }
+
+    @DisplayName("노선 업데이트한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "1호선");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        //when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-yellow-600");
+        params2.put("name", "2호선");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.header("Date")).isNotBlank();
     }
 }
