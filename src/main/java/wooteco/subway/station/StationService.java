@@ -4,10 +4,11 @@ import java.util.List;
 
 public class StationService {
 
+    private final StationDao stationDao;
     private static StationService instance;
 
     private StationService() {
-
+        this.stationDao = StationDao.getInstance();
     }
 
     public static StationService getInstance() {
@@ -18,14 +19,14 @@ public class StationService {
     }
 
     public Station add(String name) {
-        return StationDao.save(new Station(name));
+        return stationDao.save(new Station(name));
     }
 
     public List<Station> stations() {
-        return StationDao.findAll();
+        return stationDao.findAll();
     }
 
     public void delete(Long id) {
-        StationDao.delete(id);
+        stationDao.delete(id);
     }
 }

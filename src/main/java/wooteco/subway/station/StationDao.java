@@ -6,46 +6,53 @@ import wooteco.subway.exception.StationDuplicationException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private Long seq = 0L;
+    private List<Station> stations = new ArrayList<>();
+    private static StationDao instance;
 
     private StationDao() {
-
     }
 
-    public static Station save(Station station) {
+    public static StationDao getInstance() {
+        if (instance == null) {
+            instance = new StationDao();
+        }
+
+        return instance;
+    }
+
+    public Station save(Station station) {
         validateDuplicatedStation(station);
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
     }
 
-    private static void validateDuplicatedStation(Station newStation) {
+    private void validateDuplicatedStation(Station newStation) {
         if (isDuplicated(newStation)) {
             throw new StationDuplicationException();
         }
     }
 
-    private static boolean isDuplicated(Station newStation) {
+    private boolean isDuplicated(Station newStation) {
         return stations.stream()
                 .anyMatch(station -> station.isSameName(newStation));
     }
 
-    public static List<Station> findAll() {
+    public List<Station> findAll() {
         return stations;
     }
 
-    private static Station createNewObject(Station station) {
+    private Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
 
-    public static void delete(Long id) {
+    public void delete(Long id) {
         stations.stream()
             .filter(station -> station.isSameId(id))
             .findAny()

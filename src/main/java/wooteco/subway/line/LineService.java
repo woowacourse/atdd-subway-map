@@ -4,10 +4,11 @@ import java.util.List;
 
 public class LineService {
 
+    private final LineDao lineDao;
     private static LineService instance;
 
     private LineService() {
-
+        this.lineDao = LineDao.getInstance();
     }
 
     public static LineService getInstance() {
@@ -18,22 +19,22 @@ public class LineService {
     }
 
     public Line add(String name, String color) {
-        return LineDao.save(new Line(name, color));
+        return lineDao.save(new Line(name, color));
     }
 
     public List<Line> lines() {
-        return LineDao.findAll();
+        return lineDao.findAll();
     }
 
     public Line line(Long id) {
-        return LineDao.findById(id);
+        return lineDao.findById(id);
     }
 
     public void update(Long id, String name, String color) {
-        LineDao.update(id, name, color);
+        lineDao.update(id, name, color);
     }
 
     public void delete(Long id) {
-        LineDao.delete(id);
+        lineDao.delete(id);
     }
 }
