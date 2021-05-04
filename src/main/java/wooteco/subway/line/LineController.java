@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,8 @@ public class LineController {
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
 
-        if (lineDao.findLineByName(lineRequest.getName()).isPresent()) {
+        final Optional<Line> lineByName = lineDao.findLineByName(lineRequest.getName());
+        if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
             throw new LineNameDuplicatedException();
         }
 

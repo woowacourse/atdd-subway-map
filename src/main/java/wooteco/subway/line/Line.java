@@ -41,4 +41,8 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public boolean isNotSameId(Long id) {
+        return !this.id.equals(id);
+    }
 }
