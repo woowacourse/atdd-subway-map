@@ -28,24 +28,24 @@ public class LineService {
         return new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    public List<LineResponseDto> showLines() {
+    public List<LineResponseDto> getAllLines() {
         List<Line> lines = lineJdbcDao.findAll();
         return lines.stream()
                 .map(it -> new LineResponseDto(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
-    public LineResponseDto showLine(Long lineId) {
+    public LineResponseDto getLineById(Long lineId) {
         Line foundLine = lineJdbcDao.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
         return new LineResponseDto(foundLine.getId(), foundLine.getName(), foundLine.getName());
     }
 
-    public long editLine(Long lineId, LineEditRequestDto request) {
+    public long updateLine(Long lineId, LineEditRequestDto request) {
         return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
     }
 
-    public long deleteLine(Long lineId) {
+    public long deleteLineById(Long lineId) {
         return lineJdbcDao.deleteById(lineId);
     }
 }

@@ -25,35 +25,39 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponseDto> createLine(@RequestBody LineRequestDto lineRequest) {
-        LineResponseDto lineResponse = lineService.createLine(lineRequest);
-        return ResponseEntity.created(
-                URI.create("/lines/" + lineResponse.getId())
-        ).body(lineResponse);
+        LineResponseDto lineResponseDto = lineService.createLine(lineRequest);
+        return ResponseEntity
+            .created(URI.create("/lines/" + lineResponseDto.getId()))
+            .body(lineResponseDto);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponseDto>> showAllLines() {
-        List<LineResponseDto> lineResponses = lineService.showLines();
-        return ResponseEntity.ok().body(lineResponses);
+        List<LineResponseDto> lineResponses = lineService.getAllLines();
+        return ResponseEntity.ok()
+            .body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponseDto> showOneLine(@PathVariable Long lineId) {
-        LineResponseDto lineResponse = lineService.showLine(lineId);
-        return ResponseEntity.ok().body(lineResponse);
+    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponseDto> showOneLine(@PathVariable Long id) {
+        LineResponseDto lineResponseDto = lineService.getLineById(id);
+        return ResponseEntity.ok()
+            .body(lineResponseDto);
     }
 
-    @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {
-        lineService.editLine(lineId, request);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).build();
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineEditRequestDto request) {
+        lineService.updateLine(id, request);
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .build();
     }
 
-    @DeleteMapping("/lines/{lineId}")
-    public ResponseEntity deleteLine(@PathVariable Long lineId) {
-        lineService.deleteLine(lineId);
+    @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 }
