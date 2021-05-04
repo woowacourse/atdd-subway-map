@@ -1,27 +1,25 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
+
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
 public class StationService {
-    private StationDao stationDao;
-
-    public StationService() {
-        stationDao = new StationDao();
-    }
 
     public Station save(String stationName) {
         Station station = new Station(stationName);
-        if (stationDao.find(stationName).isPresent()) {
+        if (StationDao.findByName(stationName).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 역이 있습니다;");
         }
-        return stationDao.save(station);
+        return StationDao.save(station);
     }
 
     public List<Station> findAll() {
-        return stationDao.findAll();
+        return StationDao.findAll();
     }
 
     public void delete(Long id) {
-        stationDao.delete(id);
+        StationDao.delete(id);
     }
 }
