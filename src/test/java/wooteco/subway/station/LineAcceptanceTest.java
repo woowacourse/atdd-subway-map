@@ -153,4 +153,52 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
+    @DisplayName("특정 노선을 조회한다.")
+    @Test
+    public void specificLine() {
+        //given
+        final String color = "bg-purple-405";
+        final String name = "부산선";
+        Map<String, String> params = new HashMap<>();
+        params.put("color", color);
+        params.put("name", name);
+        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/"+String.valueOf(responseId))
+            .then().log().all()
+            .extract();
+
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getColor()).isEqualTo(color);
+    }
+
+    @DisplayName("존재하지 않는 노선을 조회한다.")
+    @Test
+    public void voidLine() {
+        //given
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/"+String.valueOf(999))
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
