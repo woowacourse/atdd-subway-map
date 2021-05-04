@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.exception.DuplicatedNameException;
 
 import java.net.URI;
 import java.util.List;
@@ -30,6 +31,12 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
+        StationDao.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(DuplicatedNameException.class)
+    public ResponseEntity duplicatedException() {
+        return ResponseEntity.badRequest().build();
     }
 }
