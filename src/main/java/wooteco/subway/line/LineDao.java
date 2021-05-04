@@ -52,7 +52,7 @@ public class LineDao {
         line = new Line(id, name, color);
     }
 
-    private static Line findById(Long id) {
+    public static Line findById(Long id) {
         return lines.stream()
             .filter(line -> line.isSameId(id))
             .findAny()
