@@ -11,10 +11,20 @@ public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
+    public static void clear() {
+        stations.clear();
+    }
+
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    public static Optional<Station> findByName(final String name) {
+        return stations.stream()
+            .filter(station -> station.isSameName(name))
+            .findAny();
     }
 
     public static List<Station> findAll() {
