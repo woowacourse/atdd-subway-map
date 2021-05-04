@@ -16,6 +16,5 @@ public class AcceptanceTest {
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        StationDao.deleteAll();
     }
 }

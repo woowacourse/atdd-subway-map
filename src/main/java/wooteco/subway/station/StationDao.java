@@ -36,8 +36,4 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
-
-    public static void deleteAll() {
-        stations.clear();
-    }
 }
