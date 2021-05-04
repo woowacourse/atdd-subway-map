@@ -7,7 +7,7 @@
             + request : color, name
             + response : id, name, color
             + [x] 같은 이름 노선 생성 불가 기능 구현 
-        + [ ] 노선 목록 조회 
+        + [x] 노선 목록 조회 
             + request : x
             + response : List(id, name, color)
         + [ ] 단일 노선 조회

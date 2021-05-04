@@ -7,9 +7,8 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
 
 public class LineDao {
-
     private static Long seq = 0L;
-    public static final List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
         validateDuplicatedName(line);
@@ -34,5 +33,9 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static List<Line> findAll() {
+        return lines;
     }
 }
