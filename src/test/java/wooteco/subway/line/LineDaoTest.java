@@ -41,4 +41,13 @@ class LineDaoTest {
         assertThatThrownBy(() -> lineDao.findById(2L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("노선 정보 수정")
+    void update() {
+        Line savedLine = lineDao.save(line);
+        lineDao.update(savedLine.getId(), "9호선", "남색");
+        assertEquals(savedLine.getName(), "9호선");
+        assertEquals(savedLine.getColor(), "남색");
+    }
 }

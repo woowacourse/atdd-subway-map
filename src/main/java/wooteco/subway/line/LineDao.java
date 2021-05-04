@@ -28,6 +28,16 @@ public class LineDao {
         return lines;
     }
 
+    public void update(Long id, String name, String color) {
+        Line targetLine = findById(id);
+        Field nameField = ReflectionUtils.findField(Line.class, "name");
+        Field colorField = ReflectionUtils.findField(Line.class, "color");
+        nameField.setAccessible(true);
+        ReflectionUtils.setField(nameField, targetLine, name);
+        colorField.setAccessible(true);
+        ReflectionUtils.setField(colorField, targetLine, color);
+    }
+
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
