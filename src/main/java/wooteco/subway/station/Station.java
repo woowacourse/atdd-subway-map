@@ -27,5 +27,9 @@ public class Station {
     public boolean equalName(Station station) {
         return this.name.equals(station.name);
     }
+
+    public boolean equalId(Long id) {
+        return this.id.equals(id);
+    }
 }
 

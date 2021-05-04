@@ -34,7 +34,7 @@ public class StationDao {
 
     public static void delete(Long id) {
         Station findByIdStation = stations.stream()
-                .filter(station -> station.getId() == id.intValue())
+                .filter(station -> station.equalId(id))
                 .findFirst()
                 .get();
         stations.remove(findByIdStation);
