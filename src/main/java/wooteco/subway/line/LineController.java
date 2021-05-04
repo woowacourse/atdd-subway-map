@@ -13,46 +13,56 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LineController {
+public final class LineController {
+
+    private final LineDao lineDao;
+
+    public LineController(final LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line newLine = LineDao.save(line);
-        final LineResponse lineResponse = new LineResponse(newLine.getName(), newLine.getColor());
+    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
+        final String name = lineRequest.getName();
+        final String color = lineRequest.getColor();
 
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        final Long id = lineDao.save(name, color);
+        final LineResponse lineResponse = new LineResponse(id, name, color);
+
+        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final String name = lineRequest.getName();
+        final String color = lineRequest.getColor();
 
-        LineDao.update(id, line);
+        lineDao.update(id, name, color);
+
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<Line> lines = LineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
+
         final List<LineResponse> lineResponses = lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        final Line line = LineDao.findById(id);
-        final LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        final Line line = lineDao.findById(id);
 
+        final LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable final Long id) {
-        LineDao.delete(id);
+        lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

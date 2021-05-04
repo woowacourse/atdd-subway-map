@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import wooteco.subway.station.Station;
 
-public class Line {
+public final class Line {
     private Long id;
     private String name;
     private String color;
@@ -13,9 +13,12 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public Line(final Long id, final String name, final String color) {
+        this(id, name, color, null);
+    }
+
+    public Line(final String name, final String color) {
+        this(null, name, color, null);
     }
 
     public Line(final Long id, final String name, final String color, final List<Station> stations) {
@@ -46,11 +49,11 @@ public class Line {
         this.color = color;
     }
 
-    public boolean sameName(Line persistLine) {
+    public boolean sameName(final Line persistLine) {
         return this.name.equals(persistLine.name);
     }
 
-    public boolean isId(Long id) {
+    public boolean isId(final Long id) {
         return this.id.equals(id);
     }
 
