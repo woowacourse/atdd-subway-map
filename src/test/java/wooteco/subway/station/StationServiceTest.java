@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class StationServiceTest {
     private static final String stationName = "잠실역";
-    private static final String 서울역 = "서울역";
 
     @Autowired
     private StationService stationService;

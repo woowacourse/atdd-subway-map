@@ -32,7 +32,7 @@ class StationDaoTest {
 
     @Test
     @DisplayName("이름으로 역 검색")
-    void findById() {
+    void findByName() {
         Optional<Station> findStation = stationDao.findByName(stationName1);
         assertTrue(findStation.isPresent());
     }
@@ -54,9 +54,10 @@ class StationDaoTest {
     @DisplayName("역 삭제 확인")
     void delete() {
         Station savedStation = stationDao.save(stationName2);
-        assertThat(stationDao.findByName(stationName2)).isNotNull();
+        assertTrue(stationDao.findByName(savedStation.getName())
+                             .isPresent());
         stationDao.delete(savedStation.getId());
-        Optional<Station> findStation = stationDao.findByName(savedStation.getName());
-        assertFalse(findStation.isPresent());
+        assertFalse(stationDao.findByName(savedStation.getName())
+                              .isPresent());
     }
 }

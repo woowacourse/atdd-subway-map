@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 public class LineController {
     private final LineService lineService;
 
-    public LineController() {
-        this.lineService = new LineService();
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping

@@ -1,51 +1,75 @@
 package wooteco.subway.line;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.Station;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public class LineDao {
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     private Long seq = 0L;
     private List<Line> lines = new ArrayList<>();
 
-    public Line save(Line line) {
-        Line persistStation = createNewObject(line);
-        lines.add(persistStation);
-        return persistStation;
+    private RowMapper<Line> lineRowMapper() {
+        return (resultSet, rowNum) -> new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+        );
     }
 
-    public Line findById(Long id) {
-        return lines.stream()
-                    .filter(line -> line.getId()
-                                        .equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    public Line save(String name, String color) {
+        String sql = "insert into Line (name, color) values (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, name);
+            ps.setString(2, color);
+            return ps;
+        }, keyHolder);
+        return new Line(keyHolder.getKey()
+                                 .longValue(), name, color);
+    }
+
+    public Optional<Line> findById(Long id) {
+        String sql = "select id, name, color from LINE where id = ?";
+        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), id);
+        return result.stream().findAny();
+    }
+
+    public Optional<Line> findByName(String name) {
+        String sql = "select id, name, color from LINE where name = ?";
+        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), name);
+        return result.stream().findAny();
     }
 
     public List<Line> findAll() {
-        return lines;
+        String sql = "select id, name, color from LINE";
+        return jdbcTemplate.query(sql, lineRowMapper());
     }
 
     public void update(Long id, String name, String color) {
-        Line targetLine = findById(id);
-        Field nameField = ReflectionUtils.findField(Line.class, "name");
-        Field colorField = ReflectionUtils.findField(Line.class, "color");
-        nameField.setAccessible(true);
-        ReflectionUtils.setField(nameField, targetLine, name);
-        colorField.setAccessible(true);
-        ReflectionUtils.setField(colorField, targetLine, color);
-    }
-
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+        String sql = "update LINE set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     public void delete(Long id) {
-        lines.remove(findById(id));
+        String sql = "delete from LINE where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
