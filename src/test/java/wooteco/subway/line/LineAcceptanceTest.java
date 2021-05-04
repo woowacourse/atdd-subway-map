@@ -348,4 +348,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("이미 존재하는 색으로 노선을 수정한다.")
+    @Test
+    void updateLineWithDuplicateColor() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-blue-600");
+        params2.put("name", "분당선");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("color", "bg-blue-600");
+        params3.put("name", "2호선");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .body(params3)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .put("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
