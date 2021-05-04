@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -21,10 +22,20 @@ public class StationDao {
         return stations;
     }
 
+    public static Optional<Station> findById(long id) {
+        return stations.stream()
+            .filter(station -> station.getId() == id)
+            .findAny();
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void deleteById(long id) {
+        stations.removeIf(station -> station.getId() == id);
     }
 }

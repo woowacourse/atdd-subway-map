@@ -17,4 +17,13 @@ public class StationService {
         return StationDao.save(station);
     }
 
+    public List<Station> findAll() {
+        return StationDao.findAll();
+    }
+
+    public void deleteById(long id) {
+        StationDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("삭제할 수 없습니다."));
+        StationDao.deleteById(id);
+    }
 }
