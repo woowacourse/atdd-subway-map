@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
-        if(lineRequest.isSameStations()){
+        if (lineRequest.isSameStations()) {
             throw new IllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
         }
         Line line = lineRequestToLine(lineRequest);
