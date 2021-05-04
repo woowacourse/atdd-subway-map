@@ -7,16 +7,23 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.exception.DuplicatedStationNameException;
 
 @RestController
 public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        try {
+            Station station = new Station(stationRequest.getName());
+            Station newStation = StationDao.save(station);
+            StationResponse stationResponse = new StationResponse(newStation.getId(),
+                newStation.getName());
+            return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+                .body(stationResponse);
+        } catch (DuplicatedStationNameException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
