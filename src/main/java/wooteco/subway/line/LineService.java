@@ -43,4 +43,10 @@ public class LineService {
         Line updatedLine = new Line(lineRequest.getName(), lineRequest.getColor());
         LineDao.update(currentLine, updatedLine);
     }
+
+    public void deleteLine(Long id) {
+        Line line = LineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        LineDao.delete(line);
+    }
 }

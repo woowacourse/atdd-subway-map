@@ -119,7 +119,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("id", "1");
         params1.put("name", "분당선");
         params1.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -150,12 +149,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("id", "1");
         params.put("name", "2호선");
         params.put("color", "bg-blue-600");
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("id", "1");
         params2.put("name", "신분당");
         params2.put("color", "bg-blue-600");
 
@@ -192,7 +189,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLineWhenDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("id", "1");
         params.put("name", "2호선");
         params.put("color", "bg-blue-600");
 
@@ -201,12 +197,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> originalResponse = RestAssured.given().log().all()
-                .when()
-                .get("/lines/1")
                 .then().log().all()
                 .extract();
 
@@ -221,5 +211,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        int originalSize = LineDao.findAll().size();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(LineDao.findAll()).hasSize(originalSize - 1);
     }
 }

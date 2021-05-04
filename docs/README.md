@@ -39,7 +39,7 @@
         - PUT, /lines/{id}, BODY : {color, name}
     - res
         - 200 OK
-- [ ] 노선 삭제
+- [x] 노선 삭제``
     - req
         - DELETE, /lines/{id}
     - res

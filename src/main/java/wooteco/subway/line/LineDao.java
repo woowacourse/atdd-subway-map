@@ -38,6 +38,10 @@ public class LineDao {
     public static void update(Line currentLine, Line updatedLine) {
         IntStream.range(0, lines.size())
                 .filter(i -> lines.get(i).equals(currentLine))
-                .mapToObj(i -> lines.set(i, updatedLine))
+                .mapToObj(i -> lines.set(i, updatedLine));
+    }
+
+    public static void delete(Line line) {
+        lines.remove(line);
     }
 }
