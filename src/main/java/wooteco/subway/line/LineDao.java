@@ -57,4 +57,9 @@ public class LineDao {
 
         lines.remove(line);
     }
+
+    public void deleteAll() {
+        lines.clear();
+        seq = 0L;
+    }
 }
