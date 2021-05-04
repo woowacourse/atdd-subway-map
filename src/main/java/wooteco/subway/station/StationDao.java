@@ -1,12 +1,13 @@
 package wooteco.subway.station;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+@Component
 public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
@@ -35,11 +36,6 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
-    }
-
-    public static void update(Station station) {
-        deleteById(station.getId());
-        stations.add(station);
     }
 
     public static void deleteById(Long id) {

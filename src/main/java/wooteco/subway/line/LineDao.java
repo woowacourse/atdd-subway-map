@@ -4,8 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 
+@Component
 public class LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
