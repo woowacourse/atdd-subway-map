@@ -1,20 +1,20 @@
 package wooteco.subway.line;
 
-public class LineException extends IllegalArgumentException {
+public final class LineException extends IllegalArgumentException {
 
     public LineException() {
         super("유효하지 않은 노선입니다.");
     }
 
-    public LineException(String s) {
+    public LineException(final String s) {
         super(s);
     }
 
-    public LineException(String message, Throwable cause) {
+    public LineException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public LineException(Throwable cause) {
+    public LineException(final Throwable cause) {
         super(cause);
     }
 }

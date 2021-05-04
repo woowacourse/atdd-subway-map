@@ -10,15 +10,8 @@ public final class Line {
     private String color;
     private List<Station> stations;
 
-    public Line() {
-    }
-
     public Line(final Long id, final String name, final String color) {
         this(id, name, color, null);
-    }
-
-    public Line(final String name, final String color) {
-        this(null, name, color, null);
     }
 
     public Line(final Long id, final String name, final String color, final List<Station> stations) {
@@ -38,23 +31,6 @@ public final class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
-    }
-
-    public void update(final String name, final String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public boolean sameName(final Line persistLine) {
-        return this.name.equals(persistLine.name);
-    }
-
-    public boolean isId(final Long id) {
-        return this.id.equals(id);
     }
 
     @Override

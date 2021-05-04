@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/lines")
 public final class LineController {
 
     private final LineDao lineDao;
@@ -21,7 +23,7 @@ public final class LineController {
         this.lineDao = lineDao;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         final String name = lineRequest.getName();
         final String color = lineRequest.getColor();
@@ -32,17 +34,7 @@ public final class LineController {
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
-    @PutMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
-        final String name = lineRequest.getName();
-        final String color = lineRequest.getColor();
-
-        lineDao.update(id, name, color);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/lines")
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         final List<Line> lines = lineDao.findAll();
 
@@ -52,7 +44,7 @@ public final class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         final Line line = lineDao.findById(id);
 
@@ -60,7 +52,17 @@ public final class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @DeleteMapping("/lines/{id}")
+    @PutMapping("/{id}")
+    public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
+        final String name = lineRequest.getName();
+        final String color = lineRequest.getColor();
+
+        lineDao.update(id, name, color);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable final Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();

@@ -1,21 +1,14 @@
 package wooteco.subway.line;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 @Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static final List<Line> lines = new ArrayList<>();
 
     private final JdbcTemplate jdbcTemplate;
     private final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -39,7 +32,7 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
-    public void delete(final Long id){
+    public void delete(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -50,10 +43,10 @@ public class LineDao {
     }
 
     public Line findById(final Long id) {
-        final String sql = "SELECT * FROM LINE WHERE id = ?";
-        try{
+        try {
+            final String sql = "SELECT * FROM LINE WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Line.class, id);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new LineException("존재하지 않는 노선입니다.");
         }
     }
@@ -65,9 +58,13 @@ public class LineDao {
 
     public List<Line> findAll() {
         final String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(sql, (rs, rn) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")));
+        return jdbcTemplate.query(
+                sql,
+                (rs, rn) -> new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")
+                )
+        );
     }
 }
