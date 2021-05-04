@@ -23,5 +23,9 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    public boolean hasSameName(Station station) {
+        return getName().equals(station.getName());
+    }
 }
 
