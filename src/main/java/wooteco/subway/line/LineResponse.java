@@ -17,6 +17,12 @@ public class LineResponse {
         this.stations = stations;
     }
 
+    public LineResponse(Line newLine) {
+        this.id = newLine.getId();
+        this.name = newLine.getName();
+        this.color = newLine.getColor();
+    }
+
     public Long getId() {
         return id;
     }

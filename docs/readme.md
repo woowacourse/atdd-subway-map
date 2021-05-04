@@ -3,9 +3,10 @@
     + [x] 역 관리
         + [x] 같은 이름 지하철역 생성 불가 기능 구현
     + [ ] 노선 관리
-        + [ ] 노선 생성 기능 구현
+        + [x] 노선 생성 기능 구현
             + request : color, name
             + response : id, name, color
+            + [ ] 같은 이름 노선 생성 불가 기능 구현 
         + [ ] 노선 목록 조회 
             + request : x
             + response : List(id, name, color)
