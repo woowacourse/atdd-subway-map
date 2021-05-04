@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineResponseDto;
-import wooteco.subway.dao.LineJdbcDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public class LineService {
     private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
 
-    private final LineJdbcDao lineJdbcDao;
+    private final LineDao lineJdbcDao;
 
-    public LineService(LineJdbcDao lineJdbcDao) {
+    public LineService(LineDao lineJdbcDao) {
         this.lineJdbcDao = lineJdbcDao;
     }
 
