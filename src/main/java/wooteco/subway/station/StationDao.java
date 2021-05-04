@@ -36,4 +36,13 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static void update(Station station) {
+        deleteById(station.getId());
+        stations.add(station);
+    }
+
+    public static void deleteById(Long id) {
+        stations.removeIf(station -> station.getId().equals(id));
+    }
 }
