@@ -19,7 +19,13 @@ public class LineDao {
         return persistLine;
     }
 
-    public static Optional<Line> find(String lineName) {
+    public static Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findAny();
+    }
+
+    public static Optional<Line> findByName(String lineName) {
         return lines.stream()
                 .filter(line -> line.getName().equals(lineName))
                 .findAny();

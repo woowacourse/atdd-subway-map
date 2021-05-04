@@ -16,7 +16,7 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         Line line = lineRequestToLine(lineRequest);
-        if (LineDao.find(line.getName()).isPresent()) {
+        if (LineDao.findByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
         }
         Line savedLine = LineDao.save(line);
@@ -39,5 +39,10 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse find(Long id) {
+        Line line = LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
+        return new LineResponse(line);
     }
 }

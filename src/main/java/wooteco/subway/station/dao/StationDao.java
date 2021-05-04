@@ -44,4 +44,8 @@ public class StationDao {
     public static void delete(Long id) {
         stations.removeIf(station -> station.getId().equals(id));
     }
+
+    public static void clear() {
+        stations.clear();
+    }
 }
