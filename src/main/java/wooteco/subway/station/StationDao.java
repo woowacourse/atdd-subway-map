@@ -5,8 +5,7 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.DuplicationException;
 
 public class StationDao {
     private static Long seq = 0L;
@@ -21,7 +20,7 @@ public class StationDao {
 
     private static void validateDuplicatedName(Station station) {
         if (isDuplicate(station)) {
-            throw new DuplicatedNameException();
+            throw new DuplicationException("이미 존재하는 역 이름입니다.");
         }
     }
 

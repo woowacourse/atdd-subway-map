@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 이름 중복 생성 불가 기능")
     @Test
-    void duplicatedLine() {
+    void duplicatedLineName() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "GREEN");
@@ -59,6 +59,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
+        params.clear();
+        params.put("color", "RED");
+        params.put("name", "2호선");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +72,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
+
+    @DisplayName("노선 색깔 중복 생성 불가 기능")
+    @Test
+    void duplicatedLineColor() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "GREEN");
+        params.put("name", "2호선");
+
+        RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        params.clear();
+        params.put("color", "GREEN");
+        params.put("name", "3호선");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 노선 색깔입니다.");
+    }
+
 
     @DisplayName("전체 노선을 조회한다")
     @Test

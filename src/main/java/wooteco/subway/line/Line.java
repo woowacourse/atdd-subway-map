@@ -40,4 +40,8 @@ public class Line {
     public Line update(String name, String color) {
         return new Line(id, name, color);
     }
+
+    public boolean isSameColor(Line newLine) {
+        return this.color.equals(newLine.color);
+    }
 }
