@@ -27,4 +27,9 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static boolean findByName(String name) {
+        return stations.stream()
+                .anyMatch(station -> station.getName().equals(name));
+    }
 }
