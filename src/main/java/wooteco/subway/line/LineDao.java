@@ -32,22 +32,7 @@ public class LineDao {
         }
     }
 
-//    public Station save(Station station) {
-//        Station persistStation = createNewObject(station);
-//        stations.add(persistStation);
-//        return persistStation;
-//    }
-//
-//    public List<Station> findAll() {
-//        return stations;
-//    }
-//
-//    private Station createNewObject(Station station) {
-//        duplicateName(station);
-//        Field field = ReflectionUtils.findField(Station.class, "id");
-//        field.setAccessible(true);
-//        ReflectionUtils.setField(field, station, ++seq);
-//        return station;
-//    }
-
+    public List<Line> findAll() {
+        return new ArrayList<>(lines);
+    }
 }
