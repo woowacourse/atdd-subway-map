@@ -16,6 +16,14 @@ public class LineDao {
         return persistStation;
     }
 
+    public Line findById(Long id) {
+        return lines.stream()
+                    .filter(line -> line.getId()
+                                        .equals(id))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    }
+
     public List<Line> findAll() {
         return lines;
     }

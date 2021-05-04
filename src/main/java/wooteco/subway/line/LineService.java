@@ -25,4 +25,8 @@ public class LineService {
                       .stream()
                       .anyMatch(line -> name.equals(line.getName()));
     }
+
+    public Line findById(Long id) {
+        return lineDao.findById(id);
+    }
 }
