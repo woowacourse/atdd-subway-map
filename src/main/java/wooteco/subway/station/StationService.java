@@ -8,8 +8,12 @@ public class StationService {
     public StationService() {
         stationDao = new StationDao();
     }
+
     public Station save(String stationName) {
         Station station = new Station(stationName);
+        if (stationDao.find(stationName).isPresent()) {
+            throw new IllegalArgumentException("같은 이름의 역이 있습니다;");
+        }
         return stationDao.save(station);
     }
 

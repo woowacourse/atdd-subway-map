@@ -17,6 +17,12 @@ public class StationDao {
         return persistStation;
     }
 
+    public Optional<Station> find(String stationName) {
+        return stations.stream()
+                .filter(station -> station.getName().equals(stationName))
+                .findAny();
+    }
+
     public List<Station> findAll() {
         return stations;
     }
