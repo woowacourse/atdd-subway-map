@@ -1,11 +1,14 @@
 package wooteco.subway.line;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class LineController {
@@ -23,14 +26,11 @@ public class LineController {
         ).body(lineResponse);
     }
 
-//    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<List<StationResponse>> showStations() {
-//        List<Station> stations = StationDao.findAll();
-//        List<StationResponse> stationResponses = stations.stream()
-//                .map(it -> new StationResponse(it.getId(), it.getName()))
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok().body(stationResponses);
-//    }
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<LineResponse> lineResponses = lineService.showLines();
+        return ResponseEntity.ok().body(lineResponses);
+    }
 //
 //    @DeleteMapping("/stations/{id}")
 //    public ResponseEntity deleteStation(@PathVariable Long id) {

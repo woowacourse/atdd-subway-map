@@ -11,9 +11,10 @@ public class LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
-    public static Long save(Line line) {
+    public static Line save(String name, String color) {
+        Line line = new Line(++seq, name, color);
         lines.add(line);
-        return ++seq;
+        return line;
     }
 
     private static Station createNewObject(Station station) {
@@ -21,5 +22,13 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static List<Line> findAll() {
+        return lines;
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 }
