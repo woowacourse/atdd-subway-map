@@ -38,4 +38,9 @@ public class StationDaoCache implements StationDao {
             .filter(station -> station.isSameName(name))
             .findAny();
     }
+
+    @Override
+    public void remove(Long id) {
+        stations.removeIf(station -> station.isSameId(id));
+    }
 }

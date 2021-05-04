@@ -52,4 +52,10 @@ public class StationDaoJdbcTemplate implements StationDao {
         String sql = "SELECT * FROM station WHERE name = ?";
         return jdbcTemplate.query(sql, stationRowMapper, name).stream().findAny();
     }
+
+    @Override
+    public void remove(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

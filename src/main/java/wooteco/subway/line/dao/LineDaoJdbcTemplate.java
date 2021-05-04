@@ -34,8 +34,8 @@ public class LineDaoJdbcTemplate implements LineDao {
 
     @Override
     public Optional<Line> findLineByName(String name) {
-        final String query = "SELECT * FROM line WHERE name = ?";
-        return jdbcTemplate.query(query, lineRowMapper, name)
+        final String sql = "SELECT * FROM line WHERE name = ?";
+        return jdbcTemplate.query(sql, lineRowMapper, name)
             .stream()
             .findAny();
     }
@@ -53,25 +53,25 @@ public class LineDaoJdbcTemplate implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        final String query = "SELECT * FROM line";
-        return jdbcTemplate.query(query, lineRowMapper);
+        final String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
     public Optional<Line> findLineById(Long id) {
-        final String query = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(query, lineRowMapper, id).stream().findAny();
+        final String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.query(sql, lineRowMapper, id).stream().findAny();
     }
 
     @Override
     public void removeLine(Long id) {
-        String query = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        String sql = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
     public void update(Long id, String name, String color) {
-        String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(query, name, color, id);
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 }

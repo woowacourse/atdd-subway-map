@@ -283,7 +283,7 @@ class LineControllerTest extends AcceptanceTest {
             .when()
             .delete(uri)
             .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+            .statusCode(HttpStatus.NO_CONTENT.value());
 
         // then
         RestAssured.given().log().all()
