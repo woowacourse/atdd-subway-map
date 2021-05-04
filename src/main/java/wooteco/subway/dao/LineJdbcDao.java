@@ -39,22 +39,11 @@ public class LineJdbcDao {
         return new Line(createdLineId, name, color);
     }
 
-//    private static Station createNewObject(Station station) {
-//        Field field = ReflectionUtils.findField(Station.class, "id");
-//        field.setAccessible(true);
-//        ReflectionUtils.setField(field, station, ++seq);
-//        return station;
-//    }
-//
     public List<Line> findAll() {
         String query = "SELECT * FROM LINE";
         return jdbcTemplate.query(query, lineRowMapper);
     }
-//
-//    public static void deleteAll() {
-//        lines.clear();
-//    }
-//
+
     public Optional<Line> findById(Long lineId) {
         String query = "SELECT * FROM LINE WHERE id = ?";
         Line result = DataAccessUtils.singleResult(
