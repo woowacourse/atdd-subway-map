@@ -28,7 +28,7 @@ public class LineDao {
         searched.update(line.getName(), line.getColor());
     }
 
-    private static Line findById(Long id) {
+    public static Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isId(id))
                 .findFirst()
