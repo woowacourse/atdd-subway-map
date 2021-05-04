@@ -123,6 +123,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+        int originalSize = StationDao.findAll().size();
 
         // when
         String uri = createResponse.header("Location");
@@ -134,5 +135,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(StationDao.findAll()).hasSize(originalSize - 1);
     }
 }

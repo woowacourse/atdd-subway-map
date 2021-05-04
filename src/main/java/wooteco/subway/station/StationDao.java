@@ -26,4 +26,11 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static void deleteById(Long id) {
+        stations.stream()
+                .filter(station -> station.isSameId(id))
+                .findAny()
+                .ifPresent(station -> stations.remove(station));
+    }
 }
