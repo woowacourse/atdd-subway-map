@@ -45,13 +45,16 @@ public class LineDao {
     }
 
     public Line update(Line newLine) {
-        Line line = lines.stream()
-            .filter(it -> it.isSameId(newLine.getId()))
-            .findFirst()
-            .orElseThrow(NotExistItemException::new);
+        Line line = findById(newLine.getId());
 
         lines.remove(line);
         lines.add(newLine);
         return newLine;
+    }
+
+    public void delete(Long id) {
+        Line line = findById(id);
+
+        lines.remove(line);
     }
 }

@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
@@ -92,5 +93,22 @@ class LineDaoTest {
         Line newLine = new Line(1L, "3호선", "bg-orange-600");
 
         assertThatThrownBy(() -> lineDao.update(newLine)).isInstanceOf(NotExistItemException.class);
+    }
+
+    @Test
+    @DisplayName("id를 이용하여 노선을 삭제한다.")
+    void delete() {
+        Line line2 = new Line("2호선", "bg-green-600");
+        lineDao.save(line2);
+
+        assertThatCode(() -> lineDao.delete(1L)).doesNotThrowAnyException();
+        assertThat(lineDao.findAll()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id로 노선을 삭제하려하면 에러가 출력된다.")
+    void deleteException() {
+        assertThatThrownBy(() -> lineDao.delete(1L))
+            .isInstanceOf(NotExistItemException.class);
     }
 }
