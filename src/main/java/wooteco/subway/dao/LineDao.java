@@ -37,11 +37,6 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
-    public List<Line> findAll() {
-        String query = "SELECT * FROM LINE";
-        return jdbcTemplate.query(query, lineRowMapper);
-    }
-
     public Optional<Line> findById(Long id) {
         String query = "SELECT * FROM LINE WHERE id = ?";
         Line result = DataAccessUtils.singleResult(
@@ -50,12 +45,19 @@ public class LineDao {
         return Optional.ofNullable(result);
     }
 
-    public Optional<Line> findByName(String name) {
-        String query = "SELECT * FROM LINE WHERE name = ?";
-        Line result = DataAccessUtils.singleResult(
-            jdbcTemplate.query(query, lineRowMapper, name)
-        );
-        return Optional.ofNullable(result);
+    public List<Line> findAll() {
+        String query = "SELECT * FROM LINE";
+        return jdbcTemplate.query(query, lineRowMapper);
+    }
+
+    public long countByName(String name) {
+        String sql = "SELECT COUNT(*) FROM LINE WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, name);
+    }
+
+    public long countByColor(String color) {
+        String sql = "SELECT COUNT(*) FROM LINE WHERE color = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, color);
     }
 
     public int update(Long id, String color, String name) {

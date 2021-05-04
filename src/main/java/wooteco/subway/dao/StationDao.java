@@ -52,4 +52,9 @@ public class StationDao {
         String query = "DELETE FROM STATION WHERE id = ?";
         return jdbcTemplate.update(query, id);
     }
+
+    public long countByName(String name) {
+        String sql = "SELECT COUNT(*) FROM STATION WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, name);
+    }
 }
