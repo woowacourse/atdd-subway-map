@@ -32,10 +32,20 @@ public class StationDao {
         return stations;
     }
 
+    public static void delete(Long id) {
+        if (!stations.removeIf(station -> station.getId().equals(id))) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다");
+        }
+    }
+
     private static Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void clear() {
+        stations.clear();
     }
 }
