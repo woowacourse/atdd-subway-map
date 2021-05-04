@@ -45,7 +45,7 @@ npm run dev
     - [ ] 같은 이름 지하철 역 생성 불가
     - [ ] "-역"을 접미사로 가지고 있음
 - [ ] 역 조회
-- [ ] 역 삭제 
+- [ ] 역 삭제
 
 ### 노선 관리 
 - [ ] 노선 생성
@@ -62,8 +62,10 @@ npm run dev
 - [ ] 노선 삭제 
 
 ### E2E 테스트 작성
-- [ ] 노선 기능 
+- [ ] 노선 기능
+
 <br>
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
