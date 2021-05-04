@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.controller.dto.response;
 
 public class LineResponse {
     private Long id;

@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.controller.dto.request.LineEditRequest;
+import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.service.LineService;
 
 import java.net.URI;
 import java.util.List;
