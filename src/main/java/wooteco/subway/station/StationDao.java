@@ -28,7 +28,7 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     private Station createNewObject(Station station) {
