@@ -1,10 +1,17 @@
 package wooteco.subway.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,6 +19,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 class LineControllerTest extends AcceptanceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -30,5 +38,44 @@ class LineControllerTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.valueOf(201).value())
             .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+    }
+
+    @DisplayName("전체 노선을 조회한다.")
+    @Test
+    void showLines() throws Exception {
+        LineRequest lineRequest1 = new LineRequest("2호선", "red", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse1 = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(lineRequest1))
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        LineRequest lineRequest2 = new LineRequest("3호선", "blue", 2L, 3L, 4);
+        ExtractableResponse<Response> lineResponse2 = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(lineRequest2))
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> expectedLineIds = Arrays.asList(lineResponse1, lineResponse2).stream()
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath().getList("", LineResponse.class).stream()
+            .map(lineResponse -> lineResponse.getId())
+            .collect(Collectors.toList());
+        Assertions.assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }

@@ -17,4 +17,7 @@ public class LineService {
         return LineDao.save(line);
     }
 
+    public List<Line> findAll() {
+        return LineDao.findAll();
+    }
 }
