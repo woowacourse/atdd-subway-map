@@ -1,7 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.dto.request.LineEditRequestDto;
+import wooteco.subway.controller.dto.request.LineUpdateRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineResponseDto;
 import wooteco.subway.dao.LineDao;
@@ -41,8 +41,8 @@ public class LineService {
         return new LineResponseDto(foundLine.getId(), foundLine.getName(), foundLine.getName());
     }
 
-    public long updateLine(Long lineId, LineEditRequestDto request) {
-        return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
+    public long updateLine(Long lineId, LineUpdateRequestDto lineUpdateRequestDto) {
+        return lineJdbcDao.edit(lineId, lineUpdateRequestDto.getColor(), lineUpdateRequestDto.getName());
     }
 
     public long deleteLineById(Long lineId) {

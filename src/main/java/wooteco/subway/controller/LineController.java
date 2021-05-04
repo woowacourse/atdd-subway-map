@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.controller.dto.request.LineEditRequestDto;
+import wooteco.subway.controller.dto.request.LineUpdateRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineResponseDto;
 import wooteco.subway.service.LineService;
@@ -48,8 +48,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineEditRequestDto request) {
-        lineService.updateLine(id, request);
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineUpdateRequestDto lineUpdateRequestDto) {
+        lineService.updateLine(id, lineUpdateRequestDto);
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .build();
