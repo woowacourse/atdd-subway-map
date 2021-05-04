@@ -12,6 +12,10 @@ public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
+    private StationDao() {
+
+    }
+
     public static Station save(Station station) {
         validateDuplicatedStation(station);
         Station persistStation = createNewObject(station);
