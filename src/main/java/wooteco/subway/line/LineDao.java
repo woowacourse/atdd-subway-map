@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class LineDao {
+    private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
+    private static final long EDIT_SUCCESS = 1;
+
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -37,5 +40,13 @@ public class LineDao {
         return lines.stream()
                 .filter(line -> line.getId().equals(lineId))
                 .findFirst();
+    }
+
+    public static Long edit(Long lineId, String color, String name) {
+        Line foundLine = findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
+        int index = lines.indexOf(foundLine);
+        lines.set(index, new Line(lineId, color, name));
+        return EDIT_SUCCESS;
     }
 }
