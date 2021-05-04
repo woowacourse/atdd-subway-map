@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;

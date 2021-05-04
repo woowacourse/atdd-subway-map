@@ -1,7 +1,12 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LinesResponse;
+import wooteco.subway.line.repository.LineDao;
 
 import java.net.URI;
 import java.util.ArrayList;

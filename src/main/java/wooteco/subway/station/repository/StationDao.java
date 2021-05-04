@@ -1,12 +1,14 @@
-package wooteco.subway.station;
+package wooteco.subway.station.repository;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StationDao {
+    public static final long INITIAL_INDEX = 0L;
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -31,6 +33,7 @@ public class StationDao {
     }
 
     public static void deleteAll() {
+        seq = INITIAL_INDEX;
         stations.clear();
     }
 }

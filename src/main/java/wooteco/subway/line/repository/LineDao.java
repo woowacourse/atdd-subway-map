@@ -1,6 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.line.repository;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.domain.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 public class LineDao {
     private static final int INDEX_MATCHER = 1;
+    public static final long INITIAL_INDEX = 0L;
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -28,6 +30,7 @@ public class LineDao {
     }
 
     public static void deleteAll() {
+        seq = INITIAL_INDEX;
         lines.clear();
     }
 

@@ -3,7 +3,7 @@ package wooteco.subway.advice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.station.StationController;
+import wooteco.subway.station.controller.StationController;
 
 import java.util.HashMap;
 import java.util.Map;
