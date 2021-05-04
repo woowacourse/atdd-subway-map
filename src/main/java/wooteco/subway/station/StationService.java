@@ -1,5 +1,8 @@
 package wooteco.subway.station;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StationService {
 
     public static StationResponse createStation(String name) {
@@ -10,10 +13,16 @@ public class StationService {
         return new StationResponse(newStation);
     }
 
-    public static StationResponse deleteById(Long id) {
+    public static List<StationResponse> showStations() {
+        List<Station> stations = StationDao.findAll();
+        return stations.stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
+    }
+
+    public static void deleteById(Long id) {
         Station station = StationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이름의 역이 존재하지 않습니다."));
         StationDao.delete(station);
-        return new StationResponse(station);
     }
 }

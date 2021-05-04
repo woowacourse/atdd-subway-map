@@ -4,6 +4,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class LineDao {
@@ -19,6 +20,10 @@ public class LineDao {
     public static boolean findByName(String name) {
         return lines.stream()
                 .anyMatch(line -> line.getName().equals(name));
+    }
+
+    public static List<Line> findAll() {
+        return Collections.unmodifiableList(lines);
     }
 
     private static Line createNewObject(Line line) {

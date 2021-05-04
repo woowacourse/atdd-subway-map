@@ -1,5 +1,8 @@
 package wooteco.subway.line;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class LineService {
     public static LineResponse create(String color, String name) {
         if (LineDao.findByName(name)) {
@@ -7,5 +10,12 @@ public class LineService {
         }
         Line line = LineDao.save(new Line(color, name));
         return new LineResponse(line);
+    }
+
+    public static List<LineResponse> showLines() {
+        List<Line> lines = LineDao.findAll();
+        return lines.stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 }
