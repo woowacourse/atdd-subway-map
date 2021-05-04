@@ -167,4 +167,32 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updatedLineResponse.getColor()).isEqualTo(newColor);
         assertThat(updatedLineResponse.getName()).isEqualTo(newLineName);
     }
+
+    @DisplayName("노선을 제거한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }
