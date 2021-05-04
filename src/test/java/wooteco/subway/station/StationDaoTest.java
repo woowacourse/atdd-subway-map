@@ -16,24 +16,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 class StationDaoTest {
 
+    private static final String stationName1 = "잠실역";
+    private static final String stationName2 = "서울역";
     @Autowired
     private StationDao stationDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private String stationName = "서울역";
-
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("delete from STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
-        jdbcTemplate.update("insert into STATION (name) values (?)", "잠실역");
+        jdbcTemplate.update("insert into STATION (name) values (?)", stationName1);
     }
 
     @Test
-    @DisplayName("id로 역 검색")
+    @DisplayName("이름으로 역 검색")
     void findById() {
-        Optional<Station> findStation = stationDao.findById(1L);
+        Optional<Station> findStation = stationDao.findByName(stationName1);
         assertTrue(findStation.isPresent());
     }
 
@@ -46,18 +46,17 @@ class StationDaoTest {
     @Test
     @DisplayName("역 생성 저장 확인")
     void save() {
-        stationDao.save(stationName);
+        stationDao.save(stationName2);
         assertThat(stationDao.findAll()).hasSize(2);
     }
 
     @Test
     @DisplayName("역 삭제 확인")
     void delete() {
-        Long savedStationId = stationDao.save(stationName)
-                                        .getId();
-        assertThat(stationDao.findById(savedStationId)).isNotNull();
-        stationDao.delete(savedStationId);
-        Optional<Station> findStation = stationDao.findById(savedStationId);
+        Station savedStation = stationDao.save(stationName2);
+        assertThat(stationDao.findByName(stationName2)).isNotNull();
+        stationDao.delete(savedStation.getId());
+        Optional<Station> findStation = stationDao.findByName(savedStation.getName());
         assertFalse(findStation.isPresent());
     }
 }

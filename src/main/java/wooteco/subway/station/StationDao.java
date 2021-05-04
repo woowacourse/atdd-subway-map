@@ -42,9 +42,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper());
     }
 
-    public Optional<Station> findById(Long id) {
-        String sql = "select id, name from STATION where id = ?";
-        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), id);
+    public Optional<Station> findByName(String name) {
+        String sql = "select id, name from STATION where name = ?";
+        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), name);
         return result.stream().findAny();
     }
 
@@ -52,4 +52,5 @@ public class StationDao {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }
