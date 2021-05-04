@@ -1,6 +1,8 @@
 package wooteco.subway.station;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 public class StationService {
 
@@ -25,6 +27,13 @@ public class StationService {
             .ifPresent(station -> {
                 throw new IllegalStateException("중복된 이름의 지하철역입니다.");
             });
+    }
+
+    public List<StationResponse> findStations() {
+        final List<Station> stations = StationDao.findAll();
+        return stations.stream()
+            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .collect(Collectors.toList());
     }
 
     public Station findById(final Long id) {

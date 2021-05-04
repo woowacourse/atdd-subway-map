@@ -1,7 +1,7 @@
 ## 요구 사항 정의
 - [x] 같은 이름 지하철역 생성 불가 기능
 - [x] Station Service 생성
-- [ ] Station Controller에서 Station Service 사용하도록 수정 
+- [x] Station Controller에서 Station Service 사용하도록 수정 
 - [ ] 지하철 노선 관리 API 구현
     - [ ] 노선 생성
     - [ ] 노선 목록 조회
