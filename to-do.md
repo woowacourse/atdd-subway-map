@@ -7,7 +7,7 @@
 ### 2. 지하철 노선 관리 API 구현하기
 - [x] 지하철 역(Station) 객체 참고해서 Line 객체 생성
 - [x] 노선 생성 Request/Response
-- [ ] 전체 노선 목록 조회 Request/Response
+- [x] 전체 노선 목록 조회 Request/Response
 - [ ] 단일 노선 조회 Request/Response
 - [ ] 지하철 노선 수정 Request/Response
 - [ ] 지하철 노선 삭제 Request/Response
