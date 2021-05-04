@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.DuplicateException;
 
 public class LineDao {
 
@@ -17,9 +18,36 @@ public class LineDao {
     }
 
     private Line createNewObject(Line line) {
+        validateDuplicateName(line);
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    private void validateDuplicateName(Line line) {
+        String name = line.getName();
+        if (lines.stream().anyMatch(it -> it.isSameName(name))) {
+            throw new DuplicateException();
+        }
+    }
+
+//    public Station save(Station station) {
+//        Station persistStation = createNewObject(station);
+//        stations.add(persistStation);
+//        return persistStation;
+//    }
+//
+//    public List<Station> findAll() {
+//        return stations;
+//    }
+//
+//    private Station createNewObject(Station station) {
+//        duplicateName(station);
+//        Field field = ReflectionUtils.findField(Station.class, "id");
+//        field.setAccessible(true);
+//        ReflectionUtils.setField(field, station, ++seq);
+//        return station;
+//    }
+
 }

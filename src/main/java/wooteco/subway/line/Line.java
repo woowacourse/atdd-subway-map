@@ -28,7 +28,12 @@ public class Line {
         return name;
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
     public String getColor() {
         return color;
     }
+
 }
