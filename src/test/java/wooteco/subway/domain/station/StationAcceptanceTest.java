@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.domain.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import wooteco.subway.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
