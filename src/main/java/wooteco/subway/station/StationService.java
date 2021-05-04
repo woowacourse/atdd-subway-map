@@ -1,19 +1,22 @@
 package wooteco.subway.station;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class StationService {
     private final StationDao stationDao;
 
-    public StationService() {
-        this.stationDao = new StationDao();
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public Station createStation(String name) {
         if (isStationExist(name)) {
             throw new IllegalArgumentException("존재하는 역 이름입니다.");
         }
-        return stationDao.save(new Station(name));
+        return stationDao.save(name);
     }
 
     public List<Station> findAll() {

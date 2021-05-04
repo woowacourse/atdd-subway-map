@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 public class StationController {
     private final StationService stationService;
 
-    public StationController() {
-        this.stationService = new StationService();
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")

@@ -1,41 +1,55 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public class StationDao {
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-    public Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private RowMapper<Station> stationRowMapper() {
+        return (resultSet, rowNum) -> new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+        );
+    }
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Station save(String name) {
+        String sql = "insert into STATION (name) values (?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, name);
+            return ps;
+        }, keyHolder);
+        return new Station(keyHolder.getKey()
+                                    .longValue(), name);
     }
 
     public List<Station> findAll() {
-        return stations;
+        String sql = "select id, name from STATION";
+        return jdbcTemplate.query(sql, stationRowMapper());
     }
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Optional<Station> findById(Long id) {
+        String sql = "select id, name from STATION where id = ?";
+        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), id);
+        return result.stream().findAny();
     }
 
     public void delete(Long id) {
-        stations.remove(findById(id));
-    }
-
-    public Station findById(Long id) {
-        return stations.stream()
-                       .filter(station -> station.getId()
-                                                 .equals(id))
-                       .findFirst()
-                       .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        String sql = "delete from STATION where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

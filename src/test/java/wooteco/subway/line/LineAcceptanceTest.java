@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,15 +128,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = extract.header("Location");
         ExtractableResponse<Response> response = RestAssured.given()
-                                                           .log()
-                                                           .all()
-                                                           .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                           .when()
-                                                           .delete(uri)
-                                                           .then()
-                                                           .log()
-                                                           .all()
-                                                           .extract();
+                                                            .log()
+                                                            .all()
+                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                            .when()
+                                                            .delete(uri)
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
