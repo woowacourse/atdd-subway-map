@@ -29,8 +29,13 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         //todo : 구현
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> exceptionHandler() {
+        return ResponseEntity.badRequest().build();
     }
 }
