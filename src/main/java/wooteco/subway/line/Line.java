@@ -1,16 +1,11 @@
 package wooteco.subway.line;
 
-import wooteco.subway.station.StationResponse;
-
-import java.util.List;
-
-public class LineResponse {
+public class Line {
     private Long id;
-    private String name;
-    private String color;
+    private final String name;
+    private final String color;
 
-    public LineResponse(Long id, String name, String color) {
-        this.id = id;
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -27,4 +22,7 @@ public class LineResponse {
         return color;
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
 }
