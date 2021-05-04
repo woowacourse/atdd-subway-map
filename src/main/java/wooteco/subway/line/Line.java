@@ -27,4 +27,8 @@ public class Line {
     public String getColor() {
         return color;
     }
+
+    public boolean isSameName(Line newLine) {
+        return this.name.equals(newLine.name);
+    }
 }
