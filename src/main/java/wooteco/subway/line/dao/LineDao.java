@@ -35,6 +35,18 @@ public class LineDao {
         return lines;
     }
 
+    public static void delete(Long id) {
+        lines.removeIf(line -> line.getId().equals(id));
+    }
+
+    public static void update(Line newLine) {
+        lines.stream()
+                .filter(line -> line.getId().equals(newLine.getId()))
+                .map(line -> updateObject(line, newLine))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("수정할 대상이 없습니다."));
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
@@ -42,7 +54,18 @@ public class LineDao {
         return line;
     }
 
-    public static void delete(Long id) {
-        lines.removeIf(line -> line.getId().equals(id));
+    private static Line updateObject(Line line, Line updateLine) {
+        Field color = ReflectionUtils.findField(Line.class, "color");
+        Field fare = ReflectionUtils.findField(Line.class, "extraFare");
+        Field name = ReflectionUtils.findField(Line.class, "name");
+
+        color.setAccessible(true);
+        fare.setAccessible(true);
+        name.setAccessible(true);
+
+        ReflectionUtils.setField(color, line, updateLine.getColor());
+        ReflectionUtils.setField(fare, line, updateLine.getExtraFare());
+        ReflectionUtils.setField(name, line, updateLine.getName());
+        return line;
     }
 }

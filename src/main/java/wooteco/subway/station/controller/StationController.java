@@ -10,7 +10,6 @@ import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class StationController {

@@ -53,4 +53,10 @@ public class LineService {
         LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("삭제하려는 노선이 존재하지 않습니다"));
         LineDao.delete(id);
     }
+
+    public void update(Long id, LineRequest lineRequest) {
+        LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getExtraFare(), lineRequest.getColor());
+        LineDao.update(line);
+    }
 }

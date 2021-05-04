@@ -33,6 +33,13 @@ public class Line {
         this.extraFare = extraFare;
     }
 
+    public Line(Long id, String name, Long extraFare, String color) {
+        this.id = id;
+        this.name = name;
+        this.extraFare = extraFare;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
