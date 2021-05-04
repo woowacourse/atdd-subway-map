@@ -6,6 +6,7 @@ import wooteco.subway.station.Station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -30,5 +31,11 @@ public class LineDao {
 
     public static void deleteAll() {
         lines.clear();
+    }
+
+    public static Optional<Line> findById(Long lineId) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(lineId))
+                .findFirst();
     }
 }

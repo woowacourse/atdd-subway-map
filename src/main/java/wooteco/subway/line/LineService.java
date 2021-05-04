@@ -19,4 +19,10 @@ public class LineService {
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse showLine(Long lineId) {
+        Line foundLine = LineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("Id에 해당하는 노선이 없습니다."));
+        return new LineResponse(foundLine.getId(), foundLine.getName(), foundLine.getName());
+    }
 }
