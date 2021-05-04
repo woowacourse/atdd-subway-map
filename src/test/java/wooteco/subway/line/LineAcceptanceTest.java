@@ -201,4 +201,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
+
+    @DisplayName("존재하지 않는 id의 노선을 조회한다.")
+    @Test
+    void getLineOfIdDoesNotExist() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-blue-600");
+        params2.put("name", "분당선");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/0")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
