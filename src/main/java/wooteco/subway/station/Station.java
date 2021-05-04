@@ -18,20 +18,20 @@ public class Station {
         this.name = name;
     }
 
-    public final Long getId() {
-        return id;
-    }
-
-    public final String getName() {
-        return name;
-    }
-
     public final boolean isId(final Long id) {
         return this.id.equals(id);
     }
 
     public final boolean sameName(final Station other) {
         return this.name.equals(other.name);
+    }
+
+    public final Long getId() {
+        return id;
+    }
+
+    public final String getName() {
+        return name;
     }
 
     @Override
