@@ -16,10 +16,11 @@ public class Station {
         this(null, name);
     }
 
-    public Station(Long id, String name) {
-        validateNameLength(name);
+    public Station(Long id, final String name) {
+        String trimAndRemoveDuplicateBlankName = name.trim().replaceAll(" +", " ");
+        validateNameLength(trimAndRemoveDuplicateBlankName);
         this.id = id;
-        this.name = name;
+        this.name = trimAndRemoveDuplicateBlankName;
     }
 
     private void validateNameLength(String name) {
