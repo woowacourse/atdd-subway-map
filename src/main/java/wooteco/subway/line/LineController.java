@@ -2,22 +2,23 @@ package wooteco.subway.line;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.exception.LineNameDuplicatedException;
 import wooteco.subway.exception.LineNotFoundException;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationResponse;
 
 @RestController
 public class LineController {
-    private LineDao lineDao;
+
+    private final LineDao lineDao;
 
     public LineController() {
         this.lineDao = new LineDao();
@@ -52,5 +53,21 @@ public class LineController {
         Line line = lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
         return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(),
             line.getColor()));
+    }
+
+    @PutMapping(value = "/lines/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line line = lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+        if (lineDao.findLineByName(lineRequest.getName()).isPresent()) {
+            throw new LineNameDuplicatedException();
+        }
+        line.changeInfo(lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity removeLine(@PathVariable Long id) {
+        lineDao.removeLine(id);
+        return ResponseEntity.ok().build();
     }
 }

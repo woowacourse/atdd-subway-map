@@ -39,4 +39,8 @@ public class LineDao {
             .filter(line -> line.isSameId(id))
             .findAny();
     }
+
+    public void removeLine(Long id) {
+        lines.removeIf(line -> line.isSameId(id));
+    }
 }

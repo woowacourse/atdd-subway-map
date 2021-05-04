@@ -1,9 +1,10 @@
 package wooteco.subway.line;
 
 public class Line {
+
     private Long id;
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
 
     public Line(String name, String color) {
         this.name = name;
@@ -28,5 +29,10 @@ public class Line {
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
+    }
+
+    public void changeInfo(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
