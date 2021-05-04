@@ -37,14 +37,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .log().all()
                 .extract();
-        LineResponse actualLine = response.as(LineResponse.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(actualLine.getId()).isNotNull();
-        assertThat(actualLine.getColor()).isEqualTo("bg-red-600");
-        assertThat(actualLine.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
@@ -157,5 +157,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("특정 ID의 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-blue-600");
+        params2.put("name", "분당선");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .then().log().all()
+                .extract();
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(createResponse1.header("Location").split("/")[2]));
+        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 }

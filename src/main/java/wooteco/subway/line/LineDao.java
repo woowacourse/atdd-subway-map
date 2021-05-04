@@ -43,4 +43,11 @@ public class LineDao {
     public List<Line> findAll() {
         return new ArrayList<>(lines);
     }
+
+    public Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id 입니다."));
+    }
 }
