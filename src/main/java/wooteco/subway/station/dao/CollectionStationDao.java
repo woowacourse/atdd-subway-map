@@ -1,18 +1,20 @@
-package wooteco.subway.station;
-
-import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
+package wooteco.subway.station.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.Station;
 
 @Component
-public class StationDao {
-    private static Long seq = 0L;
+@Primary
+public class CollectionStationDao implements StationDao {
+    private Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
+    public Station save(Station station) {
         Station persistStation = createNewObject(station);
         if (isPersist(persistStation)) {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");
@@ -21,24 +23,24 @@ public class StationDao {
         return persistStation;
     }
 
-    private static boolean isPersist(Station persistStation) {
+    private boolean isPersist(Station persistStation) {
         return stations.stream()
             .anyMatch(
                 persistedStation -> persistedStation.getName().equals(persistStation.getName()));
     }
 
-    public static List<Station> findAll() {
+    public List<Station> findAll() {
         return stations;
     }
 
-    private static Station createNewObject(Station station) {
+    private Station createNewObject(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
 
-    public static void deleteById(Long id) {
+    public void deleteById(Long id) {
         stations.removeIf(station -> station.getId().equals(id));
     }
 }
