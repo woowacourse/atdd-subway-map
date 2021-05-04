@@ -31,4 +31,8 @@ public class Line {
     public boolean isSameName(Line newLine) {
         return this.name.equals(newLine.name);
     }
+
+    public boolean isSameId(Long id) {
+        return this.id == id;
+    }
 }

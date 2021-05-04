@@ -10,7 +10,7 @@
         + [x] 노선 목록 조회 
             + request : x
             + response : List(id, name, color)
-        + [ ] 단일 노선 조회
+        + [x] 단일 노선 조회
             + request : x
             + response : id, name, color
         + [ ] 노선 수정

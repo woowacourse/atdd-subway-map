@@ -38,4 +38,11 @@ public class LineDao {
     public static List<Line> findAll() {
         return lines;
     }
+
+    public static Line findLineById(Long id) {
+        return lines.stream()
+            .filter(line -> line.isSameId(id))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+    }
 }
