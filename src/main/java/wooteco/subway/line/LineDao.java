@@ -13,9 +13,18 @@ public class LineDao {
     private List<Line> lines = new ArrayList<>();
 
     public Line save(Line line) {
+        validateToSave(line);
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;
+    }
+
+    private void validateToSave(Line lineToSave) {
+        boolean hasSameName = lines.stream().anyMatch(line -> line.hasSameName(lineToSave));
+
+        if (hasSameName) {
+            throw new IllegalArgumentException("중복된 이름을 생성할 수 없습니다.");
+        }
     }
 
     private Line createNewObject(Line line) {
