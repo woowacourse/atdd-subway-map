@@ -41,6 +41,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("이미 존재하는 노선의 이름으로 생성 요청 시 BAD_REQUEST를 응답한다.")
+    @Test
+    void createLineWhenDuplicateLineName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "분당선");
+        params.put("color", "bg-red-600");
+
+        // when
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void getLines() {
@@ -111,8 +140,86 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         Long expectedLineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
-        Long resultLineId = response.jsonPath().getLong("id");
+        Long resultLineId = response.as(LineResponse.class).getId();
 
         assertThat(resultLineId).isEqualTo(expectedLineId);
+    }
+
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("id", "1");
+        params.put("name", "2호선");
+        params.put("color", "bg-blue-600");
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("id", "1");
+        params2.put("name", "신분당");
+        params2.put("color", "bg-blue-600");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> originalResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> expectedResponse = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(originalResponse.body()).isNotEqualTo(expectedResponse.body());
+    }
+
+    @DisplayName("이미 존재하는 이름으로 수정 시 BAD_REQUEST를 응답한다.")
+    @Test
+    void updateLineWhenDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("id", "1");
+        params.put("name", "2호선");
+        params.put("color", "bg-blue-600");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> originalResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> expectedResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -33,7 +33,8 @@
         - GET, /lines/{id}
     - res
         - 200 OK, BODY : {id, name, color}
-- [ ] 노선 수정
+- [x] 노선 수정
+  - [x] 이미 존재하는 이름으로 수정할 수 없다.
     - req
         - PUT, /lines/{id}, BODY : {color, name}
     - res
