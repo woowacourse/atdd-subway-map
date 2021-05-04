@@ -45,4 +45,11 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public static void delete(Long id) {
+        lines.stream()
+            .filter(line -> line.isSameId(id))
+            .findAny()
+            .ifPresent(line -> lines.remove(line));
+    }
 }
