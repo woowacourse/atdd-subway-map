@@ -16,6 +16,6 @@
         + [x] 노선 수정
             + request : color, name
             + response : x
-        + [ ] 노선 삭제
+        + [x] 노선 삭제
             + request : x
             + response : x

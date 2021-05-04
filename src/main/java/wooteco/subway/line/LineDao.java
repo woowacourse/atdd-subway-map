@@ -23,16 +23,16 @@ public class LineDao {
         }
     }
 
-    private static boolean isDuplicateName(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameName(newLine));
-    }
-
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    private static boolean isDuplicateName(Line newLine) {
+        return lines.stream()
+            .anyMatch(line -> line.isSameName(newLine));
     }
 
     public static List<Line> findAll() {
@@ -53,5 +53,18 @@ public class LineDao {
             .findAny()
             .orElseThrow(IllegalArgumentException::new);
         lines.set(index, updatedLine);
+    }
+
+    public static void deleteLineById(Long id) {
+        Integer index = lines.stream()
+            .filter(line -> line.isSameId(id))
+            .map(line -> lines.indexOf(line))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+        lines.remove(index);
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 }

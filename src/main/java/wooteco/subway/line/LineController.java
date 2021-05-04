@@ -1,10 +1,12 @@
 package wooteco.subway.line;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,5 +49,11 @@ public class LineController {
         Line findLine = LineDao.findLineById(id);
         Line updatedLine = findLine.update(lineRequest.getName(), lineRequest.getColor());
         LineDao.update(updatedLine);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/lines/{id}")
+    public void deleteLine(@PathVariable Long id) {
+        LineDao.deleteLineById(id);
     }
 }
