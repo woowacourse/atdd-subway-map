@@ -24,7 +24,9 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/lines",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponseDto> createLine(@RequestBody LineCreateRequestDto lineCreateRequestDto) {
         LineResponseDto lineResponseDto = lineService.createLine(lineCreateRequestDto);
         return ResponseEntity
@@ -46,7 +48,7 @@ public class LineController {
             .body(allLineResponses);
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineUpdateRequestDto lineUpdateRequestDto) {
         lineService.updateLine(id, lineUpdateRequestDto);
         return ResponseEntity.ok()
@@ -54,7 +56,7 @@ public class LineController {
             .build();
     }
 
-    @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLinById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
