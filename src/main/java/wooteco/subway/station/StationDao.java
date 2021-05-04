@@ -36,4 +36,11 @@ public class StationDao implements StationRepository {
                 .filter(station -> station.getName().equals(name))
                 .findAny();
     }
+
+    @Override
+    public void delete(Long id) {
+        if (!stations.removeIf(station -> station.getId().equals(id))) {
+            throw new IllegalArgumentException("해당하는 id의 역이 없습니다.");
+        }
+    }
 }
