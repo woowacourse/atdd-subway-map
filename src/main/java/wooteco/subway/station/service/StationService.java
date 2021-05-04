@@ -2,8 +2,10 @@ package wooteco.subway.station.service;
 
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StationService {
 
@@ -15,8 +17,11 @@ public class StationService {
         return StationDao.save(station);
     }
 
-    public List<Station> findAll() {
-        return StationDao.findAll();
+    public List<StationResponse> findAll() {
+        List<Station> stations = StationDao.findAll();
+        return stations.stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
