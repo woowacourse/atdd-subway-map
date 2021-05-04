@@ -98,4 +98,22 @@ class LineControllerTest extends AcceptanceTest {
         );
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().isEqualTo(expectedLineResponse);
     }
+
+    @DisplayName("id를 통해 노선을 변경하면, payload대로 노선 수정한다")
+    @Test
+    void updateLine() {
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "구분당선");
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

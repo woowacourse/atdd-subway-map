@@ -38,4 +38,8 @@ public class LineDao {
     public static Line getLine(final Long id) {
         return lines.get(id.intValue() - INDEX_MATCHER);
     }
+
+    public static void updateLine(final Long id, final Line line) {
+        lines.set(id.intValue() - INDEX_MATCHER, line);
+    }
 }

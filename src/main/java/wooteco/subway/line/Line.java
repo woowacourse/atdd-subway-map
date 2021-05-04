@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class Line {
     private Long id;
-    final private String color;
-    final private String name;
+    private String color;
+    private String name;
 
     public Line(final Long id, final String color, final String name) {
         this.id = id;
@@ -28,6 +28,14 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public void setColor(final String color) {
+        this.color = color;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     @Override
