@@ -20,16 +20,20 @@ public class Line {
         this.color = color;
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
     }
 
     public String getColor() {

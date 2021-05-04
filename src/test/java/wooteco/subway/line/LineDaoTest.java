@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.NotExistItemException;
 
 class LineDaoTest {
 
@@ -59,4 +60,20 @@ class LineDaoTest {
         assertThat(linesAll).isEqualTo(lines);
     }
 
+    @Test
+    @DisplayName("id를 이용하여 노선을 조회한다.")
+    void findById() {
+        Line line2 = new Line("2호선", "bg-green-600");
+        Line line3 = new Line("3호선", "bg-orange-600");
+
+        assertThat(lineDao.findById(1L)).isSameAs(line2);
+        assertThat(lineDao.findById(2L)).isSameAs(line3);
+    }
+
+    @Test
+    @DisplayName("없는 id를 조회하면 에러가 출력된다.")
+    void notExistLineFindException() {
+        assertThatThrownBy(() -> lineDao.findById(1L))
+            .isInstanceOf(NotExistItemException.class);
+    }
 }

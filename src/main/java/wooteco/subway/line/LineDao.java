@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.NotExistItemException;
 
 public class LineDao {
 
@@ -34,5 +35,12 @@ public class LineDao {
 
     public List<Line> findAll() {
         return new ArrayList<>(lines);
+    }
+
+    public Line findById(Long id) {
+        return lines.stream()
+            .filter(it -> it.isSameId(id))
+            .findFirst()
+            .orElseThrow(NotExistItemException::new);
     }
 }
