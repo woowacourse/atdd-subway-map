@@ -35,6 +35,10 @@ public class LineDao {
                 .anyMatch(line -> line.isSameColor(newLine));
     }
 
+    public static List<Line> findAll() {
+        return lines;
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
