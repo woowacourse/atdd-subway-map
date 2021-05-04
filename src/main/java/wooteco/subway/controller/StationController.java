@@ -11,16 +11,22 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.service.StationService;
 
 @RestController
 public class StationController {
 
+    private StationService stationService;
+
+    public StationController() {
+        this.stationService = new StationService();
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = stationService.createStation(stationRequest.getName());
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        return ResponseEntity.created(URI.create("/npstations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
