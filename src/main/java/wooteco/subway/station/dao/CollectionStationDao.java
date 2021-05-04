@@ -11,8 +11,9 @@ import wooteco.subway.station.Station;
 @Component
 @Primary
 public class CollectionStationDao implements StationDao {
+
+    private static final List<Station> stations = new ArrayList<>();
     private Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
     public Station save(Station station) {
         Station persistStation = createNewObject(station);

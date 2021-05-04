@@ -1,11 +1,12 @@
 package wooteco.subway.line;
 
 public class Line {
+
     private Long id;
     private String color;
     private String name;
 
-    public Line(){
+    public Line() {
     }
 
     public Line(Long id, String name, String color) {
@@ -14,7 +15,7 @@ public class Line {
         this.name = name;
     }
 
-    public Line(String name, String color){
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }

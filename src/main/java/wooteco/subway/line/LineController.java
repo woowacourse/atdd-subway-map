@@ -49,20 +49,22 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
+            null);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line persistedLine = lineDao.findById(id);
-        Line updatedLine = new Line(persistedLine.getId(), lineRequest.getName(), lineRequest.getColor());
+        Line updatedLine = new Line(persistedLine.getId(), lineRequest.getName(),
+            lineRequest.getColor());
         lineDao.update(updatedLine);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id){
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }

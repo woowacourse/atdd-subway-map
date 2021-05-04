@@ -11,9 +11,10 @@ import wooteco.subway.line.Line;
 
 @Component
 @Primary
-public class CollectionLineDao implements LineDao{
+public class CollectionLineDao implements LineDao {
+
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new ArrayList<>();
 
     public Line save(Line line) {
         Line persistsLine = createNewObject(line);

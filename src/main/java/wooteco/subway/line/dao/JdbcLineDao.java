@@ -11,8 +11,8 @@ import wooteco.subway.line.Line;
 @Component
 public class JdbcLineDao implements LineDao {
 
-    private JdbcTemplate jdbcTemplate;
-    private LineMapper mapper;
+    private final JdbcTemplate jdbcTemplate;
+    private final LineMapper mapper;
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate, LineMapper mapper) {
         this.jdbcTemplate = jdbcTemplate;
