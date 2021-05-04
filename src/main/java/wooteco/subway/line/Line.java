@@ -61,4 +61,8 @@ public class Line {
     public boolean sameName(Line persistLine) {
         return this.name.equals(persistLine.name);
     }
+
+    public boolean isId(Long id) {
+        return this.id.equals(id);
+    }
 }

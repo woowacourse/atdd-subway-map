@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.StationException;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -17,6 +16,18 @@ public class LineDao {
         }
         lines.add(persistLine);
         return persistLine;
+    }
+
+    public static void delete(final Long id){
+        final Line line = findById(id);
+        lines.remove(line);
+    }
+
+    private static Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.isId(id))
+                .findFirst()
+                .orElseThrow(()-> new LineException("노선이 존재하지 않습니다."));
     }
 
     private static boolean isDuplicatedName(Line persistLine) {
