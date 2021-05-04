@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StationServiceTest {
-
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {

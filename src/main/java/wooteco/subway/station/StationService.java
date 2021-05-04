@@ -11,7 +11,7 @@ public class StationService {
 
     public Station createStation(String stationName) {
         if (isStationExist(stationName)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("존재하는 역 이름입니다.");
         }
         return stationDao.save(new Station(stationName));
     }
