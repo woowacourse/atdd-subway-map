@@ -37,4 +37,10 @@ public class StationDao {
     public static void delete(Station station) {
         stations.remove(station);
     }
+
+    public static Optional<Station> findByName(String stationName) {
+        return stations.stream()
+                .filter(station -> station.getName().equals(stationName))
+                .findFirst();
+    }
 }

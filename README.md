@@ -55,8 +55,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 
 ## 기능 구현 목록
-- [ ] 지하철 역 관리
-    - [ ] 같은 지하철역 생성 불가 기능
+- [x] 지하철 역 관리
+    - [x] 같은 지하철 역 생성 불가 기능
     - [x] 삭제 기능
 
 - [ ] 지하철 노선 관리 

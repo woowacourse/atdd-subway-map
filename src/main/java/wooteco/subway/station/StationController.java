@@ -14,7 +14,13 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        String stationName = stationRequest.getName();
+        Optional<Station> duplicateStation = StationDao.findByName(stationName);
+        if (duplicateStation.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Station station = new Station(stationName);
         Station newStation = StationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
@@ -33,7 +39,7 @@ public class StationController {
     public ResponseEntity<String> deleteStation(@PathVariable Long id) {
         Optional<Station> station = StationDao.findById(id);
         if(!station.isPresent()) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+            return ResponseEntity.badRequest().build();
         }
         StationDao.delete(station.get());
         return ResponseEntity.noContent().build();
