@@ -23,6 +23,12 @@ public class LineService {
                 .anyMatch(line -> line.isSameName(lineRequest.getName()));
     }
 
+    public LineResponse findLine(Long id) {
+        Line newLine = LineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    }
+
     public List<LineResponse> findAllLines() {
         List<Line> lines = LineDao.findAll();
         return lines.stream()

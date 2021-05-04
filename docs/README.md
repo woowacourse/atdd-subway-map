@@ -28,7 +28,7 @@
         - GET, /lines
     - res
         - 200 OK, BODY : {list - id, name, color}
-- [ ] 노선 조회
+- [x] 노선 조회
     - req
         - GET, /lines/{id}
     - res
