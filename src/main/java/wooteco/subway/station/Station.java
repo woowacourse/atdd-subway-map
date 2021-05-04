@@ -12,6 +12,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
     public Station(String name) {
         this.name = name;
     }

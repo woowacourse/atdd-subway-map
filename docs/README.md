@@ -1,7 +1,7 @@
 # 기능 구현 목록
 
 ## 역 관리
-- [ ] 중복되는 역의 이름이 존재하는 경우 역을 추가할 수 없다. (res : BAD_REQUEST)
+- [x] 중복되는 역의 이름이 존재하는 경우 역을 추가할 수 없다. (res : BAD_REQUEST)
 - [x] StationDao를 가진 StationService 레이어가 존재한다.
 - [ ] DELETE 요청이 들어오는 경우 요청에 맞는 역을 찾아 삭제한다.
 
