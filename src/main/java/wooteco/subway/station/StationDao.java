@@ -27,4 +27,8 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public void delete(Long id) {
+        stations.removeIf(station -> station.getId().equals(id));
+    }
 }
