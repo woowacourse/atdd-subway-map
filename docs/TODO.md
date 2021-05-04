@@ -1,2 +1,2 @@
 ## TodoList
-- [ ] Station Service 생성
+- [ ] CQRS 고려 

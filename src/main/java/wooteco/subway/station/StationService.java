@@ -4,10 +4,20 @@ import java.util.NoSuchElementException;
 
 public class StationService {
 
-    public void createStation(final String name) {
+    private static final StationService STATION_SERVICE = new StationService();
+
+    private StationService() {
+    }
+
+    public static StationService getInstance() {
+        return STATION_SERVICE;
+    }
+
+    public StationResponse createStation(final StationRequest stationRequest) {
+        final String name = stationRequest.getName();
         validateDuplicatedStationName(name);
-        final Station station = new Station(name);
-        StationDao.save(station);
+        final Station station = StationDao.save(new Station(name));
+        return new StationResponse(station.getId(), station.getName());
     }
 
     private void validateDuplicatedStationName(final String name) {
