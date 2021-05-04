@@ -27,4 +27,10 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public Optional<Station> findStationByName(String name) {
+        return stations.stream()
+                .filter(station -> station.isSameName(name))
+                .findAny();
+    }
 }
