@@ -1,4 +1,4 @@
-package wooteco.subway.controller.dto.request;
+package wooteco.subway.controller.dto.request.line;
 
 public class LineRequestDto {
     private String name;
@@ -36,16 +36,5 @@ public class LineRequestDto {
 
     public int getDistance() {
         return distance;
-    }
-
-    @Override
-    public String toString() {
-        return "LineRequest{" +
-                "name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
     }
 }

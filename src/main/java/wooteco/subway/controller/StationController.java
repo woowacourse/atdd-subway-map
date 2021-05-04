@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.controller.dto.request.StationRequestDto;
-import wooteco.subway.controller.dto.response.StationResponseDto;
+import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
+import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.service.StationService;
 
 import java.net.URI;
@@ -24,8 +24,8 @@ public class StationController {
     }
 
     @PostMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StationResponseDto> createStation(@RequestBody StationRequestDto stationRequestDto) {
-        StationResponseDto stationResponseDto = stationService.createStation(stationRequestDto);
+    public ResponseEntity<StationResponseDto> createStation(@RequestBody StationCreateRequestDto stationCreateRequestDto) {
+        StationResponseDto stationResponseDto = stationService.createStation(stationCreateRequestDto);
         return ResponseEntity
             .created(URI.create("/stations/" + stationResponseDto.getId()))
             .body(stationResponseDto);

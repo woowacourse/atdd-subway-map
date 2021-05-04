@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.controller.dto.request.LineUpdateRequestDto;
-import wooteco.subway.controller.dto.request.LineRequestDto;
-import wooteco.subway.controller.dto.response.LineResponseDto;
+import wooteco.subway.controller.dto.request.line.LineCreateRequestDto;
+import wooteco.subway.controller.dto.request.line.LineUpdateRequestDto;
+import wooteco.subway.controller.dto.request.line.LineRequestDto;
+import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -26,8 +27,8 @@ public class LineController {
     }
 
     @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponseDto> createLine(@RequestBody LineRequestDto lineRequestDto) {
-        LineResponseDto lineResponseDto = lineService.createLine(lineRequestDto);
+    public ResponseEntity<LineResponseDto> createLine(@RequestBody LineCreateRequestDto lineCreateRequestDto) {
+        LineResponseDto lineResponseDto = lineService.createLine(lineCreateRequestDto);
         return ResponseEntity
             .created(URI.create("/lines/" + lineResponseDto.getId()))
             .body(lineResponseDto);

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.controller.dto.response.LineResponseDto;
+import wooteco.subway.controller.dto.response.line.LineResponseDto;
 
 import java.util.Arrays;
 import java.util.HashMap;

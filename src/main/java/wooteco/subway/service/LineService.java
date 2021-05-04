@@ -2,9 +2,10 @@ package wooteco.subway.service;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.dto.request.LineUpdateRequestDto;
-import wooteco.subway.controller.dto.request.LineRequestDto;
-import wooteco.subway.controller.dto.response.LineResponseDto;
+import wooteco.subway.controller.dto.request.line.LineCreateRequestDto;
+import wooteco.subway.controller.dto.request.line.LineUpdateRequestDto;
+import wooteco.subway.controller.dto.request.line.LineRequestDto;
+import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
@@ -21,15 +22,15 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineResponseDto createLine(LineRequestDto lineRequestDto) {
-        validateLineNameDuplicate(lineRequestDto);
-        Line newLine = new Line(lineRequestDto.getName(), lineRequestDto.getColor());
+    public LineResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
+        validateLineNameDuplicate(lineCreateRequestDto.getName());
+        Line newLine = new Line(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Long id = lineDao.save(newLine);
         return new LineResponseDto(id, newLine);
     }
 
-    private void validateLineNameDuplicate(LineRequestDto lineRequestDto) {
-        Optional<Line> lineFoundByName = lineDao.findByName(lineRequestDto.getName());
+    private void validateLineNameDuplicate(String name) {
+        Optional<Line> lineFoundByName = lineDao.findByName(name);
         lineFoundByName.ifPresent(foundLine -> {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         });

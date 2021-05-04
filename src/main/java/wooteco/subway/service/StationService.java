@@ -2,8 +2,8 @@ package wooteco.subway.service;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.dto.request.StationRequestDto;
-import wooteco.subway.controller.dto.response.StationResponseDto;
+import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
+import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
@@ -18,15 +18,15 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponseDto createStation(StationRequestDto stationRequest) {
-        validateStationNameDuplicate(stationRequest);
-        Station newStation = new Station(stationRequest.getName());
+    public StationResponseDto createStation(StationCreateRequestDto stationCreateRequestDto) {
+        validateStationNameDuplicate(stationCreateRequestDto.getName());
+        Station newStation = new Station(stationCreateRequestDto.getName());
         Long id = stationDao.save(newStation);
         return new StationResponseDto(id, newStation);
     }
 
-    private void validateStationNameDuplicate(StationRequestDto stationRequest) {
-        Optional<Station> foundStationByName = stationDao.findByName(stationRequest.getName());
+    private void validateStationNameDuplicate(String name) {
+        Optional<Station> foundStationByName = stationDao.findByName(name);
         foundStationByName.ifPresent(station -> {
             throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         });
