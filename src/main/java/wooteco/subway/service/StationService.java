@@ -19,7 +19,7 @@ public class StationService {
 
     public StationResponse createStation(StationRequest stationRequest) {
         stationJdbcDao.findByName(stationRequest.getName()).ifPresent(station -> {
-            throw new IllegalArgumentException("이미 존재하는 이름입니다.");
+            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         });
         Station newStation = stationJdbcDao.save(stationRequest.getName());
         return new StationResponse(newStation.getId(), newStation.getName());

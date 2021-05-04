@@ -21,6 +21,9 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
+        lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        });
         Line newLine = lineJdbcDao.save(lineRequest.getName(), lineRequest.getColor());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }

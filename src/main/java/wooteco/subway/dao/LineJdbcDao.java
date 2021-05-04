@@ -52,6 +52,14 @@ public class LineJdbcDao {
         return Optional.ofNullable(result);
     }
 
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM LINE WHERE name = ?";
+        Line result = DataAccessUtils.singleResult(
+                jdbcTemplate.query(query, lineRowMapper, name)
+        );
+        return Optional.ofNullable(result);
+    }
+
     public Long edit(Long lineId, String color, String name) {
         String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
         return (long) jdbcTemplate.update(query, color, name, lineId);

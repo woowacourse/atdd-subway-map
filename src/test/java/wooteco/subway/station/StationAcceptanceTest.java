@@ -3,14 +3,13 @@ package wooteco.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.response.StationResponse;
-import wooteco.subway.dao.StationDao;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,12 +20,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Transactional
 class StationAcceptanceTest extends AcceptanceTest {
-
-    @AfterEach
-    void tearDown() {
-        StationDao.deleteAll();
-    }
 
     @DisplayName("지하철역을 생성한다.")
     @Test
