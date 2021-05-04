@@ -21,7 +21,7 @@ public class LineController {
     private final LineDao lineDao;
 
     public LineController() {
-        this.lineDao = new LineDao();
+        this.lineDao = new LineDaoCache();
     }
 
     @PostMapping("/lines")

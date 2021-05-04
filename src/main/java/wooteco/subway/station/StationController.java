@@ -18,7 +18,7 @@ public class StationController {
     private final StationDao stationDao;
 
     public StationController() {
-        this.stationDao = new StationDao();
+        this.stationDao = new StationDaoCache();
     }
 
     @PostMapping("/stations")
