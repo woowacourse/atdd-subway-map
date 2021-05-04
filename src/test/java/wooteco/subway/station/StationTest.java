@@ -4,11 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +39,19 @@ class StationTest {
 
     private static Stream<Arguments> trimAndRemoveDuplicatedBlankTest() {
         return Stream.of(
-                Arguments.of(" sadang   station    ", "sadang station"),
-                Arguments.of("    kog    mo  station", "kog mo station"),
+                Arguments.of(" sadang  station    ", "sadang station"),
+                Arguments.of("    kog mo  station", "kog mo station"),
                 Arguments.of(" bill    gates   station ", "bill gates station")
         );
+    }
+
+    @DisplayName("역 이름에 자모음이 아닌 한글, 영어, 숫자, 공백, 괄호, ·가 아닌 문자가 들어가면 예외")
+    @ParameterizedTest
+    @ValueSource(strings = {"쓰다가 오타가 나버ㄹㄴ역", "대쉬는-안되는데-역", "슬래쉬도/안되는데/역", "꿈은이루어진다★역"})
+    public void invalidNameTest(String invalidName) {
+        //given & when & then
+        assertThatThrownBy(() -> new Station(invalidName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("역 이름에 유효하지 않은 문자가 있습니다.");
     }
 }
