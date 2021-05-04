@@ -75,7 +75,7 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isBlank();
     }
 
-    @DisplayName("노선 조회 - 성공")
+    @DisplayName("노선 목록 조회 - 성공")
     @Test
     void getStations() {
         /// given
@@ -116,5 +116,49 @@ class LineControllerTest extends AcceptanceTest {
             .map(LineResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("노선 조회 - 성공")
+    @Test
+    void getStationById() {
+        /// given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+    }
+
+    @DisplayName("노선 조회 - 실패(노선 정보 없음)")
+    @Test
+    void getStationById_notFound() {
+        /// given
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/-1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

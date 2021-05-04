@@ -33,4 +33,10 @@ public class LineDao {
     public List<Line> findAll() {
         return lines;
     }
+
+    public Optional<Line> findLineById(Long id) {
+        return lines.stream()
+            .filter(line -> line.isSameId(id))
+            .findAny();
+    }
 }
