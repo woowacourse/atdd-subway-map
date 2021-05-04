@@ -44,4 +44,8 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+    public void delete(Long id) {
+        lines.remove(findById(id));
+    }
 }

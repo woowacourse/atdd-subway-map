@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,5 +50,16 @@ class LineDaoTest {
         lineDao.update(savedLine.getId(), "9호선", "남색");
         assertEquals(savedLine.getName(), "9호선");
         assertEquals(savedLine.getColor(), "남색");
+    }
+
+    @Test
+    @DisplayName("노선 정보 삭제")
+    void delete() {
+        Long savedLineId = lineDao.save(line)
+                                  .getId();
+        assertThat(lineDao.findById(savedLineId)).isNotNull();
+        lineDao.delete(savedLineId);
+        assertThatThrownBy(() -> lineDao.findById(savedLineId))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

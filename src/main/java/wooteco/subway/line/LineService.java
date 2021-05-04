@@ -33,4 +33,8 @@ public class LineService {
     public void modifyLine(Long id, String name, String color) {
         lineDao.update(id, name, color);
     }
+
+    public void deleteLine(Long id) {
+        lineDao.delete(id);
+    }
 }
