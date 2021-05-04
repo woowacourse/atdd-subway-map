@@ -153,4 +153,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("중복된 노선 이름 추가시 예외 처리")
+    @Test
+    void nameDuplication() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        params.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "강남역");
+        params2.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.exception.NameDuplicationException;
 
 @RestController
 public class LineController {
@@ -21,7 +22,6 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-
         Line newLine = LineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
             newLine.getColor());
@@ -60,5 +60,10 @@ public class LineController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handle() {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NameDuplicationException.class)
+    public ResponseEntity handleNameDuplication() {
+        return ResponseEntity.status(409).build();
     }
 }

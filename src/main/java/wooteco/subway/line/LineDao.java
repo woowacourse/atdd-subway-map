@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.NameDuplicationException;
 
 public class LineDao {
 
@@ -11,6 +12,10 @@ public class LineDao {
     private static List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
+        if (lines.contains(line)) {
+            throw new NameDuplicationException("중복된 이름입니다.");
+        }
+
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;

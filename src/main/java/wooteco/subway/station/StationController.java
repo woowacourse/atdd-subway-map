@@ -6,11 +6,13 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.exception.NameDuplicationException;
 
 @RestController
 public class StationController {
@@ -27,8 +29,8 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = StationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 
@@ -36,5 +38,10 @@ public class StationController {
     public ResponseEntity deleteStation(@PathVariable Long id) {
         StationDao.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(NameDuplicationException.class)
+    public ResponseEntity handleNameDuplication() {
+        return ResponseEntity.status(409).build();
     }
 }
