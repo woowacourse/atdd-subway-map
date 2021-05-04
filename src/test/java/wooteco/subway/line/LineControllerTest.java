@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class LineControllerTest extends AcceptanceTest {
-    private ExtractableResponse<Response> createResponse;
+    private ExtractableResponse<Response> response;
 
     @Override
     @BeforeEach
@@ -30,7 +30,7 @@ class LineControllerTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
-        createResponse = RestAssured.given().log().all()
+        response = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -43,11 +43,12 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void createLine() {
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(createResponse.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
 
-        assertThat(createResponse.response().jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(createResponse.as(LineResponse.class).getName()).isEqualTo("신분당선");
+        assertThat(response.response().jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.response().jsonPath().getLong("id")).isEqualTo(1L);
+        assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
     }
 
     @DisplayName("전체 노선을 조회하면 저장된 모든 노선들을 반환한다 ")
@@ -70,7 +71,7 @@ class LineControllerTest extends AcceptanceTest {
                 .get("/lines")
                 .then().log().all()
                 .extract();
-        
+
         Map<String, Object> sinBunDangLine = (Map<String, Object>) response.as(ArrayList.class).get(0);
         Map<String, Object> line2 = (Map<String, Object>) response.as(ArrayList.class).get(1);
 
@@ -78,5 +79,23 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(sinBunDangLine.get("name")).isEqualTo("신분당선");
         assertThat(line2.get("name")).isEqualTo("2호선");
+    }
+
+    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보를 반환한다.")
+    @Test
+    void getLine() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/1")
+                .then().log().all()
+                .extract();
+
+        LineResponse expectedLineResponse = new LineResponse(
+                1L,
+                "신분당선",
+                "bg-red-600"
+        );
+        assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().isEqualTo(expectedLineResponse);
     }
 }

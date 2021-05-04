@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineDao {
+    private static final int INDEX_MATCHER = 1;
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
@@ -32,5 +33,9 @@ public class LineDao {
 
     public static List<Line> getLines() {
         return new ArrayList<>(lines);
+    }
+
+    public static Line getLine(final Long id) {
+        return lines.get(id.intValue() - INDEX_MATCHER);
     }
 }
