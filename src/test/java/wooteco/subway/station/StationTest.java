@@ -23,6 +23,4 @@ class StationTest {
         assertThatThrownBy(() -> new Station(1L, name))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-
 }

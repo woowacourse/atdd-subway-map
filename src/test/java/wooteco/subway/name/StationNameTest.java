@@ -21,8 +21,8 @@ class StationNameTest {
     @ValueSource(strings = {"검프", "검 프 역", "gump역"})
     @DisplayName("유효하지 않은 이름의 객체를 가져올 시 예외가 발생한다.")
     void validateName(String name) {
-        assertThatThrownBy(() -> {
-            new StationName(name).name();
-        }).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() ->
+            new StationName(name)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }

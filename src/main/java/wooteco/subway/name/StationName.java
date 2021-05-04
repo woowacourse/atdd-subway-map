@@ -7,10 +7,11 @@ public class StationName implements Name {
     private final String name;
 
     public StationName(final String name) {
+        validateName(name);
         this.name = name;
     }
 
-    public void validateName() {
+    public void validateName(final String name) {
         if (!PATTERN.matcher(name).matches()) {
             throw new IllegalArgumentException("잘못된 역 이름입니다.");
         }
@@ -18,7 +19,6 @@ public class StationName implements Name {
 
     @Override
     public String name() {
-        validateName();
         return name;
     }
 }
