@@ -17,6 +17,27 @@
 
 <br>
 
+
+## 기능 구현 목록
+
+### 공통
+- [ ] 모든 도메인에 Service 계층 분리
+
+### Station
+- [ ] [예외] 역 이름에 중복이 있어서는 안 된다.
+- [ ] 역 삭제 기능([DELETE] /stations/${stationId})을 구현한다.
+
+### Line
+- [ ] Line Controller 추가
+- [ ] Line Dao 추가
+- [ ] Line CRUD API 구현
+  - [ ] Create
+    - [ ] [예외] 이름이 중복되어선 안 된다.
+  - [ ] Read
+  - [ ] Delete
+
+
+
 ## 🚀 Getting Started
 
 ### Install
