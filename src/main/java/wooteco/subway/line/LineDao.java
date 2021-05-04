@@ -26,7 +26,11 @@ public class LineDao {
         return line;
     }
 
-    private static void deleteAll(){
+    public static void deleteAll(){
         lines.clear();
+    }
+
+    public static List<Line> getLines() {
+        return new ArrayList<>(lines);
     }
 }

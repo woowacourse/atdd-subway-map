@@ -1,11 +1,11 @@
 package wooteco.subway.line;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class LineController {
@@ -16,5 +16,22 @@ public class LineController {
         Line newLine = LineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+    }
+
+    @GetMapping("/lines")
+    public ResponseEntity<List<LinesResponse>> getLines() {
+        List<Line> lines = LineDao.getLines();
+        List<LinesResponse> linesResponses = new ArrayList<>();
+        for (Line line : lines) {
+            linesResponses.add(new LinesResponse(line.getId(), line.getName(), line.getColor()));
+        }
+
+        return ResponseEntity.ok().body(linesResponses);
+    }
+
+    @DeleteMapping("/lines")
+    public ResponseEntity deleteLines() {
+        LineDao.deleteAll();
+        return ResponseEntity.ok().build();
     }
 }

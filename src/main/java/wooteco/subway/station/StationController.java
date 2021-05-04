@@ -29,12 +29,12 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity deleteStations(@PathVariable Long id) {
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/stations")
-    public ResponseEntity deleteStation() {
+    public ResponseEntity deleteStations() {
         StationDao.deleteAll();
         return ResponseEntity.ok().build();
     }
