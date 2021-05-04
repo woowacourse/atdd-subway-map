@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class LineDao {
     private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
-    private static final long EDIT_SUCCESS = 1;
+    private static final long AFFECTED_ROWS_COUNT = 1;
 
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
@@ -47,6 +47,13 @@ public class LineDao {
                 .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
         int index = lines.indexOf(foundLine);
         lines.set(index, new Line(lineId, color, name));
-        return EDIT_SUCCESS;
+        return AFFECTED_ROWS_COUNT;
+    }
+
+    public static Long deleteById(Long lineId) {
+        Line foundLine = findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
+        lines.remove(foundLine);
+        return AFFECTED_ROWS_COUNT;
     }
 }

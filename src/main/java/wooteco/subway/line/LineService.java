@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-
-    private static final int EDITED_ROW_COUNT = 1;
     private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
 
     public LineResponse createLine(LineRequest lineRequest) {
@@ -31,5 +29,9 @@ public class LineService {
 
     public long editLine(Long lineId, LineEditRequest request) {
         return LineDao.edit(lineId, request.getColor(), request.getName());
+    }
+
+    public long deleteLine(Long lineId) {
+        return LineDao.deleteById(lineId);
     }
 }
