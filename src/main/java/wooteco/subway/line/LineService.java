@@ -1,5 +1,8 @@
 package wooteco.subway.line;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
@@ -18,5 +21,12 @@ public class LineService {
     private boolean checkNameDuplicate(LineRequest lineRequest) {
         return LineDao.findAll().stream()
                 .anyMatch(line -> line.isSameName(lineRequest.getName()));
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = LineDao.findAll();
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .collect(Collectors.toList());
     }
 }

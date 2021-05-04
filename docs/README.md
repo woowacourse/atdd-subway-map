@@ -22,7 +22,7 @@
         - POST, /lines, BODY : {color, name}
     - res
         - 201 CREATED, Location = /lines/{id}, BODY : {id, name, color}
-- [ ] 노선 목록 조회
+- [x] 노선 목록 조회
     - 전체 등록된 노선을 조회한다.
     - req
         - GET, /lines
