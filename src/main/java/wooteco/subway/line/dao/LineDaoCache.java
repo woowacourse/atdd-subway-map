@@ -1,10 +1,11 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.Line;
 
 public class LineDaoCache implements LineDao {
 
@@ -47,5 +48,10 @@ public class LineDaoCache implements LineDao {
     @Override
     public void removeLine(Long id) {
         lines.removeIf(line -> line.isSameId(id));
+    }
+
+    @Override
+    public void update(Long id, String name, String color) {
+        findLineById(id).get().changeInfo(name, color);
     }
 }

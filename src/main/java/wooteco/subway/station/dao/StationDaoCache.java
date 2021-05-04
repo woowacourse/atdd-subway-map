@@ -1,10 +1,12 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.dao.StationDao;
 
 public class StationDaoCache implements StationDao {
 

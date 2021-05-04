@@ -14,14 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.exception.LineNameDuplicatedException;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dao.LineDaoCache;
 
 @RestController
 public class LineController {
 
     private final LineDao lineDao;
 
-    public LineController() {
-        this.lineDao = new LineDaoCache();
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     @PostMapping("/lines")
@@ -57,11 +59,13 @@ public class LineController {
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line line = lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+        lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+
         if (lineDao.findLineByName(lineRequest.getName()).isPresent()) {
             throw new LineNameDuplicatedException();
         }
-        line.changeInfo(lineRequest.getName(), lineRequest.getColor());
+
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 

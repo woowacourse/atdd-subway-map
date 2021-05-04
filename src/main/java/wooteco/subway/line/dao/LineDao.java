@@ -1,7 +1,8 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import java.util.List;
 import java.util.Optional;
+import wooteco.subway.line.Line;
 
 public interface LineDao {
 
@@ -14,4 +15,6 @@ public interface LineDao {
     Optional<Line> findLineById(Long id);
 
     void removeLine(Long id);
+
+    void update(Long id, String name, String color);
 }
