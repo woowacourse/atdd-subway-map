@@ -247,4 +247,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("존재하지 않는 단일 노선 조회")
+    @Test
+    void getLineIfNotFoundId() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        String name1 = "2호선";
+        params.put("name", name1);
+        params.put("color", "green");
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        //when
+        Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/" + (id + 1L))
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
+    }
 }

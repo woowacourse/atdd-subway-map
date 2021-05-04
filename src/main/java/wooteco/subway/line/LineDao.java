@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.exception.NotFoundException;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -52,7 +53,7 @@ public class LineDao {
         return lines.stream()
             .filter(line -> line.isSameId(id))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
     }
 
     public static void update(Line updatedLine) {
@@ -62,7 +63,7 @@ public class LineDao {
             .filter(line -> line.isSameId(updatedLine.getId()))
             .map(line -> lines.indexOf(line))
             .findAny()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
         lines.set(index, updatedLine);
     }
 

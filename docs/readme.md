@@ -13,6 +13,7 @@
         + [x] 단일 노선 조회
             + request : x
             + response : id, name, color
+            + [x] 존재하지 않는 노선 ID 조회 예외 처리 
         + [x] 노선 수정
             + request : color, name
             + response : x
