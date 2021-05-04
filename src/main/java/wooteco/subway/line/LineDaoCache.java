@@ -9,7 +9,7 @@ import org.springframework.util.ReflectionUtils;
 public class LineDaoCache implements LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     @Override
     public Optional<Line> findLineByName(String name) {

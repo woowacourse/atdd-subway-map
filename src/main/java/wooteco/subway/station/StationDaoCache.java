@@ -9,7 +9,7 @@ import org.springframework.util.ReflectionUtils;
 public class StationDaoCache implements StationDao {
 
     private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private final List<Station> stations = new ArrayList<>();
 
     @Override
     public Station save(Station station) {
