@@ -40,8 +40,14 @@ public class LineDao {
         lines.add(new Line(id, color, name));
     }
 
-    public static void delete(Line line) {
-        lines.remove(line);
+    public static void delete(Long id) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다.");
+        }
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 
     private static Line createNewObject(Line line) {

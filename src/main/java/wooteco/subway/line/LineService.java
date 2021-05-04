@@ -28,4 +28,8 @@ public class LineService {
     public static void updateById(Long id, String color, String name) {
         LineDao.update(id, color, name);
     }
+
+    public static void deleteById(Long id) {
+        LineDao.delete(id);
+    }
 }
