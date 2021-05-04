@@ -55,15 +55,17 @@
 <script>
 import validator from "../../utils/validator";
 import { SNACKBAR_MESSAGES } from "../../utils/constants";
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { SET_STATIONS, SHOW_SNACKBAR } from "../../store/shared/mutationTypes";
 import shortid from "shortid";
 
 export default {
   name: "StationPage",
+  computed: {
+    ...mapGetters(["stations"]),
+  },
   created() {
     // TODO 초기 역 데이터를 불러오는 API를 추가해주세요.
-    this.stations = [];
     this.setStations([...this.stations]); // stations 데이터를 단 한개 존재하는 저장소에 등록
   },
   methods: {
@@ -81,14 +83,17 @@ export default {
           _id: shortid.generate(),
           name: this.stationName,
         };
-        this.stations.push(newStation);
-        this.stationName = "";
-        this.$refs.stationForm.resetValidation();
+        this.setStations([...this.stations, newStation]);
+        this.initStationForm();
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.CREATE.SUCCESS);
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.CREATE.FAIL);
         throw new Error(e);
       }
+    },
+    initStationForm() {
+      this.stationName = "";
+      this.$refs.stationForm.resetValidation();
     },
     async onDeleteStation(stationId) {
       try {
@@ -108,7 +113,6 @@ export default {
       rules: { ...validator },
       valid: false,
       stationName: "",
-      stations: [],
     };
   },
 };
