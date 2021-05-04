@@ -10,21 +10,27 @@ import java.util.List;
 @RestController
 public class StationController {
 
+    private final StationService stationService;
+
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse stationResponse = StationService.createStation(stationRequest.getName());
+        StationResponse stationResponse = stationService.createStation(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = StationService.showStations();
+        List<StationResponse> stationResponses = stationService.showStations();
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        StationService.deleteById(id);
+        stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
