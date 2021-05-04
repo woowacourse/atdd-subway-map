@@ -1,5 +1,8 @@
 package wooteco.subway.dao;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,10 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -21,9 +20,9 @@ public class StationDao {
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name"));
+        new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name"));
 
     public Long save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";
@@ -39,7 +38,7 @@ public class StationDao {
     public Optional<Station> findByName(String name) {
         String query = "SELECT * FROM STATION WHERE name = ?";
         Station result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, stationRowMapper, name)
+            jdbcTemplate.query(query, stationRowMapper, name)
         );
         return Optional.ofNullable(result);
     }

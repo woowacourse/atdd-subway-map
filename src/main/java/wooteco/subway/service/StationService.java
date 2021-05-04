@@ -1,14 +1,13 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -35,8 +34,8 @@ public class StationService {
     public List<StationResponseDto> getAllStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(StationResponseDto::new)
-                .collect(Collectors.toList());
+            .map(StationResponseDto::new)
+            .collect(Collectors.toList());
     }
 
     public long deleteStationById(Long id) {

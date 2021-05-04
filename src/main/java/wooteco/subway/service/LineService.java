@@ -1,16 +1,14 @@
 package wooteco.subway.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.line.LineCreateRequestDto;
 import wooteco.subway.controller.dto.request.line.LineUpdateRequestDto;
-import wooteco.subway.controller.dto.request.line.LineRequestDto;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -45,8 +43,8 @@ public class LineService {
     public List<LineResponseDto> getAllLines() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponseDto::new)
-                .collect(Collectors.toList());
+            .map(LineResponseDto::new)
+            .collect(Collectors.toList());
     }
 
     public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {

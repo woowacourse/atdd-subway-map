@@ -1,5 +1,7 @@
 package wooteco.subway.controller;
 
+import java.net.URI;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.service.StationService;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 public class StationController {
