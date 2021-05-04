@@ -1,9 +1,9 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.dto.request.LineEditRequest;
-import wooteco.subway.controller.dto.request.LineRequest;
-import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.request.LineEditRequestDto;
+import wooteco.subway.controller.dto.request.LineRequestDto;
+import wooteco.subway.controller.dto.response.LineResponseDto;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.domain.Line;
 
@@ -20,28 +20,28 @@ public class LineService {
         this.lineJdbcDao = lineJdbcDao;
     }
 
-    public LineResponse createLine(LineRequest lineRequest) {
+    public LineResponseDto createLine(LineRequestDto lineRequest) {
         lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
             throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
         });
         Line newLine = lineJdbcDao.save(lineRequest.getName(), lineRequest.getColor());
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineResponseDto(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponseDto> showLines() {
         List<Line> lines = lineJdbcDao.findAll();
         return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .map(it -> new LineResponseDto(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showLine(Long lineId) {
+    public LineResponseDto showLine(Long lineId) {
         Line foundLine = lineJdbcDao.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
-        return new LineResponse(foundLine.getId(), foundLine.getName(), foundLine.getName());
+        return new LineResponseDto(foundLine.getId(), foundLine.getName(), foundLine.getName());
     }
 
-    public long editLine(Long lineId, LineEditRequest request) {
+    public long editLine(Long lineId, LineEditRequestDto request) {
         return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
     }
 

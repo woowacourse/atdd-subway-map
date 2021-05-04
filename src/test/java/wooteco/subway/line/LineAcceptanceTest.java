@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.response.LineResponseDto;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -116,7 +116,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponseDto.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -152,7 +152,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        Long resultLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
+        Long resultLineId = response.jsonPath().getObject(".", LineResponseDto.class).getId();
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 

@@ -1,8 +1,8 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.controller.dto.request.StationRequest;
-import wooteco.subway.controller.dto.response.StationResponse;
+import wooteco.subway.controller.dto.request.StationRequestDto;
+import wooteco.subway.controller.dto.response.StationResponseDto;
 import wooteco.subway.dao.StationJdbcDao;
 import wooteco.subway.domain.Station;
 
@@ -17,18 +17,18 @@ public class StationService {
         this.stationJdbcDao = stationJdbcDao;
     }
 
-    public StationResponse createStation(StationRequest stationRequest) {
+    public StationResponseDto createStation(StationRequestDto stationRequest) {
         stationJdbcDao.findByName(stationRequest.getName()).ifPresent(station -> {
             throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         });
         Station newStation = stationJdbcDao.save(stationRequest.getName());
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return new StationResponseDto(newStation.getId(), newStation.getName());
     }
 
-    public List<StationResponse> showStations() {
+    public List<StationResponseDto> showStations() {
         List<Station> stations = stationJdbcDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(it -> new StationResponseDto(it.getId(), it.getName()))
                 .collect(Collectors.toList());
     }
 

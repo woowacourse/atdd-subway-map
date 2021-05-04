@@ -1,14 +1,14 @@
 package wooteco.subway.controller.dto.response;
 
-public class LineResponse {
+public class LineResponseDto {
     private Long id;
     private String name;
     private String color;
 
-    public LineResponse() {
+    public LineResponseDto() {
     }
 
-    public LineResponse(Long id, String name, String color) {
+    public LineResponseDto(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;

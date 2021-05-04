@@ -1,13 +1,13 @@
 package wooteco.subway.controller.dto.response;
 
-public class StationResponse {
+public class StationResponseDto {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    public StationResponseDto() {
     }
 
-    public StationResponse(Long id, String name) {
+    public StationResponseDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }

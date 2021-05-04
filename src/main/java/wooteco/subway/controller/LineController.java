@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.controller.dto.request.LineEditRequest;
-import wooteco.subway.controller.dto.request.LineRequest;
-import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.request.LineEditRequestDto;
+import wooteco.subway.controller.dto.request.LineRequestDto;
+import wooteco.subway.controller.dto.response.LineResponseDto;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -26,27 +26,27 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.createLine(lineRequest);
+    public ResponseEntity<LineResponseDto> createLine(@RequestBody LineRequestDto lineRequest) {
+        LineResponseDto lineResponse = lineService.createLine(lineRequest);
         return ResponseEntity.created(
                 URI.create("/lines/" + lineResponse.getId())
         ).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.showLines();
+    public ResponseEntity<List<LineResponseDto>> showAllLines() {
+        List<LineResponseDto> lineResponses = lineService.showLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-        LineResponse lineResponse = lineService.showLine(lineId);
+    public ResponseEntity<LineResponseDto> showOneLine(@PathVariable Long lineId) {
+        LineResponseDto lineResponse = lineService.showLine(lineId);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequest request) {
+    public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {
         lineService.editLine(lineId, request);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).build();
     }
