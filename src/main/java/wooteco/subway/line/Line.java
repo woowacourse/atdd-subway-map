@@ -41,6 +41,19 @@ public class Line {
         return stations;
     }
 
+    public void update(final String name, final String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public boolean sameName(Line persistLine) {
+        return this.name.equals(persistLine.name);
+    }
+
+    public boolean isId(Long id) {
+        return this.id.equals(id);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -56,13 +69,5 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public boolean sameName(Line persistLine) {
-        return this.name.equals(persistLine.name);
-    }
-
-    public boolean isId(Long id) {
-        return this.id.equals(id);
     }
 }

@@ -23,6 +23,11 @@ public class LineDao {
         lines.remove(line);
     }
 
+    public static void update(Long id, Line line) {
+        final Line searched = findById(id);
+        searched.update(line.getName(), line.getColor());
+    }
+
     private static Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isId(id))
@@ -45,4 +50,6 @@ public class LineDao {
         ReflectionUtils.setField(field, line, ++seq);
         return line;
     }
+
+
 }
