@@ -31,7 +31,7 @@ public class StationDao {
 
     private static boolean isDuplicated(Station newStation) {
         return stations.stream()
-                .anyMatch(station -> station.equals(newStation));
+                .anyMatch(station -> station.isSameName(newStation));
     }
 
     public static List<Station> findAll() {
