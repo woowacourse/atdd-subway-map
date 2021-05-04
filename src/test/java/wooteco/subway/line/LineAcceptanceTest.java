@@ -82,7 +82,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
-        
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
