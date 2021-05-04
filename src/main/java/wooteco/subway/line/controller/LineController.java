@@ -14,8 +14,8 @@ import java.util.List;
 public class LineController {
     private LineService lineService;
 
-    public LineController() {
-        this.lineService = new LineService();
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
