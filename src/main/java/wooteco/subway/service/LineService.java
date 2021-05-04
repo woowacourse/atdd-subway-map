@@ -27,14 +27,14 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineJdbcDao.findAll();
         return lines.stream()
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse showLine(Long lineId) {
-        Line foundLine = LineDao.findById(lineId)
+        Line foundLine = lineJdbcDao.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
         return new LineResponse(foundLine.getId(), foundLine.getName(), foundLine.getName());
     }

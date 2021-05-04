@@ -1,12 +1,16 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineJdbcDao {
@@ -15,6 +19,12 @@ public class LineJdbcDao {
     public LineJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+            new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color"));
 
     public Line save(String name, String color) {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
@@ -36,19 +46,22 @@ public class LineJdbcDao {
 //        return station;
 //    }
 //
-//    public static List<Line> findAll() {
-//        return lines;
-//    }
+    public List<Line> findAll() {
+        String query = "SELECT * FROM LINE";
+        return jdbcTemplate.query(query, lineRowMapper);
+    }
 //
 //    public static void deleteAll() {
 //        lines.clear();
 //    }
 //
-//    public static Optional<Line> findById(Long lineId) {
-//        return lines.stream()
-//                .filter(line -> line.getId().equals(lineId))
-//                .findFirst();
-//    }
+    public Optional<Line> findById(Long lineId) {
+        String query = "SELECT * FROM LINE WHERE id = ?";
+        Line result = DataAccessUtils.singleResult(
+                jdbcTemplate.query(query, lineRowMapper, lineId)
+        );
+        return Optional.ofNullable(result);
+    }
 //
 //    public static Long edit(Long lineId, String color, String name) {
 //        Line foundLine = findById(lineId)
