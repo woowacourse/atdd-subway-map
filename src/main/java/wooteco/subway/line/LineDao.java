@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class LineDao {
 
@@ -49,5 +50,19 @@ public class LineDao {
                 .filter(line -> line.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id 입니다."));
+    }
+
+    public void updateById(Long id, Line line) {
+        List<Line> linesToUpdate = lines.stream()
+                .map(persistLine -> persistLine.getId().equals(id) ? line : persistLine)
+                .collect(Collectors.toList());
+        validateNewLines(linesToUpdate);
+        lines = linesToUpdate;
+    }
+
+    private void validateNewLines(List<Line> linesToUpdate) {
+        if (lines.containsAll(linesToUpdate)) {
+            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        }
     }
 }
