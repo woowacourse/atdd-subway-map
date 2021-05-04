@@ -15,10 +15,24 @@ public class StationDao {
         stations.clear();
     }
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
+    public static Station save(final Station station) {
+        final Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
+    }
+
+    public static void deleteById(final Long id) {
+        stations.removeIf(station -> station.isSameId(id));
+    }
+
+    public static List<Station> findAll() {
+        return stations;
+    }
+
+    public static Optional<Station> findById(final Long id) {
+        return stations.stream()
+            .filter(station -> station.isSameId(id))
+            .findAny();
     }
 
     public static Optional<Station> findByName(final String name) {
@@ -27,12 +41,8 @@ public class StationDao {
             .findAny();
     }
 
-    public static List<Station> findAll() {
-        return stations;
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
+    private static Station createNewObject(final Station station) {
+        final Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
