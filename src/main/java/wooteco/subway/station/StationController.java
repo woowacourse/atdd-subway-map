@@ -34,7 +34,7 @@ public class StationController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handler(IllegalArgumentException e){
+    public ResponseEntity<String> handler(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
