@@ -28,10 +28,28 @@ public class StationDao {
         return stations;
     }
 
+    public static Station findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
+    }
+
     private static Station setId(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static void delete(Station station) {
+        ifAbsent(station);
+        stations.remove(station);
+    }
+
+    private static void ifAbsent(Station station) {
+        if (!stations.contains(station)) {
+            throw new IllegalArgumentException("역이 존재하지 않습니다.");
+        }
     }
 }

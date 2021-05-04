@@ -30,7 +30,8 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        //todo : 구현
+        Station station = StationDao.findById(id);
+        StationDao.delete(station);
         return ResponseEntity.noContent().build();
     }
 
