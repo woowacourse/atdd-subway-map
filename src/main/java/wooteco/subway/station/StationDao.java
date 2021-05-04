@@ -28,6 +28,18 @@ public final class StationDao {
         return stations;
     }
 
+    public static void delete(final Long id){
+        final Station station = findById(id);
+        stations.remove(station);
+    }
+
+    private static Station findById(final Long id) {
+        return stations.stream()
+                .filter(station -> station.isId(id))
+                .findFirst()
+                .orElseThrow(() -> new StationException("존재하지 않는 역입니다."));
+    }
+
     private static Station createNewObject(final Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
