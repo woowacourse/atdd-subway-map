@@ -40,7 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("지하철노선을 조회한다.")
+    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -82,5 +82,75 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> it.getId())
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("하나의 지하철 노선을 상세 조회한다.")
+    @Test
+    void getLineDetail() {
+        LineDao.save(new Line(1L, "name", "yellow darken-4"));
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("없는 지하철 노선 조회 시 예외 메시지를 출력한다")
+    @Test
+    void invalidLineId() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void modifyLine() {
+        LineDao.save(new Line(1L, "name", "yellow darken-4"));
+
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        params1.put("color", "bg-blue-600");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params1)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        params.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

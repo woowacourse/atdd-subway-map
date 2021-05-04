@@ -22,7 +22,7 @@ public class LineDao {
 
     public static void delete(Long id) {
         lines.stream()
-            .filter(line -> line.getId() == id)
+            .filter(line -> line.getId().equals(id))
             .findFirst()
             .ifPresent(line -> lines.remove(line));
     }
@@ -32,5 +32,18 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static Line find(Long id) {
+        return lines.stream()
+            .filter(line -> line.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
+    }
+
+    public static void modify(Long id, LineRequest lineRequest) {
+        Line line = find(id);
+        lines.set(lines.indexOf(line), new Line(line.getId(), lineRequest.getName(),
+            lineRequest.getColor()));
     }
 }
