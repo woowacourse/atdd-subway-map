@@ -33,6 +33,20 @@ export const SNACKBAR_MESSAGES = {
       FAIL: "😰 역을 삭제하는 도중에 오류가 발생했습니다.",
     },
   },
+  LINE: {
+    CREATE: {
+      SUCCESS: "😀 새로운 노선을 생성했습니다.",
+      FAIL: "😰 새로운 노선을 추가하는 도중에 오류가 발생했습니다.",
+    },
+    UPDATE: {
+      SUCCESS: "😀 노선을 성공적으로 수정했습니다.",
+      FAIL: "😰 노선을 수정하는 도중에 오류가 발생했습니다.",
+    },
+    DELETE: {
+      SUCCESS: "😀 노선을 성공적으로 삭제했습니다.",
+      FAIL: "😰 노선을 삭제하는 도중에 오류가 발생했습니다.",
+    },
+  },
 };
 
 export const PATH_TYPE = {

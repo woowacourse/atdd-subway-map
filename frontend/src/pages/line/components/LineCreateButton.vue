@@ -56,6 +56,7 @@
             color="grey darken-1"
             label="거리"
             placeholder="거리"
+            type="number"
             outlined
           ></v-text-field>
         </div>
@@ -115,7 +116,7 @@ import { mapGetters, mapMutations } from "vuex";
 import Dialog from "../../../components/dialogs/Dialog";
 import { LINE_COLORS, SNACKBAR_MESSAGES } from "../../../utils/constants";
 import shortid from "shortid";
-import { SHOW_SNACKBAR } from "../../../store/shared/mutationTypes";
+import { SET_LINES, SHOW_SNACKBAR } from "../../../store/shared/mutationTypes";
 import validator from "../../../utils/validator";
 
 export default {
@@ -123,7 +124,7 @@ export default {
   components: { Dialog },
   mixins: [dialog],
   computed: {
-    ...mapGetters(["stations"]),
+    ...mapGetters(["stations", "lines"]),
   },
   created() {
     this.lineColors = LINE_COLORS.map((color) => {
@@ -134,7 +135,7 @@ export default {
     });
   },
   methods: {
-    ...mapMutations([SHOW_SNACKBAR]),
+    ...mapMutations([SET_LINES, SHOW_SNACKBAR]),
     setLineColor(color) {
       this.lineForm.color = color;
     },
@@ -147,11 +148,15 @@ export default {
       }
       try {
         // TODO 노선을 추가하는 API를 추가해주세요.
-        this.initLineForm()
+        const newLine = { ...this.lineForm };
+        // TODO 전체 노선을 불러오는 API를 추가해주세요
+        this.setLines([...this.lines, newLine]); // setLines는 데이터를 관리하기 위해 단 1개 존재하는 저장소에 노선 정보를 저장하는 메서드입니다.
+        this.initLineForm();
         this.closeDialog();
-        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.SUCCESS);
+        this.showSnackbar(SNACKBAR_MESSAGES.LINE.CREATE.SUCCESS);
       } catch (e) {
-        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL);
+        this.showSnackbar(SNACKBAR_MESSAGES.LINE.CREATE.FAIL);
+        throw new Error(e);
       }
     },
     initLineForm() {

@@ -23,7 +23,7 @@
                       class="relative bottom-1"
                       left
                     />
-                    <span>{{ line.name }}</span>
+                    <span class="ml-2">{{ line.name }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="flex-row"> </v-list-item-action>
@@ -39,14 +39,16 @@
 <script>
 import LineCreateButton from "./components/LineCreateButton";
 import { SET_LINES } from "../../store/shared/mutationTypes";
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "LinePage",
   components: { LineCreateButton },
+  computed: {
+    ...mapGetters(["lines"]),
+  },
   created() {
     //TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
-    this.lines = [];
     this.setLines([...this.lines]);
   },
   methods: {
@@ -58,7 +60,6 @@ export default {
   data() {
     return {
       line: {},
-      lines: [],
       lineDetail: null,
     };
   },
