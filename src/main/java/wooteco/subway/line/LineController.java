@@ -3,11 +3,14 @@ package wooteco.subway.line;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,5 +38,14 @@ public class LineController {
         Line line = LineDao.findLineById(id);
         LineResponse response = new LineResponse(line);
         return ResponseEntity.ok(response);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/lines/{id}")
+    public void updateLine(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
+        Line findLine = LineDao.findLineById(id);
+        Line updatedLine = findLine.update(lineRequest.getName(), lineRequest.getColor());
+        LineDao.update(updatedLine);
     }
 }

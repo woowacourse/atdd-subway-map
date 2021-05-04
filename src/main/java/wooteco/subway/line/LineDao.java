@@ -45,4 +45,13 @@ public class LineDao {
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
+
+    public static void update(Line updatedLine) {
+        Integer index = lines.stream()
+            .filter(line -> line.isSameId(updatedLine.getId()))
+            .map(line -> lines.indexOf(line))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+        lines.set(index, updatedLine);
+    }
 }

@@ -13,7 +13,7 @@
         + [x] 단일 노선 조회
             + request : x
             + response : id, name, color
-        + [ ] 노선 수정
+        + [x] 노선 수정
             + request : color, name
             + response : x
         + [ ] 노선 삭제
