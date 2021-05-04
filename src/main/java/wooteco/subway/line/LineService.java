@@ -18,4 +18,10 @@ public class LineService {
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
+
+    public static LineResponse showLine(Long id) {
+        Line line = LineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다."));
+        return new LineResponse(line);
+    }
 }

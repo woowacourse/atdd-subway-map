@@ -21,6 +21,12 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping(value = "/lines/{id}")
+    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) {
+        LineResponse lineResponse = LineService.showLine(id);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handler(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
