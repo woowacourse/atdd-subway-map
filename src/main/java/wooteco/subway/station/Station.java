@@ -30,5 +30,9 @@ public class Station {
     public String getName() {
         return name.name();
     }
+
+    public boolean sameName(String name) {
+        return this.name.sameName(name);
+    }
 }
 

@@ -11,7 +11,10 @@ public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
+    public static Station save(final Station station) {
+        if (findByName(station.getName()).isPresent()) {
+            throw new IllegalArgumentException("이미 등록된 역 입니다.");
+        }
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
         return persistStation;
@@ -21,10 +24,21 @@ public class StationDao {
         return stations;
     }
 
-    private static Station createNewObject(Station station) {
+    private static Station createNewObject(final Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public static Optional<Station> findByName(final String name) {
+        return stations.stream()
+                .filter(station -> station.sameName(name))
+                .findAny();
+    }
+
+    public static void clear() {
+        stations.clear();
+        seq = 0L;
     }
 }
