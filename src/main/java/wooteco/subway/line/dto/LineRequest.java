@@ -43,4 +43,8 @@ public class LineRequest {
     public Long getExtraFare() {
         return extraFare;
     }
+
+    public boolean isSameStations(){
+        return upStationId.equals(downStationId);
+    }
 }

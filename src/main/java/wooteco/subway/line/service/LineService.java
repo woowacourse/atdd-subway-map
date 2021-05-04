@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
+        if(lineRequest.isSameStations()){
+            throw new IllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
+        }
         Line line = lineRequestToLine(lineRequest);
         if (LineDao.findByName(line.getName()).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
