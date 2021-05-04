@@ -41,10 +41,16 @@ public class LineController {
         return ResponseEntity.ok(lineResponse);
     }
 
-    @PutMapping(value= "/lines/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    @PutMapping(value = "/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.updateById(id, line);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineDao.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

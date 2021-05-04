@@ -66,4 +66,12 @@ public class LineDao {
             throw new IllegalArgumentException("존재하지 않는 id 입니다.");
         }
     }
+
+    public void deleteById(Long id) {
+        boolean isRemoved = lines.removeIf(line -> line.getId().equals(id));
+
+        if (!isRemoved) {
+            throw new IllegalArgumentException("존재하지 않는 ID 입니다.");
+        }
+    }
 }
