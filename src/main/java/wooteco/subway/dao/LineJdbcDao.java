@@ -62,19 +62,14 @@ public class LineJdbcDao {
         );
         return Optional.ofNullable(result);
     }
-//
-//    public static Long edit(Long lineId, String color, String name) {
-//        Line foundLine = findById(lineId)
-//                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
-//        int index = lines.indexOf(foundLine);
-//        lines.set(index, new Line(lineId, color, name));
-//        return AFFECTED_ROWS_COUNT;
-//    }
-//
-//    public static Long deleteById(Long lineId) {
-//        Line foundLine = findById(lineId)
-//                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
-//        lines.remove(foundLine);
-//        return AFFECTED_ROWS_COUNT;
-//    }
+
+    public Long edit(Long lineId, String color, String name) {
+        String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
+        return (long) jdbcTemplate.update(query, color, name, lineId);
+    }
+
+    public Long deleteById(Long lineId) {
+        String query = "DELETE FROM LINE WHERE id = ?";
+        return (long) jdbcTemplate.update(query, lineId);
+    }
 }

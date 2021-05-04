@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.LineEditRequest;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.domain.Line;
 
@@ -40,10 +39,10 @@ public class LineService {
     }
 
     public long editLine(Long lineId, LineEditRequest request) {
-        return LineDao.edit(lineId, request.getColor(), request.getName());
+        return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
     }
 
     public long deleteLine(Long lineId) {
-        return LineDao.deleteById(lineId);
+        return lineJdbcDao.deleteById(lineId);
     }
 }
