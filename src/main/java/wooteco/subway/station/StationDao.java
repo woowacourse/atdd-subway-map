@@ -8,17 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class StationDao {
-    private static final StationDao STATION_DAO = new StationDao();
 
     private Long seq = 0L;
     private List<Station> stations = new ArrayList<>();
-
-    private StationDao() {
-    }
-
-    public static StationDao instance() {
-        return STATION_DAO;
-    }
 
     public Station save(Station station) {
         validateToSave(station);

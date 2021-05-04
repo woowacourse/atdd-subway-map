@@ -25,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "잠실역");
+        params.put("name", "강남역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -74,7 +74,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "양재역");
+        params1.put("name", "강남역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,7 +116,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "석촌역");
+        params.put("name", "강남역");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
