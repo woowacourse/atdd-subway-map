@@ -16,8 +16,8 @@
 - Line
     - id, name, color, List<Station>
 
-- [ ] 노선 생성
-    - [ ] 같은 이름은 추가할 수 없다.
+- [x] 노선 생성
+    - [x] 같은 이름은 추가할 수 없다.
     - req
         - POST, /lines, BODY : {color, name}
     - res
