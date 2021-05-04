@@ -116,4 +116,17 @@ class LineControllerTest extends AcceptanceTest {
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("id를 통해 노선을 삭제하면, payload대로 노선을 삭제한다")
+    @Test
+    void deleteLine() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

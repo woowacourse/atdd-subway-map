@@ -27,7 +27,7 @@ public class LineDao {
         return line;
     }
 
-    public static void deleteAll(){
+    public static void deleteAll() {
         lines.clear();
     }
 
@@ -36,10 +36,18 @@ public class LineDao {
     }
 
     public static Line getLine(final Long id) {
-        return lines.get(id.intValue() - INDEX_MATCHER);
+        return lines.get(getIndexById(id));
     }
 
     public static void updateLine(final Long id, final Line line) {
-        lines.set(id.intValue() - INDEX_MATCHER, line);
+        lines.set(getIndexById(id), line);
+    }
+
+    public static void deleteById(final Long id) {
+        lines.remove(getIndexById(id));
+    }
+
+    private static int getIndexById(final Long id) {
+        return id.intValue() - INDEX_MATCHER;
     }
 }
