@@ -20,11 +20,17 @@ public class LineDao {
     }
 
     private void validateToSave(Line lineToSave) {
-        boolean hasSameName = lines.stream().anyMatch(line -> line.hasSameName(lineToSave));
-
-        if (hasSameName) {
-            throw new IllegalArgumentException("중복된 이름을 생성할 수 없습니다.");
+        if (hasSameName(lineToSave) || hasSameColor(lineToSave)) {
+            throw new IllegalArgumentException("중복된 이름이나 색의 노선을 생성할 수 없습니다.");
         }
+    }
+
+    private boolean hasSameName(Line lineToSave) {
+        return lines.stream().anyMatch(line -> line.hasSameName(lineToSave));
+    }
+
+    private boolean hasSameColor(Line lineToSave) {
+        return lines.stream().anyMatch(line -> line.hasSameColor(lineToSave));
     }
 
     private Line createNewObject(Line line) {

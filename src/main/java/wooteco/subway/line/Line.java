@@ -30,6 +30,10 @@ public class Line {
     }
 
     public boolean hasSameName(Line lineToSave) {
-        return getName().equals(lineToSave.getName());
+        return name.equals(lineToSave.getName());
+    }
+
+    public boolean hasSameColor(Line lineToSave) {
+        return color.equals(lineToSave.getColor());
     }
 }
