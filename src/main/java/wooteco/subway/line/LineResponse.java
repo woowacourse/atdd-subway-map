@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import wooteco.subway.station.StationResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
@@ -9,6 +10,10 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+
+    public LineResponse(Long id, String name, String color) {
+        this(id, name, color, new ArrayList());
+    }
 
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
