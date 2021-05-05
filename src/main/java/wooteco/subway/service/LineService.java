@@ -25,18 +25,18 @@ public class LineService {
     private void validateDuplication(String name) {
         boolean isDuplicated = lineDao.findAll()
                 .stream()
-                .anyMatch(line -> line.getName().equals(name));
+                .anyMatch(line -> line.hasSameName(name));
         if (isDuplicated) {
-            throw new IllegalArgumentException("중복!");
+            throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");
         }
-    }
-
-    public List<Line> findAll() {
-        return lineDao.findAll();
     }
 
     public Line findById(long id) {
         return lineDao.findById(id);
+    }
+
+    public List<Line> findAll() {
+        return lineDao.findAll();
     }
 
     public void editLine(long id, String name, String color) {
