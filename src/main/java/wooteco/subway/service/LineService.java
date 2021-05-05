@@ -40,8 +40,7 @@ public class LineService {
 
     public void editLine(long id, String name, String color) {
         validateDuplication(name);
-        Line targetLine = findById(id);
-        lineDao.updateLine(targetLine, name, color);
+        lineDao.updateLine(id, name, color);
     }
 
     public void deleteLine(long id) {
