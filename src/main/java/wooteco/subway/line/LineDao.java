@@ -1,8 +1,6 @@
 package wooteco.subway.line;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -104,13 +102,12 @@ public class LineDao {
 //        lines.set(index, updatedLine);
 //    }
 
-    public static void deleteLineById(Long id) {
-        Integer index = lines.stream()
-            .filter(line -> line.isSameId(id))
-            .map(line -> lines.indexOf(line))
-            .findAny()
-            .orElseThrow(IllegalArgumentException::new);
-        lines.remove(index);
+    public void deleteLineById(Long id) {
+        String sql = "DELETE FROM line WHERE id = ?";
+        int updateCount = jdbcTemplate.update(sql, id);
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+        }
     }
 
     public static void deleteAll() {

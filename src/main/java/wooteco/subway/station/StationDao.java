@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.exception.NotFoundException;
 
 @Repository
 public class StationDao {
@@ -63,15 +64,23 @@ public class StationDao {
 
     }
 
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        int updateCount = jdbcTemplate.update(sql, id);
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 역 ID 입니다.");
+        }
+    }
+
+    public static void deleteAll() {
+        stations.clear();
+    }
+
     private RowMapper<Station> mapperStation() {
         return (rs, rowNum) -> {
             Long id = rs.getLong("id");
             String name = rs.getString("name");
             return new Station(id, name);
         };
-    }
-
-    public static void deleteAll() {
-        stations.clear();
     }
 }

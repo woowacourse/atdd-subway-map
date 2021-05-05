@@ -60,6 +60,6 @@ public class LineController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/lines/{id}")
     public void deleteLine(@PathVariable Long id) {
-        LineDao.deleteLineById(id);
+        lineDao.deleteLineById(id);
     }
 }

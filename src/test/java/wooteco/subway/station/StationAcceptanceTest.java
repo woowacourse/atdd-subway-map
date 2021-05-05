@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.line.LineResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -139,4 +140,64 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("역 삭제 기능")
+    @Test
+    void delete() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        String name1 = "강남역";
+        params.put("name", name1);
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        //when
+        Long id = response1.body().jsonPath().getObject(".", StationResponse.class).getId();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/stations/" + id)
+            .then()
+            .log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않는 역 삭제 요청 시, 예외 처리 기능")
+    @Test
+    void deleteIfNotExistStationId() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        String name1 = "강남역";
+        params.put("name", name1);
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        //when
+        Long id = response1.body().jsonPath().getObject(".", StationResponse.class).getId();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/stations/" + (id + 1))
+            .then()
+            .log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 역 ID 입니다.");
+    }
+
 }
