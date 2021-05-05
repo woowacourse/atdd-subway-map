@@ -14,6 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
@@ -27,6 +28,7 @@ import static org.hamcrest.core.Is.is;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 class LineAcceptanceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -56,7 +58,9 @@ class LineAcceptanceTest {
                 .body(OBJECT_MAPPER.writeValueAsString(lineRequest))
                 .when().post("/lines")
                 .then().log().all();
-        addCreatedLineId(validatableResponse);
+        if (validatableResponse.extract().statusCode() != 400) {
+            addCreatedLineId(validatableResponse);
+        }
         return validatableResponse;
     }
 
@@ -71,11 +75,23 @@ class LineAcceptanceTest {
     @Test
     void createLine() throws Exception {
         LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
-        LineResponse lineResponse = new LineResponse(1L, "2호선", "red", new ArrayList<>());
+        ValidatableResponse validatableResponse = postLineApi(lineRequest);
+        long id = testLineIds.get(0);
+
+        LineResponse lineResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
+
+        validatableResponse.statusCode(HttpStatus.CREATED.value())
+                .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+    }
+
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 등록을 시도한다.")
+    @Test
+    void cannotCreateLine() throws Exception {
+        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
+        postLineApi(lineRequest);
 
         postLineApi(lineRequest)
-                .statusCode(HttpStatus.CREATED.value())
-                .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("전체 노선을 조회한다.")
