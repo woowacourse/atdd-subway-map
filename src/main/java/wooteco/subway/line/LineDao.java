@@ -1,8 +1,14 @@
 package wooteco.subway.line;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
@@ -11,57 +17,67 @@ import wooteco.subway.exception.NotExistItemException;
 @Repository
 public class LineDao {
 
-    private final List<Line> lines = new ArrayList<>();
-    private Long seq = 0L;
+    private final JdbcTemplate jdbcTemplate;
 
-    public Line save(Line line) {
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Line createNewObject(Line line) {
-        validateDuplicateName(line);
+    public Line save(Line line) {
+        String sql = "insert into LINE (name, color) values (?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        try {
+            jdbcTemplate.update(con -> {
+                PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
+                prepareStatement.setString(1, line.getName());
+                prepareStatement.setString(2, line.getColor());
+                return prepareStatement;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateException();
+        }
+
+        return createNewObject(line, keyHolder.getKey().longValue());
+    }
+
+    private Line createNewObject(Line line, Long id) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
+        ReflectionUtils.setField(field, line, id);
         return line;
     }
 
-    private void validateDuplicateName(Line line) {
-        String name = line.getName();
-        if (lines.stream().anyMatch(it -> it.isSameName(name))) {
-            throw new DuplicateException();
-        }
-    }
-
     public List<Line> findAll() {
-        return new ArrayList<>(lines);
+        String sql = "select * from LINE";
+
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public Line findById(Long id) {
-        return lines.stream()
-            .filter(it -> it.isSameId(id))
-            .findFirst()
-            .orElseThrow(NotExistItemException::new);
+        String sql = "select * from LINE where id = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotExistItemException();
+        }
     }
 
     public Line update(Line newLine) {
-        Line line = findById(newLine.getId());
-
-        lines.remove(line);
-        lines.add(newLine);
+        String sql = "update LINE set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
         return newLine;
     }
 
     public void delete(Long id) {
-        Line line = findById(id);
-
-        lines.remove(line);
+        String sql = "delete from LINE where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public void deleteAll() {
-        lines.clear();
-        seq = 0L;
-    }
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNumber) -> new Line(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("color")
+    );
 }

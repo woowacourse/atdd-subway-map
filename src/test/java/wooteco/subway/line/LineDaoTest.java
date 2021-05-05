@@ -6,19 +6,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("classpath:tableInit.sql")
 class LineDaoTest {
 
     private LineDao lineDao;
 
-    @BeforeEach
-    void setUp() {
-        lineDao = new LineDao();
+    public LineDaoTest(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     @Test
@@ -44,33 +49,32 @@ class LineDaoTest {
     @Test
     @DisplayName("모든 노선 목록을 조회한다")
     void findAll() {
-        Line line2 = new Line("2호선", "bg-green-600");
-        Line line3 = new Line("3호선", "bg-orange-600");
-        Line line4 = new Line("4호선", "bg-skyBlue-600");
+        Line line2 = lineDao.save(new Line("2호선", "bg-green-600"));
+        Line line3 = lineDao.save(new Line("3호선", "bg-orange-600"));
+        Line line4 = lineDao.save(new Line("4호선", "bg-skyBlue-600"));
 
         List<Line> lines = Arrays.asList(line2, line3, line4);
-
-        lineDao.save(line2);
-        lineDao.save(line3);
-        lineDao.save(line4);
-
         List<Line> linesAll = lineDao.findAll();
 
         assertThat(linesAll).hasSize(3);
-        assertThat(linesAll).isEqualTo(lines);
+
+        for (int i = 0; i < linesAll.size(); i++) {
+            assertThat(lines.get(i).getId()).isEqualTo(lines.get(i).getId());
+            assertThat(lines.get(i).getName()).isEqualTo(lines.get(i).getName());
+            assertThat(lines.get(i).getColor()).isEqualTo(lines.get(i).getColor());
+        }
     }
 
     @Test
     @DisplayName("id를 이용하여 노선을 조회한다.")
     void findById() {
-        Line line2 = new Line("2호선", "bg-green-600");
-        Line line3 = new Line("3호선", "bg-orange-600");
+        lineDao.save(new Line("2호선", "bg-green-600"));
+        lineDao.save(new Line("3호선", "bg-orange-600"));
 
-        lineDao.save(line2);
-        lineDao.save(line3);
-
-        assertThat(lineDao.findById(1L)).isSameAs(line2);
-        assertThat(lineDao.findById(2L)).isSameAs(line3);
+        Line line = lineDao.findById(1L);
+        assertThat(line.getId()).isEqualTo(1L);
+        assertThat(line.getName()).isEqualTo("2호선");
+        assertThat(line.getColor()).isEqualTo("bg-green-600");
     }
 
     @Test
@@ -90,13 +94,6 @@ class LineDaoTest {
         assertThat(lineDao.update(newLine)).isSameAs(newLine);
     }
 
-    @Test
-    @DisplayName("존재하지 않는 노선의 이름 또는 색상을 수정하면, 오류가 발생한다.")
-    void notExistLineUpdateException() {
-        Line newLine = new Line(1L, "3호선", "bg-orange-600");
-
-        assertThatThrownBy(() -> lineDao.update(newLine)).isInstanceOf(NotExistItemException.class);
-    }
 
     @Test
     @DisplayName("id를 이용하여 노선을 삭제한다.")
@@ -106,12 +103,5 @@ class LineDaoTest {
 
         assertThatCode(() -> lineDao.delete(1L)).doesNotThrowAnyException();
         assertThat(lineDao.findAll()).hasSize(0);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 id로 노선을 삭제하려하면 에러가 출력된다.")
-    void deleteException() {
-        assertThatThrownBy(() -> lineDao.delete(1L))
-            .isInstanceOf(NotExistItemException.class);
     }
 }

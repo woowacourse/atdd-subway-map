@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,9 +49,16 @@ class StationDaoTest {
     void findAll() {
         Station station1 = stationDao.save(new Station("잠실역"));
         Station station2 = stationDao.save(new Station("잠실새내역"));
-        List<Station> stations = stationDao.findAll();
-        assertThat(stations).hasSize(2);
-        assertThat(stations).containsExactly(station1, station2);
+
+        List<Station> stations = Arrays.asList(station1, station2);
+
+        List<Station> stationsAll = stationDao.findAll();
+        assertThat(stationsAll).hasSize(2);
+
+        for (int i = 0; i < stationsAll.size(); i++) {
+            assertThat(stationsAll.get(i).getId()).isEqualTo(stations.get(i).getId());
+            assertThat(stationsAll.get(i).getName()).isEqualTo(stations.get(i).getName());
+        }
     }
 
     @Test

@@ -2,7 +2,6 @@ package wooteco.subway.station;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,13 +39,10 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "select * from STATION";
-        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> {
-            Station station = new Station(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name")
-                );
-            return station;
-        });
+        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+        ));
     }
 
     private Station createNewObject(Station station, Long id) {
