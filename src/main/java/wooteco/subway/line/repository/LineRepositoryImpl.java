@@ -42,4 +42,9 @@ public class LineRepositoryImpl implements LineRepository {
         lineDao.update(line);
     }
 
+    @Override
+    public void deleteById(final Long id) {
+        lineDao.deleteById(id);
+    }
+
 }

@@ -30,4 +30,8 @@ public class LineService {
     public void update(final Line line) {
         lineRepository.update(line);
     }
+
+    public void deleteById(final Long id) {
+        lineRepository.deleteById(id);
+    }
 }
