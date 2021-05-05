@@ -37,7 +37,6 @@ public class LineController {
         for (Line line : lines) {
             linesResponses.add(new LinesResponse(line.getId(), line.getName(), line.getColor()));
         }
-
         return ResponseEntity.ok().body(linesResponses);
     }
 

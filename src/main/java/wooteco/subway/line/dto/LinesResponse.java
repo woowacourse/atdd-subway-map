@@ -1,9 +1,9 @@
 package wooteco.subway.line.dto;
 
 public class LinesResponse {
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public LinesResponse(final Long id, final String name, final String color) {
         this.id = id;

@@ -15,7 +15,7 @@ import java.util.Objects;
 public class StationRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public StationRepository(JdbcTemplate jdbcTemplate) {
+    public StationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
