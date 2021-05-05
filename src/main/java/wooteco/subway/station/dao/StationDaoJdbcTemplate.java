@@ -56,4 +56,10 @@ public class StationDaoJdbcTemplate implements StationDao {
         String sql = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public void removeAll() {
+        String sql = "DELETE FROM station";
+        jdbcTemplate.update(sql);
+    }
 }

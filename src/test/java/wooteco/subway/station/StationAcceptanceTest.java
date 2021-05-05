@@ -10,16 +10,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dao.StationDao;
 
 @DisplayName("지하철역 관련 기능")
-@Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    StationDao stationDao;
+
+    @AfterEach
+    void afterEach() {
+        stationDao.removeAll();
+    }
 
     @DisplayName("지하철역 -  생성")
     @Test
@@ -29,17 +42,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
         params.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
             .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+            .statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
