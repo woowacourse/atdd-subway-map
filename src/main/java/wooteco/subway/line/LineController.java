@@ -34,7 +34,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::new)
             .collect(Collectors.toList());

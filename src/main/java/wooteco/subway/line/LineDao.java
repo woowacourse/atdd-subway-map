@@ -1,6 +1,8 @@
 package wooteco.subway.line;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.station.Station;
 
 @Repository
 public class LineDao {
@@ -60,8 +63,16 @@ public class LineDao {
             .anyMatch(line -> line.isSameName(newLine));
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    public List<Line> findAll() {
+        String sql = "SELECT id, name, color FROM line";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> getLine(rs));
+    }
+
+    private Line getLine(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
     }
 
     public static Line findLineById(Long id) {
