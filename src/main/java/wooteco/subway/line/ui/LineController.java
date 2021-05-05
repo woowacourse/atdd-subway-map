@@ -2,10 +2,7 @@ package wooteco.subway.line.ui;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.line.repository.LineRepositoryImpl;
@@ -14,6 +11,10 @@ import wooteco.subway.line.ui.dto.LineResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @RestController
 @RequestMapping("lines")
@@ -22,7 +23,7 @@ public class LineController {
     private final LineService lineService;
 
     public LineController() {
-        this.lineService =  new LineService(new LineRepositoryImpl(new LineDao()));
+        this.lineService =  new LineService(LineRepositoryImpl.getInstance());
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,6 +42,21 @@ public class LineController {
                                 savedLine.getColor()
                         )
                 );
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> allLines() {
+
+        final List<LineResponse> lineResponses = lineService.allLines().stream()
+                .map(line ->
+                        new LineResponse(
+                                line.getId(),
+                                line.getName(),
+                                line.getColor()
+                        )
+                ).collect(toList());
+
+        return ResponseEntity.ok(lineResponses);
     }
 
 }

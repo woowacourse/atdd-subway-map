@@ -29,4 +29,8 @@ public class LineDao {
         return line.get();
     }
 
+    public void clear() {
+        store.clear();
+        sequence = 0L;
+    }
 }

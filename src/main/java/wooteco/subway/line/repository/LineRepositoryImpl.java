@@ -6,11 +6,15 @@ import wooteco.subway.line.domain.LineRepository;
 import java.util.List;
 
 public class LineRepositoryImpl implements LineRepository {
+    private final static LineRepositoryImpl instance = new LineRepositoryImpl();
 
-    private final LineDao lineDao;
+    private final LineDao lineDao = new LineDao();
 
-    public LineRepositoryImpl(final LineDao lineDao) {
-        this.lineDao = lineDao;
+    private LineRepositoryImpl() {
+    }
+
+    public static LineRepository getInstance() {
+        return instance;
     }
 
     @Override
@@ -26,6 +30,11 @@ public class LineRepositoryImpl implements LineRepository {
     @Override
     public Line findById(final Long id) {
         return lineDao.findById(id);
+    }
+
+    @Override
+    public void clear() {
+        lineDao.clear();
     }
 
 }
