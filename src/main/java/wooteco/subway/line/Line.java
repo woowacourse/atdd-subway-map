@@ -5,17 +5,17 @@ import java.util.Objects;
 public class Line {
     private Long id;
     private LineName name;
-    private String color;
+    private LineColor color;
 
     public Line(String name, String color) {
         this(null, name, color);
     }
 
     public Line(Long id, String name, String color) {
-        this(id, new LineName(name), color);
+        this(id, new LineName(name), new LineColor(color));
     }
 
-    public Line(Long id, LineName name, String color) {
+    public Line(Long id, LineName name, LineColor color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -30,7 +30,7 @@ public class Line {
     }
 
     public String getColor() {
-        return color;
+        return color.getColorName();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class LineName {
@@ -29,5 +30,18 @@ public class LineName {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineName lineName = (LineName) o;
+        return Objects.equals(name, lineName.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
