@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
-import wooteco.subway.line.dao.dto.LineDto;
+import wooteco.subway.line.repository.dto.LineDto;
 import wooteco.subway.line.service.LineService;
 
 import java.net.URI;

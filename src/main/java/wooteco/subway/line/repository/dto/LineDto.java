@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao.dto;
+package wooteco.subway.line.repository.dto;
 
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.controller.dto.StationResponse;

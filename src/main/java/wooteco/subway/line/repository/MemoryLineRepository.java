@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.line.repository;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MemoryLineDao implements LineDao {
+public class MemoryLineRepository implements LineRepository {
 
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
