@@ -20,10 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
 public class LIneAcceptanceTest extends AcceptanceTest {
+    private final MemoryLineDao memoryLineDao = new MemoryLineDao();
 
     @AfterEach
     void clean() {
-        LineDao.clear();
+        memoryLineDao.clear();
     }
 
     @DisplayName("노선을 생성한다.")
@@ -220,7 +221,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(LineDao.findById(deleteId)).isEmpty();
+        assertThat(memoryLineDao.findById(deleteId)).isEmpty();
     }
 
     @DisplayName("노선 제거시 없는 노선이면 예외가 발생한다.")

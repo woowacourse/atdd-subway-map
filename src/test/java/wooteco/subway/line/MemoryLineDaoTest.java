@@ -8,44 +8,45 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LineDaoTest {
+class MemoryLineDaoTest {
     private String name;
     private Long id;
+    private MemoryLineDao memoryLineDao = new MemoryLineDao();
 
     @BeforeEach
     void setUp() {
         name = "아마찌선";
         id = 1L;
-        LineDao.save(new Line(id, name, "bg-red-600"));
+        memoryLineDao.save(new Line(id, name, "bg-red-600"));
     }
 
     @AfterEach
     void clean() {
-        LineDao.clear();
+        memoryLineDao.clear();
     }
 
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
-        assertThat(LineDao.findByName(name).get().name()).isEqualTo(name);
+        assertThat(memoryLineDao.findByName(name).get().name()).isEqualTo(name);
     }
 
     @Test
     @DisplayName("노선을 저장한다.")
     void saveDuplicatedName() {
-        assertThatThrownBy(() -> LineDao.save(new Line(2L, name, "bg-red-600")));
+        assertThatThrownBy(() -> memoryLineDao.save(new Line(2L, name, "bg-red-600")));
     }
 
     @Test
     @DisplayName("전체 노선을 조회한다.")
     void findAll() {
-        assertThat(LineDao.findAll()).hasSize(1);
+        assertThat(memoryLineDao.findAll()).hasSize(1);
     }
 
     @Test
     @DisplayName("이름으로 단일 노선을 조회한다.")
     void findByName() {
-        assertThat(LineDao.findByName(name).get().name()).isEqualTo(name);
+        assertThat(memoryLineDao.findByName(name).get().name()).isEqualTo(name);
     }
 
     @Test
@@ -54,8 +55,8 @@ class LineDaoTest {
         String updateName = "흑기선";
         String updateColor = "bg-red-700";
 
-        LineDao.update(id, updateName, updateColor);
-        Line findLine = LineDao.findById(id).get();
+        memoryLineDao.update(id, updateName, updateColor);
+        Line findLine = memoryLineDao.findById(id).get();
 
         assertThat(findLine.name()).isEqualTo(updateName);
         assertThat(findLine.color()).isEqualTo(updateColor);
