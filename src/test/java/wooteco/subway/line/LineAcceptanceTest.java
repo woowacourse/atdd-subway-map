@@ -145,6 +145,43 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("grey darken-1");
     }
 
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "grey darken-1");
+        params.put("upStationId", 1);
+        params.put("downStationId", 2);
+        params.put("distance", 2);
+        params.put("extraFare", 500);
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Map<String, Object> updatedParams = new HashMap<>();
+        updatedParams.put("name", "3호선");
+        updatedParams.put("color", "grey darken-2");
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updatedParams)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -156,6 +193,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", 2);
         params.put("distance", 2);
         params.put("extraFare", 500);
+
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
