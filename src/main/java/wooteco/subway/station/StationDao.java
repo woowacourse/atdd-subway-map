@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.StationDuplicationException;
 
@@ -7,21 +8,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class StationDao {
-    private static StationDao instance;
     private Long seq = 0L;
     private final List<Station> stations = new ArrayList<>();
-
-    private StationDao() {
-    }
-
-    public static StationDao getInstance() {
-        if (instance == null) {
-            instance = new StationDao();
-        }
-
-        return instance;
-    }
 
     public Station save(Station station) {
         validateDuplicatedStation(station);

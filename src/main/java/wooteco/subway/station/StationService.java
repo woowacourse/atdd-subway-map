@@ -1,21 +1,16 @@
 package wooteco.subway.station;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class StationService {
 
     private final StationDao stationDao;
-    private static StationService instance;
 
-    private StationService() {
-        this.stationDao = StationDao.getInstance();
-    }
-
-    public static StationService getInstance() {
-        if (instance == null) {
-            instance = new StationService();
-        }
-        return instance;
+    private StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public Station add(String name) {

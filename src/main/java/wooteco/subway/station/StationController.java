@@ -13,8 +13,8 @@ public class StationController {
 
     private final StationService stationService;
 
-    public StationController() {
-        this.stationService = StationService.getInstance();
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")

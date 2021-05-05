@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.NoLineException;
@@ -8,22 +9,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class LineDao {
 
-    private static LineDao instance;
     private Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();
-
-    private LineDao() {
-    }
-
-    public static LineDao getInstance() {
-        if (instance == null) {
-            instance = new LineDao();
-        }
-
-        return instance;
-    }
 
     public Line save(Line line) {
         validateDuplicatedLine(line);

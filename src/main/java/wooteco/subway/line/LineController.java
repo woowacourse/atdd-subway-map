@@ -13,8 +13,8 @@ public class LineController {
 
     private final LineService lineService;
 
-    public LineController() {
-        this.lineService = LineService.getInstance();
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")

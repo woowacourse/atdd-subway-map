@@ -132,7 +132,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void findLine() {

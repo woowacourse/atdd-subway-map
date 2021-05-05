@@ -68,8 +68,8 @@ npm run dev
 > 2 단계
 
 ### Spring Bean 활용
-- [ ] Service Bean 등록
-- [ ] DAO Bean 등록 
+- [x] Service Bean 등록
+- [x] DAO Bean 등록 
 
 ### 스프링 JDBC H2 DB 저장
 - [ ] DB 연결

@@ -1,21 +1,16 @@
 package wooteco.subway.line;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class LineService {
 
-    private static LineService instance;
     private final LineDao lineDao;
 
-    private LineService() {
-        this.lineDao = LineDao.getInstance();
-    }
-
-    public static LineService getInstance() {
-        if (instance == null) {
-            instance = new LineService();
-        }
-        return instance;
+    private LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     public Line add(String name, String color) {
