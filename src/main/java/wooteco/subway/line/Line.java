@@ -19,17 +19,17 @@ public class Line {
         this.color = color;
     }
 
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     public Line(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-    }
-
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
     }
 
     public boolean isSameName(String name) {

@@ -200,12 +200,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-blue-600");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "bg-blue-600");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "신분당선");
+        params2.put("color", "bg-blue-600");
 
         RestAssured.given().log().all()
-                .body(params)
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        RestAssured.given().log().all()
+                .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -214,7 +225,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> expectedResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/1")

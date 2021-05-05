@@ -39,15 +39,22 @@ public class LineDao implements LineRepository {
     }
 
     @Override
-    public void update(Line currentLine, Line updatedLine) {
+    public void updateById(Long id, Line updatedLine) {
+        Line line = findByIdIfExist(id);
         lines.stream()
-                .filter(currentLine::equals)
+                .filter(line::equals)
                 .findAny()
-                .ifPresent(line -> line.update(updatedLine));
+                .ifPresent(l -> l.update(updatedLine));
+    }
+
+    private Line findByIdIfExist(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
     @Override
-    public void delete(Line line) {
+    public void deleteById(Long id) {
+        Line line = findByIdIfExist(id);
         lines.remove(line);
     }
 }

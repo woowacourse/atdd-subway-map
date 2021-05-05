@@ -20,7 +20,7 @@ public class SubwayConfig {
     @Bean
     public LineRepository lineRepository() {
 //        return new LineDao(); // 1단계
-        return new LineJdbcDao(); // 2단계
+        return new LineJdbcDao(jdbcTemplate); // 2단계
     }
 
     @Bean
