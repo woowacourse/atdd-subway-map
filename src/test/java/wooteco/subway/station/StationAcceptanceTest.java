@@ -127,7 +127,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/stations/" + stationIdToDelete)
+            .delete("/stations/{id}", stationIdToDelete)
             .then().log().all()
             .extract();
 
