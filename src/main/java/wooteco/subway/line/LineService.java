@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DataNotFoundException;

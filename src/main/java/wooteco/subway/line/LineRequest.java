@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 public class LineRequest {
+
     private String name;
     private String color;
     private Long upStationId;

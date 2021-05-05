@@ -1,11 +1,11 @@
 package wooteco.subway.line;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.station.StationResponse;
 
-import java.util.List;
-
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
