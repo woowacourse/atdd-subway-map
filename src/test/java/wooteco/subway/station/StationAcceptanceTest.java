@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.controller.dto.StationResponse;
 
@@ -23,6 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
+    @Transactional
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -44,6 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @Transactional
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -72,6 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
+    @Transactional
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
@@ -102,8 +106,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        System.out.println("asdf" + response.jsonPath());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+                .peek(it -> System.out.println("fda" + it.header("Location")))
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
@@ -114,6 +120,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
+    @Transactional
     void deleteStation() {
         // given
         Map<String, String> params1 = new HashMap<>();

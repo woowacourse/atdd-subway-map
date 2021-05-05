@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
-import wooteco.subway.line.dao.MemoryLineDao;
 import wooteco.subway.line.dao.dto.LineDto;
 import wooteco.subway.line.service.LineService;
 
@@ -19,8 +18,8 @@ public class LineController {
 
     private LineService lineService;
 
-    public LineController() {
-        this.lineService = new LineService(new MemoryLineDao());
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("")

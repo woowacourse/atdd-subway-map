@@ -1,5 +1,6 @@
 package wooteco.subway.station.service;
 
+import org.springframework.stereotype.Service;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dao.dto.StationDto;
 import wooteco.subway.station.domain.Station;
@@ -7,6 +8,7 @@ import wooteco.subway.station.domain.Station;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class StationService {
 
     private StationDao stationDao;

@@ -18,8 +18,8 @@ public class StationController {
 
     private StationService stationService;
 
-    public StationController() {
-        this.stationService = new StationService(new MemoryStationDao());
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")

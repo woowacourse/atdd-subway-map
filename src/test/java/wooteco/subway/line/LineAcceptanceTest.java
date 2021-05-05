@@ -3,15 +3,13 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineResponse;
-import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.line.dao.MemoryLineDao;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,13 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @DisplayName("지하철 노선 관련 기능")
+@Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    void setUp2() {
-        LineDao lineDao = new MemoryLineDao();
-        lineDao.deleteAll();
-    }
 
     @DisplayName("지하철 노선 생성한다.")
     @Test
@@ -193,8 +186,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> updateParams = new HashMap<>();
-        params1.put("name", "3호선");
-        params1.put("color", "bg-red-600");
+        updateParams.put("name", "3호선");
+        updateParams.put("color", "bg-red-600");
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()

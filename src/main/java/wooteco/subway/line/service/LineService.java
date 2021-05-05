@@ -1,5 +1,6 @@
 package wooteco.subway.line.service;
 
+import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dao.dto.LineDto;
 import wooteco.subway.line.domain.Line;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class LineService {
 
     private LineDao lineDao;
