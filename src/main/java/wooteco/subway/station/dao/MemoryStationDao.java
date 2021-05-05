@@ -15,8 +15,8 @@ public class MemoryStationDao implements StationDao {
 
     @Override
     public Station save(Station station) {
-        if(validateDuplicateName(station)) {
-           throw new DuplicatedNameException();
+        if (validateDuplicateName(station)) {
+            throw new DuplicatedNameException();
         }
         Station persistStation = createNewObject(station);
         stations.add(persistStation);

@@ -11,7 +11,8 @@ public class LineDto {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations;;
+    private List<StationResponse> stations;
+    ;
 
     public static LineDto from(Line line) {
         return new LineDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>());

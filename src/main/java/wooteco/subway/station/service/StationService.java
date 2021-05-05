@@ -1,6 +1,5 @@
 package wooteco.subway.station.service;
 
-import wooteco.subway.station.dao.MemoryStationDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dao.dto.StationDto;
 import wooteco.subway.station.domain.Station;
@@ -10,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class StationService {
 
-    private StationDao stationDao ;
+    private StationDao stationDao;
 
     public StationService(StationDao stationDao) {
         this.stationDao = stationDao;
