@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -88,7 +90,11 @@ public class LineDao {
 
     public Line findLineById(Long id) {
         String sql = "SELECT id, name, color FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, mapperLine(), id);
+        try {
+            return jdbcTemplate.queryForObject(sql, mapperLine(), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+        }
     }
 
     public void update(Line updatedLine) {
