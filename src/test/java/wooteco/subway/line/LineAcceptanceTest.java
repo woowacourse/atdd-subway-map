@@ -57,7 +57,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("grey darken-1");
     }
 
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("노선 목록을 조회한다.")
     @Test
     void showLines() {
         /// given
@@ -108,5 +108,40 @@ class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> it.getId())
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void showLine() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "grey darken-1");
+        params.put("upStationId", 1);
+        params.put("downStationId", 2);
+        params.put("distance", 2);
+        params.put("extraFare", 500);
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Long createId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/" + createId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(createId);
+        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo("2호선");
+        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("grey darken-1");
     }
 }
