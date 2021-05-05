@@ -16,15 +16,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.LineResponse;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationDaoCache;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private static final LineDaoCache lineDaoCache = new LineDaoCache();
+    private static final StationDaoCache stationDaoCache = new StationDaoCache();
+
     @AfterEach
     void cleanTestResidue() {
-        StationDao.clean();
-        LineDao.clean();
+        stationDaoCache.clean();
+        lineDaoCache.clean();
     }
 
     @DisplayName("지하철노선을 생성한다.")

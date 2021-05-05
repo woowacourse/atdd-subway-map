@@ -20,9 +20,10 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        LineDaoCache lineDaoCache = new LineDaoCache();
         try {
             Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-            Line newLine = LineDao.save(line);
+            Line newLine = lineDaoCache.save(line);
             LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
                 newLine.getColor());
             return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
@@ -34,7 +35,8 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        LineDaoCache lineDaoCache = new LineDaoCache();
+        List<Line> lines = lineDaoCache.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
             .collect(Collectors.toList());
@@ -43,8 +45,9 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        LineDaoCache lineDaoCache = new LineDaoCache();
         try {
-            Line line = LineDao.findOne(id);
+            Line line = lineDaoCache.findOne(id);
             LineResponse lineResponse = new LineResponse(line.getId(), line.getName(),
                 line.getColor());
             return ResponseEntity.ok().body(lineResponse);
@@ -56,9 +59,10 @@ public class LineController {
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest,
         @PathVariable Long id) {
+        LineDaoCache lineDaoCache = new LineDaoCache();
         try {
             Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-            LineDao.update(id.intValue(), line);
+            lineDaoCache.update(id.intValue(), line);
             return ResponseEntity.ok().build();
         } catch (VoidLineException e) {
             return ResponseEntity.badRequest().build();
@@ -67,8 +71,9 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
+        LineDaoCache lineDaoCache = new LineDaoCache();
         try {
-            LineDao.delete(id);
+            lineDaoCache.delete(id);
             return ResponseEntity.ok().build();
         } catch (VoidLineException e) {
             return ResponseEntity.badRequest().build();
