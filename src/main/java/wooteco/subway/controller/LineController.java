@@ -51,7 +51,7 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineUpdateRequestDto lineUpdateRequestDto) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequestDto lineUpdateRequestDto) {
         lineService.updateLine(id, lineUpdateRequestDto);
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLinById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLinById(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
