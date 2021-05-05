@@ -39,6 +39,9 @@ npm run dev
 <br>
 
 ## 🚟 기능 요구사항 
+
+> 1 단계 
+
 ### 역 관리
 - [x] 역 추가
   - 제한 사항
@@ -61,6 +64,21 @@ npm run dev
 
 ### E2E 테스트 작성
 - [x] 노선 기능
+
+> 2 단계
+
+### Spring Bean 활용
+- [ ] Service Bean 등록
+- [ ] DAO Bean 등록 
+
+### 스프링 JDBC H2 DB 저장
+- [ ] DB 연결
+- [ ] DB 생성
+- [ ] DAO 쿼리 작성 
+- [ ] H2 log/console 확인 
+
+### 스프링 JDBC H2 DB 테스트
+- [ ] DAO 테스트 작성 
 
 <br>
 
