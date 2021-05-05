@@ -29,3 +29,7 @@
 
 - 노선 기능에 대한 E2E 테스트를 작성
 - StationAcceptanceTest 클래스를 참고
+
+## DAO 를 JDBC 사용하도록 수정
+
+## Spring Bean을 사용하여 생명주기 관리
