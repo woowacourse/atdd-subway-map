@@ -14,7 +14,7 @@ public class LineDao {
 
     public static Line save(Line line) {
         Line persistLine  = createNewObject(line);
-        lines.add(persistLine);
+        add(persistLine);
         return persistLine;
     }
 
@@ -33,5 +33,13 @@ public class LineDao {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findFirst();
+    }
+
+    public static boolean add(Line newLine) {
+        return lines.add(newLine);
+    }
+
+    public static boolean delete(Line line) {
+        return lines.remove(line);
     }
 }

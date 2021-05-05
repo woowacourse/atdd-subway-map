@@ -10,6 +10,7 @@ import wooteco.subway.station.StationResponse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,11 +47,31 @@ public class LineController {
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable long id) {
-        Line line = LineDao.findById(id).get();
+        Optional<Line> validLine = LineDao.findById(id);
+        if(!validLine.isPresent()){
+            throw new IllegalArgumentException("노선 업데이트에 실패하였습니다.");
+        }
 
+        Line line = validLine.get();
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), generateStationResponse(line.getStations()));
 
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+        Optional<Line> validLine = LineDao.findById(id);
+        if(!validLine.isPresent()){
+            throw new IllegalArgumentException("노선 업데이트에 실패하였습니다.");
+        }
+
+        Line line = validLine.get();
+        Line newLine = new Line(line.getId(), lineRequest.getName(), lineRequest.getColor(), line.getStations());
+
+        LineDao.delete(line);
+        LineDao.add(newLine);
+
+        return ResponseEntity.ok().build();
     }
 
     private List<StationResponse> generateStationResponse(List<Station> stations) {
