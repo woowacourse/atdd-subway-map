@@ -84,7 +84,7 @@ class LineRepositoryTest {
 
     @DisplayName("id를 통해 Line을 삭제하면, DB에 있는 Line을 삭제한다.")
     @Test
-    void deleteById(){
+    void deleteById() {
         Long id = 1L;
 
         String query = "SELECT EXISTS(SELECT * FROM line WHERE id = ?)";

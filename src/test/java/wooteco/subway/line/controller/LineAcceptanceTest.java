@@ -19,15 +19,13 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql("classpath:tableInit.sql")
-class LineControllerTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        RestAssured.given().delete("/lines");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");

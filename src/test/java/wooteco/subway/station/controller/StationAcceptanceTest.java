@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("classpath:tableInit.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> createResponse1;
@@ -29,8 +31,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        RestAssured.given().delete("/stations");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -98,9 +98,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-
-
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()

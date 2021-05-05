@@ -68,7 +68,7 @@ public class LineRepository {
         try {
             String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
             jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new IllegalArgumentException("존재하지 않는 id 입니다.");
         }
     }
