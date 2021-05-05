@@ -32,12 +32,12 @@ public class Line {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void setColor(final String color) {
