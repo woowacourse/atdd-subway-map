@@ -25,4 +25,12 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public String name() {
+        return name.name();
+    }
+
+    public boolean sameName(String name) {
+        return this.name.sameName(name);
+    }
 }
