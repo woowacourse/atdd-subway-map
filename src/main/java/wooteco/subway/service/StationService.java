@@ -7,6 +7,7 @@ import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.BadRequestException;
 
 @Service
 public class StationService {
@@ -25,7 +26,7 @@ public class StationService {
 
     private void validateStationNameDuplicate(String name) {
         if (stationDao.countByName(name) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+            throw new BadRequestException("이미 존재하는 역 이름입니다.");
         }
     }
 

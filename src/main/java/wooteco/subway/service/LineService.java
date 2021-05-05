@@ -8,6 +8,7 @@ import wooteco.subway.controller.dto.request.line.LineUpdateRequestDto;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.BadRequestException;
 
 @Service
 public class LineService {
@@ -27,20 +28,20 @@ public class LineService {
 
     private void validateLineNameDuplicate(String name) {
         if (lineDao.countByName(name) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+            throw new BadRequestException("이미 존재하는 노선 이름입니다.");
         }
     }
 
     private void validateLineColorDuplicate(String color) {
         if (lineDao.countByColor(color) > 0) {
-            throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
+            throw new BadRequestException("이미 존재하는 노선 색깔입니다.");
         }
     }
 
     public LineResponseDto getLineById(Long id) {
         return lineDao.findById(id)
             .map(LineResponseDto::new)
-            .orElseThrow(() -> new IllegalArgumentException("Id에 해당하는 노선이 없습니다."));
+            .orElseThrow(() -> new BadRequestException("Id에 해당하는 노선이 없습니다."));
     }
 
     public List<LineResponseDto> getAllLines() {
