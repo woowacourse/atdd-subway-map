@@ -23,8 +23,8 @@ public class Station {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public StationName getName() {
+        return name;
     }
 
     @Override

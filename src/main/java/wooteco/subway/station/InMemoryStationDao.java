@@ -2,12 +2,13 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.LineColor;
+import wooteco.subway.line.LineName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
 public class InMemoryStationDao implements StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
@@ -38,6 +39,18 @@ public class InMemoryStationDao implements StationDao {
                 .filter(station -> station.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
+    }
+
+    @Override
+    public boolean checkExistName(StationName name) {
+        return stations.stream()
+                .anyMatch(station -> station.getName().equals(name));
+    }
+
+    @Override
+    public boolean checkExistId(Long id) {
+        return stations.stream()
+                .anyMatch(station -> station.getId().equals(id));
     }
 
     private Station setId(Station station) {
