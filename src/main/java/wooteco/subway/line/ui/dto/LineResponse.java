@@ -1,9 +1,5 @@
 package wooteco.subway.line.ui.dto;
 
-import wooteco.subway.station.ui.dto.StationResponse;
-
-import java.util.List;
-
 public class LineResponse {
     private final Long id;
     private final String name;
