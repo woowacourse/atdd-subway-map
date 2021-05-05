@@ -1,70 +1,15 @@
 package wooteco.subway.line;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.LineDuplicationException;
-import wooteco.subway.exception.NoLineException;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class LineDao {
+public interface LineDao {
+    Line save(Line line);
 
-    private Long seq = 0L;
-    private final List<Line> lines = new ArrayList<>();
+    List<Line> findAll();
 
-    public Line save(Line line) {
-        validateDuplicatedLine(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
-    }
+    void update(Long id, String name, String color);
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
-    }
+    Line findById(Long id);
 
-    private void validateDuplicatedLine(Line newLine) {
-        if (isDuplicatedName(newLine) || isDuplicatedColor(newLine)) {
-            throw new LineDuplicationException();
-        }
-    }
-
-    private boolean isDuplicatedName(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameName(newLine));
-    }
-
-    private boolean isDuplicatedColor(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameColor(newLine));
-    }
-
-    public List<Line> findAll() {
-        return lines;
-    }
-
-    public void update(Long id, String name, String color) {
-        Line line = findById(id);
-        line = new Line(id, name, color);
-    }
-
-    public Line findById(Long id) {
-        return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findAny()
-            .orElseThrow(NoLineException::new);
-    }
-
-    public void delete(Long id) {
-        lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findAny()
-            .ifPresent(line -> lines.remove(line));
-    }
+    void delete(Long id);
 }

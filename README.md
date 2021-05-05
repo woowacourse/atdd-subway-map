@@ -74,7 +74,7 @@ npm run dev
 ### 스프링 JDBC H2 DB 저장
 - [x] DB 연결
 - [x] DB 생성
-- [ ] DAO 쿼리 작성 
+- [x] DAO 쿼리 작성 
 - [x] H2 log/console 확인 
 
 ### 스프링 JDBC H2 DB 테스트
