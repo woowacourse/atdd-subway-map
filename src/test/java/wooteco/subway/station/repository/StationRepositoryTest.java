@@ -30,13 +30,13 @@ public class StationRepositoryTest {
         jdbcTemplate.update(query, "잠실새내역");
     }
 
-    @DisplayName("역을 DB에 저장하면, 생성된 id값을 반환한다.")
+    @DisplayName("역을 DB에 저장하면, id가 생성된 역을 반환한다.")
     @Test
     void saveStation() {
         Station station = new Station("석촌역");
 
-        Long id = stationRepository.save(station);
-        assertThat(id).isEqualTo(3L);
+        Station savedStation = stationRepository.save(station);
+        assertThat(savedStation.getId()).isEqualTo(3L);
     }
 
     @DisplayName("DB에 있는 역이름을 찾으면, true를 반환한다.")

@@ -19,12 +19,12 @@ public class StationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean isExist(Station station) {
+    public boolean isExist(final Station station) {
         String query = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
     }
 
-    public Long save(Station station) {
+    public Station save(final Station station) {
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,7 +34,7 @@ public class StationRepository {
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
     }
 
     public List<Station> findAll() {
@@ -43,8 +43,13 @@ public class StationRepository {
     }
 
     public void deleteById(final Long id) {
-        String query = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        try {
+            String query = "DELETE FROM station WHERE id = ?";
+            jdbcTemplate.update(query, id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("존재하지 않는 id 입니다");
+        }
+
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
