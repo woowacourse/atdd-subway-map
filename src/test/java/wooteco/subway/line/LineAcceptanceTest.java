@@ -42,7 +42,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선을 조회하는 요청을 보낸다.")
+    @DisplayName("노선 목록을 조회하는 요청을 보낸다.")
     void showLines() {
         // given
         Map<String, String> params1 = new HashMap<>();
@@ -83,5 +83,36 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @Test
+    @DisplayName("노선을 조회하는 요청을 보낸다.")
+    void getLineTest() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-green-600");
+        params.put("name", "7호선");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get(createResponse.header("Location"))
+                .then().log().all()
+                .extract();
+
+        String name = response.jsonPath().get("name");
+        String color = response.jsonPath().get("color");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(name).isEqualTo("7호선");
+        assertThat(color).isEqualTo("bg-green-600");
     }
 }
