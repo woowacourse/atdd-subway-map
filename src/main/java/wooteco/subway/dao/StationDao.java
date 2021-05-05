@@ -14,15 +14,15 @@ import wooteco.subway.domain.Station;
 @Repository
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public StationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
         new Station(
             resultSet.getLong("id"),
             resultSet.getString("name"));
+
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Long save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";

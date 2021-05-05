@@ -14,16 +14,15 @@ import wooteco.subway.domain.Line;
 @Repository
 public class LineDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public LineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
         new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("color"));
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Long save(Line line) {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
