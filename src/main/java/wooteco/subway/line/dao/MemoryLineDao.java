@@ -54,6 +54,11 @@ public class MemoryLineDao implements LineDao {
         lines.add(line);
     }
 
+    @Override
+    public void deleteAll() {
+        lines.clear();
+    }
+
     private void validateDuplicateName(Line newLine) {
         if (lines.stream()
                 .anyMatch(line -> line.equalName(newLine))) {
