@@ -10,7 +10,11 @@ import java.util.stream.Collectors;
 
 public class StationService {
 
-    private StationDao stationDao = new MemoryStationDao();
+    private StationDao stationDao ;
+
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
     public StationDto save(StationDto stationDto) {
         Station station = stationDao.save(new Station(stationDto.getName()));

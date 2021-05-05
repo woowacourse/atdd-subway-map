@@ -13,6 +13,7 @@ public class MemoryStationDao implements StationDao {
     private Long seq = 0L;
     private List<Station> stations = new ArrayList<>();
 
+    @Override
     public Station save(Station station) {
         if(validateDuplicateName(station)) {
            throw new DuplicatedNameException();
@@ -22,6 +23,7 @@ public class MemoryStationDao implements StationDao {
         return persistStation;
     }
 
+    @Override
     public List<Station> findAll() {
         return Collections.unmodifiableList(stations);
     }
@@ -33,11 +35,17 @@ public class MemoryStationDao implements StationDao {
         return station;
     }
 
-    public void delete(Long id) {
-        Station findByIdStation = stations.stream()
+    @Override
+    public Station findById(Long id) {
+        return stations.stream()
                 .filter(station -> station.equalId(id))
                 .findFirst()
                 .get();
+    }
+
+    @Override
+    public void delete(Long id) {
+        Station findByIdStation = findById(id);
         stations.remove(findByIdStation);
     }
 

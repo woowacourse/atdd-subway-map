@@ -21,7 +21,7 @@ public class StationController {
     private StationService stationService;
 
     public StationController() {
-        this.stationService = new StationService();
+        this.stationService = new StationService(new MemoryStationDao());
     }
 
     @PostMapping("/stations")
@@ -44,10 +44,5 @@ public class StationController {
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DuplicatedNameException.class)
-    public ResponseEntity duplicatedException() {
-        return ResponseEntity.badRequest().build();
     }
 }
