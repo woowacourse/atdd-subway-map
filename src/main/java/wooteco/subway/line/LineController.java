@@ -55,7 +55,7 @@ public class LineController {
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         try {
-            LineDto lineDto = lineService.findOne(id);
+            LineDto lineDto = lineService.findOne(new LineDto(id));
             LineResponse lineResponse = new LineResponse(lineDto.getId(), lineDto.getName(),
                 lineDto.getColor());
             return ResponseEntity.ok().body(lineResponse);
@@ -69,7 +69,7 @@ public class LineController {
         @PathVariable Long id) {
         try {
             LineDto lineDto = new LineDto(id, lineRequest.getName(), lineRequest.getColor());
-            lineService.update(id.intValue(), lineDto);
+            lineService.update(lineDto);
             return ResponseEntity.ok().build();
         } catch (VoidLineException e) {
             return ResponseEntity.badRequest().build();
@@ -79,10 +79,10 @@ public class LineController {
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         try {
-            lineService.delete(id);
+            lineService.delete(new LineDto(id));
             return ResponseEntity.ok().build();
         } catch (VoidLineException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.noContent().build();
         }
     }
 }

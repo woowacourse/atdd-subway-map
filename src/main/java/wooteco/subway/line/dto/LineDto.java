@@ -6,6 +6,10 @@ public class LineDto {
     private final String name;
     private final String color;
 
+    public LineDto(Long id) {
+        this(id, null, null);
+    }
+
     public LineDto(String name, String color) {
         this(null, name, color);
     }

@@ -26,17 +26,17 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineDto findOne(long index) {
-        Line line = lineDao.findOne(index);
+    public LineDto findOne(LineDto lineDto) {
+        Line line = lineDao.findOne(lineDto.getId());
         return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 
-    public void update(long index,LineDto lineDto) {
+    public void update(LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
-        lineDao.update((int) index, line);
+        lineDao.update(lineDto.getId(), line);
     }
 
-    public void delete(long index) {
-        lineDao.delete(index);
+    public void delete(LineDto lineDto) {
+        lineDao.delete(lineDto.getId());
     }
 }

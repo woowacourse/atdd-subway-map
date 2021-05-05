@@ -55,7 +55,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public void update(int id, Line line) {
+    public void update(long id, Line line) {
         Line targetLine = lines.stream()
             .filter(element -> element.getId() == id)
             .findAny()

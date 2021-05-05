@@ -5,6 +5,10 @@ public class StationDto {
     private final Long id;
     private final String name;
 
+    public StationDto(Long id) {
+        this(id, null);
+    }
+
     public StationDto(String name) {
         this(null, name);
     }

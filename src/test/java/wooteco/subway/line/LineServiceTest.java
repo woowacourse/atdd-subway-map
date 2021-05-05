@@ -88,7 +88,7 @@ public class LineServiceTest {
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         //when
-        LineDto requestedDto = lineServiceWithMock.findOne((long) 1);
+        LineDto requestedDto = lineServiceWithMock.findOne(new LineDto((long) 1));
 
         //then
         assertThat(requestedDto.getId()).isEqualTo(line.getId());
@@ -103,11 +103,11 @@ public class LineServiceTest {
         LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto("7호선", "녹담색");
+        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
 
         //when
-        lineService.update(index, requestDto);
-        LineDto responseDto = lineService.findOne(index);
+        lineService.update(requestDto);
+        LineDto responseDto = lineService.findOne(requestDto);
 
         //then
         assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
@@ -121,13 +121,13 @@ public class LineServiceTest {
         LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto("7호선", "녹담색");
+        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
 
         //when
-        lineService.delete(index);
+        lineService.delete(requestDto);
 
         //then
-        assertThatThrownBy(() -> lineService.findOne(index))
+        assertThatThrownBy(() -> lineService.findOne(requestDto))
             .isInstanceOf(VoidLineException.class);
     }
 }
