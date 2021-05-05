@@ -9,11 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.line.repository.LineRepositoryImpl;
 import wooteco.subway.line.ui.dto.LineRequest;
 
 import java.net.URISyntaxException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
@@ -21,10 +25,10 @@ import static org.hamcrest.Matchers.is;
 class LineControllerTest {
 
     @Autowired
-    private LineController lineController;
+    private LineRepository lineRepository;
 
     @Autowired
-    private LineRepository lineRepository;
+    private JdbcTemplate jdbcTemplate;
 
     @LocalServerPort
     private int port;
@@ -32,7 +36,8 @@ class LineControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        lineRepository.clear();
+        jdbcTemplate.update("ALTER TABLE LINE ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM LINE");
     }
 
     @DisplayName("새로운 노선을 생성한다.")
@@ -57,8 +62,8 @@ class LineControllerTest {
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void allLines() throws URISyntaxException {
-        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
-        lineController.createNewLine(new LineRequest("2호선", "bg-green-600"));
+        lineRepository.save(new Line("신분당선", "bg-red-600"));
+        lineRepository.save(new Line("2호선", "bg-green-600"));
 
         RestAssured
                 .given().log().all()
@@ -74,9 +79,9 @@ class LineControllerTest {
 
     @DisplayName("노선을 검색한다")
     @Test
-    void findById_findLineById() throws URISyntaxException {
-        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
-        lineController.createNewLine(new LineRequest("2호선", "bg-green-600"));
+    void findById_findLineById() {
+        lineRepository.save(new Line("신분당선", "bg-red-600"));
+        lineRepository.save(new Line("2호선", "bg-green-600"));
 
         RestAssured
                 .given().log().all()
@@ -107,8 +112,8 @@ class LineControllerTest {
 
     @DisplayName("노션을 수정한다.")
     @Test
-    void modifyById_modifyLineFromUserInputs() throws URISyntaxException {
-        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
+    void modifyById_modifyLineFromUserInputs() {
+        final long id = lineRepository.save(new Line("신분당선", "bg-red-600"));
 
         RestAssured
                 .given().log().all()
@@ -116,15 +121,20 @@ class LineControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                     .body(new LineRequest("구분당선", "bg-red-600"))
-                    .put("/lines/1")
+                    .put("/lines/" + id)
                 .then()
                     .statusCode(HttpStatus.OK.value());
+
+        final Line line = lineRepository.findById(id);
+        assertThat(line.getName()).isEqualTo("구분당선");
+
+
     }
 
     @DisplayName("노션을 삭제한다.")
     @Test
-    void deleteById_deleteLineFromUserInputs() throws URISyntaxException {
-        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
+    void deleteById_deleteLineFromUserInputs() {
+        lineRepository.save(new Line("신분당선", "bg-red-600"));
 
         RestAssured
                 .given().log().all()

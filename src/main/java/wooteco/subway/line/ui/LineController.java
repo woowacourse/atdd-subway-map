@@ -1,5 +1,6 @@
 package wooteco.subway.line.ui;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -94,10 +95,8 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    private ResponseEntity<String> handleIllegalArgumentException(Exception e) {
-        System.out.println(e.getMessage());
-
+    @ExceptionHandler(DataAccessException.class)
+    private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

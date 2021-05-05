@@ -10,8 +10,9 @@ import java.util.List;
 @Service
 public class LineService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
+    @Autowired
     public LineService(final LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
