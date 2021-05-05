@@ -1,9 +1,10 @@
 package wooteco.subway.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
+
+import java.util.List;
 
 @Service
 public class LineService {
@@ -23,8 +24,8 @@ public class LineService {
 
     private void validateDuplication(String name) {
         boolean isDuplicated = lineDao.findAll()
-            .stream()
-            .anyMatch(line -> line.getName().equals(name));
+                .stream()
+                .anyMatch(line -> line.getName().equals(name));
         if (isDuplicated) {
             throw new IllegalArgumentException("중복!");
         }
@@ -40,7 +41,7 @@ public class LineService {
 
     public void editLine(long id, String name, String color) {
         validateDuplication(name);
-        lineDao.updateLine(id, name, color);
+        lineDao.update(id, name, color);
     }
 
     public void deleteLine(long id) {
