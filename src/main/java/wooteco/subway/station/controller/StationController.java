@@ -24,7 +24,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationService.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName().toString());
+        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName().text());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
@@ -32,7 +32,7 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName().toString()))
+                .map(station -> new StationResponse(station.getId(), station.getName().text()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }

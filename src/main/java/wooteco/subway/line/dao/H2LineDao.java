@@ -35,8 +35,8 @@ public class H2LineDao implements LineDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.getName().toString());
-            ps.setString(2, line.getColor().toString());
+            ps.setString(1, line.getName().text());
+            ps.setString(2, line.getColor().text());
             return ps;
         }, keyHolder);
         long lineId = keyHolder.getKey().longValue();
@@ -77,7 +77,7 @@ public class H2LineDao implements LineDao {
                 "FROM LINE " +
                 "WHERE NAME = ?";
 
-        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.toString());
+        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.text());
         return countOfName > 0;
     }
 
@@ -87,7 +87,7 @@ public class H2LineDao implements LineDao {
                 "FROM LINE " +
                 "WHERE COLOR = ?";
 
-        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, color.toString());
+        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, color.text());
         return countOfColor > 0;
     }
 
@@ -97,7 +97,7 @@ public class H2LineDao implements LineDao {
                 "FROM LINE " +
                 "WHERE ID = ?";
 
-        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
+        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return countOfColor > 0;
     }
 
@@ -107,7 +107,7 @@ public class H2LineDao implements LineDao {
                 "SET NAME = ?, COLOR = ? " +
                 "WHERE ID = ?";
 
-        jdbcTemplate.update(sql, line.getName().toString(), line.getColor().toString(), line.getId());
+        jdbcTemplate.update(sql, line.getName().text(), line.getColor().text(), line.getId());
     }
 
     @Override

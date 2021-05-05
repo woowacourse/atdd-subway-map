@@ -33,6 +33,10 @@ public class LineName {
         return name;
     }
 
+    public String text() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

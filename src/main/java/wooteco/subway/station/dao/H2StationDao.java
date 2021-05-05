@@ -33,7 +33,7 @@ public class H2StationDao implements StationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName().toString());
+            ps.setString(1, station.getName().text());
             return ps;
         }, keyHolder);
         long stationId = keyHolder.getKey().longValue();
@@ -74,7 +74,7 @@ public class H2StationDao implements StationDao {
                 "FROM STATION " +
                 "WHERE NAME = ?";
 
-        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.toString());
+        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.text());
         return countOfName > 0;
     }
 
@@ -84,7 +84,7 @@ public class H2StationDao implements StationDao {
                 "FROM STATION " +
                 "WHERE ID = ?";
 
-        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
+        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return countOfColor > 0;
     }
 

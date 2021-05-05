@@ -29,6 +29,10 @@ public class StationName {
         }
     }
 
+    public String text() {
+        return name;
+    }
+
     public String getName() {
         return name;
     }

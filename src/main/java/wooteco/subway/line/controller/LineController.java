@@ -23,21 +23,21 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName().toString(), newLine.getColor().toString(), null);
+        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName().text(), newLine.getColor().text(), null);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName().toString(), line.getColor().toString(), null));
+        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName().text(), line.getColor().text(), null));
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName().toString(), line.getColor().toString(), null))
+                .map(line -> new LineResponse(line.getId(), line.getName().text(), line.getColor().text(), null))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
