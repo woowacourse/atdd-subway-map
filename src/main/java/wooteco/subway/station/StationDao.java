@@ -31,6 +31,12 @@ public class StationDao {
         return station;
     }
 
+    private static Optional<Station> findById(final Long id) {
+        return stations.stream()
+                .filter(station -> station.sameId(id))
+                .findAny();
+    }
+
     public static Optional<Station> findByName(final String name) {
         return stations.stream()
                 .filter(station -> station.sameName(name))
@@ -40,5 +46,10 @@ public class StationDao {
     public static void clear() {
         stations.clear();
         seq = 0L;
+    }
+
+    public static void delete(final Long id) {
+        Station findStation = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 역임!"));
+        stations.remove(findStation);
     }
 }

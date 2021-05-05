@@ -10,15 +10,15 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
+    public Station(final Long id, final String name) {
         this(id, new StationName(name));
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this(0L, new StationName(name));
     }
 
-    public Station(Long id, Name name) {
+    public Station(final Long id, final Name name) {
         this.id = id;
         this.name = name;
     }
@@ -31,8 +31,12 @@ public class Station {
         return name.name();
     }
 
-    public boolean sameName(String name) {
+    public boolean sameName(final String name) {
         return this.name.sameName(name);
+    }
+
+    public boolean sameId(final Long id) {
+        return this.id.equals(id);
     }
 }
 

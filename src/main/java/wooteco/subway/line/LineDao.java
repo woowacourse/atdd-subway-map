@@ -31,6 +31,12 @@ public class LineDao {
         return line;
     }
 
+    public static Optional<Line> findById(final Long id) {
+        return lines.stream()
+                .filter(line -> line.sameId(id))
+                .findAny();
+    }
+
     public static Optional<Line> findByName(final String name) {
         return lines.stream()
                 .filter(line -> line.sameName(name))
@@ -40,12 +46,6 @@ public class LineDao {
     public static void clear() {
         lines.clear();
         seq = 0L;
-    }
-
-    public static Optional<Line> findById(final Long id) {
-        return lines.stream()
-                .filter(line -> line.sameId(id))
-                .findAny();
     }
 
     public static void update(final Long id, final String name, final String color) {
