@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.dao.dto.StationDto;
+import wooteco.subway.station.repository.dto.StationDto;
 import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RestController
 public class StationController {
 
-    private StationService stationService;
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;

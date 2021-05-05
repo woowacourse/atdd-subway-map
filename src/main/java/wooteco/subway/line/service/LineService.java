@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
