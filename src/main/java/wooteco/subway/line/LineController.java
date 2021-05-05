@@ -19,6 +19,12 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
+    @GetMapping(value = "/lines/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        Line line = LineDao.findById(id);
+        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName(), line.getColor(), null));
+    }
+
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = LineDao.findAll();

@@ -110,6 +110,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("지하철노선을 id로 조회한다")
+    @Test
+    void getLineById() {
+        /// given
+        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo(TEST_LINE_NAME);
+        assertThat(lineResponse.getColor()).isEqualTo(TEST_COLOR_NAME);
+    }
+
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void getLines() {
