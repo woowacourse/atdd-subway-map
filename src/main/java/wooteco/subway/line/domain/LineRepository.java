@@ -7,4 +7,5 @@ public interface LineRepository {
     List<Line> allLines();
     Line findById(Long id);
     void clear();
+    void update(Line line);
 }

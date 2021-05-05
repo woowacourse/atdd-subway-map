@@ -4,7 +4,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.LineDao;
 import wooteco.subway.line.repository.LineRepositoryImpl;
 import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
@@ -12,9 +11,8 @@ import wooteco.subway.line.ui.dto.LineResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("lines")
@@ -77,8 +75,19 @@ public class LineController {
         );
     }
 
+    @PutMapping(value = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    @SuppressWarnings({"rawtypes"})
+    public ResponseEntity modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.update(line);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     private ResponseEntity<String> handleIllegalArgumentException(Exception e) {
+        System.out.println(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
