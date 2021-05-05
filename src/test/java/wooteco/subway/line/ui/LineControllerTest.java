@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.repository.LineRepositoryImpl;
 import wooteco.subway.line.ui.dto.LineRequest;
 
 import java.net.URISyntaxException;
