@@ -1,4 +1,4 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,11 +11,11 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
-public class JDBCStationDao implements StationDao {
+public class JDBCStationRepository implements StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JDBCStationDao(JdbcTemplate jdbcTemplate) {
+    public JDBCStationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -51,7 +51,7 @@ public class JDBCStationDao implements StationDao {
 
     @Override
     public void delete(Long id) {
-        String query = "DELETE FROM STATION WHERE id = ?";
+        String query = "DELETE FROM station WHERE id = ?";
         this.jdbcTemplate.update(query, id);
     }
 }

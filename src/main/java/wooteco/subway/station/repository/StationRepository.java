@@ -1,10 +1,10 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.repository;
 
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
-public interface StationDao {
+public interface StationRepository {
 
     Station save(Station station);
 
