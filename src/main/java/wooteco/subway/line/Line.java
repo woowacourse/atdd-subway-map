@@ -28,12 +28,4 @@ public class Line {
     public String getColor() {
         return color;
     }
-
-    public boolean hasSameName(Line lineToSave) {
-        return name.equals(lineToSave.getName());
-    }
-
-    public boolean hasSameColor(Line lineToSave) {
-        return color.equals(lineToSave.getColor());
-    }
 }
