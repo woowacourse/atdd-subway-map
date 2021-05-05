@@ -20,8 +20,8 @@ public class LineController {
 
     private final LineService lineService;
 
-    public LineController() {
-        this.lineService =  new LineService(LineRepositoryImpl.getInstance());
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

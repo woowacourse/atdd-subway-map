@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
 import java.util.ArrayList;
@@ -7,10 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public class LineDao {
     public static final String ID_DOES_NOT_EXIST = "존재하지 않는 아이디 입니다.";
 
-    private Map<Long, Line> store = new HashMap<>();
+    private final Map<Long, Line> store = new HashMap<>();
     private long sequence = 0L;
 
     public long save(Line line) {
