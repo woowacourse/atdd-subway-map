@@ -66,6 +66,9 @@ class LineDaoTest {
         Line line2 = new Line("2호선", "bg-green-600");
         Line line3 = new Line("3호선", "bg-orange-600");
 
+        lineDao.save(line2);
+        lineDao.save(line3);
+
         assertThat(lineDao.findById(1L)).isSameAs(line2);
         assertThat(lineDao.findById(2L)).isSameAs(line3);
     }
