@@ -25,7 +25,7 @@ public class LineService {
 
     public List<LineDto> findAll() {
         return lineDao.findAll().stream()
-                .map(line -> LineDto.from(line))
+                .map(LineDto::from)
                 .collect(Collectors.toList());
     }
 
