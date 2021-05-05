@@ -115,4 +115,19 @@ class LineControllerTest {
                 .then()
                     .statusCode(HttpStatus.OK.value());
     }
+
+    @DisplayName("노션을 삭제한다.")
+    @Test
+    void deleteById_deleteLineFromUserInputs() throws URISyntaxException {
+        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
+
+        RestAssured
+                .given().log().all()
+                    .accept(MediaType.ALL_VALUE)
+                .when()
+                    .delete("/lines/1")
+                .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
 }

@@ -8,4 +8,5 @@ public interface LineRepository {
     Line findById(Long id);
     void clear();
     void update(Line line);
+    void deleteById(Long id);
 }
