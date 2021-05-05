@@ -10,7 +10,6 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
 
 @Component
-@Primary
 public class CollectionLineDao implements LineDao {
 
     private static Long seq = 0L;

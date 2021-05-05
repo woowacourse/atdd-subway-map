@@ -2,6 +2,7 @@ package wooteco.subway.line.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import wooteco.subway.line.Line;
 
 @Component
+@Primary
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -40,16 +42,19 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Line findById(Long id) {
-        return null;
+        String query = "select * from LINE where id = ?";
+        return jdbcTemplate.queryForObject(query, mapper, id);
     }
 
     @Override
     public void update(Line updatedLine) {
-
+        String query = "update LINE set name = ?, color = ? where id = ?";
+        jdbcTemplate.update(query, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
     }
 
     @Override
     public void deleteById(Long id) {
-
+        String query = "delete from LINE where id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

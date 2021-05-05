@@ -1,19 +1,19 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.station.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 @Component
-public class LineMapper implements RowMapper<Line> {
+public class StationMapper implements RowMapper<Station> {
 
     @Override
-    public Line mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+    public Station mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
-        String color = resultSet.getString("color");
-        return new Line(id, name, color);
+        return new Station(id, name);
     }
 }

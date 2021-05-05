@@ -11,4 +11,5 @@ public interface StationDao {
 
     void deleteById(Long id);
 
+    Station findById(Long id);
 }

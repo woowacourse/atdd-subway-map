@@ -9,7 +9,6 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.Station;
 
 @Component
-@Primary
 public class CollectionStationDao implements StationDao {
 
     private static final List<Station> stations = new ArrayList<>();
@@ -43,5 +42,14 @@ public class CollectionStationDao implements StationDao {
 
     public void deleteById(Long id) {
         stations.removeIf(station -> station.getId().equals(id));
+    }
+
+    @Override
+    public Station findById(Long id) {
+        return stations
+            .stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
     }
 }
