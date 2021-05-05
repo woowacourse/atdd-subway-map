@@ -1,6 +1,7 @@
 package wooteco.subway.line.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
@@ -11,8 +12,8 @@ import java.util.List;
 public class LineRepositoryImpl implements LineRepository {
     private final LineDao lineDao;
 
-    public LineRepositoryImpl(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.lineDao = new LineDao(jdbcTemplate);
     }
 
     @Override
@@ -28,11 +29,6 @@ public class LineRepositoryImpl implements LineRepository {
     @Override
     public Line findById(final Long id) {
         return lineDao.findById(id);
-    }
-
-    @Override
-    public void clear() {
-        lineDao.clear();
     }
 
     @Override
