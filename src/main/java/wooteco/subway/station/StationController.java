@@ -10,38 +10,32 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
 
-    @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        String stationName = stationRequest.getName();
-        Optional<Station> duplicateStation = StationDao.findByName(stationName);
-        if (duplicateStation.isPresent()) {
-            return ResponseEntity.badRequest().build();
-        }
+    private final StationService stationService;
 
-        Station station = new Station(stationName);
-        Station newStation = StationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        String stationName = stationRequest.getName();
+        StationResponse stationResponse = stationService.createStation(stationName);
+
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.showStations();
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<String> deleteStation(@PathVariable Long id) {
-        Optional<Station> station = StationDao.findById(id);
-        if(!station.isPresent()) {
-            return ResponseEntity.badRequest().build();
-        }
-        StationDao.delete(station.get());
+        stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
     }
 }

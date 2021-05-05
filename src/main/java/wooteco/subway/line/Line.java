@@ -13,6 +13,7 @@ public class Line {
 
     public Line() {
     }
+
     public Line(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
