@@ -115,10 +115,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
@@ -126,14 +126,30 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        String uri = createResponse.header("Location");
+        long responseId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete(uri)
+            .delete("/stations/"+String.valueOf(responseId))
             .then().log().all()
             .extract();
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철역을 제거한다.")
+    @Test
+    void deleteVoidStation() {
+        //given
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/stations/"+String.valueOf(999))
+            .then().log().all()
+            .extract();
+
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

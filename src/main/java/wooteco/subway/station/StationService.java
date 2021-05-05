@@ -25,4 +25,8 @@ public class StationService {
         Station saveStation = stationDao.save(station);
         return new StationDto(saveStation.getId(), saveStation.getName());
     }
+
+    public void delete(StationDto stationDto) {
+        stationDao.delete(stationDto.getId());
+    }
 }

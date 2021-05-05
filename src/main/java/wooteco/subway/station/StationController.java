@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.DuplicatedStationNameException;
+import wooteco.subway.exception.VoidStationException;
 import wooteco.subway.station.dto.StationDto;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -48,6 +49,11 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        return ResponseEntity.noContent().build();
+        try {
+            stationService.delete(new StationDto(id));
+        } catch (VoidStationException e) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().build();
     }
 }

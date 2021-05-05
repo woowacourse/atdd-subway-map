@@ -7,4 +7,5 @@ public interface StationDao {
 
     Station save(Station station);
     List<Station> findAll();
+    void delete(long id);
 }
