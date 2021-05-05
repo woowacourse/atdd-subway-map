@@ -57,4 +57,11 @@ class LineRepositoryTest {
         List<Line> lines = lineRepository.findAll();
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
+
+    @DisplayName("id를 통해 Line을 조회하면, 해당 id에 매칭되는 Line을 반환한다.")
+    @Test
+    void getLine() {
+        Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
+        assertThat(lineRepository.getLine(1L)).isEqualTo(expectedLine);
+    }
 }
