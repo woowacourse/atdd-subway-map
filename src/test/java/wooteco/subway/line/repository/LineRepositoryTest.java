@@ -34,7 +34,7 @@ class LineRepositoryTest {
     @Test
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
-        assertThat(lineRepository.save(line)).isEqualTo(3L);
+        assertThat(lineRepository.save(line).getId()).isEqualTo(3L);
     }
 
     @DisplayName("DB에 존재하는 Line이면, true를 반환한다.")
@@ -42,8 +42,8 @@ class LineRepositoryTest {
     void isExist() {
         Line line1 = new Line("bg-blue-600", "1호선");
         Line line2 = new Line("bg-green-600", "2호선");
-        assertThat(lineRepository.isExist(line1)).isFalse();
-        assertThat(lineRepository.isExist(line2)).isTrue();
+        assertThat(lineRepository.isExistName(line1)).isFalse();
+        assertThat(lineRepository.isExistName(line2)).isTrue();
     }
 
     @DisplayName("전체 Line을 조회하면, DB에 존재하는 Line 리스트를 반환한다.")
@@ -54,7 +54,7 @@ class LineRepositoryTest {
                 new Line(2L, "bg-green-600", "2호선")
         );
 
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineRepository.getLines();
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 

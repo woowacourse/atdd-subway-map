@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@Sql("classpath:tableInit.sql")
 class LineControllerTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
 
@@ -97,7 +98,8 @@ class LineControllerTest extends AcceptanceTest {
                 "신분당선",
                 "bg-red-600"
         );
-        assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().isEqualTo(expectedLineResponse);
+        assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
+                isEqualTo(expectedLineResponse);
     }
 
     @DisplayName("id를 통해 노선을 변경하면, payload대로 노선 수정한다")

@@ -15,14 +15,14 @@ public class StationService {
     }
 
     public Station createStation(final Station station) {
-        if (stationRepository.isExist(station)) {
+        if (stationRepository.isExistName(station)) {
             throw new IllegalArgumentException("이미 존재하는 Station 입니다");
         }
         return stationRepository.save(station);
     }
 
     public List<Station> findAll() {
-        return stationRepository.findAll();
+        return stationRepository.getStations();
     }
 
     public void delete(final Long id) {

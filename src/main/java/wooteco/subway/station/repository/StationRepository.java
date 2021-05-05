@@ -19,7 +19,7 @@ public class StationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean isExist(final Station station) {
+    public boolean isExistName(final Station station) {
         String query = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
     }
@@ -37,7 +37,7 @@ public class StationRepository {
         return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
     }
 
-    public List<Station> findAll() {
+    public List<Station> getStations() {
         String query = "SELECT id, name FROM station ORDER BY id";
         return jdbcTemplate.query(query, stationRowMapper);
     }
@@ -49,7 +49,6 @@ public class StationRepository {
         } catch (Exception e) {
             throw new IllegalArgumentException("존재하지 않는 id 입니다");
         }
-
     }
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(

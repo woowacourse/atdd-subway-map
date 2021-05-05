@@ -42,16 +42,16 @@ public class StationRepositoryTest {
     @DisplayName("DB에 있는 역이름을 찾으면, true를 반환한다.")
     @Test
     void isExist() {
-        assertThat(stationRepository.isExist(new Station("잠실역"))).isTrue();
-        assertThat(stationRepository.isExist(new Station("잠실새내역"))).isTrue();
-        assertThat(stationRepository.isExist(new Station("석촌역"))).isFalse();
+        assertThat(stationRepository.isExistName(new Station("잠실역"))).isTrue();
+        assertThat(stationRepository.isExistName(new Station("잠실새내역"))).isTrue();
+        assertThat(stationRepository.isExistName(new Station("석촌역"))).isFalse();
     }
 
     @DisplayName("DB에 있는 역들을 조회하면, 역을 담은 리스트를 반환한다.")
     @Test
     void findAll() {
         List<Station> stations = Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
-        assertThat(stationRepository.findAll()).usingRecursiveComparison().isEqualTo(stations);
+        assertThat(stationRepository.getStations()).usingRecursiveComparison().isEqualTo(stations);
     }
 
     @DisplayName("id를 통해 삭제 요청을 하면, DB에 있는 해당 id 역을 삭제한다")

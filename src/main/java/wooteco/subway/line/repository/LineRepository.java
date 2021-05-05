@@ -19,12 +19,12 @@ public class LineRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean isExist(final Line line) {
+    public boolean isExistName(final Line line) {
         String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
     }
 
-    public Long save(final Line line) {
+    public Line save(final Line line) {
         String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,10 +34,11 @@ public class LineRepository {
             ps.setString(2, line.getName());
             return ps;
         }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+
+        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getColor(), line.getName());
     }
 
-    public List<Line> findAll() {
+    public List<Line> getLines() {
         String query = "SELECT id, color, name FROM line ORDER BY id";
         return jdbcTemplate.query(query, lineRowMapper);
     }
@@ -49,23 +50,35 @@ public class LineRepository {
     );
 
     public Line getLine(final Long id) {
-        String query = "SELECT color, name FROM line WHERE id = ?";
-
-        return jdbcTemplate.queryForObject(
-                query,
-                (resultSet, rowNum) -> new Line(
-                        resultSet.getString("color"),
-                        resultSet.getString("name")
-                ), id);
+        try {
+            String query = "SELECT id, color, name FROM line WHERE id = ?";
+            return jdbcTemplate.queryForObject(
+                    query,
+                    (resultSet, rowNum) -> new Line(
+                            resultSet.getLong("id"),
+                            resultSet.getString("color"),
+                            resultSet.getString("name")
+                    ), id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        }
     }
 
     public void update(final Line line) {
-        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
-        jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
+        try {
+            String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
+            jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
+        } catch (Exception e){
+            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        }
     }
 
     public void deleteById(final Long id) {
-        String query = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        try {
+            String query = "DELETE FROM line WHERE id = ?";
+            jdbcTemplate.update(query, id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        }
     }
 }
