@@ -10,7 +10,7 @@ import wooteco.subway.exception.VoidLineException;
 public class LineDao {
 
     private static Long seq = 0L;
-    private static final List<Line> lines = new ArrayList<>();
+    private static List<Line> lines = new ArrayList<>();
 
     public static Line save(Line line) {
         validateDuplicate(line);
@@ -65,5 +65,9 @@ public class LineDao {
             return;
         }
         throw new VoidLineException("[Error] 해당 노선이 존재하지 않습니다.");
+    }
+
+    public static void clean() {
+        lines = new ArrayList<>();
     }
 }

@@ -37,4 +37,8 @@ public class StationDao {
         ReflectionUtils.setField(field, station, ++seq);
         return station;
     }
+
+    public static void clean() {
+        stations = new ArrayList<>();
+    }
 }
