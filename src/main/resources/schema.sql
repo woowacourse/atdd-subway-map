@@ -1,4 +1,4 @@
-create table if not exists STATION
+create table if not exists station
 (
     id
     bigint
@@ -16,7 +16,7 @@ create table if not exists STATION
 )
     );
 
-create table if not exists LINE
+create table if not exists line
 (
     id
     bigint
@@ -38,7 +38,7 @@ create table if not exists LINE
 )
     );
 
-create table if not exists SECTION
+create table if not exists section
 (
     id
     bigint
