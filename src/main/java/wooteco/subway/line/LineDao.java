@@ -107,7 +107,7 @@ public class LineDao {
         }
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         int updateCount = jdbcTemplate.update(sql, id);
         if (updateCount == 0) {
