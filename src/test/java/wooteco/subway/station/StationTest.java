@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class StationTest {
 
     @Test
-    @DisplayName("아무런 정보 없이 역 생성")
+    @DisplayName("역 생성")
     void createStation() {
         // given
 
