@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -75,21 +76,21 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM line";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> getLine(rs));
+        return jdbcTemplate.query(sql, mapperLine());
     }
 
-    private Line getLine(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String color = rs.getString("color");
-        return new Line(id, name, color);
+    private RowMapper<Line> mapperLine() {
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            String color = rs.getString("color");
+            return new Line(id, name, color);
+        };
     }
 
-    public static Line findLineById(Long id) {
-        return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
+    public Line findLineById(Long id) {
+        String sql = "SELECT id, name, color FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, mapperLine(), id);
     }
 
 //    public static void update(Line updatedLine) {

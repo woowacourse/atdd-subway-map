@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -56,16 +57,18 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll() {
+    public List<Station> findAll()  {
         String sql = "SELECT id, name FROM station";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> getStation(rs));
+        return jdbcTemplate.query(sql, mapperStation());
 
     }
 
-    private Station getStation(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("id");
-        String name = rs.getString("name");
-        return new Station(id, name);
+    private RowMapper<Station> mapperStation() {
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            return new Station(id, name);
+        };
     }
 
     public static void deleteAll() {

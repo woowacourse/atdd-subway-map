@@ -43,7 +43,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findLineById(id);
+        Line line = lineDao.findLineById(id);
         LineResponse response = new LineResponse(line);
         return ResponseEntity.ok(response);
     }
@@ -52,7 +52,7 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public void updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
-        Line findLine = LineDao.findLineById(id);
+        Line findLine = lineDao.findLineById(id);
         Line updatedLine = findLine.update(lineRequest.getName(), lineRequest.getColor());
 //        LineDao.update(updatedLine); todo: update 주석 처리 되어있음!
     }
