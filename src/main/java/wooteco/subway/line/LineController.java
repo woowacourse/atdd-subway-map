@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,18 +37,30 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        try {
+            return ResponseEntity.ok().body(lineService.findLine(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().build();
+        try {
+            lineService.updateLine(id, lineRequest);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
-        return ResponseEntity.noContent().build();
+        try {
+            lineService.deleteLine(id);
+            return ResponseEntity.noContent().build();
+        } catch(NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

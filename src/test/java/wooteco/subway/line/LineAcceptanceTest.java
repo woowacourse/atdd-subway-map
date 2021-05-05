@@ -58,6 +58,39 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("grey darken-1");
     }
 
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        Map<String, Object> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "grey darken-1");
+        params1.put("upStationId", 1);
+        params1.put("downStationId", 2);
+        params1.put("distance", 2);
+        params1.put("extraFare", 500);
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("노선 목록을 조회한다.")
     @Test
     void showLines() {
@@ -146,6 +179,20 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo("grey darken-1");
     }
 
+    @DisplayName("없는 노선을 조회한다.")
+    @Test
+    void showNotExistLine() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/2000000")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
@@ -184,6 +231,26 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("없는 노선을 수정한다.")
+    @Test
+    void updateNotExistLine() {
+        Map<String, Object> updatedParams = new HashMap<>();
+        updatedParams.put("name", "3호선");
+        updatedParams.put("color", "grey darken-2");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updatedParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/2000000")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -214,5 +281,19 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("없는 노선을 제거한다.")
+    @Test
+    void deleteNotExistLine() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/2000000")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

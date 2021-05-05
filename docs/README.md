@@ -8,7 +8,7 @@
     - [x] 노선 조회
     - [x] 노선 수정
     - [x] 노선 삭제
-- [ ] End to End 테스트 작성하기
+- [x] End to End 테스트 작성하기
 
 ## Commit Convention
 - 커밋 메시지 언어 : 한글.
