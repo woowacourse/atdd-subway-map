@@ -1,46 +1,86 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.exception.NotFoundException;
 
+@Repository
 public class StationDao {
+
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        validateDuplicatedName(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicatedName(Station station) {
+    public Station save(Station station) {
+        validateDuplicatedName(station);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO station (name) VALUES (?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection
+                .prepareStatement(sql, new String[]{"id", "name"});
+            preparedStatement.setString(1, station.getName());
+            return preparedStatement;
+        }, keyHolder);
+
+        Map<String, Object> keys = keyHolder.getKeys();
+        return new Station((Long) keys.get("id"), (String) keys.get("name"));
+    }
+
+    private void validateDuplicatedName(Station station) {
         if (isDuplicate(station)) {
             throw new DuplicationException("이미 존재하는 역 이름입니다.");
         }
     }
 
-    private static boolean isDuplicate(Station newStation) {
-        return stations.stream()
-            .anyMatch(station -> station.isSameName(newStation));
+    private boolean isDuplicate(Station newStation) {
+        String sql = "SELECT id FROM station WHERE name = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newStation.getName());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll()  {
+        String sql = "SELECT id, name FROM station";
+        return jdbcTemplate.query(sql, mapperStation());
+
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        int updateCount = jdbcTemplate.update(sql, id);
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 역 ID 입니다.");
+        }
     }
 
     public static void deleteAll() {
         stations.clear();
+    }
+
+    private RowMapper<Station> mapperStation() {
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            return new Station(id, name);
+        };
     }
 }

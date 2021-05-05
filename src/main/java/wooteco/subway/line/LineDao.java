@@ -1,24 +1,48 @@
 package wooteco.subway.line;
 
-import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.util.ReflectionUtils;
+import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
 
+@Repository
 public class LineDao {
+
     private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        validateDuplicateNameAndColor(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateDuplicateNameAndColor(Line line) {
+    public Line save(Line line) {
+        validateDuplicateNameAndColor(line);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO line (`name`, color) VALUES (?, ?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection
+                .prepareStatement(sql, new String[]{"id", "name", "color"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
+
+        Map<String, Object> keys = keyHolder.getKeys();
+        return new Line((Long) keys.get("id"), (String) keys.get("name"),
+            (String) keys.get("color"));
+    }
+
+    private void validateDuplicateNameAndColor(Line line) {
         if (isDuplicateName(line)) {
             throw new DuplicationException("이미 존재하는 노선 이름입니다.");
         }
@@ -28,52 +52,61 @@ public class LineDao {
         }
     }
 
-    private static boolean isDuplicateColor(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameColor(newLine)) ;
+    private boolean isDuplicateColor(Line newLine) {
+        String sql = "SELECT id FROM line WHERE color = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newLine.getColor());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
-    private static boolean isDuplicateName(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameName(newLine)) ;
+    private boolean isDuplicateName(Line newLine) {
+        String sql = "SELECT id FROM line WHERE name = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newLine.getName());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public List<Line> findAll() {
+        String sql = "SELECT id, name, color FROM line";
+        return jdbcTemplate.query(sql, mapperLine());
     }
 
-    public static List<Line> findAll() {
-        return lines;
+    private RowMapper<Line> mapperLine() {
+        return (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            String color = rs.getString("color");
+            return new Line(id, name, color);
+        };
     }
 
-    public static Line findLineById(Long id) {
-        return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findFirst()
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
+    public Line findLineById(Long id) {
+        String sql = "SELECT id, name, color FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, mapperLine(), id);
     }
 
-    public static void update(Line updatedLine) {
+    public void update(Line updatedLine) {
         validateDuplicateNameAndColor(updatedLine);
-
-        Integer index = lines.stream()
-            .filter(line -> line.isSameId(updatedLine.getId()))
-            .map(line -> lines.indexOf(line))
-            .findAny()
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
-        lines.set(index, updatedLine);
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        int updateCount = jdbcTemplate
+            .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+        }
     }
 
-    public static void deleteLineById(Long id) {
-        Integer index = lines.stream()
-            .filter(line -> line.isSameId(id))
-            .map(line -> lines.indexOf(line))
-            .findAny()
-            .orElseThrow(IllegalArgumentException::new);
-        lines.remove(index);
+    public void deleteLineById(Long id) {
+        String sql = "DELETE FROM line WHERE id = ?";
+        int updateCount = jdbcTemplate.update(sql, id);
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+        }
     }
 
     public static void deleteAll() {

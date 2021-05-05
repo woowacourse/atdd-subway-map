@@ -18,17 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineDao.save(line);
+        Line newLine = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LineDao.findAll();
+        List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::new)
             .collect(Collectors.toList());
@@ -37,7 +43,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LineDao.findLineById(id);
+        Line line = lineDao.findLineById(id);
         LineResponse response = new LineResponse(line);
         return ResponseEntity.ok(response);
     }
@@ -46,14 +52,14 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public void updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
-        Line findLine = LineDao.findLineById(id);
+        Line findLine = lineDao.findLineById(id);
         Line updatedLine = findLine.update(lineRequest.getName(), lineRequest.getColor());
-        LineDao.update(updatedLine);
+        lineDao.update(updatedLine);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/lines/{id}")
     public void deleteLine(@PathVariable Long id) {
-        LineDao.deleteLineById(id);
+        lineDao.deleteLineById(id);
     }
 }

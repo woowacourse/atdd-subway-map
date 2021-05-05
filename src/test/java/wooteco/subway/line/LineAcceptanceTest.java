@@ -203,6 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.clear();
         String updatedName = "3호선";
         params.put("name", updatedName);
+        params.put("color", "orange");
 
         //when
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
@@ -270,6 +271,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .get("/lines/" + (id + 1L))
             .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
+    }
+
+    @DisplayName("존재하지 않는 노선 삭제 요청 시, 예외 처리 기능")
+    @Test
+    void deleteIfNotExistLineId() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green");
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        //when
+        Long id = response1.body().jsonPath().getObject(".", LineResponse.class).getId();
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + (id + 1))
+            .then()
+            .log().all()
             .extract();
 
         //then
