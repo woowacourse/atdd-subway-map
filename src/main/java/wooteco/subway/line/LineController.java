@@ -26,12 +26,8 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            LineResponse lineResponse = lineService.createLine(lineRequest);
-            return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        LineResponse lineResponse = lineService.createLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,30 +37,18 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok().body(lineService.findLine(id));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            lineService.updateLine(id, lineRequest);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        lineService.updateLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        try {
-            lineService.deleteLine(id);
-            return ResponseEntity.noContent().build();
-        } catch(NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -9,7 +9,7 @@
     - [x] 노선 수정
     - [x] 노선 삭제
 - [x] End to End 테스트 작성하기
-- [ ] Dao 객체가 아닌 DB에서 데이터 관리
+- [x] Dao 객체가 아닌 DB에서 데이터 관리
 - [x] 스프링 빈 활용하기
 
 ## Commit Convention

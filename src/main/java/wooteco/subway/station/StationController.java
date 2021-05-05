@@ -23,12 +23,8 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        try {
-            StationResponse stationResponse = stationService.createStation(stationRequest);
-            return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        StationResponse stationResponse = stationService.createStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)

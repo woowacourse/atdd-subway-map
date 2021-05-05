@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicatedNameException;
 
 @Service
 public class LineService {
@@ -26,7 +28,7 @@ public class LineService {
     private void validateDuplicatedLineName(final String name) {
         lineDao.findByName(name)
             .ifPresent(station -> {
-                throw new IllegalStateException("중복된 이름의 노선입니다.");
+                throw new DuplicatedNameException("중복된 이름의 노선입니다.");
             });
     }
 
@@ -38,7 +40,7 @@ public class LineService {
 
     public LineResponse findLine(final Long id) {
         final Line line = lineDao.findById(id).orElseThrow(() -> {
-            throw new NoSuchElementException("해당 Id의 노선이 없습니다.");
+            throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
         });
         return LineResponse.from(line);
     }

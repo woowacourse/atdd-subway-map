@@ -3,16 +3,15 @@ package wooteco.subway.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.AcceptanceTest;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicatedNameException;
 
-@Transactional
-@SpringBootTest
-class StationServiceTest {
+
+class StationServiceTest extends AcceptanceTest {
 
     @Autowired
     private StationService stationService;
@@ -34,7 +33,7 @@ class StationServiceTest {
         stationService.createStation(new StationRequest(name));
 
         assertThatThrownBy(() -> stationService.createStation(new StationRequest(name)))
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(DuplicatedNameException.class)
             .hasMessage("중복된 이름의 지하철역입니다.");
     }
 
@@ -43,7 +42,7 @@ class StationServiceTest {
     void findStationsFail() {
         final String name = "잠실역";
         assertThatThrownBy(() -> stationService.findByName(name))
-            .isInstanceOf(NoSuchElementException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("해당 이름의 지하철역이 없습니다.");
     }
 
@@ -56,15 +55,15 @@ class StationServiceTest {
 
         stationService.deleteStation(station.getId());
         assertThatThrownBy(() -> stationService.findById(station.getId()))
-            .isInstanceOf(NoSuchElementException.class)
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("해당 Id의 지하철역이 없습니다.");
     }
 
     @DisplayName("역 제거 기능이 실패하는지 확인")
     @Test
     void deleteStationFail() {
-        assertThatThrownBy(() -> stationService.deleteStation(1L))
-            .isInstanceOf(NoSuchElementException.class)
+        assertThatThrownBy(() -> stationService.deleteStation(20000L))
+            .isInstanceOf(DataNotFoundException.class)
             .hasMessage("해당 Id의 지하철역이 없습니다.");
     }
 }
