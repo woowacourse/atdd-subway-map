@@ -45,6 +45,11 @@ public class LineService {
         return LineResponse.from(line);
     }
 
+    public void updateLine(final Long id, final LineRequest lineRequest) {
+        findLine(id);
+        LineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+    }
+
     public void deleteLine(final Long id) {
         findLine(id);
         LineDao.deleteById(id);

@@ -19,6 +19,10 @@ public class Line {
         this(null, name, color, stations);
     }
 
+    public Line(Long id, String name, String color) {
+        this(id, name, color, null);
+    }
+
     public Line(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;

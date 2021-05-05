@@ -44,6 +44,11 @@ public class LineDao {
         return lines;
     }
 
+    public static void update(final Line updatedLine) {
+        deleteById(updatedLine.getId());
+        lines.add(updatedLine);
+    }
+
     public static void deleteById(final Long id) {
         lines.removeIf(line -> line.isSameId(id));
     }
