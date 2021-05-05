@@ -37,11 +37,11 @@ public class StationH2Dao implements StationDao {
         return jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> {
-                   Station station = new Station(
-                           rs.getLong("id"),
-                           rs.getString("name")
-                   );
-                   return station;
+                    Station station = new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                    );
+                    return station;
                 });
     }
 
