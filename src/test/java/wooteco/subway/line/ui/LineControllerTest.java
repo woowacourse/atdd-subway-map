@@ -3,22 +3,17 @@ package wooteco.subway.line.ui;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.repository.LineRepositoryImpl;
 import wooteco.subway.line.ui.dto.LineRequest;
-
-import javax.swing.*;
 
 import java.net.URISyntaxException;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineControllerTest {
@@ -105,4 +100,19 @@ class LineControllerTest {
                     .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("노션을 수정한다.")
+    @Test
+    void modifyById_modifyLineFromUserInputs() throws URISyntaxException {
+        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
+
+        RestAssured
+                .given().log().all()
+                    .accept(MediaType.ALL_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                    .body(new LineRequest("구분당선", "bg-red-600"))
+                    .put("/lines/1")
+                .then()
+                    .statusCode(HttpStatus.OK.value());
+    }
 }

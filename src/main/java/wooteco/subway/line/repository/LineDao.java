@@ -5,6 +5,8 @@ import wooteco.subway.line.domain.Line;
 import java.util.*;
 
 public class LineDao {
+    public static final String ID_DOES_NOT_EXIST = "존재하지 않는 아이디 입니다.";
+
     private Map<Long, Line> store = new HashMap<>();
     private long sequence = 0L;
 
@@ -20,17 +22,22 @@ public class LineDao {
     }
 
     public Line findById(final Long id) {
-        final Optional<Line> line = Optional.ofNullable(store.get(id));
 
-        if (!line.isPresent()) {
-            throw new IllegalArgumentException("존재하지 않는 아이디 입니다.");
+        if (!store.containsKey(id)) {
+            throw new IllegalArgumentException(ID_DOES_NOT_EXIST);
         }
 
-        return line.get();
+        return store.get(id);
     }
 
     public void clear() {
         store.clear();
         sequence = 0L;
+    }
+
+    public void update(final Line line) {
+        if (store.replace(line.getId(), line) == null) {
+            throw new IllegalArgumentException(ID_DOES_NOT_EXIST);
+        }
     }
 }

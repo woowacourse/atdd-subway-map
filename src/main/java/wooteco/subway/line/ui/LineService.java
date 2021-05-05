@@ -26,4 +26,8 @@ public class LineService {
     public Line findById(final Long id) {
         return lineRepository.findById(id);
     }
+
+    public void update(final Line line) {
+        lineRepository.update(line);
+    }
 }

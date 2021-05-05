@@ -37,4 +37,9 @@ public class LineRepositoryImpl implements LineRepository {
         lineDao.clear();
     }
 
+    @Override
+    public void update(Line line) {
+        lineDao.update(line);
+    }
+
 }
