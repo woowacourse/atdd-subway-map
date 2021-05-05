@@ -9,9 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.StationResponse;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,34 +79,36 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-/*    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getStations() {
+    void getLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        params1.put("name", "신분당선");
+        params1.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        params2.put("name", "백기선");
+        params2.put("color", "bg-red-600");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/stations")
+                .get("/lines")
                 .then().log().all()
                 .extract();
 
@@ -111,13 +117,13 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+   /* @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
