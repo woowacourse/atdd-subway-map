@@ -1,11 +1,5 @@
 package wooteco.subway.line;
 
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,16 +9,24 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
 
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Repository
 public class LineDao {
 
-    private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
-
+    private static Long seq = 0L;
     private final JdbcTemplate jdbcTemplate;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public static void deleteAll() {
+        lines.clear();
     }
 
     public Line save(Line line) {
@@ -33,7 +35,7 @@ public class LineDao {
         String sql = "INSERT INTO line (`name`, color) VALUES (?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, new String[]{"id", "name", "color"});
+                    .prepareStatement(sql, new String[]{"id", "name", "color"});
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
@@ -41,7 +43,7 @@ public class LineDao {
 
         Map<String, Object> keys = keyHolder.getKeys();
         return new Line((Long) keys.get("id"), (String) keys.get("name"),
-            (String) keys.get("color"));
+                (String) keys.get("color"));
     }
 
     private void validateDuplicateNameAndColor(Line line) {
@@ -101,7 +103,7 @@ public class LineDao {
         validateDuplicateNameAndColor(updatedLine);
         String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         int updateCount = jdbcTemplate
-            .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+                .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
         if (updateCount == 0) {
             throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
         }
@@ -113,9 +115,5 @@ public class LineDao {
         if (updateCount == 0) {
             throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
         }
-    }
-
-    public static void deleteAll() {
-        lines.clear();
     }
 }

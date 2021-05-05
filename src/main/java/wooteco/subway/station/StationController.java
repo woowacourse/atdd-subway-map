@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
+            @RequestBody StationRequest stationRequest) {
         StationResponse newStation = stationService.createStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
                 .body(newStation);

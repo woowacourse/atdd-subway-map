@@ -1,11 +1,5 @@
 package wooteco.subway.station;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +8,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
+
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class StationDao {
@@ -27,13 +26,17 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public static void deleteAll() {
+        stations.clear();
+    }
+
     public Station save(Station station) {
         validateDuplicatedName(station);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, new String[]{"id", "name"});
+                    .prepareStatement(sql, new String[]{"id", "name"});
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
@@ -58,7 +61,7 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll()  {
+    public List<Station> findAll() {
         String sql = "SELECT id, name FROM station";
         return jdbcTemplate.query(sql, mapperStation());
 
@@ -70,10 +73,6 @@ public class StationDao {
         if (updateCount == 0) {
             throw new NotFoundException("존재하지 않는 역 ID 입니다.");
         }
-    }
-
-    public static void deleteAll() {
-        stations.clear();
     }
 
     private RowMapper<Station> mapperStation() {
