@@ -72,10 +72,10 @@ npm run dev
 - [x] DAO Bean 등록 
 
 ### 스프링 JDBC H2 DB 저장
-- [ ] DB 연결
-- [ ] DB 생성
+- [x] DB 연결
+- [x] DB 생성
 - [ ] DAO 쿼리 작성 
-- [ ] H2 log/console 확인 
+- [x] H2 log/console 확인 
 
 ### 스프링 JDBC H2 DB 테스트
 - [ ] DAO 테스트 작성 
