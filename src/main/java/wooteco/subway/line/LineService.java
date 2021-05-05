@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -35,5 +36,12 @@ public class LineService {
         return LineDao.findALl().stream().
             map(LineResponse::from).
             collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(final Long id) {
+        final Line line = LineDao.findById(id).orElseThrow(() -> {
+            throw new NoSuchElementException("해당 Id의 노선이 없습니다.");
+        });
+        return LineResponse.from(line);
     }
 }

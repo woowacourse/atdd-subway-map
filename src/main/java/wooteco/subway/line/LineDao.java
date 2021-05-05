@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.Station;
 
 public class LineDao {
     private static Long seq = 0L;
@@ -25,6 +26,12 @@ public class LineDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
         return line;
+    }
+
+    public static Optional<Line> findById(final Long id) {
+        return lines.stream()
+            .filter(line -> line.isSameId(id))
+            .findAny();
     }
 
     public static Optional<Line> findByName(final String name) {

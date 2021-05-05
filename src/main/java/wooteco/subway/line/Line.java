@@ -26,6 +26,14 @@ public class Line {
         this.stations = stations;
     }
 
+    public boolean isSameName(final String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameId(final Long id) {
+        return this.id == id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -40,9 +48,5 @@ public class Line {
 
     public List<Station> getStations() {
         return stations;
-    }
-
-    public boolean isSameName(final String name) {
-        return this.name.equals(name);
     }
 }
