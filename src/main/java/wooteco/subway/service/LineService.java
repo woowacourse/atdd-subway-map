@@ -1,19 +1,27 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
 
+@Service
 public class LineService {
+
+    private final LineDao lineDao;
+
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
     public Line createLine(String name, String color) {
         validateDuplication(name);
         Line line = new Line(name, color);
-        return LineDao.save(line);
+        return lineDao.save(line);
     }
 
     private void validateDuplication(String name) {
-        boolean isDuplicated = LineDao.findAll()
+        boolean isDuplicated = lineDao.findAll()
             .stream()
             .anyMatch(line -> line.getName().equals(name));
         if (isDuplicated) {
@@ -22,21 +30,21 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        return LineDao.findAll();
+        return lineDao.findAll();
     }
 
     public Line findById(long id) {
-        return LineDao.findById(id)
+        return lineDao.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 노선이 존재하지 않습니다."));
     }
 
     public void editLine(long id, String name, String color) {
         validateDuplication(name);
         Line targetLine = findById(id);
-        LineDao.updateLine(targetLine, name, color);
+        lineDao.updateLine(targetLine, name, color);
     }
 
     public void deleteLine(long id) {
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
     }
 }

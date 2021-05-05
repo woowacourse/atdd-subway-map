@@ -15,10 +15,10 @@ import wooteco.subway.service.StationService;
 @RestController
 public class StationController {
 
-    private StationService stationService;
+    private final StationService stationService;
 
-    public StationController() {
-        this.stationService = new StationService();
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
