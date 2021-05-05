@@ -44,4 +44,9 @@ public class LineService {
         });
         return LineResponse.from(line);
     }
+
+    public void deleteLine(final Long id) {
+        findLine(id);
+        LineDao.deleteById(id);
+    }
 }

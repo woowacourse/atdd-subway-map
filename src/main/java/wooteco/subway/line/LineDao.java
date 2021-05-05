@@ -42,5 +42,9 @@ public class LineDao {
 
     public static List<Line> findALl() {
         return lines;
-}
+    }
+
+    public static void deleteById(final Long id) {
+        lines.removeIf(line -> line.isSameId(id));
+    }
 }
