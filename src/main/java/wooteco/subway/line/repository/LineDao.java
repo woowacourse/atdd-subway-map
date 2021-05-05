@@ -1,10 +1,8 @@
 package wooteco.subway.line.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
@@ -26,7 +24,7 @@ public class LineDao {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            final PreparedStatement pstmt = connection.prepareStatement(sql, new String[] {"id"});
+            final PreparedStatement pstmt = connection.prepareStatement(sql, new String[]{"id"});
             pstmt.setString(1, line.getName());
             pstmt.setString(2, line.getColor());
 

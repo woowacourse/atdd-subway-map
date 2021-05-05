@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.repository.LineRepositoryImpl;
 import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
 
@@ -69,9 +68,9 @@ public class LineController {
 
         return ResponseEntity.ok(
                 new LineResponse(
-                    line.getId(),
-                    line.getName(),
-                    line.getColor()
+                        line.getId(),
+                        line.getName(),
+                        line.getColor()
                 )
         );
     }
