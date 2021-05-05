@@ -47,4 +47,9 @@ public class StationRepository {
         String query = "SELECT id, name FROM station ORDER BY id";
         return jdbcTemplate.query(query, stationRowMapper);
     }
+
+    public void deleteById(final Long id) {
+        String query = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(query, id);
+    }
 }

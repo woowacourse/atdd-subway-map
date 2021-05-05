@@ -53,4 +53,16 @@ public class StationRepositoryTest {
         List<Station> stations = Arrays.asList(new Station(1L, "잠실역"), new Station(2L, "잠실새내역"));
         assertThat(stationRepository.findAll()).usingRecursiveComparison().isEqualTo(stations);
     }
+
+    @DisplayName("id를 통해 삭제 요청을 하면, DB에 있는 해당 id 역을 삭제한다")
+    @Test
+    void deleteById() {
+        Long id = 1L;
+
+        String query = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?)";
+        assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isTrue();
+
+        stationRepository.deleteById(id);
+        assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
+    }
 }
