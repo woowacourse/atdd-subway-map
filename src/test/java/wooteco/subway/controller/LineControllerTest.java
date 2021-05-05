@@ -140,4 +140,18 @@ class LineControllerTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("등록된 노선을 삭제한다.")
+    @Test
+    void deleteLine() throws JsonProcessingException {
+        LineRequest lineRequest = new LineRequest("7호선", "green", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse = postLineApi(lineRequest).extract();
+        String uri = lineResponse.header("Location");
+
+        RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }

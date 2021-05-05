@@ -35,4 +35,8 @@ public class LineService {
         Line targetLine = findById(id);
         LineDao.updateLine(targetLine, name, color);
     }
+
+    public void deleteLine(long id) {
+        LineDao.deleteById(id);
+    }
 }
