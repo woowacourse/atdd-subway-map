@@ -28,4 +28,12 @@ public class LineDao implements LineRepository {
     public List<Line> findAll() {
         return lines;
     }
+
+    @Override
+    public Line findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다."));
+    }
 }

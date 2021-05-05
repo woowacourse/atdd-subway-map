@@ -28,4 +28,12 @@ public class Line {
             throw new IllegalArgumentException("같은 역을 상행, 하행 종착역으로 입력하였습니다.");
         }
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
