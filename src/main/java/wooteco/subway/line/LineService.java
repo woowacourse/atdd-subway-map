@@ -26,4 +26,9 @@ public class LineService {
         Line line = lineRepository.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
+
+    public LineResponse update(long id, String name, String color) {
+        Line newLine = lineRepository.update(id, new Line(name, color));
+        return LineResponse.from(newLine);
+    }
 }

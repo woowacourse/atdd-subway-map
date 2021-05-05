@@ -115,4 +115,38 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(name).isEqualTo("7호선");
         assertThat(color).isEqualTo("bg-green-600");
     }
+
+    @Test
+    @DisplayName("노선을 수정하는 요청을 보낸다.")
+    void updateLine() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-green-600");
+        params.put("name", "7호선");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-blue-600");
+        params2.put("name", "구분당선");
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(createResponse.header("Location"))
+                .then().log().all()
+                .extract();
+        String name = updateResponse.jsonPath().get("name");
+        String color = updateResponse.jsonPath().get("color");
+
+        // then
+        assertThat(name).isEqualTo("구분당선");
+        assertThat(color).isEqualTo("bg-blue-600");
+    }
 }
