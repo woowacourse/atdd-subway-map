@@ -7,20 +7,27 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.DuplicatedStationNameException;
 
 @RestController
 public class StationController {
 
+    private final StationService stationService;
+
+    public StationController() {
+        Assembler assembler = new Assembler();
+        this.stationService = assembler.getStationService();
+    }
+
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationDao stationDaoCache = new StationDaoCache();
         try {
-            Station station = new Station(stationRequest.getName());
-            Station newStation = stationDaoCache.save(station);
-            StationResponse stationResponse = new StationResponse(newStation.getId(),
-                newStation.getName());
-            return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+            StationDto stationDto = new StationDto(stationRequest.getName());
+            StationDto savedStationDto = stationService.save(stationDto);
+            StationResponse stationResponse = new StationResponse(savedStationDto.getId(),
+                savedStationDto.getName());
+            return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
                 .body(stationResponse);
         } catch (DuplicatedStationNameException e) {
             return ResponseEntity.badRequest().build();
@@ -29,9 +36,8 @@ public class StationController {
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        StationDaoCache stationDaoCache = new StationDaoCache();
-        List<Station> stations = stationDaoCache.findAll();
-        List<StationResponse> stationResponses = stations.stream()
+        List<StationDto> stationDtos = stationService.showStations();
+        List<StationResponse> stationResponses = stationDtos.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
