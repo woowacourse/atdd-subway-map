@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,6 +15,7 @@ import wooteco.subway.exception.DuplicationException;
 
 @Repository
 public class StationDao {
+
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
@@ -39,15 +40,20 @@ public class StationDao {
         return new Station((Long) keys.get("id"), (String) keys.get("name"));
     }
 
-    private static void validateDuplicatedName(Station station) {
+    private void validateDuplicatedName(Station station) {
         if (isDuplicate(station)) {
             throw new DuplicationException("이미 존재하는 역 이름입니다.");
         }
     }
 
-    private static boolean isDuplicate(Station newStation) {
-        return stations.stream()
-            .anyMatch(station -> station.isSameName(newStation));
+    private boolean isDuplicate(Station newStation) {
+        String sql = "SELECT id FROM station WHERE name = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newStation.getName());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     public List<Station> findAll() {

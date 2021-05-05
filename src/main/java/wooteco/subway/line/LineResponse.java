@@ -5,6 +5,7 @@ import wooteco.subway.station.StationResponse;
 import java.util.List;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;

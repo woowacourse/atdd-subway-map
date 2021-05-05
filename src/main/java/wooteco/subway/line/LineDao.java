@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.station.Station;
 
 @Repository
 public class LineDao {
@@ -43,7 +43,7 @@ public class LineDao {
             (String) keys.get("color"));
     }
 
-    private static void validateDuplicateNameAndColor(Line line) {
+    private void validateDuplicateNameAndColor(Line line) {
         if (isDuplicateName(line)) {
             throw new DuplicationException("이미 존재하는 노선 이름입니다.");
         }
@@ -53,14 +53,24 @@ public class LineDao {
         }
     }
 
-    private static boolean isDuplicateColor(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameColor(newLine));
+    private boolean isDuplicateColor(Line newLine) {
+        String sql = "SELECT id FROM line WHERE color = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newLine.getColor());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
-    private static boolean isDuplicateName(Line newLine) {
-        return lines.stream()
-            .anyMatch(line -> line.isSameName(newLine));
+    private boolean isDuplicateName(Line newLine) {
+        String sql = "SELECT id FROM line WHERE name = ?";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, newLine.getName());
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     public List<Line> findAll() {
@@ -82,16 +92,16 @@ public class LineDao {
             .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
     }
 
-    public static void update(Line updatedLine) {
-        validateDuplicateNameAndColor(updatedLine);
-
-        Integer index = lines.stream()
-            .filter(line -> line.isSameId(updatedLine.getId()))
-            .map(line -> lines.indexOf(line))
-            .findAny()
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
-        lines.set(index, updatedLine);
-    }
+//    public static void update(Line updatedLine) {
+//        validateDuplicateNameAndColor(updatedLine);
+//
+//        Integer index = lines.stream()
+//            .filter(line -> line.isSameId(updatedLine.getId()))
+//            .map(line -> lines.indexOf(line))
+//            .findAny()
+//            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
+//        lines.set(index, updatedLine);
+//    }
 
     public static void deleteLineById(Long id) {
         Integer index = lines.stream()
