@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
 import java.util.Objects;
 
@@ -7,10 +7,6 @@ public class LineColor {
 
     public LineColor(String color) {
         this.color = color;
-    }
-
-    public String getColorName() {
-        return color;
     }
 
     @Override
@@ -26,8 +22,7 @@ public class LineColor {
         return Objects.hash(color);
     }
 
-    @Override
-    public String toString() {
+    public String text() {
         return color;
     }
 }

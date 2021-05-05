@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class LineTest {
         Line line = new Line(rawName, TEST_COLOR);
 
         //then
-        assertThat(line.getName()).isEqualTo(expectedName);
+        assertThat(line.getName().text()).isEqualTo(expectedName);
     }
 
     private static Stream<Arguments> trimAndRemoveDuplicatedBlankTest() {

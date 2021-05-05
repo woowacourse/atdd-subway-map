@@ -1,10 +1,12 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationName;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -31,7 +33,7 @@ public class H2StationDao implements StationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName().toString());
+            ps.setString(1, station.getName().text());
             return ps;
         }, keyHolder);
         long stationId = keyHolder.getKey().longValue();
@@ -72,7 +74,7 @@ public class H2StationDao implements StationDao {
                 "FROM STATION " +
                 "WHERE NAME = ?";
 
-        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.toString());
+        int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.text());
         return countOfName > 0;
     }
 

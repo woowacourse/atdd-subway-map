@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class StationTest {
         Station station = new Station(rawName);
 
         //then
-        assertThat(station.getName()).isEqualTo(expectedName);
+        assertThat(station.getName().text()).isEqualTo(expectedName);
     }
 
     private static Stream<Arguments> trimAndRemoveDuplicatedBlankTest() {

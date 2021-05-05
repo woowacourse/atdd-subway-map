@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.domain;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -28,10 +28,6 @@ public class StationName {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,8 +41,7 @@ public class StationName {
         return Objects.hash(name);
     }
 
-    @Override
-    public String toString() {
+    public String text() {
         return name;
     }
 }
