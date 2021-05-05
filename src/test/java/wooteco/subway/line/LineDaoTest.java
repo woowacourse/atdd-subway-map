@@ -69,7 +69,7 @@ public class LineDaoTest {
         Long id = lineRepository.save(line).getId();
 
         // when
-        lineRepository.remove(id);
+        lineRepository.delete(id);
 
         // then
         assertThatThrownBy(() -> lineRepository.findById(id))
