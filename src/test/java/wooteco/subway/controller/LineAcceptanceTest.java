@@ -22,7 +22,7 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
-class LineControllerTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @DisplayName("지하철 노선을 생성한다.")

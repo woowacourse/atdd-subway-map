@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.controller.apis;
 
 import java.net.URI;
 import java.util.ArrayList;

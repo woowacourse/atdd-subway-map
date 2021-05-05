@@ -1,4 +1,4 @@
-package wooteco.subway.domain.station;
+package wooteco.subway.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.controller.apis;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
