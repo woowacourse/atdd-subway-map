@@ -1,11 +1,11 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import static org.hamcrest.core.Is.is;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -76,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역 목록을 조회한다.")
     @Test
-    void getStations() {
+    void getLines() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
@@ -122,29 +121,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("id를 이용하여 지하철역을 조회한다.")
     @Test
-    public void getStation() {
+    public void getLine() {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "2호선");
         params1.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+
+        RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
-            .then().log().all()
-            .extract();
+            .then().log().all();
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "3호선");
         params2.put("color", "bg-orange-600");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+        RestAssured.given().log().all()
             .body(params2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
-            .then().log().all()
-            .extract();
+            .then().log().all();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -157,22 +155,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body("name", is("2호선"))
             .body("color", is("bg-green-600"))
             .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("id를 기준으로 노선을 수정한다.")
+    @Test
+    public void putLine() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "2호선");
+        params1.put("color", "bg-green-600");
+
+        RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "3호선");
+        params2.put("color", "bg-orange-600");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params2)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
-/*
-
- RestAssured.given().log().all()
-     .accept(MediaType.APPLICATION_JSON_VALUE)
-     .when().get("/room/1/statistics")
-     .then().log().all()
-     .statusCode(HttpStatus.OK.value())
-     .contentType(MediaType.APPLICATION_JSON_VALUE)
-     .body("whiteName", is("fortune"))
-     .body("whiteWin", is("0"))
-     .body("whiteLose", is("0"))
-     .body("blackName", is("portune"))
-     .body("blackWin", is("0"))
-     .body("blackLose", is("0"));
-
-
- */
