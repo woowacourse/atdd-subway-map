@@ -44,9 +44,11 @@ public class LineController {
                 );
     }
 
-    @GetMapping
+    @GetMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<List<LineResponse>> allLines() {
-
         final List<LineResponse> lineResponses = lineService.allLines().stream()
                 .map(line ->
                         new LineResponse(
@@ -57,6 +59,27 @@ public class LineController {
                 ).collect(toList());
 
         return ResponseEntity.ok(lineResponses);
+    }
+
+    @GetMapping(value = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
+        final Line line = lineService.findById(id);
+
+        return ResponseEntity.ok(
+                new LineResponse(
+                    line.getId(),
+                    line.getName(),
+                    line.getColor()
+                )
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    private ResponseEntity<String> handleIllegalArgumentException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }
