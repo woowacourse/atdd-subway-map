@@ -50,6 +50,11 @@ public class LineDao {
         return line;
     }
 
+    public static void update(Line line) {
+        ifAbsent(line);
+        lines.set(lines.indexOf(line), line);
+    }
+
     public static void delete(Line line) {
         ifAbsent(line);
         lines.remove(line);

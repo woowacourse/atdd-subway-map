@@ -35,12 +35,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남노선");
-
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -179,6 +176,49 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @DisplayName("노선 정보를 업데이트한다.")
+    @Test
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        Map<String, String> updateParam = new HashMap<>();
+        String updateName = "빨리빨리역";
+        String updateColor = "red darken-3";
+
+        updateParam.put("name", updateName);
+        updateParam.put("color", updateColor);
+
+        String uri = response.header("Location");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        LineResponse result = updateResponse.body().as(LineResponse.class);
+
+        // then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(result.getName()).isEqualTo(updateName);
+        assertThat(result.getColor()).isEqualTo(updateColor);
+    }
+
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -203,6 +243,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
     }
 
     @DisplayName("없는 ID의 지하철노선을 삭제하려고 하면 예외")
