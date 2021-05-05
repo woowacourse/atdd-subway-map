@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.DuplicationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -69,7 +69,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo(new DuplicatedNameException().getMessage());
+        assertThat(response.body().asString()).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
