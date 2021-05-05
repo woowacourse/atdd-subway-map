@@ -1,56 +1,73 @@
 package wooteco.subway.line;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 @Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
-    public static void clear() {
-        lines.clear();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("color")
+    );
+
+    public LineDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static Line save(final Line line) {
-        final Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    public Line save(final Line line) {
+        final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        final PreparedStatementCreator preparedStatementCreator = con -> {
+            final PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        };
+        jdbcTemplate.update(preparedStatementCreator, keyHolder);
+        final long id = keyHolder.getKey().longValue();
+        return new Line(id, line.getName(), line.getColor());
     }
 
-    private static Line createNewObject(final Line line) {
-        final Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public static Optional<Line> findById(final Long id) {
-        return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findAny();
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public static Optional<Line> findByName(final String name) {
-        return lines.stream()
-            .filter(line -> line.isSameName(name))
-            .findAny();
+    public Optional<Line> findById(final Long id) {
+        final String sql = "SELECT * FROM line WHERE id = ?";
+        final List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, id);
+        if (lines.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(lines.get(0));
     }
 
-    public static List<Line> findALl() {
-        return lines;
+    public Optional<Line> findByName(final String name) {
+        final String sql = "SELECT * FROM line WHERE name = ?";
+        final List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, name);
+        if (lines.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(lines.get(0));
     }
 
-    public static void update(final Line updatedLine) {
-        deleteById(updatedLine.getId());
-        lines.add(updatedLine);
-    }
-
-    public static void deleteById(final Long id) {
-        lines.removeIf(line -> line.isSameId(id));
+    public void update(final Line updatedLine) {
+        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
     }
 }

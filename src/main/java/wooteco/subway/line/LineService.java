@@ -19,25 +19,25 @@ public class LineService {
         final String color = lineRequest.getColor();
 
         validateDuplicatedLineName(name);
-        final Line line = LineDao.save(new Line(name, color));
+        final Line line = lineDao.save(new Line(name, color));
         return LineResponse.from(line);
     }
 
     private void validateDuplicatedLineName(final String name) {
-        LineDao.findByName(name)
+        lineDao.findByName(name)
             .ifPresent(station -> {
                 throw new IllegalStateException("중복된 이름의 노선입니다.");
             });
     }
 
     public List<LineResponse> findLines() {
-        return LineDao.findALl().stream().
+        return lineDao.findAll().stream().
             map(LineResponse::from).
             collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
-        final Line line = LineDao.findById(id).orElseThrow(() -> {
+        final Line line = lineDao.findById(id).orElseThrow(() -> {
             throw new NoSuchElementException("해당 Id의 노선이 없습니다.");
         });
         return LineResponse.from(line);
@@ -45,11 +45,11 @@ public class LineService {
 
     public void updateLine(final Long id, final LineRequest lineRequest) {
         findLine(id);
-        LineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(final Long id) {
         findLine(id);
-        LineDao.deleteById(id);
+        lineDao.deleteById(id);
     }
 }
