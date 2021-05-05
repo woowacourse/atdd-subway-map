@@ -39,11 +39,11 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("전체 노선을 조회한다.")
     @Test
     void showLines() throws Exception {
-        LineRequest lineRequest1 = new LineRequest("2호선", "red", 1L, 3L, 7);
+        LineRequest lineRequest1 = new LineRequest("3호선", "red", 1L, 3L, 7);
         ExtractableResponse<Response> lineResponse1 = postLineApi(lineRequest1)
             .extract();
 
-        LineRequest lineRequest2 = new LineRequest("3호선", "blue", 2L, 3L, 4);
+        LineRequest lineRequest2 = new LineRequest("4호선", "blue", 2L, 3L, 4);
         ExtractableResponse<Response> lineResponse2 = postLineApi(lineRequest2)
             .extract();
 
@@ -76,12 +76,12 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("아이디로 노선을 조회한다.")
     @Test
     void showLine() throws JsonProcessingException {
-        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
+        LineRequest lineRequest = new LineRequest("5호선", "red", 1L, 3L, 7);
         ExtractableResponse<Response> lineResponse = postLineApi(lineRequest)
             .extract();
 
         long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
-        LineResponse getResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
+        LineResponse getResponse = new LineResponse(id, "5호선", "red", new ArrayList<>());
 
         RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -90,5 +90,54 @@ class LineControllerTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .body(is(OBJECT_MAPPER.writeValueAsString(getResponse)));
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void editLine() throws JsonProcessingException {
+        LineRequest lineRequest = new LineRequest("6호선", "red", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse = postLineApi(lineRequest)
+            .extract();
+        long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+            .when().put("/lines/" + id)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("없는 아이디의 지하철 노선은 수정할 수 없다.")
+    @Test
+    void cannotEditLineWhenNoId() throws JsonProcessingException {
+        LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+            .when().put("/lines/" + 9999)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("이미 생성된 노선의 이름으로 수정할 수 없다.")
+    @Test
+    void cannotEditLineWhenDuplicateName() throws JsonProcessingException {
+        LineRequest lineRequest1 = new LineRequest("6호선", "red", 1L, 3L, 7);
+        LineRequest lineRequest2 = new LineRequest("신분당선", "red", 1L, 3L, 7);
+        ExtractableResponse<Response> lineResponse1 = postLineApi(lineRequest1)
+            .extract();
+        postLineApi(lineRequest2);
+        long id = Long.parseLong(lineResponse1.header("Location").split("/")[2]);
+        LineRequest putRequest = new LineRequest("신분당선", "white", 1L, 3L, 7);
+
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+            .when().put("/lines/" + id)
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

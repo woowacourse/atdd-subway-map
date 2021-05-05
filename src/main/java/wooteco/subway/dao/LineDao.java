@@ -35,6 +35,15 @@ public class LineDao {
         return Line;
     }
 
+    public static void updateLine(Line line, String name, String color) {
+        Field nameField = ReflectionUtils.findField(Line.class, "name");
+        nameField.setAccessible(true);
+        ReflectionUtils.setField(nameField, line, name);
+        Field colorField = ReflectionUtils.findField(Line.class, "color");
+        colorField.setAccessible(true);
+        ReflectionUtils.setField(colorField, line, color);
+    }
+
     public static void deleteById(long id) {
         lines.removeIf(Line -> Line.getId() == id);
     }

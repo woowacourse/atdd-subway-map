@@ -1,5 +1,6 @@
 package wooteco.subway.controller;
 
+import com.google.common.io.LineReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import sun.security.provider.certpath.ResponderId;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
@@ -48,4 +51,9 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
+        lineService.editLine(id, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
 }
