@@ -20,7 +20,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     private static final String TEST_COLOR_NAME = "orange darken-4";
 
     @Autowired
-    LineDao dao;
+    private LineDao dao;
 
     static Map<String, String> param = new HashMap<>();
 
