@@ -78,7 +78,7 @@ npm run dev
 - [x] H2 log/console 확인 
 
 ### 스프링 JDBC H2 DB 테스트
-- [ ] DAO 테스트 작성 
+- [x] DAO 테스트 작성 
 
 <br>
 
