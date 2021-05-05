@@ -4,9 +4,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.Station;
 
+@Repository
 public class LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();

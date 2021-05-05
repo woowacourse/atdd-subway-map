@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StationController {
 
-    private final StationService stationService = StationService.getInstance();
+    private final StationService stationService;
+
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
+    }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {

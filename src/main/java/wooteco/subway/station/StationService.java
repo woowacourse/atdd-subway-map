@@ -3,16 +3,15 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StationService {
 
-    private static final StationService STATION_SERVICE = new StationService();
+    private final StationDao stationDao;
 
-    private StationService() {
-    }
-
-    public static StationService getInstance() {
-        return STATION_SERVICE;
+    private StationService(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public StationResponse createStation(final StationRequest stationRequest) {
