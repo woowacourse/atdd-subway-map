@@ -2,13 +2,10 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.line.dao.MemoryLineDao;
-import wooteco.subway.line.dao.dto.LineDto;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.line.dao.MemoryLineDao;
+import wooteco.subway.line.dao.dto.LineDto;
 import wooteco.subway.line.service.LineService;
 
 import java.net.URI;
@@ -50,7 +47,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
