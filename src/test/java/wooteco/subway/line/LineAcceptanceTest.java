@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
@@ -18,6 +19,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     private static final String TEST_LINE_NAME = "강남노선";
     private static final String TEST_COLOR_NAME = "orange darken-4";
 
+    @Autowired
+    LineDao dao;
+
     static Map<String, String> param = new HashMap<>();
 
     @BeforeAll
@@ -28,7 +32,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @AfterEach
     void cleanDB() {
-        LineDao.deleteAll();
+        dao.deleteAll();
     }
 
     @DisplayName("지하철노선을 생성한다.")
