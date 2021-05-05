@@ -9,7 +9,6 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;

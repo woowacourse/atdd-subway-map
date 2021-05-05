@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.repository.StationDao;
 import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.ui.dto.StationRequest;
 import wooteco.subway.station.ui.dto.StationResponse;
