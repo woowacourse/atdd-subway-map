@@ -123,6 +123,41 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @DisplayName("단일 노선을 조회한다.")
+    @Test
+    void findLineByID() {
+        // given
+        String name = "신분당선";
+        String color = "bg-red-600";
+        Long id = 1L;
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findLineResponse.jsonPath().getLong("id")).isEqualTo(id);
+        assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo(name);
+        assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
+    }
+
+
    /* @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {

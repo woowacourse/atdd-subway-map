@@ -41,4 +41,10 @@ public class LineDao {
         lines.clear();
         seq = 0L;
     }
+
+    public static Optional<Line> findById(Long id) {
+        return lines.stream()
+                .filter(line -> line.sameId(id))
+                .findAny();
+    }
 }

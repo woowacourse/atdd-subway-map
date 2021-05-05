@@ -35,6 +35,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+        Line findLine = LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        LineResponse response = new LineResponse(findLine.id(), findLine.name(), findLine.color(), Collections.emptyList());
+        return ResponseEntity.ok().body(response);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseError> handleException(IllegalArgumentException e) {
         logger.info(e.getMessage());

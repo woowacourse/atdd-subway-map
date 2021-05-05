@@ -41,4 +41,8 @@ public class Line {
     public boolean sameName(String name) {
         return this.name.sameName(name);
     }
+
+    public boolean sameId(Long id) {
+        return this.id.equals(id);
+    }
 }
