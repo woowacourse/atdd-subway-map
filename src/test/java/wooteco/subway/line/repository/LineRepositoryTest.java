@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
@@ -41,5 +44,17 @@ class LineRepositoryTest {
         Line line2 = new Line("bg-green-600", "2호선");
         assertThat(lineRepository.isExist(line1)).isFalse();
         assertThat(lineRepository.isExist(line2)).isTrue();
+    }
+
+    @DisplayName("전체 Line을 조회하면, DB에 존재하는 Line 리스트를 반환한다.")
+    @Test
+    void findAll() {
+        List<Line> expectedLines = Arrays.asList(
+                new Line(1L, "bg-red-600", "신분당선"),
+                new Line(2L, "bg-green-600", "2호선")
+        );
+
+        List<Line> lines = lineRepository.findAll();
+        assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 }

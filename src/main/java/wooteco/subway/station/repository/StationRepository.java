@@ -19,14 +19,6 @@ public class StationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> {
-        Station station = new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
-        );
-        return station;
-    };
-
     public boolean isExist(Station station) {
         String query = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
@@ -54,4 +46,9 @@ public class StationRepository {
         String query = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
+
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
 }
