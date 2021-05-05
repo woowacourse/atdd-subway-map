@@ -42,6 +42,12 @@ public class LineController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
+        LineDao.update(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseError> handleException(IllegalArgumentException e) {
         logger.info(e.getMessage());

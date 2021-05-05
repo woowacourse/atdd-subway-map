@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,6 +156,41 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
     }
 
+    @DisplayName("노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "백기선");
+        params1.put("color", "bg-red-600");
+
+        // given
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "흑기선");
+        params2.put("color", "bg-red-600");
+
+        // when
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        long newId = response1.body().jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/{id}", newId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
    /* @DisplayName("지하철역을 제거한다.")
     @Test

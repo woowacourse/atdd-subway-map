@@ -2,7 +2,7 @@ package wooteco.subway.name;
 
 import java.util.regex.Pattern;
 
-public class LineName implements Name{
+public class LineName implements Name {
     private static final Pattern PATTERN = Pattern.compile("^[가-힣|0-9]*선$");
     private final String name;
 
@@ -25,5 +25,10 @@ public class LineName implements Name{
     @Override
     public boolean sameName(final String name) {
         return this.name.equals(name);
+    }
+
+    @Override
+    public Name changeName(final String name) {
+        return new LineName(name);
     }
 }

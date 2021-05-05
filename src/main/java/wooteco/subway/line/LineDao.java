@@ -42,9 +42,15 @@ public class LineDao {
         seq = 0L;
     }
 
-    public static Optional<Line> findById(Long id) {
+    public static Optional<Line> findById(final Long id) {
         return lines.stream()
                 .filter(line -> line.sameId(id))
                 .findAny();
+    }
+
+    public static void update(final Long id, final String name, final String color) {
+        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        line.changeName(name);
+        line.changeColor(color);
     }
 }

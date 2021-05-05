@@ -38,11 +38,19 @@ public class Line {
         return color;
     }
 
-    public boolean sameName(String name) {
+    public boolean sameName(final String name) {
         return this.name.sameName(name);
     }
 
-    public boolean sameId(Long id) {
+    public boolean sameId(final Long id) {
         return this.id.equals(id);
+    }
+
+    public void changeName(final String name) {
+        this.name = this.name.changeName(name);
+    }
+
+    public void changeColor(String color) {
+        this.color = color;
     }
 }

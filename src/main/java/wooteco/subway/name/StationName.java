@@ -26,4 +26,9 @@ public class StationName implements Name {
     public boolean sameName(final String name) {
         return this.name.equals(name);
     }
+
+    @Override
+    public Name changeName(String name) {
+        return new StationName(name);
+    }
 }

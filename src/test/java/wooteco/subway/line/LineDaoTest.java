@@ -10,11 +10,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineDaoTest {
     private String name;
+    private Long id;
 
     @BeforeEach
     void setUp() {
         name = "아마찌선";
-        LineDao.save(new Line(1L, name, "bg-red-600"));
+        id = 1L;
+        LineDao.save(new Line(id, name, "bg-red-600"));
     }
 
     @AfterEach
@@ -35,13 +37,27 @@ class LineDaoTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("전체 노선을 조회한다.")
     void findAll() {
         assertThat(LineDao.findAll()).hasSize(1);
     }
 
     @Test
+    @DisplayName("이름으로 단일 노선을 조회한다.")
     void findByName() {
         assertThat(LineDao.findByName(name).get().name()).isEqualTo(name);
+    }
+
+    @Test
+    @DisplayName("노선을 수정한다.")
+    void updateLine() {
+        String updateName = "흑기선";
+        String updateColor = "bg-red-700";
+
+        LineDao.update(id, updateName, updateColor);
+        Line findLine = LineDao.findById(id).get();
+
+        assertThat(findLine.name()).isEqualTo(updateName);
+        assertThat(findLine.color()).isEqualTo(updateColor);
     }
 }
