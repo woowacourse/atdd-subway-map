@@ -47,6 +47,10 @@ public class StationDao {
         stations.remove(station);
     }
 
+    public static void deleteAll() {
+        stations = new ArrayList<>();
+    }
+
     private static void ifAbsent(Station station) {
         if (!stations.contains(station)) {
             throw new IllegalArgumentException("역이 존재하지 않습니다.");
