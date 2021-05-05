@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,14 +10,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.LineResponse;
+import wooteco.subway.station.StationDao;
 
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @AfterEach
+    void cleanTestResidue() {
+        StationDao.clean();
+        LineDao.clean();
+    }
 
     @DisplayName("지하철노선을 생성한다.")
     @Test
