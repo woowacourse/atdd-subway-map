@@ -26,8 +26,16 @@ public class Line {
         this.color = color;
     }
 
+    public Long id() {
+        return id;
+    }
+
     public String name() {
         return name.name();
+    }
+
+    public String color() {
+        return color;
     }
 
     public boolean sameName(String name) {
