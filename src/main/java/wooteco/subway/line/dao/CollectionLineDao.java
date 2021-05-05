@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
@@ -12,8 +11,8 @@ import wooteco.subway.line.Line;
 @Component
 public class CollectionLineDao implements LineDao {
 
-    private static Long seq = 0L;
     private static final List<Line> lines = new ArrayList<>();
+    private static Long seq = 0L;
 
     public Line save(Line line) {
         Line persistsLine = createNewObject(line);

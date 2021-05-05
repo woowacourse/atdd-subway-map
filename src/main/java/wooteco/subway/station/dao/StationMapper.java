@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import wooteco.subway.line.Line;
 import wooteco.subway.station.Station;
 
 @Component
