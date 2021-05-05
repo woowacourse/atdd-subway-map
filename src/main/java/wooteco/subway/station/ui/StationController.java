@@ -1,8 +1,12 @@
-package wooteco.subway.station;
+package wooteco.subway.station.ui;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.repository.StationDao;
+import wooteco.subway.station.ui.dto.StationRequest;
+import wooteco.subway.station.ui.dto.StationResponse;
 
 import java.net.URI;
 import java.util.List;
