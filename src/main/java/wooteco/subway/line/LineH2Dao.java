@@ -1,11 +1,9 @@
 package wooteco.subway.line;
 
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
