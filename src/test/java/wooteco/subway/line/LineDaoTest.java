@@ -3,7 +3,7 @@ package wooteco.subway.line;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.AppConfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class LineDaoTest {
     private LineRepository lineRepository = AppConfig.lineRepository();
@@ -60,5 +60,19 @@ public class LineDaoTest {
 
         //then
         assertThat(lineRepository.findById(expected.getId())).isEqualTo(newLine);
+    }
+
+    @Test
+    void removeTest() {
+        // given
+        Line line = new Line("7호선", "color name");
+        Long id = lineRepository.save(line).getId();
+
+        // when
+        lineRepository.remove(id);
+
+        // then
+        assertThatThrownBy(() -> lineRepository.findById(id))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

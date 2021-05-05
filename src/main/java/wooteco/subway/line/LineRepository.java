@@ -10,4 +10,6 @@ public interface LineRepository {
     Line findById(Long id);
 
     void update(Long id, Line newLine);
+
+    void remove(Long id);
 }
