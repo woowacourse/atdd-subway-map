@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.DuplicatedLineNameException;
 import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.line.dto.LineDto;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 
 @RestController
 public class LineController {

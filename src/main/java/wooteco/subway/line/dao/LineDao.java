@@ -1,6 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import java.util.List;
+import wooteco.subway.line.Line;
 
 public interface LineDao {
     Line save(Line line);

@@ -1,8 +1,8 @@
 package wooteco.subway.assembler;
 
-import wooteco.subway.line.LineDaoCache;
+import wooteco.subway.line.dao.LineDaoCache;
 import wooteco.subway.line.LineService;
-import wooteco.subway.station.StationDaoCache;
+import wooteco.subway.station.dao.StationDaoCache;
 import wooteco.subway.station.StationService;
 
 public class Assembler {

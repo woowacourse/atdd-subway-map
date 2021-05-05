@@ -1,11 +1,10 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.LineRequest;
+import wooteco.subway.line.dto.LineRequest;
 
 class LineRequestTest {
 
