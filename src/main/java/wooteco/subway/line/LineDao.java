@@ -15,8 +15,16 @@ public class LineDao {
         if (isDuplicatedName(line)) {
             throw new IllegalArgumentException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
         }
+        if (isDuplicatedColor(line)) {
+            throw new IllegalArgumentException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
+        }
         lines.add(persistLine);
         return persistLine;
+    }
+
+    private static boolean isDuplicatedColor(Line line) {
+        return lines.stream()
+                .anyMatch(line1 -> line1.getColor().equals(line.getColor()));
     }
 
     private static boolean isDuplicatedName(Line line) {
@@ -48,6 +56,7 @@ public class LineDao {
     }
 
     public static void deleteAll() {
+        seq = 0L;
         lines = new ArrayList<>();
     }
 

@@ -9,21 +9,23 @@ public class Line {
 
     private Long id;
     private String name;
+    private String color;
 
     public Line() {
-        this(null, null);
+        this(null, null, null);
     }
 
-    public Line(String name) {
-        this(null, name);
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public Line(Long id, final String name) {
+    public Line(Long id, final String name, String color) {
         String trimAndRemoveDuplicateBlankName = name.trim().replaceAll(" +", " ");
         validateNameLength(trimAndRemoveDuplicateBlankName);
         validateInvalidName(trimAndRemoveDuplicateBlankName);
         this.id = id;
         this.name = trimAndRemoveDuplicateBlankName;
+        this.color = color;
     }
 
     private void validateNameLength(String name) {
@@ -44,6 +46,10 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override

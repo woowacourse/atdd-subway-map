@@ -48,6 +48,7 @@ public class StationDao {
     }
 
     public static void deleteAll() {
+        seq = 0L;
         stations = new ArrayList<>();
     }
 

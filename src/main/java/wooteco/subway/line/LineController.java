@@ -13,9 +13,9 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = LineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), null, null);
+        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor(), null);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
@@ -23,7 +23,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = LineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), null, null))
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), null))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
