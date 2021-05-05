@@ -1,3 +1,9 @@
 handlebars:
   suffix: .html
   enabled: true
+
+spring:
+  h2:
+    console:
+      enabled: true
+

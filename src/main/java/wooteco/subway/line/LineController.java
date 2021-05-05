@@ -1,15 +1,20 @@
 package wooteco.subway.line;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.AppConfig;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class LineController {
-    private final LineService lineService = AppConfig.lineService();
+    private final LineService lineService;
+
+    @Autowired
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLines(@RequestBody LineRequest lineRequest) {
