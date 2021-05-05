@@ -25,13 +25,6 @@ class LineServiceTest {
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
     }
 
-    @AfterEach
-    void afterAll() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
-    }
-
-
     @Test
     @DisplayName("노선 정상 생성 테스트")
     void createStation() {

@@ -32,12 +32,6 @@ class LineDaoTest {
         jdbcTemplate.update("insert into LINE(name, color) values (?, ?)", lineName1, color1);
     }
 
-    @AfterEach
-    void afterAll() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
-    }
-
     @Test
     @DisplayName("이름으로 노선 검색")
     void findByName() {

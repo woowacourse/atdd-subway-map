@@ -31,12 +31,6 @@ class StationDaoTest {
         jdbcTemplate.update("insert into STATION (name) values (?)", stationName1);
     }
 
-    @AfterEach
-    void afterAll() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
-    }
-
     @Test
     @DisplayName("이름으로 역 검색")
     void findByName() {

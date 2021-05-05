@@ -27,12 +27,6 @@ class StationServiceTest {
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
     }
 
-    @AfterEach
-    void afterAll() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
-    }
-
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
