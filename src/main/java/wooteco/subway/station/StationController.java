@@ -15,19 +15,24 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-    Logger logger = LoggerFactory.getLogger(StationController.class);
+    private final StationDao stationDao;
+    private final Logger logger = LoggerFactory.getLogger(StationController.class);
+
+    public StationController() {
+        this.stationDao = new MemoryStationDao();
+    }
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
                 .collect(Collectors.toList());
@@ -36,7 +41,7 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        StationDao.delete(id);
+        stationDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 
