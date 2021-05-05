@@ -190,7 +190,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> updateParam = new HashMap<>();
-        String updateName = "빨리빨리역";
+        String updateName = "빨리빨리노선";
         String updateColor = "red darken-3";
 
         updateParam.put("name", updateName);
