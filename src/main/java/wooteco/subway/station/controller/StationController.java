@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.dao.MemoryStationDao;
 import wooteco.subway.station.dao.dto.StationDto;
 import wooteco.subway.station.service.StationService;
 
