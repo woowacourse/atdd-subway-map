@@ -8,4 +8,6 @@ public interface LineRepository {
     List<Line> findAll();
 
     Line findById(Long id);
+
+    void update(Long id, Line newLine);
 }

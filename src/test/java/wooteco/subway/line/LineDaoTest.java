@@ -47,4 +47,18 @@ public class LineDaoTest {
         // then
         assertThat(expected).isEqualTo(found);
     }
+
+    @Test
+    void update() {
+        // given
+        Line line = new Line("7호선", "color name");
+        Line expected = lineRepository.save(line);
+        Line newLine = new Line("2호선", "new color");
+
+        // when
+        lineRepository.update(expected.getId(), newLine);
+
+        //then
+        assertThat(lineRepository.findById(expected.getId())).isEqualTo(newLine);
+    }
 }
