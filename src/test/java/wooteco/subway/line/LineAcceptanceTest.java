@@ -180,4 +180,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(putLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteLine(){
+        //given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "테스트선");
+        params.put("color", "red");
+        params.put("upStationId", 1);
+        params.put("downStationId", 2);
+        params.put("distance", "1000");
+        params.put("extraFare", "100");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        //when
+        ExtractableResponse<Response> deleteLineResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(deleteLineResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

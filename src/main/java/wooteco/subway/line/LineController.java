@@ -49,7 +49,7 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable long id) {
         Optional<Line> validLine = LineDao.findById(id);
         if(!validLine.isPresent()){
-            throw new IllegalArgumentException("노선 업데이트에 실패하였습니다.");
+            throw new IllegalArgumentException("노선 조회에 실패하였습니다.");
         }
 
         Line line = validLine.get();
@@ -80,4 +80,16 @@ public class LineController {
                 .collect(Collectors.toList());
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteLine(@PathVariable long id) {
+        Optional<Line> validLine = LineDao.findById(id);
+        if(!validLine.isPresent()){
+            throw new IllegalArgumentException("노선 삭제에 실패하였습니다.");
+        }
+
+        Line line = validLine.get();
+        LineDao.delete(line);
+
+        return ResponseEntity.noContent().build();
+    }
 }
