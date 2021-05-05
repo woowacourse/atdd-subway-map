@@ -15,17 +15,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 
 @RestController
 public class LineController {
 
     @Autowired
     private LineDao lineDao;
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<LineResponse> exceptionHandler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 @RestController
 public class StationController {
@@ -24,11 +26,6 @@ public class StationController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<StationResponse> exceptionHandler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<StationResponse> sqlExceptionHandler(SQLException e) {
         return ResponseEntity.badRequest().build();
     }
 
