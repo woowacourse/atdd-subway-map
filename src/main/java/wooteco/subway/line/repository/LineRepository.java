@@ -58,4 +58,9 @@ public class LineRepository {
                         resultSet.getString("name")
                 ), id);
     }
+
+    public void update(final Line line) {
+        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
+        jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
+    }
 }

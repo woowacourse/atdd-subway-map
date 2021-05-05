@@ -64,4 +64,21 @@ class LineRepositoryTest {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
         assertThat(lineRepository.getLine(1L)).isEqualTo(expectedLine);
     }
+
+    @DisplayName("id를 통해 Line 수정 요청을 보내면, DB에있는 Line정보를 수정한다")
+    @Test
+    void update() {
+        Line bundangLine = new Line(1L, "bg-white-600", "분당선");
+        lineRepository.update(bundangLine);
+
+        String query = "SELECT color, name FROM line WHERE id = ?";
+        Line line = jdbcTemplate.queryForObject(
+                query,
+                (resultSet, rowNum) -> new Line(
+                        resultSet.getString("color"),
+                        resultSet.getString("name")
+                ), 1L);
+
+        assertThat(bundangLine).isEqualTo(line);
+    }
 }
