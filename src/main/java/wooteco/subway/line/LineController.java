@@ -13,17 +13,23 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
-    private static final LineDao LINE_DAO = LineDaoFactory.makeLineDao();
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LINE_DAO.save(line);
+        Line newLine = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
             newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
@@ -31,7 +37,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = LINE_DAO.findAll();
+        List<Line> lines = lineDao.findAll();
 
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
@@ -41,7 +47,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = LINE_DAO.findById(id);
+        Line line = lineDao.findById(id);
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -49,13 +55,13 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        LINE_DAO.update(line);
+        lineDao.update(line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        LINE_DAO.delete(id);
+        lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 

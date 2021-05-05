@@ -3,9 +3,11 @@ package wooteco.subway.station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
 
+@Repository
 public class StationDao {
 
     private final List<Station> stations = new ArrayList<>();

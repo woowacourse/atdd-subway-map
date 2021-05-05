@@ -15,12 +15,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestConstructor;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private final StationDao stationDao = StationDaoFactory.makeStationDao();
+    private final StationDao stationDao;
+
+    public StationAcceptanceTest(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
     @BeforeEach
     void beforeSetUp() {

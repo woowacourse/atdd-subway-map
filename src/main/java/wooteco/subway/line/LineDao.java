@@ -3,10 +3,12 @@ package wooteco.subway.line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 
+@Repository
 public class LineDao {
 
     private final List<Line> lines = new ArrayList<>();
