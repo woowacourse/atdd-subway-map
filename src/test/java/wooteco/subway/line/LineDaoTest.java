@@ -2,7 +2,6 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.Test;
 import wooteco.subway.AppConfig;
-import wooteco.subway.station.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +11,7 @@ public class LineDaoTest {
     @Test
     void create() {
         // given
-        Line line = new Line("2호선", new Station("강남역"), new Station("역삼역"));
+        Line line = new Line("2호선", "color name");
 
         // when
         lineRepository.save(line);
@@ -24,8 +23,8 @@ public class LineDaoTest {
     @Test
     void findAll() {
         // given
-        Line line1 = new Line("1호선", new Station("동탄역"), new Station("의정부역"));
-        Line line2 = new Line("9호선", new Station("가양역"), new Station("석촌역"));
+        Line line1 = new Line("1호선", "color name");
+        Line line2 = new Line("9호선", "color name");
         int sizeBefore = lineRepository.findAll().size();
 
         // when
@@ -39,7 +38,7 @@ public class LineDaoTest {
     @Test
     void findByIdTest() {
         // given
-        Line line = new Line("7호선", new Station("장암역"), new Station("부평구청역"));
+        Line line = new Line("7호선", "color name");
 
         // when
         Line expected = lineRepository.save(line);
