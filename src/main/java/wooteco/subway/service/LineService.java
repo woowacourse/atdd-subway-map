@@ -38,9 +38,9 @@ public class LineService {
     }
 
     public LineResponseDto getLineById(Long id) {
-        Line foundLine = lineDao.findById(id)
+        return lineDao.findById(id)
+            .map(LineResponseDto::new)
             .orElseThrow(() -> new IllegalArgumentException("Id에 해당하는 노선이 없습니다."));
-        return new LineResponseDto(foundLine);
     }
 
     public List<LineResponseDto> getAllLines() {
