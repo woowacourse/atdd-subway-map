@@ -54,7 +54,7 @@ public class LineController {
         @RequestBody LineRequest lineRequest) {
         Line findLine = lineDao.findLineById(id);
         Line updatedLine = findLine.update(lineRequest.getName(), lineRequest.getColor());
-//        LineDao.update(updatedLine); todo: update 주석 처리 되어있음!
+        lineDao.update(updatedLine);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

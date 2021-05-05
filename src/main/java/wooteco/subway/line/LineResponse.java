@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import org.springframework.lang.NonNull;
 import wooteco.subway.station.StationResponse;
 
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.List;
 public class LineResponse {
 
     private Long id;
+
+    @NonNull
     private String name;
     private String color;
     private List<StationResponse> stations;

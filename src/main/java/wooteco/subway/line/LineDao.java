@@ -91,16 +91,15 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, mapperLine(), id);
     }
 
-//    public static void update(Line updatedLine) {
-//        validateDuplicateNameAndColor(updatedLine);
-//
-//        Integer index = lines.stream()
-//            .filter(line -> line.isSameId(updatedLine.getId()))
-//            .map(line -> lines.indexOf(line))
-//            .findAny()
-//            .orElseThrow(() -> new NotFoundException("존재하지 않는 노선 ID 입니다."));
-//        lines.set(index, updatedLine);
-//    }
+    public void update(Line updatedLine) {
+        validateDuplicateNameAndColor(updatedLine);
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        int updateCount = jdbcTemplate
+            .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+        if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
+        }
+    }
 
     public void deleteLineById(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";

@@ -203,6 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.clear();
         String updatedName = "3호선";
         params.put("name", updatedName);
+        params.put("color", "orange");
 
         //when
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
