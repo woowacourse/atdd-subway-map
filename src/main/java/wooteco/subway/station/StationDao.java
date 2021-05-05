@@ -1,21 +1,39 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicationException;
 
+@Repository
 public class StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Station save(Station station) {
         validateDuplicatedName(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO station (name) VALUES (?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection
+                .prepareStatement(sql, new String[]{"id", "name"});
+            preparedStatement.setString(1, station.getName());
+            return preparedStatement;
+        }, keyHolder);
+
+        Map<String, Object> keys = keyHolder.getKeys();
+        return new Station((Long) keys.get("id"), (String) keys.get("name"));
     }
 
     private static void validateDuplicatedName(Station station) {
@@ -31,13 +49,6 @@ public class StationDao {
 
     public static List<Station> findAll() {
         return stations;
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
     }
 
     public static void deleteAll() {
