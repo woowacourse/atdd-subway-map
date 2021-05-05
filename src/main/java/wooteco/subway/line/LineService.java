@@ -31,4 +31,8 @@ public class LineService {
         Line newLine = lineRepository.update(id, new Line(name, color));
         return LineResponse.from(newLine);
     }
+
+    public void deleteLine(long id) {
+        lineRepository.delete(id);
+    }
 }

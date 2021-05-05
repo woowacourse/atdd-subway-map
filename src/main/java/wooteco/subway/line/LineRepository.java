@@ -11,5 +11,5 @@ public interface LineRepository {
 
     Line update(Long id, Line newLine);
 
-    void remove(Long id);
+    void delete(Long id);
 }
