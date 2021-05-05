@@ -6,4 +6,5 @@ public interface LineRepository {
     long save(Line line);
     List<Line> allLines();
     Line findById(Long id);
+    void clear();
 }

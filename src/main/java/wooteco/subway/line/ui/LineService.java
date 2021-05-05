@@ -3,6 +3,8 @@ package wooteco.subway.line.ui;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 
+import java.util.List;
+
 public class LineService {
 
     private LineRepository lineRepository;
@@ -17,4 +19,7 @@ public class LineService {
         return new Line(id, line.getName(), line.getColor());
     }
 
+    public List<Line> allLines() {
+        return lineRepository.allLines();
+    }
 }
