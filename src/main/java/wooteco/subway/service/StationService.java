@@ -22,7 +22,8 @@ public class StationService {
             throw new IllegalArgumentException("중복!");
         }
         Station station = new Station(name);
-        return stationDao.save(station);
+        long id = stationDao.save(station);
+        return stationDao.findById(id);
     }
 
     public List<Station> findAll() {
@@ -30,8 +31,6 @@ public class StationService {
     }
 
     public void deleteById(long id) {
-        stationDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("삭제할 수 없습니다."));
         stationDao.deleteById(id);
     }
 }
