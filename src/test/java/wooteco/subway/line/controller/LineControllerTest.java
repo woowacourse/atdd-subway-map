@@ -27,8 +27,6 @@ class LineControllerTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        RestAssured.given().delete("/lines");
-
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");

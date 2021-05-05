@@ -11,16 +11,16 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+public class StationControllerTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> createResponse1;
     private ExtractableResponse<Response> createResponse2;
@@ -29,8 +29,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        RestAssured.given().delete("/stations");
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -98,9 +96,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-
-
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -110,11 +105,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
