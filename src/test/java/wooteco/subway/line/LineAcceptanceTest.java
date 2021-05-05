@@ -190,7 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .get(createResponse1.header("Location"))
                 .then().log().all()
                 .extract();
         LineResponse lineResponse = response.as(LineResponse.class);
@@ -265,7 +265,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .put(createResponse1.header("Location"))
                 .then().log().all()
                 .extract();
 
@@ -341,7 +341,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .body(params3)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .put("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .put(createResponse1.header("Location"))
                 .then().log().all()
                 .extract();
 
@@ -385,7 +385,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .body(params3)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .put("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .put(createResponse1.header("Location"))
                 .then().log().all()
                 .extract();
 
@@ -412,7 +412,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + Long.parseLong(createResponse1.header("Location").split("/")[2]))
+                .delete(createResponse1.header("Location"))
                 .then()
                 .log().all()
                 .extract();
