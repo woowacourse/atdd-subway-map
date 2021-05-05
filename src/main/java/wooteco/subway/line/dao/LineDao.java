@@ -1,4 +1,8 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
+
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineColor;
+import wooteco.subway.line.domain.LineName;
 
 import java.util.List;
 

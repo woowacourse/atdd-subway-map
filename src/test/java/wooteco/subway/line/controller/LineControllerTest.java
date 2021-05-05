@@ -1,21 +1,28 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dao.LineDao;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 테스트")
-class LineAcceptanceTest extends AcceptanceTest {
+class LineControllerTest extends AcceptanceTest {
     private static final String TEST_LINE_NAME = "강남노선";
     private static final String TEST_COLOR_NAME = "orange darken-4";
 

@@ -1,10 +1,13 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineColor;
+import wooteco.subway.line.domain.LineName;
 
 import java.sql.PreparedStatement;
 import java.util.List;

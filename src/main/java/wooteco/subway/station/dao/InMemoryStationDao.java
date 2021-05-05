@@ -1,9 +1,8 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.line.LineColor;
-import wooteco.subway.line.LineName;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
