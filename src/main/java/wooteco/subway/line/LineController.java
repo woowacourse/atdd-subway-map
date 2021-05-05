@@ -21,17 +21,17 @@ public class LineController {
         Line newLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
-                             .body(lineResponse);
+                .body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                                                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
-                                                .collect(Collectors.toList());
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok()
-                             .body(lineResponses);
+                .body(lineResponses);
     }
 
     @GetMapping("/{id}")
@@ -39,20 +39,20 @@ public class LineController {
         Line findLine = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
         return ResponseEntity.ok()
-                             .body(lineResponse);
+                .body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.modifyLine(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok()
-                             .build();
+                .build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent()
-                             .build();
+                .build();
     }
 }

@@ -14,15 +14,15 @@ import java.util.Optional;
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
 
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     private RowMapper<Station> stationRowMapper() {
         return (resultSet, rowNum) -> new Station(
                 resultSet.getLong("id"),
                 resultSet.getString("name")
         );
-    }
-
-    public StationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Station save(String name) {
@@ -34,7 +34,7 @@ public class StationDao {
             return ps;
         }, keyHolder);
         return new Station(keyHolder.getKey()
-                                    .longValue(), name);
+                .longValue(), name);
     }
 
     public List<Station> findAll() {

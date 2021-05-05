@@ -21,23 +21,23 @@ public class StationController {
         Station newStation = stationService.createStation(stationRequest.getName());
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
-                             .body(stationResponse);
+                .body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
-                                                         .map(it -> new StationResponse(it.getId(), it.getName()))
-                                                         .collect(Collectors.toList());
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok()
-                             .body(stationResponses);
+                .body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent()
-                             .build();
+                .build();
     }
 }

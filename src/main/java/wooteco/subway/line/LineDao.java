@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.Station;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +14,11 @@ import java.util.Optional;
 @Repository
 public class LineDao {
     private final JdbcTemplate jdbcTemplate;
-
+    private Long seq = 0L;
+    private List<Line> lines = new ArrayList<>();
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
 
     private RowMapper<Line> lineRowMapper() {
         return (resultSet, rowNum) -> new Line(
@@ -43,7 +38,7 @@ public class LineDao {
             return ps;
         }, keyHolder);
         return new Line(keyHolder.getKey()
-                                 .longValue(), name, color);
+                .longValue(), name, color);
     }
 
     public Optional<Line> findById(Long id) {

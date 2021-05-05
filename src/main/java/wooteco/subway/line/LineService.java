@@ -25,12 +25,12 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-                      .orElseThrow(() -> new LineExistenceException("존재하지 않는 노선입니다."));
+                .orElseThrow(() -> new LineExistenceException("존재하지 않는 노선입니다."));
     }
 
     private boolean isStationExist(String name) {
         return lineDao.findByName(name)
-                      .isPresent();
+                .isPresent();
     }
 
     public void modifyLine(Long id, String name, String color) {

@@ -3,7 +3,7 @@ handlebars:
   enabled: true
 
 spring:
-  datasource:           # datasource 설정
+  datasource: # datasource 설정
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
     username: sa

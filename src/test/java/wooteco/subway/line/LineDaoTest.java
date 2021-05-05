@@ -74,9 +74,9 @@ class LineDaoTest {
     void delete() {
         Line savedLine = lineDao.save(lineName2, color2);
         assertTrue(lineDao.findByName(savedLine.getName())
-                          .isPresent());
+                .isPresent());
         lineDao.delete(savedLine.getId());
         assertFalse(lineDao.findByName(savedLine.getName())
-                           .isPresent());
+                .isPresent());
     }
 }

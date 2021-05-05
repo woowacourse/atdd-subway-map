@@ -55,9 +55,9 @@ class StationDaoTest {
     void delete() {
         Station savedStation = stationDao.save(stationName2);
         assertTrue(stationDao.findByName(savedStation.getName())
-                             .isPresent());
+                .isPresent());
         stationDao.delete(savedStation.getId());
         assertFalse(stationDao.findByName(savedStation.getName())
-                              .isPresent());
+                .isPresent());
     }
 }
