@@ -36,4 +36,15 @@ public class LineDao implements LineRepository {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다."));
     }
+
+    @Override
+    public void update(Long id, Line newLine) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다.");
+        }
+        Field field = ReflectionUtils.findField(Line.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, newLine, id);
+        lines.add(newLine);
+    }
 }
