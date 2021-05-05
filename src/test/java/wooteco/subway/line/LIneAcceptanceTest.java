@@ -192,22 +192,26 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-   /* @DisplayName("지하철역을 제거한다.")
+    @DisplayName("노선을 제거한다.")
     @Test
-    void deleteStation() {
+    void deleteLine() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "백기선");
+        params.put("color", "bg-red-600");
+
+        // when
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
-        // when
+        long deleteId = createResponse.body().jsonPath().getLong("id");
         String uri = createResponse.header("Location");
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
@@ -216,5 +220,35 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }*/
+        assertThat(LineDao.findById(deleteId)).isEmpty();
+    }
+
+    @DisplayName("노선 제거시 없는 노선이면 예외가 발생한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "백기선");
+        params.put("color", "bg-red-600");
+
+        // when
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        String uri = "/lines/{id}";
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri, 2L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

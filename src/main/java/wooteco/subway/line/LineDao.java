@@ -53,4 +53,9 @@ public class LineDao {
         line.changeName(name);
         line.changeColor(color);
     }
+
+    public static void delete(Long id) {
+        Line findLine = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        lines.remove(findLine);
+    }
 }

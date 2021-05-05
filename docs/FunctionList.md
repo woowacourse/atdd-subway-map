@@ -23,8 +23,8 @@
       - [x] PUT "/lines/{id}" 요청 시 특정 노선 속성 변경
         - [x] 색깔, 이름을 수정할 수 있다.
   - [ ] 노선 삭제
-      - [ ] DELETE "/lines/{id}" 요청 시 특정 노선 삭제
-        - [ ] 노선만 삭제 
+      - [x] DELETE "/lines/{id}" 요청 시 특정 노선 삭제
+        - [x] 노선만 삭제 
   
 ## 프로그램 제약 사항 
 - [ ] @Service, @Component 등 스프링 사용금지(@Controller)
