@@ -1,20 +1,18 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 
 import java.util.List;
 
+@Repository
 public class LineRepositoryImpl implements LineRepository {
-    private final static LineRepositoryImpl instance = new LineRepositoryImpl();
+    private final LineDao lineDao;
 
-    private final LineDao lineDao = new LineDao();
-
-    private LineRepositoryImpl() {
-    }
-
-    public static LineRepository getInstance() {
-        return instance;
+    public LineRepositoryImpl(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     @Override

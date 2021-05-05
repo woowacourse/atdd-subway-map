@@ -1,13 +1,15 @@
 package wooteco.subway.line.ui;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.line.repository.LineRepositoryImpl;
+import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.ui.dto.LineRequest;
 
 import java.net.URISyntaxException;
@@ -21,13 +23,16 @@ class LineControllerTest {
     @Autowired
     private LineController lineController;
 
+    @Autowired
+    private LineRepository lineRepository;
+
     @LocalServerPort
     private int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        LineRepositoryImpl.getInstance().clear();
+        lineRepository.clear();
     }
 
     @DisplayName("새로운 노선을 생성한다.")
