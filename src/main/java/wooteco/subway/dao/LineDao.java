@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -51,7 +52,10 @@ public class LineDao {
 
     public void update(long id, String name, String color) {
         String query = "UPDATE LINE SET name = ?, color = ? WHERE ID = ?";
-        jdbcTemplate.update(query, name, color, id);
+        int affectedRowCounts = jdbcTemplate.update(query, name, color, id);
+        if (affectedRowCounts == 0) {
+            throw new EmptyResultDataAccessException((int) id);
+        }
     }
 
     public void deleteById(long id) {
