@@ -1,52 +1,66 @@
 package wooteco.subway.station;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static void clear() {
-        stations.clear();
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+        resultSet.getLong("id"),
+        resultSet.getString("name")
+    );
+
+    public StationDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static Station save(final Station station) {
-        final Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public Station save(final Station station) {
+        final String sql = "INSERT INTO station (name) VALUES (?)";
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        final PreparedStatementCreator preparedStatementCreator = con -> {
+            final PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, station.getName());
+            return preparedStatement;
+        };
+        jdbcTemplate.update(preparedStatementCreator, keyHolder);
+        final long id = keyHolder.getKey().longValue();
+        return new Station(id, station.getName());
     }
 
-    public static void deleteById(final Long id) {
-        stations.removeIf(station -> station.isSameId(id));
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public List<Station> findAll() {
+        final String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public static Optional<Station> findById(final Long id) {
-        return stations.stream()
-            .filter(station -> station.isSameId(id))
-            .findAny();
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, id);
+        if (stations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stations.get(0));
     }
 
-    public static Optional<Station> findByName(final String name) {
-        return stations.stream()
-            .filter(station -> station.isSameName(name))
-            .findAny();
-    }
-
-    private static Station createNewObject(final Station station) {
-        final Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Optional<Station> findByName(final String name) {
+        final String sql = "SELECT * FROM station WHERE name = ?";
+        final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, name);
+        if (stations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stations.get(0));
     }
 }
