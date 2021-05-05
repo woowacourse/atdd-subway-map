@@ -19,7 +19,7 @@ public class LineService {
         validateDuplication(name);
         Line line = new Line(name, color);
         long id = lineDao.save(line);
-        return findById(id);
+        return lineDao.findById(id);
     }
 
     private void validateDuplication(String name) {
@@ -31,12 +31,12 @@ public class LineService {
         }
     }
 
-    public Line findById(long id) {
-        return lineDao.findById(id);
-    }
-
     public List<Line> findAll() {
         return lineDao.findAll();
+    }
+
+    public Line findById(long id) {
+        return lineDao.findById(id);
     }
 
     public void editLine(long id, String name, String color) {
