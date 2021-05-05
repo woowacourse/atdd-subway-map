@@ -1,4 +1,4 @@
-package wooteco.subway.line.ui;
+package wooteco.subway.line.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
