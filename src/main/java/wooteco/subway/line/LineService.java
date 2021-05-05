@@ -11,9 +11,16 @@ public class LineService {
     }
 
     public LineResponse createLine(String name, String color) {
+        validateDuplicateLineName(name);
         Line line = new Line(name, color);
         Line save = this.lineRepository.save(line);
         return new LineResponse(save.getId(), save.getName(), save.getColor());
+    }
+
+    private void validateDuplicateLineName(String name) {
+        if (this.lineRepository.findByName(name).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 노선명입니다.");
+        }
     }
 
     public List<LineResponse> findAll() {

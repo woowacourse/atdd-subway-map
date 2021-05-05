@@ -5,6 +5,7 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LineDao implements LineRepository {
     private Long seq = 0L;
@@ -35,6 +36,13 @@ public class LineDao implements LineRepository {
                 .filter(line -> line.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다."));
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        return lines.stream()
+                .filter(line -> line.getName().equals(name))
+                .findAny();
     }
 
     @Override

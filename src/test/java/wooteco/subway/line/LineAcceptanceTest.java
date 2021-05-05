@@ -41,6 +41,35 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-skyblue-600");
+        params.put("name", "4호선");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @Test
     @DisplayName("노선 목록을 조회하는 요청을 보낸다.")
     void showLines() {
