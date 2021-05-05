@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ import static org.hamcrest.CoreMatchers.is;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    void setUp2() {
+        LineDao lineDao = new MemoryLineDao();
+        lineDao.deleteAll();
+    }
+
     @DisplayName("지하철 노선 생성한다.")
     @Test
     void createLine() {
@@ -107,9 +115,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines/1")
+                .get(uri)
                 .then().log().all()
                 .extract();
 
@@ -141,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("name", "3호선");
         params2.put("color", "bg-red-600");
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -150,9 +159,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/1")
+                .delete(uri)
                 .then().log().all()
                 .extract();
 
@@ -186,7 +196,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("name", "3호선");
         params1.put("color", "bg-red-600");
 
-        String uri = createResponse.header("Location");  // "/lines/1"
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(updateParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
