@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
 
-    private LineDao lineDao;
+    private final LineDao lineDao;
 
-    public LineController() {
-        this.lineDao = new LineDao();
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     @PostMapping("/lines")
