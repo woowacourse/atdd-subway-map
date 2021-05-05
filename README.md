@@ -31,6 +31,8 @@
 - StationAcceptanceTest 클래스를 참고
 
 ## DAO 를 JDBC 사용하도록 수정
+- [x] Station
+- [ ] Line
 
 ## Spring Bean
 - [x] Spring Bean을 사용하여 생명주기 관리

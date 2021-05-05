@@ -1,50 +1,52 @@
 package wooteco.subway.station;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
 public class StationDao {
 
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    public static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(resultSet.getLong("id"), resultSet.getString("name"));
 
-    public Station save(Station station) {
-        validateToSave(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private void validateToSave(Station stationToSave) {
-        boolean hasSameName = stations.stream().anyMatch(station -> station.hasSameName(stationToSave));
+    public Station save(Station station) {
+        String sql = "INSERT INTO station (name) values (?)";
 
-        if (hasSameName) {
-            throw new IllegalArgumentException("중복된 이름을 생성할 수 없습니다.");
-        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
+
+        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
     }
 
     public List<Station> findAll() {
-        return new ArrayList<>(stations);
-    }
+        String sql = "SELECT * FROM station";
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        Objects.requireNonNull(field).setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
     public void delete(Long id) {
-        boolean isRemoved = stations.removeIf(station -> station.getId().equals(id));
+        String sql = "DELETE FROM station WHERE id = (?)";
+        int updatedRowCount = jdbcTemplate.update(sql, id);
 
-        if (!isRemoved) {
-            throw new IllegalArgumentException("존재하지 않는 ID 입니다.");
+        if (updatedRowCount == 0) {
+            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
         }
     }
 }
