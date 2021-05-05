@@ -5,9 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.repository.LineRepository;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,7 +22,12 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
+@Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private LineRepository lineRepository;
+
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
@@ -231,7 +240,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        int originalSize = LineDao.findAll().size();
+        int originalSize = lineRepository.findAll().size();
 
         // when
         String uri = createResponse.header("Location");
@@ -243,6 +252,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(LineDao.findAll()).hasSize(originalSize - 1);
+        assertThat(lineRepository.findAll()).hasSize(originalSize - 1);
     }
 }

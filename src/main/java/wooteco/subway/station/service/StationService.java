@@ -1,14 +1,27 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
+
+import org.springframework.stereotype.Service;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.repository.StationRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class StationService {
+
+    private StationRepository stationRepository;
+
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
+    }
 
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
         Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        Station newStation = stationRepository.save(station);
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
@@ -19,18 +32,18 @@ public class StationService {
     }
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return StationDao.findAll().stream()
+        return stationRepository.findAll().stream()
                 .anyMatch(station -> station.isSameName(stationRequest.getName()));
     }
 
     public List<StationResponse> findAllStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationRepository.findAll();
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 
     public void deleteStation(Long id) {
-        StationDao.deleteById(id);
+        stationRepository.deleteById(id);
     }
 }

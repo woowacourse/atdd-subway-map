@@ -1,8 +1,11 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.service.LineService;
 
 import java.net.URI;
 import java.util.List;
@@ -10,7 +13,11 @@ import java.util.List;
 @RestController
 public class LineController {
 
-    private final LineService lineService = new LineService();
+    private final LineService lineService;
+
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
+    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {

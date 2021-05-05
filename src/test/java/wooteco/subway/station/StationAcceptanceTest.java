@@ -5,9 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.repository.StationRepository;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private StationRepository stationRepository;
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -123,7 +130,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
-        int originalSize = StationDao.findAll().size();
+        int originalSize = stationRepository.findAll().size();
 
         // when
         String uri = createResponse.header("Location");
@@ -135,6 +142,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(StationDao.findAll()).hasSize(originalSize - 1);
+        assertThat(stationRepository.findAll()).hasSize(originalSize - 1);
     }
 }

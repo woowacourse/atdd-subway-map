@@ -39,8 +39,18 @@
         - PUT, /lines/{id}, BODY : {color, name}
     - res
         - 200 OK
-- [x] 노선 삭제``
+- [x] 노선 삭제
     - req
         - DELETE, /lines/{id}
     - res
         - 204 noContent
+    
+## 2단계 - 프레임워크 적용
+1. 스프링 JDBC 활용하여 H2 DB에 저장하기
+  - [ ] Dao 객체가 아닌 DB에서 데이터를 관리하기
+  - [ ] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
+2. H2 DB를 통해 저장된 값 확인하기
+   [ ] 실제로 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
+   [ ] log, console 등
+3. 스프링 빈 활용하기
+   [x] 매번 생성하지 않아도 되는 객체와 싱글톤이나 static으로 구현되었던 객체들을 스프링 빈으로 관리해도 좋음
