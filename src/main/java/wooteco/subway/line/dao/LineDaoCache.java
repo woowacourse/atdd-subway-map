@@ -9,8 +9,8 @@ import wooteco.subway.line.Line;
 
 public class LineDaoCache implements LineDao {
 
-    private Long seq = 0L;
     private final List<Line> lines = new ArrayList<>();
+    private Long seq = 0L;
 
     @Override
     public Optional<Line> findLineByName(String name) {

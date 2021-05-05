@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.dao.StationDao;
 
 public class StationDaoCache implements StationDao {
 
-    private Long seq = 0L;
     private final List<Station> stations = new ArrayList<>();
+    private Long seq = 0L;
 
     @Override
     public Station save(Station station) {

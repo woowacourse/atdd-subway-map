@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.exception.LineNameDuplicatedException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
-import wooteco.subway.line.dao.LineDaoCache;
 
 @RestController
 public class LineController {
