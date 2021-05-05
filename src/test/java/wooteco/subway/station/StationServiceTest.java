@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +22,7 @@ class StationServiceTest {
         Station station = new Station(requestStationDto.getName());
 
         StationDaoCache mockDao = mock(StationDaoCache.class);
-        when(mockDao.save(station)).thenReturn(savedStation);
+        when(mockDao.save(any())).thenReturn(savedStation);
 
         StationService stationService = new StationService(mockDao);
 
