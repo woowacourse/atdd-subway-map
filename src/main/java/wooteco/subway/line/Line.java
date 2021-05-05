@@ -25,12 +25,12 @@ public class Line {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public LineName getName() {
+        return name;
     }
 
-    public String getColor() {
-        return color.getColorName();
+    public LineColor getColor() {
+        return color;
     }
 
     @Override

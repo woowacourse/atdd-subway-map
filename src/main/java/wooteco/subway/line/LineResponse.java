@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import wooteco.subway.station.StationResponse;
 
 import java.util.List;
