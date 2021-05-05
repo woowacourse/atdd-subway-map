@@ -21,4 +21,9 @@ public class LineService {
                 .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findById(long id) {
+        Line line = lineRepository.findById(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    }
 }
