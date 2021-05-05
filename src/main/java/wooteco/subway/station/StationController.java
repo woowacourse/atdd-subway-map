@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
-
     Logger logger = LoggerFactory.getLogger(StationController.class);
 
     @PostMapping("/stations")

@@ -15,7 +15,6 @@ import java.util.Collections;
 
 @RestController
 public class LineController {
-
     Logger logger = LoggerFactory.getLogger(LineController.class);
 
     @PostMapping("/lines")
