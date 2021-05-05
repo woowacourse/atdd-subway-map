@@ -14,13 +14,12 @@ import java.util.NoSuchElementException;
 public class H2LineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Line> lineRowMapper = (rs, rowNum) -> {
+    private static final RowMapper<Line> LINE_ROW_MAPPER = (rs, rowNum) -> {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
         return new Line(id, name, color);
     };
-
 
     public H2LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,7 +27,7 @@ public class H2LineDao implements LineDao {
 
     @Override
     public Line save(Line line) {
-        String sql = "insert into LINE (name, color) values (?, ?)";
+        String sql = "INSERT INTO LINE (NAME, COLOR) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -47,7 +46,7 @@ public class H2LineDao implements LineDao {
                 "FROM LINE";
 
         return jdbcTemplate.query(sql,
-                lineRowMapper
+                LINE_ROW_MAPPER
         );
     }
 
@@ -55,10 +54,10 @@ public class H2LineDao implements LineDao {
     public Line findById(Long id) {
         String sql = "SELECT * " +
                 "FROM LINE " +
-                "WHERE id = ?";
+                "WHERE ID = ?";
 
         List<Line> queryResult = jdbcTemplate.query(sql,
-                lineRowMapper,
+                LINE_ROW_MAPPER,
                 id
         );
 
@@ -71,9 +70,9 @@ public class H2LineDao implements LineDao {
 
     @Override
     public boolean checkExistName(LineName name) {
-        String sql = "SELECT count(*) " +
+        String sql = "SELECT COUNT(*) " +
                 "FROM LINE " +
-                "WHERE name = ?";
+                "WHERE NAME = ?";
 
         int countOfName = jdbcTemplate.queryForObject(sql, Integer.class, name.toString());
         return countOfName > 0;
@@ -81,9 +80,9 @@ public class H2LineDao implements LineDao {
 
     @Override
     public boolean checkExistColor(LineColor color) {
-        String sql = "SELECT count(*) " +
+        String sql = "SELECT COUNT(*) " +
                 "FROM LINE " +
-                "WHERE color = ?";
+                "WHERE COLOR = ?";
 
         int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, color.toString());
         return countOfColor > 0;
@@ -91,9 +90,9 @@ public class H2LineDao implements LineDao {
 
     @Override
     public boolean checkExistId(Long id) {
-        String sql = "SELECT count(*) " +
+        String sql = "SELECT COUNT(*) " +
                 "FROM LINE " +
-                "WHERE id = ?";
+                "WHERE ID = ?";
 
         int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
         return countOfColor > 0;
@@ -102,8 +101,8 @@ public class H2LineDao implements LineDao {
     @Override
     public void update(Line line) {
         String sql = "UPDATE LINE " +
-                "SET name = ?, color = ? " +
-                "WHERE id = ?";
+                "SET NAME = ?, COLOR = ? " +
+                "WHERE ID = ?";
 
         jdbcTemplate.update(sql, line.getName().toString(), line.getColor().toString(), line.getId());
     }
@@ -112,7 +111,7 @@ public class H2LineDao implements LineDao {
     public void delete(Line line) {
         String sql = "DELETE " +
                 "FROM LINE " +
-                "WHERE id = ?";
+                "WHERE ID = ?";
 
         jdbcTemplate.update(sql, line.getId());
     }
