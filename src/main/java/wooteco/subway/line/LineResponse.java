@@ -41,4 +41,8 @@ public class LineResponse {
     public List<StationResponse> getStations() {
         return stations;
     }
+
+    public static LineResponse from(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
+    }
 }

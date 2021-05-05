@@ -38,12 +38,13 @@ public class LineDao implements LineRepository {
     }
 
     @Override
-    public void update(Long id, Line newLine) {
+    public Line update(Long id, Line newLine) {
         remove(id);
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, newLine, id);
         lines.add(newLine);
+        return newLine;
     }
 
     @Override
