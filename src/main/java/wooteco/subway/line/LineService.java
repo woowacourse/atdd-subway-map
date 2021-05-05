@@ -14,7 +14,7 @@ public class LineService {
 
     public Line createLine(String name, String color) {
         if (isStationExist(name)) {
-            throw new IllegalArgumentException("존재하는 노선 이름입니다.");
+            throw new LineExistenceException("존재하는 노선 이름입니다.");
         }
         return lineDao.save(name, color);
     }
@@ -25,7 +25,7 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-                      .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+                      .orElseThrow(() -> new LineExistenceException("존재하지 않는 노선입니다."));
     }
 
     private boolean isStationExist(String name) {

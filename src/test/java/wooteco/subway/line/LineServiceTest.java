@@ -35,7 +35,7 @@ class LineServiceTest {
     void createDuplicatedStation() {
         lineService.createLine("2호선", "초록색");
         assertThatThrownBy(() -> lineService.createLine("2호선", "초록색"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(LineExistenceException.class);
     }
 
     @Test
@@ -44,6 +44,6 @@ class LineServiceTest {
         String sql = "insert into Line (name, color) values (?, ?)";
         jdbcTemplate.update(sql, "2호선", "초록색");
         assertThatThrownBy(() -> lineService.findById(2L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(LineExistenceException.class);
     }
 }

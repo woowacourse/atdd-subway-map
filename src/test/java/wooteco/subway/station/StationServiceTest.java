@@ -38,6 +38,6 @@ class StationServiceTest {
     void createDuplicatedStation() {
         stationService.createStation(stationName);
         assertThatThrownBy(() -> stationService.createStation(stationName))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(StationExistenceException.class);
     }
 }
