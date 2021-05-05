@@ -59,7 +59,7 @@ public class StationRepositoryTest {
     void deleteById() {
         Long id = 1L;
 
-        String query = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?)";
+        String query = "SELECT EXISTS(SELECT * FROM station WHERE id = ?)";
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isTrue();
 
         stationRepository.deleteById(id);

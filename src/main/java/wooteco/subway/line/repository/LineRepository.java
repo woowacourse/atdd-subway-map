@@ -63,4 +63,9 @@ public class LineRepository {
         String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
         jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
     }
+
+    public void deleteById(final Long id) {
+        String query = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(query, id);
+    }
 }
