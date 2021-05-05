@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,20 +49,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = createStationInsertResponse("역삼역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .log()
+                                                            .all()
+                                                            .when()
+                                                            .get("/stations")
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                                           .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                                           .map(it -> Long.parseLong(it.header("Location")
+                                                                       .split("/")[2]))
                                            .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath()
+                                           .getList(".", StationResponse.class)
+                                           .stream()
+                                           .map(StationResponse::getId)
+                                           .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -75,11 +81,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .log()
+                                                            .all()
+                                                            .when()
+                                                            .delete(uri)
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -88,12 +98,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> createStationInsertResponse(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-        return RestAssured.given().log().all()
+        return RestAssured.given()
+                          .log()
+                          .all()
                           .body(params)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .post("/stations")
-                          .then().log().all()
+                          .then()
+                          .log()
+                          .all()
                           .extract();
     }
 }

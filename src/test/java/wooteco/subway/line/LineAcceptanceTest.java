@@ -25,7 +25,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> response = createLineInsertResponse("초록색", "2호선");
 
-        System.out.println(response.header("Location"));
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -42,7 +41,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 전체 노선을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -60,6 +59,9 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .all()
                                                             .extract();
 
+        Stream.of(createResponse1, createResponse2)
+              .map(it -> it.header("Location"))
+              .forEach(System.out::println);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
@@ -90,7 +92,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .log()
                                                             .all()
                                                             .extract();
-
+        System.out.println("[LOG]" + response.jsonPath()
+                                             .getString("name"));
+        System.out.println("[LOG]" + response.jsonPath()
+                                             .getString("color"));
         assertThat(response.jsonPath()
                            .getString("name")).isEqualTo("2호선");
         assertThat(response.jsonPath()
@@ -106,6 +111,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "남색");
         params2.put("name", "9호선");
+
+        System.out.println("[LOG] uri = " + uri);
+
         ExtractableResponse<Response> response = RestAssured.given()
                                                             .log()
                                                             .all()
@@ -117,6 +125,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .log()
                                                             .all()
                                                             .extract();
+
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -141,13 +150,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", color);
-        params1.put("name", name);
+        Map<String, String> params = new HashMap<>();
+        params.put("color", color);
+        params.put("name", name);
         return RestAssured.given()
                           .log()
                           .all()
-                          .body(params1)
+                          .body(params)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .post("/lines")

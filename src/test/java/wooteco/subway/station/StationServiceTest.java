@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,12 @@ class StationServiceTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("delete from STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+    }
+
+    @AfterEach
+    void afterAll() {
         jdbcTemplate.execute("delete from STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
     }
