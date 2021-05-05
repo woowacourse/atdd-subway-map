@@ -22,4 +22,8 @@ public class LineService {
     public List<Line> allLines() {
         return lineRepository.allLines();
     }
+
+    public Line findById(final Long id) {
+        return lineRepository.findById(id);
+    }
 }

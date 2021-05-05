@@ -63,7 +63,7 @@ class LineControllerTest {
         RestAssured
                 .given().log().all()
                     .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .header("host", "localhost:49468")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                     .get("/lines")
                 .then()
@@ -71,4 +71,38 @@ class LineControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body("id", contains(1,2));
     }
+
+    @DisplayName("노선을 검색한다")
+    @Test
+    void findById_findLineById() throws URISyntaxException {
+        lineController.createNewLine(new LineRequest("신분당선", "bg-red-600"));
+        lineController.createNewLine(new LineRequest("2호선", "bg-green-600"));
+
+        RestAssured
+                .given().log().all()
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                    .get("/lines/1")
+                .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body("id", is(1))
+                    .body("name", is("신분당선"))
+                    .body("color", is("bg-red-600"));
+    }
+
+    @DisplayName("노선이 없다면 400에러 발생")
+    @Test
+    void findById_canNotFindLineById() {
+        RestAssured
+                .given().log().all()
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                    .get("/lines/1")
+                .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
 }
