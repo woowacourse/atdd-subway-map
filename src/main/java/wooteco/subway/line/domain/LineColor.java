@@ -9,10 +9,6 @@ public class LineColor {
         this.color = color;
     }
 
-    public String getColorName() {
-        return color;
-    }
-
     public String text() {
         return color;
     }

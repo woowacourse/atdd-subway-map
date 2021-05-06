@@ -29,10 +29,6 @@ public class LineName {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String text() {
         return name;
     }
