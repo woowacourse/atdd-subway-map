@@ -148,7 +148,7 @@ class LineAcceptanceTest {
                 .body(OBJECT_MAPPER.writeValueAsString(putRequest))
                 .when().put("/lines/" + id)
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("없는 아이디의 지하철 노선은 수정할 수 없다.")
