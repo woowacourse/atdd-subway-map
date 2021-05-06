@@ -1,11 +1,21 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
 import java.util.List;
 import java.util.Optional;
 
-public class LineH2Dao implements LineDao{
+@Repository
+public class LineH2Dao implements LineDao {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineH2Dao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
     public Line save(Line line) {
         return null;

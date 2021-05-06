@@ -9,13 +9,14 @@ import wooteco.subway.station.domain.Station;
 import java.util.List;
 import java.util.Optional;
 
+@Primary
 @Repository
-public class StationH2Dao implements StationDao{
+public class StationH2Dao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-        new Station(resultSet.getLong("id"), resultSet.getString("name"));
+            new Station(resultSet.getLong("id"), resultSet.getString("name"));
 
 
     public StationH2Dao(JdbcTemplate jdbcTemplate) {

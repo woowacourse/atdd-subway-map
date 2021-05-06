@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.domain.Line;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Primary
 @Repository
 public class LocalLineDao implements LineDao {
 
@@ -64,15 +66,12 @@ public class LocalLineDao implements LineDao {
 
     private Line updateObject(Line line, Line updateLine) {
         Field color = ReflectionUtils.findField(Line.class, "color");
-        Field fare = ReflectionUtils.findField(Line.class, "extraFare");
         Field name = ReflectionUtils.findField(Line.class, "name");
 
         color.setAccessible(true);
-        fare.setAccessible(true);
         name.setAccessible(true);
 
         ReflectionUtils.setField(color, line, updateLine.getColor());
-        ReflectionUtils.setField(fare, line, updateLine.getExtraFare());
         ReflectionUtils.setField(name, line, updateLine.getName());
         return line;
     }

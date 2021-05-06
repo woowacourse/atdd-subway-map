@@ -6,10 +6,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.domain.Station;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,12 +33,10 @@ public class LineService {
     }
 
     public Line lineRequestToLine(LineRequest lineRequest) {
-        Station downStation = stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
-        Station upStation = stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
-        List<Station> stations = new ArrayList<>(Arrays.asList(downStation, upStation));
+        stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
+        stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
 
-        return new Line(lineRequest.getName(), stations, lineRequest.getDistance(), lineRequest.getColor(),
-                lineRequest.getExtraFare());
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
     public List<LineResponse> findAll() {
@@ -63,7 +58,7 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getExtraFare(), lineRequest.getColor());
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
     }
 }
