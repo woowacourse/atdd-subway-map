@@ -29,9 +29,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
+        return LineResponse.listOf(lines);
     }
 
     public void deleteById(Long id) {

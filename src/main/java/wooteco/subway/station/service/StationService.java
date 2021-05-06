@@ -23,16 +23,13 @@ public class StationService {
     public StationResponse createStation(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
-        return new StationResponse(newStation.getId(),
-                newStation.getName());
+        return new StationResponse(newStation.getId(), newStation.getName());
     }
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
-        return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+        return StationResponse.listOf(stations);
     }
 
     public void deleteById(Long id) {

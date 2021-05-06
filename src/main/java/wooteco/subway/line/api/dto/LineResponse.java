@@ -5,6 +5,7 @@ import wooteco.subway.line.model.Line;
 import wooteco.subway.station.api.dto.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -31,9 +32,10 @@ public class LineResponse {
         this.color = newLine.getColor();
     }
 
-    public LineResponse(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public static List<LineResponse> listOf(List<Line> lines) {
+        return lines.stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
