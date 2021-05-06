@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.exception.NoSuchLineException;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,8 +44,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(NoSuchLineException.class)
-    public ResponseEntity handleNoSuchLine() {
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoSuchStation() {
         return ResponseEntity.badRequest().build();
     }
 }
