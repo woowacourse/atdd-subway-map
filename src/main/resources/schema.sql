@@ -20,5 +20,6 @@ create table if not exists SECTION
     up_station_id bigint not null,
     down_station_id bigint not null,
     distance int,
+    extra_fare int,
     primary key(id)
     );

@@ -1,32 +1,23 @@
 package wooteco.subway.line.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import wooteco.subway.line.domain.Line;
-
-public class LineCreateRequest {
-    @NotBlank
+public class LineRequest {
     private String name;
-    @NotBlank
     private String color;
-    @NotNull
     private Long upStationId;
-    @NotNull
     private Long downStationId;
-    @NotNull
     private int distance;
+    private int extraFare;
 
-    private Long extraFare;
-
-    private LineCreateRequest() {
+    public LineRequest() {
     }
 
-    private LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance, int extraFare) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+        this.extraFare = extraFare;
     }
 
     public Line toLine() {
@@ -53,7 +44,7 @@ public class LineCreateRequest {
         return distance;
     }
 
-    public Long getExtraFare() {
+    public int getExtraFare() {
         return extraFare;
     }
 
