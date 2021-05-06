@@ -9,6 +9,7 @@ import wooteco.subway.exception.NoSuchLineException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Repository
@@ -51,7 +52,7 @@ public class StationDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new NoSuchLineException("없는 노선입니다.");
+            throw new NoSuchElementException("존재하지 않아 삭제할 수 없습니다.");
         }
     }
 }
