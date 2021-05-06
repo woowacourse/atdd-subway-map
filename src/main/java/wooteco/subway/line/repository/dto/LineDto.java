@@ -14,12 +14,12 @@ public class LineDto {
     private List<StationResponse> stations;
     ;
 
-    public static LineDto from(Line line) {
-        return new LineDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
+    public LineDto() {
     }
 
     public LineDto(String name, String color) {
-        this(0L, name, color, new ArrayList<>());
+        this.name = name;
+        this.color = color;
     }
 
     public LineDto(Long id, String name, String color, List<StationResponse> stations) {
@@ -29,7 +29,8 @@ public class LineDto {
         this.stations = stations;
     }
 
-    public LineDto() {
+    public static LineDto from(Line line) {
+        return new LineDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
     public Long getId() {
