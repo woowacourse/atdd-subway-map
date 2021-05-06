@@ -7,17 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.EmptyResultDataAccessException;
-import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.domain.line.Line;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 class LineDaoTest {
 
     @Autowired
+    @Qualifier("jdbc")
     private LineDao lineDao;
+
+    @Test
+    void dependency() {
+        assertThat(lineDao).isNotNull();
+    }
 
     @Test
     void save() {

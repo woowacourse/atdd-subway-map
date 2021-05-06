@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +24,7 @@ import wooteco.subway.controller.dto.response.StationResponse;
 public class StationController {
 
     @Autowired
+    @Qualifier("jdbc")
     private StationDao stationDao;
 
     @ExceptionHandler(IllegalArgumentException.class)
