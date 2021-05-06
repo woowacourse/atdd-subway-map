@@ -1,9 +1,8 @@
-package wooteco.subway.station;
+package wooteco.subway.dto.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -176,7 +175,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//        assertThat(StationDao.findAll().size()).isEqualTo(1);
-//        assertThat(StationDao.findAll().get(0).getName()).isEqualTo("잠실역");
     }
 }

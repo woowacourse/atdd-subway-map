@@ -1,10 +1,9 @@
-package wooteco.subway.line;
+package wooteco.subway.dto.line;
 
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -148,7 +147,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//        assertThat(LineDao.findAll().size()).isEqualTo(1);
-//        assertThat(LineDao.findAll().get(0).getName()).isEqualTo("2호선");
     }
 }

@@ -1,9 +1,13 @@
-package wooteco.subway.station;
+package wooteco.subway.controller;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.station.StationRequest;
+import wooteco.subway.dto.station.StationResponse;
 
 import java.net.URI;
 import java.util.List;

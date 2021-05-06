@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.dto.station;
 
 public class StationRequest {
     private String name;

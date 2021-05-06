@@ -1,9 +1,10 @@
-package wooteco.subway.line;
+package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -41,7 +42,6 @@ public class LineDao {
     }
 
     public void update(Long id, Line line) {
-        //        validateLine(newLine);
         String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
@@ -50,11 +50,4 @@ public class LineDao {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
-
-
-//    public static void delete(Long id) {
-//        if (!lines.removeIf(line -> line.getId().equals(id))) {
-//            throw new IllegalArgumentException("존재하지 않는 노선입니다");
-//        }
-//    }
 }
