@@ -1,10 +1,5 @@
 package wooteco.subway.line;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +12,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import wooteco.subway.exception.NoSuchLineException;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class LineDaoTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -35,7 +35,7 @@ public class LineDaoTest {
     @Test
     void successSaveTest() {
         assertDoesNotThrow(() ->
-            lineDao.save(new Line("신분당선", "black"))
+                lineDao.save(new Line("신분당선", "black"))
         );
     }
 
@@ -108,9 +108,9 @@ public class LineDaoTest {
     @Test
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
-            () -> {
-                lineDao.modify(1L, new LineRequest());
-            }
+                () -> {
+                    lineDao.modify(1L, new LineRequest());
+                }
         ).isInstanceOf(NoSuchLineException.class);
     }
 
@@ -120,9 +120,9 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
-            () -> {
-                lineDao.modify(2L, new LineRequest("신분당선", "red"));
-            }
+                () -> {
+                    lineDao.modify(2L, new LineRequest("신분당선", "red"));
+                }
         ).isInstanceOf(DuplicateKeyException.class);
     }
 

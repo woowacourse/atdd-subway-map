@@ -1,14 +1,15 @@
 package wooteco.subway.station;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.NoSuchLineException;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class StationDao {
@@ -37,8 +38,8 @@ public class StationDao {
         String query = "SELECT * FROM station";
         List<Station> stations = jdbcTemplate.query(query, (resultSet, rowNum) -> {
             Station station = new Station(
-                resultSet.getLong("id"),
-                resultSet.getString("name")
+                    resultSet.getLong("id"),
+                    resultSet.getString("name")
             );
             return station;
         });

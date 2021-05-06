@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 public class LineResponse {
-
     private Long id;
     private String name;
     private String color;
@@ -26,5 +25,4 @@ public class LineResponse {
     public String getColor() {
         return color;
     }
-
 }
