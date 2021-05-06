@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import wooteco.subway.station.Station;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Line {
@@ -11,18 +12,12 @@ public class Line {
     private String color;
     private List<Station> stations;
 
-    public Line() {
-    }
-
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(-1L, name, color, Collections.emptyList());
     }
 
     public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+        this(id, name, color, Collections.emptyList());
     }
 
     public Line(Long id, String name, String color, List<Station> stations) {
