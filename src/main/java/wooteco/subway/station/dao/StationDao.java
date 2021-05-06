@@ -17,10 +17,13 @@ import wooteco.subway.station.model.Station;
 @Repository
 public class StationDao {
 
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
-
     private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Station> mapperStation = (rs, rowNum) -> {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        return new Station(id, name);
+    };
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -59,7 +62,7 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT id, name FROM station";
-        return jdbcTemplate.query(sql, mapperStation());
+        return jdbcTemplate.query(sql, mapperStation);
 
     }
 
@@ -69,13 +72,5 @@ public class StationDao {
         if (updateCount == 0) {
             throw new NotFoundException("존재하지 않는 역 ID 입니다.");
         }
-    }
-
-    private RowMapper<Station> mapperStation() {
-        return (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String name = rs.getString("name");
-            return new Station(id, name);
-        };
     }
 }

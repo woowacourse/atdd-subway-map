@@ -19,6 +19,13 @@ public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<Line> mapperLine = (rs, rowNum) -> {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
+
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -71,22 +78,13 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT id, name, color FROM line";
-        return jdbcTemplate.query(sql, mapperLine());
-    }
-
-    private RowMapper<Line> mapperLine() {
-        return (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String name = rs.getString("name");
-            String color = rs.getString("color");
-            return new Line(id, name, color);
-        };
+        return jdbcTemplate.query(sql, mapperLine);
     }
 
     public Line findLineById(Long id) {
         String sql = "SELECT id, name, color FROM line WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, mapperLine(), id);
+            return jdbcTemplate.queryForObject(sql, mapperLine, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 노선 ID 입니다.");
         }
