@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.domain.line.Line;
 
 @JdbcTest
-@Sql(scripts = {"classpath:test.sql"})
+@DisplayName("노선 레포지토리 레이어 테스트")
 class LineDaoTest {
 
     private LineDao lineDao;

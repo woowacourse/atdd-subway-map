@@ -17,6 +17,7 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.LineDao;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("노선 서비스 레이어 테스트")
 class LineServiceTest {
 
     @Mock

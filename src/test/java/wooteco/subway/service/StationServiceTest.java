@@ -17,6 +17,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.StationDao;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("역 서비스 레이어 테스트")
 public class StationServiceTest {
 
     @Mock
