@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
 public class LineDao {
@@ -24,7 +25,11 @@ public class LineDao {
 
     public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        int affectedRowNumber = jdbcTemplate.update(query, id);
+
+        if (affectedRowNumber == 0) {
+            throw new NoSuchLineException("없는 노선입니다.");
+        }
     }
 
     public List<Line> findAll() {
@@ -55,7 +60,11 @@ public class LineDao {
 
     public void modify(Long id, LineRequest lineRequest) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
-        jdbcTemplate.update(query, lineRequest.getName(), lineRequest.getColor(), id);
+        int affectedRowNumber = jdbcTemplate
+            .update(query, lineRequest.getName(), lineRequest.getColor(), id);
+        if (affectedRowNumber == 0) {
+            throw new NoSuchLineException("존재하지 않아 변경할 수 없습니다.");
+        }
     }
 
     public long save(Line line) {

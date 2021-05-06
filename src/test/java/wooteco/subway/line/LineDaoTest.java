@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import wooteco.subway.exception.NoSuchLineException;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -82,6 +83,56 @@ public class LineDaoTest {
 
         assertDoesNotThrow(() -> {
             lineDao.find(1L);
+        });
+    }
+
+    @DisplayName("line 삭제 실패 테스트")
+    @Test
+    void failDeleteLineTest() {
+        assertThatThrownBy(() -> {
+            lineDao.delete(1L);
+        }).isInstanceOf(NoSuchLineException.class);
+    }
+
+    @DisplayName("line 삭제 성공 테스트")
+    @Test
+    void deleteLineTest() {
+        lineDao.save(new Line("신분당선", "black"));
+
+        assertDoesNotThrow(() -> {
+            lineDao.delete(1L);
+        });
+    }
+
+    @DisplayName("존재하지 않는 line 수정 실패 테스트")
+    @Test
+    void failModifyLineNotExistsTest() {
+        assertThatThrownBy(
+            () -> {
+                lineDao.modify(1L, new LineRequest());
+            }
+        ).isInstanceOf(NoSuchLineException.class);
+    }
+
+    @DisplayName("중복되는 line 수정 실패 테스트")
+    @Test
+    void failModifiedLineSameIdTest() {
+        lineDao.save(new Line("신분당선", "black"));
+        lineDao.save(new Line("2호선", "black"));
+        assertThatThrownBy(
+            () -> {
+                lineDao.modify(2L, new LineRequest("신분당선", "red"));
+            }
+        ).isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @DisplayName("line 수정 성공 테스트")
+    @Test
+    void modifyLineTest() {
+        lineDao.save(new Line("신분당선", "black"));
+
+        assertDoesNotThrow(() -> {
+            lineDao.modify(1L, new LineRequest("2호선", "black"));
         });
     }
 }
