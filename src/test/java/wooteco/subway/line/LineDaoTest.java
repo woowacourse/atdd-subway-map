@@ -31,20 +31,27 @@ class LineDaoTest {
     @DisplayName("노선 추가")
     void insert() {
         // given
-        Line line = lineDao.insert("bg-red-100", "코다역");
+        LineName lineName = new LineName("코다선");
+        Line line = lineDao.insert("bg-red-100", lineName);
 
         assertThat(line.getColor()).isEqualTo("bg-red-100");
-        assertThat(line.getName()).isEqualTo("코다역");
+        assertThat(line.getName()).isEqualTo("코다선");
     }
 
     @Test
     @DisplayName("노선 목록 조회")
     void findAll() {
-        lineDao.insert("bg-red-100", "현구막역");
-        lineDao.insert("bg-black-200", "크로플역");
+        //given
+        LineName lineName1 = new LineName("거북선");
+        LineName lineName2 = new LineName("원양어선");
 
+        lineDao.insert("bg-red-100", lineName1);
+        lineDao.insert("bg-black-200", lineName2);
+
+        //when
         List<Line> lines = lineDao.findAll();
 
+        //then
         assertThat(lines).hasSize(2);
     }
 
@@ -52,14 +59,15 @@ class LineDaoTest {
     @DisplayName("id를 통한 노선 조회")
     void findById() {
         //given
-        Line line = lineDao.insert("bg-red-100", "현구막역");
+        LineName lineName = new LineName("거북선");
+        Line line = lineDao.insert("bg-red-100", lineName);
 
         //when
         Line expectedLine = lineDao.findById(line.getId())
                 .get();
 
         //then
-        assertThat(expectedLine.getName()).isEqualTo("현구막역");
+        assertThat(expectedLine.getName()).isEqualTo("거북선");
         assertThat(expectedLine.getColor()).isEqualTo("bg-red-100");
     }
 
@@ -67,27 +75,30 @@ class LineDaoTest {
     @DisplayName("노선 수정 테스트")
     void update() {
         //given
-        Line line = lineDao.insert("bg-red-100", "현구막역");
+        LineName lineName = new LineName("거북선");
+        Line line = lineDao.insert("bg-red-100", lineName);
 
         //when
-        lineDao.update(line.getId(), "bg-yellow-100", "크로플역");
+        lineDao.update(line.getId(), "bg-yellow-100", "크로플선");
 
         //then
         Line expectedLine = lineDao.findById(line.getId())
                 .get();
         assertThat(expectedLine.getColor()).isEqualTo("bg-yellow-100");
-        assertThat(expectedLine.getName()).isEqualTo("크로플역");
+        assertThat(expectedLine.getName()).isEqualTo("크로플선");
     }
 
     @Test
     @DisplayName("노선 수정 예외 테스트")
     void update_duplicate() {
         //given
-        Line line = lineDao.insert("bg-red-100", "현구막역");
-        lineDao.insert("bg-yellow-100", "크로플역");
+        LineName lineName1 = new LineName("거북선");
+        LineName lineName2 = new LineName("원양어선");
+        Line line = lineDao.insert("bg-red-100", lineName1);
+        lineDao.insert("bg-yellow-100", lineName2);
 
         //when - then
-        assertThatThrownBy(() -> lineDao.update(line.getId(), "bg-yellow-100", "크로플역"))
+        assertThatThrownBy(() -> lineDao.update(line.getId(), "bg-yellow-100", "원양어선"))
                 .isInstanceOf(DataAccessException.class);
     }
 
@@ -95,8 +106,10 @@ class LineDaoTest {
     @DisplayName("노선 삭제 테스트")
     void delete() {
         //given
-        Line line1 = lineDao.insert("bg-red-100", "현구막역");
-        Line line2 = lineDao.insert("bg-yellow-100", "크로플역");
+        LineName lineName1 = new LineName("거북선");
+        LineName lineName2 = new LineName("원양어선");
+        lineDao.insert("bg-red-100", lineName1);
+        Line line2 = lineDao.insert("bg-yellow-100", lineName2);
 
         //when
         lineDao.delete(line2.getId());

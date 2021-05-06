@@ -20,7 +20,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line insert(String color, String name) {
+    public Line insert(String color, LineName name) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO line (color, name) VALUES (?,?)";
         jdbcTemplate.update((Connection con) -> {
@@ -28,7 +28,7 @@ public class LineDao {
                     query,
                     new String[]{"id"});
             pstmt.setString(1, color);
-            pstmt.setString(2, name);
+            pstmt.setString(2, name.getName());
             return pstmt;
         }, keyHolder);
 

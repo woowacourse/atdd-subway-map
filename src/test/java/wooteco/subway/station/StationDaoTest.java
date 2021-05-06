@@ -29,7 +29,9 @@ public class StationDaoTest {
     @Test
     @DisplayName("Station 추가 테스트")
     void insert() {
+        //given
         StationName A = new StationName("A역");
+
         //when
         Station expected = stationDao.insert(A);
 

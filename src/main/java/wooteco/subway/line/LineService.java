@@ -18,8 +18,9 @@ public class LineService {
     }
 
     public LineResponse create(String color, String name) {
+        LineName lineName = new LineName(name);
         try {
-            return new LineResponse(lineDao.insert(color, name));
+            return new LineResponse(lineDao.insert(color, lineName));
         } catch (DataIntegrityViolationException e) {
             throw new LineDuplicateException();
         }

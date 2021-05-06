@@ -3,14 +3,18 @@ package wooteco.subway.line;
 public class Line {
     private Long id;
     private String color;
-    private String name;
+    private LineName name;
 
     public Line(String color, String name) {
         this.color = color;
-        this.name = name;
+        this.name = new LineName(name);
     }
 
     public Line(Long id, String color, String name) {
+        this(id, color, new LineName(name));
+    }
+
+    public Line(Long id, String color, LineName name) {
         this.id = id;
         this.color = color;
         this.name = name;
@@ -25,6 +29,6 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 }
