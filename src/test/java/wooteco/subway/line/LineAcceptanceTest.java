@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -146,7 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 수정한다.")
     @Test
-    void updateLine(){
+    void updateLine() {
         //given
         Map<String, Object> params = new HashMap<>();
         params.put("name", "테스트선");
@@ -183,7 +186,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 삭제한다.")
     @Test
-    void deleteLine(){
+    void deleteLine() {
         //given
         Map<String, Object> params = new HashMap<>();
         params.put("name", "테스트선");

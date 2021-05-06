@@ -2,13 +2,11 @@ package wooteco.subway.line;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wooteco.subway.station.Station;
+import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationResponse;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,56 +14,43 @@ public class LineService {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
     @Autowired
-    public LineService(LineDao lineDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor) {
-        List<Station> stations = new ArrayList<>();
-        Station upStation = stationDao.findById(upStationId).get();
-        Station downStation = stationDao.findById(downStationId).get();
-        stations.add(upStation);
-        stations.add(downStation);
+        long lineId = lineDao.save(lineName, lineColor);
+        sectionDao.save(lineId, upStationId, downStationId);
 
-        Line line = new Line(lineName, lineColor, stations);
-        Line newLine = lineDao.save(line);
-
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineResponse(lineId, lineName, lineColor);
     }
 
     public List<LineResponse> showLines() {
-        List<Line> lines = lineDao.findAll();
-
-        return lines.stream()
-                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-                .collect(Collectors.toList());
+        return lineDao.findAll();
     }
 
     public LineResponse showLine(long id) {
-        Optional<Line> validLine = lineDao.findById(id);
-        if(!validLine.isPresent()){
-            throw new IllegalArgumentException("노선 조회에 실패하였습니다.");
-        }
-        Line line = validLine.get();
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), generateStationResponse(line.getStations()));
+        List<Long> stationsId = lineDao.findStationsIdByLineId(id);
+        System.out.println(stationsId);
+
+        List<StationResponse> stations = stationsId.stream()
+                .map(stationDao::findById)
+                .collect(Collectors.toList());
+
+        LineResponse lineResponse = lineDao.findById(id);
+        return new LineResponse(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor(), stations);
+    }
+
+    public void updateLine(long id, String lineName, String lineColor) {
+        lineDao.update(id, lineName, lineColor);
     }
 
     public void deleteLine(long id) {
-        Optional<Line> validLine = lineDao.findById(id);
-        if(!validLine.isPresent()){
-            throw new IllegalArgumentException("노선 삭제에 실패하였습니다.");
-        }
-
-        Line line = validLine.get();
-        lineDao.delete(line);
-    }
-
-    private List<StationResponse> generateStationResponse(List<Station> stations) {
-        return stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
+        lineDao.delete(id);
     }
 }

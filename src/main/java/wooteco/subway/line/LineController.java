@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/lines")
@@ -26,7 +25,6 @@ public class LineController {
         String lineColor = lineRequest.getColor();
 
         LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor);
-
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -42,21 +40,14 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-//    @PutMapping("{id}")
-//    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
-//        Optional<Line> validLine = LineDao.findById(id);
-//        if(!validLine.isPresent()){
-//            throw new IllegalArgumentException("노선 업데이트에 실패하였습니다.");
-//        }
-//
-//        Line line = validLine.get();
-//        Line newLine = new Line(line.getId(), lineRequest.getName(), lineRequest.getColor(), line.getStations());
-//
-//        LineDao.delete(line);
-//        LineDao.add(newLine);
-//
-//        return ResponseEntity.ok().build();
-//    }
+    @PutMapping("{id}")
+    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+        String lineName = lineRequest.getName();
+        String lineColor = lineRequest.getColor();
+        lineService.updateLine(id, lineName, lineColor);
+
+        return ResponseEntity.ok().build();
+    }
 
     @DeleteMapping("{id}")
     public ResponseEntity deleteLine(@PathVariable long id) {
