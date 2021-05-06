@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.dto.StationDto;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -53,11 +52,8 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable final Long id) {
-        try {
-            stationService.delete(new StationDto(id));
-        } catch (NotFoundStationException e) {
-            return ResponseEntity.noContent().build();
-        }
+        stationService.delete(new StationDto(id));
+
         return ResponseEntity.ok()
             .build();
     }
