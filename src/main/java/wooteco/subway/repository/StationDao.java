@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -42,12 +42,12 @@ public class StationDao {
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
-    public Station findById(long id) {
+    public Station findById(Long id) {
         String query = "SELECT * FROM STATION WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         String query = "DELETE FROM STATION WHERE ID = ?";
         jdbcTemplate.update(query, id);
     }

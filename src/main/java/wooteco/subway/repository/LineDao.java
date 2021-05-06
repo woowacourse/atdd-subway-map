@@ -1,4 +1,4 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -45,17 +45,17 @@ public class LineDao {
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
-    public Line findById(long id) {
+    public Line findById(Long id) {
         String query = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
     }
 
-    public void updateLine(long id, String name, String color) {
+    public void updateLine(Long id, String name, String color) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(query, name, color, id);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         String query = "DELETE FROM LINE WHERE ID = ?";
         jdbcTemplate.update(query, id);
     }

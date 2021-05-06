@@ -2,7 +2,7 @@ package wooteco.subway.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.StationDao;
+import wooteco.subway.repository.StationDao;
 import wooteco.subway.domain.station.Station;
 
 @Service
@@ -30,7 +30,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         stationDao.deleteById(id);
     }
 }
