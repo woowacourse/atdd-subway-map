@@ -39,17 +39,23 @@ public class LineService {
 
     public LineResponse findLine(final Long id) {
         final Line line = lineDao.findById(id)
-            .orElseThrow(() ->  new DataNotFoundException("해당 Id의 노선이 없습니다."));
+            .orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
         return LineResponse.from(line);
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {
-        findLine(id);
+        validateExistentLineById(id);
         lineDao.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(final Long id) {
-        findLine(id);
+        validateExistentLineById(id);
         lineDao.deleteById(id);
+    }
+
+    private void validateExistentLineById(final Long id) {
+        if (!lineDao.findById(id).isPresent()) {
+            throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
+        }
     }
 }
