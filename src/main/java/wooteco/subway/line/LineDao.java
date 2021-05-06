@@ -35,7 +35,7 @@ public class LineDao {
         };
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new Line(id, line.getName(), line.getColor());
+        return findById(id).get();
     }
 
     public void deleteById(final long id) {
