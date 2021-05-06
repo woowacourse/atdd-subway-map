@@ -30,7 +30,6 @@ class StationDaoTest {
         testStationId = stationDao.save(new Station("testStation"));
     }
 
-
     @DisplayName("역을 등록한다.")
     @Test
     void save() {
