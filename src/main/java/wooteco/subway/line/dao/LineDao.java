@@ -1,6 +1,7 @@
 package wooteco.subway.line.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,15 +29,14 @@ public class LineDao {
         String sql = "INSERT INTO line (`name`, color) VALUES (?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, new String[]{"id", "name", "color"});
+                .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
         }, keyHolder);
 
-        Map<String, Object> keys = keyHolder.getKeys();
-        return new Line((Long) keys.get("id"), (String) keys.get("name"),
-            (String) keys.get("color"));
+        long id = keyHolder.getKey().longValue();
+        return findLineById(id);
     }
 
     private void validateDuplicateNameAndColor(Line line) {
