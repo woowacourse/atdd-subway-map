@@ -18,5 +18,5 @@
 - [x]  스프링 빈 적용하기
 - [x] 스프링 JDBC 적용하기
     - [x] h2 DB에 저장하기
-- [ ] Service 레이어 테스트 작성
-- [ ] Repository 레이어 테스트 작성
+- [x] Service 레이어 테스트 작성
+- [x] Repository 레이어 테스트 작성
