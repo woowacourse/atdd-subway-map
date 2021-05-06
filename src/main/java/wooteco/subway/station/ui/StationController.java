@@ -1,6 +1,7 @@
 package wooteco.subway.station.ui;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +52,14 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
+        return ResponseEntity.badRequest().body("동일한 역을 등록할 수 없습니다");
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> databaseExceptionHandle(Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.badRequest().body("데이터베이스 에러입니다.");
     }
+
 }

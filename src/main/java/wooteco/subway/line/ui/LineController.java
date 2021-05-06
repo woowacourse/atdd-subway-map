@@ -1,6 +1,7 @@
 package wooteco.subway.line.ui;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,11 @@ public class LineController {
         lineService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
+        return ResponseEntity.badRequest().body("동일한 라인을 등록할 수 없습니다");
     }
 
     @ExceptionHandler(DataAccessException.class)
