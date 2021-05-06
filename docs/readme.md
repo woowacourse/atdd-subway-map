@@ -20,3 +20,8 @@
         + [x] 노선 삭제
             + request : x
             + response : x
+
+### 개선 사항
++ [ ] 패키지 분리
++ [ ] Dto validation 
++ [ ] 레포지토리 분리  
