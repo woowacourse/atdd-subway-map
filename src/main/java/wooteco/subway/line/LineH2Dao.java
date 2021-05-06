@@ -80,6 +80,7 @@ public class LineH2Dao implements LineRepository {
 
     @Override
     public void delete(Long id) {
-
+        String query = "DELETE FROM LINE WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }
