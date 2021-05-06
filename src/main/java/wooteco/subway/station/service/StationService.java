@@ -23,4 +23,7 @@ public class StationService {
         return stationRepository.findAll();
     }
 
+    public void deleteById(Long id) {
+        stationRepository.delete(id);
+    }
 }

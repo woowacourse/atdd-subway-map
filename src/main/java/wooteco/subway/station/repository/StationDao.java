@@ -43,4 +43,10 @@ public class StationDao {
             return new Station(id, name);
         });
     }
+
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM STATION WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
 }
