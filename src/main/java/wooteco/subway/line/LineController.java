@@ -28,6 +28,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        Line line = lineRequest.toEntity();
+        LineDao.update(id, line);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handler(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

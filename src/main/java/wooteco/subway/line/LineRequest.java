@@ -37,4 +37,8 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    public Line toEntity() {
+        return new Line(name, color);
+    }
 }

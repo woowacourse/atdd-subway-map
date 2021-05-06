@@ -42,4 +42,11 @@ public class LineDao {
     public static List<Line> findAll() {
         return lines;
     }
+
+    public static void update(Long id, Line newLine) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
+        }
+        lines.add(createNewObject(newLine));
+    }
 }
