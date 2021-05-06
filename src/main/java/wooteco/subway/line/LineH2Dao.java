@@ -21,9 +21,16 @@ public class LineH2Dao implements LineRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
+
     @Override
     public Line save(Line line) {
-        String query= "INSERT INTO LINE (name, color) values (?, ?)";
+        String query = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -43,13 +50,6 @@ public class LineH2Dao implements LineRepository {
         String query = "SELECT * FROM LINE";
         return jdbcTemplate.query(query, lineRowMapper);
     }
-
-    private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
-        long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String color = rs.getString("color");
-        return new Line(id, name, color);
-    };
 
     @Override
     public Line findById(Long id) {
@@ -73,7 +73,7 @@ public class LineH2Dao implements LineRepository {
 
     @Override
     public Line update(Long id, Line newLine) {
-        String query = "UPDATE LINE set name = ?, color = ? WHERE id = ?";
+        String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         this.jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
         return this.findById(id);
     }
