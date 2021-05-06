@@ -24,11 +24,10 @@ import static org.hamcrest.CoreMatchers.is;
 public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
-    @Transactional
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "일원역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -46,7 +45,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    @Transactional
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -75,11 +73,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    @Transactional
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        params1.put("name", "판교역");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -89,7 +86,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        params2.put("name", "구의역");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -113,14 +110,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    @Transactional
     void deleteStation() {
         // given
         Map<String, String> params1 = new HashMap<>();
