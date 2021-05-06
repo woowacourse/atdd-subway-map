@@ -72,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         assertThat(createResponse2.statusCode())
-            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            .isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
