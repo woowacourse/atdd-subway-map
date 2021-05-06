@@ -11,12 +11,12 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color) {
-        this(null, name, color);
-    }
-
     public Line(Long id, Line line) {
         this(id, line.getName(), line.getColor());
+    }
+
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
     public Long getId() {

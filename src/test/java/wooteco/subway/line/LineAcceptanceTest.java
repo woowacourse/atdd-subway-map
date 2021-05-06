@@ -25,21 +25,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
+        // given
         String lineNameToCreate = "신분당선";
         String lineColorToCreate = "bg-red-600";
+
+        // when
         ExtractableResponse<Response> response = requestCreateLineAndGetResponse(lineNameToCreate, lineColorToCreate);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-
-        List<LineResponseDto> allSavedLineResponseDtos = requestAndGetAllSavedLineResponseDtos();
-        assertThat(allSavedLineResponseDtos).hasSize(1);
-        LineResponseDto savedLineResponseDto = allSavedLineResponseDtos.get(0);
-
-        assertThat(response.header("Location")).isEqualTo("/lines/" + savedLineResponseDto.getId());
-        assertThat(savedLineResponseDto.getName()).isEqualTo(lineNameToCreate);
-        assertThat(savedLineResponseDto.getColor()).isEqualTo(lineColorToCreate);
+        assertThat(response.header("Location")).isNotBlank();
     }
 
     private ExtractableResponse<Response> requestCreateLineAndGetResponse(String name, String color) {
