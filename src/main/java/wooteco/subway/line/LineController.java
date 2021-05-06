@@ -66,11 +66,6 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handle() {
-        return ResponseEntity.badRequest().build();
-    }
-
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity handleNameDuplication() {
         return ResponseEntity.status(409).build();
