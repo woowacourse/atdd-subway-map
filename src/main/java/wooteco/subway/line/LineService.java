@@ -36,8 +36,6 @@ public class LineService {
 
     public LineResponse showLine(long id) {
         List<Long> stationsId = lineDao.findStationsIdByLineId(id);
-        System.out.println(stationsId);
-
         List<StationResponse> stations = stationsId.stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
