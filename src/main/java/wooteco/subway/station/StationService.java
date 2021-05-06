@@ -14,7 +14,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(String name) {
+    public StationResponse create(String name) {
         return new StationResponse(stationDao.insert(name));
     }
 

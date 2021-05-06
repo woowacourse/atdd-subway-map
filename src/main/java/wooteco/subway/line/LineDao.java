@@ -1,61 +1,71 @@
 package wooteco.subway.line;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        Line persistentLine = createNewObject(line);
-        lines.add(persistentLine);
-        return persistentLine;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static boolean findByName(String name) {
-        return lines.stream()
-                .anyMatch(line -> line.getName().equals(name));
+    public Line insert(String color, String name) {
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = "INSERT INTO line (color, name) VALUES (?,?)";
+        jdbcTemplate.update((Connection con) -> {
+            PreparedStatement pstmt = con.prepareStatement(
+                    query,
+                    new String[]{"id"});
+            pstmt.setString(1, color);
+            pstmt.setString(2, name);
+            return pstmt;
+        }, keyHolder);
+
+        final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(id, color, name);
     }
 
-    public static List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
+    public List<Line> findAll() {
+        String query = "SELECT * FROM line";
+        return jdbcTemplate.query(query,
+                (resultSet, rowNum) -> new Line(
+                        resultSet.getLong("id"),
+                        resultSet.getString("color"),
+                        resultSet.getString("name")
+                )
+        );
     }
 
-    public static Optional<Line> findById(Long id) {
-        return lines.stream()
-                .filter(line -> line.getId().equals(id))
-                .findFirst();
+    public Optional<Line> findById(Long id) {
+        String query = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.query(query,
+                (resultSet, rowNum) -> new Line(
+                        resultSet.getLong("id"),
+                        resultSet.getString("color"),
+                        resultSet.getString("name")
+                ), id)
+                .stream()
+                .findAny();
     }
 
-    public static void update(Long id, String color, String name) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다.");
-        }
-        lines.add(new Line(id, color, name));
+    public void update(Long id, String color, String name) {
+        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
+        jdbcTemplate.update(query, color, name, id);
     }
 
-    public static void delete(Long id) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다.");
-        }
-    }
-
-    public static void deleteAll() {
-        lines.clear();
-    }
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public void delete(Long id) {
+        String query = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }
