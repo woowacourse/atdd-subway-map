@@ -4,12 +4,14 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.SectionDto;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
+import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.dao.LineJdbcDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -50,12 +52,12 @@ public class LineService {
         );
     }
 
-//    public List<LineResponse> showLines() {
-//        List<Line> lines = lineJdbcDao.findAll();
-//        return lines.stream()
-//                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-//                .collect(Collectors.toList());
-//    }
+    public List<LineFindAllResponseDto> showLines() {
+        List<Line> lines = lineJdbcDao.findAllLine();
+        return lines.stream()
+                .map(it -> new LineFindAllResponseDto(it.getId(), it.getName(), it.getColor()))
+                .collect(Collectors.toList());
+    }
 //
 //    public LineResponse showLine(Long lineId) {
 //        Line foundLine = lineJdbcDao.findById(lineId)

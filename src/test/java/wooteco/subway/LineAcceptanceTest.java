@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.fixture.FixtureParams;
 import wooteco.subway.fixture.FixtureRequest;
 import wooteco.subway.util.JsonAndMapContainsTester;
@@ -49,7 +49,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 //        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 //    }
 //
-    @DisplayName("노선에 등록된 역 목록을 조회한다.")
+    @DisplayName("노선에 목록을 조회한다.")
     @Test
     void getLines() {
         /// given
@@ -69,7 +69,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createdResponse1, createdResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineFindAllResponseDto.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);

@@ -56,10 +56,15 @@ public class LineJdbcDao {
         return sectionKeyHolder.getKey().longValue();
     }
 
-//    public List<Line> findAll() {
-//        String query = "SELECT * FROM LINE";
-//        return jdbcTemplate.query(query, lineRowMapper);
-//    }
+    public List<Line> findAllLine() {
+        String query = "SELECT * FROM LINE";
+        return jdbcTemplate.query(query, (resultSet, rowNum) ->
+                new Line(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("color"))
+        );
+    }
 //
 //    public Optional<Line> findById(Long lineId) {
 //        String query = "SELECT * FROM LINE WHERE id = ?";
