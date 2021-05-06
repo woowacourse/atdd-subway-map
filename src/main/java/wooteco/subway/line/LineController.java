@@ -1,9 +1,9 @@
 package wooteco.subway.line;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.exception.line.LineNotExistException;
 
 import java.net.URI;
 import java.util.List;
@@ -30,7 +30,7 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}")
-    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotExistException {
         LineResponse lineResponse = lineService.showLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -45,10 +45,5 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handler(DataAccessException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

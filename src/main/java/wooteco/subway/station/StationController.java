@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,11 +32,5 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // TODO : Validator로 변경
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handler(DataAccessException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

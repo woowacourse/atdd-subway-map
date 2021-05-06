@@ -1,6 +1,9 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.line.LineDuplicateException;
+import wooteco.subway.exception.line.LineNotExistException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +18,11 @@ public class LineService {
     }
 
     public LineResponse create(String color, String name) {
-        return new LineResponse(lineDao.insert(color, name));
+        try {
+            return new LineResponse(lineDao.insert(color, name));
+        } catch (DataIntegrityViolationException e) {
+            throw new LineDuplicateException();
+        }
     }
 
     public List<LineResponse> showLines() {
@@ -27,7 +34,7 @@ public class LineService {
 
     public LineResponse showLine(Long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 노선이 존재하지 않습니다."));
+                .orElseThrow(LineNotExistException::new);
         return new LineResponse(line);
     }
 

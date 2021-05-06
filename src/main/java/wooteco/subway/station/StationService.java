@@ -1,6 +1,8 @@
 package wooteco.subway.station;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.station.StationDuplicateException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +17,11 @@ public class StationService {
     }
 
     public StationResponse create(String name) {
-        return new StationResponse(stationDao.insert(name));
+        try {
+            return new StationResponse(stationDao.insert(name));
+        } catch (DataIntegrityViolationException e) {
+            throw new StationDuplicateException();
+        }
     }
 
     public List<StationResponse> showStations() {

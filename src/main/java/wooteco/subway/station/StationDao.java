@@ -44,13 +44,13 @@ public class StationDao {
         );
     }
 
-    public Optional<Station> findById(Long id) {
-        String query = "SELECT * FROM station WHERE id = ?";
+    public Optional<Station> findByName(String name) {
+        String query = "SELECT * FROM station WHERE name = ?";
         return jdbcTemplate.query(query,
                 (resultSet, rowNum) -> new Station(
                         resultSet.getLong("id"),
                         resultSet.getString("name")
-                ), id)
+                ), name)
                 .stream()
                 .findAny();
     }
