@@ -39,15 +39,15 @@ public class LineController {
         return ResponseEntity.ok(lineService.showLineById(id));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/lines/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         lineService.update(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/lines/{id}")
-    public void deleteLine(@PathVariable Long id) {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
