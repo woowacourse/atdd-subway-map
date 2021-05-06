@@ -111,10 +111,16 @@ npm run dev
   - [ ] Distance 변경
 - [ ] 구간이 하나인 노선에서 마지막 구간 제거 불가
 
-  
 ### 노선 조회 기능 수정
 - [ ] 상행 -> 하행 역 목록 차례로 출력
-  
+
+### 지하철 역 / 지하철 노선 / 지하철 구간 구조 설계
+|Station |Line |Section   |
+|:------:|:---:|:--------:|
+|        |List\<Section>| |
+|        |조회 시 구간 정렬|  |
+
+<br>
 
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
