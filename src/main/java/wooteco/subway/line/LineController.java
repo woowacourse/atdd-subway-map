@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.exception.NameDuplicationException;
+import wooteco.subway.exception.NoSuchLineException;
 
 @RestController
 public class LineController {
@@ -61,7 +62,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        LineDao.delete(id);
+        lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -73,5 +74,10 @@ public class LineController {
     @ExceptionHandler(NameDuplicationException.class)
     public ResponseEntity handleNameDuplication() {
         return ResponseEntity.status(409).build();
+    }
+
+    @ExceptionHandler(NoSuchLineException.class)
+    public ResponseEntity handleNoSuchLine() {
+        return ResponseEntity.badRequest().build();
     }
 }

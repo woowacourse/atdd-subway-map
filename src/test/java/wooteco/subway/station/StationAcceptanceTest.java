@@ -158,7 +158,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(createResponse2.statusCode())
+            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
     }
 }
