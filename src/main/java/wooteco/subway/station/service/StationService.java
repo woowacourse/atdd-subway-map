@@ -17,7 +17,7 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationDto save(StationDto stationDto) {
+    public StationDto save(final StationDto stationDto) {
         Station station = stationRepository.save(new Station(stationDto.getName()));
         return StationDto.from(station);
     }
@@ -29,7 +29,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         stationRepository.delete(id);
     }
 }
