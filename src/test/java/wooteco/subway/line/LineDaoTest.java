@@ -1,0 +1,93 @@
+package wooteco.subway.line;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.Rollback;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@JdbcTest
+@Rollback
+class LineDaoTest {
+    LineDao lineDao;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        lineDao = new LineDao(jdbcTemplate);
+    }
+
+    @Test
+    @DisplayName("노선 추가")
+    void insert() {
+        // given
+        Line line = lineDao.insert("bg-red-100", "코다역");
+
+        assertThat(line.getColor()).isEqualTo("bg-red-100");
+        assertThat(line.getName()).isEqualTo("코다역");
+    }
+
+    @Test
+    @DisplayName("노선 목록 조회")
+    void findAll() {
+        lineDao.insert("bg-red-100", "현구막역");
+        lineDao.insert("bg-black-200", "크로플역");
+
+        List<Line> lines = lineDao.findAll();
+
+        assertThat(lines).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("id를 통한 노선 조회")
+    void findById() {
+        //given
+        Line line = lineDao.insert("bg-red-100", "현구막역");
+
+        //when
+        Line expectedLine = lineDao.findById(line.getId())
+                .get();
+
+        //then
+        assertThat(expectedLine.getName()).isEqualTo("현구막역");
+        assertThat(expectedLine.getColor()).isEqualTo("bg-red-100");
+    }
+
+    @Test
+    @DisplayName("노선 수정 테스트")
+    void update() {
+        //given
+        Line line = lineDao.insert("bg-red-100", "현구막역");
+
+        //when
+        lineDao.update(line.getId(), "bg-yellow-100", "크로플역");
+
+        //then
+        Line expectedLine = lineDao.findById(line.getId())
+                .get();
+        assertThat(expectedLine.getColor()).isEqualTo("bg-yellow-100");
+        assertThat(expectedLine.getName()).isEqualTo("크로플역");
+    }
+
+    @Test
+    @DisplayName("노선 삭제 테스트")
+    void delete() {
+        //given
+        Line line1 = lineDao.insert("bg-red-100", "현구막역");
+        Line line2 = lineDao.insert("bg-yellow-100", "크로플역");
+
+        //when
+        lineDao.delete(line2.getId());
+
+        //then
+        assertThat(lineDao.findAll()).hasSize(1);
+    }
+}

@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -42,17 +41,6 @@ public class StationDao {
                         resultSet.getString("name")
                 )
         );
-    }
-
-    public Optional<Station> findByName(String name) {
-        String query = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Station(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name")
-                ), name)
-                .stream()
-                .findAny();
     }
 
     public void deleteById(Long id) {
