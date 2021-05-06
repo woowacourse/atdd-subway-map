@@ -4,16 +4,16 @@ import java.util.Objects;
 
 public class Station {
 
-    private long id;
+    private Long id;
     private String name;
 
-    public Station(long id, String name) {
+    public Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
-        this(0, name);
+        this(null, name);
     }
 
     public boolean hasSameName(String name) {
