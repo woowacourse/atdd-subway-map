@@ -2,10 +2,7 @@ package wooteco.subway.station.domain;
 
 public class Station {
     private Long id;
-    private String name;
-
-    public Station() {
-    }
+    private final String name;
 
     public Station(final Long id, final String name) {
         this.id = id;
@@ -16,11 +13,11 @@ public class Station {
         this.name = name;
     }
 
-    public boolean isSameName(Station station) {
+    public boolean isSameName(final Station station) {
         return this.name.equals(station.name);
     }
 
-    public boolean isSameId(Long id) {
+    public boolean isSameId(final Long id) {
         return this.id.equals(id);
     }
 
