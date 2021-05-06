@@ -4,18 +4,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
-
     private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
@@ -37,29 +35,29 @@ public class StationDao {
         return new Station(id, name);
     }
 
-    public static List<Station> findAll() {
-        return Collections.unmodifiableList(stations);
+    public List<Station> findAll() {
+        String query = "SELECT * FROM station";
+        return jdbcTemplate.query(query,
+                (resultSet, rowNum) -> new Station(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                )
+        );
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public Optional<Station> findById(Long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.query(query,
+                (resultSet, rowNum) -> new Station(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                ), id)
+                .stream()
+                .findAny();
     }
 
-    public static boolean findByName(String name) {
-        return stations.stream()
-                .anyMatch(station -> station.getName().equals(name));
-    }
-
-    public static Optional<Station> findById(Long id) {
-        return stations.stream()
-                .filter(station -> station.getId().equals(id))
-                .findFirst();
-    }
-
-    public static void delete(Station station) {
-        stations.remove(station);
+    public void deleteById(Long id) {
+        String query = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

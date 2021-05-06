@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,9 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handler(IllegalArgumentException e) {
+    // TODO : Validator로 변경
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<String> handler(DataAccessException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

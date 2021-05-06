@@ -21,13 +21,11 @@ public class StationService {
     public List<StationResponse> showStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
     }
 
     public void deleteById(Long id) {
-        Station station = stationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 역이 존재하지 않습니다."));
-        StationDao.delete(station);
+        stationDao.deleteById(id);
     }
 }
