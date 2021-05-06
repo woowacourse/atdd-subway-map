@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.assembler.Assembler;
-import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDaoCache;
 import wooteco.subway.line.dto.LineDto;
 
@@ -128,6 +128,6 @@ public class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.findOne(requestDto))
-            .isInstanceOf(VoidLineException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 }

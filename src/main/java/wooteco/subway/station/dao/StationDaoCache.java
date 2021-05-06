@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.DuplicatedStationNameException;
-import wooteco.subway.exception.VoidStationException;
+import wooteco.subway.exception.DuplicateStationException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.Station;
 
 public class StationDaoCache implements StationDao {
@@ -25,7 +25,7 @@ public class StationDaoCache implements StationDao {
         if (stations.stream()
             .map(Station::getName)
             .anyMatch(name -> name.equals(station.getName()))) {
-            throw new DuplicatedStationNameException("[ERROR] 역의 이름이 중복됩니다.");
+            throw new DuplicateStationException("[ERROR] 역의 이름이 중복됩니다.");
         }
     }
 
@@ -46,7 +46,7 @@ public class StationDaoCache implements StationDao {
         if (stations.removeIf(station -> station.getId() == id)) {
             return 1;
         }
-        throw new VoidStationException("[Error] 해당 역이 존재하지 않습니다.");
+        throw new NotFoundStationException("[Error] 해당 역이 존재하지 않습니다.");
     }
 
     public void clean() {

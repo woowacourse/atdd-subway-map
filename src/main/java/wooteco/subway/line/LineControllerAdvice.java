@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.exception.NotFoundLineException;
 
 @RestControllerAdvice
 public class LineControllerAdvice {
@@ -21,8 +21,8 @@ public class LineControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(VoidLineException.class)
-    public ResponseEntity voidLineDeleteExceptionResponse(VoidLineException e) {
+    @ExceptionHandler(NotFoundLineException.class)
+    public ResponseEntity voidLineDeleteExceptionResponse(NotFoundLineException e) {
         return ResponseEntity.noContent().build();
     }
 }

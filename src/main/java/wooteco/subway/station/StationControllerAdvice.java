@@ -4,7 +4,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.VoidStationException;
+import wooteco.subway.exception.NotFoundStationException;
 
 @RestControllerAdvice
 public class StationControllerAdvice {
@@ -14,7 +14,7 @@ public class StationControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(VoidStationException.class)
+    @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity voidStationExceptionResponse() {
         return ResponseEntity.noContent().build();
     }

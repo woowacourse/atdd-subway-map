@@ -7,8 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.DuplicatedLineNameException;
-import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.exception.DuplicateLineException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
 
 class LineDaoCacheTest {
@@ -45,10 +45,10 @@ class LineDaoCacheTest {
 
         //then
         assertThatThrownBy(() -> lineDaoCache.create(line1))
-            .isInstanceOf(DuplicatedLineNameException.class);
+            .isInstanceOf(DuplicateLineException.class);
 
         assertThatThrownBy(() -> lineDaoCache.create(line2))
-            .isInstanceOf(DuplicatedLineNameException.class);
+            .isInstanceOf(DuplicateLineException.class);
     }
 
     @DisplayName("id값에 맞는 노선 반환")
@@ -78,7 +78,7 @@ class LineDaoCacheTest {
 
         //then
         assertThatThrownBy(() -> lineDaoCache.show(id))
-            .isInstanceOf(VoidLineException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("전 노선 호출")
@@ -126,7 +126,7 @@ class LineDaoCacheTest {
 
         //then
         assertThatThrownBy(() -> lineDaoCache.show(id))
-            .isInstanceOf(VoidLineException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 
     @DisplayName("노선 삭제 실패")
@@ -139,6 +139,6 @@ class LineDaoCacheTest {
 
         //then
         assertThatThrownBy(() -> lineDaoCache.delete(id))
-            .isInstanceOf(VoidLineException.class);
+            .isInstanceOf(NotFoundLineException.class);
     }
 }

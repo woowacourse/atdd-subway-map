@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.DuplicatedLineNameException;
-import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.exception.DuplicateLineException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
 
 public class LineDaoCache implements LineDao {
@@ -25,12 +25,12 @@ public class LineDaoCache implements LineDao {
         if (lines.stream()
             .map(Line::getName)
             .anyMatch(name -> name.equals(line.getName()))) {
-            throw new DuplicatedLineNameException("[ERROR] 노선의 이름이 중복됩니다.");
+            throw new DuplicateLineException("[ERROR] 노선의 이름이 중복됩니다.");
         }
         if (lines.stream()
             .map(Line::getColor)
             .anyMatch(color -> color.equals(line.getColor()))) {
-            throw new DuplicatedLineNameException("[ERROR] 노선의 색이 중복됩니다.");
+            throw new DuplicateLineException("[ERROR] 노선의 색이 중복됩니다.");
         }
     }
 
@@ -39,7 +39,7 @@ public class LineDaoCache implements LineDao {
         return lines.stream()
             .filter(element -> element.getId() == id)
             .findAny()
-            .orElseThrow(() -> new VoidLineException("[Error] 해당 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LineDaoCache implements LineDao {
         Line targetLine = lines.stream()
             .filter(element -> element.getId() == id)
             .findAny()
-            .orElseThrow(() -> new VoidLineException("[Error] 해당 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
 
         targetLine.setColor(line.getColor());
         targetLine.setName(line.getName());
@@ -72,7 +72,7 @@ public class LineDaoCache implements LineDao {
         if (lines.removeIf(line -> line.getId() == id)) {
             return 1;
         }
-        throw new VoidLineException("[Error] 해당 노선이 존재하지 않습니다.");
+        throw new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다.");
     }
 
     public void clean() {
