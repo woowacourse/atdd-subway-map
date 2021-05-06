@@ -42,9 +42,9 @@ public class StationDaoCache implements StationDao {
     }
 
     @Override
-    public void delete(long id) {
+    public int delete(long id) {
         if (stations.removeIf(station -> station.getId() == id)) {
-            return;
+            return 1;
         }
         throw new VoidStationException("[Error] 해당 역이 존재하지 않습니다.");
     }

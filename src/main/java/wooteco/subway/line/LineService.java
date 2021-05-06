@@ -1,10 +1,15 @@
 package wooteco.subway.line;
 
+import java.sql.SQLNonTransientException;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import wooteco.subway.exception.VoidLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineDto;
 
+@Service
 public class LineService {
 
     private final LineDao lineDao;
@@ -33,10 +38,14 @@ public class LineService {
 
     public void update(LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
-        lineDao.update(lineDto.getId(), line);
+        if (lineDao.update(lineDto.getId(), line) == 0){
+            throw new EmptyResultDataAccessException(0);
+        }
     }
 
     public void delete(LineDto lineDto) {
-        lineDao.delete(lineDto.getId());
+        if (lineDao.delete(lineDto.getId()) == 0){
+            throw new VoidLineException("[ERROR] 해당노선이 존재하지 않습니다.");
+        }
     }
 }

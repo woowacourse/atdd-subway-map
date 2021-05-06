@@ -1,10 +1,12 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.sql.SQLNonTransientException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
@@ -252,12 +255,89 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         LineResponse lineResponse = checkLineResponse.jsonPath().getObject(".", LineResponse.class);
-
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getColor()).isEqualTo(color);
     }
+
+    @DisplayName("존재하지 않는 노선을 수정한다.")
+    @Test
+    public void updateVoidLine() {
+        //given
+
+        //when
+        final String color = "bg-purple-406";
+        final String name = "대구선";
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("color", color);
+        updateParams.put("name", name);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + String.valueOf(999))
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("이미 다른 노선이 사용중인 색깔로 바꾼다")
+    @Test
+    public void updateLineToExistedLine() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-white-400");
+        params.put("name", "구미선");
+        ExtractableResponse<Response> requestResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        params.put("color", "bg-white-401");
+        params.put("name", "황천선");
+        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
+
+        //when
+        final String color = "bg-white-400";
+        final String name = "대구선";
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("color", color);
+        updateParams.put("name", name);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/"+String.valueOf(responseId))
+            .then().log().all()
+            .extract();
+
+        ExtractableResponse<Response> checkLineResponse = RestAssured.given().log().all()
+            .when()
+            .get("/lines/"+String.valueOf(responseId))
+            .then().log().all()
+            .extract();
+
+        LineResponse lineResponse = checkLineResponse.jsonPath().getObject(".", LineResponse.class);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     @DisplayName("특정 노선을 삭제한다.")
     @Test

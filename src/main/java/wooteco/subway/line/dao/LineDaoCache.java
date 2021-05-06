@@ -55,7 +55,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public void update(long id, Line line) {
+    public int update(long id, Line line) {
         Line targetLine = lines.stream()
             .filter(element -> element.getId() == id)
             .findAny()
@@ -63,12 +63,14 @@ public class LineDaoCache implements LineDao {
 
         targetLine.setColor(line.getColor());
         targetLine.setName(line.getName());
+
+        return 1;
     }
 
     @Override
-    public void delete(long id) {
+    public int delete(long id) {
         if (lines.removeIf(line -> line.getId() == id)) {
-            return;
+            return 1;
         }
         throw new VoidLineException("[Error] 해당 노선이 존재하지 않습니다.");
     }

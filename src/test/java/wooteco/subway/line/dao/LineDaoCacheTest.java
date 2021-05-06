@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.DuplicatedLineNameException;
 import wooteco.subway.exception.VoidLineException;
+import wooteco.subway.line.Line;
 import wooteco.subway.line.dao.LineDaoCache;
 
 class LineDaoCacheTest {
