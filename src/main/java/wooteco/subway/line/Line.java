@@ -5,10 +5,10 @@ import java.util.Objects;
 import wooteco.subway.station.Station;
 
 public final class Line {
-    private Long id;
-    private String name;
-    private String color;
-    private List<Station> stations;
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final List<Station> stations;
 
     public Line(final Long id, final String name, final String color) {
         this(id, name, color, null);
