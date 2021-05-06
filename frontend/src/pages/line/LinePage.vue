@@ -8,11 +8,11 @@
         <v-card-text
           class="relative px-0 pb-0 mb-6 line-list-container d-flex flex-column"
         >
-          <div class="d-flex justify-end mr-4">
+          <v-divider />
+          <div class="d-flex justify-end mr-4 line-create-button-container">
             <LineCreateButton />
           </div>
-          <v-divider />
-          <div class="mt-4 overflow-y-auto">
+          <div class="overflow-y-auto">
             <v-list-item-group v-model="line" color="grey darken-3">
               <v-list-item v-for="line in lines" :key="line.name">
                 <v-list-item-content>
@@ -26,7 +26,10 @@
                     <span class="ml-2">{{ line.name }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
-                <v-list-item-action class="flex-row"> </v-list-item-action>
+                <v-list-item-action class="flex-row">
+                  <LineEditButton :line="line" />
+                  <LineDeleteButton :line="line" />
+                </v-list-item-action>
               </v-list-item>
             </v-list-item-group>
           </div>
@@ -40,10 +43,12 @@
 import LineCreateButton from "./components/LineCreateButton";
 import { SET_LINES } from "../../store/shared/mutationTypes";
 import { mapGetters, mapMutations } from "vuex";
+import LineEditButton from "./components/LineEditButton";
+import LineDeleteButton from "./components/LineDeleteButton";
 
 export default {
   name: "LinePage",
-  components: { LineCreateButton },
+  components: { LineDeleteButton, LineEditButton, LineCreateButton },
   computed: {
     ...mapGetters(["lines"]),
   },
@@ -69,5 +74,9 @@ export default {
 <style lang="scss" scoped>
 .line-list-container {
   height: calc(100% - 80px);
+}
+
+.line-create-button-container {
+  height: 25px;
 }
 </style>
