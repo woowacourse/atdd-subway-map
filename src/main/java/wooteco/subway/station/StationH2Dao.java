@@ -26,7 +26,7 @@ public class StationH2Dao implements StationRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
+        this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
                     .prepareStatement(query, new String[]{"id"});
             ps.setString(1, station.getName());
@@ -39,7 +39,7 @@ public class StationH2Dao implements StationRepository {
     @Override
     public List<Station> findAll() {
         String query = "SELECT * FROM STATION";
-        return jdbcTemplate.query(query, (rs, rn) -> {
+        return this.jdbcTemplate.query(query, (rs, rn) -> {
             long id = rs.getLong("id");
             String name = rs.getString("name");
             return new Station(id, name);
@@ -48,7 +48,16 @@ public class StationH2Dao implements StationRepository {
 
     @Override
     public Optional<Station> findByName(String name) {
-        return Optional.empty();
+        String query = "SELECT * FROM STATION WHERE name = ?";
+
+        return this.jdbcTemplate.query(query, (rs) -> {
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                String stationName = rs.getString("name");
+                return Optional.of(new Station(id, stationName));
+            }
+            return Optional.empty();
+        }, name);
     }
 
     @Override
