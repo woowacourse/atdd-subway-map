@@ -27,7 +27,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(
         @RequestBody StationRequest stationRequest) {
         Station newStation = stationService.createStation(stationRequest.getName());
@@ -37,7 +37,7 @@ public class StationController {
             .body(stationResponse);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
