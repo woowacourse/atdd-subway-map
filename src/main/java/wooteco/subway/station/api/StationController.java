@@ -24,7 +24,8 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
             @RequestBody @Valid StationRequest stationRequest) {
         StationResponse newStation = stationService.createStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+        String uri = "/stations/" + newStation.getId();
+        return ResponseEntity.created(URI.create(uri))
                 .body(newStation);
     }
 
