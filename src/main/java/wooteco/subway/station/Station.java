@@ -3,27 +3,12 @@ package wooteco.subway.station;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
-    private String name;
-
-    public Station() {
-    }
+    private final Long id;
+    private final String name;
 
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public Station(final String name) {
-        this.name = name;
-    }
-
-    public final boolean isId(final Long id) {
-        return this.id.equals(id);
-    }
-
-    public final boolean sameName(final Station other) {
-        return this.name.equals(other.name);
     }
 
     public final Long getId() {

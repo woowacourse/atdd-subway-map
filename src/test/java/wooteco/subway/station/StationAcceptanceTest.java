@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends AcceptanceTest {
+final class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -60,8 +62,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then()
-                .log().all()
+                .then().log().all()
                 .extract();
 
         // then
@@ -100,15 +101,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        List<Long> expectedStationIds = Arrays
+                .asList(stationId(createResponse1), stationId(createResponse2));
+        List<Long> resultStationIds = resultStationsIds(response);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
+
+    private Long stationId(final ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
+    private List<Long> resultStationsIds(ExtractableResponse<Response> response) {
+        final JsonPath jsonPath = response.jsonPath();
+        final List<StationResponse> stationResponses = jsonPath.getList(".", StationResponse.class);
+
+        return stationResponses.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
+
 
     @DisplayName("지하철역을 제거한다.")
     @Test
