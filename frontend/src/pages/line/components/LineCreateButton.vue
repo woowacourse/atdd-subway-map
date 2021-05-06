@@ -3,7 +3,7 @@
     <template slot="trigger">
       <v-btn
         @click="initAllStationsView"
-        class="mx-2 absolute right-30 z-1 line-create-button z-10"
+        class="mx-2 line-create-button"
         fab
         color="amber"
       >
@@ -89,6 +89,7 @@
                   small
                   class="color-button ma-1"
                   depressed
+                  min-width="30"
                   :color="option.color"
                   @click="setLineColor(option.color)"
                 ></v-btn>
@@ -207,15 +208,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.color-button {
-  min-width: 30px !important;
+.arrow-left-right-icon {
+  bottom: 15px;
 }
 
 .line-create-button {
-  bottom: -25px;
-}
-
-.arrow-left-right-icon {
-  bottom: 15px;
+  top: -29px;
 }
 </style>
