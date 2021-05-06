@@ -1,8 +1,7 @@
 package wooteco.subway.line;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.NoSuchLineException;
+import wooteco.subway.line.exception.NoSuchLineException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

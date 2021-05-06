@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.exception.NoSuchStationException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class StationDao implements StationRepository {
     @Override
     public void delete(Long id) {
         if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new IllegalArgumentException("해당하는 id의 역이 없습니다.");
+            throw new NoSuchStationException("해당하는 id의 역이 없습니다.");
         }
     }
 }
