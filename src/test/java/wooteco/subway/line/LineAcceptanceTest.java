@@ -335,13 +335,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
     }
-
-    @Test
-    void name() {
-        //given
-
-        //when
-
-        //then
-    }
 }

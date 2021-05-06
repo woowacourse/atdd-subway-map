@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -37,8 +38,12 @@ class LineServiceTest {
         List<LineResponse> lineResponses = lineService.findAll();
 
         //then
-        assertThat(lineResponses.get(0).getName()).isEqualTo("2호선");
-        assertThat(lineResponses.get(1).getName()).isEqualTo("3호선");
+        assertAll(
+            () -> assertThat(lineResponses.get(0).getId()).isEqualTo(1L),
+            () -> assertThat(lineResponses.get(0).getName()).isEqualTo("2호선"),
+            () -> assertThat(lineResponses.get(1).getId()).isEqualTo(2L),
+            () -> assertThat(lineResponses.get(1).getName()).isEqualTo("3호선")
+        );
     }
 
     @DisplayName("노선 생성")
