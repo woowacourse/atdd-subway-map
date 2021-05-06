@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MemoryStationRepository implements StationRepository {
-    private Long seq = 0L;
-    private List<Station> stations = new ArrayList<>();
+    private static Long seq = 0L;
+    private static List<Station> stations = new ArrayList<>();
 
     @Override
     public Station save(Station station) {
@@ -38,7 +38,7 @@ public class MemoryStationRepository implements StationRepository {
     @Override
     public Station findById(Long id) {
         return stations.stream()
-                .filter(station -> station.equalId(id))
+                .filter(station -> station.isSameId(id))
                 .findFirst()
                 .get();
     }
@@ -51,6 +51,6 @@ public class MemoryStationRepository implements StationRepository {
 
     private boolean validateDuplicateName(Station newStation) {
         return stations.stream()
-                .anyMatch(station -> station.equalName(newStation));
+                .anyMatch(station -> station.isSameName(newStation));
     }
 }

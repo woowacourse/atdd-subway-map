@@ -1,10 +1,12 @@
 package wooteco.subway.station.repository;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
@@ -27,14 +29,18 @@ public class JDBCStationRepository implements StationRepository {
 
     @Override
     public Station save(Station station) {
-        String query = "INSERT INTO station (name) VALUES(?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        try {
+            String query = "INSERT INTO station (name) VALUES(?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            this.jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, station.getName());
+                return ps;
+            }, keyHolder);
+            return findById(keyHolder.getKey().longValue());
+        } catch (DuplicateKeyException e) {
+            throw new DuplicatedNameException(e.getCause());
+        }
     }
 
     @Override

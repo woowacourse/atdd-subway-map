@@ -15,7 +15,7 @@ public class MemoryLineRepository implements LineRepository {
     private static List<Line> lines = new ArrayList<>();
 
     public Line save(Line line) {
-        validateDuplicateName(line);
+        validateDuplicateName(line.getName());
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
         return persistLine;
@@ -36,7 +36,7 @@ public class MemoryLineRepository implements LineRepository {
     @Override
     public Line findById(Long id) {
         return lines.stream()
-                .filter(line -> line.equalId(id))
+                .filter(line -> line.isSameId(id))
                 .findFirst()
                 .get();
     }
@@ -49,7 +49,7 @@ public class MemoryLineRepository implements LineRepository {
 
     @Override
     public void update(Line line) {
-        validateDuplicateName(line);
+        validateDuplicateName(line.getName());
         delete(line.getId());
         lines.add(line);
     }
@@ -59,9 +59,9 @@ public class MemoryLineRepository implements LineRepository {
         lines.clear();
     }
 
-    private void validateDuplicateName(Line newLine) {
+    private void validateDuplicateName(String name) {
         if (lines.stream()
-                .anyMatch(line -> line.equalName(newLine))) {
+                .anyMatch(line -> line.isSameName(name))) {
             throw new DuplicatedNameException();
         }
     }
