@@ -9,7 +9,6 @@ import wooteco.subway.station.domain.Station;
 import java.util.List;
 import java.util.Optional;
 
-@Primary
 @Repository
 public class StationH2Dao implements StationDao{
 
@@ -35,13 +34,13 @@ public class StationH2Dao implements StationDao{
     @Override
     public Optional<Station> findById(Long stationId) {
         String findQuery = "SELECT * FROM station WHERE id = ?;";
-        return jdbcTemplate.queryForList(findQuery, Station.class, stationId).stream().findAny();
+        return jdbcTemplate.query(findQuery, stationRowMapper, stationId).stream().findAny();
     }
 
     @Override
     public Optional<Station> findByName(String stationName) {
         String findQuery = "SELECT * FROM station WHERE name = ?;";
-        return jdbcTemplate.queryForList(findQuery, Station.class, stationName).stream().findAny();
+        return jdbcTemplate.query(findQuery, stationRowMapper, stationName).stream().findAny();
     }
 
     @Override
@@ -54,11 +53,5 @@ public class StationH2Dao implements StationDao{
     public void delete(Long id) {
         String findQuery = "DELETE FROM station WHERE id = ?;";
         jdbcTemplate.update(findQuery, id);
-    }
-
-    @Override
-    public void clear() {
-        String findQuery = "TRUNCATE TABLE station;";
-        jdbcTemplate.update(findQuery);
     }
 }
