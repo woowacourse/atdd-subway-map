@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.station.StationDao;
 
 import java.net.URI;
 import java.util.List;
@@ -33,6 +34,12 @@ public class LineController {
         Line line = lineRequest.toEntity();
         LineDao.update(id, line);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        LineDao.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

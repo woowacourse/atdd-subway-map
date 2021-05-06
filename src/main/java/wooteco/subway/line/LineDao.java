@@ -44,9 +44,13 @@ public class LineDao {
     }
 
     public static void update(Long id, Line newLine) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다.");
-        }
+        delete(id);
         lines.add(createNewObject(newLine));
+    }
+
+    public static void delete(Long id) {
+        if (!lines.removeIf(line -> line.getId().equals(id))) {
+            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+        }
     }
 }

@@ -83,6 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response2.body().asString()).isEqualTo("중복된 노선입니다.");
     }
 
+    @DisplayName("노선을 조회한다.")
     @Test
     void showLines() {
         /// given
@@ -118,5 +119,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(line -> line.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(LineDao.findAll().size()).isEqualTo(1);
+        assertThat(LineDao.findAll().get(0).getName()).isEqualTo("2호선");
     }
 }
