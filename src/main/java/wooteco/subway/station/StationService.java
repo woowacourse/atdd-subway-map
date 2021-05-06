@@ -17,7 +17,7 @@ public class StationService {
     }
 
     public List<StationDto> showStations() {
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationDao.showAll();
         return stations.stream()
             .map(station -> new StationDto(station.getId(), station.getName()))
             .collect(Collectors.toList());

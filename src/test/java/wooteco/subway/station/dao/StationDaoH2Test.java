@@ -21,7 +21,7 @@ class StationDaoH2Test {
     @DisplayName("전체 역 반환 테스트")
     @Test
     public void checkAllStation() {
-        List<Station> stationeee = stationDao.findAll();
+        List<Station> stationeee = stationDao.showAll();
 
         for (Station station : stationeee) {
             System.out.println(station.getName());
@@ -33,7 +33,7 @@ class StationDaoH2Test {
         stationDao.save(station2);
 
         //when
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationDao.showAll();
 
         System.out.println("################ START ###################");
         for (Station station : stations) {
@@ -56,7 +56,7 @@ class StationDaoH2Test {
         stationDao.save(station1);
 
         //then
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationDao.showAll();
         Station responseStation = stations.get(0);
         assertThat(responseStation.getName()).isEqualTo("상봉역");
     }

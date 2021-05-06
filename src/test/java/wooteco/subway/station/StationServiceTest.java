@@ -47,7 +47,7 @@ class StationServiceTest {
         );
 
         StationDaoCache mockDao = mock(StationDaoCache.class);
-        when(mockDao.findAll()).thenReturn(stations);
+        when(mockDao.showAll()).thenReturn(stations);
         StationService stationService = new StationService(mockDao);
 
         List<StationDto> expectedDtos = Arrays.asList(

@@ -53,7 +53,7 @@ public class LineServiceTest {
         );
 
         LineDaoCache mockLineDao = mock(LineDaoCache.class);
-        when(mockLineDao.findAll()).thenReturn(lines);
+        when(mockLineDao.showAll()).thenReturn(lines);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         List<LineDto> expectedDtos = Arrays.asList(
@@ -84,7 +84,7 @@ public class LineServiceTest {
         Line line = new Line((long) 1, "창원선", "청록색");
 
         LineDaoCache mockLineDao = mock(LineDaoCache.class);
-        when(mockLineDao.findOne(any())).thenReturn(line);
+        when(mockLineDao.show(any())).thenReturn(line);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         //when

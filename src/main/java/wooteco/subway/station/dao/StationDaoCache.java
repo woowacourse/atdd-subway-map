@@ -30,7 +30,7 @@ public class StationDaoCache implements StationDao {
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<Station> showAll() {
         return stations;
     }
 

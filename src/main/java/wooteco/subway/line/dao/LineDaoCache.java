@@ -14,7 +14,7 @@ public class LineDaoCache implements LineDao {
     private static List<Line> lines = new ArrayList<>();
 
     @Override
-    public Line save(Line line) {
+    public Line create(Line line) {
         validateDuplicate(line);
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
@@ -35,7 +35,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public Line findOne(Long id) {
+    public Line show(Long id) {
         return lines.stream()
             .filter(element -> element.getId() == id)
             .findAny()
@@ -43,7 +43,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<Line> showAll() {
         return lines;
     }
 

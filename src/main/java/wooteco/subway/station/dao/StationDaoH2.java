@@ -38,7 +38,7 @@ public class StationDaoH2 implements StationDao {
     }
 
     @Override
-    public List<Station> findAll() {
+    public List<Station> showAll() {
         String statement = "SELECT * FROM STATION";
         return jdbcTemplate.query(statement, rowMapper);
     }

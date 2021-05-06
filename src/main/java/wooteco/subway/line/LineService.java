@@ -19,19 +19,19 @@ public class LineService {
 
     public LineDto createLine(LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
-        Line saveLine = lineDao.save(line);
+        Line saveLine = lineDao.create(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
     }
 
     public List<LineDto> findAll() {
-        return lineDao.findAll()
+        return lineDao.showAll()
             .stream()
             .map(it -> new LineDto(it.getId(), it.getName(), it.getColor()))
             .collect(Collectors.toList());
     }
 
     public LineDto findOne(LineDto lineDto) {
-        Line line = lineDao.findOne(lineDto.getId());
+        Line line = lineDao.show(lineDto.getId());
         return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 

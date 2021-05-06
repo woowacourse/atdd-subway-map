@@ -31,7 +31,7 @@ public class LineDaoH2 implements LineDao {
     }
 
     @Override
-    public Line save(Line line) {
+    public Line create(Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
@@ -40,13 +40,13 @@ public class LineDaoH2 implements LineDao {
     }
 
     @Override
-    public Line findOne(Long id) {
+    public Line show(Long id) {
         String statement = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(statement, rowMapper, id);
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<Line> showAll() {
         String statement = "SELECT * FROM LINE";
         return jdbcTemplate.query(statement, rowMapper);
     }

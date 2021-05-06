@@ -5,11 +5,11 @@ import wooteco.subway.line.Line;
 
 public interface LineDao {
 
-    Line save(Line line);
+    Line create(Line line);
 
-    Line findOne(Long id);
+    Line show(Long id);
 
-    List<Line> findAll();
+    List<Line> showAll();
 
     int update(long id, Line line);
 

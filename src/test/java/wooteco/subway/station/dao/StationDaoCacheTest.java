@@ -28,7 +28,7 @@ class StationDaoCacheTest {
         //given
 
         //when
-        List<Station> stations = stationDaoCache.findAll();
+        List<Station> stations = stationDaoCache.showAll();
 
         //then
         assertTrue(stations.containsAll(Arrays.asList(STATION1, STATION2)));
@@ -42,7 +42,7 @@ class StationDaoCacheTest {
         stationDaoCache.save(station);
 
         //when
-        List<Station> stations = stationDaoCache.findAll();
+        List<Station> stations = stationDaoCache.showAll();
 
         //then
         assertTrue(stations.containsAll(Arrays.asList(STATION1, STATION2, station)));
