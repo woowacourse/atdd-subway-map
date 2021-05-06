@@ -62,6 +62,7 @@ public class StationH2Dao implements StationRepository {
 
     @Override
     public void delete(Long id) {
-
+        String query = "DELETE FROM STATION WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }
