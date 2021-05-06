@@ -1,12 +1,10 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.sql.SQLNonTransientException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +13,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
@@ -143,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-purple-505");
         params.put("name", "백호선");
 
-        ExtractableResponse<Response> response2= RestAssured.given().log().all()
+        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -190,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get("/lines/"+String.valueOf(responseId))
+            .get("/lines/" + responseId)
             .then().log().all()
             .extract();
 
@@ -209,7 +206,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get("/lines/"+String.valueOf(999))
+            .get("/lines/" + 999)
             .then().log().all()
             .extract();
 
@@ -244,13 +241,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body(updateParams)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .put("/lines/"+String.valueOf(responseId))
+            .put("/lines/" + responseId)
             .then().log().all()
             .extract();
 
         ExtractableResponse<Response> checkLineResponse = RestAssured.given().log().all()
             .when()
-            .get("/lines/"+String.valueOf(responseId))
+            .get("/lines/" + responseId)
             .then().log().all()
             .extract();
 
@@ -277,7 +274,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body(updateParams)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .put("/lines/" + String.valueOf(999))
+            .put("/lines/" + 999)
             .then().log().all()
             .extract();
 
@@ -322,13 +319,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body(updateParams)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .put("/lines/"+String.valueOf(responseId))
+            .put("/lines/" + responseId)
             .then().log().all()
             .extract();
 
         ExtractableResponse<Response> checkLineResponse = RestAssured.given().log().all()
             .when()
-            .get("/lines/"+String.valueOf(responseId))
+            .get("/lines/" + responseId)
             .then().log().all()
             .extract();
 
@@ -360,7 +357,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/"+String.valueOf(responseId))
+            .delete("/lines/" + responseId)
             .then().log().all()
             .extract();
 
@@ -376,7 +373,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/"+String.valueOf(999))
+            .delete("/lines/" + 999)
             .then().log().all()
             .extract();
 

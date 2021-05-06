@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.DuplicatedLineNameException;
 import wooteco.subway.exception.VoidLineException;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.dao.LineDaoCache;
 
 class LineDaoCacheTest {
 
@@ -47,7 +46,6 @@ class LineDaoCacheTest {
         //then
         assertThatThrownBy(() -> lineDaoCache.save(line1))
             .isInstanceOf(DuplicatedLineNameException.class);
-
 
         assertThatThrownBy(() -> lineDaoCache.save(line2))
             .isInstanceOf(DuplicatedLineNameException.class);

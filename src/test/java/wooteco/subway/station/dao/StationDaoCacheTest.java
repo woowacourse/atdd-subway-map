@@ -1,6 +1,6 @@
 package wooteco.subway.station.dao;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.dao.StationDaoCache;
 
 class StationDaoCacheTest {
 

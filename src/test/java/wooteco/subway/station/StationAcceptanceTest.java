@@ -12,12 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -133,7 +129,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         long responseId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/stations/"+String.valueOf(responseId))
+            .delete("/stations/" + responseId)
             .then().log().all()
             .extract();
 
@@ -149,7 +145,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/stations/"+String.valueOf(999))
+            .delete("/stations/" + 999)
             .then().log().all()
             .extract();
 

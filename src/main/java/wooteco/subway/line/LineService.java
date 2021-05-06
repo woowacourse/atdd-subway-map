@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import java.sql.SQLNonTransientException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -38,13 +37,13 @@ public class LineService {
 
     public void update(LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
-        if (lineDao.update(lineDto.getId(), line) == 0){
+        if (lineDao.update(lineDto.getId(), line) == 0) {
             throw new EmptyResultDataAccessException(0);
         }
     }
 
     public void delete(LineDto lineDto) {
-        if (lineDao.delete(lineDto.getId()) == 0){
+        if (lineDao.delete(lineDto.getId()) == 0) {
             throw new VoidLineException("[ERROR] 해당노선이 존재하지 않습니다.");
         }
     }
