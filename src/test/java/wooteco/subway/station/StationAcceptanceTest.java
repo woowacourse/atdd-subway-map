@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,11 +17,11 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.web.dto.StationResponse;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("역 인수 테스트")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
     @Test
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -41,8 +41,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("중복된 지하철 역을 생성할 수 없다.")
     @Test
+    @DisplayName("중복된 지하철 역을 생성할 수 없다.")
     void cannotCreateDuplicatedStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -70,11 +70,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.body().asString()).isEqualTo("중복된 지하철 역입니다.");
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -101,8 +100,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
+    @DisplayName("지하철역을 조회한다.")
     void showStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
@@ -134,7 +133,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
@@ -143,8 +142,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
     @Test
+    @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -175,7 +174,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//        assertThat(StationDao.findAll().size()).isEqualTo(1);
-//        assertThat(StationDao.findAll().get(0).getName()).isEqualTo("잠실역");
+        // todo DB 사이즈 1, 이름 검사
     }
 }

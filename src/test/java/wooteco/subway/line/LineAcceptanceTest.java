@@ -1,27 +1,24 @@
 package wooteco.subway.line;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import wooteco.subway.AcceptanceTest;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import wooteco.subway.AcceptanceTest;
 import wooteco.subway.web.dto.LineResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@DisplayName("노선 관련 기능")
-@JdbcTest
+@DisplayName("노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Map<String, String> params1 = new HashMap<>();
@@ -34,8 +31,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "bg-green-600");
     }
 
-    @DisplayName("노선을 생성한다.")
     @Test
+    @DisplayName("노선을 생성한다.")
     void createLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -52,8 +49,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
-    @DisplayName("중복된 지하철 노선을 생성할 수 없다.")
     @Test
+    @DisplayName("중복된 지하철 노선을 생성할 수 없다.")
     void cannotCreateDuplicatedLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -77,11 +74,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response2.body().asString()).isEqualTo("중복된 노선입니다.");
     }
 
-    @DisplayName("노선을 조회한다.")
     @Test
+    @DisplayName("노선을 조회한다.")
     void showLines() {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -118,8 +114,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
     @Test
+    @DisplayName("지하철 노선을 제거한다.")
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -148,7 +144,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//        assertThat(LineDao.findAll().size()).isEqualTo(1);
-//        assertThat(LineDao.findAll().get(0).getName()).isEqualTo("2호선");
+        // todo DB 사이즈 1, 이름 검사
     }
 }
