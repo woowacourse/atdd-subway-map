@@ -21,15 +21,17 @@ public class LineService {
     }
 
     public LineResponse save(LineRequest lineRequest) {
+        validateDuplicateName(lineRequest.getName());
+        validateIfDownStationIsEqualToUpStation(lineRequest);
+        Line line = lineRequestToLine(lineRequest);
+        Line savedLine = lineDao.save(line);
+        return new LineResponse(savedLine);
+    }
+
+    private void validateIfDownStationIsEqualToUpStation(LineRequest lineRequest) {
         if (lineRequest.isSameStations()) {
             throw new IllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
         }
-        Line line = lineRequestToLine(lineRequest);
-        if (lineDao.findByName(line.getName()).isPresent()) {
-            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
-        }
-        Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine);
     }
 
     public Line lineRequestToLine(LineRequest lineRequest) {
@@ -58,7 +60,14 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
+        validateDuplicateName(lineRequest.getName());
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
+    }
+
+    private void validateDuplicateName(String lineName) {
+        if (lineDao.findByName(lineName).isPresent()) {
+            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
+        }
     }
 }
