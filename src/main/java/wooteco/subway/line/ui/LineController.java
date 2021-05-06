@@ -11,6 +11,7 @@ import wooteco.subway.line.ui.dto.LineResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -44,7 +45,6 @@ public class LineController {
     }
 
     @GetMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<LineResponse>> allLines() {
@@ -61,7 +61,6 @@ public class LineController {
     }
 
     @GetMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
