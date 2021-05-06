@@ -8,9 +8,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
 public class StationDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -45,6 +47,10 @@ public class StationDao {
 
     public void delete(Long id) {
         String query = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        int affectedRowNumber = jdbcTemplate.update(query, id);
+
+        if (affectedRowNumber == 0) {
+            throw new NoSuchLineException("없는 노선입니다.");
+        }
     }
 }

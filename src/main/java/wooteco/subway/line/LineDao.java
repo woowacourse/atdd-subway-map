@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.NoSuchLineException;
 
 @Repository
 public class LineDao {
@@ -43,21 +42,15 @@ public class LineDao {
 
     public Line find(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
-        try {
-            return jdbcTemplate.queryForObject(query,
-                (resultSet, rowNum) -> {
-                    Line line = new Line(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("color")
-                    );
-                    return line;
-                }, id);
-        } catch (Exception e) {
-            throw new NoSuchLineException(e.getMessage());
-        }
-
-
+        return jdbcTemplate.queryForObject(query,
+            (resultSet, rowNum) -> {
+                Line line = new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color")
+                );
+                return line;
+            }, id);
     }
 
     public void modify(Long id, LineRequest lineRequest) {
