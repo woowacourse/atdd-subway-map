@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.station.Station;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@Transactional
 class StationDaoTest {
 
     @Autowired
@@ -42,7 +44,7 @@ class StationDaoTest {
     @Test
     void findAll() {
         // given
-        Station station1 = new Station("수서역");
+        Station station1 = new Station("잠실역");
         Station station2 = new Station("일원역");
 
         // when
@@ -60,7 +62,7 @@ class StationDaoTest {
     @Test
     void deleteById() {
         // given
-        Station station = new Station("구의역");
+        Station station = new Station("잠실역");
         Station persistedStation = stationDao.save(station);
 
         // when

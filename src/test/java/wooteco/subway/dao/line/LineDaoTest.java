@@ -12,9 +12,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@Transactional
 class LineDaoTest {
 
     @Autowired
@@ -44,8 +46,8 @@ class LineDaoTest {
     @Test
     void findAll() {
         // given
-        Line line1 = new Line("4호선", "bg-blue-600");
-        Line line2 = new Line("5호선", "bg-yellow-600");
+        Line line1 = new Line("3호선", "bg-blue-600");
+        Line line2 = new Line("4호선", "bg-yellow-600");
 
         // when
         lineDao.save(line1);
@@ -64,7 +66,7 @@ class LineDaoTest {
     @Test
     void findById() {
         // given
-        Line line = new Line("6호선", "bg-red-600");
+        Line line = new Line("3호선", "bg-red-600");
 
         // when
         Line persistedLine = lineDao.save(line);
@@ -81,17 +83,17 @@ class LineDaoTest {
     @Test
     void update() {
         // given
-        Line line = new Line("7호선", "bg-red-600");
+        Line line = new Line("3호선", "bg-red-600");
 
         // when
         Line persistedLine = lineDao.save(line);
-        lineDao.update(new Line(persistedLine.getId(), "8호선", "bg-blue-600"));
+        lineDao.update(new Line(persistedLine.getId(), "4호선", "bg-blue-600"));
         Line updatedLine = lineDao.findById(persistedLine.getId());
 
         // then
         assertAll(
             () -> assertThat(persistedLine.getId()).isEqualTo(updatedLine.getId()),
-            () -> assertThat("8호선").isEqualTo(updatedLine.getName()),
+            () -> assertThat("4호선").isEqualTo(updatedLine.getName()),
             () -> assertThat("bg-blue-600").isEqualTo(updatedLine.getColor())
         );
     }
@@ -99,7 +101,7 @@ class LineDaoTest {
     @Test
     void deleteById() {
         // given
-        Line line = new Line("9호선", "bg-black-600");
+        Line line = new Line("3호선", "bg-black-600");
         Line persistedLine = lineDao.save(line);
 
         // when
