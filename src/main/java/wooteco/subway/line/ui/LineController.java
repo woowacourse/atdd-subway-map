@@ -43,10 +43,7 @@ public class LineController {
                 );
     }
 
-    @GetMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> allLines() {
         final List<LineResponse> lineResponses = lineService.allLines().stream()
                 .map(line ->
@@ -60,10 +57,7 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
         final Line line = lineService.findById(id);
 
