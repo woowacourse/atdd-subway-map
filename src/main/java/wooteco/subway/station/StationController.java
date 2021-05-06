@@ -18,8 +18,8 @@ public class StationController {
     private final StationDao stationDao;
     private final Logger logger = LoggerFactory.getLogger(StationController.class);
 
-    public StationController() {
-        this.stationDao = new MemoryStationDao();
+    public StationController(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     @PostMapping
@@ -45,8 +45,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ResponseError> handleException(IllegalArgumentException e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }

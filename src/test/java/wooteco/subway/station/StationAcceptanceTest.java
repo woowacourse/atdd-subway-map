@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
@@ -21,12 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private final StationDao stationDao = new MemoryStationDao();
-
-    @AfterEach
-    void clean() {
-        stationDao.clear();
-    }
+    @Autowired
+    private  StationDao stationDao;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -149,21 +146,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStationException() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
         String uri = "/stations/{id}";
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(uri, 2L)
+                .delete(uri, 0L)
                 .then().log().all()
                 .extract();
 
