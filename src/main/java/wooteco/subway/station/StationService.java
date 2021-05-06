@@ -12,11 +12,11 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(String name) {
-        if (isStationExist(name)) {
+    public Station createStation(StationRequest stationRequest) {
+        if (isStationExist(stationRequest.getName())) {
             throw new StationExistenceException("존재하는 역 이름입니다.");
         }
-        return stationDao.save(name);
+        return stationDao.save(stationRequest.getName());
     }
 
     public List<Station> findAll() {

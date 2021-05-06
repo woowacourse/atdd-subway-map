@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class StationServiceTest {
-    private static final String stationName = "잠실역";
+    private final String stationName = "잠실역";
 
     @Autowired
     private StationService stationService;
@@ -20,8 +20,11 @@ class StationServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private StationRequest stationRequest;
+
     @BeforeEach
     void setUp() {
+        stationRequest = new StationRequest("잠실역");
         jdbcTemplate.execute("delete from STATION");
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
     }
@@ -29,15 +32,15 @@ class StationServiceTest {
     @Test
     @DisplayName("역 정상 생성 테스트")
     void createStation() {
-        Station savedStation = stationService.createStation(stationName);
+        Station savedStation = stationService.createStation(stationRequest);
         assertEquals(stationName, savedStation.getName());
     }
 
     @Test
     @DisplayName("역 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        stationService.createStation(stationName);
-        assertThatThrownBy(() -> stationService.createStation(stationName))
+        stationService.createStation(stationRequest);
+        assertThatThrownBy(() -> stationService.createStation(stationRequest))
                 .isInstanceOf(StationExistenceException.class);
     }
 }
