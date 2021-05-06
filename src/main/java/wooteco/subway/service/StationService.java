@@ -19,7 +19,7 @@ public class StationService {
         boolean isDuplicated = stations.stream()
             .anyMatch(station -> station.getName().equals(name));
         if (isDuplicated) {
-            throw new IllegalArgumentException("중복!");
+            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
         }
         Station station = new Station(name);
         long id = stationDao.save(station);
