@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -40,22 +41,34 @@ public class LineH2Dao implements LineRepository {
     @Override
     public List<Line> findAll() {
         String query = "SELECT * FROM LINE";
-        return jdbcTemplate.query(query, (rs, rn) -> {
-            long id = rs.getLong("id");
-            String name = rs.getString("name");
-            String color = rs.getString("color");
-            return new Line(id, name, color);
-        });
+        return jdbcTemplate.query(query, lineRowMapper);
     }
+
+    private final RowMapper<Line> lineRowMapper = (rs, rn) -> {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
 
     @Override
     public Line findById(Long id) {
-        return null;
+        String query = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        return Optional.empty();
+        String query = "SELECT * FROM LINE WHERE name = ?";
+        return this.jdbcTemplate.query(query, (rs) -> {
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                String lineName = rs.getString("name");
+                String color = rs.getString("color");
+                return Optional.of(new Line(id, lineName, color));
+            }
+            return Optional.empty();
+        }, name);
     }
 
     @Override
