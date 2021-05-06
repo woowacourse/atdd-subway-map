@@ -56,9 +56,8 @@ public class LineDao {
     }
 
     public void modify(Long id, LineRequest lineRequest) {
-        Line line = find(id);
-        lines.set(lines.indexOf(line), new Line(line.getId(), lineRequest.getName(),
-            lineRequest.getColor()));
+        String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
+        jdbcTemplate.update(query, lineRequest.getName(), lineRequest.getColor(), id);
     }
 
     public long save(Line line) {
