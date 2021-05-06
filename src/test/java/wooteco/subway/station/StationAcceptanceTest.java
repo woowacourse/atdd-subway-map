@@ -71,6 +71,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().asString()).isEqualTo("이미 존재하는 역 이름입니다.");
     }
 
+    @DisplayName("잘못된 요청값으로 지하철역 생성 요청시, 예외처리")
+    @Test
+    void createStationFailByNotValidatedRequest() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("역 이름은 최소 2글자 이상이어야 합니다.");
+    }
+
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
@@ -114,6 +135,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철역을 제거한다.")
+    @Test
     void deleteStation() {
         // given
         Map<String, String> params = new HashMap<>();

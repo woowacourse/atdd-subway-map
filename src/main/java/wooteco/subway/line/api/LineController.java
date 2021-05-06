@@ -1,5 +1,6 @@
 package wooteco.subway.line.api;
 
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse newLine = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
     }
@@ -38,7 +39,7 @@ public class LineController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/lines/{id}")
-    public void updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public void updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         lineService.update(id, lineRequest);
     }
 

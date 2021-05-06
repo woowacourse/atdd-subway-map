@@ -1,5 +1,6 @@
 package wooteco.subway.station.api;
 
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(
-            @RequestBody StationRequest stationRequest) {
+            @RequestBody @Valid StationRequest stationRequest) {
         StationResponse newStation = stationService.createStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
                 .body(newStation);
