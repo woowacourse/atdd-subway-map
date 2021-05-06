@@ -27,7 +27,9 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
         LineResponse lineResponse = new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), new ArrayList<>());
-        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId())).body(lineResponse);
+        URI uri = URI.create("/lines/" + savedLine.getId());
+        return ResponseEntity.created(uri)
+                .body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,25 +38,29 @@ public class LineController {
                 .stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok()
+                .body(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok()
+                .body(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
         lineService.editLine(id, lineRequest.getName(), lineRequest.getColor());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable long id) {
         lineService.deleteLine(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }
