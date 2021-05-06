@@ -43,6 +43,8 @@
     - [x] LineDao 인터페이스화
 - [ ] XXXDao에서 관리하던 정보를 DB에서 관리할 수 있도록 변경하기
 - [ ] 스프링 JDBC 활용하여 H2 DB에 저장하기
+  - [ ] DBLineDao 구현
+  - [ ] DBStationDao 구현
   - [ ] Dao 객체가 아닌 DB에서 데이터를 관리하기
   - [ ] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
 - [ ] H2 DB를 통해 저장된 값 확인하기
