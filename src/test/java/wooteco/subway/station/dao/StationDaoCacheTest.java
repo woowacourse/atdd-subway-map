@@ -25,26 +25,26 @@ class StationDaoCacheTest {
     @DisplayName("전체 역 반환 테스트")
     @Test
     public void checkAllStation() {
-        //given
+        // given
 
-        //when
+        // when
         List<Station> stations = stationDaoCache.showAll();
 
-        //then
+        // then
         assertTrue(stations.containsAll(Arrays.asList(STATION1, STATION2)));
     }
 
     @DisplayName("저장 테스트")
     @Test
     public void checkSave() {
-        //given
+        // given
         Station station = new Station("상봉역");
         stationDaoCache.save(station);
 
-        //when
+        // when
         List<Station> stations = stationDaoCache.showAll();
 
-        //then
+        // then
         assertTrue(stations.containsAll(Arrays.asList(STATION1, STATION2, station)));
     }
 

@@ -26,27 +26,27 @@ class StationResponseTest {
     @Test
     @DisplayName("역 관련 Id 확인 생성")
     void checkStationIdResponse() {
-        //given
+        // given
         StationResponse stationResponse = new StationResponse(ID, NAME);
 
-        //when
+        // when
         Long stationId = stationResponse.getId();
 
-        //then
+        // then
         assertThat(stationId).isEqualTo(ID);
     }
 
     @Test
     @DisplayName("역 관련 Name 확인 생성")
     void checkStationNameResponse() {
-        //given
+        // given
         StationResponse stationResponse = new StationResponse(ID, NAME);
 
-        //when
+        // when
         Long stationId = stationResponse.getId();
         String stationName = stationResponse.getName();
 
-        //then
+        // then
         assertThat(stationName).isEqualTo(NAME);
     }
 }

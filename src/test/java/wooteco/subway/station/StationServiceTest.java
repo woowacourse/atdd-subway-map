@@ -18,7 +18,7 @@ class StationServiceTest {
     @DisplayName("서비스에서 저장 테스트")
     @Test
     void save() {
-        //given
+        // given
         StationDto requestStationDto = new StationDto("스타벅스 선정릉역");
         Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
         Station station = new Station(requestStationDto.getName());
@@ -28,10 +28,10 @@ class StationServiceTest {
 
         StationService stationService = new StationService(mockDao);
 
-        //when
+        // when
         StationDto savedStationDto = stationService.save(requestStationDto);
 
-        //then
+        // then
         assertThat(savedStationDto.getId()).isEqualTo(savedStation.getId());
         assertThat(savedStationDto.getName()).isEqualTo(savedStation.getName());
     }
@@ -39,7 +39,7 @@ class StationServiceTest {
     @DisplayName("서비스에서 전체 역 호출")
     @Test
     void load() {
-        //given
+        // given
         List<Station> stations = Arrays.asList(
             new Station((long) 1, "성서공단역"),
             new Station((long) 2, "이곡역"),
@@ -56,10 +56,10 @@ class StationServiceTest {
             new StationDto((long) 3, "용산역")
         );
 
-        //when
+        // when
         List<StationDto> requestedDtos = stationService.showStations();
 
-        //then
+        // then
         assertThat(requestedDtos.get(0).getId()).isEqualTo(expectedDtos.get(0).getId());
         assertThat(requestedDtos.get(0).getName()).isEqualTo(expectedDtos.get(0).getName());
         assertThat(requestedDtos.get(1).getId()).isEqualTo(expectedDtos.get(1).getId());

@@ -45,7 +45,7 @@ public class LineServiceTest {
     @Test
     @DisplayName("전체 노선 반환")
     void showAllLines() {
-        //given
+        // given
         List<Line> lines = Arrays.asList(
             new Line((long) 1, "대구선", "노란색"),
             new Line((long) 2, "광주선", "분홍색"),
@@ -62,10 +62,10 @@ public class LineServiceTest {
             new LineDto((long) 3, "울산선", "검은색")
         );
 
-        //when
+        // when
         List<LineDto> requestedDtos = lineServiceWithMock.findAll();
 
-        //then
+        // then
         assertThat(requestedDtos.get(0).getId()).isEqualTo(expectedDtos.get(0).getId());
         assertThat(requestedDtos.get(0).getName()).isEqualTo(expectedDtos.get(0).getName());
         assertThat(requestedDtos.get(0).getColor()).isEqualTo(expectedDtos.get(0).getColor());
@@ -80,17 +80,17 @@ public class LineServiceTest {
     @Test
     @DisplayName("특정 노선 반환")
     void findOne() {
-        //given
+        // given
         Line line = new Line((long) 1, "창원선", "청록색");
 
         LineDaoCache mockLineDao = mock(LineDaoCache.class);
         when(mockLineDao.show(any())).thenReturn(line);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
-        //when
+        // when
         LineDto requestedDto = lineServiceWithMock.findOne(new LineDto((long) 1));
 
-        //then
+        // then
         assertThat(requestedDto.getId()).isEqualTo(line.getId());
         assertThat(requestedDto.getName()).isEqualTo(line.getName());
         assertThat(requestedDto.getColor()).isEqualTo(line.getColor());
@@ -99,17 +99,17 @@ public class LineServiceTest {
     @Test
     @DisplayName("특정 노선 업데이트")
     void update() {
-        //given
+        // given
         LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
         LineDto requestDto = new LineDto(index, "7호선", "녹담색");
 
-        //when
+        // when
         lineService.update(requestDto);
         LineDto responseDto = lineService.findOne(requestDto);
 
-        //then
+        // then
         assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
         assertThat(responseDto.getColor()).isEqualTo(requestDto.getColor());
     }
@@ -117,16 +117,16 @@ public class LineServiceTest {
     @Test
     @DisplayName("특정 노선 삭제")
     void delete() {
-        //given
+        // given
         LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
         LineDto requestDto = new LineDto(index, "7호선", "녹담색");
 
-        //when
+        // when
         lineService.delete(requestDto);
 
-        //then
+        // then
         assertThatThrownBy(() -> lineService.findOne(requestDto))
             .isInstanceOf(NotFoundLineException.class);
     }

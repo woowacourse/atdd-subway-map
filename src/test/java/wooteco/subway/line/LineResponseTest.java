@@ -77,10 +77,10 @@ class LineResponseTest {
         );
         LineResponse lineResponse = new LineResponse(ID, NAME, COLOR, givenStations);
 
-        //when
+        // when
         List<StationResponse> stations = lineResponse.getStations();
 
-        //then
+        // then
         assertThat(givenStations.get(0).getId()).isEqualTo(stations.get(0).getId());
         assertThat(givenStations.get(0).getName()).isEqualTo(stations.get(0).getName());
         assertThat(givenStations.get(1).getId()).isEqualTo(stations.get(1).getId());

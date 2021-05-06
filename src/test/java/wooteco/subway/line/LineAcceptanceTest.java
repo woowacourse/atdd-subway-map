@@ -124,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선을 전체 조회한다.")
     @Test
     void checkAllLines() {
-        //given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-purple-404");
         params.put("name", "호남선");
@@ -148,14 +148,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        //when
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .get("/lines")
             .then().log().all()
             .extract();
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(response1, response2).stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -169,7 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 노선을 조회한다.")
     @Test
     public void specificLine() {
-        //given
+        // given
         final String color = "bg-purple-405";
         final String name = "부산선";
         Map<String, String> params = new HashMap<>();
@@ -184,7 +184,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
-        //when
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .get("/lines/" + responseId)
@@ -193,7 +193,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
 
-        //then
+        // then
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getColor()).isEqualTo(color);
     }
@@ -201,23 +201,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 노선을 조회한다.")
     @Test
     public void voidLine() {
-        //given
+        // given
 
-        //when
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .get("/lines/" + 999)
             .then().log().all()
             .extract();
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("특정 노선을 수정한다.")
     @Test
     public void updateLine() {
-        //given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-white-400");
         params.put("name", "구미선");
@@ -230,7 +230,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
-        //when
+        // when
         final String color = "bg-purple-406";
         final String name = "대구선";
         Map<String, String> updateParams = new HashMap<>();
@@ -252,7 +252,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         LineResponse lineResponse = checkLineResponse.jsonPath().getObject(".", LineResponse.class);
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getColor()).isEqualTo(color);
@@ -261,9 +261,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 노선을 수정한다.")
     @Test
     public void updateVoidLine() {
-        //given
+        // given
 
-        //when
+        // when
         final String color = "bg-purple-406";
         final String name = "대구선";
         Map<String, String> updateParams = new HashMap<>();
@@ -278,14 +278,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("이미 다른 노선이 사용중인 색깔로 바꾼다")
     @Test
     public void updateLineToExistedLine() {
-        //given
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-white-400");
         params.put("name", "구미선");
@@ -308,7 +308,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
-        //when
+        // when
         final String color = "bg-white-400";
         final String name = "대구선";
         Map<String, String> updateParams = new HashMap<>();
@@ -331,7 +331,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = checkLineResponse.jsonPath().getObject(".", LineResponse.class);
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -339,7 +339,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("특정 노선을 삭제한다.")
     @Test
     public void deleteSpecificLine() {
-        //given
+        // given
         final String color = "bg-purple-511";
         final String name = "울산선";
         Map<String, String> params = new HashMap<>();
@@ -354,30 +354,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
-        //when
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .delete("/lines/" + responseId)
             .then().log().all()
             .extract();
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("존재하지 않는 노선을 삭제한다.")
     @Test
     public void deleteVoidLine() {
-        //given
+        // given
 
-        //when
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .delete("/lines/" + 999)
             .then().log().all()
             .extract();
 
-        //then
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

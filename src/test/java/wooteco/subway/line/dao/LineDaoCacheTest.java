@@ -25,25 +25,27 @@ class LineDaoCacheTest {
     @DisplayName("노선 저장")
     @Test
     public void save() {
-        //given
+        // given
         Line line = new Line("10호선", "붉은색");
 
-        //when
+        // when
         Line requestedLine = lineDaoCache.create(line);
 
-        //then
+        // then
         assertThat(requestedLine.getName()).isEqualTo(line.getName());
         assertThat(requestedLine.getColor()).isEqualTo(line.getColor());
     }
 
     @DisplayName("노선 중복 저장 시도")
     @Test
-    public void duplicatedSave() {
-        //given
+    public void duplicatedSaveException() {
+        // given
         Line line1 = new Line("1호선", "초록색");
         Line line2 = new Line("2호선", "파란색");
 
-        //then
+        // when
+
+        // then
         assertThatThrownBy(() -> lineDaoCache.create(line1))
             .isInstanceOf(DuplicateLineException.class);
 
@@ -54,15 +56,15 @@ class LineDaoCacheTest {
     @DisplayName("id값에 맞는 노선 반환")
     @Test
     public void findLine() {
-        //given
+        // given
         Line line1 = new Line("12호선", "분홍색");
         Line saveLine = lineDaoCache.create(line1);
         long id = saveLine.getId();
 
-        //when
+        // when
         Line requestedLine = lineDaoCache.show(id);
 
-        //then
+        // then
         assertThat(requestedLine.getId()).isEqualTo(id);
         assertThat(requestedLine.getName()).isEqualTo(line1.getName());
         assertThat(requestedLine.getColor()).isEqualTo(line1.getColor());
@@ -70,33 +72,33 @@ class LineDaoCacheTest {
 
     @DisplayName("존재하지 않는 id 값을 가진 노선 반환 시도")
     @Test
-    void findLineVoidId() {
-        //given
+    void findLineNotFoundLineException() {
+        // given
 
-        //when
+        // when
         long id = -1;
 
-        //then
+        // then
         assertThatThrownBy(() -> lineDaoCache.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
-    @DisplayName("전 노선 호출")
+    @DisplayName("모든 노선 호출")
     @Test
     void findAll() {
-        //given
+        // given
 
-        //when
+        // when
         List<Line> lines = lineDaoCache.showAll();
 
-        //then
+        // then
         assertThat(lines.get(0)).isEqualTo(line);
     }
 
     @DisplayName("노선 업데이트")
     @Test
     void update() {
-        //given
+        // given
         Line line1 = new Line("11호선", "보라색");
         Line saveLine = lineDaoCache.create(line1);
         long id = saveLine.getId();
@@ -104,11 +106,11 @@ class LineDaoCacheTest {
         String requestColor = "노란색";
         Line requestLine = new Line(requestName, requestColor);
 
-        //when
+        // when
         lineDaoCache.update((int) id, requestLine);
         Line responseLine = lineDaoCache.show(id);
 
-        //then
+        // then
         assertThat(responseLine.getName()).isEqualTo(requestName);
         assertThat(responseLine.getColor()).isEqualTo(requestColor);
     }
@@ -116,28 +118,28 @@ class LineDaoCacheTest {
     @DisplayName("노선 삭제")
     @Test
     void remove() {
-        //given
+        // given
         Line line1 = new Line("12호선", "분홍색");
         Line saveLine = lineDaoCache.create(line1);
         long id = saveLine.getId();
 
-        //when
+        // when
         lineDaoCache.delete(id);
 
-        //then
+        // then
         assertThatThrownBy(() -> lineDaoCache.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
-    @DisplayName("노선 삭제 실패")
+    @DisplayName("노선 삭제시도 중 해당 노선을 찾지 못할 경우 예외처리")
     @Test
-    void removeFail() {
-        //given
+    void removeNotFoundException() {
+        // given
         long id = -1;
 
-        //when
+        // when
 
-        //then
+        // then
         assertThatThrownBy(() -> lineDaoCache.delete(id))
             .isInstanceOf(NotFoundLineException.class);
     }
