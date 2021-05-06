@@ -52,22 +52,25 @@ class LineAcceptanceTest {
     }
 
     private ValidatableResponse postLineApi(LineRequest lineRequest) throws JsonProcessingException {
+        String requestBody = OBJECT_MAPPER.writeValueAsString(lineRequest);
         ValidatableResponse validatableResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .body(OBJECT_MAPPER.writeValueAsString(lineRequest))
+                .body(requestBody)
                 .when().post("/lines")
                 .then().log().all();
-        if (validatableResponse.extract().statusCode() != 400) {
+        int statusCode = validatableResponse.extract().statusCode();
+        if (statusCode != 400) {
             addCreatedLineId(validatableResponse);
         }
         return validatableResponse;
     }
 
     private void addCreatedLineId(ValidatableResponse validatableResponse) {
-        long id = Long.parseLong(validatableResponse.extract()
+        String headerToken = validatableResponse.extract()
                 .header("Location")
-                .split("/")[2]);
+                .split("/")[2];
+        long id = Long.parseLong(headerToken);
         testLineIds.add(id);
     }
 
@@ -78,10 +81,10 @@ class LineAcceptanceTest {
         ValidatableResponse validatableResponse = postLineApi(lineRequest);
         long id = testLineIds.get(0);
 
-        LineResponse lineResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
-
+        LineResponse lineResponse = new LineResponse(id, "2호선", "red");
+        String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
         validatableResponse.statusCode(HttpStatus.CREATED.value())
-                .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+                .body(is(responseBody));
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 등록을 시도한다.")
@@ -103,8 +106,7 @@ class LineAcceptanceTest {
         postLineApi(lineRequest2);
 
         List<Long> resultLineIds = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
+                .when().get("/lines")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -124,7 +126,8 @@ class LineAcceptanceTest {
         postLineApi(lineRequest);
 
         long id = testLineIds.get(0);
-        LineResponse lineResponse = new LineResponse(id, "5호선", "red", new ArrayList<>());
+        LineResponse lineResponse = new LineResponse(id, "5호선", "red");
+        String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -132,7 +135,7 @@ class LineAcceptanceTest {
                 .when().get("/lines/" + id)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body(is(OBJECT_MAPPER.writeValueAsString(lineResponse)));
+                .body(is(responseBody));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -142,10 +145,11 @@ class LineAcceptanceTest {
         postLineApi(lineRequest);
         long id = testLineIds.get(0);
         LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+        String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+                .body(requestBody)
                 .when().put("/lines/" + id)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -155,10 +159,11 @@ class LineAcceptanceTest {
     @Test
     void cannotEditLineWhenNoId() throws JsonProcessingException {
         LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+        String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+                .body(requestBody)
                 .when().put("/lines/" + 9999)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
@@ -173,10 +178,11 @@ class LineAcceptanceTest {
         postLineApi(lineRequest2);
         long id = testLineIds.get(0);
         LineRequest putRequest = new LineRequest("신분당선", "white", 1L, 3L, 7);
+        String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(OBJECT_MAPPER.writeValueAsString(putRequest))
+                .body(requestBody)
                 .when().put("/lines/" + id)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
