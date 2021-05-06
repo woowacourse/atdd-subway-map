@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
@@ -20,12 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
 public class LIneAcceptanceTest extends AcceptanceTest {
-    private final LineDao lineDao = new MemoryLineDao();
+    @Autowired
+    private LineDao lineDao;
 
-    @AfterEach
-    void clean() {
-        lineDao.clear();
-    }
+//    @AfterEach
+//    void clean() {
+//        lineDao.clear();
+//    }
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -227,25 +229,11 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 제거시 없는 노선이면 예외가 발생한다.")
     @Test
     void deleteStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "백기선");
-        params.put("color", "bg-red-600");
-
-        // when
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
         String uri = "/lines/{id}";
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(uri, 2L)
+                .delete(uri, 0L)
                 .then().log().all()
                 .extract();
 

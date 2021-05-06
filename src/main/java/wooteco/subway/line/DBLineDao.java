@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -24,6 +25,7 @@ public class DBLineDao implements LineDao {
 
     @Override
     public Line save(final Line line) {
+        validateDuplicate(line);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -87,6 +89,12 @@ public class DBLineDao implements LineDao {
 
         if(rowCount == 0) {
             throw new IllegalStateException("존재하지 않는 id임");
+        }
+    }
+
+    private void validateDuplicate(final Line line) {
+        if (findByName(line.name()).isPresent()) {
+            throw new IllegalStateException("이미 있는 역임!");
         }
     }
 }

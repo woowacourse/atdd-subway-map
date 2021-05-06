@@ -35,18 +35,21 @@
 
 ## 2단계 - 프레임워크 적용
 ## 2단계 구현할 기능 목록  
-- [ ] 1,2단계에서 구현한 애플리케이션에 스프링 빈과 스프링 JDBC를 적용하기
+- [x] 1,2단계에서 구현한 애플리케이션에 스프링 빈과 스프링 JDBC를 적용하기
   - [x] Spring JDBC 의존성 추가 
   - [x] H2 데이터 베이스 설정 
 - [x] XXXDao 인터페이스화
     - [x] StationDao 인터페이스화
     - [x] LineDao 인터페이스화
-- [ ] XXXDao에서 관리하던 정보를 DB에서 관리할 수 있도록 변경하기
-- [ ] 스프링 JDBC 활용하여 H2 DB에 저장하기
-  - [ ] DBLineDao 구현
-  - [ ] DBStationDao 구현
-  - [ ] Dao 객체가 아닌 DB에서 데이터를 관리하기
-  - [ ] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
+- [x] XXXDao에서 관리하던 정보를 DB에서 관리할 수 있도록 변경하기
+- [x] 스프링 JDBC 활용하여 H2 DB에 저장하기
+  - [x] DBLineDao 구현
+  - [x] DBStationDao 구현
+  - [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
+  - [x] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
+- [ ] controller 로직 구현
+  - [x] lineController 구현
+  - [ ] stationController 구현
 - [ ] H2 DB를 통해 저장된 값 확인하기
   - [ ] 실제로 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
 - [ ] 스프링 빈 활용하기

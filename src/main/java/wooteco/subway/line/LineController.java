@@ -18,8 +18,8 @@ public class LineController {
     private final LineDao lineDao;
     private final Logger logger = LoggerFactory.getLogger(LineController.class);
 
-    public LineController() {
-        this.lineDao = new MemoryLineDao();
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     @PostMapping
@@ -59,9 +59,11 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ResponseError> handleException(IllegalArgumentException e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
+
+
 }
