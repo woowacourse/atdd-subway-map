@@ -1,24 +1,34 @@
 package wooteco.subway.dao.line;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 
-@Component
-@Primary
+@Repository
+@Qualifier("jdbc")
 public class JdbcLineDao implements LineDao {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final LineMapper mapper;
+    private static final RowMapper<Line> mapper = (rs, rowNum) -> {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String color = rs.getString("color");
+        return new Line(id, name, color);
+    };
 
-    public JdbcLineDao(JdbcTemplate jdbcTemplate, LineMapper mapper) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mapper = mapper;
     }
 
     @Override

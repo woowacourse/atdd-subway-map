@@ -2,23 +2,31 @@ package wooteco.subway.dao.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.station.Station;
 
-@Component
-@Primary
+@Repository
+@Qualifier("jdbc")
 public class JdbcStationDao implements StationDao {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final StationMapper mapper;
+    private static final RowMapper<Station> mapper = (rs, rowNum) -> {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        return new Station(id, name);
+    };
 
-    public JdbcStationDao(JdbcTemplate jdbcTemplate, StationMapper mapper) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mapper = mapper;
     }
 
     @Override
