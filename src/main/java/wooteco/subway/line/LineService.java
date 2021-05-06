@@ -12,11 +12,11 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(String name, String color) {
-        if (isStationExist(name)) {
+    public Line createLine(LineRequest lineRequest) {
+        if (isStationExist(lineRequest.getName())) {
             throw new LineExistenceException("존재하는 노선 이름입니다.");
         }
-        return lineDao.save(name, color);
+        return lineDao.save(lineRequest.getName(), lineRequest.getColor());
     }
 
     public List<Line> findAll() {
@@ -33,8 +33,8 @@ public class LineService {
                 .isPresent();
     }
 
-    public void modifyLine(Long id, String name, String color) {
-        lineDao.update(id, name, color);
+    public void modifyLine(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {

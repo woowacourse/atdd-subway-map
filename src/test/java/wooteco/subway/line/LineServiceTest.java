@@ -17,8 +17,11 @@ class LineServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private LineRequest lineRequest;
+
     @BeforeEach
     void setUp() {
+        lineRequest = new LineRequest("2호선", "초록색", null, null, 0);
         jdbcTemplate.execute("delete from LINE");
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
     }
@@ -26,15 +29,15 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정상 생성 테스트")
     void createStation() {
-        Line savedLine = lineService.createLine("2호선", "초록색");
+        Line savedLine = lineService.createLine(lineRequest);
         assertEquals("2호선", savedLine.getName());
     }
 
     @Test
     @DisplayName("노선 이름 중복 생성 테스트")
     void createDuplicatedStation() {
-        lineService.createLine("2호선", "초록색");
-        assertThatThrownBy(() -> lineService.createLine("2호선", "초록색"))
+        lineService.createLine(lineRequest);
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
                 .isInstanceOf(LineExistenceException.class);
     }
 
