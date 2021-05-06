@@ -38,9 +38,8 @@ public class LineService {
     }
 
     public LineResponse findLine(final Long id) {
-        final Line line = lineDao.findById(id).orElseThrow(() -> {
-            throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
-        });
+        final Line line = lineDao.findById(id)
+            .orElseThrow(() ->  new DataNotFoundException("해당 Id의 노선이 없습니다."));
         return LineResponse.from(line);
     }
 
