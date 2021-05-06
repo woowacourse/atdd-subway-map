@@ -34,7 +34,7 @@ public class StationController {
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
             .map(it -> new StationResponse(it.getId(), it.getName()))
             .collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        StationDao.delete(id);
+        stationDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
