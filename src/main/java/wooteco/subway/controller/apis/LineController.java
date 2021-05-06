@@ -50,12 +50,14 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
+            new ArrayList<>());
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> editLine(@PathVariable long id,
+        @RequestBody LineRequest lineRequest) {
         lineService.editLine(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }

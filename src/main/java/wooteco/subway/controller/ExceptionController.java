@@ -14,7 +14,8 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<Void> emptyResultDataAccessException(EmptyResultDataAccessException error) {
+    public ResponseEntity<Void> emptyResultDataAccessException(
+        EmptyResultDataAccessException error) {
         return ResponseEntity.badRequest().build();
     }
 }
