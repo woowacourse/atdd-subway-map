@@ -4,11 +4,8 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
-
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Station(Long id, String name) {
