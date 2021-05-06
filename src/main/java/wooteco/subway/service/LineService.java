@@ -19,11 +19,15 @@ public class LineService {
     }
 
     public LineResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
-        validateLineNameDuplicate(lineCreateRequestDto.getName());
-        validateLineColorDuplicate(lineCreateRequestDto.getColor());
+        validateLineNameColorDuplicate(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Line newLine = new Line(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Long id = lineDao.save(newLine);
         return new LineResponseDto(id, newLine);
+    }
+
+    private void validateLineNameColorDuplicate(String name, String color) {
+        validateLineNameDuplicate(name);
+        validateLineColorDuplicate(color);
     }
 
     private void validateLineNameDuplicate(String name) {
@@ -52,6 +56,7 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
+        validateLineNameColorDuplicate(lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
         return lineDao.update(id, lineUpdateRequestDto.getColor(), lineUpdateRequestDto.getName());
     }
 
