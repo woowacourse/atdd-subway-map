@@ -73,7 +73,9 @@ public class LineH2Dao implements LineRepository {
 
     @Override
     public Line update(Long id, Line newLine) {
-        return null;
+        String query = "UPDATE LINE set name = ?, color = ? WHERE id = ?";
+        this.jdbcTemplate.update(query, newLine.getName(), newLine.getColor(), id);
+        return this.findById(id);
     }
 
     @Override
