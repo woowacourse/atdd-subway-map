@@ -7,13 +7,21 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
+    public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public Station(final String name) {
         this.name = name;
+    }
+
+    public boolean isSameName(Station station) {
+        return this.name.equals(station.name);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 
     public Long getId() {
@@ -22,14 +30,6 @@ public class Station {
 
     public String getName() {
         return name;
-    }
-
-    public boolean equalName(Station station) {
-        return this.name.equals(station.name);
-    }
-
-    public boolean equalId(Long id) {
-        return this.id.equals(id);
     }
 }
 
