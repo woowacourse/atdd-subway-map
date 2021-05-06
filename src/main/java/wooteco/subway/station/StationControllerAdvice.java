@@ -11,5 +11,4 @@ public class StationControllerAdvice {
     public ResponseEntity<String> handleIllegalArgumentsException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
-
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public class StationH2Dao implements StationRepository {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public StationH2Dao(JdbcTemplate jdbcTemplate) {
