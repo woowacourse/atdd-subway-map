@@ -2,13 +2,13 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
+import wooteco.subway.AcceptanceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-public class LineDaoTest {
+public class LineDaoTest extends AcceptanceTest {
     @Autowired
     private LineRepository lineRepository;
 
@@ -77,6 +77,6 @@ public class LineDaoTest {
 
         // then
         assertThatThrownBy(() -> lineRepository.findById(id))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DataAccessException.class);
     }
 }

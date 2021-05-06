@@ -1,6 +1,8 @@
 package wooteco.subway.line;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.NoSuchLineException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class LineDao implements LineRepository {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchLineException("해당 id에 맞는 노선을 찾을 수 없습니다."));
     }
 
     @Override
@@ -58,7 +60,7 @@ public class LineDao implements LineRepository {
     @Override
     public void delete(Long id) {
         if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("해당 id에 맞는 노선을 찾을 수 없습니다.");
+            throw new NoSuchLineException("해당 id에 맞는 노선을 찾을 수 없습니다.");
         }
     }
 }
