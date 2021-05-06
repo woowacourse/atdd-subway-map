@@ -18,7 +18,6 @@ public class StationDao {
     }
 
     public Long save(Station station) {
-//        validateStation(station);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO station (name) VALUES (?)";
 
@@ -30,12 +29,6 @@ public class StationDao {
 
         return keyHolder.getKey().longValue();
     }
-
-//    private void validateStation(Station newStation) {
-//        if (duplicatedNameExists(newStation.getName())) {
-//            throw new IllegalArgumentException("중복된 지하철 역입니다.");
-//        }
-//    }
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
