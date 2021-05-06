@@ -44,9 +44,4 @@ public class StationController {
         stationService.delete(station);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> exceptionHandler() {
-        return ResponseEntity.badRequest().build();
-    }
 }

@@ -1,4 +1,4 @@
-package wooteco.subway.aop;
+package wooteco.subway.aop.logger;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

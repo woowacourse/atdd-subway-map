@@ -58,9 +58,4 @@ public class LineController {
         lineService.delete(line);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ResponseEntity<Void> exceptionHandler() {
-        return ResponseEntity.badRequest().build();
-    }
 }
