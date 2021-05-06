@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dto;
 
 import javax.validation.constraints.NotNull;
 
@@ -9,6 +9,7 @@ public class SectionRequest {
     private Long downStationId;
     @NotNull
     private int distance;
+//    private int extraFare;
 
     private SectionRequest() {
     }
@@ -17,6 +18,7 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+//        this.extraFare = extraFare;
     }
 
     public Long getUpStationId() {
@@ -30,4 +32,8 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
+
+//    public int getExtraFare() {
+//        return extraFare;
+//    }
 }
