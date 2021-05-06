@@ -25,54 +25,54 @@ public class SectionService {
                 sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(),
                 0
-                );
+        );
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
-        System.out.println("0000000000");
+
         Set<Long> sectionsIds = new HashSet<>();
-        for(Section sec : sectionsByLineId){
+        for (Section sec : sectionsByLineId) {
             sectionsIds.add(sec.getDownStationId());
             sectionsIds.add(sec.getUpStationId());
         }
         validateIfSectionContainsOnlyOneStationInLine(sectionsIds, section);
         StationsMap lineStations = StationsMap.from(sectionsByLineId);
-        System.out.println("1111111111");
-        if(lineStations.isDownStation(section) || lineStations.isUpStation(section)){
-            System.out.println("222222");
+
+        if (lineStations.isDownStation(section) || lineStations.isUpStation(section)) {
             sectionDao.save(section);
             return;
         }
-        //update
-        if(sectionsIds.contains(section.getDownStationId())){
-            //todo거리검증해야됨.
-            System.out.println("333333");
-            sectionDao.updateByDownStationId(section.getLineId(), section.getDownStationId(), section.getUpStationId());
+        if (sectionsIds.contains(section.getDownStationId())) {
+            int prevDistance = lineStations.getDistanceFromDownToUpStationMap(section.getDownStationId());
+            int difference = prevDistance - section.getDistance();
+            if (difference <= 0) {
+                throw new IllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
+            }
+            sectionDao.updateByDownStationId(section.getLineId(), section.getDownStationId(),
+                    section.getUpStationId(), difference);
             sectionDao.save(section);
             return;
         }
-        if(sectionsIds.contains(section.getUpStationId())){
-            System.out.println("44444444");
-            //todo거리검증해야됨.
-            sectionDao.updateByUpStationId(section.getLineId(), section.getUpStationId(), section.getDownStationId());
+        if (sectionsIds.contains(section.getUpStationId())) {
+            int prevDistance = lineStations.getDistanceFromUpToDownStationMap(section.getUpStationId());
+            int difference = prevDistance - section.getDistance();
+            if (difference <= 0) {
+                throw new IllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
+            }
+            sectionDao.updateByUpStationId(section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+                    difference);
             sectionDao.save(section);
             return;
         }
     }
 
     private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> sectionsIds, Section section) {
-        for(Long id : sectionsIds){
-            System.out.println("fuckfuck");
-            System.out.println(id);
-        }
-        System.out.println(section.getDownStationId());
-        System.out.println(section.getUpStationId());
         int count = 0;
-        if(sectionsIds.contains(section.getDownStationId())){
+        if (sectionsIds.contains(section.getDownStationId())) {
             ++count;
         }
-        if(sectionsIds.contains(section.getUpStationId())){
+        if (sectionsIds.contains(section.getUpStationId())) {
             ++count;
         }
-        if(count != 1){
+        if (count != 1) {
             throw new IllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
         }
     }
