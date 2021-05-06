@@ -14,8 +14,8 @@ public class MemoryStationRepository implements StationRepository {
     private static List<Station> stations = new ArrayList<>();
 
     @Override
-    public Station save(Station station) {
-        if (validateDuplicateName(station)) {
+    public Station save(final Station station) {
+        if (validateDuplicateName(station.getName())) {
             throw new DuplicatedNameException();
         }
         Station persistStation = createNewObject(station);
@@ -28,7 +28,7 @@ public class MemoryStationRepository implements StationRepository {
         return Collections.unmodifiableList(stations);
     }
 
-    private Station createNewObject(Station station) {
+    private Station createNewObject(final Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
@@ -36,7 +36,7 @@ public class MemoryStationRepository implements StationRepository {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Station findById(final Long id) {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
                 .findFirst()
@@ -44,13 +44,13 @@ public class MemoryStationRepository implements StationRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Station findByIdStation = findById(id);
         stations.remove(findByIdStation);
     }
 
-    private boolean validateDuplicateName(Station newStation) {
+    private boolean validateDuplicateName(final String name) {
         return stations.stream()
-                .anyMatch(station -> station.isSameName(newStation));
+                .anyMatch(station -> station.isSameName(name));
     }
 }

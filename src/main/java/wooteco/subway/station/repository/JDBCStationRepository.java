@@ -28,7 +28,7 @@ public class JDBCStationRepository implements StationRepository {
             );
 
     @Override
-    public Station save(Station station) {
+    public Station save(final Station station) {
         try {
             String query = "INSERT INTO station (name) VALUES(?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -50,13 +50,13 @@ public class JDBCStationRepository implements StationRepository {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Station findById(final Long id) {
         String query = "SELECT * FROM station WHERE id = ?";
         return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         String query = "DELETE FROM station WHERE id = ?";
         this.jdbcTemplate.update(query, id);
     }

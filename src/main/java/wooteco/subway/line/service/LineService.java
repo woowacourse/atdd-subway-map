@@ -17,7 +17,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineDto save(LineDto linedto) {
+    public LineDto save(final LineDto linedto) {
         Line line = new Line(linedto.getName(), linedto.getColor());
         return LineDto.from(lineRepository.save(line));
     }
@@ -28,15 +28,15 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineDto findById(Long id) {
+    public LineDto findById(final Long id) {
         return LineDto.from(lineRepository.findById(id));
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         lineRepository.delete(id);
     }
 
-    public void update(LineDto lineDto) {
+    public void update(final LineDto lineDto) {
         Line line = lineRepository.findById(lineDto.getId());
         Line updatedLine = line.update(lineDto.getName(), lineDto.getColor());
         lineRepository.update(updatedLine);

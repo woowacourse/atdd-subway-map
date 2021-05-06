@@ -31,7 +31,7 @@ public class JDBCLineRepository implements LineRepository {
             );
 
     @Override
-    public Line save(Line line) {
+    public Line save(final Line line) {
         try {
             String query = "INSERT INTO LINE(name, color) VALUES(?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -54,19 +54,19 @@ public class JDBCLineRepository implements LineRepository {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Line findById(final Long id) {
         String query = "SELECT * FROM LINE WHERE id = ?";
         return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         String query = "DELETE FROM LINE WHERE id = ?";
         this.jdbcTemplate.update(query, id);
     }
 
     @Override
-    public void update(Line line) {
+    public void update(final Line line) {
         String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         this.jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
     }

@@ -12,16 +12,16 @@ import java.util.List;
 public class MemoryLineRepository implements LineRepository {
 
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final List<Line> LINES = new ArrayList<>();
 
-    public Line save(Line line) {
+    public Line save(final Line line) {
         validateDuplicateName(line.getName());
         Line persistLine = createNewObject(line);
-        lines.add(persistLine);
+        LINES.add(persistLine);
         return persistLine;
     }
 
-    private Line createNewObject(Line line) {
+    private Line createNewObject(final Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
@@ -30,37 +30,37 @@ public class MemoryLineRepository implements LineRepository {
 
     @Override
     public List<Line> findAll() {
-        return Collections.unmodifiableList(lines);
+        return Collections.unmodifiableList(LINES);
     }
 
     @Override
-    public Line findById(Long id) {
-        return lines.stream()
+    public Line findById(final Long id) {
+        return LINES.stream()
                 .filter(line -> line.isSameId(id))
                 .findFirst()
                 .get();
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Line findByIdLine = findById(id);
-        lines.remove(findByIdLine);
+        LINES.remove(findByIdLine);
     }
 
     @Override
-    public void update(Line line) {
+    public void update(final Line line) {
         validateDuplicateName(line.getName());
         delete(line.getId());
-        lines.add(line);
+        LINES.add(line);
     }
 
     @Override
     public void deleteAll() {
-        lines.clear();
+        LINES.clear();
     }
 
-    private void validateDuplicateName(String name) {
-        if (lines.stream()
+    private void validateDuplicateName(final String name) {
+        if (LINES.stream()
                 .anyMatch(line -> line.isSameName(name))) {
             throw new DuplicatedNameException();
         }

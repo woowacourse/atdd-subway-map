@@ -13,8 +13,8 @@ public class Station {
         this.name = name;
     }
 
-    public boolean isSameName(final Station station) {
-        return this.name.equals(station.name);
+    public boolean isSameName(final String name) {
+        return this.name.equals(name);
     }
 
     public boolean isSameId(final Long id) {

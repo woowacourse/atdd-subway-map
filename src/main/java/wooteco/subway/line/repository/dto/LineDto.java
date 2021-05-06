@@ -17,19 +17,19 @@ public class LineDto {
     public LineDto() {
     }
 
-    public LineDto(String name, String color) {
+    public LineDto(final String name, final String color) {
         this.name = name;
         this.color = color;
     }
 
-    public LineDto(Long id, String name, String color, List<StationResponse> stations) {
+    public LineDto(final Long id, final String name, final String color, final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
     }
 
-    public static LineDto from(Line line) {
+    public static LineDto from(final Line line) {
         return new LineDto(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
