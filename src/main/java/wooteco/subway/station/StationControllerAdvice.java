@@ -11,12 +11,14 @@ public class StationControllerAdvice {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity overlappedStationExceptionResponse() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+            .build();
     }
 
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity voidStationExceptionResponse() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 
 }

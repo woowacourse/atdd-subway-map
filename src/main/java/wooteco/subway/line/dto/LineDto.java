@@ -6,15 +6,15 @@ public class LineDto {
     private final String name;
     private final String color;
 
-    public LineDto(Long id) {
+    public LineDto(final Long id) {
         this(id, null, null);
     }
 
-    public LineDto(String name, String color) {
+    public LineDto(final String name, final String color) {
         this(null, name, color);
     }
 
-    public LineDto(Long id, String name, String color) {
+    public LineDto(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;

@@ -31,35 +31,37 @@ public class LineDaoH2 implements LineDao {
     }
 
     @Override
-    public Line create(Line line) {
+    public Line create(final Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
+
         long key = jdbcInsert.executeAndReturnKey(params).longValue();
+
         return new Line(key, line.getName(), line.getColor());
     }
 
     @Override
-    public Line show(Long id) {
-        String statement = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(statement, rowMapper, id);
+    public Line show(final Long id) {
+        String sql = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     @Override
     public List<Line> showAll() {
-        String statement = "SELECT * FROM LINE";
-        return jdbcTemplate.query(statement, rowMapper);
+        String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public int update(long id, Line line) {
-        String statement = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
-        return jdbcTemplate.update(statement, line.getName(), line.getColor(), id);
+    public int update(final long id, final Line line) {
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     @Override
-    public int delete(long id) {
-        String statement = "DELETE FROM LINE WHERE id = ?";
-        return jdbcTemplate.update(statement, id);
+    public int delete(final long id) {
+        String sql = "DELETE FROM LINE WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }

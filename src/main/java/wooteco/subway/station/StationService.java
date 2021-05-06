@@ -12,25 +12,28 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
     public List<StationDto> showStations() {
         List<Station> stations = stationDao.showAll();
+
         return stations.stream()
             .map(station -> new StationDto(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }
 
-    public StationDto save(StationDto stationDto) {
+    public StationDto save(final StationDto stationDto) {
         Station station = new Station(stationDto.getName());
         Station saveStation = stationDao.save(station);
+
         return new StationDto(saveStation.getId(), saveStation.getName());
     }
 
-    public void delete(StationDto stationDto) {
+    public void delete(final StationDto stationDto) {
         int deletedStationNumber = stationDao.delete(stationDto.getId());
+
         if (deletedStationNumber == 0) {
             throw new NotFoundStationException("[ERROR] 존재하지 않는 역입니다.");
         }

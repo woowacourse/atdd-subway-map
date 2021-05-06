@@ -16,8 +16,10 @@ public class LineDaoCache implements LineDao {
     @Override
     public Line create(Line line) {
         validateDuplicate(line);
+
         Line persistLine = createNewObject(line);
         lines.add(persistLine);
+
         return persistLine;
     }
 
@@ -27,6 +29,7 @@ public class LineDaoCache implements LineDao {
             .anyMatch(name -> name.equals(line.getName()))) {
             throw new DuplicateLineException("[ERROR] 노선의 이름이 중복됩니다.");
         }
+
         if (lines.stream()
             .map(Line::getColor)
             .anyMatch(color -> color.equals(line.getColor()))) {
@@ -51,6 +54,7 @@ public class LineDaoCache implements LineDao {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
+
         return line;
     }
 
@@ -72,6 +76,7 @@ public class LineDaoCache implements LineDao {
         if (lines.removeIf(line -> line.getId() == id)) {
             return 1;
         }
+
         throw new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다.");
     }
 

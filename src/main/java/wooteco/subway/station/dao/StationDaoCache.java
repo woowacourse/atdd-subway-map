@@ -14,17 +14,20 @@ public class StationDaoCache implements StationDao {
     private static List<Station> stations = new ArrayList<>();
 
     @Override
-    public Station save(Station station) {
+    public Station save(final Station station) {
         validateDuplicate(station);
+
         Station persistStation = createNewObject(station);
         stations.add(persistStation);
+
         return persistStation;
     }
 
-    private void validateDuplicate(Station station) {
+    private void validateDuplicate(final Station station) {
         if (stations.stream()
             .map(Station::getName)
             .anyMatch(name -> name.equals(station.getName()))) {
+
             throw new DuplicateStationException("[ERROR] 역의 이름이 중복됩니다.");
         }
     }
@@ -34,18 +37,20 @@ public class StationDaoCache implements StationDao {
         return stations;
     }
 
-    private Station createNewObject(Station station) {
+    private Station createNewObject(final Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
+
         return station;
     }
 
     @Override
-    public int delete(long id) {
+    public int delete(final long id) {
         if (stations.removeIf(station -> station.getId() == id)) {
             return 1;
         }
+
         throw new NotFoundStationException("[Error] 해당 역이 존재하지 않습니다.");
     }
 

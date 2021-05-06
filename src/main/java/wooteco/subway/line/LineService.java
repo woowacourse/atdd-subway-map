@@ -13,11 +13,11 @@ public class LineService {
 
     private final LineDao lineDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(final LineDao lineDao) {
         this.lineDao = lineDao;
     }
 
-    public LineDto createLine(LineDto lineDto) {
+    public LineDto createLine(final LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
         Line saveLine = lineDao.create(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
@@ -30,19 +30,20 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineDto findOne(LineDto lineDto) {
+    public LineDto findOne(final LineDto lineDto) {
         Line line = lineDao.show(lineDto.getId());
         return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 
-    public void update(LineDto lineDto) {
+    public void update(final LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
+
         if (lineDao.update(lineDto.getId(), line) == 0) {
             throw new EmptyResultDataAccessException(0);
         }
     }
 
-    public void delete(LineDto lineDto) {
+    public void delete(final LineDto lineDto) {
         if (lineDao.delete(lineDto.getId()) == 0) {
             throw new NotFoundLineException("[ERROR] 해당노선이 존재하지 않습니다.");
         }

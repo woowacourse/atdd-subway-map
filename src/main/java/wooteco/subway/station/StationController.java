@@ -27,11 +27,15 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
+        @RequestBody final StationRequest stationRequest) {
+
         StationDto stationDto = new StationDto(stationRequest.getName());
         StationDto savedStationDto = stationService.save(stationDto);
-        StationResponse stationResponse = new StationResponse(savedStationDto.getId(),
-            savedStationDto.getName());
+        StationResponse stationResponse = new StationResponse(
+            savedStationDto.getId(),
+            savedStationDto.getName()
+        );
+
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
             .body(stationResponse);
     }
@@ -42,16 +46,19 @@ public class StationController {
         List<StationResponse> stationResponses = stationDtos.stream()
             .map(it -> new StationResponse(it.getId(), it.getName()))
             .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+
+        return ResponseEntity.ok()
+            .body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity deleteStation(@PathVariable final Long id) {
         try {
             stationService.delete(new StationDto(id));
         } catch (NotFoundStationException e) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+            .build();
     }
 }

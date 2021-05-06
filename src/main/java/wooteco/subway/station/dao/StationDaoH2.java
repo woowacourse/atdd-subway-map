@@ -30,10 +30,12 @@ public class StationDaoH2 implements StationDao {
     }
 
     @Override
-    public Station save(Station station) {
+    public Station save(final Station station) {
         Map<String, String> params = new HashMap<>();
         params.put("name", station.getName());
+
         long key = jdbcInsert.executeAndReturnKey(params).longValue();
+
         return new Station(key, station.getName());
     }
 
@@ -44,7 +46,7 @@ public class StationDaoH2 implements StationDao {
     }
 
     @Override
-    public int delete(long id) {
+    public int delete(final long id) {
         String statement = "DELETE FROM station WHERE id = ?";
         return jdbcTemplate.update(statement, id);
     }
