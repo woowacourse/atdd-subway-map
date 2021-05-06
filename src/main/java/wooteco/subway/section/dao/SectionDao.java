@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.section.domain.Section;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SectionDao {
@@ -20,7 +19,7 @@ public interface SectionDao {
 
     void update(Section newSection);
 
-    void updateByDownStationId(Long lineId, Long downStationId, Long upStationId);
+    void updateByDownStationId(Long lineId, Long downStationId, Long upStationId, int distance);
 
-    void updateByUpStationId(Long lineId, Long upStationId, Long downStationId);
+    void updateByUpStationId(Long lineId, Long upStationId, Long downStationId, int distance);
 }

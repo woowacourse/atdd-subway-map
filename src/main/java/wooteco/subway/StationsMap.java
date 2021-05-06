@@ -11,13 +11,13 @@ public class StationsMap {
 
 
     private StationsMap(Map<Long, Section> upToDownStationMap, Map<Long, Section> downToUpStationMap,
-                  Deque<Long> upToDownSerializedMap) {
+                        Deque<Long> upToDownSerializedMap) {
         this.upToDownStationMap = upToDownStationMap;
         this.downToUpStationMap = downToUpStationMap;
         this.upToDownSerializedMap = upToDownSerializedMap;
     }
 
-    public static StationsMap from(List<Section> sectionsByLineId){
+    public static StationsMap from(List<Section> sectionsByLineId) {
         Map<Long, Section> upToDownStationMap = new HashMap<>();
         Map<Long, Section> downToUpStationMap = new HashMap<>();
         Deque<Long> upToDownSerializedMap = new ArrayDeque<>();
@@ -28,8 +28,6 @@ public class StationsMap {
 
         Long downStationId = sectionsByLineId.get(0).getDownStationId();
         Long upStationId = sectionsByLineId.get(0).getUpStationId();
-        upToDownSerializedMap.add(downStationId);
-
         do {
             if (downToUpStationMap.containsKey(downStationId)) {
                 Section nextSection = downToUpStationMap.get(downStationId);
@@ -51,5 +49,20 @@ public class StationsMap {
 
     public boolean isUpStation(Section section) {
         return upToDownSerializedMap.getFirst().equals(section.getDownStationId());
+    }
+
+    public Deque<Long> getOrderedStations() {
+        return upToDownSerializedMap;
+    }
+
+    public void getDistance() {
+    }
+
+    public int getDistanceFromUpToDownStationMap(Long upStationId) {
+        return upToDownStationMap.get(upStationId).getDistance();
+    }
+
+    public int getDistanceFromDownToUpStationMap(Long downStationId) {
+        return downToUpStationMap.get(downStationId).getDistance();
     }
 }

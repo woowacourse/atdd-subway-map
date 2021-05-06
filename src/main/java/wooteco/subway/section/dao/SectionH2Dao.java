@@ -43,14 +43,16 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
-    public void updateByDownStationId(Long lineId, Long downStationId, Long upStationId) {
-        String updateQuery = "UPDATE section SET down_station_id = ? WHERE down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(updateQuery, upStationId, downStationId, lineId);
+    public void updateByDownStationId(Long lineId, Long downStationId, Long upStationId, int distance) {
+        String updateQuery = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND " +
+                "line_id = ?";
+        jdbcTemplate.update(updateQuery, upStationId, distance, downStationId, lineId);
     }
 
     @Override
-    public void updateByUpStationId(Long lineId, Long upStationId, Long downStationId) {
-        String updateQuery = "UPDATE section SET up_station_id = ? WHERE up_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(updateQuery, downStationId, upStationId, lineId);
+    public void updateByUpStationId(Long lineId, Long upStationId, Long downStationId, int distance) {
+        String updateQuery = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id " +
+                "= ?";
+        jdbcTemplate.update(updateQuery, downStationId, distance, upStationId, lineId);
     }
 }
