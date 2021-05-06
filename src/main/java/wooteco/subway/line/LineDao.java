@@ -22,6 +22,13 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public static void delete(Long id) {
+        lines.stream()
+            .filter(line -> line.getId().equals(id))
+            .findFirst()
+            .ifPresent(line -> lines.remove(line));
+    }
+
     public List<Line> findAll() {
         String query = "SELECT * FROM line";
         List<Line> lines = jdbcTemplate.query(query, (resultSet, rowNum) -> {
@@ -35,21 +42,20 @@ public class LineDao {
         return lines;
     }
 
-    public static void delete(Long id) {
-        lines.stream()
-            .filter(line -> line.getId().equals(id))
-            .findFirst()
-            .ifPresent(line -> lines.remove(line));
+    public Line find(Long id) {
+        String query = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(query,
+            (resultSet, rowNum) -> {
+                Line line = new Line(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color")
+                );
+                return line;
+            }, id);
     }
 
-    public static Line find(Long id) {
-        return lines.stream()
-            .filter(line -> line.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
-    }
-
-    public static void modify(Long id, LineRequest lineRequest) {
+    public void modify(Long id, LineRequest lineRequest) {
         Line line = find(id);
         lines.set(lines.indexOf(line), new Line(line.getId(), lineRequest.getName(),
             lineRequest.getColor()));
