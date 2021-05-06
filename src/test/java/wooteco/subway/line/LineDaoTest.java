@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -66,4 +67,21 @@ public class LineDaoTest {
         assertThat(lines.get(1).getId()).isEqualTo(2L);
     }
 
+    @DisplayName("line 단일 조회 실패 테스트")
+    @Test
+    void failFindLineByIdTest() {
+        assertThatThrownBy(() -> {
+            lineDao.find(1L);
+        }).isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @DisplayName("line 단일 조회 성공 테스트")
+    @Test
+    void findLineByIdTest() {
+        lineDao.save(new Line("신분당선", "black"));
+
+        assertDoesNotThrow(() -> {
+            lineDao.find(1L);
+        });
+    }
 }
