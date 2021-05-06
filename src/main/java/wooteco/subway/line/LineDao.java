@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
 
 @Repository
 public class LineDao {
 
+    private static Long seq = 0L;
+    private static List<Line> lines = new ArrayList<>();
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -22,24 +22,16 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
-
-    public long save(Line line) {
-        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, line.getName());
-            ps.setString(2, line.getColor());
-            return ps;
-        }, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
-    public static List<Line> findAll() {
+    public List<Line> findAll() {
+        String query = "SELECT * FROM line";
+        List<Line> lines = jdbcTemplate.query(query, (resultSet, rowNum) -> {
+            Line line = new Line(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("color")
+            );
+            return line;
+        });
         return lines;
     }
 
@@ -48,13 +40,6 @@ public class LineDao {
             .filter(line -> line.getId().equals(id))
             .findFirst()
             .ifPresent(line -> lines.remove(line));
-    }
-
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
     }
 
     public static Line find(Long id) {
@@ -68,5 +53,19 @@ public class LineDao {
         Line line = find(id);
         lines.set(lines.indexOf(line), new Line(line.getId(), lineRequest.getName(),
             lineRequest.getColor()));
+    }
+
+    public long save(Line line) {
+        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 }
