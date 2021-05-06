@@ -24,4 +24,9 @@ public class StationRepositoryImpl implements StationRepository {
     public List<Station> findAll() {
         return stationDao.findAll();
     }
+
+    @Override
+    public int delete(Long id) {
+        return stationDao.delete(id);
+    }
 }

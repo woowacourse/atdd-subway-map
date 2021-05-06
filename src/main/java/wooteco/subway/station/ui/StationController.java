@@ -47,6 +47,7 @@ public class StationController {
     @DeleteMapping("/stations/{id}")
     @SuppressWarnings({"rawtypes"})
     public ResponseEntity deleteStation(@PathVariable Long id) {
+        stationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
