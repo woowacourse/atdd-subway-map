@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,14 +19,21 @@ import wooteco.subway.exception.NameDuplicationException;
 @RestController
 public class LineController {
 
+    private LineDao lineDao;
+
+    @Autowired
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = LineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        long id = lineDao.save(line);
+        LineResponse lineResponse = new LineResponse(id, line.getName(),
+            line.getColor());
+        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -12,11 +12,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
+
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private LineDao lineDao;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -38,6 +43,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+
+    @DisplayName("중복된 노선 이름 추가시 예외 처리")
+    @Test
+    void nameDuplication() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        params.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "강남역");
+        params2.put("color", "bg-green-600");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        assertThat(createResponse2.statusCode())
+            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -87,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("하나의 지하철 노선을 상세 조회한다.")
     @Test
     void getLineDetail() {
-        LineDao.save(new Line(1L, "name", "yellow darken-4"));
+        lineDao.save(new Line(1L, "name", "yellow darken-4"));
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -112,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 수정")
     @Test
     void modifyLine() {
-        LineDao.save(new Line(1L, "name", "yellow darken-4"));
+        lineDao.save(new Line(1L, "name", "yellow darken-4"));
 
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
@@ -154,32 +189,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("중복된 노선 이름 추가시 예외 처리")
-    @Test
-    void nameDuplication() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        params.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "강남역");
-        params2.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(params2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-
-        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-
-    }
 }

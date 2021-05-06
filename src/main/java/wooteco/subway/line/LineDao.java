@@ -1,24 +1,42 @@
 package wooteco.subway.line;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.NameDuplicationException;
 
+@Repository
 public class LineDao {
+
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        if (lines.contains(line)) {
-            throw new NameDuplicationException("중복된 이름입니다.");
-        }
+    public long save(Line line) {
+        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
 
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public static List<Line> findAll() {
