@@ -5,12 +5,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Rollback
@@ -75,6 +77,18 @@ class LineDaoTest {
                 .get();
         assertThat(expectedLine.getColor()).isEqualTo("bg-yellow-100");
         assertThat(expectedLine.getName()).isEqualTo("크로플역");
+    }
+
+    @Test
+    @DisplayName("노선 수정 예외 테스트")
+    void update_duplicate() {
+        //given
+        Line line = lineDao.insert("bg-red-100", "현구막역");
+        lineDao.insert("bg-yellow-100", "크로플역");
+
+        //when - then
+        assertThatThrownBy(() -> lineDao.update(line.getId(), "bg-yellow-100", "크로플역"))
+                .isInstanceOf(DataAccessException.class);
     }
 
     @Test

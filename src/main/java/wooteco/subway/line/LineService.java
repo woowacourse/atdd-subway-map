@@ -39,7 +39,11 @@ public class LineService {
     }
 
     public void updateById(Long id, String color, String name) {
-        lineDao.update(id, color, name);
+        try {
+            lineDao.update(id, color, name);
+        } catch (DataIntegrityViolationException e) {
+            throw new LineDuplicateException();
+        }
     }
 
     public void deleteById(Long id) {
