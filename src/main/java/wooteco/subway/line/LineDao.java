@@ -14,8 +14,6 @@ import java.util.Optional;
 @Repository
 public class LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
