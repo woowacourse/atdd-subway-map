@@ -2,12 +2,10 @@ package wooteco.subway.line;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,47 +20,33 @@ import wooteco.subway.line.dto.LineResponse;
 public class LineController {
 
     @Autowired
-    private LineDao lineDao;
+    private LineService service;
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor(), null);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse response = service.create(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> linesResponse = lines
-            .stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
-            .collect(Collectors.toList());
-        return ResponseEntity.ok().body(linesResponse);
+        return ResponseEntity.ok().body(service.findAll());
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
-            null);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok().body(service.findById(id));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line persistedLine = lineDao.findById(id);
-        Line updatedLine = new Line(persistedLine.getId(), lineRequest.getName(),
-            lineRequest.getColor());
-        lineDao.update(updatedLine);
+        service.updateById(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineDao.deleteById(id);
+        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
