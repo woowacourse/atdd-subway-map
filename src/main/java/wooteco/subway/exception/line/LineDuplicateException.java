@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class LineDuplicateException extends LineException {
     public LineDuplicateException() {
-        super(HttpStatus.BAD_REQUEST, "해당 이름의 노선이 이미 존재합니다.");
+        super(HttpStatus.BAD_REQUEST, "중복된 값이 존재합니다.");
     }
 }

@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import wooteco.subway.exception.line.LineNamePatternException;
-import wooteco.subway.exception.station.StationNamePatternException;
 
 import java.util.regex.Pattern;
 
