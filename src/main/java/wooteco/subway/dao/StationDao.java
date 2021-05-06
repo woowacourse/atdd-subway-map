@@ -38,12 +38,12 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String query = "SELECT * FROM STATION";
+        String query = "SELECT ID, NAME FROM STATION";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     public Station findById(long id) {
-        String query = "SELECT * FROM STATION WHERE ID = ?";
+        String query = "SELECT ID, NAME FROM STATION WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
     }
 

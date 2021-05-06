@@ -41,12 +41,12 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String query = "SELECT * FROM LINE";
+        String query = "SELECT ID, NAME, COLOR FROM LINE";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     public Line findById(long id) {
-        String query = "SELECT * FROM LINE WHERE ID = ?";
+        String query = "SELECT ID, NAME, COLOR FROM LINE WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
     }
 
