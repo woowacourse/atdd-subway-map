@@ -52,22 +52,25 @@ class StationAcceptanceTest {
     }
 
     private ValidatableResponse postStationApi(StationRequest stationRequest) throws JsonProcessingException {
+        String requestBody = OBJECT_MAPPER.writeValueAsString(stationRequest);
         ValidatableResponse validatableResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .body(OBJECT_MAPPER.writeValueAsString(stationRequest))
+                .body(requestBody)
                 .when().post("/stations")
                 .then().log().all();
-        if (validatableResponse.extract().statusCode() != 400) {
+        int statusCode = validatableResponse.extract().statusCode();
+        if (statusCode != 400) {
             addCreatedStationId(validatableResponse);
         }
         return validatableResponse;
     }
 
     private void addCreatedStationId(ValidatableResponse validatableResponse) {
-        long id = Long.parseLong(validatableResponse.extract()
+        String headerToken = validatableResponse.extract()
                 .header("Location")
-                .split("/")[2]);
+                .split("/")[2];
+        long id = Long.parseLong(headerToken);
         testStationIds.add(id);
     }
 
@@ -80,8 +83,9 @@ class StationAcceptanceTest {
 
         StationResponse stationResponse = new StationResponse(id, "강남역");
 
+        String responseBody = OBJECT_MAPPER.writeValueAsString(stationResponse);
         validatableResponse.statusCode(HttpStatus.CREATED.value())
-                .body(is(OBJECT_MAPPER.writeValueAsString(stationResponse)));
+                .body(is(responseBody));
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -103,8 +107,7 @@ class StationAcceptanceTest {
         postStationApi(stationRequest2);
 
         List<Long> resultStationIds = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
+                .when().get("/stations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -121,7 +124,8 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() throws JsonProcessingException {
         StationRequest stationRequest = new StationRequest("강남역");
-        String uri = postStationApi(stationRequest).extract().header("Location");
+        String uri = postStationApi(stationRequest).extract()
+                .header("Location");
 
         RestAssured.given().log().all()
                 .when().delete(uri)
