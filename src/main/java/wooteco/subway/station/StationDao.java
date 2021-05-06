@@ -18,14 +18,14 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station insert(String name) {
+    public Station insert(StationName name) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update((Connection con) -> {
             PreparedStatement pstmt = con.prepareStatement(
                     query,
                     new String[]{"id"});
-            pstmt.setString(1, name);
+            pstmt.setString(1, name.getName());
             return pstmt;
         }, keyHolder);
 

@@ -17,8 +17,9 @@ public class StationService {
     }
 
     public StationResponse create(String name) {
+        StationName stationName = new StationName(name);
         try {
-            return new StationResponse(stationDao.insert(name));
+            return new StationResponse(stationDao.insert(stationName));
         } catch (DataIntegrityViolationException e) {
             throw new StationDuplicateException();
         }
