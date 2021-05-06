@@ -1,6 +1,5 @@
 package wooteco.subway.line.dao;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.domain.Line;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Primary
 @Repository
 public class LocalLineDao implements LineDao {
 
