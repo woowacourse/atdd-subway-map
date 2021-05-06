@@ -9,7 +9,6 @@ import wooteco.subway.dto.LineResponse;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor(), new ArrayList<>());
+        LineResponse lineResponse = LineResponse.from(savedLine);
         URI uri = URI.create("/lines/" + savedLine.getId());
         return ResponseEntity.created(uri)
                 .body(lineResponse);
@@ -36,18 +35,16 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll()
                 .stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>()))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok()
-                .body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
-        return ResponseEntity.ok()
-                .body(lineResponse);
+        LineResponse lineResponse = LineResponse.from(line);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{id}")
