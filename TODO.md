@@ -25,3 +25,13 @@
 - [x] 역 저장 기능
 - [x] 역 목록 조회 기능
 - [x] 역 제거 기능
+
+## 3단계 - 지하철 구간 관리 기능
+
+### 지하철 노선(Line) 추가 API 수정 - POST /lines
+- [x] 노선(Line) 추가 시 3가지 정보를 추가로 입력 받음
+    - [x] upStationId: 상행 종점 / downStationId: 하행 종점 / distance: 두 종점간의 거리
+    - [x] 두 종점간의 연결 정보 이용하여 노선(Line) 추가 시, 구간(Section) 정보도 함께 등록
+
+### 지하철 구간(Section) 추가 API 구현 - POST /lines/1/sections
+- [ ] 노선(Line)에 구간을(Section) 추가하는 API 만들기
