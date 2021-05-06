@@ -8,26 +8,26 @@ import org.springframework.util.ReflectionUtils;
 
 public class StationDao {
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> STATIONS = new ArrayList<>();
 
     public static Station save(Station station) {
-        if (alreadyStoredStationName(station)) {
+        if (isDuplicateStationName(station)) {
             throw new IllegalArgumentException("이미 저장된 역 이름입니다.");
         }
 
         Station persistStation = createNewObject(station);
-        stations.add(persistStation);
+        STATIONS.add(persistStation);
         return persistStation;
     }
 
-    private static boolean alreadyStoredStationName(Station station) {
+    private static boolean isDuplicateStationName(Station station) {
         final String stationName = station.getName();
-        return stations.stream()
+        return STATIONS.stream()
                        .anyMatch(storedStation -> storedStation.getName().equals(stationName));
     }
 
     public static List<Station> findAll() {
-        return stations;
+        return STATIONS;
     }
 
     private static Station createNewObject(Station station) {
