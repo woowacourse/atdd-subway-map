@@ -19,27 +19,9 @@ public class LineService {
     }
 
     public LineResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
-        validateLineNameColorDuplicate(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Line newLine = new Line(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Long id = lineDao.save(newLine);
         return new LineResponseDto(id, newLine);
-    }
-
-    private void validateLineNameColorDuplicate(String name, String color) {
-        validateLineNameDuplicate(name);
-        validateLineColorDuplicate(color);
-    }
-
-    private void validateLineNameDuplicate(String name) {
-        if (lineDao.countByName(name) > 0) {
-            throw new BadRequestException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
-    private void validateLineColorDuplicate(String color) {
-        if (lineDao.countByColor(color) > 0) {
-            throw new BadRequestException("이미 존재하는 노선 색깔입니다.");
-        }
     }
 
     public LineResponseDto getLineById(Long id) {
@@ -56,7 +38,6 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
-        validateLineNameColorDuplicate(lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
         return lineDao.update(id, lineUpdateRequestDto.getColor(), lineUpdateRequestDto.getName());
     }
 

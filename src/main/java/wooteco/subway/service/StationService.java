@@ -18,16 +18,9 @@ public class StationService {
     }
 
     public StationResponseDto createStation(StationCreateRequestDto stationCreateRequestDto) {
-        validateStationNameDuplicate(stationCreateRequestDto.getName());
         Station newStation = new Station(stationCreateRequestDto.getName());
         Long id = stationDao.save(newStation);
         return new StationResponseDto(id, newStation);
-    }
-
-    private void validateStationNameDuplicate(String name) {
-        if (stationDao.countByName(name) > 0) {
-            throw new BadRequestException("이미 존재하는 역 이름입니다.");
-        }
     }
 
     public List<StationResponseDto> getAllStations() {
