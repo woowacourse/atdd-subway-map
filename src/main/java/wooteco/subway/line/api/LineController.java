@@ -12,6 +12,7 @@ import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
@@ -20,7 +21,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse newLine = lineService.createLine(lineRequest);
         String uri = "/lines/" + newLine.getId();
@@ -28,24 +29,24 @@ public class LineController {
                 .body(newLine);
     }
 
-    @GetMapping("/lines")
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.showLineById(id));
     }
 
-    @PutMapping("/lines/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
