@@ -44,6 +44,7 @@ public class LineDao {
     }
 
     public static void update(Long id, Line newLine) {
+        validateLine(newLine);
         delete(id);
         lines.add(createNewObject(newLine));
     }
