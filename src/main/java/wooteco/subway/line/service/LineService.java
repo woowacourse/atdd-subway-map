@@ -5,7 +5,6 @@ import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.line.repository.dto.LineDto;
 import wooteco.subway.line.domain.Line;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,8 @@ public class LineService {
     }
 
     public void update(LineDto lineDto) {
-        Line line = new Line(lineDto.getId(), lineDto.getName(), lineDto.getColor(), new ArrayList<>());
-        lineRepository.update(line);
+        Line line = lineRepository.findById(lineDto.getId());
+        Line updatedLine = line.update(lineDto.getName(), lineDto.getColor());
+        lineRepository.update(updatedLine);
     }
 }
