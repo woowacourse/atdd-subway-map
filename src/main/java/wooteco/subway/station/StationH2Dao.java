@@ -38,7 +38,12 @@ public class StationH2Dao implements StationRepository {
 
     @Override
     public List<Station> findAll() {
-        return null;
+        String query = "SELECT * FROM STATION";
+        return jdbcTemplate.query(query, (rs, rn) -> {
+            long id = rs.getLong("id");
+            String name = rs.getString("name");
+            return new Station(id, name);
+        });
     }
 
     @Override
