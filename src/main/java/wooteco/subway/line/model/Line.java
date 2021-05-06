@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.model;
 
 public class Line {
 

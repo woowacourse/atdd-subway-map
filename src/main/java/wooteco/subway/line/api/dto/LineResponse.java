@@ -1,7 +1,8 @@
-package wooteco.subway.line;
+package wooteco.subway.line.api.dto;
 
 import org.springframework.lang.NonNull;
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.line.model.Line;
+import wooteco.subway.station.api.dto.StationResponse;
 
 import java.util.List;
 

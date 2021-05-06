@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import wooteco.subway.line.model.Line;
 
 @Repository
 public class LineDao {

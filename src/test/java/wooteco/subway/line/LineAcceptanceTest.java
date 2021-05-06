@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import wooteco.subway.line.api.dto.LineResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

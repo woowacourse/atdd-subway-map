@@ -1,10 +1,14 @@
-package wooteco.subway.line;
+package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.api.dto.LineRequest;
+import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.model.Line;
 
 @Service
 @Transactional

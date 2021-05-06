@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import wooteco.subway.line.api.dto.LineRequest;
+import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.service.LineService;
 
 @RestController
 public class LineController {
