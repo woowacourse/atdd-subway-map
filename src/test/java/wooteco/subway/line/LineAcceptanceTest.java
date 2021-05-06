@@ -37,10 +37,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 //    @Test
 //    void createLineWithDuplicateName() {
 //        // given
-//        createLineResponse(getLineParams());
+//        createLineRequest(getLineParams());
 //
 //        // when
-//        ExtractableResponse<Response> response = createLineResponse(getLineParams());
+//        ExtractableResponse<Response> response = createLineRequest(getLineParams());
 //
 //        // then
 //        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -50,8 +50,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 //    @Test
 //    void getLines() {
 //        /// given
-//        ExtractableResponse<Response> createdResponse1 = createLineResponse(getLineParams());
-//        ExtractableResponse<Response> createdResponse2 = createLineResponse(getLineParams2());
+//        ExtractableResponse<Response> createdResponse1 = createLineRequest(getLineParams());
+//        ExtractableResponse<Response> createdResponse2 = createLineRequest(getLineParams2());
 //
 //        // when
 //        ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -76,7 +76,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 //    @Test
 //    void getLine() {
 //        // given
-//        ExtractableResponse<Response> createdResponse = createLineResponse(getLineParams());
+//        ExtractableResponse<Response> createdResponse = createLineRequest(getLineParams());
 //
 //        Long expectedLineId = Long.parseLong(createdResponse.header("Location").split("/")[2]);
 //
@@ -101,7 +101,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 //    @Test
 //    void updateLine() {
 //        // given
-//        ExtractableResponse<Response> createdResponse = createLineResponse(getLineParams());
+//        ExtractableResponse<Response> createdResponse = createLineRequest(getLineParams());
 //        Long expectedLineId = Long.parseLong(createdResponse.header("Location").split("/")[2]);
 //
 //        // when
@@ -119,23 +119,23 @@ class LineAcceptanceTest extends AcceptanceTest {
 //        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
 //    }
 //
-//    @DisplayName("노선을 제거한다.")
-//    @Test
-//    void deleteLine() {
-//        // given
-//        ExtractableResponse<Response> createdResponse = createLineResponse(getLineParams());
-//
-//        // when
-//        String uri = createdResponse.header("Location");
-//        ExtractableResponse<Response> response = RestAssured.given().log().all()
-//                .when()
-//                .delete(uri)
-//                .then().log().all()
-//                .extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//    }
+    @DisplayName("노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> createdResponse = createLineRequest(getLineParams());
+
+        // when
+        String uri = createdResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 
     private ExtractableResponse<Response> createLineRequest(Map<String, String> params) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()

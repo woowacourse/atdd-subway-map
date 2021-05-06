@@ -19,7 +19,7 @@ public class LineJdbcDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line saveLineWithSection(String name, String color, Long upStationId, Long downStationId, int distance) {
         Long createdLineId = insertLine(name, color);
         Long createdSectionId = insertSection(createdLineId, upStationId, downStationId, distance);
         List<Section> sections = new ArrayList<>();
@@ -41,11 +41,6 @@ public class LineJdbcDao {
     }
 
     private Long insertSection(Long lineId, Long upStationId, Long downStationId, int distance) {
-        System.out.println("테스트");
-        System.out.println(lineId);
-        System.out.println(upStationId);
-        System.out.println(downStationId);
-        System.out.println(distance);
         String insertSectionSql = "INSERT INTO SECTION " +
                 "(line_id, up_station_id, down_station_id, distance) " +
                 "VALUES (?, ?, ?, ?)";
@@ -93,8 +88,20 @@ public class LineJdbcDao {
 //        return (long) jdbcTemplate.update(query, color, name, lineId);
 //    }
 //
-//    public Long deleteById(Long lineId) {
-//        String query = "DELETE FROM LINE WHERE id = ?";
-//        return (long) jdbcTemplate.update(query, lineId);
-//    }
+    public Long deleteLineWithSectionByLineId(Long lineId) {
+        String selectSectionQuery = "SELECT * FROM section WHERE line_id = ?";
+        List<Long> sectionIds = jdbcTemplate.query(
+                selectSectionQuery,
+                (resultSet, rowNum) -> resultSet.getLong("id"),
+                lineId
+        );
+
+        for (Long sectionId : sectionIds) {
+            String deleteSectionQuery = "DELETE FROM section WHERE id = ?";
+            jdbcTemplate.update(deleteSectionQuery, sectionId);
+        }
+
+        String deleteLineQuery = "DELETE FROM LINE WHERE id = ?";
+        return (long) jdbcTemplate.update(deleteLineQuery, lineId);
+    }
 }

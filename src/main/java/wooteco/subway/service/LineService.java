@@ -26,7 +26,7 @@ public class LineService {
 //        lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
 //            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
 //        });
-        Line newLine = lineJdbcDao.save(
+        Line newLine = lineJdbcDao.saveLineWithSection(
                 lineRequest.getName(),
                 lineRequest.getColor(),
                 lineRequest.getUpStationId(),
@@ -67,7 +67,7 @@ public class LineService {
 //        return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
 //    }
 //
-//    public long deleteLine(Long lineId) {
-//        return lineJdbcDao.deleteById(lineId);
-//    }
+    public long deleteLine(Long lineId) {
+        return lineJdbcDao.deleteLineWithSectionByLineId(lineId);
+    }
 }
