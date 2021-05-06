@@ -3,10 +3,11 @@ import VueRouter from "vue-router";
 import stationRoutes from "./modules/station";
 import lineRoutes from "./modules/line";
 import mainRoutes from "./modules/main";
+import sectionRoutes from "./modules/section";
 
 Vue.use(VueRouter);
 
 export default new VueRouter({
   mode: "history",
-  routes: [...stationRoutes, ...lineRoutes, ...mainRoutes],
+  routes: [...stationRoutes, ...lineRoutes, ...mainRoutes, ...sectionRoutes],
 });
