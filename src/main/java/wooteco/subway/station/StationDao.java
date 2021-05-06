@@ -1,51 +1,52 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        validateStation(station);
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static void validateStation(Station newStation) {
-        if (duplicatedNameExists(newStation.getName())) {
-            throw new IllegalArgumentException("중복된 지하철 역입니다.");
-        }
+    public Long save(Station station) {
+//        validateStation(station);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO station (name) VALUES (?)";
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, station.getName());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
-    private static boolean duplicatedNameExists(String newStation) {
-        return stations.stream()
-                .anyMatch(station -> station.getName().equals(newStation));
+//    private void validateStation(Station newStation) {
+//        if (duplicatedNameExists(newStation.getName())) {
+//            throw new IllegalArgumentException("중복된 지하철 역입니다.");
+//        }
+//    }
+
+    public List<Station> findAll() {
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")
+        ));
     }
 
-    public static List<Station> findAll() {
-        return stations;
-    }
-
-    public static void delete(Long id) {
-        if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다");
-        }
-    }
-
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
-
-    public static void clear() {
-        stations.clear();
+    public void delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

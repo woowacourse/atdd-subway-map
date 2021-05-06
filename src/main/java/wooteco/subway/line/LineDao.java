@@ -1,57 +1,60 @@
 package wooteco.subway.line;
 
-import org.springframework.util.ReflectionUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 
+@Repository
 public class LineDao {
-    private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
 
-    public static Line save(Line line) {
-        validateLine(line);
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+    private final JdbcTemplate jdbcTemplate;
+
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+    public Long save(Line line) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
-    private static void validateLine(Line newLine) {
-        if (duplicatedNameExists(newLine.getName())) {
-            throw new IllegalArgumentException("중복된 노선입니다.");
-        }
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")
+        ));
     }
 
-    private static boolean duplicatedNameExists(String newLine) {
-        return lines.stream()
-                .anyMatch(line -> line.getName().equals(newLine));
+    public void update(Long id, Line line) {
+        //        validateLine(newLine);
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    public static void clear() {
-        lines.clear();
+    public void delete(Long id) {
+        String sql = "DELETE FROM line WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public static List<Line> findAll() {
-        return lines;
-    }
 
-    public static void update(Long id, Line newLine) {
-        validateLine(newLine);
-        delete(id);
-        lines.add(createNewObject(newLine));
-    }
-
-    public static void delete(Long id) {
-        if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다");
-        }
-    }
+//    public static void delete(Long id) {
+//        if (!lines.removeIf(line -> line.getId().equals(id))) {
+//            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+//        }
+//    }
 }
