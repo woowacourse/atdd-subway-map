@@ -33,7 +33,7 @@ public class StationDao {
         };
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new Station(id, station.getName());
+        return findById(id).get();
     }
 
     public void deleteById(final long id) {
