@@ -1,12 +1,14 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class LineService {
     private final LineRepository lineRepository;
 

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Transactional
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;

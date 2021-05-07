@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Transactional
 @RequestMapping("/stations")
 public class StationController {
     private final StationService stationService;
