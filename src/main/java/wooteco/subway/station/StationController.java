@@ -4,21 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.domain.Station;
 
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import wooteco.subway.domain.Station;
 
-@RestController
 @RequiredArgsConstructor
+@RestController
 public class StationController {
 
     private final StationDao stationDao;
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        Station station = Station.from(stationRequest.getName());
         Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);

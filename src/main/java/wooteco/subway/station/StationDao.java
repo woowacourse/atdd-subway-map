@@ -2,11 +2,12 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import wooteco.subway.domain.Station;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -28,5 +29,11 @@ public class StationDao {
         field.setAccessible(true);
         ReflectionUtils.setField(field, station, ++seq);
         return station;
+    }
+
+    public Optional<Station> findStationById(Long id) {
+        return stations.stream()
+                .filter(station -> station.isSameId(id))
+                .findAny();
     }
 }
