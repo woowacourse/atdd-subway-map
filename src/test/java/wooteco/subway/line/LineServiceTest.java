@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.line.exception.LineException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +38,6 @@ class LineServiceTest {
     void createDuplicatedStation() {
         lineService.createLine("2호선", "초록색");
         assertThatThrownBy(() -> lineService.createLine("2호선", "초록색"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(LineException.class);
     }
 }

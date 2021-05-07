@@ -1,6 +1,8 @@
 package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.station.exception.ErrorCode;
+import wooteco.subway.station.exception.StationException;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public class StationService {
 
     public Station createStation(String name) {
         if (isStationExist(name)) {
-            throw new IllegalArgumentException("존재하는 역 이름입니다.");
+            throw new StationException(ErrorCode.ALREADY_EXIST_STATION_NAME);
         }
         return stationDao.save(name);
     }
