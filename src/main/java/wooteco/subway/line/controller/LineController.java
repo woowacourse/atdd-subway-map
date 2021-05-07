@@ -14,11 +14,6 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
 
-//    private final LineDao lineDao;
-//
-//    public LineController(LineDao lineDao) {
-//        this.lineDao = lineDao;
-//    }
     private final LineService lineService;
 
     public LineController(LineService lineService) {
