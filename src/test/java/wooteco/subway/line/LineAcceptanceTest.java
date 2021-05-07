@@ -280,6 +280,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("2호선");
     }
 
+    @DisplayName("노선 수정 - 성공(원본 이름 변경 없을시)")
+    @Test
+    void updateStationWithOriginalName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "3호선");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("color", "red");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        String uri = createResponse.header("Location");
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", "3호선");
+        updateParams.put("color", "blue");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updateParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getColor()).isEqualTo("blue");
+        assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("3호선");
+    }
+
     @DisplayName("노선 수정 - 실패(중복 노선 이름)")
     @Test
     void updateStationFailureWhenThereIsDuplicateName() {
