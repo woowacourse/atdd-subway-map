@@ -4,12 +4,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 
+@Repository
 public class StationJdbcDao implements StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
