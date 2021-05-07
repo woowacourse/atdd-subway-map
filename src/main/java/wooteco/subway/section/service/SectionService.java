@@ -23,8 +23,7 @@ public class SectionService {
         Section section = new Section(lineId,
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
-                sectionRequest.getDistance(),
-                0
+                sectionRequest.getDistance()
         );
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
 
@@ -92,7 +91,7 @@ public class SectionService {
         sectionDao.delete(downSection.getId());
 
         Section newSection = new Section(lineId, downSection.getUpStationId(), upSection.getDownStationId(),
-                upSection.getDistance() + downSection.getDistance(), 0);
+                upSection.getDistance() + downSection.getDistance());
 
         sectionDao.save(newSection);
     }
