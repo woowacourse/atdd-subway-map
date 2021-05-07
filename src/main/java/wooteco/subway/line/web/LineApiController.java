@@ -26,6 +26,6 @@ public class LineApiController {
 
         Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
         LineResponse lineResponse = LineResponse.create(line);
-        return ResponseEntity.created(URI.create("/lines" + line.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 }
