@@ -1,4 +1,4 @@
-package wooteco.subway.line.repository;
+package wooteco.subway.line.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class LineJdbcDao implements LineRepository {
+public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

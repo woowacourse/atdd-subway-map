@@ -4,10 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.Line;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineResponse;
-import wooteco.subway.line.repository.LineRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 public class LineService {
     private static final Logger log = LoggerFactory.getLogger(LineService.class);
 
-    private final LineRepository lineRepository;
+    private final LineDao lineDao;
 
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateLineName(lineCreateRequest);
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
-        Line newLine = lineRepository.save(line);
+        Line newLine = lineDao.save(line);
         log.info(newLine.getName() + " 노선 생성 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
@@ -37,19 +37,19 @@ public class LineService {
     }
 
     private boolean checkNameDuplicate(LineCreateRequest lineCreateRequest) {
-        return lineRepository.findAll().stream()
+        return lineDao.findAll().stream()
                 .anyMatch(line -> line.isSameName(lineCreateRequest.getName()));
     }
 
     public LineResponse findBy(Long id) {
-        Line newLine = lineRepository.findById(id)
+        Line newLine = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
         log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
     public List<LineResponse> findAll() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineDao.findAll();
         log.info("지하철 모든 노선 조회 성공");
         return lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
@@ -60,12 +60,12 @@ public class LineService {
         validatesRequest(id, lineUpdateRequest);
 
         Line updatedLine = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        lineRepository.update(id, updatedLine);
+        lineDao.update(id, updatedLine);
         log.info("노선 정보 수정 완료");
     }
 
     private void validatesRequest(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line currentLine = lineRepository.findById(id)
+        Line currentLine = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
         String oldName = currentLine.getName();
@@ -77,13 +77,13 @@ public class LineService {
     }
 
     private boolean validatesName(String oldName, String newName) {
-        return lineRepository.findAll().stream()
+        return lineDao.findAll().stream()
                 .filter(line -> !line.isSameName(oldName))
                 .anyMatch(line -> line.isSameName(newName));
     }
 
     public void delete(Long id) {
-        lineRepository.delete(id);
+        lineDao.delete(id);
         log.info("노선 삭제 성공");
     }
 }

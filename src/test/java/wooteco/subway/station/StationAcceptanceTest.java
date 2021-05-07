@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.dao.StationDao;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationRepository stationRepository;
+    private StationDao stationDao;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -132,7 +132,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
-        int originalSize = stationRepository.findAll().size();
+        int originalSize = stationDao.findAll().size();
 
         // when
         String uri = createResponse.header("Location");
@@ -144,6 +144,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(stationRepository.findAll()).hasSize(originalSize - 1);
+        assertThat(stationDao.findAll()).hasSize(originalSize - 1);
     }
 }

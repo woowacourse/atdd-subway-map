@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.response.LineResponse;
-import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.dao.LineDao;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private LineRepository lineRepository;
+    private LineDao lineDao;
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -251,7 +251,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        int originalSize = lineRepository.findAll().size();
+        int originalSize = lineDao.findAll().size();
 
         // when
         String uri = createResponse.header("Location");
@@ -263,6 +263,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(lineRepository.findAll()).hasSize(originalSize - 1);
+        assertThat(lineDao.findAll()).hasSize(originalSize - 1);
     }
 }

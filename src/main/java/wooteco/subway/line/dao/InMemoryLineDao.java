@@ -1,4 +1,4 @@
-package wooteco.subway.line.repository;
+package wooteco.subway.line.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LineDao implements LineRepository {
+public class InMemoryLineDao implements LineDao {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 

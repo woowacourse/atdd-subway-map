@@ -1,11 +1,11 @@
-package wooteco.subway.line.repository;
+package wooteco.subway.line.dao;
 
 import wooteco.subway.line.Line;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface LineRepository {
+public interface LineDao {
     Line save(Line line);
 
     List<Line> findAll();

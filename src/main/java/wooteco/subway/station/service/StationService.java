@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.Station;
+import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.repository.StationRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 public class StationService {
     private static final Logger log = LoggerFactory.getLogger(StationService.class);
 
-    private final StationRepository stationRepository;
+    private final StationDao stationDao;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationService(StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
         Station station = new Station(stationRequest.getName());
-        Station newStation = stationRepository.save(station);
+        Station newStation = stationDao.save(station);
         log.info(newStation.getName() + "역이 생성되었습니다.");
         return new StationResponse(newStation.getId(), newStation.getName());
     }
@@ -36,12 +36,12 @@ public class StationService {
     }
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return stationRepository.findAll().stream()
+        return stationDao.findAll().stream()
                 .anyMatch(station -> station.isSameName(stationRequest.getName()));
     }
 
     public List<StationResponse> findAll() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = stationDao.findAll();
         log.info("등록된 지하철 역 조회 성공");
         return stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
@@ -49,7 +49,7 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        stationRepository.delete(id);
+        stationDao.delete(id);
         log.info("지하철 역 삭제 성공");
     }
 }

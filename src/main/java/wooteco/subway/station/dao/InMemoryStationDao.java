@@ -1,4 +1,4 @@
-package wooteco.subway.station.repository;
+package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.Station;
@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StationDao implements StationRepository {
+public class InMemoryStationDao implements StationDao {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 
