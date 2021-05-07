@@ -1,22 +1,18 @@
 package wooteco.subway.station;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import wooteco.subway.domain.Station;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class StationResponse {
     private Long id;
     private String name;
 
-    public StationResponse() {
-    }
-
-    public StationResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public static StationResponse create(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 }

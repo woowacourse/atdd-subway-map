@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.web;
 
 public class LineRequest {
     private String name;

@@ -1,11 +1,5 @@
 package wooteco.subway.line.web;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.LineRequest;
 import wooteco.subway.station.StationDao;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,8 +30,8 @@ class LineApiControllerTest {
     @Test
     @DisplayName("노선 생성 - 성공")
     void createLine_success() throws Exception {
-        Long upStationId = stationDao.save(new Station("잠실역")).getId();
-        Long downStationId = stationDao.save(new Station("잠실새내역")).getId();
+        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
+        Long downStationId = stationDao.save(Station.from("잠실새내역")).getId();
 
         final LineRequest lineRequest =
             new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
@@ -46,12 +43,12 @@ class LineApiControllerTest {
             .andDo(print())
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"))
-            .andExpect(jsonPath("lineResponse.id").exists())
-            .andExpect(jsonPath("lineResponse.name").value("2호선"))
-            .andExpect(jsonPath("lineResponse.color").value("bg-green-600"))
-            .andExpect(jsonPath("lineResponse.stations").isArray())
-            .andExpect(jsonPath("lineResponse.stations[0].name").value("잠실역"))
-            .andExpect(jsonPath("lineResponse.stations[1].name").value("잠실새내역"));
+            .andExpect(jsonPath("id").exists())
+            .andExpect(jsonPath("name").value("2호선"))
+            .andExpect(jsonPath("color").value("bg-green-600"))
+            .andExpect(jsonPath("stations").isArray())
+            .andExpect(jsonPath("stations[0].name").value("잠실역"))
+            .andExpect(jsonPath("stations[1].name").value("잠실새내역"));
     }
 
     @Test
