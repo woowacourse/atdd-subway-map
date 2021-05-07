@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<StationResponse> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<StationResponse> stations;
+
+    public LineResponse(){
+
+    }
 
     public LineResponse(Line line, List<StationResponse> stations) {
         this(line.getId(), line.getName(), line.getColor(), stations);
