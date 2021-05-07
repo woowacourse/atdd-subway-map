@@ -58,7 +58,7 @@ public class LineJdbcDao implements LineRepository {
     }
 
     @Override
-    public void updateById(Long id, Line updatedLine) {
+    public void update(Long id, Line updatedLine) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         String newName = updatedLine.getName();
         String newColor = updatedLine.getColor();
@@ -66,7 +66,7 @@ public class LineJdbcDao implements LineRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
     }

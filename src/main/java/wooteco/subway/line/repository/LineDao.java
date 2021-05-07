@@ -39,7 +39,7 @@ public class LineDao implements LineRepository {
     }
 
     @Override
-    public void updateById(Long id, Line updatedLine) {
+    public void update(Long id, Line updatedLine) {
         Line line = findByIdIfExist(id);
         lines.stream()
                 .filter(line::equals)
@@ -53,7 +53,7 @@ public class LineDao implements LineRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         Line line = findByIdIfExist(id);
         lines.remove(line);
     }

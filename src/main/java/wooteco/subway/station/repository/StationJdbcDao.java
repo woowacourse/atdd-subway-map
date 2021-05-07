@@ -48,7 +48,7 @@ public class StationJdbcDao implements StationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         String query = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(query, id);
     }

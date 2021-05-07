@@ -40,7 +40,7 @@ public class StationService {
                 .anyMatch(station -> station.isSameName(stationRequest.getName()));
     }
 
-    public List<StationResponse> findAllStations() {
+    public List<StationResponse> findAll() {
         List<Station> stations = stationRepository.findAll();
         log.info("등록된 지하철 역 조회 성공");
         return stations.stream()
@@ -48,8 +48,8 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStation(Long id) {
-        stationRepository.deleteById(id);
+    public void delete(Long id) {
+        stationRepository.delete(id);
         log.info("지하철 역 삭제 성공");
     }
 }

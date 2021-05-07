@@ -9,5 +9,5 @@ public interface StationRepository {
 
     List<Station> findAll();
 
-    void deleteById(Long id);
+    void delete(Long id);
 }

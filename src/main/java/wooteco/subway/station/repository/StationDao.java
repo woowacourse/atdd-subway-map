@@ -31,7 +31,7 @@ public class StationDao implements StationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         stations.stream()
                 .filter(station -> station.isSameId(id))
                 .findAny()

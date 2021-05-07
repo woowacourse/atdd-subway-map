@@ -41,14 +41,14 @@ public class LineService {
                 .anyMatch(line -> line.isSameName(lineCreateRequest.getName()));
     }
 
-    public LineResponse findLine(Long id) {
+    public LineResponse findBy(Long id) {
         Line newLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
         log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    public List<LineResponse> findAllLines() {
+    public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
         log.info("지하철 모든 노선 조회 성공");
         return lines.stream()
@@ -56,11 +56,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
         validatesRequest(id, lineUpdateRequest);
 
         Line updatedLine = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        lineRepository.updateById(id, updatedLine);
+        lineRepository.update(id, updatedLine);
         log.info("노선 정보 수정 완료");
     }
 
@@ -82,8 +82,8 @@ public class LineService {
                 .anyMatch(line -> line.isSameName(newName));
     }
 
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
+    public void delete(Long id) {
+        lineRepository.delete(id);
         log.info("노선 삭제 성공");
     }
 }
