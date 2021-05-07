@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.controller.station;
 
 import java.net.URI;
 import java.util.List;
@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.station.dto.StationDto;
-import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.StationServiceDto;
+import wooteco.subway.controller.dto.request.StationRequest;
+import wooteco.subway.controller.dto.response.StationResponse;
 
 @RestController
 @RequestMapping(value = "/stations")
@@ -30,11 +31,11 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
         @RequestBody final StationRequest stationRequest) {
 
-        StationDto stationDto = new StationDto(stationRequest.getName());
-        StationDto savedStationDto = stationService.save(stationDto);
+        StationServiceDto stationServiceDto = new StationServiceDto(stationRequest.getName());
+        StationServiceDto savedStationServiceDto = stationService.save(stationServiceDto);
         StationResponse stationResponse = new StationResponse(
-            savedStationDto.getId(),
-            savedStationDto.getName()
+            savedStationServiceDto.getId(),
+            savedStationServiceDto.getName()
         );
 
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
@@ -43,8 +44,8 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationDto> stationDtos = stationService.showStations();
-        List<StationResponse> stationResponses = stationDtos.stream()
+        List<StationServiceDto> stationServiceDtos = stationService.showStations();
+        List<StationResponse> stationResponses = stationServiceDtos.stream()
             .map(it -> new StationResponse(it.getId(), it.getName()))
             .collect(Collectors.toList());
 
@@ -54,7 +55,7 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable final Long id) {
-        stationService.delete(new StationDto(id));
+        stationService.delete(new StationServiceDto(id));
 
         return ResponseEntity.ok()
             .build();

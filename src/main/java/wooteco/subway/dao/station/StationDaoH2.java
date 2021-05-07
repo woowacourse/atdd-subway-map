@@ -1,4 +1,4 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.dao.station;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.Station;
+import wooteco.subway.domain.Station;
 
 @Repository
 public class StationDaoH2 implements StationDao {

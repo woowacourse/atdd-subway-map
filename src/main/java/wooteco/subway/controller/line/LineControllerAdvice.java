@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.controller;
 
 import java.sql.SQLNonTransientException;
 import org.springframework.dao.DuplicateKeyException;

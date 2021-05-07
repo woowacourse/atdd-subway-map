@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.response.StationResponse;
 
 class LineResponseTest {
 

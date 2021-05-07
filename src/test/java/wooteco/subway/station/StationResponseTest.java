@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.controller.dto.response.StationResponse;
 
 class StationResponseTest {
 

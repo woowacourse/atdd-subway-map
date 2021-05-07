@@ -1,4 +1,4 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.dao.station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateStationException;
 import wooteco.subway.exception.NotFoundStationException;
-import wooteco.subway.station.Station;
+import wooteco.subway.domain.Station;
 
 public class StationDaoCache implements StationDao {
 

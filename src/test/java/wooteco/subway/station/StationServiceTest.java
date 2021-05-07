@@ -10,8 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.station.dao.StationDaoCache;
-import wooteco.subway.station.dto.StationDto;
+import wooteco.subway.dao.station.StationDaoCache;
+import wooteco.subway.domain.Station;
+import wooteco.subway.service.dto.StationServiceDto;
+import wooteco.subway.service.StationService;
 
 class StationServiceTest {
 
@@ -19,9 +21,9 @@ class StationServiceTest {
     @Test
     void save() {
         // given
-        StationDto requestStationDto = new StationDto("스타벅스 선정릉역");
+        StationServiceDto requestStationServiceDto = new StationServiceDto("스타벅스 선정릉역");
         Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
-        Station station = new Station(requestStationDto.getName());
+        Station station = new Station(requestStationServiceDto.getName());
 
         StationDaoCache mockDao = mock(StationDaoCache.class);
         when(mockDao.save(any())).thenReturn(savedStation);
@@ -29,11 +31,11 @@ class StationServiceTest {
         StationService stationService = new StationService(mockDao);
 
         // when
-        StationDto savedStationDto = stationService.save(requestStationDto);
+        StationServiceDto savedStationServiceDto = stationService.save(requestStationServiceDto);
 
         // then
-        assertThat(savedStationDto.getId()).isEqualTo(savedStation.getId());
-        assertThat(savedStationDto.getName()).isEqualTo(savedStation.getName());
+        assertThat(savedStationServiceDto.getId()).isEqualTo(savedStation.getId());
+        assertThat(savedStationServiceDto.getName()).isEqualTo(savedStation.getName());
     }
 
     @DisplayName("서비스에서 전체 역 호출")
@@ -50,14 +52,14 @@ class StationServiceTest {
         when(mockDao.showAll()).thenReturn(stations);
         StationService stationService = new StationService(mockDao);
 
-        List<StationDto> expectedDtos = Arrays.asList(
-            new StationDto((long) 1, "성서공단역"),
-            new StationDto((long) 2, "이곡역"),
-            new StationDto((long) 3, "용산역")
+        List<StationServiceDto> expectedDtos = Arrays.asList(
+            new StationServiceDto((long) 1, "성서공단역"),
+            new StationServiceDto((long) 2, "이곡역"),
+            new StationServiceDto((long) 3, "용산역")
         );
 
         // when
-        List<StationDto> requestedDtos = stationService.showStations();
+        List<StationServiceDto> requestedDtos = stationService.showStations();
 
         // then
         assertThat(requestedDtos.get(0).getId()).isEqualTo(expectedDtos.get(0).getId());

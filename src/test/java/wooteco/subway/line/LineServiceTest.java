@@ -12,9 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.assembler.Assembler;
+import wooteco.subway.domain.Line;
 import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.line.dao.LineDaoCache;
-import wooteco.subway.line.dto.LineDto;
+import wooteco.subway.dao.line.LineDaoCache;
+import wooteco.subway.service.dto.LineServiceDto;
+import wooteco.subway.service.LineService;
 
 public class LineServiceTest {
 
@@ -32,14 +34,14 @@ public class LineServiceTest {
         // given
         String name = "부산1호선";
         String color = "주홍색";
-        LineDto lineDto = new LineDto(name, color);
+        LineServiceDto lineServiceDto = new LineServiceDto(name, color);
 
         // when
-        LineDto createdLineDto = lineService.createLine(lineDto);
+        LineServiceDto createdLineServiceDto = lineService.createLine(lineServiceDto);
 
         // then
-        assertThat(createdLineDto.getName()).isEqualTo(name);
-        assertThat(createdLineDto.getColor()).isEqualTo(color);
+        assertThat(createdLineServiceDto.getName()).isEqualTo(name);
+        assertThat(createdLineServiceDto.getColor()).isEqualTo(color);
     }
 
     @Test
@@ -56,14 +58,14 @@ public class LineServiceTest {
         when(mockLineDao.showAll()).thenReturn(lines);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
-        List<LineDto> expectedDtos = Arrays.asList(
-            new LineDto((long) 1, "대구선", "노란색"),
-            new LineDto((long) 2, "광주선", "분홍색"),
-            new LineDto((long) 3, "울산선", "검은색")
+        List<LineServiceDto> expectedDtos = Arrays.asList(
+            new LineServiceDto((long) 1, "대구선", "노란색"),
+            new LineServiceDto((long) 2, "광주선", "분홍색"),
+            new LineServiceDto((long) 3, "울산선", "검은색")
         );
 
         // when
-        List<LineDto> requestedDtos = lineServiceWithMock.findAll();
+        List<LineServiceDto> requestedDtos = lineServiceWithMock.findAll();
 
         // then
         assertThat(requestedDtos.get(0).getId()).isEqualTo(expectedDtos.get(0).getId());
@@ -88,7 +90,7 @@ public class LineServiceTest {
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         // when
-        LineDto requestedDto = lineServiceWithMock.findOne(new LineDto((long) 1));
+        LineServiceDto requestedDto = lineServiceWithMock.findOne(new LineServiceDto((long) 1));
 
         // then
         assertThat(requestedDto.getId()).isEqualTo(line.getId());
@@ -100,14 +102,14 @@ public class LineServiceTest {
     @DisplayName("특정 노선 업데이트")
     void update() {
         // given
-        LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
-        LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
+        LineServiceDto initiatedRequestDto = new LineServiceDto("문화선", "무지개색");
+        LineServiceDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
+        LineServiceDto requestDto = new LineServiceDto(index, "7호선", "녹담색");
 
         // when
         lineService.update(requestDto);
-        LineDto responseDto = lineService.findOne(requestDto);
+        LineServiceDto responseDto = lineService.findOne(requestDto);
 
         // then
         assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
@@ -118,10 +120,10 @@ public class LineServiceTest {
     @DisplayName("특정 노선 삭제")
     void delete() {
         // given
-        LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
-        LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
+        LineServiceDto initiatedRequestDto = new LineServiceDto("문화선", "무지개색");
+        LineServiceDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
+        LineServiceDto requestDto = new LineServiceDto(index, "7호선", "녹담색");
 
         // when
         lineService.delete(requestDto);

@@ -1,7 +1,7 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.dao.station;
 
 import java.util.List;
-import wooteco.subway.station.Station;
+import wooteco.subway.domain.Station;
 
 public interface StationDao {
 

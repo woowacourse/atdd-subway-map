@@ -1,7 +1,7 @@
-package wooteco.subway.line.dto;
+package wooteco.subway.dto.line;
 
 import java.util.List;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.dto.station.StationResponse;
 
 public class LineResponse {
 

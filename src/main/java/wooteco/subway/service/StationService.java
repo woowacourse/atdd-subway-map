@@ -1,11 +1,12 @@
-package wooteco.subway.station;
+package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.NotFoundStationException;
-import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationDto;
+import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.service.dto.StationServiceDto;
+import wooteco.subway.domain.Station;
 
 @Service
 public class StationService {
@@ -16,23 +17,23 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public List<StationDto> showStations() {
+    public List<StationServiceDto> showStations() {
         List<Station> stations = stationDao.showAll();
 
         return stations.stream()
-            .map(station -> new StationDto(station.getId(), station.getName()))
+            .map(station -> new StationServiceDto(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }
 
-    public StationDto save(final StationDto stationDto) {
-        Station station = new Station(stationDto.getName());
+    public StationServiceDto save(final StationServiceDto stationServiceDto) {
+        Station station = new Station(stationServiceDto.getName());
         Station saveStation = stationDao.save(station);
 
-        return new StationDto(saveStation.getId(), saveStation.getName());
+        return new StationServiceDto(saveStation.getId(), saveStation.getName());
     }
 
-    public void delete(final StationDto stationDto) {
-        int deletedStationNumber = stationDao.delete(stationDto.getId());
+    public void delete(final StationServiceDto stationServiceDto) {
+        int deletedStationNumber = stationDao.delete(stationServiceDto.getId());
 
         if (deletedStationNumber == 0) {
             throw new NotFoundStationException("[ERROR] 존재하지 않는 역입니다.");

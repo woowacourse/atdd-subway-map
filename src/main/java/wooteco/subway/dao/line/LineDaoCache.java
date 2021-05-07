@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.dao.line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.line.Line;
+import wooteco.subway.domain.Line;
 
 public class LineDaoCache implements LineDao {
 

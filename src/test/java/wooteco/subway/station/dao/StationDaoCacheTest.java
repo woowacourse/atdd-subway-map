@@ -7,7 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.station.Station;
+import wooteco.subway.dao.station.StationDaoCache;
+import wooteco.subway.domain.Station;
 
 class StationDaoCacheTest {
 

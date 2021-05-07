@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dao.LineDaoCache;
-import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.station.dao.StationDaoCache;
+import wooteco.subway.dao.line.LineDaoCache;
+import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.dao.station.StationDaoCache;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 

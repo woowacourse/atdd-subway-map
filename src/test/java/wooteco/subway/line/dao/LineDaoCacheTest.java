@@ -7,9 +7,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.dao.line.LineDaoCache;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.line.Line;
+import wooteco.subway.domain.Line;
 
 class LineDaoCacheTest {
 
