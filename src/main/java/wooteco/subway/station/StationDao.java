@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,7 +32,7 @@ public class StationDao {
             return ps;
         }, keyHolder);
 
-        return new StationEntity(keyHolder.getKey().longValue(), stationEntity.getName());
+        return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), stationEntity.getName());
     }
 
     public List<Station> findAll() {
@@ -42,10 +43,18 @@ public class StationDao {
 
     public void delete(Long id) {
         String sql = "DELETE FROM station WHERE id = (?)";
-        int updatedRowCount = jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
+    }
 
-        if (updatedRowCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
-        }
+    public boolean hasStationWithName(String name) {
+        String sql = "SELECT COUNT(*) FROM station WHERE name = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, name) > 0;
+    }
+
+    public boolean hasStationWithId(Long id) {
+        String sql = "SELECT COUNT(*) FROM station WHERE id = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }
