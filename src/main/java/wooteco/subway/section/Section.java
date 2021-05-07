@@ -32,6 +32,10 @@ public class Section {
         return downStationId.equals(id);
     }
 
+    public boolean isSameOrLongDistance(Section newSection) {
+        return this.distance <= newSection.distance;
+    }
+
     public Long getId() {
         return id;
     }
