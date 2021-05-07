@@ -9,46 +9,59 @@ import org.springframework.util.ReflectionUtils;
 
 import wooteco.subway.exception.DuplicateNameException;
 
-public class LineDao {
+public class LineFakeDao implements LineDao {
     private static Long seq = 0L;
     static final List<Line> LINES = new ArrayList<>();
 
-    public static Line save(Line line) {
-        if (isDuplicateLineName(line)) {
+    @Override
+    public Line save(LineRequest lineRequest) {
+        if (isDuplicateLineName(lineRequest)) {
             throw new DuplicateNameException("이미 저장된 노선 이름입니다.");
         }
 
-        Line persistLine = createNewObject(line);
+        Line persistLine = createNewObject(lineRequest);
         LINES.add(persistLine);
         return persistLine;
     }
 
-    private static boolean isDuplicateLineName(Line line) {
-        final String lineName = line.getName();
+    private static boolean isDuplicateLineName(LineRequest lineRequest) {
+        final String lineName = lineRequest.getName();
         return LINES.stream()
                     .anyMatch(storedLine -> storedLine.getName().equals(lineName));
     }
 
-    public static List<Line> findAll() {
+    @Override
+    public List<Line> findAll() {
         return LINES;
     }
 
-    public static Optional<Line> findById(Long id) {
+    @Override
+    public Optional<Line> findById(Long id) {
         return LINES.stream()
                     .filter(line -> line.getId().equals(id))
                     .findAny();
     }
 
-    public static void update(Line beforeLine, Line afterLine) {
-        final int updateIndex = LINES.indexOf(beforeLine);
-        LINES.set(updateIndex, afterLine);
+    @Override
+    public Optional<Line> findByName(String name) {
+        return LINES.stream()
+                    .filter(line -> line.getName().equals(name))
+                    .findAny();
     }
 
-    public static void delete(Long id) {
+    @Override
+    public void update(Long id, LineRequest lineRequest) {
+        delete(id);
+        LINES.add(new Line(id, lineRequest));
+    }
+
+    @Override
+    public void delete(Long id) {
         LINES.removeIf(line -> line.getId().equals(id));
     }
 
-    private static Line createNewObject(Line line) {
+    private Line createNewObject(LineRequest lineRequest) {
+        Line line = new Line(seq, lineRequest);
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
         ReflectionUtils.setField(field, line, ++seq);
