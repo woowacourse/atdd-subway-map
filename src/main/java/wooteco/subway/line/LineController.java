@@ -18,10 +18,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
-        final Line lineToSave = new Line(lineRequest.getName(), lineRequest.getColor());
-
-        final Line line = lineRepository.save(lineToSave);
+    public ResponseEntity<LineResponse> create(@RequestBody final Line lineRequest) {
+        final Line line = lineRepository.save(lineRequest);
         final LineResponse lineResponse = lineResponseById(line.getId());
 
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
@@ -50,8 +48,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+    public ResponseEntity<LineResponse> updateLine(@RequestBody final Line line) {
         lineRepository.save(line);
 
         return ResponseEntity.ok().build();

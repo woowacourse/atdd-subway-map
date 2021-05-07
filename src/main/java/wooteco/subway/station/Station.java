@@ -3,8 +3,11 @@ package wooteco.subway.station;
 import java.util.Objects;
 
 public class Station {
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
+
+    public Station() {
+    }
 
     public Station(final String name) {
         this(null, name);

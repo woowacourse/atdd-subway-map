@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class Line {
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<Station> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<Station> stations;
+
+    public Line(){
+
+    }
 
     public Line(final String name, final String color) {
         this(null, name, color, Collections.emptyList());
