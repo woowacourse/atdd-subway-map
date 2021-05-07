@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.request.StationRequest;
 
 import java.util.regex.Pattern;
 
@@ -17,7 +16,7 @@ public class LineValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return StationRequest.class.isAssignableFrom(clazz);
+        return LineRequest.class.isAssignableFrom(clazz);
     }
 
     @Override
