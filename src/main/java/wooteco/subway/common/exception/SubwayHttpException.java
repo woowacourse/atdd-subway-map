@@ -7,9 +7,13 @@ public class SubwayHttpException extends RuntimeException implements HttpExcepti
     private static final String ERROR_MESSAGE = "오류가 발생했습니다";
 
     private final HttpStatus status;
-    private final Object body;
+    private final String body;
 
-    public SubwayHttpException(HttpStatus status, Object body) {
+    public SubwayHttpException(String body) {
+        this(HttpStatus.BAD_REQUEST, body);
+    }
+
+    public SubwayHttpException(HttpStatus status, String body) {
         super(ERROR_MESSAGE);
         this.status = status;
         this.body = body;
@@ -21,7 +25,7 @@ public class SubwayHttpException extends RuntimeException implements HttpExcepti
     }
 
     @Override
-    public Object body() {
+    public String body() {
         return body;
     }
 }

@@ -1,11 +1,8 @@
 package wooteco.subway.domain.line.dao;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -43,6 +40,15 @@ public class LineDao {
         ));
     }
 
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")
+        ), id);
+    }
+
     public void update(Long id, Line line) {
         String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
@@ -51,14 +57,5 @@ public class LineDao {
     public void delete(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public Line findById(Long id) {
-        String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")
-        ), id);
     }
 }

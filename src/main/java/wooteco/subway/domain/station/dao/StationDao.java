@@ -38,16 +38,16 @@ public class StationDao {
         ));
     }
 
-    public void delete(Long id) {
-        String sql = "DELETE FROM station WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
     public Station findById(Long id) {
         String sql = "SELECT id, name FROM station WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Station(
                 rs.getLong("id"),
                 rs.getString("name")
         ), id);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

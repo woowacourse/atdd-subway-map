@@ -1,20 +1,17 @@
 package wooteco.subway.web.controller;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.common.exception.SubwayHttpException;
 
 @RestControllerAdvice
 public class SubwayControllerAdvice {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handler(DataAccessException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(SubwayHttpException.class)
+    public ResponseEntity<String> handler(SubwayHttpException e) {
+        return ResponseEntity
+                .status(e.httpStatus())
+                .body(e.body());
     }
 }
