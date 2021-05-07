@@ -17,7 +17,8 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public void databaseErrorLog(DataAccessException e) {
+    public ResponseEntity<Void> databaseErrorLog(DataAccessException e) {
         log.error("Data Access Error!!!!!");
+        return ResponseEntity.badRequest().build();
     }
 }
