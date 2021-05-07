@@ -43,8 +43,8 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, DataAccessException.class})
-    public ResponseEntity<String> handler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
+//    @ExceptionHandler({IllegalArgumentException.class, DataAccessException.class})
+//    public ResponseEntity<String> handler(IllegalArgumentException e) {
+//        return ResponseEntity.badRequest().body(e.getMessage());
+//    }
 }
