@@ -1,6 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.line;
 
-public class InsufficientLineInformationException extends RuntimeException {
+public class InsufficientLineInformationException extends LineException {
     private static final String MESSAGE = "필수값이 잘못 되었습니다.";
 
     public InsufficientLineInformationException() {

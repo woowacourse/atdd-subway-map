@@ -3,7 +3,7 @@ package wooteco.subway.station;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.StationNotFoundException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 @RequiredArgsConstructor
 @Service

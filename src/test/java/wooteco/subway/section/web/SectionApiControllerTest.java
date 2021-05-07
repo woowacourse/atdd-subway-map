@@ -1,14 +1,6 @@
 package wooteco.subway.section.web;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +17,13 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineService;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.StationDao;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -57,15 +56,15 @@ class SectionApiControllerTest {
         Station newStation = stationDao.save(Station.from("강남역"));
 
         SectionRequest sectionRequest = new SectionRequest(newStation.getId(), upStation.getId(),
-            4);
+                4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(header().exists("Location"));
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(3);
@@ -82,16 +81,16 @@ class SectionApiControllerTest {
         Line line = createLine(upStation, downStation);
 
         SectionRequest sectionRequest = new SectionRequest(downStation.getId(),
-            newStation.getId(),
-            4);
+                newStation.getId(),
+                4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(header().exists("Location"));
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(3);
@@ -108,15 +107,15 @@ class SectionApiControllerTest {
         Line line = createLine(upStation, downStation);
 
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(),
-            4);
+                4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(header().exists("Location"));
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(3);
@@ -133,16 +132,16 @@ class SectionApiControllerTest {
         Line line = createLine(upStation, downStation);
 
         SectionRequest sectionRequest = new SectionRequest(newStation.getId(),
-            downStation.getId(),
-            4);
+                downStation.getId(),
+                4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(header().exists("Location"));
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(3);
@@ -158,15 +157,15 @@ class SectionApiControllerTest {
         final Line line = createLine(upStation, downStation);
 
         final SectionRequest sectionRequest =
-            new SectionRequest(newStation.getId(), downStation.getId(), ORIGINAL_DISTANCE);
+                new SectionRequest(newStation.getId(), downStation.getId(), ORIGINAL_DISTANCE);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("새로 추가할 거리가 기존 거리보다 겉거나 큽니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("새로 추가할 거리가 기존 거리보다 같거나 큽니다."));
     }
 
     @Test
@@ -178,15 +177,15 @@ class SectionApiControllerTest {
         final Line line = createLine(upStation, downStation);
 
         final SectionRequest sectionRequest =
-            new SectionRequest(Long.MAX_VALUE, downStation.getId(), ORIGINAL_DISTANCE);
+                new SectionRequest(Long.MAX_VALUE, downStation.getId(), ORIGINAL_DISTANCE);
 
         // when
         final ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         //then
         result.andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("존재하지 않는 역입니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("해당 역이 존재하지 않습니다."));
     }
 
     @Test
@@ -199,17 +198,17 @@ class SectionApiControllerTest {
         final Line line = createLine(upStation, station);
 
         final SectionRequest sectionRequest =
-            new SectionRequest(newStation.getId(), station.getId(), 0);
-        
+                new SectionRequest(newStation.getId(), station.getId(), 0);
+
         // when
         final ResultActions result = 구간_추가(sectionRequest, line.getId());
 
         // then
         result.andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("자연수가 아닌 거리를 등록하셨습니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("자연수가 아닌 거리를 등록하셨습니다."));
     }
-    
+
 
     @Test
     @DisplayName("구간 등록 - 실패(의미상 중복된 섹션을 등록할 경우)")
@@ -218,16 +217,16 @@ class SectionApiControllerTest {
         final Station upStation = upStation();
         final Station downStation = downStation();
         final Line line = createLine(upStation, downStation);
-        final SectionRequest sectionRequest = 
-            new SectionRequest(downStation.getId(), upStation.getId(), 3);
-        
+        final SectionRequest sectionRequest =
+                new SectionRequest(downStation.getId(), upStation.getId(), 3);
+
         //when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
-        
+
         //then
         result.andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("중복된 섹션입니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("중복된 구간입니다."));
     }
 
     @Test
@@ -236,14 +235,14 @@ class SectionApiControllerTest {
         // given
         final Station upStation = upStation();
         final Station downStation = downStation();
-        final Station 강남역 = Station.from("강남역");
-        final Line line = createLine(upStation, 강남역);
+        final Station dummyStation = stationDao.save(Station.from("강남역"));
+        final Line line = createLine(upStation, dummyStation);
 
         final SectionRequest sectionRequest1 =
-            new SectionRequest(강남역.getId(), downStation.getId(), 3);
+                new SectionRequest(dummyStation.getId(), downStation.getId(), 3);
 
         final SectionRequest sectionRequest2 =
-            new SectionRequest(upStation.getId(), downStation.getId(), 3);
+                new SectionRequest(upStation.getId(), downStation.getId(), 3);
 
         구간_추가(sectionRequest1, line.getId());
 
@@ -252,15 +251,15 @@ class SectionApiControllerTest {
 
         // then
         result.andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("두 역이 모두 같은 노선에 포함되었습니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("잘못된 구간입니다."));
     }
 
     private ResultActions 구간_추가(SectionRequest sectionRequest, Long lineId) throws Exception {
         return mockMvc.perform(post("/lines/" + lineId + "/sections")
-            .content(objectMapper.writeValueAsString(sectionRequest))
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(sectionRequest))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
     }
 

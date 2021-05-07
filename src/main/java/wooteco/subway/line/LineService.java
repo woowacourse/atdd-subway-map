@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.DuplicatedLineInformationException;
+import wooteco.subway.exception.line.DuplicatedLineInformationException;
 import wooteco.subway.section.SectionDao;
 
 @RequiredArgsConstructor
