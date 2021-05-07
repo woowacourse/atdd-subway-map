@@ -16,7 +16,7 @@ public class Station {
         this.name = name;
     }
 
-    public static Station from(String name) {
+    public static Station from(String name){
         return new Station(name);
     }
 
