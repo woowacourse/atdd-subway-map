@@ -58,8 +58,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all()
-                .extract()
-        ;
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

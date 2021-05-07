@@ -15,13 +15,8 @@ public class GlobalAdvice {
         return ResponseEntity.badRequest().body(message);
     }
 
-    @ExceptionHandler(StationException.class)
-    public ResponseEntity<String> handleStationException(final StationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(LineException.class)
-    public ResponseEntity<String> handleLineException(final LineException e) {
+    @ExceptionHandler({StationException.class, LineException.class})
+    public ResponseEntity<String> handleStationException(final RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
