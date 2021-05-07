@@ -39,4 +39,3 @@ public class Station {
         return Objects.hash(id);
     }
 }
-
