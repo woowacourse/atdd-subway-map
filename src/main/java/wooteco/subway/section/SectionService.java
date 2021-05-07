@@ -2,6 +2,9 @@ package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 @Service
 public class SectionService {
 
@@ -13,12 +16,20 @@ public class SectionService {
 
     public Section add(Long lineId, Long upStationId, Long downStationId, int distance) {
         Section section = new Section(upStationId, downStationId, distance);
-        Sections sections = sections(lineId);
-        sections.add(section);
-        return sectionH2Dao.save(lineId, section);
+        Section newSection = sectionH2Dao.save(lineId, section);
+        Optional<Section> overlappedSection = sectionH2Dao.findBySameUpOrDownId(lineId, newSection);
+        overlappedSection.ifPresent(updateIntermediate(newSection));
+        return newSection;
     }
 
-    private Sections sections(Long lineId) {
-        return new Sections(sectionH2Dao.findById(lineId));
+    private Consumer<Section> updateIntermediate(Section newSection) {
+        return originalSection -> {
+            int newDistance = originalSection.getDistance() - newSection.getDistance();
+            if (originalSection.isUpStation(newSection.getUpStationId())) {
+                sectionH2Dao.updateUpStation(originalSection.getId(), newSection.getDownStationId(), newDistance);
+                return;
+            }
+            sectionH2Dao.updateDownStation(originalSection.getId(), newSection.getUpStationId(), newDistance);
+        };
     }
 }
