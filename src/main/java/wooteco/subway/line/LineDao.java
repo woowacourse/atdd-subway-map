@@ -34,6 +34,15 @@ public class LineDao {
         return LINES.get(id.intValue());
     }
 
+    public static void update(Long id, LineRequest lineRequest) {
+        final Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        LINES.set(id.intValue(), updatedLine);
+    }
+
+    public static void delete(Long id) {
+        LINES.remove(id.intValue());
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
