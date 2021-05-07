@@ -1,19 +1,19 @@
 package wooteco.subway.service.dto;
 
-public class StationDto {
+public class StationServiceDto {
 
     private final Long id;
     private final String name;
 
-    public StationDto(final Long id) {
+    public StationServiceDto(final Long id) {
         this(id, null);
     }
 
-    public StationDto(final String name) {
+    public StationServiceDto(final String name) {
         this(null, name);
     }
 
-    public StationDto(final Long id, final String name) {
+    public StationServiceDto(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }

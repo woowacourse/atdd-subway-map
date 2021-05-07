@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.controller.line;
 
 import java.net.URI;
 import java.util.List;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.service.LineService;
-import wooteco.subway.dto.LineDto;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.dto.LineServiceDto;
+import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.controller.dto.response.LineResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,10 +30,10 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor());
-        LineDto createdLineDto = lineService.createLine(lineDto);
-        LineResponse lineResponse = new LineResponse(createdLineDto.getId(),
-            createdLineDto.getName(), createdLineDto.getColor());
+        LineServiceDto lineServiceDto = new LineServiceDto(lineRequest.getName(), lineRequest.getColor());
+        LineServiceDto createdLineServiceDto = lineService.createLine(lineServiceDto);
+        LineResponse lineResponse = new LineResponse(createdLineServiceDto.getId(),
+            createdLineServiceDto.getName(), createdLineServiceDto.getColor());
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
@@ -41,7 +41,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineDto> lines = lineService.findAll();
+        List<LineServiceDto> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
             .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
             .collect(Collectors.toList());
@@ -52,11 +52,11 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        LineDto lineDto = lineService.findOne(new LineDto(id));
+        LineServiceDto lineServiceDto = lineService.findOne(new LineServiceDto(id));
         LineResponse lineResponse = new LineResponse(
-            lineDto.getId(),
-            lineDto.getName(),
-            lineDto.getColor()
+            lineServiceDto.getId(),
+            lineServiceDto.getName(),
+            lineServiceDto.getColor()
         );
 
         return ResponseEntity.ok()
@@ -68,8 +68,8 @@ public class LineController {
     public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest,
         @PathVariable final Long id) {
 
-        LineDto lineDto = new LineDto(id, lineRequest.getName(), lineRequest.getColor());
-        lineService.update(lineDto);
+        LineServiceDto lineServiceDto = new LineServiceDto(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.update(lineServiceDto);
 
         return ResponseEntity.ok()
             .build();
@@ -78,9 +78,9 @@ public class LineController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable final Long id) {
-        lineService.delete(new LineDto(id));
+        lineService.delete(new LineServiceDto(id));
 
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
             .build();
     }
 }

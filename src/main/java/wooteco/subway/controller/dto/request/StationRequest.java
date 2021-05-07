@@ -1,4 +1,4 @@
-package wooteco.subway.dto.station;
+package wooteco.subway.controller.dto.request;
 
 public class StationRequest {
 
