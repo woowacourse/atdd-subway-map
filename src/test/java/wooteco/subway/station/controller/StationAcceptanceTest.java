@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@Sql("classpath:tableInit.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> createResponse1;

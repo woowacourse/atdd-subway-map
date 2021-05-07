@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class StationControllerAdvice {
+public class SubwayControllerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleException(final Exception e) {
         Map<String, String> body = new HashMap<>();
