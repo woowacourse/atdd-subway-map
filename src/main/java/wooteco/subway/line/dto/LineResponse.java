@@ -12,7 +12,7 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse(){
+    public LineResponse() {
 
     }
 

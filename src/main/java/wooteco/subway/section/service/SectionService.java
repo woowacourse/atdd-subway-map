@@ -95,7 +95,7 @@ public class SectionService {
         Optional<Section> upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);
         Optional<Section> downSection = lineRoute.getSectionFromDownToUpStationMapByStationId(stationId);
 
-        if(upSection.isPresent() && downSection.isPresent()){
+        if (upSection.isPresent() && downSection.isPresent()) {
             sectionDao.save(new Section(lineId,
                     downSection.get().getUpStationId(),
                     upSection.get().getDownStationId(),

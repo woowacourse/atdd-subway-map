@@ -22,7 +22,7 @@ public class Section {
     }
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
-        if(upStationId.equals(downStationId)) {
+        if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException("구간의 상행과 하행이 같을 수 없습니다.");
         }
     }
