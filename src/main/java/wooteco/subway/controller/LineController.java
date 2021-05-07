@@ -54,13 +54,8 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handler(DataAccessException e) {
+    @ExceptionHandler({IllegalArgumentException.class, DataAccessException.class})
+    public ResponseEntity<String> exceptionHandler(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
