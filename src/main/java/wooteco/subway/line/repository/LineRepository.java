@@ -14,6 +14,11 @@ import java.util.Objects;
 @Repository
 public class LineRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("color"),
+            resultSet.getString("name")
+    );
 
     public LineRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,14 +33,18 @@ public class LineRepository {
         String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(Connection -> {
-            PreparedStatement ps = Connection.prepareStatement(query, new String[]{"id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
             ps.setString(1, line.getColor());
             ps.setString(2, line.getName());
             return ps;
         }, keyHolder);
 
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getColor(), line.getName());
+        return new Line(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                line.getColor(),
+                line.getName()
+        );
     }
 
     public List<Line> getLines() {
@@ -43,22 +52,10 @@ public class LineRepository {
         return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
-            resultSet.getLong("id"),
-            resultSet.getString("color"),
-            resultSet.getString("name")
-    );
-
     public Line getLine(final Long id) {
         try {
             String query = "SELECT id, color, name FROM line WHERE id = ?";
-            return jdbcTemplate.queryForObject(
-                    query,
-                    (resultSet, rowNum) -> new Line(
-                            resultSet.getLong("id"),
-                            resultSet.getString("color"),
-                            resultSet.getString("name")
-                    ), id);
+            return jdbcTemplate.queryForObject(query, lineRowMapper, id);
         } catch (Exception e) {
             throw new IllegalArgumentException("존재하지 않는 id 입니다.");
         }

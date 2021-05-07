@@ -14,6 +14,10 @@ import java.util.Objects;
 @Repository
 public class StationRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
 
     public StationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,13 +32,16 @@ public class StationRepository {
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(Connection -> {
-            PreparedStatement ps = Connection.prepareStatement(query, new String[]{"id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
 
-        return new Station(Objects.requireNonNull(keyHolder.getKey()).longValue(), station.getName());
+        return new Station(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                station.getName()
+        );
     }
 
     public List<Station> getStations() {
@@ -50,9 +57,4 @@ public class StationRepository {
             throw new IllegalArgumentException("존재하지 않는 id 입니다");
         }
     }
-
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
 }
