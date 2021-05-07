@@ -3,6 +3,7 @@ package wooteco.subway.line.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,28 +11,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationResponse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql("classpath:tableInit.sql")
 class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
+    private final LineRequest firstLineRequest = new LineRequest("신분당선", "bg-red-600");;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", "bg-red-600");
-        params1.put("name", "신분당선");
         response = RestAssured.given().log().all()
-                .body(params1)
+                .body(firstLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -46,19 +46,20 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
 
-        assertThat(response.response().jsonPath().getString("name")).isEqualTo("신분당선");
-        assertThat(response.response().jsonPath().getLong("id")).isEqualTo(1L);
-        assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
+        LineResponse responseBody = response.body().as(LineResponse.class);
+
+
+        assertThat(responseBody).usingRecursiveComparison()
+                .ignoringFields("upStationId", "downStationId", "distance", "id", "stations")
+                .isEqualTo(firstLineRequest);
     }
 
     @DisplayName("전체 노선을 조회하면 저장된 모든 노선들을 반환한다 ")
     @Test
     void getLines() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", "bg-green-600");
-        params1.put("name", "2호선");
+        LineRequest secondLineRequest = new LineRequest("2호선", "bg-green-600");
         RestAssured.given().log().all()
-                .body(params1)
+                .body(secondLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -72,13 +73,17 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, Object> sinBunDangLine = (Map<String, Object>) response.as(ArrayList.class).get(0);
-        Map<String, Object> line2 = (Map<String, Object>) response.as(ArrayList.class).get(1);
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        List<LineRequest> lineRequests = Arrays.asList(firstLineRequest, secondLineRequest);
+
+        RecursiveComparisonConfiguration configuration = RecursiveComparisonConfiguration.builder()
+                .withIgnoredFields("upStationId", "downStationId", "distance", "id", "stations")
+                .withIgnoredCollectionOrderInFields()
+                .build();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(sinBunDangLine.get("name")).isEqualTo("신분당선");
-        assertThat(line2.get("name")).isEqualTo("2호선");
+        assertThat(lineResponses).usingRecursiveFieldByFieldElementComparator(configuration).isEqualTo(lineRequests);
     }
 
     @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보를 반환한다.")
@@ -96,6 +101,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 "신분당선",
                 "bg-red-600"
         );
+
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);
     }
@@ -103,12 +109,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id를 통해 노선을 변경하면, payload대로 노선 수정한다")
     @Test
     void updateLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
-
+        LineRequest lineUpdateRequest = new LineRequest("구분당선", "bg-blue-600");
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/1")
