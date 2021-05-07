@@ -53,6 +53,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("지하철 역 이름은 XX역으로 끝나지 않으면 예외처리가 된다.")
+    @Test
+    void invalidStationName() {
+        // given
+        Map<String, String> invalidParam = new HashMap<>();
+        invalidParam.put("name", "역이름은역이라는단어로끝나야함");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(invalidParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("지하철 역 이름이 잘못되었습니다.");
+    }
+
     @DisplayName("중복된 지하철 역을 생성할 수 없다.")
     @Test
     void cannotCreateDuplicatedStation() {
