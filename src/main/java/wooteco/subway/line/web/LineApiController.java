@@ -25,13 +25,13 @@ public class LineApiController {
     private final StationService stationService;
 
     @InitBinder("lineRequest")
-    private void initBind(WebDataBinder webDataBinder){
+    private void initBind(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new LineValidator());
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             throw new InsufficientLineInformationException();
         }
 

@@ -12,7 +12,7 @@ public class LineValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         LineRequest lineRequest = (LineRequest) target;
-        if (lineRequest.getDownStationId().equals(lineRequest.getUpStationId())){
+        if (lineRequest.getDownStationId().equals(lineRequest.getUpStationId())) {
             errors.rejectValue("downStationId", "duplicatedStation", "중복된 역입니다.");
         }
     }
