@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.web.dto.LineResponse;
 
 @DisplayName("노선 인수 테스트")
@@ -97,21 +98,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> listResponse = getLineListResponse();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(line -> Long.parseLong(line.header("Location").split("/")[2]))
+        assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Line> expectedLines = Stream.of(createResponse1, createResponse2)
+                .map(response -> new Line(
+                        response.jsonPath().getLong("id"),
+                        response.jsonPath().getString("name"),
+                        response.jsonPath().getString("color")
+                ))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(line -> line.getId())
+
+        List<Line> resultLines = listResponse.jsonPath().getList(".").stream()
+                .map(obj -> {
+                    Map<String, Object> map = (Map<String, Object>) obj;
+                    return new Line(
+                            Long.valueOf((Integer) map.get("id")),
+                            (String) map.get("name"),
+                            (String) map.get("color")
+                    );
+                })
                 .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+
+        for (int i = 0; i < resultLines.size(); i++) {
+            Line result = resultLines.get(i);
+            Line expected = expectedLines.get(i);
+            assertThat(result.getId()).isEqualTo(expected.getId());
+            assertThat(result.getName()).isEqualTo(expected.getName());
+            assertThat(result.getColor()).isEqualTo(expected.getColor());
+        }
+
+        assertThat(resultLines).containsAll(expectedLines);
     }
 
     @Test
@@ -144,6 +163,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        // todo DB 사이즈 1, 이름 검사
+
+        ExtractableResponse<Response> lineListResponse = getLineListResponse();
+        assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<LineResponse> lineResponses = lineListResponse.jsonPath().getList(".", LineResponse.class);
+        assertThat(lineResponses.size()).isEqualTo(1);
+        assertThat(lineResponses.get(0).getName()).isEqualTo(params2.get("name"));
+        assertThat(lineResponses.get(0).getColor()).isEqualTo(params2.get("color"));
+    }
+
+    private ExtractableResponse<Response> getLineListResponse() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
     }
 }
