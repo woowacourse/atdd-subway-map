@@ -22,3 +22,4 @@ create table if not exists SECTION
     distance int,
     primary key(id)
     );
+
