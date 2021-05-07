@@ -18,7 +18,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
-        sectionService.save(lineId, sectionRequest);
+        sectionService.insertSectionInLine(lineId, sectionRequest);
         return ResponseEntity.noContent().build();
     }
 

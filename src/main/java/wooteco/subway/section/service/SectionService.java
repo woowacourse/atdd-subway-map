@@ -14,6 +14,9 @@ import java.util.Set;
 @Service
 public class SectionService {
 
+    public static final int DELETE_STATION_IN_LINE_LIMIT = 2;
+    public static final int INSERT_SECTION_IN_LINE_LIMIT = 1;
+    public static final int INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT = 0;
     private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
@@ -21,61 +24,42 @@ public class SectionService {
     }
 
     @Transactional
-    public void save(Long lineId, SectionRequest sectionRequest) {
+    public void insertSectionInLine(Long lineId, SectionRequest sectionRequest) {
         Section section = Section.of(lineId, sectionRequest);
+
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
         Set<Long> sectionsIds = lineRoute.getStationIds();
 
         validateIfSectionContainsOnlyOneStationInLine(sectionsIds, section);
 
-        if (lineRoute.isEndOfUpLine(section.getUpStationId()) || lineRoute.isEndOfDownLine(section.getDownStationId())) {
+        if (lineRoute.isInsertSectionInEitherEndsOfLine(section)) {
             sectionDao.save(section);
             return;
         }
-        if (sectionsIds.contains(section.getDownStationId())) {
-            updateSectionWhenIncludesDownStation(section, lineRoute);
-            sectionDao.save(section);
-        }
-        if (sectionsIds.contains(section.getUpStationId())) {
-            updateSectionWhenIncludesUpStation(section, lineRoute);
-            sectionDao.save(section);
-        }
-    }
-
-    private void updateSectionWhenIncludesUpStation(Section section, LineRoute lineRoute) {
-        int prevDistance = lineRoute.getDistanceFromUpToDownStationMap(section.getUpStationId());
-        int distanceGap = prevDistance - section.getDistance();
-        validateDistantDifference(distanceGap);
-        sectionDao.updateByUpStationId(section.getLineId(),
-                section.getUpStationId(),
-                section.getDownStationId(),
-                distanceGap);
-    }
-
-    private void updateSectionWhenIncludesDownStation(Section section, LineRoute lineRoute) {
-        int prevDistance = lineRoute.getDistanceFromDownToUpStationMap(section.getDownStationId());
-        int distanceGap = prevDistance - section.getDistance();
-        validateDistantDifference(distanceGap);
-        sectionDao.updateByDownStationId(section.getLineId(),
-                section.getDownStationId(),
-                section.getUpStationId(),
-                distanceGap);
-    }
-
-    private void validateDistantDifference(int difference) {
-        if (difference <= 0) {
-            throw new IllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
-        }
+        insertSectionInMiddleOfLine(section, lineRoute);
+        sectionDao.save(section);
     }
 
     private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> sectionsIds, Section section) {
         long count = sectionsIds.stream()
-                .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
-                .count();
+            .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
+            .count();
 
-        if (count != 1) {
+        if (count != INSERT_SECTION_IN_LINE_LIMIT) {
             throw new IllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
+        }
+    }
+
+    private void insertSectionInMiddleOfLine(Section section, LineRoute lineRoute) {
+        Section updateSection = lineRoute.getSectionNeedToBeUpdatedForInsert(section);
+        validateSectionDistanceGap(updateSection);
+        sectionDao.update(updateSection);
+    }
+
+    private void validateSectionDistanceGap(Section section) {
+        if (section.getDistance() <= INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT) {
+            throw new IllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
         }
     }
 
@@ -84,7 +68,7 @@ public class SectionService {
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(lineId);
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
-        if (lineRoute.getStationIds().size() == 2) {
+        if (lineRoute.getStationIds().size() == DELETE_STATION_IN_LINE_LIMIT) {
             throw new IllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 

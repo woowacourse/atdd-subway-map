@@ -11,9 +11,7 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long lineId);
 
-    void updateByDownStationId(Long lineId, Long downStationId, Long upStationId, int distance);
-
-    void updateByUpStationId(Long lineId, Long upStationId, Long downStationId, int distance);
-
     void delete(Long id);
+
+    void update(Section section);
 }
