@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.dto.LineDto;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
@@ -25,7 +27,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor());
         LineDto createdLineDto = lineService.createLine(lineDto);
@@ -36,7 +38,7 @@ public class LineController {
             .body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineDto> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
@@ -47,7 +49,7 @@ public class LineController {
             .body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         LineDto lineDto = lineService.findOne(new LineDto(id));
         LineResponse lineResponse = new LineResponse(
@@ -61,7 +63,7 @@ public class LineController {
 
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest,
         @PathVariable final Long id) {
 
@@ -73,7 +75,7 @@ public class LineController {
 
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable final Long id) {
         lineService.delete(new LineDto(id));
 
