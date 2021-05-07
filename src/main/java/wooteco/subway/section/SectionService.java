@@ -11,7 +11,7 @@ public class SectionService {
         this.sectionH2Dao = sectionH2Dao;
     }
 
-    public Section add(Long lineId, String upStationId, String downStationId, Long distance) {
+    public Section add(Long lineId, Long upStationId, Long downStationId, int distance) {
         Section section = new Section(upStationId, downStationId, distance);
         return sectionH2Dao.save(lineId, section);
     }

@@ -23,9 +23,9 @@ public class SectionH2Dao {
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, lineId);
-            ps.setString(2, section.getUpStationId());
-            ps.setString(3, section.getDownStationId());
-            ps.setLong(4, section.getDistance());
+            ps.setLong(2, section.getUpStationId());
+            ps.setLong(3, section.getDownStationId());
+            ps.setInt(4, section.getDistance());
 
             return ps;
         }, keyHolder);
