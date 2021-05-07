@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wooteco.subway.station.exception.DuplicateStationNameException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class StationService {
 
     private void validateDuplicateStationName(String name) {
         if (stationRepository.findByName(name).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 역입니다.");
+            throw new DuplicateStationNameException("이미 존재하는 역의 이름입니다.");
         }
     }
 
