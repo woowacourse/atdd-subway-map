@@ -1,10 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.station.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Station;
+import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -42,5 +42,15 @@ public class StationDao {
     public void delete(Long id) {
         String sql = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void clear() {
+        String sql = "DELETE FROM station";
+        jdbcTemplate.update(sql);
+    }
+
+    public int countStationByName(String name) {
+        String sql = "SELECT count(*) FROM station WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 }
