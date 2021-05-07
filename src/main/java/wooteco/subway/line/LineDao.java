@@ -40,7 +40,7 @@ public class LineDao {
     }
 
     public static void delete(Long id) {
-        LINES.remove(id.intValue());
+        LINES.removeIf(line -> line.getId().equals(id));
     }
 
     private static Line createNewObject(Line line) {

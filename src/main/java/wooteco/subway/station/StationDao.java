@@ -31,7 +31,7 @@ public class StationDao {
     }
 
     public static void delete(Long id) {
-        STATIONS.remove(id.intValue());
+        STATIONS.removeIf(station -> station.getId().equals(id));
     }
 
     private static Station createNewObject(Station station) {
