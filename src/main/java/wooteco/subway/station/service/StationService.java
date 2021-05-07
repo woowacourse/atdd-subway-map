@@ -2,6 +2,7 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -23,7 +24,7 @@ public class StationService {
         Station station = new Station(stationRequest.getName());
 
         if (stationRepository.isExistName(station)) {
-            throw new IllegalArgumentException("이미 존재하는 Station 입니다");
+            throw new DuplicateNameException("중복되는 StationName 입니다.");
         }
         Station newStation = stationRepository.save(station);
         return new StationResponse(newStation.getId(), newStation.getName());
