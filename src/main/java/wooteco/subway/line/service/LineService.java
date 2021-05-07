@@ -1,5 +1,7 @@
 package wooteco.subway.line.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
+    private static final Logger log = LoggerFactory.getLogger("console");
+
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -22,6 +26,7 @@ public class LineService {
         validateLineName(lineRequest);
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineRepository.save(line);
+        log.info(newLine.getName() + " 노선 생성 성공");
         return new LineResponse(newLine);
     }
 
@@ -39,11 +44,13 @@ public class LineService {
     public LineResponse findLine(Long id) {
         Line newLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
+        log.info("지하철 모든 노선 조회 성공");
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -51,9 +58,9 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         validatesRequest(id, lineRequest);
-
         Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineRepository.updateById(id, updatedLine);
+        log.info("노선 정보 수정 완료");
     }
 
     private void validatesRequest(Long id, LineRequest lineRequest) {
@@ -76,5 +83,6 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+        log.info("노선 삭제 성공");
     }
 }
