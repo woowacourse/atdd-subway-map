@@ -3,6 +3,7 @@ package wooteco.subway.line.dao;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.LineIllegalArgumentException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class LocalLineDao implements LineDao {
                 .filter(line -> line.getId().equals(newLine.getId()))
                 .map(line -> updateObject(line, newLine))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("수정할 대상이 없습니다."));
+                .orElseThrow(() -> new LineIllegalArgumentException("수정할 대상이 없습니다."));
     }
 
     private Line createNewObject(Line line) {

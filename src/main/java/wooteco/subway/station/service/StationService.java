@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.exception.StationIllegalArgumentException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class StationService {
     public StationResponse save(String stationName) {
         Station station = Station.from(stationName);
         if (stationDao.findByName(stationName).isPresent()) {
-            throw new IllegalArgumentException("같은 이름의 역이 있습니다;");
+            throw new StationIllegalArgumentException("같은 이름의 역이 있습니다;");
         }
         return StationResponse.of(stationDao.save(station));
     }
