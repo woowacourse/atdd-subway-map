@@ -13,4 +13,12 @@ public class ErrorResponse {
     public static ErrorResponse of(String errorType, String message) {
         return new ErrorResponse(errorType, message);
     }
+
+    public String getErrorType() {
+        return errorType;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
