@@ -20,6 +20,7 @@ public class Sections {
     private void validate(Section newSection) {
         validateConnected(newSection, this::isConnected);
         validateConnected(newSection, this::isAlreadyExisted);
+        validateDistance(newSection);
     }
 
     private void validateConnected(Section newSection, BiPredicate<Section, Section> biPredicate) {
@@ -37,5 +38,18 @@ public class Sections {
     private boolean isAlreadyExisted(Section newSection, Section section) {
         return section.isUpStation(newSection.getUpStationId()) &&
             section.isDownStation(newSection.getDownStationId());
+    }
+
+    private void validateDistance(Section newSection) {
+        sections.stream()
+            .filter(section -> section.isUpStation(newSection.getUpStationId()))
+            .findAny()
+            .ifPresent(section -> isValidDistance(newSection, section));
+    }
+
+    private void isValidDistance(Section newSection, Section section) {
+        if (section.isSameOrLongDistance(newSection)) {
+            throw new InvalidAddSectionException();
+        }
     }
 }
