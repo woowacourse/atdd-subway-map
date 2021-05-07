@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -15,21 +16,19 @@ public class LineService {
     }
 
     public Line add(LineRequest lineRequest) {
-        List<Line> lines = lineDao.findAll();
+        validateDuplication(lineRequest.getName());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateDuplicatedLine(lines, line);
         return lineDao.save(line);
     }
 
-    private void validateDuplicatedLine(List<Line> lines, Line newLine) {
-        if (isDuplicatedColor(lines, newLine)) {
+    private void validateDuplication(String name) {
+        if (isDuplicated(name)) {
             throw new LineDuplicationException();
         }
     }
 
-    private boolean isDuplicatedColor(List<Line> lines, Line newLine) {
-        return lines.stream()
-                .anyMatch(line -> line.isSameColor(newLine));
+    private boolean isDuplicated(String name) {
+        return lineDao.findByName(name).isPresent();
     }
 
     public List<Line> lines() {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class LineH2Dao implements LineDao {
@@ -66,6 +67,22 @@ public class LineH2Dao implements LineDao {
                     );
                     return line;
                 }, id);
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String sql = "SELECT COUNT(*) FROM LINE WHERE name=?";
+        List<Line> lines = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> {
+                    Line line = new Line(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("color")
+                    );
+                    return line;
+                }, name);
+        return lines.stream().findAny();
     }
 
     @Override
