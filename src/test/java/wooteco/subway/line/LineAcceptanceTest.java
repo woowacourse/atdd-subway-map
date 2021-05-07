@@ -164,15 +164,22 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "구분당선");
-        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(createResponse.header("Location"))
                 .then().log().all()
                 .extract();
-        String name = updateResponse.jsonPath().get("name");
-        String color = updateResponse.jsonPath().get("color");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get(createResponse.header("Location"))
+                .then().log().all()
+                .extract();
+
+        String name = response.jsonPath().get("name");
+        String color = response.jsonPath().get("color");
 
         // then
         assertThat(name).isEqualTo("구분당선");

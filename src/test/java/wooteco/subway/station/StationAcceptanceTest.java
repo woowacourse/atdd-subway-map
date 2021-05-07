@@ -97,6 +97,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .when()
                 .get("/stations")
                 .then().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract();
 
         // then

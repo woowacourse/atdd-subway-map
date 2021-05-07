@@ -8,6 +8,7 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+    generate-unique-name: false
   h2:
     console:
       enabled: true     # h2 console 설정

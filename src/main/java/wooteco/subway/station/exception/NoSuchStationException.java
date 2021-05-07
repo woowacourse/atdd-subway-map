@@ -1,9 +1,11 @@
 package wooteco.subway.station.exception;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
-public class NoSuchStationException extends DataAccessException {
-    public NoSuchStationException(String msg) {
-        super(msg);
+public class NoSuchStationException extends EmptyResultDataAccessException {
+    private static String msg = "해당하는 id의 역이 없습니다.";
+
+    public NoSuchStationException(int expectedSize) {
+        super(msg, expectedSize);
     }
 }

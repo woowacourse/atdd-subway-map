@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.line;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class StationControllerAdvice {
+public class LineControllerAdvice {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> handleEmptyResultException(Exception e) {
@@ -20,6 +20,6 @@ public class StationControllerAdvice {
     public ResponseEntity<String> handleDuplicateUniqueColumnException(Exception e) {
         return ResponseEntity
                 .badRequest()
-                .body("이미 존재하는 역 이름입니다.");
+                .body("이미 존재하는 노선 이름입니다.");
     }
 }

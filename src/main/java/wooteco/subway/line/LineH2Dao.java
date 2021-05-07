@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -42,7 +41,7 @@ public class LineH2Dao implements LineRepository {
             return ps;
         }, keyHolder);
 
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getName(), line.getColor());
+        return this.findById(keyHolder.getKey().longValue());
     }
 
     @Override

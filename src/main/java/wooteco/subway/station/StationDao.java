@@ -27,6 +27,14 @@ public class StationDao implements StationRepository {
     }
 
     @Override
+    public Station findById(long id) {
+        return this.stations.stream()
+                .filter(station -> station.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new NoSuchStationException(1));
+    }
+
+    @Override
     public List<Station> findAll() {
         return stations;
     }
@@ -41,7 +49,7 @@ public class StationDao implements StationRepository {
     @Override
     public void delete(Long id) {
         if (!stations.removeIf(station -> station.getId().equals(id))) {
-            throw new NoSuchStationException("해당하는 id의 역이 없습니다.");
+            throw new NoSuchStationException(1);
         }
     }
 }
