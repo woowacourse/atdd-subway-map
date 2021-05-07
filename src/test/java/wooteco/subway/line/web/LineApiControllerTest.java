@@ -1,14 +1,24 @@
 package wooteco.subway.line.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineDao;
@@ -20,8 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LineApiControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -74,7 +85,7 @@ class LineApiControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("노선 이름이 중복됩니다."));
+                .andExpect(content().string("중복되는 라인 정보가 존재합니다."));
     }
 
     @Test
@@ -95,7 +106,7 @@ class LineApiControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("노선 색상이 중복됩니다."));
+                .andExpect(content().string("중복되는 라인 정보가 존재합니다."));
     }
 
     @Test
@@ -110,7 +121,8 @@ class LineApiControllerTest {
 
         // then
         result.andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("필수값이 잘못 되었습니다."));
     }
 
     @Test
@@ -123,10 +135,10 @@ class LineApiControllerTest {
         // when
         ResultActions result = 노선_생성(lineRequest);
 
-        // then
+        // then선
         result.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("등록되지 않은 역입니다."));
+                .andExpect(content().string("해당 역이 존재하지 않습니다."));
     }
 
     @Test
@@ -144,7 +156,7 @@ class LineApiControllerTest {
         // then
         result.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("상행선과 하행선 역이 같을 수 없습니다."));
+                .andExpect(content().string("필수값이 잘못 되었습니다."));
     }
 
     private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {

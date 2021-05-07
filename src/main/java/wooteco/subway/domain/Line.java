@@ -25,4 +25,12 @@ public class Line {
     public List<Station> stations() {
         return sections.stations();
     }
+
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
+    }
 }
