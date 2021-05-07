@@ -1,23 +1,23 @@
-package wooteco.subway;
+package wooteco.subway.line.domain;
 
 import wooteco.subway.section.domain.Section;
 
 import java.util.*;
 
-public class StationsMap {
+public class LineRoute {
     Map<Long, Section> upToDownStationMap;
     Map<Long, Section> downToUpStationMap;
     Deque<Long> upToDownSerializedMap;
 
 
-    private StationsMap(Map<Long, Section> upToDownStationMap, Map<Long, Section> downToUpStationMap,
-                        Deque<Long> upToDownSerializedMap) {
+    private LineRoute(Map<Long, Section> upToDownStationMap, Map<Long, Section> downToUpStationMap,
+                      Deque<Long> upToDownSerializedMap) {
         this.upToDownStationMap = upToDownStationMap;
         this.downToUpStationMap = downToUpStationMap;
         this.upToDownSerializedMap = upToDownSerializedMap;
     }
 
-    public static StationsMap from(List<Section> sectionsByLineId) {
+    public static LineRoute from(List<Section> sectionsByLineId) {
         Map<Long, Section> upToDownStationMap = new HashMap<>();
         Map<Long, Section> downToUpStationMap = new HashMap<>();
         Deque<Long> upToDownSerializedMap = new ArrayDeque<>();
@@ -40,22 +40,19 @@ public class StationsMap {
                 upStationId = nextSection.getDownStationId();
             }
         } while (downToUpStationMap.containsKey(downStationId) || upToDownStationMap.containsKey(upStationId));
-        return new StationsMap(upToDownStationMap, downToUpStationMap, upToDownSerializedMap);
+        return new LineRoute(upToDownStationMap, downToUpStationMap, upToDownSerializedMap);
     }
 
-    public boolean isDownStation(Section section) {
-        return upToDownSerializedMap.getLast().equals(section.getUpStationId());
+    public boolean isEndOfDownStation(Long stationId) {
+        return upToDownSerializedMap.getLast().equals(stationId);
     }
 
-    public boolean isUpStation(Section section) {
-        return upToDownSerializedMap.getFirst().equals(section.getDownStationId());
+    public boolean isEndOfUpStation(Long stationId) {
+        return upToDownSerializedMap.getFirst().equals(stationId);
     }
 
     public Deque<Long> getOrderedStations() {
         return upToDownSerializedMap;
-    }
-
-    public void getDistance() {
     }
 
     public int getDistanceFromUpToDownStationMap(Long upStationId) {
@@ -64,5 +61,13 @@ public class StationsMap {
 
     public int getDistanceFromDownToUpStationMap(Long downStationId) {
         return downToUpStationMap.get(downStationId).getDistance();
+    }
+
+    public Section getSectionFromUpToDownStationMapByStationId(Long stationId) {
+        return upToDownStationMap.get(stationId);
+    }
+
+    public Section getSectionFromDownToUpStationMapByStationId(Long stationId) {
+        return downToUpStationMap.get(stationId);
     }
 }

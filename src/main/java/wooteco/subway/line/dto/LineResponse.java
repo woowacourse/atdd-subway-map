@@ -25,7 +25,7 @@ public class LineResponse {
         this.color = color;
         this.stations = stations;
     }
-    
+
     public Long getId() {
         return id;
     }

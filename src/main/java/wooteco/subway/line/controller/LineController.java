@@ -29,7 +29,7 @@ public class LineController {
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAll();
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/lines/{id}")

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.StationsMap;
+import wooteco.subway.line.domain.LineRoute;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
@@ -68,8 +68,8 @@ public class LineService {
     public LineResponse find(Long id) {
         Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        StationsMap stationsMap = StationsMap.from(sectionsByLineId);
-        List<StationResponse> stations = stationsMap.getOrderedStations()
+        LineRoute lineRoute = LineRoute.from(sectionsByLineId);
+        List<StationResponse> stations = lineRoute.getOrderedStations()
                 .stream()
                 .map(stationId -> stationDao.findById(stationId))
                 .map(stationOpt -> stationOpt.get())

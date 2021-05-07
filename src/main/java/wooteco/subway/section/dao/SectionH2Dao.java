@@ -33,16 +33,6 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
-    public void update(Section newSection) {
-
-    }
-
-    @Override
     public void updateByDownStationId(Long lineId, Long downStationId, Long upStationId, int distance) {
         String updateQuery = "UPDATE section SET down_station_id = ?, distance = ? WHERE down_station_id = ? AND " +
                 "line_id = ?";
@@ -54,5 +44,11 @@ public class SectionH2Dao implements SectionDao {
         String updateQuery = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id " +
                 "= ?";
         jdbcTemplate.update(updateQuery, downStationId, distance, upStationId, lineId);
+    }
+
+    @Override
+    public void delete(Long sectionId) {
+        String deleteQuery = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(deleteQuery, sectionId);
     }
 }
