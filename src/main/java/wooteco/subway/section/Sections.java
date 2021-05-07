@@ -19,7 +19,7 @@ public class Sections {
 
     private void validate(Section newSection) {
         validateConnected(newSection, this::isConnected);
-        validateConnected(newSection, this::isAlreadyExisted);
+        validateConnected(newSection, this::isNotExisted);
         validateDistance(newSection);
     }
 
@@ -35,9 +35,9 @@ public class Sections {
             section.isDownStation(newSection.getDownStationId());
     }
 
-    private boolean isAlreadyExisted(Section newSection, Section section) {
-        return section.isUpStation(newSection.getUpStationId()) &&
-            section.isDownStation(newSection.getDownStationId());
+    private boolean isNotExisted(Section newSection, Section section) {
+        return !(section.isUpStation(newSection.getUpStationId()) &&
+            section.isDownStation(newSection.getDownStationId()));
     }
 
     private void validateDistance(Section newSection) {
