@@ -1,7 +1,5 @@
 package wooteco.subway.station.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +12,6 @@ import java.util.List;
 
 @RestController
 public class StationController {
-    private static final Logger log = LoggerFactory.getLogger(StationController.class);
     private final StationService stationService;
 
     public StationController(StationService stationService) {
@@ -24,21 +21,18 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse newStation = stationService.save(stationRequest);
-        log.info("An INFO Message : {}", newStation.getName() + "역이 생성되었습니다.");
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> allStations = stationService.findAllStations();
-        log.info("An INFO Message : {}", "등록된 지하철 역 조회 성공");
         return ResponseEntity.ok().body(allStations);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
-        log.info("An INFO Message : {}", "지하철 역 삭제 성공");
         return ResponseEntity.noContent().build();
     }
 }

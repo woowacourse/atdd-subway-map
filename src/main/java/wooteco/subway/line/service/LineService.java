@@ -1,5 +1,7 @@
 package wooteco.subway.line.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.request.LineCreateRequest;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final Logger log = LoggerFactory.getLogger(LineService.class);
 
     private final LineRepository lineRepository;
 
@@ -23,6 +26,7 @@ public class LineService {
         validateLineName(lineCreateRequest);
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line newLine = lineRepository.save(line);
+        log.info(newLine.getName() + " 노선 생성 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
@@ -40,11 +44,13 @@ public class LineService {
     public LineResponse findLine(Long id) {
         Line newLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
+        log.info("지하철 모든 노선 조회 성공");
         return lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
                 .collect(Collectors.toList());
@@ -55,6 +61,7 @@ public class LineService {
 
         Line updatedLine = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         lineRepository.updateById(id, updatedLine);
+        log.info("노선 정보 수정 완료");
     }
 
     private void validatesRequest(Long id, LineUpdateRequest lineUpdateRequest) {
@@ -77,5 +84,6 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+        log.info("노선 삭제 성공");
     }
 }
