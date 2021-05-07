@@ -42,7 +42,8 @@
 - [x] StationAcceptanceTest부터 하나한씩 테스트 만들어나가기 (Station API는 기존에 완성되어 있으므로 기존에 정상적으로 응답하는 값 바탕으로 테스트 코드 작성하기)
 - [x] Json 데이터 검증 쉽게 하는 방법 찾기
   -> 그냥 일일이 작성하자! 그게 그거다! Json 으로 굳이 변환하면서 확인하는 게 오히려 응집도가 떨어져서 확인이 어렵다.
-- [ ] RestAssured 반복되는 부분 모듈화 시키기
+- [x] RestAssured 반복되는 부분 모듈화 시키기
+- [ ] LineAcceptanceTest 새로 작성하기
 
 
 ### 지하철 노선(Line) 관련 API 전체 수정
