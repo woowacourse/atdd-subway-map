@@ -106,6 +106,50 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @ParameterizedTest(name = "구간 추가 - 실패(null)")
+    @CsvSource(value = {"null, null, null", "1, null, 2", "null, 1, 2", "1, 2, null"}, nullValues = {"null"})
+    void createSectionFailuresWhenNull(String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("distance", distance);
+        params.put("downStationId", downStationId);
+        params.put("upStationId", upStationId);
+        params.put("lineId", "1");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ParameterizedTest(name = "구간 추가 - 실패(empty)")
+    @CsvSource(value = {",,", "1,,2", ",1,2", "1,2,"})
+    void createSectionFailuresWhenEmpty(String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("distance", distance);
+        params.put("downStationId", downStationId);
+        params.put("upStationId", upStationId);
+        params.put("lineId", "1");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @ParameterizedTest(name = "구간을 제거(노선의 역 삭제) - 성공")
     @CsvSource({"1", "2", "3"})
     void deleteSection(String stationId) {
