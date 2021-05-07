@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
@@ -15,7 +17,7 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
         sectionService.save(lineId, sectionRequest);
         return ResponseEntity.noContent().build();
     }

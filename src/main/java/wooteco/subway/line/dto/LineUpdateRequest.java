@@ -8,10 +8,10 @@ public class LineUpdateRequest {
     @NotBlank
     private String color;
 
-    private LineUpdateRequest() {
+    public LineUpdateRequest() {
     }
 
-    private LineUpdateRequest(String name, String color) {
+    public LineUpdateRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
