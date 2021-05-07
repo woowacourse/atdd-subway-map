@@ -42,11 +42,7 @@ public class StationDao {
 
     public void delete(Long id) {
         String sql = "DELETE FROM station WHERE id = (?)";
-        int updatedRowCount = jdbcTemplate.update(sql, id);
-
-        if (updatedRowCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     public int count(String name) {
