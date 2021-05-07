@@ -64,6 +64,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("{\"message\":\"이미 존재하는 역 이름입니다.\"}");
 
         List<Long> allSavedStationIds = requestAndGetAllSavedStationIds();
         assertThat(allSavedStationIds).hasSize(1);
