@@ -5,9 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.application.SectionService;
+import wooteco.subway.line.application.LineService;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineSaveRequestDto;
 import wooteco.subway.line.dto.LineUpdateRequest;
@@ -22,22 +23,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
     private final LineDao lineDao;
-    private final SectionService sectionService;
+    private final LineService lineService;
     private final Logger logger = LoggerFactory.getLogger(LineController.class);
 
-    public LineController(LineDao lineDao, SectionService sectionService) {
+    public LineController(LineDao lineDao, LineService lineService) {
         this.lineDao = lineDao;
-        this.sectionService = sectionService;
+        this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody LineSaveRequestDto requestDto) {
-        Line newLine = lineDao.save(new Line(requestDto.getName(), requestDto.getColor()));
-
-         new SectionService();
-        // TODO : 구간에 포함된 지하철 역 조회 로직
-        LineResponse response = new LineResponse(newLine.id(), newLine.name(), newLine.color(), Collections.emptyList());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.id())).body(response);
+    public ResponseEntity<LineResponse> create(@RequestBody LineRequest requestDto) {
+        LineResponse response = lineService.save(requestDto);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping
