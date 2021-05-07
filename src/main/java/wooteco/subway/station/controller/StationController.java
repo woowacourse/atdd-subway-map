@@ -24,21 +24,21 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse newStation = stationService.save(stationRequest);
-        log.info("An INFO Message : {}", newStation.getName() + "역이 생성되었습니다.");
+        log.info(newStation.getName() + "역이 생성되었습니다.");
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> allStations = stationService.findAllStations();
-        log.info("An INFO Message : {}", "등록된 지하철 역 조회 성공");
+        log.info("등록된 지하철 역 조회 성공");
         return ResponseEntity.ok().body(allStations);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStation(id);
-        log.info("An INFO Message : {}", "지하철 역 삭제 성공");
+        log.info("지하철 역 삭제 성공");
         return ResponseEntity.noContent().build();
     }
 }
