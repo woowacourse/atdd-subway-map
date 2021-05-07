@@ -2,6 +2,7 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.line.dto.LineCreateRequest;
 import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.exception.SectionIllegalArgumentException;
 
 public class Section {
 
@@ -54,7 +55,7 @@ public class Section {
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
-            throw new IllegalArgumentException("구간의 상행과 하행이 같을 수 없습니다.");
+            throw new SectionIllegalArgumentException("구간의 상행과 하행이 같을 수 없습니다.");
         }
     }
 
