@@ -31,8 +31,12 @@ public class Sections {
     }
 
     private boolean isConnected(Section newSection, Section section) {
-        return section.isUpStation(newSection.getUpStationId()) ||
-            section.isDownStation(newSection.getDownStationId());
+        return isEndpoint(newSection, section) || isIntermediate(newSection, section);
+    }
+
+    private boolean isEndpoint(Section newSection, Section section) {
+        return section.isUpStation(newSection.getDownStationId()) ||
+                section.isDownStation(newSection.getUpStationId());
     }
 
     private boolean isNotExisted(Section newSection, Section section) {
@@ -51,5 +55,10 @@ public class Sections {
         if (section.isSameOrLongDistance(newSection)) {
             throw new InvalidAddSectionException();
         }
+    }
+
+    private boolean isIntermediate(Section newSection, Section section) {
+        return section.isUpStation(newSection.getUpStationId()) ||
+                section.isDownStation(newSection.getDownStationId());
     }
 }

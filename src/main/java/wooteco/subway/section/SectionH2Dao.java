@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class SectionH2Dao {
@@ -33,9 +34,9 @@ public class SectionH2Dao {
         return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
-    public List<Section> findById(Long lineId) {
-        String sql = "SELECT * FROM SECTION WHERE line_id=?";
-        return jdbcTemplate.query(
+    public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
+        String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
+        List<Section> sections = jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> {
                     Section section = new Section(
@@ -45,6 +46,17 @@ public class SectionH2Dao {
                             rs.getInt("distance")
                     );
                     return section;
-                }, lineId);
+                }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId());
+        return sections.stream().findAny();
+    }
+
+    public void updateUpStation(Long id, Long upStationId, int distance) {
+        String sql = "UPDATE SECTION SET up_station_id=?, distance=? WHERE id=?";
+        jdbcTemplate.update(sql, upStationId, distance, id);
+    }
+
+    public void updateDownStation(Long id, Long downStationId, int distance) {
+        String sql = "UPDATE SECTION SET down_station_id=?, distance=? WHERE id=?";
+        jdbcTemplate.update(sql, downStationId, distance, id);
     }
 }
