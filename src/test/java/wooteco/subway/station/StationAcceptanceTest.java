@@ -63,13 +63,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
                                                             .when()
                                                             .get("/stations")
                                                             .then()
-                                                            .log()
-                                                            .all()
                                                             .extract();
 
         // then
@@ -95,13 +91,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
                                                             .when()
                                                             .delete(uri)
                                                             .then()
-                                                            .log()
-                                                            .all()
                                                             .extract();
 
         // then
@@ -112,15 +104,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given()
-                          .log()
-                          .all()
                           .body(params)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .post("/stations")
                           .then()
-                          .log()
-                          .all()
                           .extract();
     }
 }

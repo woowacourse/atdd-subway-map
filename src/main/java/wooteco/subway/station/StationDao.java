@@ -45,7 +45,8 @@ public class StationDao {
     public Optional<Station> findByName(String name) {
         String sql = "select id, name from STATION where name = ?";
         List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), name);
-        return result.stream().findAny();
+        return result.stream()
+                     .findAny();
     }
 
     public void delete(Long id) {

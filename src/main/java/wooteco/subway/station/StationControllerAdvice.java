@@ -9,6 +9,7 @@ import wooteco.subway.station.exception.StationException;
 public class StationControllerAdvice {
     @ExceptionHandler(StationException.class)
     public ResponseEntity<String> handle(StationException e) {
-        return ResponseEntity.status(e.statusCode()).body(e.getMessage());
+        return ResponseEntity.status(e.statusCode())
+                             .body(e.getMessage());
     }
 }

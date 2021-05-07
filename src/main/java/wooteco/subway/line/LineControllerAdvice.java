@@ -9,6 +9,7 @@ import wooteco.subway.line.exception.LineException;
 public class LineControllerAdvice {
     @ExceptionHandler(LineException.class)
     public ResponseEntity<String> handle(LineException e) {
-        return ResponseEntity.status(e.statusCode()).body(e.getMessage());
+        return ResponseEntity.status(e.statusCode())
+                             .body(e.getMessage());
     }
 }

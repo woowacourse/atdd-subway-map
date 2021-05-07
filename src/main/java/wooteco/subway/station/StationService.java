@@ -26,7 +26,8 @@ public class StationService {
     }
 
     private boolean isStationExist(String name) {
-        return stationDao.findByName(name).isPresent();
+        return stationDao.findByName(name)
+                         .isPresent();
     }
 
     public void delete(Long id) {

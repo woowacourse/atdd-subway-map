@@ -42,13 +42,15 @@ public class LineDao {
     public Optional<Line> findById(Long id) {
         String sql = "select id, name, color from LINE where id = ?";
         List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), id);
-        return result.stream().findAny();
+        return result.stream()
+                     .findAny();
     }
 
     public Optional<Line> findByName(String name) {
         String sql = "select id, name, color from LINE where name = ?";
         List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), name);
-        return result.stream().findAny();
+        return result.stream()
+                     .findAny();
     }
 
     public List<Line> findAll() {
