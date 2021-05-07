@@ -6,13 +6,15 @@ import java.util.List;
 
 import org.springframework.util.ReflectionUtils;
 
+import wooteco.subway.exception.DuplicateNameException;
+
 public class StationDao {
     private static Long seq = 0L;
-    private static final List<Station> STATIONS = new ArrayList<>();
+    static final List<Station> STATIONS = new ArrayList<>();
 
     public static Station save(Station station) {
         if (isDuplicateStationName(station)) {
-            throw new IllegalArgumentException("이미 저장된 역 이름입니다.");
+            throw new DuplicateNameException("이미 저장된 역 이름입니다.");
         }
 
         Station persistStation = createNewObject(station);

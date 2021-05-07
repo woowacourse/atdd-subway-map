@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,14 @@ import wooteco.subway.AcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        StationDao.STATIONS.clear();
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
