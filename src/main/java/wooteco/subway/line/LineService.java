@@ -14,9 +14,9 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line add(String name, String color) {
+    public Line add(LineRequest lineRequest) {
         List<Line> lines = lineDao.findAll();
-        Line line = new Line(name, color);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateDuplicatedLine(lines, line);
         return lineDao.save(line);
     }
@@ -40,8 +40,8 @@ public class LineService {
         return lineDao.findById(id);
     }
 
-    public void update(Long id, String name, String color) {
-        lineDao.update(id, name, color);
+    public void update(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void delete(Long id) {
