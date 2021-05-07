@@ -44,8 +44,8 @@ public class SectionService {
 
     private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> sectionsIds, Section section) {
         long count = sectionsIds.stream()
-            .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
-            .count();
+                .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
+                .count();
 
         if (count != INSERT_SECTION_IN_LINE_LIMIT) {
             throw new SectionIllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");

@@ -21,7 +21,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public static Section of(Long lineId, Long upStationId, Long downStationId, int distance){
+    public static Section of(Long lineId, Long upStationId, Long downStationId, int distance) {
         return new Section(null,
                 lineId,
                 upStationId,
@@ -29,7 +29,7 @@ public class Section {
                 distance);
     }
 
-    public static Section of(Long id, Long lineId, Long upStationId, Long downStationId, int distance){
+    public static Section of(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         return new Section(id,
                 lineId,
                 upStationId,
