@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +24,16 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.lines();
         List<LineResponse> lineResponses = lines.stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
-            .collect(Collectors.toList());
+                .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.line(id);
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
