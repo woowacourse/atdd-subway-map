@@ -19,18 +19,18 @@ public class StationService {
 
     @Transactional
     public StationResponse save(String stationName) {
-        Station station = Station.from(stationName);
+        Station station = new Station(stationName);
         if (stationDao.findByName(stationName).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 역이 있습니다;");
         }
-        return StationResponse.of(stationDao.save(station));
+        return new StationResponse(stationDao.save(station));
     }
 
     @Transactional
     public List<StationResponse> findAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(StationResponse::of)
+                .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 

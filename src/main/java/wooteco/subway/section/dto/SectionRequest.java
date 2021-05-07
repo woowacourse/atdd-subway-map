@@ -1,5 +1,8 @@
 package wooteco.subway.section.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
