@@ -19,7 +19,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line newLine = lineService.createLine(lineRequest);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
                 .body(lineResponse);
     }
@@ -28,7 +28,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok()
                 .body(lineResponses);
@@ -37,7 +37,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line findLine = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
+        LineResponse lineResponse = new LineResponse(findLine);
         return ResponseEntity.ok()
                 .body(lineResponse);
     }
