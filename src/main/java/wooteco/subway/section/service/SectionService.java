@@ -6,6 +6,7 @@ import wooteco.subway.line.domain.LineRoute;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.exception.SectionIllegalArgumentException;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class SectionService {
             .count();
 
         if (count != INSERT_SECTION_IN_LINE_LIMIT) {
-            throw new IllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
+            throw new SectionIllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
         }
     }
 
@@ -59,7 +60,7 @@ public class SectionService {
 
     private void validateSectionDistanceGap(Section section) {
         if (section.getDistance() <= INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT) {
-            throw new IllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
+            throw new SectionIllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
         }
     }
 
@@ -69,7 +70,7 @@ public class SectionService {
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
         if (lineRoute.getStationIds().size() == DELETE_STATION_IN_LINE_LIMIT) {
-            throw new IllegalArgumentException("종점은 삭제 할 수 없습니다.");
+            throw new SectionIllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 
         Optional<Section> upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);
