@@ -46,7 +46,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("distance", "1");
         params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("upStationId", "4");
         params.put("lineId", "1");
 
         // when
@@ -123,5 +123,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @ParameterizedTest
+    @DisplayName("구간을 제거(노선의 역 삭제) - 실패")
+    @CsvSource({"1,2", "2,4", "3,3"})
+    void deleteSection(String stationId1, String stationId2) {
+
+        ExtractableResponse<Response> beforeDeleteResponse = RestAssured.given().log().all()
+                .param("stationId", stationId1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .param("stationId", stationId2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
