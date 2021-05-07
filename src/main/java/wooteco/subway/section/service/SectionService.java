@@ -50,7 +50,9 @@ public class SectionService {
         int prevDistance = lineRoute.getDistanceFromUpToDownStationMap(section.getUpStationId());
         int distanceGap = prevDistance - section.getDistance();
         validateDistantDifference(distanceGap);
-        sectionDao.updateByUpStationId(section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+        sectionDao.updateByUpStationId(section.getLineId(),
+                section.getUpStationId(),
+                section.getDownStationId(),
                 distanceGap);
     }
 
@@ -58,8 +60,10 @@ public class SectionService {
         int prevDistance = lineRoute.getDistanceFromDownToUpStationMap(section.getDownStationId());
         int distanceGap = prevDistance - section.getDistance();
         validateDistantDifference(distanceGap);
-        sectionDao.updateByDownStationId(section.getLineId(), section.getDownStationId(),
-                section.getUpStationId(), distanceGap);
+        sectionDao.updateByDownStationId(section.getLineId(),
+                section.getDownStationId(),
+                section.getUpStationId(),
+                distanceGap);
     }
 
     private void validateDistantDifference(int difference) {
@@ -93,9 +97,9 @@ public class SectionService {
         sectionDao.delete(upSection.getId());
         sectionDao.delete(downSection.getId());
 
-        Section newSection = new Section(lineId, downSection.getUpStationId(), upSection.getDownStationId(),
-                upSection.getDistance() + downSection.getDistance());
-
-        sectionDao.save(newSection);
+        sectionDao.save(new Section(lineId,
+                downSection.getUpStationId(),
+                upSection.getDownStationId(),
+                upSection.getDistance() + downSection.getDistance()));
     }
 }

@@ -16,7 +16,7 @@ public class LineH2Dao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-            Line.of(resultSet.getLong("id"),
+            new Line(resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("color"));
 
@@ -36,17 +36,13 @@ public class LineH2Dao implements LineDao {
     @Override
     public Optional<Line> findById(Long id) {
         String findQuery = "SELECT * FROM line WHERE id = ?;";
-        return jdbcTemplate.query(findQuery, lineRowMapper, id)
-                .stream()
-                .findAny();
+        return jdbcTemplate.query(findQuery, lineRowMapper, id).stream().findAny();
     }
 
     @Override
     public Optional<Line> findByName(String lineName) {
         String findQuery = "SELECT * FROM line WHERE name = ?;";
-        return jdbcTemplate.query(findQuery, lineRowMapper, lineName)
-                .stream()
-                .findAny();
+        return jdbcTemplate.query(findQuery, lineRowMapper, lineName).stream().findAny();
     }
 
     @Override
