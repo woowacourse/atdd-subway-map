@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.common.exception.NotFoundException;
 import wooteco.subway.common.exception.SubwayHttpException;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.dao.LineDao;
@@ -29,8 +30,7 @@ public class LineService {
         try {
             return lineDao.save(line);
         } catch (DuplicateKeyException e) {
-            // todo 예외 나누기?
-            throw new SubwayHttpException("중복된 이름입니다");
+            throw new SubwayHttpException("중복된 노선 이름입니다");
         }
     }
 
@@ -42,7 +42,7 @@ public class LineService {
         try {
             return lineDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new SubwayHttpException(HttpStatus.NOT_FOUND, "존재하지 않는 노선입니다");
+            throw new NotFoundException("존재하지 않는 노선입니다");
         }
     }
 
