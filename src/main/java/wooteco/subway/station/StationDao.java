@@ -37,7 +37,6 @@ public class StationDao {
 
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
     }
 
@@ -48,5 +47,15 @@ public class StationDao {
         if (updatedRowCount == 0) {
             throw new IllegalArgumentException("존재하지 않는 id 입니다.");
         }
+    }
+
+    public int count(String name) {
+        String sql = "SELECT count(*) FROM station WHERE `name` = (?)";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    }
+
+    public int count(Long id) {
+        String sql = "SELECT count(*) FROM station WHERE id = (?)";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id);
     }
 }
