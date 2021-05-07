@@ -63,9 +63,11 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "white"));
         List<Line> lines = lineDao.findAll();
-        assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines.get(0).getId()).isEqualTo(1L);
-        assertThat(lines.get(1).getId()).isEqualTo(2L);
+        assertThat(lines).hasSize(2);
+        assertThat(lines).containsExactly(
+                new Line(1L, "신분당선", "black"),
+                new Line(2L, "2호선", "white")
+        );
     }
 
     @DisplayName("line 단일 조회 실패 테스트")
@@ -80,10 +82,7 @@ public class LineDaoTest {
     @Test
     void findLineByIdTest() {
         lineDao.save(new Line("신분당선", "black"));
-
-        assertDoesNotThrow(() -> {
-            lineDao.find(1L);
-        });
+        assertDoesNotThrow(() -> lineDao.find(1L));
     }
 
     @DisplayName("line 삭제 실패 테스트")
@@ -98,19 +97,14 @@ public class LineDaoTest {
     @Test
     void deleteLineTest() {
         lineDao.save(new Line("신분당선", "black"));
-
-        assertDoesNotThrow(() -> {
-            lineDao.delete(1L);
-        });
+        assertDoesNotThrow(() -> lineDao.delete(1L));
     }
 
     @DisplayName("존재하지 않는 line 수정 실패 테스트")
     @Test
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
-                () -> {
-                    lineDao.modify(1L, new LineRequest());
-                }
+                () -> lineDao.modify(1L, new LineRequest())
         ).isInstanceOf(NoSuchElementException.class);
     }
 
@@ -120,9 +114,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
-                () -> {
-                    lineDao.modify(2L, new LineRequest("신분당선", "red"));
-                }
+                () -> lineDao.modify(2L, new LineRequest("신분당선", "red"))
         ).isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -130,9 +122,8 @@ public class LineDaoTest {
     @Test
     void modifyLineTest() {
         lineDao.save(new Line("신분당선", "black"));
-
-        assertDoesNotThrow(() -> {
-            lineDao.modify(1L, new LineRequest("2호선", "black"));
-        });
+        assertDoesNotThrow(
+                () -> lineDao.modify(1L, new LineRequest("2호선", "black"))
+        );
     }
 }
