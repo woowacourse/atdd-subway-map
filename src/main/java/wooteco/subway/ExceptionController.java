@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> unpredictableException(Exception error) {
-        return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+    public ResponseEntity<String> unpredictableException(Exception error) {
+        return ResponseEntity.badRequest().body(error.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

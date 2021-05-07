@@ -21,7 +21,7 @@ public class SectionH2Dao implements SectionDao {
 
     @Override
     public void save(Section section) {
-        String saveQuery = "INSERT INTO section(line_id, up_station_id, down_station_id, distance, extra_fare) VALUES (?, ?, ?, ?, ?)";
+        String saveQuery = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(saveQuery, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
                 section.getDistance());
     }
