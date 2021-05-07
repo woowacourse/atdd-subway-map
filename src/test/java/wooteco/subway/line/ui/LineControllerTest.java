@@ -125,9 +125,8 @@ class LineControllerTest {
                     .statusCode(HttpStatus.OK.value());
 
         final Line line = lineRepository.findById(id);
+
         assertThat(line.getName()).isEqualTo("구분당선");
-
-
     }
 
     @DisplayName("노션을 삭제한다.")
