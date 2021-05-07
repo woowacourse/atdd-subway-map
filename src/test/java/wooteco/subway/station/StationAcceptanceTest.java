@@ -27,7 +27,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-
         response = RestAssured.given().log().all()
             .body(new StationRequest("강남역"))
             .contentType(MediaType.APPLICATION_JSON_VALUE)

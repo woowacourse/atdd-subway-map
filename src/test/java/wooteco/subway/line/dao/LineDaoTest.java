@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.Line;
@@ -31,6 +32,12 @@ class LineDaoTest {
     @Test
     void save() {
         assertThat(line).isEqualTo(new Line("3호선", "bg-blue-500"));
+    }
+
+    @Test
+    void saveDuplicate() {
+        assertThatThrownBy(() -> lineDao.save(new Line("3호선", "bg-yellow-600")))
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test

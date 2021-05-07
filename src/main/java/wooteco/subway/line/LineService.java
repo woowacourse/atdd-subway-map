@@ -1,18 +1,20 @@
 package wooteco.subway.line;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LineResponses;
 
 @Service
 public class LineService {
 
-    @Autowired
-    private LineDao lineDao;
+    private final LineDao lineDao;
+
+    public LineService(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
     public LineResponse create(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
@@ -23,10 +25,7 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return lines
-            .stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
-            .collect(Collectors.toList());
+        return LineResponses.lineResponses(lines).toList();
     }
 
     public LineResponse findById(Long id) {

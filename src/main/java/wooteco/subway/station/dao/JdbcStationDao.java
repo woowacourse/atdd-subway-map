@@ -1,7 +1,6 @@
 package wooteco.subway.station.dao;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.Station;
@@ -30,6 +31,12 @@ class StationDaoTest {
     @Test
     void save() {
         assertThat(station).isEqualTo(new Station("잠실역"));
+    }
+
+    @Test
+    void saveDuplicate() {
+        assertThatThrownBy(() -> stationDao.save(new Station("잠실역")))
+            .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
