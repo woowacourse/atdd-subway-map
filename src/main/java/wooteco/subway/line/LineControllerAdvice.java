@@ -25,7 +25,7 @@ public class LineControllerAdvice {
 
     @ExceptionHandler(NotFoundLineException.class)
     public ResponseEntity voidLineDeleteExceptionResponse(final NotFoundLineException e) {
-        return ResponseEntity.noContent()
+        return ResponseEntity.badRequest()
             .build();
     }
 }

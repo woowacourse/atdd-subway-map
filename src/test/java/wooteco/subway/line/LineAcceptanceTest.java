@@ -362,7 +362,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("존재하지 않는 노선을 삭제한다.")
@@ -378,6 +378,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
