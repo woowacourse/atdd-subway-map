@@ -4,11 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicatedNameException;
 
 @Repository
 public class LineDao {
@@ -25,22 +28,30 @@ public class LineDao {
     }
 
     public Line save(final Line line) {
-        final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
-        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        final PreparedStatementCreator preparedStatementCreator = con -> {
-            final PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, line.getName());
-            preparedStatement.setString(2, line.getColor());
-            return preparedStatement;
-        };
-        jdbcTemplate.update(preparedStatementCreator, keyHolder);
-        final long id = keyHolder.getKey().longValue();
-        return findById(id).get();
+        try {
+            final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+            final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            final PreparedStatementCreator preparedStatementCreator = con -> {
+                final PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setString(1, line.getName());
+                preparedStatement.setString(2, line.getColor());
+                return preparedStatement;
+            };
+            jdbcTemplate.update(preparedStatementCreator, keyHolder);
+            final long id = keyHolder.getKey().longValue();
+            return findById(id).get();
+        } catch (DuplicateKeyException e) {
+            throw new DuplicatedNameException("중복된 이름의 노선입니다.");
+        }
     }
 
     public void deleteById(final long id) {
         final String sql = "DELETE FROM line WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        int deletedCnt = jdbcTemplate.update(sql, id);
+
+        if (deletedCnt < 1) {
+            throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
+        }
     }
 
     public List<Line> findAll() {
@@ -68,6 +79,12 @@ public class LineDao {
 
     public void update(final Line updatedLine) {
         final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+        int updatedCnt = jdbcTemplate.update(
+            sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId()
+        );
+
+        if (updatedCnt < 1) {
+            throw new DataNotFoundException("해당 Id의 노선이 없습니다.");
+        }
     }
 }
