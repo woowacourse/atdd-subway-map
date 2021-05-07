@@ -1,10 +1,11 @@
 package wooteco.subway.line;
 
-import java.util.List;
-import java.util.Objects;
 import wooteco.subway.station.Station;
 
-public final class Line {
+import java.util.List;
+import java.util.Objects;
+
+public class Line {
     private final Long id;
     private final String name;
     private final String color;

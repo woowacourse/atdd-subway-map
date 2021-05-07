@@ -7,7 +7,7 @@ import wooteco.subway.line.LineException;
 import wooteco.subway.station.StationException;
 
 @ControllerAdvice
-public final class GlobalAdvice {
+public class GlobalAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleUnknownException(final RuntimeException e) {

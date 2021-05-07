@@ -102,8 +102,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<Long> expectedStationIds = Arrays
-                .asList(stationId(createResponse1), stationId(createResponse2));
+        List<Long> expectedStationIds = Arrays.asList(stationId(createResponse1), stationId(createResponse2));
         List<Long> resultStationIds = resultStationsIds(response);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

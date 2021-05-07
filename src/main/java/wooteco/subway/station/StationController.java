@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stations")
-public final class StationController {
+public class StationController {
 
     private final StationDao stationDao;
 
@@ -21,6 +21,11 @@ public final class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         final String name = stationRequest.getName();
+
+        if (stationDao.isDuplicatedName(name)) {
+            throw new StationException("이미 존재하는 역 이름입니다.");
+        }
+
         final Long id = stationDao.save(name);
 
         final StationResponse stationResponse = new StationResponse(id, name);

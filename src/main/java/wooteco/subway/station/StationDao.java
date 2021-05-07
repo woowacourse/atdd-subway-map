@@ -1,11 +1,12 @@
 package wooteco.subway.station;
 
-import java.sql.PreparedStatement;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
+import java.util.List;
 
 @Repository
 public class StationDao {
@@ -17,10 +18,6 @@ public class StationDao {
     }
 
     public Long save(final String name) {
-        if (isDuplicatedName(name)) {
-            throw new StationException("이미 존재하는 역 이름입니다.");
-        }
-
         final String sql = "INSERT INTO STATION (name) VALUES (?)";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
@@ -30,7 +27,7 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
-    private boolean isDuplicatedName(final String name) {
+    public boolean isDuplicatedName(final String name) {
         final String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
