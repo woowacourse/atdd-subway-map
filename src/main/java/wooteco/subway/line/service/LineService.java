@@ -22,7 +22,8 @@ public class LineService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
+        long createdId = lineDao.save(line);
+        Line newLine = lineDao.findLineById(createdId);
         return new LineResponse(newLine);
     }
 

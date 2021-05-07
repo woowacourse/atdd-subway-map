@@ -1,9 +1,12 @@
 package wooteco.subway.station.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,19 +32,18 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station save(Station station) {
+    public Long save(Station station) {
         validateDuplicatedName(station);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection
-                .prepareStatement(sql, new String[]{"id", "name"});
+                .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, station.getName());
             return preparedStatement;
         }, keyHolder);
 
-        Map<String, Object> keys = keyHolder.getKeys();
-        return new Station((Long) keys.get("id"), (String) keys.get("name"));
+        return keyHolder.getKey().longValue();
     }
 
     private void validateDuplicatedName(Station station) {
@@ -64,6 +66,15 @@ public class StationDao {
         String sql = "SELECT id, name FROM station";
         return jdbcTemplate.query(sql, mapperStation);
 
+    }
+
+    public Station findStationById(long id) {
+        String sql = "SELECT id, name FROM station WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, mapperStation, id);
+        } catch (DataAccessException e) {
+            throw new NotFoundException("존재하지 않는 역 ID 입니다.");
+        }
     }
 
     public void deleteById(Long id) {

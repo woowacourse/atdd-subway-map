@@ -30,7 +30,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line save(Line line) {
+    public Long save(Line line) {
         validateDuplicateNameAndColor(line);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO line (`name`, color) VALUES (?, ?)";
@@ -42,8 +42,7 @@ public class LineDao {
             return preparedStatement;
         }, keyHolder);
 
-        long id = keyHolder.getKey().longValue();
-        return findLineById(id);
+        return keyHolder.getKey().longValue();
     }
 
     private void validateDuplicateNameAndColor(Line line) {

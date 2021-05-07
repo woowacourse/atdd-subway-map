@@ -30,7 +30,8 @@ class StationServiceTest {
     @Test
     void createStation() {
         //given
-        when(stationDao.save(any())).thenReturn(new Station(1L, "잠실역"));
+        when(stationDao.save(any())).thenReturn(1L);
+        when(stationDao.findStationById(1L)).thenReturn(new Station(1L, "잠실역"));
         StationRequest request = new StationRequest("잠실역");
 
         //when

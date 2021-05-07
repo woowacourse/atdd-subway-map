@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.api.dto.StationRequest;
 import wooteco.subway.station.api.dto.StationResponse;
@@ -22,7 +22,8 @@ public class StationService {
 
     public StationResponse createStation(StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
-        Station newStation = stationDao.save(station);
+        long createdId = stationDao.save(station);
+        Station newStation = stationDao.findStationById(createdId);
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
