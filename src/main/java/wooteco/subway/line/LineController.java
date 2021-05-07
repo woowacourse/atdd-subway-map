@@ -40,7 +40,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        final Line line = LineDao.findById(id);
+        final Line line = LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
     }
@@ -48,7 +48,9 @@ public class LineController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> editLine(@PathVariable Long id,
                                          @RequestBody LineRequest lineRequest) {
-        LineDao.update(id, lineRequest);
+        final Line beforeLine = LineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
+        final Line afterLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        LineDao.update(beforeLine, afterLine);
         return ResponseEntity.ok().build();
     }
 

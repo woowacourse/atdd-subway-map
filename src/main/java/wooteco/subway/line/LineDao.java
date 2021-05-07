@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -30,13 +31,15 @@ public class LineDao {
         return LINES;
     }
 
-    public static Line findById(Long id) {
-        return LINES.get(id.intValue());
+    public static Optional<Line> findById(Long id) {
+        return LINES.stream()
+                    .filter(line -> line.getId().equals(id))
+                    .findAny();
     }
 
-    public static void update(Long id, LineRequest lineRequest) {
-        final Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        LINES.set(id.intValue(), updatedLine);
+    public static void update(Line beforeLine, Line afterLine) {
+        final int updateIndex = LINES.indexOf(beforeLine);
+        LINES.set(updateIndex, afterLine);
     }
 
     public static void delete(Long id) {
