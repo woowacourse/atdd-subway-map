@@ -6,10 +6,10 @@ public class StationRequest {
     @NotBlank
     private String name;
 
-    public StationRequest() {
+    private StationRequest() {
     }
 
-    public StationRequest(String name) {
+    private StationRequest(String name) {
         this.name = name;
     }
 

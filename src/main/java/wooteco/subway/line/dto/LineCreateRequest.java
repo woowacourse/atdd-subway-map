@@ -15,10 +15,10 @@ public class LineCreateRequest {
     @NotNull
     private int distance;
 
-    public LineCreateRequest() {
+    private LineCreateRequest() {
     }
 
-    public LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
