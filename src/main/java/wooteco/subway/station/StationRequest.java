@@ -1,11 +1,11 @@
 package wooteco.subway.station;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class StationRequest {
-    private String name;
+    private final String name;
 
-    public StationRequest() {
-    }
-
+    @JsonCreator
     public StationRequest(String name) {
         this.name = name;
     }

@@ -1,16 +1,9 @@
 package wooteco.subway.line;
 
 public class Line {
-    private Long id;
-    private String name;
-    private String color;
-
-    public Line() {}
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+    private final Long id;
+    private final String name;
+    private final String color;
 
     public Line(Long id, LineRequest lineRequest) {
         this(id, lineRequest.getName(), lineRequest.getColor());
