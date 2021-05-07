@@ -48,7 +48,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStation(Long id) {
+    public void deleteById(Long id) {
         stationRepository.deleteById(id);
         log.info("지하철 역 삭제 성공");
     }

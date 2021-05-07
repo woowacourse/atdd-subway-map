@@ -1,7 +1,5 @@
 package wooteco.subway.station.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +31,8 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.deleteStation(id);
+    public ResponseEntity<Void> deleteStationById(@PathVariable Long id) {
+        stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
