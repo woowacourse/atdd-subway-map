@@ -32,6 +32,12 @@ public class LineDao implements LineRepository {
     }
 
     @Override
+    public boolean validateDuplicateName(String name) {
+        return lines.stream()
+                .anyMatch(line -> line.isSameName(name));
+    }
+
+    @Override
     public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))

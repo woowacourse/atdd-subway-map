@@ -37,8 +37,7 @@ public class LineService {
     }
 
     private boolean checkNameDuplicate(LineRequest lineRequest) {
-        return lineRepository.findAll().stream()
-                .anyMatch(line -> line.isSameName(lineRequest.getName()));
+        return lineRepository.validateDuplicateName(lineRequest.getName());
     }
 
     public LineResponse findById(Long id) {

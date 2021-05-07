@@ -10,4 +10,6 @@ public interface StationRepository {
     List<Station> findAll();
 
     void deleteById(Long id);
+
+    boolean validateDuplicateName(String name);
 }

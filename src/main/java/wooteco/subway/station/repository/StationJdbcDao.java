@@ -38,6 +38,12 @@ public class StationJdbcDao implements StationRepository {
         return jdbcTemplate.query(query, stationRowMapper());
     }
 
+    @Override
+    public boolean validateDuplicateName(String name) {
+        String query = "SELECT * FROM station WHERE name = ?";
+        return jdbcTemplate.update(query, name) == 1;
+    }
+
     private RowMapper<Station> stationRowMapper() {
         return (rs, rowNum) -> new Station(
                 rs.getLong("id"),

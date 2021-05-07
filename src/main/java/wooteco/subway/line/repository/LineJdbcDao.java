@@ -39,6 +39,12 @@ public class LineJdbcDao implements LineRepository {
         return jdbcTemplate.query(query, lineRowMapper());
     }
 
+    @Override
+    public boolean validateDuplicateName(String name) {
+        String query = "SELECT * FROM line WHERE name = ?";
+        return jdbcTemplate.update(query, name) == 1;
+    }
+
     private RowMapper<Line> lineRowMapper() {
         return (rs, rowNum) -> new Line(
                 rs.getLong("id"),

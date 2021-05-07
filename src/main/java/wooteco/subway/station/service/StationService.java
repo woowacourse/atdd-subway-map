@@ -36,8 +36,7 @@ public class StationService {
     }
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return stationRepository.findAll().stream()
-                .anyMatch(station -> station.isSameName(stationRequest.getName()));
+        return stationRepository.validateDuplicateName(stationRequest.getName());
     }
 
     public List<StationResponse> findAllStations() {

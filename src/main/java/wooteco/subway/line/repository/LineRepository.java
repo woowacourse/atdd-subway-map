@@ -10,6 +10,8 @@ public interface LineRepository {
 
     List<Line> findAll();
 
+    boolean validateDuplicateName(String name);
+
     Optional<Line> findById(Long id);
 
     void updateById(Long id, Line updatedLine);

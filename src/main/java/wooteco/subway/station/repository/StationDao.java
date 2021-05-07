@@ -37,4 +37,10 @@ public class StationDao implements StationRepository {
                 .findAny()
                 .ifPresent(station -> stations.remove(station));
     }
+
+    @Override
+    public boolean validateDuplicateName(String name) {
+        return stations.stream()
+                .anyMatch(station -> station.isSameName(name));
+    }
 }
