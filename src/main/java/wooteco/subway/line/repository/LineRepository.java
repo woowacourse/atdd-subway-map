@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,26 +27,25 @@ public class LineRepository {
     }
 
     public Line save(final Line line) {
-        String query = "INSERT INTO line(color, name) VALUES(?, ?)";
+        try {
+            String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int rowsAffected = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, line.getColor());
-            ps.setString(2, line.getName());
-            return ps;
-        }, keyHolder);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, line.getColor());
+                ps.setString(2, line.getName());
+                return ps;
+            }, keyHolder);
 
-        if (rowsAffected < 1) {
+            return new Line(
+                    Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                    line.getColor(),
+                    line.getName()
+            );
+        } catch (DuplicateKeyException e) {
             throw new DuplicateLineNameException();
         }
-        //TODO: 중복된 이름 검증 테스트
-
-        return new Line(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                line.getColor(),
-                line.getName()
-        );
     }
 
     public List<Line> getLines() {
@@ -61,7 +60,6 @@ public class LineRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchLineException();
         }
-        //TODO: 예외 테스트
     }
 
     public void update(final Line line) {

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
 
@@ -14,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
@@ -31,16 +31,16 @@ class LineRepositoryTest {
         jdbcTemplate.update(query, "bg-green-600", "2호선");
     }
 
-    @DisplayName("이름이랑 색깔을 입력받으면, DB에 Line을 생성하고, id를 반환한다.")
+    @DisplayName("이름이랑 색깔을 입력받으면, DB에 line을 생성하고, id를 반환한다.")
     @Test
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
         assertThat(lineRepository.save(line).getId()).isEqualTo(3L);
     }
 
-    @DisplayName("전체 Line을 조회하면, DB에 존재하는 Line 리스트를 반환한다.")
+    @DisplayName("전체 line을 조회하면, DB에 존재하는 line 리스트를 반환한다.")
     @Test
-    void findAll() {
+    void getLines() {
         List<Line> expectedLines = Arrays.asList(
                 new Line(1L, "bg-red-600", "신분당선"),
                 new Line(2L, "bg-green-600", "2호선")
@@ -50,14 +50,23 @@ class LineRepositoryTest {
         assertThat(lines).usingRecursiveComparison().isEqualTo(expectedLines);
     }
 
-    @DisplayName("id를 통해 Line을 조회하면, 해당 id에 매칭되는 Line을 반환한다.")
+    @DisplayName("전체 line을 조회할 때, DB에 존재하는 line이 없다면 빈 리스트를 반환한다.")
+    @Test
+    void getLines_noLinesSaved_emptyList() {
+        jdbcTemplate.update("TRUNCATE TABLE line");
+
+        List<Line> lines = lineRepository.getLines();
+        assertThat(lines).isEmpty();
+    }
+
+    @DisplayName("id를 통해 line을 조회하면, 해당 id에 매칭되는 line을 반환한다.")
     @Test
     void getLine() {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
         assertThat(lineRepository.getLine(1L)).isEqualTo(expectedLine);
     }
 
-    @DisplayName("id를 통해 Line 수정 요청을 보내면, DB에있는 Line정보를 수정한다")
+    @DisplayName("id를 통해 line 수정 요청을 보내면, DB에있는 line정보를 수정한다")
     @Test
     void update() {
         Line bundangLine = new Line(1L, "bg-white-600", "분당선");
@@ -74,7 +83,7 @@ class LineRepositoryTest {
         assertThat(bundangLine).isEqualTo(line);
     }
 
-    @DisplayName("id를 통해 Line을 삭제하면, DB에 있는 Line을 삭제한다.")
+    @DisplayName("id를 통해 line을 삭제하면, DB에 있는 line을 삭제한다.")
     @Test
     void deleteById() {
         Long id = 1L;
@@ -86,19 +95,33 @@ class LineRepositoryTest {
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
     }
 
-    @DisplayName("없는 id의 Line을 가져오려하면 NoSuchLineException을 error를 반환한다")
+    @DisplayName("이미 존재하는 이름의 line을 저장하려하면 DuplicateLineNameException을 반환한다")
+    @Test
+    void save_DuplicateLineNameException() {
+        Line line = new Line("bg-black-600", "신분당선");
+        assertThatThrownBy(() -> lineRepository.save(line))
+                .isInstanceOf(DuplicateLineNameException.class);
+    }
+
+    @DisplayName("없는 id의 line을 가져오려하면 NoSuchLineException을 반환한다")
     @Test
     void getLine_NoSuchLineException() {
-        String query1 = "TRUNCATE TABLE line";
-        jdbcTemplate.update(query1);
+        assertThatThrownBy(() -> lineRepository.getLine(3L))
+                .isInstanceOf(NoSuchLineException.class);
+    }
 
-        String query2 = "SELECT id, color, name FROM line ORDER BY id";
-        List<Line> what = jdbcTemplate.query(query2,
-                (resultSet, rowNum) -> new Line(
-                        resultSet.getLong("id"),
-                        resultSet.getString("color"),
-                        resultSet.getString("name"))
-        );
-        assertThat(what).isEmpty();
+    @DisplayName("없는 id의 line을 삭제하려하면 NoSuchLineException을 반환한다")
+    @Test
+    void deleteById_NoSuchLineException() {
+        assertThatThrownBy(() -> lineRepository.deleteById(3L))
+                .isInstanceOf(NoSuchLineException.class);
+    }
+
+    @DisplayName("없는 id의 line을 수정하려하면 NoSuchLineException을 반환한다")
+    @Test
+    void update_NoSuchLineException() {
+        Line line = new Line(3L, "bg-yellow-600", "지노선");
+        assertThatThrownBy(() -> lineRepository.update(line))
+                .isInstanceOf(NoSuchLineException.class);
     }
 }

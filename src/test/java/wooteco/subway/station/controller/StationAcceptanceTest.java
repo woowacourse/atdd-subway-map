@@ -22,7 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> firstStationCreateResponse;
     private ExtractableResponse<Response> secondStationCreateResponse;
-    private final StationRequest firstStationRequest = new StationRequest("강남역");;
+    private final StationRequest firstStationRequest = new StationRequest("강남역");
+    ;
 
     @Override
     @BeforeEach
@@ -118,5 +119,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("없는 id의 station을 삭제하려하면 NoSuchStationException을 반환한다")
+    @Test
+    void deleteById_NoSuchStationException() {
+        ExtractableResponse<Response> station3Response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/3")
+                .then().log().all()
+                .extract();
+
+        assertThat(station3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.station.repository;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,23 +25,23 @@ public class StationRepository {
     }
 
     public Station save(final Station station) {
-        String query = "INSERT INTO STATION(name) VALUES (?)";
+        try {
+            String query = "INSERT INTO STATION(name) VALUES (?)";
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int rowsAffected = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, station.getName());
+                return ps;
+            }, keyHolder);
 
-        if (rowsAffected < 1) {
+            return new Station(
+                    Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                    station.getName()
+            );
+        } catch (DuplicateKeyException e) {
             throw new DuplicateStationNameException();
         }
-
-        return new Station(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                station.getName()
-        );
     }
 
     public List<Station> getStations() {
@@ -53,7 +54,7 @@ public class StationRepository {
         int rowsAffected = jdbcTemplate.update(query, id);
 
         if (rowsAffected < 1) {
-            throw new NosuchStationException();
+            throw new NoSuchStationException();
         }
     }
 }

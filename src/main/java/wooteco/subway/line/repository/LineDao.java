@@ -11,7 +11,7 @@ public class LineDao {
     private static final int INDEX_MATCHER = 1;
     public static final long INITIAL_INDEX = 0L;
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new ArrayList<>();
 
     public static Line save(final Line line) {
         Line persistLine = createNewObject(line);

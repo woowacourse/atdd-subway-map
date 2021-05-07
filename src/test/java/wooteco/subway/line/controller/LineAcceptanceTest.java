@@ -15,7 +15,8 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,12 +42,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         url = response.header("Location");
     }
 
-    @DisplayName("노선 추가하는데 성공하면 201 created와 생성된 노선 정보를 반환한다")
+    @DisplayName("line 추가하는데 성공하면 201 created와 생성된 line 정보를 반환한다")
     @Test
     void createLine() {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(url).isNotBlank();
 
         LineResponse responseBody = response.body().as(LineResponse.class);
 
@@ -55,7 +56,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(firstLineRequest);
     }
 
-    @DisplayName("전체 노선을 조회하면 저장된 모든 노선들을 반환한다 ")
+    @DisplayName("전체 line을 조회하면 저장된 모든 line들을 반환한다 ")
     @Test
     void getLines() {
         LineRequest secondLineRequest = new LineRequest("2호선", "bg-green-600");
@@ -87,7 +88,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponses).usingRecursiveFieldByFieldElementComparator(configuration).isEqualTo(lineRequests);
     }
 
-    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보를 반환한다.")
+    @DisplayName("id를 통해 line을 조회하면, 해당 line 정보를 반환한다.")
     @Test
     void getLine() {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
@@ -103,7 +104,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 isEqualTo(expectedLineResponse);
     }
 
-    @DisplayName("id를 통해 노선을 변경하면, payload대로 노선 수정한다")
+    @DisplayName("id를 통해 line을 변경하면, payload대로 line 수정한다")
     @Test
     void updateLine() {
         LineRequest lineUpdateRequest = new LineRequest("구분당선", "bg-blue-600");
@@ -118,7 +119,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("id를 통해 노선을 삭제하면, payload대로 노선을 삭제한다")
+    @DisplayName("id를 통해 line을 삭제하면, payload대로 line을 삭제한다")
     @Test
     void deleteLine() {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
@@ -129,5 +130,61 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("이미 존재하는 이름의 line을 저장하려하면 DuplicateLineNameException을 반환한다")
+    @Test
+    void save_DuplicateLineNameException() {
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-black-600");
+
+        ExtractableResponse<Response> shinBunDangResponse = RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(shinBunDangResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 id의 line을 가져오려하면 NoSuchLineException을 반환한다")
+    @Test
+    void getLine_NoSuchLineException() {
+        ExtractableResponse<Response> line3Response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/3")
+                .then().log().all()
+                .extract();
+
+        assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 id의 line을 삭제하려하면 NoSuchLineException을 반환한다")
+    @Test
+    void deleteById_NoSuchLineException() {
+        ExtractableResponse<Response> line3Response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/3")
+                .then().log().all()
+                .extract();
+
+        assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 id의 line을 수정하려하면 NoSuchLineException을 반환한다")
+    @Test
+    void update_NoSuchLineException() {
+        LineRequest lineRequest = new LineRequest("지노선", "bg-yellow-600");
+
+        ExtractableResponse<Response> line3Response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(lineRequest)
+                .when()
+                .get("/lines/3")
+                .then().log().all()
+                .extract();
+
+        assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class StationDao {
     public static final long INITIAL_INDEX = 0L;
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new ArrayList<>();
 
     public static Station save(Station station) {
         Station persistStation = createNewObject(station);
