@@ -24,9 +24,9 @@ public class StationService {
     }
 
     private void validateDuplicateStationName(String name) {
-        if (stationRepository.findByName(name).isPresent()) {
-            throw new DuplicateStationNameException("이미 존재하는 역의 이름입니다.");
-        }
+        this.stationRepository.findByName(name).ifPresent(line -> {
+            throw new DuplicateStationNameException(name);
+        });
     }
 
     public List<StationResponse> findAll() {

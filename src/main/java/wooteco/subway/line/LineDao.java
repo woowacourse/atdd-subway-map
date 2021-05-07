@@ -36,7 +36,7 @@ public class LineDao implements LineRepository {
         return lines.stream()
                 .filter(line -> line.getId().equals(id))
                 .findAny()
-                .orElseThrow(() -> new NoSuchLineException("해당 id에 맞는 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchLineException(1));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class LineDao implements LineRepository {
     @Override
     public void delete(Long id) {
         if (!lines.removeIf(line -> line.getId().equals(id))) {
-            throw new NoSuchLineException("해당 id에 맞는 노선을 찾을 수 없습니다.");
+            throw new NoSuchLineException(1);
         }
     }
 }
