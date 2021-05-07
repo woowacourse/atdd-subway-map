@@ -25,7 +25,7 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
-        return LineResponses.lineResponses(lines).toList();
+        return LineResponses.from(lines).toList();
     }
 
     public LineResponse findById(Long id) {
