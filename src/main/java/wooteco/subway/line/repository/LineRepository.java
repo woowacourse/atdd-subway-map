@@ -19,6 +19,12 @@ public class LineRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
+            resultSet.getLong("id"),
+            resultSet.getString("color"),
+            resultSet.getString("name")
+    );
+
     public boolean isExistName(final Line line) {
         String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
@@ -42,12 +48,6 @@ public class LineRepository {
         String query = "SELECT id, color, name FROM line ORDER BY id";
         return jdbcTemplate.query(query, lineRowMapper);
     }
-
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
-            resultSet.getLong("id"),
-            resultSet.getString("color"),
-            resultSet.getString("name")
-    );
 
     public Line getLineById(final Long id) {
         try {

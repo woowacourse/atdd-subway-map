@@ -15,6 +15,11 @@ import java.util.Objects;
 public class StationRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
+    );
+
     public StationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -51,8 +56,4 @@ public class StationRepository {
         }
     }
 
-    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-    );
 }
