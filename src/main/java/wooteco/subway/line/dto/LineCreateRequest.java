@@ -1,23 +1,30 @@
 package wooteco.subway.line.dto;
 
-public class LineRequest {
-    private String name;
-    private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
-    private Long extraFare;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-    public LineRequest() {
+public class LineCreateRequest {
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String color;
+    @NotNull
+    private Long upStationId;
+    @NotNull
+    private Long downStationId;
+    @NotNull
+    private int distance;
+
+    public LineCreateRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance, Long extraFare) {
+    public LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-        this.extraFare = extraFare;
     }
 
     public String getName() {
@@ -38,10 +45,6 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Long getExtraFare() {
-        return extraFare;
     }
 
     public boolean isSameStations() {

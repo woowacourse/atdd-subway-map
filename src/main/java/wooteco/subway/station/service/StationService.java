@@ -16,12 +16,12 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(String stationName) {
+    public StationResponse save(String stationName) {
         Station station = new Station(stationName);
         if (stationDao.findByName(stationName).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 역이 있습니다;");
         }
-        return stationDao.save(station);
+        return new StationResponse(stationDao.save(station));
     }
 
     public List<StationResponse> findAll() {
