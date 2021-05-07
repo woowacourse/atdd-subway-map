@@ -39,14 +39,6 @@ public class StationRepositoryTest {
         assertThat(savedStation.getId()).isEqualTo(3L);
     }
 
-    @DisplayName("DB에 있는 역이름을 찾으면, true를 반환한다.")
-    @Test
-    void isExist() {
-        assertThat(stationRepository.isExistName(new Station("잠실역"))).isTrue();
-        assertThat(stationRepository.isExistName(new Station("잠실새내역"))).isTrue();
-        assertThat(stationRepository.isExistName(new Station("석촌역"))).isFalse();
-    }
-
     @DisplayName("DB에 있는 역들을 조회하면, 역을 담은 리스트를 반환한다.")
     @Test
     void findAll() {

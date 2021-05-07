@@ -23,20 +23,19 @@ public class StationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean isExistName(final Station station) {
-        String query = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
-    }
-
     public Station save(final Station station) {
         String query = "INSERT INTO STATION(name) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
+        int rowsAffected = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
+
+        if (rowsAffected < 1) {
+            throw new DuplicateStationNameException();
+        }
 
         return new Station(
                 Objects.requireNonNull(keyHolder.getKey()).longValue(),
@@ -50,11 +49,11 @@ public class StationRepository {
     }
 
     public void deleteById(final Long id) {
-        try {
-            String query = "DELETE FROM station WHERE id = ?";
-            jdbcTemplate.update(query, id);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다");
+        String query = "DELETE FROM station WHERE id = ?";
+        int rowsAffected = jdbcTemplate.update(query, id);
+
+        if (rowsAffected < 1) {
+            throw new NosuchStationException();
         }
     }
 }

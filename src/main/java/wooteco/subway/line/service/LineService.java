@@ -21,9 +21,6 @@ public class LineService {
     }
 
     public Line save(final Line line) {
-        if (lineRepository.isExistName(line)) {
-            throw new IllegalArgumentException("이미 존재하는 Line 입니다.");
-        }
         return lineRepository.save(line);
     }
 

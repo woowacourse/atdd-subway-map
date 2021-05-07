@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
 
@@ -35,15 +36,6 @@ class LineRepositoryTest {
     void save() {
         Line line = new Line("bg-blue-600", "1호선");
         assertThat(lineRepository.save(line).getId()).isEqualTo(3L);
-    }
-
-    @DisplayName("DB에 존재하는 Line이면, true를 반환한다.")
-    @Test
-    void isExist() {
-        Line line1 = new Line("bg-blue-600", "1호선");
-        Line line2 = new Line("bg-green-600", "2호선");
-        assertThat(lineRepository.isExistName(line1)).isFalse();
-        assertThat(lineRepository.isExistName(line2)).isTrue();
     }
 
     @DisplayName("전체 Line을 조회하면, DB에 존재하는 Line 리스트를 반환한다.")
@@ -92,5 +84,21 @@ class LineRepositoryTest {
 
         lineRepository.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
+    }
+
+    @DisplayName("없는 id의 Line을 가져오려하면 NoSuchLineException을 error를 반환한다")
+    @Test
+    void getLine_NoSuchLineException() {
+        String query1 = "TRUNCATE TABLE line";
+        jdbcTemplate.update(query1);
+
+        String query2 = "SELECT id, color, name FROM line ORDER BY id";
+        List<Line> what = jdbcTemplate.query(query2,
+                (resultSet, rowNum) -> new Line(
+                        resultSet.getLong("id"),
+                        resultSet.getString("color"),
+                        resultSet.getString("name"))
+        );
+        assertThat(what).isEmpty();
     }
 }
