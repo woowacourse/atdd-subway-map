@@ -32,7 +32,7 @@ public class SectionService {
 
         validateIfSectionContainsOnlyOneStationInLine(sectionsIds, section);
 
-        if (lineRoute.isEndOfLine(section.getUpStationId()) || lineRoute.isEndOfLine(section.getDownStationId())) {
+        if (lineRoute.isEndOfUpLine(section.getUpStationId()) || lineRoute.isEndOfDownLine(section.getDownStationId())) {
             sectionDao.save(section);
             return;
         }
