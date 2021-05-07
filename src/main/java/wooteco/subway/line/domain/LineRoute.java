@@ -48,8 +48,16 @@ public class LineRoute {
         return downStationId;
     }
 
+    public boolean isEndOfUpLine(Long stationId) {
+        return upToDownSerializedMap.getLast().equals(stationId);
+    }
+
+    public boolean isEndOfDownLine(Long stationId) {
+        return upToDownSerializedMap.getFirst().equals(stationId);
+    }
+
     public boolean isEndOfLine(Long stationId) {
-        return upToDownSerializedMap.getLast().equals(stationId) || upToDownSerializedMap.getFirst().equals(stationId);
+        return isEndOfUpLine(stationId) || isEndOfDownLine(stationId);
     }
 
     public int getDistanceFromUpToDownStationMap(Long upStationId) {
