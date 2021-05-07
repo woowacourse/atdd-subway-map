@@ -61,6 +61,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-red-600");
     }
 
+    @DisplayName("지하철 노선 이름은 XX선으로 끝나지 않으면 예외처리가 된다.")
+    @Test
+    void invalidLineName() {
+        // given
+        Map<String, String> invalidParam = new HashMap<>();
+        invalidParam.put("name", "노선은선이라는단어로끝나야함");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(invalidParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("지하철 노선 이름이 잘못되었습니다.");
+    }
+
     @DisplayName("중복된 지하철 노선을 생성할 수 없다.")
     @Test
     void cannotCreateDuplicatedLine() {
