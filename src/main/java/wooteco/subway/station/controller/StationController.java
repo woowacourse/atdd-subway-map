@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 public class StationController {
-    private static final Logger log = LoggerFactory.getLogger("console");
+    private static final Logger log = LoggerFactory.getLogger(StationController.class);
     private final StationService stationService;
 
     public StationController(StationService stationService) {
