@@ -16,19 +16,9 @@ public class StationService {
     }
 
     public Station createStation(String name) {
-        validateDuplication(name);
         Station station = new Station(name);
         long id = stationDao.save(station);
         return stationDao.findById(id);
-    }
-
-    private void validateDuplication(String name) {
-        boolean isDuplicated = stationDao.findAll()
-                .stream()
-                .anyMatch(station -> station.hasSameName(name));
-        if (isDuplicated) {
-            throw new IllegalArgumentException("중복된 이름의 역이 존재합니다.");
-        }
     }
 
     public List<Station> findAll() {

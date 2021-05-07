@@ -16,19 +16,9 @@ public class LineService {
     }
 
     public Line createLine(String name, String color) {
-        validateDuplication(name);
         Line line = new Line(name, color);
         long id = lineDao.save(line);
         return lineDao.findById(id);
-    }
-
-    private void validateDuplication(String name) {
-        boolean isDuplicated = lineDao.findAll()
-                .stream()
-                .anyMatch(line -> line.hasSameName(name));
-        if (isDuplicated) {
-            throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");
-        }
     }
 
     public List<Line> findAll() {
@@ -40,7 +30,6 @@ public class LineService {
     }
 
     public void editLine(long id, String name, String color) {
-        validateDuplication(name);
         lineDao.update(id, name, color);
     }
 

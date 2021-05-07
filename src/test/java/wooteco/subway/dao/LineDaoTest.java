@@ -8,9 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.line.Line;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @JdbcTest
 class LineDaoTest {
@@ -34,11 +33,13 @@ class LineDaoTest {
     @Test
     void save() {
         Line line = new Line("testLine2", "black");
-
         lineDao.save(line);
-        List<Line> lines = lineDao.findAll();
-
-        assertThat(lines).hasSize(2);
+        assertThatCode(() -> lineDao.save(line)).isInstanceOf(IllegalArgumentException.class);
+//        lineDao.save(line);
+//        lineDao.save(line);
+//        List<Line> lines = lineDao.findAll();
+//
+//        assertThat(lines).hasSize(2);
     }
 
     @DisplayName("노선을 ID로 조회한다.")
