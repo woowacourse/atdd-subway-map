@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ public class LineService {
     public Line createLine(String name, String color) {
         Line line = new Line(name, color);
         long id = lineDao.save(line);
-        return lineDao.findById(id);
+        return lineDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
     }
 
     public List<Line> findAll() {
@@ -26,7 +29,8 @@ public class LineService {
     }
 
     public Line findById(long id) {
-        return lineDao.findById(id);
+        return lineDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
     }
 
     public void editLine(long id, String name, String color) {

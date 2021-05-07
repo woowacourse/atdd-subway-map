@@ -14,6 +14,7 @@ import wooteco.subway.exception.SubwayException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -57,12 +58,13 @@ public class LineDao {
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
-    public Line findById(long id) {
+    public Optional<Line> findById(long id) {
         String query = "SELECT ID, NAME, COLOR FROM LINE WHERE ID = ?";
         try {
-            return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
+            Line line = jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
+            return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
-            throw new SubwayException(ExceptionStatus.ID_NOT_FOUND);
+            return Optional.empty();
         }
     }
 

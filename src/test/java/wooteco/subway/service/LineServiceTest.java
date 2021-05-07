@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -29,16 +31,29 @@ class LineServiceTest {
         String name = "testLine";
         String color = "black";
         Line line = new Line(name, color);
-        Line retrivedLine = new Line(1L, name, color);
+        Line retrievedLine = new Line(1L, name, color);
 
         given(lineDao.save(line)).willReturn(1L);
-        given(lineDao.findById(1L)).willReturn(retrivedLine);
+        given(lineDao.findById(1L)).willReturn(Optional.of(retrievedLine));
 
         Line savedLine = lineService.createLine(name, color);
 
-        assertThat(savedLine).isEqualTo(retrivedLine);
+        assertThat(savedLine).isEqualTo(retrievedLine);
         verify(lineDao, times(1)).save(line);
         verify(lineDao, times(1)).findById(1L);
+    }
+
+    @DisplayName("노선 조회에 성공한다.")
+    @Test
+    void findById() {
+        long id = 1;
+        Line line = new Line("testLine", "black");
+        given(lineDao.findById(id)).willReturn(Optional.of(line));
+
+        Line retrievedLine = lineService.findById(id);
+
+        assertThat(line).isEqualTo(retrievedLine);
+        verify(lineDao, times(1)).findById(id);
     }
 
     @DisplayName("노선의 이름을 수정한다.")
