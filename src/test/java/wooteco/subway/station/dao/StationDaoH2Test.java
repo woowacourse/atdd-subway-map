@@ -35,12 +35,6 @@ class StationDaoH2Test {
         //when
         List<Station> stations = stationDao.showAll();
 
-        System.out.println("################ START ###################");
-        for (Station station : stations) {
-            System.out.println(station.getName());
-        }
-        System.out.println("################ END ###################");
-
         //then
         assertThat(stations.get(0).getName()).isEqualTo(station1.getName());
         assertThat(stations.get(1).getName()).isEqualTo(station2.getName());
