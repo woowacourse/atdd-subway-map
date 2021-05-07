@@ -3,7 +3,10 @@ package wooteco.subway.line.domain;
 import wooteco.subway.exception.EmptyInputException;
 import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.line.LineSuffixException;
+import wooteco.subway.section.Section;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -12,11 +15,14 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+    private String upStationId;
+    private String downStationId;
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(Long id, String name, String color) { //TODO 삭제
         this.id = id;
         this.name = name;
         this.color = color;
