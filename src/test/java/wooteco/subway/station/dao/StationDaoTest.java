@@ -2,69 +2,48 @@ package wooteco.subway.station.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.Station;
 
-@DirtiesContext
+@Sql("/truncate.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class StationDaoTest {
 
     @Autowired
     private StationDao stationDao;
 
+    private Station station;
+
+    @BeforeEach
+    void setUp() {
+        station = stationDao.save(new Station("잠실역"));
+    }
+
     @Test
     void save() {
-        // given
-        Station station = new Station("판교역");
-
-        // when
-        Station persistedStation = stationDao.save(station);
-
-        // then
-        assertAll(
-            () -> assertThat(station.getName()).isEqualTo(persistedStation.getName())
-        );
+        assertThat(station).isEqualTo(new Station("잠실역"));
     }
 
     @Test
     void findAll() {
-        // given
-        Station station1 = new Station("수서역");
-        Station station2 = new Station("일원역");
-
-        // when
-        stationDao.save(station1);
-        stationDao.save(station2);
         List<Station> stations = stationDao.findAll();
 
-        // then
-        assertAll(
-            () -> assertThat(stations.get(0).getName()).isEqualTo(station1.getName()),
-            () -> assertThat(stations.get(1).getName()).isEqualTo(station2.getName())
-        );
+        assertThat(stations).containsExactly(new Station("잠실역"));
     }
 
     @Test
     void deleteById() {
-        // given
-        Station station = new Station("구의역");
-        Station persistedStation = stationDao.save(station);
+        stationDao.deleteById(station.getId());
 
-        // when
-        stationDao.deleteById(persistedStation.getId());
-
-        // then
-        assertThatThrownBy(() -> stationDao.findById(persistedStation.getId()))
+        assertThatThrownBy(() -> stationDao.findById(station.getId()))
             .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.station;
 
+import java.util.Objects;
+
 public class Station {
 
     private Long id;
@@ -21,8 +23,27 @@ public class Station {
         return id;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Station station = (Station) o;
+        return Objects.equals(name, station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
     public String getName() {
         return name;
+
+
     }
 }
 
