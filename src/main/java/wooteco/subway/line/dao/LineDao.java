@@ -1,10 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.line.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
+import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -49,5 +49,15 @@ public class LineDao {
     public void delete(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void clear() {
+        String sql = "DELETE FROM line";
+        jdbcTemplate.update(sql);
+    }
+
+    public int countLineByName(String name) {
+        String sql = "SELECT count(*) FROM line WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 }

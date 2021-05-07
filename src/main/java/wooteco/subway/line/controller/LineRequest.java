@@ -1,6 +1,6 @@
-package wooteco.subway.dto.line;
+package wooteco.subway.line.controller;
 
-import wooteco.subway.domain.Line;
+import wooteco.subway.line.domain.Line;
 
 public class LineRequest {
     private String name;

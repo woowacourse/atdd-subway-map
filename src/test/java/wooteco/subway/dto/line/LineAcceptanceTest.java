@@ -4,12 +4,15 @@ package wooteco.subway.dto.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.controller.LineResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +23,10 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
-@JdbcTest
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private LineDao lineDao;
 
     private static final Map<String, String> params1 = new HashMap<>();
     private static final Map<String, String> params2 = new HashMap<>();
@@ -31,6 +36,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("color", "bg-red-600");
         params2.put("name", "2호선");
         params2.put("color", "bg-green-600");
+    }
+
+    @AfterEach
+    void clear() {
+        lineDao.clear();
     }
 
     @DisplayName("노선을 생성한다.")
