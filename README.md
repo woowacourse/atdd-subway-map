@@ -24,3 +24,9 @@
    - [x] 지하철역 이름 패턴화 및 검증
    - [x] 노선 이름 패턴화 및 검증 
    - [x] color 중복 예외 처리하기
+
+## 리팩토링
+   - [x] Validator로 이름 유효성 검사
+   - [x] Use SimpleJdbcInsert
+   - [x] extract methods in tests
+   - [x] leave logs
