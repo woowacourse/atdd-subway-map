@@ -1,6 +1,7 @@
 package wooteco.subway.section.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.line.LineDao;
 import wooteco.subway.line.LineService;
-import wooteco.subway.line.SectionRequest;
+import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.StationDao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -35,6 +39,8 @@ class SectionApiControllerTest {
     private StationDao stationDao;
     @Autowired
     private LineService lineService;
+    @Autowired
+    private SectionDao sectionDao;
 
     @Test
     @DisplayName("구간 등록 - 성공(상행종점 등록)")
@@ -55,6 +61,8 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(3);
     }
 
     @Test
@@ -76,6 +84,8 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(3);
     }
 
     @Test
@@ -97,6 +107,8 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(3);
     }
 
     @Test
@@ -118,6 +130,8 @@ class SectionApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(3);
     }
 
     private ResultActions 구간_추가(SectionRequest sectionRequest, Long lineId) throws Exception {

@@ -15,4 +15,20 @@ public class Section {
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(null, upStation, downStation, distance);
     }
+
+    public boolean isStartStation(Station targetStation) {
+        return upStation.isSameId(targetStation.getId());
+    }
+
+    public boolean isDownStation(Station targetStation) {
+        return downStation.isSameId(targetStation.getId());
+    }
+
+    public void updateUpStation(Station targetStation) {
+        upStation = targetStation;
+    }
+
+    public void updateDownStation(Station targetStation) {
+        downStation = targetStation;
+    }
 }
