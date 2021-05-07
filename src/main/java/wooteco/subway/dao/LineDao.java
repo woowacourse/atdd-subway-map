@@ -19,10 +19,12 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line insert(String color, String name) {
+    public Line insert(Line line) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("line")
                 .usingGeneratedKeyColumns("id");
+        String color = line.getColor();
+        String name = line.getName();
 
         Map<String, Object> params = new HashMap<>(2);
         params.put("color", color);

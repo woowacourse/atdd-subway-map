@@ -30,46 +30,47 @@ public class StationDaoTest {
     @DisplayName("Station 추가 테스트")
     void insert() {
         //when
-        Station expected = stationDao.insert("A역");
+        Station 강남역 = stationDao.insert("강남역");
 
         //then
-        assertThat(expected.getName()).isEqualTo("A역");
+        assertThat(강남역.getName()).isEqualTo("강남역");
     }
 
     @Test
     @DisplayName("Station 중복된 이름 추가 예외처리 테스트")
     void duplicate_exception() {
         //given
-        stationDao.insert("A역");
+        stationDao.insert("강남역");
 
         //when - then
-        assertThatThrownBy(() -> stationDao.insert("A역")).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> stationDao.insert("강남역")).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     @DisplayName("Station 전체 목록 조회 테스트")
     void findAll() {
         //given
-        stationDao.insert("A역");
-        stationDao.insert("B역");
-        stationDao.insert("C역");
+        Station 강남역 = stationDao.insert("강남역");
+        Station 분당역 = stationDao.insert("분당역");
+        Station 선릉역 = stationDao.insert("선릉역");
 
         //when
         List<Station> stations = stationDao.findAll();
 
         //then
         assertThat(stations).hasSize(3);
+        assertThat(stations).containsExactly(강남역, 분당역, 선릉역);
     }
 
     @Test
     @DisplayName("삭제 요청 시 테스트")
     void delete() {
         //given
-        Station station = stationDao.insert("A역");
-        stationDao.insert("B역");
+        Station 강남역 = stationDao.insert("강남역");
+        stationDao.insert("분당역");
 
         //when
-        stationDao.deleteById(station.getId());
+        stationDao.deleteById(강남역.getId());
 
         // then
         assertThat(stationDao.findAll()).hasSize(1);
