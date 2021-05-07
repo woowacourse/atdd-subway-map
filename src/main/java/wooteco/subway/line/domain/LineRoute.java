@@ -48,24 +48,26 @@ public class LineRoute {
         return downStationId;
     }
 
-    public boolean isEndOfUpLine(Long stationId) {
+    private boolean isEndOfUpLine(Long stationId) {
         return upToDownSerializedMap.getLast().equals(stationId);
     }
 
-    public boolean isEndOfDownLine(Long stationId) {
+    private boolean isEndOfDownLine(Long stationId) {
         return upToDownSerializedMap.getFirst().equals(stationId);
     }
 
-    public boolean isEndOfLine(Long stationId) {
-        return isEndOfUpLine(stationId) || isEndOfDownLine(stationId);
+    public boolean isInsertSectionInEitherEndsOfLine(Section section) {
+        return isEndOfUpLine(section.getUpStationId()) || isEndOfDownLine(section.getDownStationId());
     }
 
-    public int getDistanceFromUpToDownStationMap(Long upStationId) {
-        return upToDownStationMap.get(upStationId).getDistance();
-    }
+    public Section getSectionNeedToBeUpdatedForInsert(Section section) {
+        if(upToDownStationMap.containsKey(section.getUpStationId())) {
+            Section updateSection = upToDownStationMap.get(section.getUpStationId());
+            return Section.of(updateSection.getId(), updateSection.getLineId(), section.getDownStationId(), updateSection.getDownStationId(), updateSection.getDistance() - section.getDistance());
+        }
 
-    public int getDistanceFromDownToUpStationMap(Long downStationId) {
-        return downToUpStationMap.get(downStationId).getDistance();
+        Section updateSection = downToUpStationMap.get(section.getDownStationId());
+        return Section.of(updateSection.getId(), updateSection.getLineId(), updateSection.getUpStationId(), section.getUpStationId(), updateSection.getDistance() - section.getDistance());
     }
 
     public Optional<Section> getSectionFromUpToDownStationMapByStationId(Long stationId) {
