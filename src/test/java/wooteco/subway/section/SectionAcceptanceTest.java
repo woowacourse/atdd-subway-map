@@ -62,8 +62,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @ParameterizedTest
-    @DisplayName("구간 추가 - 실패(양쪽 종점일 경우, 구간의 상행 하행 모두 노선 내에 존재할 경우")
+    @ParameterizedTest(name = "구간 추가 - 실패(양쪽 종점일 경우, 구간의 상행 하행 모두 노선 내에 존재할 경우")
     @CsvSource({"1, 3, 2", "1, 1, 2", "4, 5, 2"})
     void createSectionFailures(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
@@ -85,8 +84,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @ParameterizedTest
-    @DisplayName("구간 추가 - 실패(추가하려는 구간의 거리가 잘못된 경우")
+    @ParameterizedTest(name = "구간 추가 - 실패(추가하려는 구간의 거리가 잘못된 경우")
     @CsvSource({"1, 2, 3", "1, 2, 4", "2, 3, 4"})
     void createSectionFailuresWithDistance(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
@@ -108,8 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @ParameterizedTest
-    @DisplayName("구간을 제거(노선의 역 삭제) - 성공")
+    @ParameterizedTest(name = "구간을 제거(노선의 역 삭제) - 성공")
     @CsvSource({"1", "2", "3"})
     void deleteSection(String stationId) {
 
@@ -125,8 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @ParameterizedTest
-    @DisplayName("구간을 제거(노선의 역 삭제) - 실패")
+    @ParameterizedTest(name = "구간을 제거(노선의 역 삭제) - 실패")
     @CsvSource({"1,2", "2,4", "3,3"})
     void deleteSection(String stationId1, String stationId2) {
 
