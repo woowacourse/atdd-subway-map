@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.common.exception.NotFoundException;
@@ -34,19 +33,20 @@ public class StationService {
         }
     }
 
+    public List<Station> findAll() {
+        return stationDao.findAll();
+    }
+
+    public void delete(Long id) {
+        findById(id);
+        stationDao.delete(id);
+    }
+
     private Station findById(Long id) {
         try {
             return stationDao.findById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 역입니다");
         }
-    }
-
-    public List<Station> findAll() {
-        return stationDao.findAll();
-    }
-
-    public void delete(Long id) {
-        stationDao.delete(id);
     }
 }

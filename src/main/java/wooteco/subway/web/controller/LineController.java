@@ -28,9 +28,8 @@ public class LineController {
         this.lineService = lineService;
     }
 
-
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
         Line line = lineService.add(lineRequest.toEntity());
         LineResponse lineResponse = new LineResponse(line);
 
@@ -40,7 +39,7 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> list() {
         List<LineResponse> lineResponses = lineService.findAll()
                 .stream()
                 .map(LineResponse::new)
@@ -51,8 +50,18 @@ public class LineController {
                 .body(lineResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> find(@PathVariable Long id) {
+        Line line = lineService.findById(id);
+        LineResponse lineResponse = new LineResponse(line);
+
+        return ResponseEntity
+                .ok()
+                .body(lineResponse);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+    public ResponseEntity<Void> update(@PathVariable Long id,
             @RequestBody LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         lineService.update(id, line);
@@ -63,7 +72,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         lineService.delete(id);
 
         return ResponseEntity

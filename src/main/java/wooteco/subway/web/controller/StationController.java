@@ -28,7 +28,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(
+    public ResponseEntity<StationResponse> create(
             @RequestBody StationRequest stationRequest) {
         Station station = stationService.add(new Station(stationRequest.getName()));
         StationResponse stationResponse = new StationResponse(station);
@@ -39,7 +39,7 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponse>> list() {
         List<StationResponse> stationResponses = stationService.findAll()
                 .stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
@@ -51,7 +51,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         stationService.delete(id);
 
         return ResponseEntity
