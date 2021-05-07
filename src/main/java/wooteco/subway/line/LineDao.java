@@ -7,6 +7,7 @@ import wooteco.subway.domain.Line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -25,5 +26,11 @@ public class LineDao {
         Line createdLine = createNewObject(line);
         lines.add(createdLine);
         return createdLine;
+    }
+
+    public Optional<Line> findLineByInfo(String name, String color) {
+        return lines.stream()
+                .filter(line -> line.isSameName(name) || line.isSameColor(color))
+                .findAny();
     }
 }
