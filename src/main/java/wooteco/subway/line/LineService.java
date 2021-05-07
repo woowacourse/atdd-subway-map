@@ -14,9 +14,21 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line add(LineRequest lineRequest) {
-        validateDuplication(lineRequest.getName());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    public Line add(String name, String color) { //TODO 삭제
+        //section 생성 및 등록
+        //line 생성
+        List<Line> lines = lineDao.findAll();
+        Line line = new Line(name, color);
+        validateDuplicatedLine(lines, line);
+        return lineDao.save(line);
+    }
+
+    public Line add2(String name, String color, String upStationId, String downStationId, Long distance) {
+        //section 생성 및 등록 TODO SectionDao.save
+        //line 생성
+        List<Line> lines = lineDao.findAll();
+        Line line = new Line(name, color);
+        validateDuplicatedLine(lines, line);
         return lineDao.save(line);
     }
 
