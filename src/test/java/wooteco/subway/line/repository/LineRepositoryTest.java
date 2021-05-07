@@ -62,7 +62,7 @@ class LineRepositoryTest {
     @Test
     void getLine() {
         Line expectedLine = new Line(1L, "bg-red-600", "신분당선");
-        assertThat(lineRepository.getLine(1L)).isEqualTo(expectedLine);
+        assertThat(lineRepository.getLineById(1L)).isEqualTo(expectedLine);
     }
 
     @DisplayName("id를 통해 Line 수정 요청을 보내면, DB에있는 Line정보를 수정한다")

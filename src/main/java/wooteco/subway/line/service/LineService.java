@@ -8,8 +8,8 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.repository.LineRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,12 +20,11 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public List<LinesResponse> getLines() {
-        List<LinesResponse> linesResponses = new ArrayList<>();
-        for (Line line : lineRepository.getLines()) {
-            linesResponses.add(new LinesResponse(line.getId(), line.getName(), line.getColor()));
-        }
-        return linesResponses;
+    public List<LinesResponse> getAllLines() {
+        List<Line> lines = lineRepository.getLines();
+        return lines.stream()
+                .map(it -> new LinesResponse(it.getId(), it.getName(), it.getColor()))
+                .collect(Collectors.toList());
     }
 
     public LineResponse save(final LineRequest lineRequest) {
@@ -38,7 +37,7 @@ public class LineService {
     }
 
     public LineResponse getLineById(final Long id) {
-        Line line = lineRepository.getLine(id);
+        Line line = lineRepository.getLineById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 

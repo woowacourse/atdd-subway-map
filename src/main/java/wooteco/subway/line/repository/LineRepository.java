@@ -49,7 +49,7 @@ public class LineRepository {
             resultSet.getString("name")
     );
 
-    public Line getLine(final Long id) {
+    public Line getLineById(final Long id) {
         try {
             String query = "SELECT id, color, name FROM line WHERE id = ?";
             return jdbcTemplate.queryForObject(

@@ -3,9 +3,12 @@ package wooteco.subway.station.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -16,18 +19,24 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public Station createStation(final Station station) {
+    public StationResponse createStation(final StationRequest stationRequest) {
+        Station station = new Station(stationRequest.getName());
+
         if (stationRepository.isExistName(station)) {
             throw new IllegalArgumentException("이미 존재하는 Station 입니다");
         }
-        return stationRepository.save(station);
+        Station newStation = stationRepository.save(station);
+        return new StationResponse(newStation.getId(), newStation.getName());
     }
 
-    public List<Station> findAll() {
-        return stationRepository.getStations();
+    public List<StationResponse> getAllStations() {
+        List<Station> stations = stationRepository.getStations();
+        return stations.stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
     }
 
-    public void delete(final Long id) {
+    public void deleteById(final Long id) {
         stationRepository.deleteById(id);
     }
 }
