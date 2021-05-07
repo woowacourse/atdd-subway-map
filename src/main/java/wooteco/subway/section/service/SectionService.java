@@ -22,11 +22,7 @@ public class SectionService {
 
     @Transactional
     public void save(Long lineId, SectionRequest sectionRequest) {
-        Section section = new Section(lineId,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance()
-        );
+        Section section = Section.of(lineId, sectionRequest);
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
         Set<Long> sectionsIds = lineRoute.getStationIds();
@@ -96,7 +92,7 @@ public class SectionService {
         Optional<Section> downSection = lineRoute.getSectionFromDownToUpStationMapByStationId(stationId);
 
         if (upSection.isPresent() && downSection.isPresent()) {
-            sectionDao.save(new Section(lineId,
+            sectionDao.save(Section.of(lineId,
                     downSection.get().getUpStationId(),
                     upSection.get().getDownStationId(),
                     upSection.get().getDistance() + downSection.get().getDistance()));

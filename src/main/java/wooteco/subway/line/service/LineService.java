@@ -38,20 +38,15 @@ public class LineService {
         validateDuplicateName(lineCreateRequest.getName());
         validateIfDownStationIsEqualToUpStation(lineCreateRequest);
 
-        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
+        Line line = Line.of(lineCreateRequest);
         Line savedLine = lineDao.save(line);
 
         stationDao.findById(lineCreateRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
         stationDao.findById(lineCreateRequest.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
-        sectionDao.save(new Section(savedLine.getId(),
-                lineCreateRequest.getUpStationId(),
-                lineCreateRequest.getDownStationId(),
-                lineCreateRequest.getDistance()
-        ));
-
-        return new LineResponse(savedLine);
+        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
+        return LineResponse.from(savedLine);
     }
 
     private void validateIfDownStationIsEqualToUpStation(LineCreateRequest lineCreateRequest) {
@@ -63,7 +58,7 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::new)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -77,9 +72,9 @@ public class LineService {
                 .stream()
                 .map(stationDao::findById)
                 .map(Optional::get)
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
-        return new LineResponse(line, stations);
+        return LineResponse.of(line, stations);
     }
 
     @Transactional
@@ -93,7 +88,7 @@ public class LineService {
         lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
-        Line line = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        Line line = Line.of(id, lineUpdateRequest);
         lineDao.update(line);
     }
 

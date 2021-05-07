@@ -9,10 +9,10 @@ public class LineUpdateRequest {
     @NotBlank
     private String color;
 
-    public LineUpdateRequest() {
+    private LineUpdateRequest() {
     }
 
-    public LineUpdateRequest(String name, String color) {
+    private LineUpdateRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
