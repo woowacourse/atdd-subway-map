@@ -26,8 +26,7 @@ class LineDaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
         jdbcTemplate.update("insert into LINE(name, color) values (?, ?)", lineName1, color1);
     }
 

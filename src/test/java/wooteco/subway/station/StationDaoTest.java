@@ -25,8 +25,7 @@ class StationDaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
         jdbcTemplate.update("insert into STATION (name) values (?)", stationName1);
     }
 

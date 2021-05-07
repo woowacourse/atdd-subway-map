@@ -22,8 +22,7 @@ class LineServiceTest {
     @BeforeEach
     void setUp() {
         lineRequest = new LineRequest("2호선", "초록색", null, null, 0);
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
     }
 
     @Test

@@ -25,8 +25,7 @@ class StationServiceTest {
     @BeforeEach
     void setUp() {
         stationRequest = new StationRequest("잠실역");
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
     }
 
     @Test

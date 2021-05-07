@@ -27,8 +27,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void beforeEach() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table LINE");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
