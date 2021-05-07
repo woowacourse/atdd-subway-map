@@ -68,7 +68,7 @@ public class LineService {
     public LineResponse find(Long id) {
         Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        LineRoute lineRoute = LineRoute.from(sectionsByLineId);
+        LineRoute lineRoute = new LineRoute(sectionsByLineId);
         List<StationResponse> stations = lineRoute.getOrderedStations()
                 .stream()
                 .map(stationId -> stationDao.findById(stationId))
