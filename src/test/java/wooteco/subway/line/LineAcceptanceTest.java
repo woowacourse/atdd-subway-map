@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -74,9 +75,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .all()
                                                             .extract();
 
-        Stream.of(createResponse1, createResponse2)
-              .map(it -> it.header("Location"))
-              .forEach(System.out::println);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
@@ -84,7 +82,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                                        .split("/")[2]))
                                            .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath()
-                                           .getList(".", LineResponse.class)
+                                           .getList("lineResponses", LineResponse.class)
                                            .stream()
                                            .map(LineResponse::getId)
                                            .collect(Collectors.toList());
@@ -107,10 +105,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                             .log()
                                                             .all()
                                                             .extract();
-        System.out.println("[LOG]" + response.jsonPath()
-                                             .getString("name"));
-        System.out.println("[LOG]" + response.jsonPath()
-                                             .getString("color"));
         assertThat(response.jsonPath()
                            .getString("name")).isEqualTo("2호선");
         assertThat(response.jsonPath()
@@ -127,7 +121,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "남색");
         params2.put("name", "9호선");
 
-        System.out.println("[LOG] uri = " + uri);
 
         ExtractableResponse<Response> response = RestAssured.given()
                                                             .log()
