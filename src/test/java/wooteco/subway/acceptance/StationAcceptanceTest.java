@@ -1,21 +1,16 @@
 package wooteco.subway.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.controller.dto.response.StationResponse;
-import wooteco.subway.fixture.FixtureParams;
-import wooteco.subway.fixture.FixtureRequest;
+import wooteco.subway.acceptance.request.StationRequest;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,12 +21,17 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        ExtractableResponse<Response> response = FixtureRequest.createStationRequest(FixtureParams.getStationParams());
+        // given, when
+        Map<String, String> station = StationRequest.station1();
+        ExtractableResponse<Response> response = StationRequest.createStationRequest(station);
+        JsonPath jsonPath = response.jsonPath();
+        Long id = jsonPath.getLong("id");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header("Location")).isEqualTo("/stations/" + id);
+        assertThat(jsonPath.getLong("id")).isEqualTo(id);
+        assertThat(jsonPath.getString("name")).isEqualTo(station.get("name"));
     }
 
 
@@ -39,18 +39,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = FixtureParams.getStationParams();
-        FixtureRequest.createStationRequest(params);
+        Map<String, String> station = StationRequest.station1();
+        StationRequest.createStationRequest(station);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = StationRequest.createStationRequest(station);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,11 +52,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        /// given
-        ExtractableResponse<Response> createResponse1
-                = FixtureRequest.createStationRequest(FixtureParams.getStationParams());
-        ExtractableResponse<Response> createResponse2
-                = FixtureRequest.createStationRequest(FixtureParams.getStationParams2());
+        // given
+        Map<String, String> station1 = StationRequest.station1();
+        Map<String, String> station2 = StationRequest.station2();
+        ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(station1);
+        ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(station2);
+        JsonPath jsonPath1 = createStationResponse1.jsonPath();
+        JsonPath jsonPath2 = createStationResponse2.jsonPath();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -71,27 +66,25 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .get("/stations")
                 .then().log().all()
                 .extract();
+        JsonPath actualJsonPath = response.body().jsonPath();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(actualJsonPath.getMap("[0]")).isEqualTo(jsonPath1.getMap(""));
+        assertThat(actualJsonPath.getMap("[1]")).isEqualTo(jsonPath2.getMap(""));
+        assertThat(actualJsonPath.getList("")).hasSize(2);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
+        Map<String, String> station = StationRequest.station1();
         ExtractableResponse<Response> createResponse
-                = FixtureRequest.createStationRequest(FixtureParams.getStationParams());
+                = StationRequest.createStationRequest(station);
+        String uri = createResponse.header("Location");
 
         // when
-        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)

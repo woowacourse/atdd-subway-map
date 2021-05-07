@@ -1,24 +1,14 @@
-package wooteco.subway.fixture;
+package wooteco.subway.acceptance.request;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class FixtureRequest {
-    public static ExtractableResponse<Response> createLineRequest(Map<String, String> params) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
+public class StationRequest {
     public static ExtractableResponse<Response> createStationRequest(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
@@ -27,5 +17,17 @@ public class FixtureRequest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Map<String, String> station1() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        return params;
+    }
+
+    public static Map<String, String> station2() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "길동역");
+        return params;
     }
 }
