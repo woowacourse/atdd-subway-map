@@ -20,7 +20,7 @@ public class LineDao {
     }
 
     public Long create(String name, String color) {
-        String createLineSql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+        String createLineSql = "INSERT INTO line (name, color) VALUES (?, ?)";
         KeyHolder lineKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(createLineSql, new String[]{"id"});
@@ -32,7 +32,7 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String query = "SELECT * FROM LINE";
+        String query = "SELECT * FROM line";
         return jdbcTemplate.query(query, (resultSet, rowNum) ->
                 new Line(
                         resultSet.getLong("id"),
@@ -42,7 +42,7 @@ public class LineDao {
     }
 
     public Optional<Line> findById(Long lineId) {
-        String query = "SELECT * FROM LINE WHERE id = ?";
+        String query = "SELECT * FROM line WHERE id = ?";
         Line result = DataAccessUtils.singleResult(
                 jdbcTemplate.query(query, (resultSet, rowNum) ->
                         new Line(
@@ -54,12 +54,12 @@ public class LineDao {
     }
 
     public int edit(Long lineId, String name, String color) {
-        String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
+        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
         return jdbcTemplate.update(query, color, name, lineId);
     }
 
     public int deleteById(Long lineId) {
-        String deleteLineQuery = "DELETE FROM LINE WHERE id = ?";
+        String deleteLineQuery = "DELETE FROM line WHERE id = ?";
         return jdbcTemplate.update(deleteLineQuery, lineId);
     }
 }

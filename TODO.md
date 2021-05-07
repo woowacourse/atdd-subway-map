@@ -41,3 +41,8 @@
 
 ### 지하철 구간(Section) 추가 API 구현 - POST /lines/1/sections
 - [ ] 노선(Line)에 구간을(Section) 추가하는 API 만들기
+
+### DAO 구축 + 테스트 코드
+- [x] Line DAO + 테스트 코드
+- [x] Station DAO + 테스트 코드
+- [ ] Section DAO + 테스트 코드
