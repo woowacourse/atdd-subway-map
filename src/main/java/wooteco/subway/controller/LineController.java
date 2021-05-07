@@ -2,10 +2,11 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -21,7 +22,11 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest, Errors errors) {
+        new LineValidator().validate(lineRequest, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
         LineResponse lineResponse = lineService.create(lineRequest.getColor(), lineRequest.getName());
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }

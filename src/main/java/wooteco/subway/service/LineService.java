@@ -4,7 +4,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.LineName;
 import wooteco.subway.dto.response.LineResponse;
 import wooteco.subway.exception.line.LineDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
@@ -22,9 +21,8 @@ public class LineService {
     }
 
     public LineResponse create(String color, String name) {
-        LineName lineName = new LineName(name);
         try {
-            return new LineResponse(lineDao.insert(color, lineName));
+            return new LineResponse(lineDao.insert(color, name));
         } catch (DataIntegrityViolationException e) {
             throw new LineDuplicateException();
         }

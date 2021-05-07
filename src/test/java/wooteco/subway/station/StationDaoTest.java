@@ -9,7 +9,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationName;
 
 import java.util.List;
 
@@ -30,34 +29,30 @@ public class StationDaoTest {
     @Test
     @DisplayName("Station 추가 테스트")
     void insert() {
-        //given
-        StationName A = new StationName("A역");
-
         //when
-        Station expected = stationDao.insert(A);
+        Station expected = stationDao.insert("A역");
 
         //then
-        assertThat(expected.getName()).isEqualTo(A.getName());
+        assertThat(expected.getName()).isEqualTo("A역");
     }
 
     @Test
     @DisplayName("Station 중복된 이름 추가 예외처리 테스트")
     void duplicate_exception() {
         //given
-        StationName A = new StationName("A역");
-        stationDao.insert(A);
+        stationDao.insert("A역");
 
         //when - then
-        assertThatThrownBy(() -> stationDao.insert(A)).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> stationDao.insert("A역")).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     @DisplayName("Station 전체 목록 조회 테스트")
     void findAll() {
         //given
-        stationDao.insert(new StationName("A역"));
-        stationDao.insert(new StationName("B역"));
-        stationDao.insert(new StationName("C역"));
+        stationDao.insert("A역");
+        stationDao.insert("B역");
+        stationDao.insert("C역");
 
         //when
         List<Station> stations = stationDao.findAll();
@@ -70,8 +65,8 @@ public class StationDaoTest {
     @DisplayName("삭제 요청 시 테스트")
     void delete() {
         //given
-        Station station = stationDao.insert(new StationName("A역"));
-        stationDao.insert(new StationName("B역"));
+        Station station = stationDao.insert("A역");
+        stationDao.insert("B역");
 
         //when
         stationDao.deleteById(station.getId());

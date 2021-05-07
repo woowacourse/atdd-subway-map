@@ -69,6 +69,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("올바르지 않은 이름으로 지하철역을 생성한다.")
+    @Test
+    void createStationWithWrongName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // when - then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {

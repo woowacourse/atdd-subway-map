@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.LineName;
 
 import java.util.List;
 
@@ -34,8 +33,7 @@ class LineDaoTest {
     @DisplayName("노선 추가")
     void insert() {
         // given
-        LineName lineName = new LineName("코다선");
-        Line line = lineDao.insert("bg-red-100", lineName);
+        Line line = lineDao.insert("bg-red-100", "코다선");
 
         assertThat(line.getColor()).isEqualTo("bg-red-100");
         assertThat(line.getName()).isEqualTo("코다선");
@@ -45,11 +43,8 @@ class LineDaoTest {
     @DisplayName("노선 목록 조회")
     void findAll() {
         //given
-        LineName lineName1 = new LineName("거북선");
-        LineName lineName2 = new LineName("원양어선");
-
-        lineDao.insert("bg-red-100", lineName1);
-        lineDao.insert("bg-black-200", lineName2);
+        lineDao.insert("bg-red-100", "거북선");
+        lineDao.insert("bg-black-200", "원양어선");
 
         //when
         List<Line> lines = lineDao.findAll();
@@ -62,8 +57,7 @@ class LineDaoTest {
     @DisplayName("id를 통한 노선 조회")
     void findById() {
         //given
-        LineName lineName = new LineName("거북선");
-        Line line = lineDao.insert("bg-red-100", lineName);
+        Line line = lineDao.insert("bg-red-100", "거북선");
 
         //when
         Line expectedLine = lineDao.findById(line.getId())
@@ -78,8 +72,7 @@ class LineDaoTest {
     @DisplayName("노선 수정 테스트")
     void update() {
         //given
-        LineName lineName = new LineName("거북선");
-        Line line = lineDao.insert("bg-red-100", lineName);
+        Line line = lineDao.insert("bg-red-100", "거북선");
 
         //when
         lineDao.update(line.getId(), "bg-yellow-100", "크로플선");
@@ -95,10 +88,8 @@ class LineDaoTest {
     @DisplayName("노선 수정 예외 테스트")
     void update_duplicate() {
         //given
-        LineName lineName1 = new LineName("거북선");
-        LineName lineName2 = new LineName("원양어선");
-        Line line = lineDao.insert("bg-red-100", lineName1);
-        lineDao.insert("bg-yellow-100", lineName2);
+        Line line = lineDao.insert("bg-red-100", "거북선");
+        lineDao.insert("bg-yellow-100", "원양어선");
 
         //when - then
         assertThatThrownBy(() -> lineDao.update(line.getId(), "bg-yellow-100", "원양어선"))
@@ -109,10 +100,8 @@ class LineDaoTest {
     @DisplayName("노선 삭제 테스트")
     void delete() {
         //given
-        LineName lineName1 = new LineName("거북선");
-        LineName lineName2 = new LineName("원양어선");
-        lineDao.insert("bg-red-100", lineName1);
-        Line line2 = lineDao.insert("bg-yellow-100", lineName2);
+        lineDao.insert("bg-red-100", "거북선");
+        Line line2 = lineDao.insert("bg-yellow-100", "원양어선");
 
         //when
         lineDao.delete(line2.getId());

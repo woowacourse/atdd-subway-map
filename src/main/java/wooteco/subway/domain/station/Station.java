@@ -2,20 +2,16 @@ package wooteco.subway.domain.station;
 
 public class Station {
     private Long id;
-    private StationName name;
+    private String name;
 
     public Station() {
     }
 
     public Station(String name) {
-        this.name = new StationName(name);
+        this.name = name;
     }
 
     public Station(Long id, String name) {
-        this(id, new StationName(name));
-    }
-
-    public Station(Long id, StationName name) {
         this.id = id;
         this.name = name;
     }
@@ -25,7 +21,7 @@ public class Station {
     }
 
     public String getName() {
-        return name.getName();
+        return name;
     }
 }
 

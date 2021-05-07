@@ -5,7 +5,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.line.LineName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +21,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line insert(String color, LineName name) {
+    public Line insert(String color, String name) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO line (color, name) VALUES (?,?)";
         jdbcTemplate.update((Connection con) -> {
@@ -30,7 +29,7 @@ public class LineDao {
                     query,
                     new String[]{"id"});
             pstmt.setString(1, color);
-            pstmt.setString(2, name.getName());
+            pstmt.setString(2, name);
             return pstmt;
         }, keyHolder);
 

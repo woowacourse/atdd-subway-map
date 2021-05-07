@@ -4,7 +4,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationName;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.exception.station.StationDuplicateException;
 
@@ -21,9 +20,8 @@ public class StationService {
     }
 
     public StationResponse create(String name) {
-        StationName stationName = new StationName(name);
         try {
-            return new StationResponse(stationDao.insert(stationName));
+            return new StationResponse(stationDao.insert(name));
         } catch (DataIntegrityViolationException e) {
             throw new StationDuplicateException();
         }

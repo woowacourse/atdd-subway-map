@@ -5,7 +5,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,14 +20,14 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station insert(StationName name) {
+    public Station insert(String name) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update((Connection con) -> {
             PreparedStatement pstmt = con.prepareStatement(
                     query,
                     new String[]{"id"});
-            pstmt.setString(1, name.getName());
+            pstmt.setString(1, name);
             return pstmt;
         }, keyHolder);
 
@@ -46,14 +45,14 @@ public class StationDao {
         );
     }
 
-    public Optional<Station> findByName(StationName name) {
+    public Optional<Station> findByName(String name) {
         String query = "SELECT * FROM station WHERE name=?";
         return jdbcTemplate.query(query,
                 (resultSet, rowNum) -> new Station(
                         resultSet.getLong("id"),
                         resultSet.getString("name")
                 ),
-                name.getName())
+                name)
                 .stream()
                 .findAny();
     }

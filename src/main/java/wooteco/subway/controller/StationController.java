@@ -2,6 +2,7 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
@@ -20,7 +21,11 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest, Errors errors) {
+        new StationValidator().validate(stationRequest, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
         StationResponse stationResponse = stationService.create(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
