@@ -1,6 +1,6 @@
 package wooteco.subway.station.repository;
 
-public class DuplicateStationNameException extends RuntimeException {
+public class DuplicateStationNameException extends StationRepositoryException {
     private static final String MESSAGE = "중복된 역 이름입니다.";
 
     public DuplicateStationNameException() {
