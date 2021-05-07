@@ -4,9 +4,8 @@ import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.dto.LineCreateRequest;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.service.LineService;
 
 import java.net.URI;
@@ -20,9 +19,9 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineCreateRequest lineCreateRequest) {
-        LineResponse lineResponse = lineService.save(lineCreateRequest);
+    @PostMapping
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+        LineResponse lineResponse = lineService.save(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -44,9 +43,9 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @Valid @RequestBody LineUpdateRequest lineUpdateRequest) {
-        lineService.update(id, lineUpdateRequest);
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 }
