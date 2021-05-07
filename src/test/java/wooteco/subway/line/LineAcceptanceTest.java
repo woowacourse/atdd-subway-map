@@ -109,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 생성 - 실패(상행==하행)")
     @Test
-    void createLineFailureWhenDownStationIsSameAsUpstation(){
+    void createLineFailureWhenDownStationIsSameAsUpstation() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
@@ -130,7 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("개발 노선을 조회한다.")
+    @DisplayName("개별 노선을 조회한다.")
     @Test
     void getLine() {
         /// given
