@@ -13,7 +13,7 @@ public class StationDto {
         this(null, name);
     }
 
-    public StationDto(final Long id, String name) {
+    public StationDto(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
