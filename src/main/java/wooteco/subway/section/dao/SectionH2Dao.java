@@ -42,10 +42,10 @@ public class SectionH2Dao implements SectionDao {
     public void update(Section section) {
         String updateQuery = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         jdbcTemplate.update(updateQuery,
-            section.getUpStationId(),
-            section.getDownStationId(),
-            section.getDistance(),
-            section.getId());
+                section.getUpStationId(),
+                section.getDownStationId(),
+                section.getDistance(),
+                section.getId());
     }
 
     @Override
