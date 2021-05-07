@@ -81,7 +81,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
-        lineRepository.deleteById(id);
+        lineRepository.delete(id);
         log.info("노선 삭제 성공");
     }
 }

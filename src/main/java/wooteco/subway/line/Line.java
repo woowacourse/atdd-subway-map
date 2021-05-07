@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import wooteco.subway.station.Station;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Line {

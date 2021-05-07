@@ -13,7 +13,6 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationRepository;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> 강남역 = new HashMap<>();
-        강남역.put("name", "강남역");
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(강남역);
+        ExtractableResponse<Response> response = createPostResponse(param);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -81,7 +80,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath()
+                .getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
@@ -107,20 +107,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(stationRepository.findAll()).hasSize(originalSize - 1);
     }
 
-    private ExtractableResponse<Response> createDeleteResponse(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-    }
-
     private ExtractableResponse<Response> createPostResponse(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> createDeleteResponse(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
                 .then().log().all()
                 .extract();
     }

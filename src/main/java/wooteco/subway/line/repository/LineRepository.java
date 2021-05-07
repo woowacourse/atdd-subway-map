@@ -16,5 +16,5 @@ public interface LineRepository {
 
     void updateById(Long id, Line updatedLine);
 
-    void deleteById(Long id);
+    void delete(Long id);
 }

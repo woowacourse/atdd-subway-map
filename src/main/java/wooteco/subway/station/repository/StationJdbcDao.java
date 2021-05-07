@@ -40,8 +40,8 @@ public class StationJdbcDao implements StationRepository {
 
     @Override
     public boolean validateDuplicateName(String name) {
-        String query = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.update(query, name) == 1;
+        String query = "SELECT COUNT(*) FROM station WHERE name = (?)";
+        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
     }
 
     private RowMapper<Station> stationRowMapper() {
@@ -53,7 +53,7 @@ public class StationJdbcDao implements StationRepository {
 
     @Override
     public void deleteById(Long id) {
-        String query = "DELETE FROM station WHERE id = ?";
+        String query = "DELETE FROM station WHERE id = (?)";
         jdbcTemplate.update(query, id);
     }
 }

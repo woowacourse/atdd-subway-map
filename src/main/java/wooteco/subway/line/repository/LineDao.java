@@ -59,7 +59,7 @@ public class LineDao implements LineRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         Line line = findByIdIfExist(id);
         lines.remove(line);
     }

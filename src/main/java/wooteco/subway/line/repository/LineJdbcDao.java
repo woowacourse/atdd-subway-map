@@ -41,8 +41,8 @@ public class LineJdbcDao implements LineRepository {
 
     @Override
     public boolean validateDuplicateName(String name) {
-        String query = "SELECT * FROM line WHERE name = ?";
-        return jdbcTemplate.update(query, name) == 1;
+        String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
+        return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
     }
 
     private RowMapper<Line> lineRowMapper() {
@@ -70,7 +70,7 @@ public class LineJdbcDao implements LineRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
