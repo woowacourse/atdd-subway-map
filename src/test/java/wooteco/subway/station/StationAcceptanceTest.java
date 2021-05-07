@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.dto.response.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "잠실역");
+        params.put("name", "강남역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

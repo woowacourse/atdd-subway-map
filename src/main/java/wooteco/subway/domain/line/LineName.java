@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.domain.line;
 
 import wooteco.subway.exception.line.LineNamePatternException;
 

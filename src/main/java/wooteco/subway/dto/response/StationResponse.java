@@ -1,4 +1,6 @@
-package wooteco.subway.station;
+package wooteco.subway.dto.response;
+
+import wooteco.subway.domain.station.Station;
 
 public class StationResponse {
     private Long id;

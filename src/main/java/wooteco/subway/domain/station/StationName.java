@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.domain.station;
 
 import wooteco.subway.exception.station.StationNamePatternException;
 

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.Rollback;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.station.StationName;
 
 import java.util.List;
 
@@ -15,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Rollback
 public class StationDaoTest {
     StationDao stationDao;
     @Autowired

@@ -1,9 +1,12 @@
-package wooteco.subway.line;
+package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.exception.line.LineNotExistException;
+import wooteco.subway.dto.request.LineRequest;
+import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.service.LineService;
 
 import java.net.URI;
 import java.util.List;

@@ -1,9 +1,11 @@
-package wooteco.subway.line;
+package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.station.StationName;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,60 +14,52 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class LineDao {
-
+public class StationDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line insert(String color, LineName name) {
+    public Station insert(StationName name) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        String query = "INSERT INTO line (color, name) VALUES (?,?)";
+        String query = "INSERT INTO station (name) VALUES (?)";
         jdbcTemplate.update((Connection con) -> {
             PreparedStatement pstmt = con.prepareStatement(
                     query,
                     new String[]{"id"});
-            pstmt.setString(1, color);
-            pstmt.setString(2, name.getName());
+            pstmt.setString(1, name.getName());
             return pstmt;
         }, keyHolder);
 
         final long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Line(id, color, name);
+        return new Station(id, name);
     }
 
-    public List<Line> findAll() {
-        String query = "SELECT * FROM line";
+    public List<Station> findAll() {
+        String query = "SELECT * FROM station";
         return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Line(
+                (resultSet, rowNum) -> new Station(
                         resultSet.getLong("id"),
-                        resultSet.getString("color"),
                         resultSet.getString("name")
                 )
         );
     }
 
-    public Optional<Line> findById(Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
+    public Optional<Station> findByName(StationName name) {
+        String query = "SELECT * FROM station WHERE name=?";
         return jdbcTemplate.query(query,
-                (resultSet, rowNum) -> new Line(
+                (resultSet, rowNum) -> new Station(
                         resultSet.getLong("id"),
-                        resultSet.getString("color"),
                         resultSet.getString("name")
-                ), id)
+                ),
+                name.getName())
                 .stream()
                 .findAny();
     }
 
-    public void update(Long id, String color, String name) {
-        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
-        jdbcTemplate.update(query, color, name, id);
-    }
-
-    public void delete(Long id) {
-        String query = "DELETE FROM line WHERE id = ?";
+    public void deleteById(Long id) {
+        String query = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
 }

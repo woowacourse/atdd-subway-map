@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.line.LineName;
 import wooteco.subway.exception.line.LineNamePatternException;
 
 import static org.assertj.core.api.Assertions.assertThat;
