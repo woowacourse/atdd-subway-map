@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -31,7 +33,7 @@ class StationServiceTest {
         Station retrivedStation = new Station(1L, name);
 
         given(stationDao.save(station)).willReturn(1L);
-        given(stationDao.findById(1L)).willReturn(retrivedStation);
+        given(stationDao.findById(1L)).willReturn(Optional.of(retrivedStation));
 
         Station savedStation = stationService.createStation(name);
 

@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ public class StationService {
     public Station createStation(String name) {
         Station station = new Station(name);
         long id = stationDao.save(station);
-        return stationDao.findById(id);
+        return stationDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
     }
 
     public List<Station> findAll() {

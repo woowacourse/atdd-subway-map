@@ -12,6 +12,7 @@ import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -82,7 +83,8 @@ class StationDaoTest {
             @DisplayName("역 조회에 성공한다.")
             @Test
             void findById() {
-                Station station = stationDao.findById(testStationId);
+                Station station = stationDao.findById(testStationId)
+                        .get();
 
                 assertThat(station).isEqualTo(new Station(testStationId, "testStation"));
             }
@@ -95,9 +97,9 @@ class StationDaoTest {
             @DisplayName("역 조회에 실패한다.")
             @Test
             void cannotFindById() {
-                assertThatCode(() -> stationDao.findById(6874))
-                        .isInstanceOf(SubwayException.class)
-                        .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+                Optional<Station> station = stationDao.findById(68954);
+
+                assertThat(station).isEmpty();
             }
         }
     }
