@@ -34,8 +34,8 @@ public class LineService {
         sectionDao.save(new Section(savedLine.getId(),
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(),
-                lineRequest.getDistance(),
-                lineRequest.getExtraFare()));
+                lineRequest.getDistance()
+        ));
         return new LineResponse(savedLine);
     }
 

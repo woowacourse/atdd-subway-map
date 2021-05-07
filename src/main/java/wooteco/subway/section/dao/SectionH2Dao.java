@@ -13,7 +13,7 @@ public class SectionH2Dao implements SectionDao {
 
     private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) ->
             new Section(resultSet.getLong("id"), resultSet.getLong("line_id"), resultSet.getLong("up_station_id"),
-                    resultSet.getLong("down_station_id"), resultSet.getInt("distance"), resultSet.getInt("extra_fare"));
+                    resultSet.getLong("down_station_id"), resultSet.getInt("distance"));
 
     public SectionH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -23,7 +23,7 @@ public class SectionH2Dao implements SectionDao {
     public void save(Section section) {
         String saveQuery = "INSERT INTO section(line_id, up_station_id, down_station_id, distance, extra_fare) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(saveQuery, section.getLineId(), section.getUpStationId(), section.getDownStationId(),
-                section.getDistance(), section.getExtraFare());
+                section.getDistance());
     }
 
     @Override
