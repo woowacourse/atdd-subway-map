@@ -2,15 +2,19 @@ package wooteco.subway.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @JdbcTest
 class StationDaoTest {
@@ -30,34 +34,106 @@ class StationDaoTest {
         testStationId = stationDao.save(new Station("testStation"));
     }
 
-    @DisplayName("역을 등록한다.")
-    @Test
-    void save() {
-        Station station = new Station("testStation2");
+    @Nested
+    @DisplayName("save 메서드는")
+    class Describe_save {
 
-        stationDao.save(station);
-        List<Station> stations = stationDao.findAll();
+        @Nested
+        @DisplayName("이름이 중복되지 않은 엔티티의 경우")
+        class Context_with_unique_name {
 
-        assertThat(stations).hasSize(2);
+            @DisplayName("역을 정상적으로 등록한다.")
+            @Test
+            void save() {
+                Station station = new Station("testStation2");
+
+                stationDao.save(station);
+                List<Station> stations = stationDao.findAll();
+
+                assertThat(stations).hasSize(2);
+            }
+        }
+
+        @Nested
+        @DisplayName("이름이 중복된 경우")
+        class Context_with_duplicated_name {
+
+            @DisplayName("노선 등록에 실패한다.")
+            @Test
+            void cannotSave() {
+                Station station = new Station("testStation2");
+                stationDao.save(station);
+
+                assertThatCode(() -> stationDao.save(station))
+                        .isInstanceOf(SubwayException.class)
+                        .hasMessage(ExceptionStatus.DUPLICATED_NAME.getMessage());
+            }
+        }
     }
 
-    @DisplayName("역을 ID로 조회한다.")
-    @Test
-    void findById() {
-        Station station = stationDao.findById(testStationId);
+    @Nested
+    @DisplayName("findById 메서드는")
+    class Describe_findById {
 
-        assertThat(station).isEqualTo(new Station(testStationId, "testStation"));
+        @Nested
+        @DisplayName("id에 해당하는 엔티티가 존재하는 경우")
+        class Context_with_valid_id {
+
+            @DisplayName("역 조회에 성공한다.")
+            @Test
+            void findById() {
+                Station station = stationDao.findById(testStationId);
+
+                assertThat(station).isEqualTo(new Station(testStationId, "testStation"));
+            }
+        }
+
+        @Nested
+        @DisplayName("id에 해당하는 엔티티가 없는 경우")
+        class Context_with_invalid_id {
+
+            @DisplayName("역 조회에 실패한다.")
+            @Test
+            void cannotFindById() {
+                assertThatCode(() -> stationDao.findById(6874))
+                        .isInstanceOf(SubwayException.class)
+                        .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+            }
+        }
     }
 
-    @DisplayName("역을 삭제한다.")
-    @Test
-    void delete() {
-        long id = stationDao.save(new Station("dummy"));
-        int beforeLineCounts = stationDao.findAll().size();
+    @Nested
+    @DisplayName("deleteById 메서드는")
+    class Describe_deleteById {
 
-        stationDao.deleteById(id);
-        int afterLineCounts = stationDao.findAll().size();
+        @Nested
+        @DisplayName("id에 해당하는 엔티티가 존재하는 경우")
+        class Context_with_valid_id {
 
-        assertThat(beforeLineCounts - 1).isEqualTo(afterLineCounts);
+            @DisplayName("역 삭제에 성공한다.")
+            @Test
+            void deleteById() {
+                long id = stationDao.save(new Station("dummy"));
+                int beforeLineCounts = stationDao.findAll().size();
+
+                stationDao.deleteById(id);
+                int afterLineCounts = stationDao.findAll().size();
+
+                assertThat(beforeLineCounts - 1).isEqualTo(afterLineCounts);
+            }
+        }
+
+        @Nested
+        @DisplayName("id에 해당하는 엔티티가 존재하지 않는 경우")
+        class Context_with_invalid_id {
+
+            @DisplayName("노선 삭제에 실패한다.")
+            @Test
+            void cannotUpdate() {
+                assertThatCode(() -> stationDao.deleteById(6874))
+                        .isInstanceOf(SubwayException.class)
+                        .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
+            }
+        }
     }
 }
