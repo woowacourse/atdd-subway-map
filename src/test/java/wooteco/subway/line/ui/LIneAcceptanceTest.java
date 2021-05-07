@@ -3,14 +3,18 @@ package wooteco.subway.line.ui;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.domain.LineDao;
+import wooteco.subway.line.application.LineService;
+import wooteco.subway.line.domain.*;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationDao;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,16 +26,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
 public class LIneAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private StationDao stationDao;
+
     @Autowired
     private LineDao lineDao;
+
+    @Autowired
+    private LineService lineService;
+
+    @BeforeEach
+    void init() {
+        //given
+        System.out.println("11111111 = ");
+        Station station = stationDao.save(new Station("백기역"));
+        Station station2 = stationDao.save(new Station("흑기역"));
+        Station station3 = stationDao.save(new Station("아마찌역"));
+        Station station4 = stationDao.save(new Station("검프역"));
+    }
 
     @DisplayName("노선을 생성한다.")
     @Test
     void createStation() {
         // given
+        System.out.println("2222222 = ");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "3");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
