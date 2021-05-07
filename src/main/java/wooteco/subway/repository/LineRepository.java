@@ -1,9 +1,10 @@
-package wooteco.subway.dao;
+package wooteco.subway.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
@@ -12,32 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class LineJdbcDao {
-    private JdbcTemplate jdbcTemplate;
+public class LineRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final LineDao lineDao;
 
-    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
+    public LineRepository(JdbcTemplate jdbcTemplate, LineDao lineDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.lineDao = lineDao;
     }
 
     public Line saveLineWithSection(String name, String color, Long upStationId, Long downStationId, int distance) {
-        Long createdLineId = insertLine(name, color);
+        Long createdLineId = lineDao.create(name, color);
         Long createdSectionId = insertSection(createdLineId, upStationId, downStationId, distance);
         List<Section> sections = new ArrayList<>();
         Section section = new Section(createdSectionId, upStationId, downStationId, distance);
         sections.add(section);
         return new Line(createdLineId, name, color, sections);
-    }
-
-    private Long insertLine(String name, String color) {
-        String insertLineSql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
-        KeyHolder lineKeyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertLineSql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, color);
-            return ps;
-        }, lineKeyHolder);
-        return lineKeyHolder.getKey().longValue();
     }
 
     private Long insertSection(Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -57,13 +48,7 @@ public class LineJdbcDao {
     }
 
     public List<Line> findAllLine() {
-        String query = "SELECT * FROM LINE";
-        return jdbcTemplate.query(query, (resultSet, rowNum) ->
-                new Line(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("color"))
-        );
+        return lineDao.findAll();
     }
 //
 //    public Optional<Line> findById(Long lineId) {
@@ -105,6 +90,8 @@ public class LineJdbcDao {
             String deleteSectionQuery = "DELETE FROM section WHERE id = ?";
             jdbcTemplate.update(deleteSectionQuery, sectionId);
         }
+
+
 
         String deleteLineQuery = "DELETE FROM LINE WHERE id = ?";
         return (long) jdbcTemplate.update(deleteLineQuery, lineId);

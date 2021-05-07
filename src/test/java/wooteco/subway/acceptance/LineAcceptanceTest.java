@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 @Transactional
-class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTerst extends AcceptanceTest {
 
     @DisplayName("노선을 생성한다.")
     @Test

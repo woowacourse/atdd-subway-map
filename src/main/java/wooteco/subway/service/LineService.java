@@ -5,7 +5,7 @@ import wooteco.subway.controller.dto.SectionDto;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
-import wooteco.subway.dao.LineJdbcDao;
+import wooteco.subway.repository.LineRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
@@ -18,17 +18,17 @@ public class LineService {
     private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
     private static final int FIRST_INDEX = 0;
 
-    private final LineJdbcDao lineJdbcDao;
+    private final LineRepository lineRepository;
 
-    public LineService(LineJdbcDao lineJdbcDao) {
-        this.lineJdbcDao = lineJdbcDao;
+    public LineService(LineRepository lineRepository) {
+        this.lineRepository = lineRepository;
     }
 
     public LineCreateResponseDto createLine(LineRequest lineRequest) {
 //        lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
 //            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
 //        });
-        Line newLine = lineJdbcDao.saveLineWithSection(
+        Line newLine = lineRepository.saveLineWithSection(
                 lineRequest.getName(),
                 lineRequest.getColor(),
                 lineRequest.getUpStationId(),
@@ -53,7 +53,7 @@ public class LineService {
     }
 
     public List<LineFindAllResponseDto> showLines() {
-        List<Line> lines = lineJdbcDao.findAllLine();
+        List<Line> lines = lineRepository.findAllLine();
         return lines.stream()
                 .map(it -> new LineFindAllResponseDto(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
@@ -70,6 +70,6 @@ public class LineService {
 //    }
 //
     public long deleteLine(Long lineId) {
-        return lineJdbcDao.deleteLineWithSectionByLineId(lineId);
+        return lineRepository.deleteLineWithSectionByLineId(lineId);
     }
 }
