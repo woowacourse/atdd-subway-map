@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StationService {
-    private static final Logger log = LoggerFactory.getLogger("console");
+    private static final Logger log = LoggerFactory.getLogger(StationService.class);
 
     private StationRepository stationRepository;
 
@@ -48,7 +48,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         stationRepository.deleteById(id);
         log.info("지하철 역 삭제 성공");
     }

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
 
-    private static final Logger log = LoggerFactory.getLogger("console");
+    private static final Logger log = LoggerFactory.getLogger(LineService.class);
 
     private final LineRepository lineRepository;
 
@@ -81,7 +81,7 @@ public class LineService {
                 .anyMatch(line -> line.isSameName(newName));
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         lineRepository.deleteById(id);
         log.info("노선 삭제 성공");
     }

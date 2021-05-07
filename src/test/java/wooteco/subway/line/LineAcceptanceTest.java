@@ -32,12 +32,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> 분당선 = new HashMap<>();
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(params);
+        ExtractableResponse<Response> response = createPostResponse(분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -48,14 +48,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWhenDuplicateLineName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> 분당선 = new HashMap<>();
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-red-600");
 
         // when
-        createPostResponse(params);
+        createPostResponse(분당선);
 
-        ExtractableResponse<Response> response = createPostResponse(params);
+        ExtractableResponse<Response> response = createPostResponse(분당선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -65,15 +65,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "분당선");
-        params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = createPostResponse(params1);
+        Map<String, String> 분당선 = new HashMap<>();
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        params2.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse2 = createPostResponse(params2);
+        Map<String, String> 역삼역 = new HashMap<>();
+        역삼역.put("name", "역삼역");
+        역삼역.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse2 = createPostResponse(역삼역);
 
         // when
         ExtractableResponse<Response> response = createGetResponse("/lines");
@@ -95,10 +95,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "분당선");
-        params1.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse1 = createPostResponse(params1);
+        Map<String, String> 분당선 = new HashMap<>();
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
         // when
         ExtractableResponse<Response> response = createGetResponse("/lines/1");
@@ -115,18 +115,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-blue-600");
+        Map<String, String> 이호선 = new HashMap<>();
+        이호선.put("name", "2호선");
+        이호선.put("color", "bg-blue-600");
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "신분당");
-        params2.put("color", "bg-red-600");
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("name", "신분당");
+        신분당선.put("color", "bg-red-600");
 
-        createPostResponse(params);
+        createPostResponse(이호선);
 
         // when
-        ExtractableResponse<Response> expectedResponse = createPutResponse(params2, "/lines/1");
+        ExtractableResponse<Response> expectedResponse = createPutResponse(신분당선, "/lines/1");
         ExtractableResponse<Response> updatedResponse = createGetResponse("/lines/1");
 
         // then
@@ -141,19 +141,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "bg-blue-600");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "신분당선");
-        params2.put("color", "bg-blue-600");
+        Map<String, String> 이호선 = new HashMap<>();
+        이호선.put("name", "2호선");
+        이호선.put("color", "bg-blue-600");
 
-        createPostResponse(params1);
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("name", "신분당선");
+        신분당선.put("color", "bg-blue-600");
 
-        createPostResponse(params2);
+        createPostResponse(이호선);
+        createPostResponse(신분당선);
 
         // when
-        ExtractableResponse<Response> expectedResponse = createPutResponse(params2, "/lines/1");
+        ExtractableResponse<Response> expectedResponse = createPutResponse(신분당선, "/lines/1");
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -163,11 +163,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "분당선");
-        params.put("color", "bg-red-600");
+        Map<String, String> 분당선 = new HashMap<>();
+        분당선.put("name", "분당선");
+        분당선.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> createResponse = createPostResponse(params);
+        ExtractableResponse<Response> createResponse = createPostResponse(분당선);
         int originalSize = lineRepository.findAll().size();
 
         // when

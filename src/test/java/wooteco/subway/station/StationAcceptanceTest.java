@@ -33,11 +33,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> 강남역 = new HashMap<>();
+        강남역.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(params);
+        ExtractableResponse<Response> response = createPostResponse(강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -48,12 +48,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        createPostResponse(params);
+        Map<String, String> 강남역 = new HashMap<>();
+        강남역.put("name", "강남역");
+        createPostResponse(강남역);
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(params);
+        ExtractableResponse<Response> response = createPostResponse(강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -63,13 +63,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = createPostResponse(params1);
+        Map<String, String> 강남역 = new HashMap<>();
+        강남역.put("name", "강남역");
+        ExtractableResponse<Response> createResponse1 = createPostResponse(강남역);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = createPostResponse(params2);
+        Map<String, String> 역삼역 = new HashMap<>();
+        역삼역.put("name", "역삼역");
+        ExtractableResponse<Response> createResponse2 = createPostResponse(역삼역);
 
         // when
         ExtractableResponse<Response> response = createGetResponse();
@@ -92,9 +92,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = createPostResponse(params);
+        Map<String, String> 강남역 = new HashMap<>();
+        강남역.put("name", "강남역");
+        ExtractableResponse<Response> createResponse = createPostResponse(강남역);
 
         int originalSize = stationRepository.findAll().size();
 
