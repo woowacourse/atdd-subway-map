@@ -11,6 +11,7 @@ import wooteco.subway.domain.Station;
 @Service
 public class StationService {
 
+    private static final int NOT_FOUND = 0;
     private final StationDao stationDao;
 
     public StationService(final StationDao stationDao) {
@@ -33,9 +34,7 @@ public class StationService {
     }
 
     public void delete(final StationServiceDto stationServiceDto) {
-        int deletedStationNumber = stationDao.delete(stationServiceDto.getId());
-
-        if (deletedStationNumber == 0) {
+        if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundStationException("[ERROR] 존재하지 않는 역입니다.");
         }
     }

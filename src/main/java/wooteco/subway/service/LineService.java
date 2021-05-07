@@ -12,6 +12,7 @@ import wooteco.subway.domain.Line;
 @Service
 public class LineService {
 
+    private static final int NOT_FOUND = 0;
     private final LineDao lineDao;
 
     public LineService(final LineDao lineDao) {
@@ -39,13 +40,13 @@ public class LineService {
     public void update(final LineServiceDto lineServiceDto) {
         Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
 
-        if (lineDao.update(lineServiceDto.getId(), line) == 0) {
+        if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
             throw new EmptyResultDataAccessException(0);
         }
     }
 
     public void delete(final LineServiceDto lineServiceDto) {
-        if (lineDao.delete(lineServiceDto.getId()) == 0) {
+        if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException("[ERROR] 해당노선이 존재하지 않습니다.");
         }
     }
