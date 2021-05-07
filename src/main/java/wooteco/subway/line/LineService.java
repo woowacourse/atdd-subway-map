@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LineService {
