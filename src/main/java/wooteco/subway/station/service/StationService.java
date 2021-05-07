@@ -22,7 +22,7 @@ public class StationService {
         validateStationName(stationRequest);
         Station station = new Station(stationRequest.getName());
         Station newStation = stationRepository.save(station);
-        return new StationResponse(newStation.getId(), newStation.getName());
+        return new StationResponse(newStation);
     }
 
     private void validateStationName(StationRequest stationRequest) {

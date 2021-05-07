@@ -22,7 +22,7 @@ public class LineService {
         validateLineName(lineRequest);
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineRepository.save(line);
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineResponse(newLine);
     }
 
     private void validateLineName(LineRequest lineRequest) {
@@ -39,13 +39,13 @@ public class LineService {
     public LineResponse findLine(Long id) {
         Line newLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineResponse(newLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
