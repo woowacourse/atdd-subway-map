@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.StationService;
 
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class StationAcceptanceTest {
@@ -48,7 +47,10 @@ class StationAcceptanceTest {
 
     @AfterEach
     void tearDown() {
-        testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
+        try {
+            testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
+        } catch (SubwayException ignored) {
+        }
     }
 
     private ValidatableResponse postStationApi(StationRequest stationRequest) throws JsonProcessingException {
@@ -82,8 +84,8 @@ class StationAcceptanceTest {
         long id = testStationIds.get(0);
 
         StationResponse stationResponse = new StationResponse(id, "강남역");
-
         String responseBody = OBJECT_MAPPER.writeValueAsString(stationResponse);
+
         validatableResponse.statusCode(HttpStatus.CREATED.value())
                 .body(is(responseBody));
     }

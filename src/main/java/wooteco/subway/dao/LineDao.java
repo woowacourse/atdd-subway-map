@@ -68,8 +68,12 @@ public class LineDao {
 
     public void update(long id, String name, String color) {
         String query = "UPDATE LINE SET name = ?, color = ? WHERE ID = ?";
-        int affectedRowCounts = jdbcTemplate.update(query, name, color, id);
-        validateId(affectedRowCounts);
+        try {
+            int affectedRowCounts = jdbcTemplate.update(query, name, color, id);
+            validateId(affectedRowCounts);
+        } catch (DuplicateKeyException duplicateKeyException) {
+            throw new SubwayException(ExceptionStatus.DUPLICATED_NAME);
+        }
     }
 
     private void validateId(int affectedRowCounts) {

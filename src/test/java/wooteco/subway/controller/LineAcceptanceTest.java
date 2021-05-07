@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.LineService;
 
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class LineAcceptanceTest {
@@ -48,7 +47,10 @@ class LineAcceptanceTest {
 
     @AfterEach
     void tearDown() {
-        testLineIds.forEach(testLineId -> lineService.deleteLine(testLineId));
+        try {
+            testLineIds.forEach(testLineId -> lineService.deleteLine(testLineId));
+        } catch (SubwayException ignored) {
+        }
     }
 
     private ValidatableResponse postLineApi(LineRequest lineRequest) throws JsonProcessingException {
@@ -83,6 +85,7 @@ class LineAcceptanceTest {
 
         LineResponse lineResponse = new LineResponse(id, "2호선", "red");
         String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
+
         validatableResponse.statusCode(HttpStatus.CREATED.value())
                 .body(is(responseBody));
     }
