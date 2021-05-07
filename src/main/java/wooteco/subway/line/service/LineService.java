@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.line.domain.LineRoute;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineRoute;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.section.dao.SectionDao;
@@ -16,6 +16,7 @@ import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,8 +72,8 @@ public class LineService {
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
         List<StationResponse> stations = lineRoute.getOrderedStations()
                 .stream()
-                .map(stationId -> stationDao.findById(stationId))
-                .map(stationOpt -> stationOpt.get())
+                .map(stationDao::findById)
+                .map(Optional::get)
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
         return new LineResponse(line, stations);
