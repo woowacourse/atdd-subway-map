@@ -10,6 +10,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.dto.LineRequest;
 
 import java.util.List;
 import java.util.NoSuchElementException;

@@ -1,9 +1,13 @@
-package wooteco.subway.station;
+package wooteco.subway.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.dao.StationDao;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.dto.StationResponse;
 
 import java.net.URI;
 import java.util.List;

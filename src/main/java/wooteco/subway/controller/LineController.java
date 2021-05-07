@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -6,6 +6,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.dto.LineResponse;
 
 import java.net.URI;
 import java.util.List;
