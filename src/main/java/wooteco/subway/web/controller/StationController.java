@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.dao.StationDao;
+import wooteco.subway.service.StationService;
 import wooteco.subway.web.dto.StationRequest;
 import wooteco.subway.web.dto.StationResponse;
 
@@ -21,31 +21,27 @@ import wooteco.subway.web.dto.StationResponse;
 @RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StationController {
 
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
             @RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Long id = stationDao.save(station);
-        Station newStation = new Station(id, station.getName());
-
-        StationResponse stationResponse = new StationResponse(newStation.getId(),
-                newStation.getName());
+        Station station = stationService.add(new Station(stationRequest.getName()));
+        StationResponse stationResponse = new StationResponse(station);
 
         return ResponseEntity
-                .created(URI.create("/stations/" + newStation.getId()))
+                .created(URI.create("/stations/" + stationResponse.getId()))
                 .body(stationResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
+        List<StationResponse> stationResponses = stationService.findAll()
+                .stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
 
@@ -56,7 +52,7 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationDao.delete(id);
+        stationService.delete(id);
 
         return ResponseEntity
                 .noContent()

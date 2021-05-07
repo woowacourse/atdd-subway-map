@@ -49,4 +49,9 @@ public class LineDao {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public Line findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Line.class, id);
+    }
 }
