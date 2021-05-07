@@ -29,7 +29,7 @@ public class StationController {
             @RequestBody StationRequest stationRequest) {
         boolean existsName = stationDao.findByName(stationRequest.getName()).isPresent();
         if (existsName) {
-            throw new DuplicateNameException("이미 저장된 노선 이름입니다.");
+            throw new DuplicateNameException("이미 저장된 역 이름입니다.");
         }
 
         Station newStation = stationDao.save(stationRequest);
