@@ -13,6 +13,12 @@ public class SectionService {
 
     public Section add(Long lineId, Long upStationId, Long downStationId, int distance) {
         Section section = new Section(upStationId, downStationId, distance);
+        Sections sections = sections(lineId);
+        sections.add(section);
         return sectionH2Dao.save(lineId, section);
+    }
+
+    private Sections sections(Long lineId) {
+        return new Sections(sectionH2Dao.findById(lineId));
     }
 }

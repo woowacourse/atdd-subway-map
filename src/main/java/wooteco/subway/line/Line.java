@@ -15,7 +15,7 @@ public class Line {
     private String color;
     private String upStationId;
     private String downStationId;
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>(); // TODO List<Section> -> Sections 변경
 
     public Line() {
     }
