@@ -8,6 +8,7 @@ import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.dto.SectionRequest;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -87,19 +88,22 @@ public class SectionService {
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(lineId);
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
-        if (lineRoute.isEndOfLine(stationId)) {
+        if (lineRoute.getStationIds().size() == 2) {
             throw new IllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 
-        Section upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);
-        Section downSection = lineRoute.getSectionFromDownToUpStationMapByStationId(stationId);
+        Optional<Section> upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);
+        Optional<Section> downSection = lineRoute.getSectionFromDownToUpStationMapByStationId(stationId);
 
-        sectionDao.delete(upSection.getId());
-        sectionDao.delete(downSection.getId());
+        if(upSection.isPresent() && downSection.isPresent()){
+            sectionDao.save(new Section(lineId,
+                    downSection.get().getUpStationId(),
+                    upSection.get().getDownStationId(),
+                    upSection.get().getDistance() + downSection.get().getDistance()));
+            return;
+        }
 
-        sectionDao.save(new Section(lineId,
-                downSection.getUpStationId(),
-                upSection.getDownStationId(),
-                upSection.getDistance() + downSection.getDistance()));
+        upSection.ifPresent(section -> sectionDao.delete(section.getId()));
+        downSection.ifPresent(section -> sectionDao.delete(section.getId()));
     }
 }
