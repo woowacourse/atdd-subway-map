@@ -12,19 +12,19 @@ import wooteco.subway.exception.NotFoundLineException;
 public class LineControllerAdvice {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity voidLineAccessExceptionResponse(final EmptyResultDataAccessException e) {
+    public ResponseEntity<Void> voidLineAccessExceptionResponse(final EmptyResultDataAccessException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity duplicateLineAccessExceptionResponse(final SQLNonTransientException e) {
+    public ResponseEntity<Void> duplicateLineAccessExceptionResponse(final SQLNonTransientException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(NotFoundLineException.class)
-    public ResponseEntity voidLineDeleteExceptionResponse(final NotFoundLineException e) {
+    public ResponseEntity<Void> voidLineDeleteExceptionResponse(final NotFoundLineException e) {
         return ResponseEntity.badRequest()
             .build();
     }

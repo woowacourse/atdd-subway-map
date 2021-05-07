@@ -10,13 +10,13 @@ import wooteco.subway.exception.NotFoundStationException;
 public class StationControllerAdvice {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity overlappedStationExceptionResponse() {
+    public ResponseEntity<Void> overlappedStationExceptionResponse() {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(NotFoundStationException.class)
-    public ResponseEntity voidStationExceptionResponse() {
+    public ResponseEntity<Void> voidStationExceptionResponse() {
         return ResponseEntity.badRequest()
             .build();
     }
