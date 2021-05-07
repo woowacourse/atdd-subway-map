@@ -1,16 +1,13 @@
 package wooteco.subway.domain;
 
-import java.util.Collections;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import wooteco.subway.exception.section.DuplicatedSectionException;
+import wooteco.subway.exception.section.InvalidSectionException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import wooteco.subway.exception.WrongSectionException;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
@@ -35,11 +32,11 @@ public class Sections {
 
     public Optional<Section> affectedSection(Section newSection) {
         List<Section> collect = sections.stream()
-            .filter(originalSection -> isAdjacentSection(newSection, originalSection))
-            .collect(Collectors.toList());
+                .filter(originalSection -> isAdjacentSection(newSection, originalSection))
+                .collect(Collectors.toList());
 
         if (collect.size() != SECTION_LIMIT) {
-            throw new WrongSectionException();
+            throw new InvalidSectionException();
         }
 
         final Section originalSection = collect.get(FIRST_ELEMENT);
@@ -47,10 +44,14 @@ public class Sections {
     }
 
     private boolean isAdjacentSection(Section newSection, Section originalSection) {
-        return originalSection.isStartStation(newSection.getUpStation()) ||
-            originalSection.isDownStation(newSection.getDownStation()) ||
-            originalSection.isStartStation(newSection.getDownStation()) ||
-            originalSection.isDownStation(newSection.getUpStation());
+        if (originalSection.isSameSection(newSection)) {
+            throw new DuplicatedSectionException();
+        }
+
+        return originalSection.isUpStation(newSection.getUpStation()) ||
+                originalSection.isDownStation(newSection.getDownStation()) ||
+                originalSection.isUpStation(newSection.getDownStation()) ||
+                originalSection.isDownStation(newSection.getUpStation());
     }
 
     private Optional<Section> updateSection(Section originalSection, Section newSection) {
@@ -58,13 +59,13 @@ public class Sections {
         final Station upStation = newSection.getUpStation();
         final Station downStation = newSection.getDownStation();
 
-        if (originalSection.isStartStation(upStation)) {
-            originalSection.updateUpStation(downStation);
+        if (originalSection.isUpStation(upStation)) {
+            originalSection.updateUpStation(newSection);
             return Optional.of(originalSection);
         }
 
         if (originalSection.isDownStation(downStation)) {
-            originalSection.updateDownStation(upStation);
+            originalSection.updateDownStation(newSection);
             return Optional.of(originalSection);
         }
 

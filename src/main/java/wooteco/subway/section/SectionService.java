@@ -1,11 +1,11 @@
 package wooteco.subway.section;
 
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

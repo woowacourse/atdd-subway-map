@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.InsufficientLineInformationException;
+import wooteco.subway.exception.line.InsufficientLineInformationException;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.StationService;
 

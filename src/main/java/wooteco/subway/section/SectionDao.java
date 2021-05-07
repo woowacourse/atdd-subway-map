@@ -1,16 +1,12 @@
 package wooteco.subway.section;
 
-import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import wooteco.subway.domain.Sections;
+import java.util.*;
 
 @Repository
 public class SectionDao {
@@ -39,16 +35,16 @@ public class SectionDao {
     }
 
     public Section saveAffectedSections(Section section, Optional<Section> affectedSection,
-        Long lineId) {
+                                        Long lineId) {
         affectedSection.ifPresent(받아온것 -> {
             sections.get(lineId)
-                .stream()
-                .filter(안에있는것 -> 안에있는것.getId().equals(받아온것.getId()))
-                .findAny()
-                .ifPresent(안에있는것 -> {
-                    sections.get(lineId).remove(안에있는것);
-                    sections.get(lineId).add(받아온것);
-            });
+                    .stream()
+                    .filter(안에있는것 -> 안에있는것.getId().equals(받아온것.getId()))
+                    .findAny()
+                    .ifPresent(안에있는것 -> {
+                        sections.get(lineId).remove(안에있는것);
+                        sections.get(lineId).add(받아온것);
+                    });
         });
 
         return save(section, lineId);

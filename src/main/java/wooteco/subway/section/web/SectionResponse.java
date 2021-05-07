@@ -18,10 +18,10 @@ public class SectionResponse {
 
     public static SectionResponse create(Section section) {
         return new SectionResponse(
-            section.getId(),
-            StationResponse.create(section.getUpStation()),
-            StationResponse.create(section.getDownStation()),
-            section.getDistance()
-            );
+                section.getId(),
+                StationResponse.create(section.getUpStation()),
+                StationResponse.create(section.getDownStation()),
+                section.getDistance()
+        );
     }
 }
