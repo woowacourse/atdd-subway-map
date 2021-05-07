@@ -68,12 +68,12 @@ public class LineRoute {
         return downToUpStationMap.get(downStationId).getDistance();
     }
 
-    public Section getSectionFromUpToDownStationMapByStationId(Long stationId) {
-        return upToDownStationMap.get(stationId);
+    public Optional<Section> getSectionFromUpToDownStationMapByStationId(Long stationId) {
+        return Optional.ofNullable(upToDownStationMap.get(stationId));
     }
 
-    public Section getSectionFromDownToUpStationMapByStationId(Long stationId) {
-        return downToUpStationMap.get(stationId);
+    public Optional<Section> getSectionFromDownToUpStationMapByStationId(Long stationId) {
+        return Optional.ofNullable(downToUpStationMap.get(stationId));
     }
 
     public Deque<Long> getOrderedStations() {
