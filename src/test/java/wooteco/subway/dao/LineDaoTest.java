@@ -120,6 +120,17 @@ class LineDaoTest {
                 assertThat(line.getName()).isEqualTo("changedName");
                 assertThat(line.getColor()).isEqualTo("grey");
             }
+
+            @DisplayName("수정하려는 이름이 이미 존재하면 예외가 발생한다.")
+            @Test
+            void duplicatedKey() {
+                String duplicatedName = "dup";
+                lineDao.save(new Line(duplicatedName, "grey"));
+
+                assertThatCode(() -> lineDao.update(testLineId, duplicatedName, "white"))
+                        .isInstanceOf(SubwayException.class)
+                        .hasMessage(ExceptionStatus.DUPLICATED_NAME.getMessage());
+            }
         }
 
         @Nested
