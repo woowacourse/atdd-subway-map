@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @Transactional
+@RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
 
@@ -22,7 +23,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping("")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
         Line newLine = lineService.save(line);
@@ -30,7 +31,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
-    @GetMapping("/lines")
+    @GetMapping("")
     public ResponseEntity<List<LinesResponse>> getLines() {
         List<Line> lines = lineService.getLines();
         List<LinesResponse> linesResponses = new ArrayList<>();
@@ -40,7 +41,7 @@ public class LineController {
         return ResponseEntity.ok().body(linesResponses);
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable final Long id) {
 
         Line line = lineService.getLine(id);
@@ -48,13 +49,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping("/lines/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable final Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(new Line(id, lineRequest.getColor(), lineRequest.getName()));
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
