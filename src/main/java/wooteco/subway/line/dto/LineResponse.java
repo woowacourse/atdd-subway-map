@@ -11,9 +11,6 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse() {
-    }
-
     public LineResponse(Line newLine) {
         this(newLine.getId(), newLine.getName(), newLine.getColor());
     }
