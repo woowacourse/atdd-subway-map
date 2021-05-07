@@ -122,10 +122,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     private List<Long> resultStationsIds(ExtractableResponse<Response> response) {
         final JsonPath jsonPath = response.jsonPath();
-        final List<StationResponse> stationResponses = jsonPath.getList(".", StationResponse.class);
+        final List<LineResponse> lineResponses = jsonPath.getList(".", LineResponse.class);
 
-        return stationResponses.stream()
-                .map(StationResponse::getId)
+        return lineResponses.stream()
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
     }
 

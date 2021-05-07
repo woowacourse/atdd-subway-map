@@ -3,12 +3,10 @@ package wooteco.subway.station;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
-@Repository
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -46,5 +44,20 @@ public class StationDao {
     public void delete(final Long id) {
         String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public Station findById(final Long id) {
+        try {
+            final String sql = "SELECT * FROM STATION WHERE id = ?";
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                    ),
+                    id);
+        } catch (Exception e) {
+            throw new StationException("존재하지 않는 역입니다.");
+        }
     }
 }

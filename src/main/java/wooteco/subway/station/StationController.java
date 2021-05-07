@@ -12,29 +12,24 @@ import java.util.stream.Collectors;
 @RequestMapping("/stations")
 public class StationController {
 
-    private final StationDao stationDao;
+    private final StationRepository stationRepository;
 
-    public StationController(final StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(final StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
     }
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
-        final String name = stationRequest.getName();
+        final Station stationToSave = new Station(stationRequest.getName());
+        final Station station = stationRepository.save(stationToSave);
 
-        if (stationDao.isDuplicatedName(name)) {
-            throw new StationException("이미 존재하는 역 이름입니다.");
-        }
-
-        final Long id = stationDao.save(name);
-
-        final StationResponse stationResponse = new StationResponse(id, name);
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+        final StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        final List<Station> stations = stationDao.findAll();
+        final List<Station> stations = stationRepository.findAll();
 
         final List<StationResponse> stationResponses = stations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName()))
@@ -44,7 +39,9 @@ public class StationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable final Long id) {
-        stationDao.delete(id);
+        final Station station = stationRepository.findById(id);
+        stationRepository.delete(station);
+
         return ResponseEntity.noContent().build();
     }
 }

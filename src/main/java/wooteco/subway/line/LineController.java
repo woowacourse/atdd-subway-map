@@ -11,25 +11,20 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineDao lineDao;
+    private LineRepository lineRepository;
 
-    public LineController(final LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(final LineRepository lineRepository) {
+        this.lineRepository = lineRepository;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
-        final String name = lineRequest.getName();
-        final String color = lineRequest.getColor();
+        final Line lineToSave = new Line(lineRequest.getName(), lineRequest.getColor());
 
-        if (lineDao.isDuplicatedName(name)) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
-        }
+        final Line line = lineRepository.save(lineToSave);
+        final LineResponse lineResponse = lineResponseById(line.getId());
 
-        final Long id = lineDao.save(name, color);
-        final LineResponse lineResponse = lineResponseById(id);
-
-        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping("/{id}")
@@ -39,13 +34,13 @@ public class LineController {
     }
 
     private LineResponse lineResponseById(final Long id) {
-        final Line line = lineDao.findById(id);
+        final Line line = lineRepository.findById(id);
         return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> lines() {
-        final List<Line> lines = lineDao.findAll();
+        final List<Line> lines = lineRepository.findAll();
 
         final List<LineResponse> lineResponses = lines.stream()
                 .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
@@ -56,16 +51,17 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
-        final String name = lineRequest.getName();
-        final String color = lineRequest.getColor();
+        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        lineRepository.save(line);
 
-        lineDao.update(id, name, color);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable final Long id) {
-        lineDao.delete(id);
+        final Line line = lineRepository.findById(id);
+        lineRepository.delete(line);
+
         return ResponseEntity.noContent().build();
     }
 }
