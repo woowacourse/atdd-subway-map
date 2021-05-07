@@ -54,7 +54,7 @@ public class LineDaoTest {
     void findAllTestWhenEmpty() {
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines.isEmpty()).isTrue();
+        assertThat(lines).isEmpty();
     }
 
     @DisplayName("line 전체 조회 테스트")
