@@ -5,8 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.dto.LineRequest;
-import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.request.LineCreateRequest;
+import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.service.LineService;
 
 import java.net.URI;
@@ -23,8 +24,8 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse newLine = lineService.save(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        LineResponse newLine = lineService.save(lineCreateRequest);
         log.info("An INFO Message : {}", newLine.getName() + " 노선 생성 성공");
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
     }
@@ -44,8 +45,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
+        lineService.updateLine(id, lineUpdateRequest);
         log.info("An INFO Message : {}", "노선 정보 수정 완료");
         return ResponseEntity.ok().build();
     }

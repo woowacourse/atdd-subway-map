@@ -2,8 +2,9 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.dto.LineRequest;
-import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.request.LineCreateRequest;
+import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.repository.LineRepository;
 
 import java.util.List;
@@ -18,22 +19,22 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
-        validateLineName(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    public LineResponse save(LineCreateRequest lineCreateRequest) {
+        validateLineName(lineCreateRequest);
+        Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line newLine = lineRepository.save(line);
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
-    private void validateLineName(LineRequest lineRequest) {
-        if (checkNameDuplicate(lineRequest)) {
+    private void validateLineName(LineCreateRequest lineCreateRequest) {
+        if (checkNameDuplicate(lineCreateRequest)) {
             throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");
         }
     }
 
-    private boolean checkNameDuplicate(LineRequest lineRequest) {
+    private boolean checkNameDuplicate(LineCreateRequest lineCreateRequest) {
         return lineRepository.findAll().stream()
-                .anyMatch(line -> line.isSameName(lineRequest.getName()));
+                .anyMatch(line -> line.isSameName(lineCreateRequest.getName()));
     }
 
     public LineResponse findLine(Long id) {
@@ -49,19 +50,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void updateLine(Long id, LineRequest lineRequest) {
-        validatesRequest(id, lineRequest);
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        validatesRequest(id, lineUpdateRequest);
 
-        Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line updatedLine = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         lineRepository.updateById(id, updatedLine);
     }
 
-    private void validatesRequest(Long id, LineRequest lineRequest) {
+    private void validatesRequest(Long id, LineUpdateRequest lineUpdateRequest) {
         Line currentLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
         String oldName = currentLine.getName();
-        String newName = lineRequest.getName();
+        String newName = lineUpdateRequest.getName();
 
         if (validatesName(oldName, newName)) {
             throw new IllegalArgumentException("변경할 수 없는 이름입니다.");
