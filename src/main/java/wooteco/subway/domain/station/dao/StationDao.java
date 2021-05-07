@@ -44,7 +44,10 @@ public class StationDao {
     }
 
     public Station findById(Long id) {
-        String sql = "SELECT * FROM station WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, Station.class, id);
+        String sql = "SELECT id, name FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")
+        ), id);
     }
 }
