@@ -17,7 +17,7 @@ public class StationControllerAdvice {
 
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity voidStationExceptionResponse() {
-        return ResponseEntity.noContent()
+        return ResponseEntity.badRequest()
             .build();
     }
 

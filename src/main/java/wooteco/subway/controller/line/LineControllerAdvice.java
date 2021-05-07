@@ -1,4 +1,4 @@
-package wooteco.subway.controller;
+package wooteco.subway.controller.line;
 
 import java.sql.SQLNonTransientException;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,7 +25,7 @@ public class LineControllerAdvice {
 
     @ExceptionHandler(NotFoundLineException.class)
     public ResponseEntity voidLineDeleteExceptionResponse(final NotFoundLineException e) {
-        return ResponseEntity.noContent()
+        return ResponseEntity.badRequest()
             .build();
     }
 }
