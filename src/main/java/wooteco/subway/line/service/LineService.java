@@ -32,17 +32,27 @@ public class LineService {
     @Transactional
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateDuplicateName(lineCreateRequest.getName());
+        validateAllStationsIsExist(lineCreateRequest);
         validateIfDownStationIsEqualToUpStation(lineCreateRequest);
 
         Line line = Line.of(lineCreateRequest);
         Line savedLine = lineDao.save(line);
 
+        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
+        return LineResponse.from(savedLine);
+    }
+
+    private void validateDuplicateName(String lineName) {
+        if (lineDao.findByName(lineName).isPresent()) {
+            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
+        }
+    }
+
+    private void validateAllStationsIsExist(LineCreateRequest lineCreateRequest) {
         stationDao.findById(lineCreateRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
         stationDao.findById(lineCreateRequest.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
-        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
-        return LineResponse.from(savedLine);
     }
 
     private void validateIfDownStationIsEqualToUpStation(LineCreateRequest lineCreateRequest) {
@@ -89,12 +99,6 @@ public class LineService {
     private void validateDuplicateNameExceptMyself(Long id, String lineName) {
         Optional<Line> lineByName = lineDao.findByName(lineName);
         if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
-            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
-        }
-    }
-
-    private void validateDuplicateName(String lineName) {
-        if (lineDao.findByName(lineName).isPresent()) {
             throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
         }
     }
