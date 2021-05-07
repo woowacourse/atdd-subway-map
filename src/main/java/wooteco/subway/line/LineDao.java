@@ -30,6 +30,10 @@ public class LineDao {
         return LINES;
     }
 
+    public static Line findById(Long id) {
+        return LINES.get(id.intValue());
+    }
+
     private static Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
