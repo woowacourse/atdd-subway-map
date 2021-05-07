@@ -4,16 +4,24 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    private Station() {
     }
 
-    public Station(Long id, String name) {
+    private Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public static Station from(String name){
+        return new Station(name);
+    }
+
+    public static Station of(long id, String name) {
+        return new Station(id, name);
     }
 
     public Long getId() {

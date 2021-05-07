@@ -16,7 +16,9 @@ public class LineH2Dao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-            new Line(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+            Line.of(resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("color"));
 
     public LineH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

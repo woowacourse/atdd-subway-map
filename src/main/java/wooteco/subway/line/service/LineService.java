@@ -20,12 +20,20 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
-    public LineResponse save(LineRequest lineRequest) {
-        validateDuplicateName(lineRequest.getName());
-        validateIfDownStationIsEqualToUpStation(lineRequest);
-        Line line = lineRequestToLine(lineRequest);
+    @Transactional
+    public LineResponse save(LineCreateRequest lineCreateRequest) {
+        validateDuplicateName(lineCreateRequest.getName());
+        validateIfDownStationIsEqualToUpStation(lineCreateRequest);
+
+        Line line = Line.of(lineCreateRequest);
         Line savedLine = lineDao.save(line);
-        return new LineResponse(savedLine);
+
+        stationDao.findById(lineCreateRequest.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
+        stationDao.findById(lineCreateRequest.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
+        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
+        return LineResponse.from(savedLine);
     }
 
     private void validateIfDownStationIsEqualToUpStation(LineRequest lineRequest) {
@@ -44,13 +52,22 @@ public class LineService {
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::new)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse find(Long id) {
-        Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
-        return new LineResponse(line);
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
+        List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
+        LineRoute lineRoute = new LineRoute(sectionsByLineId);
+        List<StationResponse> stations = lineRoute.getOrderedStations()
+                .stream()
+                .map(stationDao::findById)
+                .map(Optional::get)
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+        return LineResponse.of(line, stations);
     }
 
     public void delete(Long id) {
@@ -58,10 +75,11 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    public void update(Long id, LineRequest lineRequest) {
-        lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
-        validateDuplicateName(lineRequest.getName());
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
+        lineDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
+        validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
+        Line line = Line.of(id, lineUpdateRequest);
         lineDao.update(line);
     }
 
