@@ -1,11 +1,13 @@
 package wooteco.subway.station;
 
 public class Station {
+    private static final Long NOT_EXIST_ID = -1L;
+
     private Long id;
     private String name;
 
     public Station(String name) {
-        this(-1L, name);
+        this(NOT_EXIST_ID, name);
     }
 
     public Station(Long id, String name) {

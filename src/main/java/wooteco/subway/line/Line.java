@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Line {
+    private static final Long NOT_EXIST_ID = -1L;
 
     private Long id;
     private String name;
@@ -13,7 +14,7 @@ public class Line {
     private List<Station> stations;
 
     public Line(String name, String color) {
-        this(-1L, name, color, Collections.emptyList());
+        this(NOT_EXIST_ID, name, color, Collections.emptyList());
     }
 
     public Line(Long id, String name, String color) {
