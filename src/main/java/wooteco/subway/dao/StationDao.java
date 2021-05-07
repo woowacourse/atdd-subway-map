@@ -1,15 +1,17 @@
 package wooteco.subway.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionInformation;
+import wooteco.subway.exception.SubwayException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Repository
@@ -25,12 +27,15 @@ public class StationDao {
         String query = "INSERT INTO station(name) VALUES(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, station.getName());
-            return ps;
-        }, keyHolder);
-
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, station.getName());
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new SubwayException(ExceptionInformation.DUPLICATE_STATION_NAME_WHEN_INSERT);
+        }
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
@@ -51,7 +56,7 @@ public class StationDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new NoSuchElementException("존재하지 않아 삭제할 수 없습니다.");
+            throw new SubwayException(ExceptionInformation.STATION_NOT_FOUND_WHEN_DELETE);
         }
     }
 }

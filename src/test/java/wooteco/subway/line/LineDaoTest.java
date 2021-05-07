@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,7 +50,7 @@ public class LineDaoTest {
 
         assertThatThrownBy(() -> {
             lineDao.save(new Line("신분당선", "red"));
-        }).isInstanceOf(DuplicateKeyException.class);
+        }).isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("line 비어있는 리스트 전체 조회 테스트")
@@ -78,7 +79,7 @@ public class LineDaoTest {
     void failFindLineByIdTest() {
         assertThatThrownBy(() -> {
             lineDao.find(1L);
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+        }).isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("line 단일 조회 성공 테스트")
@@ -93,7 +94,7 @@ public class LineDaoTest {
     void failDeleteLineTest() {
         assertThatThrownBy(() -> {
             lineDao.delete(1L);
-        }).isInstanceOf(NoSuchElementException.class);
+        }).isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("line 삭제 성공 테스트")
@@ -108,7 +109,7 @@ public class LineDaoTest {
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
                 () -> lineDao.modify(1L, new LineRequest())
-        ).isInstanceOf(NoSuchElementException.class);
+        ).isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("중복되는 line 수정 실패 테스트")
@@ -118,7 +119,7 @@ public class LineDaoTest {
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
                 () -> lineDao.modify(2L, new LineRequest("신분당선", "red"))
-        ).isInstanceOf(DuplicateKeyException.class);
+        ).isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("line 수정 성공 테스트")

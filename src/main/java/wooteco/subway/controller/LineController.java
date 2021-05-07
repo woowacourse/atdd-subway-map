@@ -1,13 +1,11 @@
 package wooteco.subway.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 
@@ -60,15 +58,5 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity handleNameDuplication() {
-        return ResponseEntity.status(409).build();
-    }
-
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity handleNoSuchLine() {
-        return ResponseEntity.badRequest().build();
     }
 }
