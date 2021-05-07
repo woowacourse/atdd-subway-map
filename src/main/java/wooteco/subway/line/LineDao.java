@@ -7,13 +7,15 @@ import java.util.Optional;
 
 import org.springframework.util.ReflectionUtils;
 
+import wooteco.subway.exception.DuplicateNameException;
+
 public class LineDao {
     private static Long seq = 0L;
-    private static final List<Line> LINES = new ArrayList<>();
+    static final List<Line> LINES = new ArrayList<>();
 
     public static Line save(Line line) {
         if (isDuplicateLineName(line)) {
-            throw new IllegalArgumentException("이미 저장된 노선 이름입니다.");
+            throw new DuplicateNameException("이미 저장된 노선 이름입니다.");
         }
 
         Line persistLine = createNewObject(line);
