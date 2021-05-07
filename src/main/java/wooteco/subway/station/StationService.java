@@ -14,7 +14,7 @@ public class StationService {
 
     public Station createStation(StationRequest stationRequest) {
         if (isStationExist(stationRequest.getName())) {
-            throw new StationExistenceException("존재하는 역 이름입니다.");
+            throw new StationExistenceException();
         }
         return stationDao.save(stationRequest.getName());
     }

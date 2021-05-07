@@ -1,7 +1,8 @@
 package wooteco.subway.station;
 
 public class StationExistenceException extends RuntimeException {
-    public StationExistenceException(String message) {
+    private static final String message = "존재하는 역 이름입니다.";
+    public StationExistenceException() {
         super(message);
     }
 }
