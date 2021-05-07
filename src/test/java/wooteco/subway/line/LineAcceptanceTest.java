@@ -1,8 +1,15 @@
 package wooteco.subway.line;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,16 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
     private ExtractableResponse<Response> createdResponse;
 
     @Override
@@ -105,19 +105,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createdResponse, createdResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -126,15 +126,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get(createdResponse.header("Location"))
-                .then().log().all()
-                .extract();
+            .when()
+            .get(createdResponse.header("Location"))
+            .then().log().all()
+            .extract();
         LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(createdResponse.header("Location").split("/")[2]));
+        assertThat(lineResponse.getId())
+            .isEqualTo(Long.parseLong(createdResponse.header("Location").split("/")[2]));
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
@@ -144,10 +145,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineOfIdDoesNotExist() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/0")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/lines/0")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -163,12 +164,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(createdResponse.header("Location"))
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(createdResponse.header("Location"))
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -184,12 +185,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/lines/0")
-                .then().log().all()
-                .extract();
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .get("/lines/0")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -210,12 +211,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "bg-green-600");
         params2.put("name", "분당선");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .put(createdResponse.header("Location"))
-                .then().log().all()
-                .extract();
+            .when()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .put(createdResponse.header("Location"))
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -229,25 +230,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then()
+            .log().all()
+            .extract();
 
         // when
         Map<String, String> params3 = new HashMap<>();
         params3.put("color", "bg-blue-600");
         params3.put("name", "2호선");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(params3)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .put(createdResponse.header("Location"))
-                .then().log().all()
-                .extract();
+            .when()
+            .body(params3)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .put(createdResponse.header("Location"))
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -258,11 +259,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(createdResponse.header("Location"))
-                .then()
-                .log().all()
-                .extract();
+            .when()
+            .delete(createdResponse.header("Location"))
+            .then()
+            .log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -273,11 +274,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLineOfIdDoesNotExist() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/0")
-                .then()
-                .log().all()
-                .extract();
+            .when()
+            .delete("/lines/0")
+            .then()
+            .log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 public class StationEntity {
+
     private Long id;
     private String name;
 

@@ -32,7 +32,8 @@ public class StationDao {
             return ps;
         }, keyHolder);
 
-        return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), stationEntity.getName());
+        return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+            stationEntity.getName());
     }
 
     public List<StationEntity> findAll() {

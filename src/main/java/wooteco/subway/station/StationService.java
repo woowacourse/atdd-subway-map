@@ -29,7 +29,8 @@ public class StationService {
     public List<StationResponse> showStations() {
         List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
-            .map(stationEntity -> new StationResponse(stationEntity.getId(), stationEntity.getName()))
+            .map(stationEntity -> new StationResponse(stationEntity.getId(),
+                stationEntity.getName()))
             .collect(Collectors.toList());
     }
 

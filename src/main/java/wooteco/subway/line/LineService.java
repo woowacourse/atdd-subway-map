@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LineService {
+
     private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
@@ -17,7 +18,8 @@ public class LineService {
         LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
         LineEntity newLineEntity = lineDao.save(lineEntity);
 
-        return new LineResponse(newLineEntity.getId(), newLineEntity.getName(), newLineEntity.getColor());
+        return new LineResponse(newLineEntity.getId(), newLineEntity.getName(),
+            newLineEntity.getColor());
     }
 
     private void validateToCreateLine(LineRequest lineRequest) {

@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 public class LineEntity {
+
     private Long id;
     private String name;
     private String color;
