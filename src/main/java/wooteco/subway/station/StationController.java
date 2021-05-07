@@ -13,14 +13,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import wooteco.subway.exception.DuplicateNameException;
+
 @RestController
 public class StationController {
+
+    private final StationDao stationDao;
+
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(
             @RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
+        boolean existsName = stationDao.findByName(stationRequest.getName()).isPresent();
+        if (existsName) {
+            throw new DuplicateNameException("이미 저장된 노선 이름입니다.");
+        }
+
+        Station newStation = stationDao.save(stationRequest);
         StationResponse stationResponse =
                 new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
@@ -29,7 +41,7 @@ public class StationController {
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
+        List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                                                          .map(it -> new StationResponse(it.getId(),
                                                                  it.getName()))
@@ -39,7 +51,7 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        StationDao.delete(id);
+        stationDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
