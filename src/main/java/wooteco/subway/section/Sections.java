@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import wooteco.subway.exception.InvalidAddSectionException;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
 public class Sections {
     private final List<Section> sections;
@@ -12,19 +13,29 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        // up or down 하나도 안 걸리는 경우
-        validateConnected(newSection);
+        validate(newSection);
         sections.add(newSection);
     }
 
-    private void validateConnected(Section newSection) {
+    private void validate(Section newSection) {
+        validateConnected(newSection, this::isConnected);
+        validateConnected(newSection, this::isAlreadyExisted);
+    }
+
+    private void validateConnected(Section newSection, BiPredicate<Section, Section> biPredicate) {
         sections.stream()
-                .filter(section -> isConnected(newSection, section))
-                .findAny()
-                .orElseThrow(InvalidAddSectionException::new);
+            .filter(section -> biPredicate.test(section, newSection))
+            .findAny()
+            .orElseThrow(InvalidAddSectionException::new);
     }
 
     private boolean isConnected(Section newSection, Section section) {
-        return section.isUpStation(newSection.getUpStationId()) || section.isDownStation(newSection.getDownStationId());
+        return section.isUpStation(newSection.getUpStationId()) ||
+            section.isDownStation(newSection.getDownStationId());
+    }
+
+    private boolean isAlreadyExisted(Section newSection, Section section) {
+        return section.isUpStation(newSection.getUpStationId()) &&
+            section.isDownStation(newSection.getDownStationId());
     }
 }
