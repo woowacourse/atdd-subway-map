@@ -1,24 +1,16 @@
 package wooteco.subway.line.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineDao;
@@ -166,4 +158,18 @@ class LineApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
     }
+
+    private ResultActions 노선_생성(String lineName, String color, String upStationName, String downStationName, int distance) throws Exception {
+
+        Long upStationId = stationDao.save(Station.from(upStationName)).getId();
+        Long downStationId = stationDao.save(Station.from(downStationName)).getId();
+        final LineRequest lineRequest =
+                new LineRequest(lineName, color, upStationId, downStationId, distance);
+        return mockMvc.perform(post("/lines")
+                .content(objectMapper.writeValueAsString(lineRequest))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+    }
+
 }

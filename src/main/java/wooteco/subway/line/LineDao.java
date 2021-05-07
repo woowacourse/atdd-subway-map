@@ -13,7 +13,7 @@ import java.util.Optional;
 public class LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines  = new ArrayList<>();
+    private List<Line> lines = new ArrayList<>();
 
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");

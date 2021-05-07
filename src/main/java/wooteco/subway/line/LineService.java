@@ -16,7 +16,7 @@ public class LineService {
     private final SectionDao sectionDao;
 
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
-        if(lineDao.findLineByInfo(name, color).isPresent()){
+        if (lineDao.findLineByInfo(name, color).isPresent()) {
             throw new DuplicatedLineInformationException();
         }
         Line line = lineDao.save(Line.of(name, color));
