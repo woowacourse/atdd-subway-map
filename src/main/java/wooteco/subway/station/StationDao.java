@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class StationDao {
 
-    public static final RowMapper<Station> STATION_ROW_MAPPER = (resultSet, rowNum) -> new Station(
+    public static final RowMapper<StationEntity> STATION_ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
         resultSet.getLong("id"), resultSet.getString("name"));
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,7 +35,7 @@ public class StationDao {
         return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), stationEntity.getName());
     }
 
-    public List<Station> findAll() {
+    public List<StationEntity> findAll() {
         String sql = "SELECT * FROM station";
 
         return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
