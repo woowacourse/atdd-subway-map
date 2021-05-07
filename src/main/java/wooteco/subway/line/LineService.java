@@ -2,6 +2,8 @@ package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
+import wooteco.subway.section.Section;
+import wooteco.subway.section.SectionH2Dao;
 
 import java.util.List;
 
@@ -9,27 +11,21 @@ import java.util.List;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionH2Dao sectionH2Dao;
 
-    private LineService(LineDao lineDao) {
+    private LineService(LineDao lineDao, SectionH2Dao sectionH2Dao) {
         this.lineDao = lineDao;
+        this.sectionH2Dao = sectionH2Dao;
     }
 
-    public Line add(String name, String color) { //TODO 삭제
-        //section 생성 및 등록
-        //line 생성
+    public Line add(LineRequest lineRequest) {
         List<Line> lines = lineDao.findAll();
-        Line line = new Line(name, color);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         validateDuplicatedLine(lines, line);
-        return lineDao.save(line);
-    }
-
-    public Line add2(String name, String color, String upStationId, String downStationId, Long distance) {
-        //section 생성 및 등록 TODO SectionDao.save
-        //line 생성
-        List<Line> lines = lineDao.findAll();
-        Line line = new Line(name, color);
-        validateDuplicatedLine(lines, line);
-        return lineDao.save(line);
+        Line savedLine = lineDao.save(line);
+        Section section = new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionH2Dao.save(savedLine.getId(), section);
+        return savedLine;
     }
 
     private void validateDuplicatedLine(List<Line> lines, Line newLine) {

@@ -85,17 +85,17 @@ npm run dev
 > 3 단계
 
 ### 노선 추가 기능 수정 
-- [ ] 3가지 정보 추가
-  - [ ] 상행 종점 (upStationId)
-  - [ ] 하행 종점 (downStationId)
-  - [ ] 두 종점간의 거리 (distance)
-- [ ] 노선 추가 시 상행-하행 구간 등록 
+- [x] 3가지 정보 추가
+  - [x] 상행 종점 (upStationId)
+  - [x] 하행 종점 (downStationId)
+  - [x] 두 종점간의 거리 (distance)
+- [x] 노선 추가 시 상행-하행 구간 등록 
   
 ### 구간 추가
-- [ ] 3가지 정보 추가
-  - [ ] 상행 종점 (upStationId)
-  - [ ] 하행 종점 (downStationId)
-  - [ ] 두 종점간의 거리 (distance)
+- [x] 3가지 정보 추가
+  - [x] 상행 종점 (upStationId)
+  - [x] 하행 종점 (downStationId)
+  - [x] 두 종점간의 거리 (distance)
 - [ ] 구간 추가 시 노선 거리 변경
 - [ ] 하나의 구간을 여러 노선에 등록 가능
 - [ ] 하나의 노선에서 중간역 추가될 경우 재배치 
