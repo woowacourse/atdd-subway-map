@@ -11,12 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.station.dto.StationResponse;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,11 +97,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineResponse expectedLineResponse = new LineResponse(
-                1L,
-                "신분당선",
-                "bg-red-600"
-        );
+        LineResponse expectedLineResponse = LineResponse.toDto(new Line(1L, "bg-red-600", "신분당선"));
 
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);

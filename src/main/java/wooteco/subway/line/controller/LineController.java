@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.service.LineService;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Transactional
@@ -27,25 +26,21 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
         Line newLine = lineService.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = LineResponse.toDto(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<LinesResponse>> getLines() {
+    public ResponseEntity<List<LineResponse>> getLines() {
         List<Line> lines = lineService.getLines();
-        List<LinesResponse> linesResponses = new ArrayList<>();
-        for (Line line : lines) {
-            linesResponses.add(new LinesResponse(line.getId(), line.getName(), line.getColor()));
-        }
-        return ResponseEntity.ok().body(linesResponses);
+        final List<LineResponse> lineResponses = LineResponse.toDtos(lines);
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable final Long id) {
-
         Line line = lineService.getLine(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        LineResponse lineResponse = LineResponse.toDto(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
