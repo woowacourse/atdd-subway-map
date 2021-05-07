@@ -15,14 +15,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import wooteco.subway.exception.DuplicateNameException;
+
 @RequestMapping("/lines")
 @RestController
 public class LineController {
 
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
+
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line newLine = LineDao.save(line);
+        boolean existsName = lineDao.findByName(lineRequest.getName()).isPresent();
+        if (existsName) {
+            throw new DuplicateNameException("이미 저장된 노선 이름입니다.");
+        }
+
+        final Line newLine = lineDao.save(lineRequest);
         final LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
                              .body(lineResponse);
@@ -30,7 +42,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<Line> lines = LineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
         final List<LineResponse> lineResponses = lines.stream()
                                                       .map(line -> new LineResponse(line.getId(),
                                                               line.getName(), line.getColor()))
@@ -40,7 +52,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        final Line line = LineDao.findById(id).orElseThrow(
+        final Line line = lineDao.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
         LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
         return ResponseEntity.ok().body(lineResponse);
@@ -49,16 +61,13 @@ public class LineController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> editLine(@PathVariable Long id,
                                          @RequestBody LineRequest lineRequest) {
-        final Line beforeLine = LineDao.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
-        final Line afterLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        LineDao.update(beforeLine, afterLine);
+        lineDao.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        LineDao.delete(id);
+        lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,14 +19,6 @@ import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        LineDao.LINES.clear();
-    }
-
 
     @DisplayName("노선을 생성한다.")
     @Test
