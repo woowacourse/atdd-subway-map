@@ -1,5 +1,6 @@
 package wooteco.subway.line.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.Line;
@@ -30,7 +31,7 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getColor(), lineRequest.getName());
         if (lineRepository.isExistName(newLine)) {
-            throw new IllegalArgumentException("이미 존재하는 Line 입니다.");
+            throw new DuplicateKeyException("이미 존재하는 Line 입니다.");
         }
         Line savedLine = lineRepository.save(newLine);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());

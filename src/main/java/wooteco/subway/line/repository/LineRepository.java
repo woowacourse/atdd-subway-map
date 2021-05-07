@@ -1,10 +1,13 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
@@ -13,6 +16,7 @@ import java.util.Objects;
 
 @Repository
 public class LineRepository {
+    private static final int NO_EXIST_COUNT = 0;
     private final JdbcTemplate jdbcTemplate;
 
     public LineRepository(final JdbcTemplate jdbcTemplate) {
@@ -31,17 +35,19 @@ public class LineRepository {
     }
 
     public Line save(final Line line) {
-        String query = "INSERT INTO line(color, name) VALUES(?, ?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(Connection -> {
-            PreparedStatement ps = Connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, line.getColor());
-            ps.setString(2, line.getName());
-            return ps;
-        }, keyHolder);
-
-        return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getColor(), line.getName());
+        try {
+            String query = "INSERT INTO line(color, name) VALUES(?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(Connection -> {
+                PreparedStatement ps = Connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, line.getColor());
+                ps.setString(2, line.getName());
+                return ps;
+            }, keyHolder);
+            return new Line(Objects.requireNonNull(keyHolder.getKey()).longValue(), line.getColor(), line.getName());
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateKeyException("중복되는 LineName 입니다.");
+        }
     }
 
     public List<Line> getLines() {
@@ -59,26 +65,24 @@ public class LineRepository {
                             resultSet.getString("color"),
                             resultSet.getString("name")
                     ), id);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("존재하지 않는 id 입니다.");
         }
     }
 
     public void update(final Line line) {
-        try {
-            String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
-            jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
+        int affectedRowCount = jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
+        if (affectedRowCount == NO_EXIST_COUNT) {
+            throw new NotFoundException("존재하지 않는 Line입니다.");
         }
     }
 
     public void deleteById(final Long id) {
-        try {
-            String query = "DELETE FROM line WHERE id = ?";
-            jdbcTemplate.update(query, id);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("존재하지 않는 id 입니다.");
+        String query = "DELETE FROM line WHERE id = ?";
+        int affectedRowCount = jdbcTemplate.update(query, id);
+        if (affectedRowCount == NO_EXIST_COUNT) {
+            throw new NotFoundException("존재하지 않는 id 입니다.");
         }
     }
 }

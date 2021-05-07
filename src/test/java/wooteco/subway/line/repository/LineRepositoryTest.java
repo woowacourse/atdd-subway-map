@@ -5,14 +5,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.domain.Line;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
@@ -84,7 +87,7 @@ class LineRepositoryTest {
 
     @DisplayName("id를 통해 Line을 삭제하면, DB에 있는 Line을 삭제한다.")
     @Test
-    void deleteById(){
+    void deleteById() {
         Long id = 1L;
 
         String query = "SELECT EXISTS(SELECT * FROM line WHERE id = ?)";
@@ -92,5 +95,35 @@ class LineRepositoryTest {
 
         lineRepository.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
+    }
+
+    @DisplayName("중복된 name을 가진 Line을 저장하려고 하면, 예외가 발생한다.")
+    @Test
+    void saveDuplicateName() {
+        Line line = new Line("bg-red-600", "신분당선");
+        assertThatThrownBy(() -> lineRepository.save(line))
+                .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @DisplayName("존재하지 않는 id의 Line을 가져오려고하면, 예외가 발생한다.")
+    @Test
+    void deleteFailByWrongId() {
+        assertThatThrownBy(() -> lineRepository.getLineById(100L))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("존재하지 않는 Line을 업데이트하려고 하면, 예외가 발생한다.")
+    @Test
+    void noExistLineUpdate() {
+        Line line = new Line(4L, "bg-red-800", "포비선");
+        assertThatThrownBy(() -> lineRepository.update(line))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("존재하지 않는 Line을 삭제하려고 하면, 예외가 발생한다.")
+    @Test
+    void noExistLineDelete() {
+        assertThatThrownBy(() -> lineRepository.deleteById(100L))
+                .isInstanceOf(NotFoundException.class);
     }
 }
