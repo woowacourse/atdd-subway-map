@@ -23,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql("classpath:tableInit.sql")
 class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
-    private final LineRequest firstLineRequest = new LineRequest("신분당선", "bg-red-600");;
+    private final LineRequest firstLineRequest = new LineRequest("신분당선", "bg-red-600");
+    private String url;
 
     @Override
     @BeforeEach
@@ -37,6 +38,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+
+        url = response.header("Location");
     }
 
     @DisplayName("노선 추가하는데 성공하면 201 created와 생성된 노선 정보를 반환한다")
@@ -47,7 +50,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
 
         LineResponse responseBody = response.body().as(LineResponse.class);
-
 
         assertThat(responseBody).usingRecursiveComparison()
                 .ignoringFields("upStationId", "downStationId", "distance", "id", "stations")
@@ -92,7 +94,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines/1")
+                .get(url)
                 .then().log().all()
                 .extract();
 
@@ -114,7 +116,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/1")
+                .put(url)
                 .then().log().all()
                 .extract();
 
@@ -127,7 +129,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/1")
+                .delete(url)
                 .then().log().all()
                 .extract();
 
