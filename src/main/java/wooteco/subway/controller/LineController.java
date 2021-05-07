@@ -33,13 +33,13 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.showLines();
+        List<LineResponse> lineResponses = lineService.findAllById();
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotExistException {
-        LineResponse lineResponse = lineService.showLine(id);
+        LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
