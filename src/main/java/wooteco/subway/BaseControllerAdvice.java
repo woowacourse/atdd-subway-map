@@ -9,7 +9,7 @@ import wooteco.subway.station.StationExistenceException;
 @ControllerAdvice
 public class BaseControllerAdvice {
     @ExceptionHandler({StationExistenceException.class, LineExistenceException.class})
-    public ResponseEntity<String> duplicateNameExceptionHandling(Exception exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
+    public ResponseEntity<ExceptionMessageObj> duplicateNameExceptionHandling(Exception exception) {
+        return ResponseEntity.badRequest().body(new ExceptionMessageObj(exception.getMessage()));
     }
 }

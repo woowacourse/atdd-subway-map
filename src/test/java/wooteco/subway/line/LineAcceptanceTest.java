@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.ExceptionMessageObj;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> response = createLineInsertResponse("초록색", "2호선");
 
-        System.out.println(response.header("Location"));
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -51,6 +51,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("존재하는 노선 이름입니다.");
     }
 
     @DisplayName("지하철 노선을 조회한다.")

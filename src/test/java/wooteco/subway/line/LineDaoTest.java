@@ -34,7 +34,7 @@ class LineDaoTest {
     @DisplayName("이름으로 노선 검색")
     void findByName() {
         Optional<Line> findStation = lineDao.findByName(lineName1);
-        assertTrue(findStation.isPresent());
+        assertThat(findStation.get().getName()).isEqualTo("2호선");
     }
 
     @Test
