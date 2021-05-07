@@ -27,6 +27,11 @@ public class StationDao {
         String query = "INSERT INTO station(name) VALUES(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        executeSaveQuery(station, query, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    private void executeSaveQuery(Station station, String query, KeyHolder keyHolder) {
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
@@ -36,7 +41,6 @@ public class StationDao {
         } catch (DuplicateKeyException e) {
             throw new SubwayException(ExceptionInformation.DUPLICATE_STATION_NAME_WHEN_INSERT);
         }
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public List<Station> findAll() {

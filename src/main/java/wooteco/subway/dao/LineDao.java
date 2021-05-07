@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,12 +25,24 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void delete(Long id) {
-        String query = "DELETE FROM line WHERE id = ?";
-        int affectedRowNumber = jdbcTemplate.update(query, id);
+    public long save(Line line) {
+        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
 
-        if (affectedRowNumber == 0) {
-            throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_DELETE);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        executeSaveQuery(line, query, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    private void executeSaveQuery(Line line, String query, KeyHolder keyHolder) {
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+                ps.setString(1, line.getName());
+                ps.setString(2, line.getColor());
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_INSERT);
         }
     }
 
@@ -51,49 +62,51 @@ public class LineDao {
     public Line find(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(query,
-                    (resultSet, rowNum) -> {
-                        Line line = new Line(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("color")
-                        );
-                        return line;
-                    }, id);
+            return selectLine(id, query);
         } catch (EmptyResultDataAccessException e) {
             throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_LOOKUP);
         }
+    }
+
+    private Line selectLine(Long id, String query) {
+        return jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> {
+                    Line line = new Line(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("color")
+                    );
+                    return line;
+                }, id);
     }
 
     public void modify(Long id, LineRequest lineRequest) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
         int affectedRowNumber = 0;
 
-        try {
-            affectedRowNumber = jdbcTemplate.update(query, lineRequest.getName(), lineRequest.getColor(), id);
-        } catch (DuplicateKeyException e) {
-            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_MODIFY);
-        }
+        affectedRowNumber = executeUpdateQuery(id, lineRequest, query);
 
         if (affectedRowNumber == 0) {
             throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_MODIFY);
         }
     }
 
-    public long save(Line line) {
-        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+    private int executeUpdateQuery(Long id, LineRequest lineRequest, String query) {
+        int affectedRowNumber;
         try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-                ps.setString(1, line.getName());
-                ps.setString(2, line.getColor());
-                return ps;
-            }, keyHolder);
+            affectedRowNumber = jdbcTemplate.update(query, lineRequest.getName(), lineRequest.getColor(), id);
         } catch (DuplicateKeyException e) {
-            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_INSERT);
+            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_MODIFY);
         }
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return affectedRowNumber;
+    }
+
+    public void delete(Long id) {
+        String query = "DELETE FROM line WHERE id = ?";
+        int affectedRowNumber = jdbcTemplate.update(query, id);
+
+        if (affectedRowNumber == 0) {
+            throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_DELETE);
+        }
     }
 }
