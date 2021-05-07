@@ -26,7 +26,7 @@ public class LineRepository {
         Long createdLineId = lineDao.create(name, color);
         Long createdSectionId = insertSection(createdLineId, upStationId, downStationId, distance);
         List<Section> sections = new ArrayList<>();
-        Section section = new Section(createdSectionId, upStationId, downStationId, distance);
+        Section section = new Section(createdSectionId, createdLineId, upStationId, downStationId, distance);
         sections.add(section);
         return new Line(createdLineId, name, color, sections);
     }

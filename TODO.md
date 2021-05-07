@@ -45,4 +45,4 @@
 ### DAO 구축 + 테스트 코드
 - [x] Line DAO + 테스트 코드
 - [x] Station DAO + 테스트 코드
-- [ ] Section DAO + 테스트 코드
+- [x] Section DAO + 테스트 코드
