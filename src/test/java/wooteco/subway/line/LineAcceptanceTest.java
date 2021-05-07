@@ -67,8 +67,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .get("/lines")
                 .then()
-                .log()
-                .all()
                 .extract();
 
         // then
@@ -98,8 +96,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .get(uri)
                 .then()
-                .log()
-                .all()
                 .extract();
 
         assertThat(response.jsonPath()
@@ -125,8 +121,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .put(uri)
                 .then()
-                .log()
-                .all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -145,26 +139,20 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .delete(uri)
                 .then()
-                .log()
-                .all()
                 .extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", color);
-        params1.put("name", name);
+        LineRequest lineRequest = new LineRequest(name, color, null, null, 0);
         return RestAssured.given()
                 .log()
                 .all()
-                .body(params1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then()
-                .log()
-                .all()
                 .extract();
     }
 }

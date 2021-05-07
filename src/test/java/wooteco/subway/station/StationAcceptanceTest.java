@@ -63,7 +63,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/stations")
-                .then().log().all()
+                .then()
                 .extract();
 
         // then
@@ -88,7 +88,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
-                .then().log().all()
+                .then()
                 .extract();
 
         // then
@@ -96,14 +96,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createStationInsertResponse(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        StationRequest stationRequest = new StationRequest(name);
         return RestAssured.given().log().all()
-                .body(params)
+                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
+                .then()
                 .extract();
     }
 }
