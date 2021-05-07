@@ -28,14 +28,14 @@ public class LineService {
         }
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> showAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showLine(Long id) {
+    public LineResponse showById(Long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(LineNotExistException::new);
         return new LineResponse(line);

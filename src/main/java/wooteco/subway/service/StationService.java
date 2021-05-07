@@ -27,7 +27,7 @@ public class StationService {
         }
     }
 
-    public List<StationResponse> showStations() {
+    public List<StationResponse> showAll() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
                 .map(StationResponse::new)
