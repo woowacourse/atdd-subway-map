@@ -87,9 +87,16 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
-        validateDuplicateName(lineRequest.getName());
+        validateDuplicateNameExceptMyself(id, lineRequest.getName());
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
+    }
+
+    private void validateDuplicateNameExceptMyself(Long id, String lineName) {
+        Optional<Line> lineByName = lineDao.findByName(lineName);
+        if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
+            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
+        }
     }
 
     private void validateDuplicateName(String lineName) {
