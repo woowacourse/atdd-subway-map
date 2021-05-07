@@ -43,11 +43,10 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.update(id, lineRequest.getName(), lineRequest.getColor());
-        URI location = URI.create("/lines/" + lineResponse.getId());
+        lineService.update(id, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity
-                .created(location)
-                .body(lineResponse);
+                .noContent()
+                .build();
     }
 
     @DeleteMapping("/{id}")
