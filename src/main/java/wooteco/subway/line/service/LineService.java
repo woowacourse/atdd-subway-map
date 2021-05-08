@@ -31,8 +31,8 @@ public class LineService {
         Line line = lineCreateRequest.toLine();
         Line savedLine = lineDao.save(line);
 
-        findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
-        findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId());
+        validateIsExistStationById(lineCreateRequest.getDownStationId());
+        validateIsExistStationById(lineCreateRequest.getUpStationId());
 
         return LineResponse.from(savedLine);
     }
@@ -51,17 +51,17 @@ public class LineService {
     }
 
     public LineResponse find(Long id) {
-        Line line = findLineByIdOrElseThrowException(id);
+        Line line = findLineById(id);
         return LineResponse.of(line, null);
     }
 
     public void delete(Long id) {
-        findLineByIdOrElseThrowException(id);
+        validateIsExistLineById(id);
         lineDao.delete(id);
     }
 
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
-        findLineByIdOrElseThrowException(id);
+        validateIsExistLineById(id);
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
         Line line = lineUpdateRequest.toLine(id);
         lineDao.update(line);
@@ -80,13 +80,24 @@ public class LineService {
         }
     }
 
+    private void validateIsExistStationById(Long id) {
+        if(stationDao.findById(id).isPresent()) {
+            throw new IllegalArgumentException("해당 지하철역이 존재하지 않습니다");
+        }
+    }
 
-    private Station findStationByIdOrElseThrowException(Long id) {
+    private Station findStationById(Long id) {
         return stationDao.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 지하철역이 존재하지 않습니다"));
     }
 
-    private Line findLineByIdOrElseThrowException(Long id) {
+    private void validateIsExistLineById(Long id) {
+        if(lineDao.findById(id).isPresent()) {
+            throw new IllegalArgumentException("해당 노선이 존재하지 않습니다");
+        }
+    }
+
+    private Line findLineById(Long id) {
         return lineDao.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다"));
     }
