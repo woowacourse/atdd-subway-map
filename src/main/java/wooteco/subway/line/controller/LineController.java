@@ -27,22 +27,14 @@ public class LineController {
         Line newLine = lineService.findLineById(id);
         return ResponseEntity.created(
                 URI.create("/lines/" + newLine.getId()))
-                .body(
-                        new LineResponse(
-                                newLine.getId(),
-                                newLine.getName(),
-                                newLine.getColor()));
+                .body(new LineResponse(newLine));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(line ->
-                        new LineResponse(
-                                line.getId(),
-                                line.getName(),
-                                line.getColor()))
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
