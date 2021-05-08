@@ -38,7 +38,7 @@ public class StationController {
         List<StationResponse> stationResponses = stations.stream()
             .map(StationResponse::new)
             .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")

@@ -47,7 +47,7 @@ public class LineController {
     @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
         Line line = lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
-        return ResponseEntity.ok().body(new LineResponse(line));
+        return ResponseEntity.ok(new LineResponse(line));
     }
 
     @PutMapping(value = "/lines/{id}")
