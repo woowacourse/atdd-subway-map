@@ -1,9 +1,9 @@
 package wooteco.subway.acceptanceTest.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.createStationWithName;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.getAllStationResponseDtosInOrder;
 import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestAndGetAllSavedStationIds;
-import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestAndGetAllSavedStationResponseDtosInOrder;
-import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestCreateStationWithNameAndGetResponse;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.acceptanceTest.AcceptanceTest;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
@@ -26,7 +26,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         String stationNameToCreate = "강남역";
 
         // when
-        ExtractableResponse<Response> response = requestCreateStationWithNameAndGetResponse(stationNameToCreate);
+        ExtractableResponse<Response> response = createStationWithName(stationNameToCreate);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,11 +42,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String duplicateStationName = "강남역";
-        requestCreateStationWithNameAndGetResponse(duplicateStationName);
+        createStationWithName(duplicateStationName);
         Long savedStationIdBeforeRequest = requestAndGetAllSavedStationIds().get(0);
 
         // when
-        ExtractableResponse<Response> response = requestCreateStationWithNameAndGetResponse(duplicateStationName);
+        ExtractableResponse<Response> response = createStationWithName(duplicateStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -62,12 +62,12 @@ class StationAcceptanceTest extends AcceptanceTest {
     void getAllStations() {
         /// given
         String firstStationName = "강남역";
-        requestCreateStationWithNameAndGetResponse(firstStationName);
+        createStationWithName(firstStationName);
         String secondStationName = "역삼역";
-        requestCreateStationWithNameAndGetResponse(secondStationName);
+        createStationWithName(secondStationName);
 
         // when
-        List<StationResponseDto> stationResponseDtosInOrder = requestAndGetAllSavedStationResponseDtosInOrder();
+        List<StationResponseDto> stationResponseDtosInOrder = getAllStationResponseDtosInOrder();
 
         // then
         StationResponseDto firstStationResponseDto = stationResponseDtosInOrder.get(0);
@@ -83,8 +83,8 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStationById() {
         // given
-        requestCreateStationWithNameAndGetResponse("강남역");
-        requestCreateStationWithNameAndGetResponse("역삼역");
+        createStationWithName("강남역");
+        createStationWithName("역삼역");
         List<Long> allSavedStationIdsBeforeDelete = requestAndGetAllSavedStationIds();
         Long stationIdToDelete = allSavedStationIdsBeforeDelete.get(0);
         Long stationIdNotToDelete = allSavedStationIdsBeforeDelete.get(1);

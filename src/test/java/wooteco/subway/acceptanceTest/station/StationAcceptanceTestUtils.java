@@ -17,7 +17,7 @@ import wooteco.subway.controller.dto.response.station.StationResponseDto;
 
 public class StationAcceptanceTestUtils {
 
-    public static ExtractableResponse<Response> requestCreateStationWithNameAndGetResponse(String name) {
+    public static ExtractableResponse<Response> createStationWithName(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -32,12 +32,12 @@ public class StationAcceptanceTestUtils {
     }
 
     public static List<Long> requestAndGetAllSavedStationIds() {
-        return requestAndGetAllSavedStationResponseDtosInOrder().stream()
+        return getAllStationResponseDtosInOrder().stream()
             .map(StationResponseDto::getId)
             .collect(Collectors.toList());
     }
 
-    public static List<StationResponseDto> requestAndGetAllSavedStationResponseDtosInOrder() {
+    public static List<StationResponseDto> getAllStationResponseDtosInOrder() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .accept(MediaType.APPLICATION_JSON_VALUE)

@@ -17,12 +17,11 @@ import wooteco.subway.controller.dto.response.line.LineResponseDto;
 
 public class LineAcceptanceTestUtils {
 
-    public static ExtractableResponse<Response> requestCreateLineAndGetResponse(String name, String color) {
-        return requestCreateLineAndGetResponse(name, color, 10L, 20L, 10);
+    public static ExtractableResponse<Response> createLine(String name, String color) {
+        return createLine(name, color, 10L, 20L, 10);
     }
 
-    public static ExtractableResponse<Response> requestCreateLineAndGetResponse(String name, String color,
-        Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -42,12 +41,12 @@ public class LineAcceptanceTestUtils {
     }
 
     public static List<Long> requestAndGetAllSavedLinesIds() {
-        return requestAndGetAllSavedLineResponseDtosInOrder().stream()
+        return getAllLinesInIdOrder().stream()
             .map(LineResponseDto::getId)
             .collect(Collectors.toList());
     }
 
-    public static List<LineResponseDto> requestAndGetAllSavedLineResponseDtosInOrder() {
+    public static List<LineResponseDto> getAllLinesInIdOrder() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -65,7 +64,7 @@ public class LineAcceptanceTestUtils {
         return lineResponseDtos;
     }
 
-    public static ExtractableResponse<Response> requestUpdateLineAndGetResponse(Long lineIdToUpdate, String newLineName, String newColor) {
+    public static ExtractableResponse<Response> requestUpdateLine(Long lineIdToUpdate, String newLineName, String newColor) {
         Map<String, String> params = new HashMap<>();
         params.put("name", newLineName);
         params.put("color", newColor);
@@ -82,7 +81,7 @@ public class LineAcceptanceTestUtils {
 
     public static LineResponseDto requestAndGetSingleSavedLineResponseDto(Long lineId) {
 
-        List<LineResponseDto> allLineResponseDtos = requestAndGetAllSavedLineResponseDtosInOrder();
+        List<LineResponseDto> allLineResponseDtos = getAllLinesInIdOrder();
         assertThat(allLineResponseDtos).hasSize(1);
 
         return allLineResponseDtos.stream()

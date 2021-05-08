@@ -1,30 +1,31 @@
 package wooteco.subway.acceptanceTest.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestCreateLineAndGetResponse;
-import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestCreateStationWithNameAndGetResponse;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.createLine;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.createStationWithName;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.controller.dto.response.line.LineWithAllStationsInOrderResponseDto;
+import wooteco.subway.controller.dto.response.line.LineStationsListResponseDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 
 public class SectionAcceptanceTestUtils {
-    public static final Station STATION_1 = new Station(4L, "첫 번째 역");
-    public static final Station STATION_2 = new Station(1L, "두 번째 역");
+    public static final Station STATION_1 = new Station(1L, "첫 번째 역");
+    public static final Station STATION_2 = new Station(2L, "두 번째 역");
     public static final Station STATION_3 = new Station(3L, "세 번째 역");
-    public static final Station STATION_4 = new Station(2L, "네 번째 역");
+    public static final Station STATION_4 = new Station(4L, "네 번째 역");
+    public static final Station NEW_STATION = new Station(5L, "새로운 역");
     public static final Long LINE_ID = 1L;
     public static final String LINE_NAME = "노선1";
     public static final String LINE_COLOR = "노선1의 색깔";
@@ -33,21 +34,40 @@ public class SectionAcceptanceTestUtils {
     public static final int NEW_SECTION_DISTANCE = 14;
     public static final int DEFAULT_SECTION_DISTANCE = 20;
 
-    public static ExtractableResponse<Response> requestCreateAndSetLineWithSectionsAndGetResponse(List<Station> stations) {
-        for (Station station : stations) {
-            requestCreateStationWithNameAndGetResponse(station.getName());
+    public static ExtractableResponse<Response> createLineWithSectionsOf(List<Station> stations) {
+
+        List<Station> sortedStationsById = stations.stream()
+            .sorted(Comparator.comparingLong(Station::getId))
+            .collect(Collectors.toList());
+
+        for (Station station : sortedStationsById) {
+            createStationWithName(station.getName());
         }
 
-        ExtractableResponse<Response> response = requestCreateLineAndGetResponse(LINE_NAME, LINE_COLOR,
+        ExtractableResponse<Response> response = createLine(LINE_NAME, LINE_COLOR, stations.get(0).getId(), stations.get(1).getId(), DEFAULT_SECTION_DISTANCE);
+
+        for (int i = 1; i + 1 < stations.size(); i++) {
+            createSection(new Section(LINE_ID, stations.get(i).getId(), stations.get(i + 1).getId(), DEFAULT_SECTION_DISTANCE));
+        }
+        createStationWithName(NEW_STATION.getName());
+        return response;
+    }
+
+    public static ExtractableResponse<Response> createLineWithSectionsOf(String lineName, String lineColor, List<Station> stations) {
+        for (Station station : stations) {
+            createStationWithName(station.getName());
+        }
+
+        ExtractableResponse<Response> response = createLine(lineName, lineColor,
             stations.get(0).getId(), stations.get(1).getId(), DEFAULT_SECTION_DISTANCE);
 
         for (int i = 1; i + 1 < stations.size(); i++) {
-            requestCreateSectionAndGetResponse(new Section(stations.get(i), stations.get(i + 1), DEFAULT_SECTION_DISTANCE));
+            createSection(new Section(stations.get(i), stations.get(i + 1), DEFAULT_SECTION_DISTANCE));
         }
         return response;
     }
 
-    public static ExtractableResponse<Response> requestCreateSectionAndGetResponse(Section newSection) {
+    public static ExtractableResponse<Response> createSection(Section newSection) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(newSection.getUpStationId()));
         params.put("downStationId", String.valueOf(newSection.getDownStationId()));
@@ -70,18 +90,12 @@ public class SectionAcceptanceTestUtils {
         assertThat(responseJsonPath.getInt("distance")).isEqualTo(newSection.getDistance());
     }
 
-    public static void requestAndAssertLineWithAllStationsInOrderResponseDtos(Stream<Station> expectedStations) {
-
-        LineWithAllStationsInOrderResponseDto responseDto = requestAllStationsOfLineInOrderAndGetResponseDto(LINE_ID);
-
-        List<StationResponseDto> expectedStationResponseDtos = expectedStations
-            .map(StationResponseDto::new)
-            .collect(Collectors.toList());
-
-        assertLineWithAllStationsInOrderResponseDto(responseDto, expectedStationResponseDtos);
+    public static void assertStationsList(List<Station> stations) {
+        LineStationsListResponseDto responseDto = getAllStationsListOf(LINE_ID);
+        assertStationsListResponseDto(responseDto, stations);
     }
 
-    public static LineWithAllStationsInOrderResponseDto requestAllStationsOfLineInOrderAndGetResponseDto(Long lineId) {
+    public static LineStationsListResponseDto getAllStationsListOf(Long lineId) {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -94,33 +108,31 @@ public class SectionAcceptanceTestUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
 
-        return response.jsonPath().getObject(".", LineWithAllStationsInOrderResponseDto.class);
+        return response.as(LineStationsListResponseDto.class);
     }
 
-    public static void assertLineWithAllStationsInOrderResponseDto(
-        LineWithAllStationsInOrderResponseDto responseDto, List<StationResponseDto> expectedStationResponseDtos) {
-
+    public static void assertStationsListResponseDto(LineStationsListResponseDto responseDto, List<Station> stations) {
         assertDefaultLineInforms(responseDto);
-        assertStationResponseDtosWithOrder(responseDto.getStations(), expectedStationResponseDtos);
+        assertStationsListResponseDtosOrder(responseDto.getStations(), stations);
     }
 
-    private static void assertDefaultLineInforms(LineWithAllStationsInOrderResponseDto responseDto) {
+    private static void assertDefaultLineInforms(LineStationsListResponseDto responseDto) {
         assertThat(responseDto.getId()).isEqualTo(LINE_ID);
         assertThat(responseDto.getName()).isEqualTo(LINE_NAME);
         assertThat(responseDto.getColor()).isEqualTo(LINE_COLOR);
     }
 
-    public static void assertStationResponseDtosWithOrder(List<StationResponseDto> actualDtos, List<StationResponseDto> expectedDtos) {
+    public static void assertStationsListResponseDtosOrder(List<StationResponseDto> actualDtos, List<Station> expectedStations) {
+        assertThat(actualDtos).hasSize(expectedStations.size());
         for (int i = 0; i < actualDtos.size(); i++) {
             StationResponseDto actualDto = actualDtos.get(i);
-            StationResponseDto expectedDto = expectedDtos.get(i);
-
-            assertThat(actualDto.getId()).isEqualTo(expectedDto.getId());
-            assertThat(actualDto.getName()).isEqualTo(expectedDto.getName());
+            Station expectedStation = expectedStations.get(i);
+            assertThat(actualDto.getId()).isEqualTo(expectedStation.getId());
+            assertThat(actualDto.getName()).isEqualTo(expectedStation.getName());
         }
     }
 
-    public static ExtractableResponse<Response> requestDeleteSectionAndGetResponse(Station stationToDelete) {
+    public static ExtractableResponse<Response> deleteSection(Station stationToDelete) {
         return RestAssured.given().log().all()
             .when()
             .delete("/lines/{lineId}/sections?stationId={stationId}", LINE_ID, stationToDelete.getId())

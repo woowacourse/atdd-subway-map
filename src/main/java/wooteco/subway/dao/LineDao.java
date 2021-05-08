@@ -26,7 +26,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Line line) {
+    public Line save(Line line) {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -35,7 +35,8 @@ public class LineDao {
             ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(id, line);
     }
 
     public Optional<Line> findById(Long id) {
@@ -51,9 +52,9 @@ public class LineDao {
         return jdbcTemplate.query(query, lineRowMapper);
     }
 
-    public int update(Long id, String color, String name) {
-        String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
-        return jdbcTemplate.update(query, color, name, id);
+    public int update(Long id, String name, String color) {
+        String query = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
+        return jdbcTemplate.update(query, name, color, id);
     }
 
     public int deleteById(Long id) {

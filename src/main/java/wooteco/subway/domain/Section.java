@@ -2,6 +2,7 @@ package wooteco.subway.domain;
 
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
+import wooteco.subway.domain.type.Direction;
 import wooteco.subway.exception.HttpException;
 
 public class Section {
@@ -22,6 +23,26 @@ public class Section {
 
     public Section(Station upStation, Station downStation, int distance) {
         this(null, null, upStation.getId(), downStation.getId(), distance);
+    }
+
+    public Section(Line line, Long upStationId, Long downStationId, Integer distance) {
+        this(null, line.getId(), upStationId, downStationId, distance);
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, Integer distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
+    public Section(Long id, Section section) {
+        this(id, section.getLineId(), section.getUpStationId(), section.getDownStationId(), section.getDistance());
+    }
+
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(null, lineId, upStation.getId(), downStation.getId(), distance);
     }
 
     private void validate(int distance) {
@@ -65,5 +86,12 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public Direction getDirectionOf(Long stationId) {
+        if (stationId.equals(upStationId)) {
+            return Direction.UP;
+        }
+        return Direction.DOWN;
     }
 }
