@@ -1,30 +1,77 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
+import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.DuplicatedNameException;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
+        resultSet.getLong("id"),
+        resultSet.getString("name")
+    );
+
+    public StationDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public Station save(final Station station) {
+        try {
+            final String sql = "INSERT INTO station (name) VALUES (?)";
+            final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+            final PreparedStatementCreator preparedStatementCreator = con -> {
+                final PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setString(1, station.getName());
+                return preparedStatement;
+            };
+            jdbcTemplate.update(preparedStatementCreator, keyHolder);
+            final long id = keyHolder.getKey().longValue();
+            return findById(id).get();
+        } catch (DuplicateKeyException e) {
+            throw new DuplicatedNameException("중복된 이름의 지하철역입니다.");
+        }
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM station WHERE id = ?";
+        int deletedCnt = jdbcTemplate.update(sql, id);
+
+        if (deletedCnt < 1) {
+            throw new DataNotFoundException("해당 Id의 지하철역이 없습니다.");
+        }
+    }
+
+    public List<Station> findAll() {
+        final String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, stationRowMapper);
+    }
+
+    public Optional<Station> findById(final Long id) {
+        final String sql = "SELECT * FROM station WHERE id = ?";
+        final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, id);
+        if (stations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stations.get(0));
+    }
+
+    public Optional<Station> findByName(final String name) {
+        final String sql = "SELECT * FROM station WHERE name = ?";
+        final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, name);
+        if (stations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(stations.get(0));
     }
 }
