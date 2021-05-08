@@ -21,7 +21,7 @@ public class StationDao {
     }
 
     public Station save(Station station) {
-        String sql = "insert into STATION (name) values (?)";
+        String sql = "INSERT INTO STATION (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -38,7 +38,7 @@ public class StationDao {
     }
 
     public List<Station> findAll() {
-        String sql = "select * from STATION";
+        String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
@@ -53,7 +53,7 @@ public class StationDao {
     }
 
     public void delete(Long id) {
-        String sql = "delete from STATION where id = ?";
+        String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

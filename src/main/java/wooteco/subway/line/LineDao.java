@@ -24,7 +24,7 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        String sql = "insert into LINE (name, color) values (?, ?)";
+        String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -49,13 +49,13 @@ public class LineDao {
     }
 
     public List<Line> findAll() {
-        String sql = "select * from LINE";
+        String sql = "SELECT * FROM LINE";
 
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     public Line findById(Long id) {
-        String sql = "select * from LINE where id = ?";
+        String sql = "SELECT * FROM LINE WHERE id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
@@ -65,13 +65,13 @@ public class LineDao {
     }
 
     public Line update(Line newLine) {
-        String sql = "update LINE set name = ?, color = ? where id = ?";
+        String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
         return newLine;
     }
 
     public void delete(Long id) {
-        String sql = "delete from LINE where id = ?";
+        String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
