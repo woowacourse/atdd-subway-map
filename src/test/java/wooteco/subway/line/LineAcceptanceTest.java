@@ -29,7 +29,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineColor = "green";
 
         // when
-        ExtractableResponse<Response> response = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(lineName, lineColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,12 +42,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String lineName = "2호선";
         String lineColor = "green";
-        노선_저장_후_Response(lineName, lineColor);
+        노선_저장_후_응답(lineName, lineColor);
 
         // when
         String lineName2 = "2호선";
         String lineColor2 = "red";
-        ExtractableResponse<Response> response = 노선_저장_후_Response(lineName2, lineColor2);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(lineName2, lineColor2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -62,15 +62,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String wrongLineColor = "";
 
         //when
-        ExtractableResponse<Response> response = 노선_저장_후_Response(wrongLineName, wrongLineColor);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(wrongLineName, wrongLineColor);
 
         // then
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(response.body().jsonPath().getString("color"))
-                .isEqualTo("노선 색을 지정해야합니다."),
-            () -> assertThat(response.body().jsonPath().getString("name"))
-                .isEqualTo("노선 이름은 최소 2글자 이상만 가능합니다.")
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("color"))
+                        .isEqualTo("노선 색을 지정해야합니다."),
+                () -> assertThat(response.body().jsonPath().getString("name"))
+                        .isEqualTo("노선 이름은 최소 2글자 이상만 가능합니다.")
         );
     }
 
@@ -80,12 +80,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String lineName = "2호선";
         String lineColor = "green";
-        노선_저장_후_Response(lineName, lineColor);
+        노선_저장_후_응답(lineName, lineColor);
 
         // when
         String lineName2 = "3호선";
         String lineColor2 = "green";
-        ExtractableResponse<Response> response = 노선_저장_후_Response(lineName2, lineColor2);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(lineName2, lineColor2);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -99,20 +99,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        노선_저장_후_Response(lineName, lineColor);
+        노선_저장_후_응답(lineName, lineColor);
 
         String lineName2 = "신분당선";
         String lineColor2 = "red";
-        노선_저장_후_Response(lineName2, lineColor2);
+        노선_저장_후_응답(lineName2, lineColor2);
 
         //when
-        ExtractableResponse<Response> response = 노선_조회_후_Response("/lines");
+        ExtractableResponse<Response> response = 노선_조회_후_응답("/lines");
 
         //then
         List<String> expectedLineNames = Arrays.asList(lineName, lineName2);
         List<String> resultLineNames = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getName)
-            .collect(Collectors.toList());
+                .map(LineResponse::getName)
+                .collect(Collectors.toList());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineNames).containsAll(expectedLineNames);
@@ -124,11 +124,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        ExtractableResponse<Response> response1 = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response1 = 노선_저장_후_응답(lineName, lineColor);
 
         //when
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
-        ExtractableResponse<Response> response = 노선_조회_후_Response("/lines/" + id);
+        ExtractableResponse<Response> response = 노선_조회_후_응답("/lines/" + id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -144,21 +144,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        ExtractableResponse<Response> response1 = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response1 = 노선_저장_후_응답(lineName, lineColor);
 
         String lineName2 = "3호선";
         String lineColor2 = "orange";
-        Map<String, String> params = 노선_저장을_위한_Request_정보(lineName2, lineColor2);
+        Map<String, String> params = 노선_저장을_위한_요청_정보(lineName2, lineColor2);
 
         //when
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/" + id)
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -170,11 +170,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        ExtractableResponse<Response> response1 = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response1 = 노선_저장_후_응답(lineName, lineColor);
 
         //when
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
-        ExtractableResponse<Response> response = 노선_조회_후_Response("/lines/" + (id + 1L));
+        ExtractableResponse<Response> response = 노선_조회_후_응답("/lines/" + (id + 1L));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -187,11 +187,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        ExtractableResponse<Response> response1 = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response1 = 노선_저장_후_응답(lineName, lineColor);
 
         //when
         Long id = response1.body().jsonPath().getObject(".", LineResponse.class).getId();
-        ExtractableResponse<Response> response = 노선_삭제_후_Response(id);
+        ExtractableResponse<Response> response = 노선_삭제_후_응답(id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -203,20 +203,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         String lineName = "2호선";
         String lineColor = "green";
-        ExtractableResponse<Response> response1 = 노선_저장_후_Response(lineName, lineColor);
+        ExtractableResponse<Response> response1 = 노선_저장_후_응답(lineName, lineColor);
 
         //when
         Long id = response1.body().jsonPath().getObject(".", LineResponse.class).getId();
 
-        ExtractableResponse<Response> response = 노선_삭제_후_Response(id + 1);
+        ExtractableResponse<Response> response = 노선_삭제_후_응답(id + 1);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo("존재하지 않는 노선 ID 입니다.");
     }
 
-    private ExtractableResponse<Response> 노선_저장_후_Response(String lineName, String lineColor) {
-        Map<String, String> params = 노선_저장을_위한_Request_정보(lineName, lineColor);
+    private ExtractableResponse<Response> 노선_저장_후_응답(String lineName, String lineColor) {
+        Map<String, String> params = 노선_저장을_위한_요청_정보(lineName, lineColor);
 
         // when
         return RestAssured.given().log().all()
@@ -228,14 +228,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private Map<String, String> 노선_저장을_위한_Request_정보(String lineName, String lineColor) {
+    private Map<String, String> 노선_저장을_위한_요청_정보(String lineName, String lineColor) {
         Map<String, String> params = new HashMap<>();
         params.put("color", lineColor);
         params.put("name", lineName);
         return params;
     }
 
-    private ExtractableResponse<Response> 노선_삭제_후_Response(Long id) {
+    private ExtractableResponse<Response> 노선_삭제_후_응답(Long id) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/lines/" + id)
@@ -244,7 +244,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_후_Response(String s) {
+    private ExtractableResponse<Response> 노선_조회_후_응답(String s) {
         return RestAssured.given().log().all()
                 .when()
                 .get(s)
