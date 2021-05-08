@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.NoLineException;
