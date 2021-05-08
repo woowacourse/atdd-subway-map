@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping(value="/lines")
 public class LineController {
     private LineDao lineDao;
 
@@ -19,7 +20,7 @@ public class LineController {
         this.lineDao = lineDao;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.createLine();
         long id = lineDao.save(line);
@@ -27,7 +28,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines")
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLine() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
@@ -36,20 +37,20 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
         Line line = lineDao.find(id);
         return ResponseEntity.ok().body(new LineResponse(line));
     }
 
-    @PutMapping(value = "/lines/{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
                                                          @RequestBody LineRequest lineRequest) {
         lineDao.modify(id, lineRequest.createLine());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
