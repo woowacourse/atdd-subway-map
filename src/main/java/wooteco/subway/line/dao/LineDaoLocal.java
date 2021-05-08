@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
 
-public class LineDaoCache implements LineDao {
+public class LineDaoLocal implements LineDao {
 
     private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;

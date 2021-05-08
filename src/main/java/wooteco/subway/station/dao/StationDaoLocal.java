@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.Station;
 
-public class StationDaoCache implements StationDao {
+public class StationDaoLocal implements StationDao {
 
     private final List<Station> stations = new ArrayList<>();
     private Long seq = 0L;
