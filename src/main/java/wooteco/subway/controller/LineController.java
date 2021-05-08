@@ -31,6 +31,7 @@ public class LineController {
         webDataBinder.addValidators(lineValidator);
     }
 
+    // TODO 노선명 중복 테스트 추가하기
     @PostMapping()
     public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse lineResponse = new LineResponse(lineService.create(lineRequest));

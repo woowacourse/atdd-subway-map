@@ -51,6 +51,32 @@ public class StationDaoTest {
     }
 
     @Test
+    @DisplayName("Id로 Station을 조회")
+    void findById(){
+        //given
+        final Long id = stationDao.insert(makeStation("A역"));
+
+        //when - then
+        assertThat(stationDao.findById(id)
+                .orElseThrow(StationNotExistException::new)
+                .getId())
+                .isEqualTo(id);
+    }
+
+    @Test
+    @DisplayName("Name으로 Station을 조회")
+    void findByName(){
+        //given
+        final Long id = stationDao.insert(makeStation("A역"));
+
+        //when - then
+        assertThat(stationDao.findByName("A역")
+                .orElseThrow(StationNotExistException::new)
+                .getId())
+                .isEqualTo(id);
+    }
+
+    @Test
     @DisplayName("Station 전체 목록 조회 테스트")
     void findAll() {
         //given

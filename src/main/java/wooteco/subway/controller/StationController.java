@@ -30,6 +30,7 @@ public class StationController {
         webDataBinder.addValidators(stationValidator);
     }
 
+    // TODO 역명 및 색 중복 테스트 추가하기
     @PostMapping()
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         StationResponse stationResponse = new StationResponse(stationService.create(stationRequest));
