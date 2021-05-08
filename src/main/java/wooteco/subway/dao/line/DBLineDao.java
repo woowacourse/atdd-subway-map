@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -14,8 +14,8 @@ import java.util.Optional;
 @Repository
 public class DBLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<LineEntity> lineRowMapper = (rs, rowNum) ->
-            new LineEntity(rs.getLong("id"),
+    private final RowMapper<Line> lineRowMapper = (rs, rowNum) ->
+            new Line(rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("color"));
 
@@ -24,55 +24,55 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public LineEntity save(final LineEntity lineEntity) {
-        validateDuplicate(lineEntity);
+    public Line save(final Line line) {
+        validateDuplicate(line);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, lineEntity.name());
-            ps.setString(2, lineEntity.color());
+            ps.setString(1, line.name());
+            ps.setString(2, line.color());
             return ps;
         }, keyHolder);
         long newId = keyHolder.getKey().longValue();
-        return new LineEntity(newId, lineEntity.name(), lineEntity.color());
+        return new Line(newId, line.name(), line.color());
     }
 
     @Override
-    public List<LineEntity> findAll() {
+    public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
 
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
-    public Optional<LineEntity> findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
-        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, id);
-        if (lineEntity.isEmpty()) {
+        List<Line> line = jdbcTemplate.query(sql, lineRowMapper, id);
+        if (line.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(lineEntity.get(0));
+        return Optional.ofNullable(line.get(0));
     }
 
     @Override
-    public Optional<LineEntity> findByName(final String name) {
+    public Optional<Line> findByName(final String name) {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
-        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, name);
-        if (lineEntity.isEmpty()) {
+        List<Line> line = jdbcTemplate.query(sql, lineRowMapper, name);
+        if (line.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(lineEntity.get(0));
+        return Optional.ofNullable(line.get(0));
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("DB 전체 삭제는 불가능!");
+        throw new UnsupportedOperationException("[ERROR] 데이터 전체 삭제는 지원하지 않습니다.");
     }
 
     @Override
@@ -88,13 +88,13 @@ public class DBLineDao implements LineDao {
         int rowCount = jdbcTemplate.update(sql, id);
 
         if(rowCount == 0) {
-            throw new IllegalStateException("존재하지 않는 id임");
+            throw new IllegalStateException("[ERROR] 존재하지 않는 line_id입니다.");
         }
     }
 
-    private void validateDuplicate(final LineEntity lineEntity) {
-        if (findByName(lineEntity.name()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
+    private void validateDuplicate(final Line line) {
+        if (findByName(line.name()).isPresent()) {
+            throw new IllegalStateException("[ERROR] 이미 존재하는 역입니다.");
         }
     }
 }

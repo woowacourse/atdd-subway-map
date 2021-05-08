@@ -4,14 +4,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.dao.entity.LineEntity;
-import wooteco.subway.dao.line.LineDao;
-import wooteco.subway.dao.line.MemoryLineDao;
+import wooteco.subway.domain.Line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class MemoryLineEntityDaoTest {
+class MemoryLineDaoTest {
     private String name;
     private Long id;
     private LineDao lineDao = new MemoryLineDao();
@@ -20,7 +18,7 @@ class MemoryLineEntityDaoTest {
     void setUp() {
         name = "아마찌선";
         id = 1L;
-        lineDao.save(new LineEntity(id, name, "bg-red-600"));
+        lineDao.save(new Line(id, name, "bg-red-600"));
     }
 
     @AfterEach
@@ -37,7 +35,7 @@ class MemoryLineEntityDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void saveDuplicatedName() {
-        assertThatThrownBy(() -> lineDao.save(new LineEntity(2L, name, "bg-red-600")));
+        assertThatThrownBy(() -> lineDao.save(new Line(2L, name, "bg-red-600")));
     }
 
     @Test
@@ -59,9 +57,9 @@ class MemoryLineEntityDaoTest {
         String updateColor = "bg-red-700";
 
         lineDao.update(id, updateName, updateColor);
-        LineEntity findLineEntity = lineDao.findById(id).get();
+        Line findLine = lineDao.findById(id).get();
 
-        assertThat(findLineEntity.name()).isEqualTo(updateName);
-        assertThat(findLineEntity.color()).isEqualTo(updateColor);
+        assertThat(findLine.name()).isEqualTo(updateName);
+        assertThat(findLine.color()).isEqualTo(updateColor);
     }
 }

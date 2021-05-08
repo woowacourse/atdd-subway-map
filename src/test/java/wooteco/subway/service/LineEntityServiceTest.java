@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.section.SectionAddRequest;
@@ -44,7 +44,7 @@ class LineEntityServiceTest {
     @DisplayName("노선 정상 저장된다")
     void save() {
         //given
-        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "화이트"));
+        when(lineDao.save(any(Line.class))).thenReturn(new Line(1L, "신분당선", "화이트"));
         when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(1L, 1L, 1L, 2L, 10));
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
@@ -61,7 +61,7 @@ class LineEntityServiceTest {
     void addSection() {
         Long lineId = 1L;
         SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, 2L, 10);
-        when(sectionDao.save(sectionAddRequest.toEntity(lineId))).thenReturn(null);
+        when(sectionDao.save(any(SectionEntity.class))).thenReturn(null);
         lineService.addSection(1L, sectionAddRequest);
     }
 }
