@@ -27,7 +27,7 @@ class LineDaoH2Test {
         Line line = new Line("10호선", "붉은색");
 
         //when
-        Line requestedLine = lineDao.create(line);
+        Line requestedLine = lineDao.save(line);
 
         //then
         assertThat(requestedLine.getName()).isEqualTo(line.getName());
@@ -42,10 +42,10 @@ class LineDaoH2Test {
         Line line2 = new Line("1호선", "파란색");
 
         // when
-        lineDao.create(line1);
+        lineDao.save(line1);
 
         //then
-        assertThatThrownBy(() -> lineDao.create(line2)).isInstanceOf(DuplicateKeyException.class);
+        assertThatThrownBy(() -> lineDao.save(line2)).isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("id값에 맞는 노선 반환")
@@ -53,7 +53,7 @@ class LineDaoH2Test {
     public void findLine() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = lineDao.create(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
 
         //when
@@ -83,9 +83,9 @@ class LineDaoH2Test {
     void findAll() {
         //given
         Line line1 = new Line("10호선", "붉은색");
-        lineDao.create(line1);
+        lineDao.save(line1);
         Line line2 = new Line("11호선", "노란색");
-        lineDao.create(line2);
+        lineDao.save(line2);
 
         //when
         List<Line> lines = lineDao.showAll();
@@ -102,7 +102,7 @@ class LineDaoH2Test {
     void update() {
         //given
         Line line1 = new Line("11호선", "보라색");
-        Line saveLine = lineDao.create(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
         String requestName = "분당선";
         String requestColor = "노란색";
@@ -122,7 +122,7 @@ class LineDaoH2Test {
     void remove() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = lineDao.create(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
 
         //when

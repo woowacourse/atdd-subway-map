@@ -19,7 +19,7 @@ class LineDaoMemoryTest {
     @BeforeEach
     public void setTest() {
         LINE_DAO_MEMORY.clean();
-        line = LINE_DAO_MEMORY.create(new Line("1호선", "파란색"));
+        line = LINE_DAO_MEMORY.save(new Line("1호선", "파란색"));
     }
 
     @DisplayName("노선 저장")
@@ -29,7 +29,7 @@ class LineDaoMemoryTest {
         Line line = new Line("10호선", "붉은색");
 
         //when
-        Line requestedLine = LINE_DAO_MEMORY.create(line);
+        Line requestedLine = LINE_DAO_MEMORY.save(line);
 
         //then
         assertThat(requestedLine.getName()).isEqualTo(line.getName());
@@ -44,10 +44,10 @@ class LineDaoMemoryTest {
         Line line2 = new Line("2호선", "파란색");
 
         //then
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.create(line1))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.save(line1))
             .isInstanceOf(DuplicateLineException.class);
 
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.create(line2))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.save(line2))
             .isInstanceOf(DuplicateLineException.class);
     }
 
@@ -56,7 +56,7 @@ class LineDaoMemoryTest {
     public void findLine() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = LINE_DAO_MEMORY.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.save(line1);
         long id = saveLine.getId();
 
         //when
@@ -98,7 +98,7 @@ class LineDaoMemoryTest {
     void update() {
         //given
         Line line1 = new Line("11호선", "보라색");
-        Line saveLine = LINE_DAO_MEMORY.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.save(line1);
         long id = saveLine.getId();
         String requestName = "분당선";
         String requestColor = "노란색";
@@ -118,7 +118,7 @@ class LineDaoMemoryTest {
     void remove() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = LINE_DAO_MEMORY.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.save(line1);
         long id = saveLine.getId();
 
         //when

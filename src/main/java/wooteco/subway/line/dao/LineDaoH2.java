@@ -31,7 +31,7 @@ public class LineDaoH2 implements LineDao {
     }
 
     @Override
-    public Line create(final Line line) {
+    public Line save(final Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());

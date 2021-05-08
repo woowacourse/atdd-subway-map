@@ -19,7 +19,7 @@ public class LineService {
 
     public LineDto createLine(final LineDto lineDto) {
         Line line = new Line(lineDto.getName(), lineDto.getColor());
-        Line saveLine = lineDao.create(line);
+        Line saveLine = lineDao.save(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
     }
 

@@ -14,7 +14,7 @@ public class LineDaoMemory implements LineDao {
     private static List<Line> lines = new ArrayList<>();
 
     @Override
-    public Line create(Line line) {
+    public Line save(Line line) {
         validateDuplicate(line);
 
         Line persistLine = createNewObject(line);

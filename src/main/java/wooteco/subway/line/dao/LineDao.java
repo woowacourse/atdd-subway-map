@@ -5,7 +5,7 @@ import wooteco.subway.line.Line;
 
 public interface LineDao {
 
-    Line create(Line line);
+    Line save(Line line);
 
     Line show(Long id);
 
