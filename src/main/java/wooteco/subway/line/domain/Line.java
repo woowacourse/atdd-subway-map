@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.name.domain.LineName;
 import wooteco.subway.name.domain.Name;
 
 import java.util.ArrayList;
@@ -10,6 +11,14 @@ public class Line {
     private Name name;
     private String color;
     private List<Section> sections = new ArrayList<>();
+
+    public Line(String name, String color) {
+        this(0L, new LineName(name), color);
+    }
+
+    public Line(Long id, String name, String color) {
+        this(id, new LineName(name), color);
+    }
 
     public Line(Long id, Name name, String color) {
         this.id = id;
