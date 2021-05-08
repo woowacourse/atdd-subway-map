@@ -9,6 +9,7 @@ import wooteco.subway.line.Line;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationH2Dao implements StationDao {
@@ -53,8 +54,17 @@ public class StationH2Dao implements StationDao {
     }
 
     @Override
-    public Station findByName(String name) {
+    public Optional<Station> findByName(String name) {
         String sql = "SELECT * FROM STATION WHERE name=?";
-        return jdbcTemplate.queryForObject(sql, Station.class, name);
+        return jdbcTemplate.query(sql,
+            (rs, rowNum) -> {
+                Station station = new Station(
+                    rs.getLong("id"),
+                    rs.getString("name")
+                );
+                return station;
+            }, name)
+            .stream()
+            .findAny();
     }
 }

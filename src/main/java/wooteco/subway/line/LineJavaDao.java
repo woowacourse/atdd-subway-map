@@ -68,16 +68,16 @@ public class LineJavaDao implements LineDao {
         lines.stream()
             .filter(line -> line.isSameId(id))
             .findAny()
-            .ifPresent(line -> lines.remove(line));
+            .ifPresent(lines::remove);
     }
 
     @Override
-    public Line findByName(String name) {
+    public Optional<Line> findByName(String name) {
         return null;
     }
 
     @Override
-    public Line findByColor(String color) {
+    public Optional<Line> findByColor(String color) {
         return null;
     }
 }

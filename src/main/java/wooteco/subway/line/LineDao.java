@@ -1,8 +1,11 @@
 package wooteco.subway.line;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface LineDao {
     Line save(Line line);
 
@@ -14,7 +17,7 @@ public interface LineDao {
 
     void delete(Long id);
 
-    Line findByName(String name);
+    Optional<Line> findByName(String name);
 
-    Line findByColor(String color);
+    Optional<Line> findByColor(String color);
 }

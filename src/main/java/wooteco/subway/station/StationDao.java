@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StationDao {
     Station save(Station station);
@@ -9,5 +10,5 @@ public interface StationDao {
 
     void delete(Long id);
 
-    Station findByName(String name);
+    Optional<Station> findByName(String name);
 }

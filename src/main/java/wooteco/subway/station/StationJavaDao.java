@@ -6,6 +6,7 @@ import wooteco.subway.exception.StationDuplicationException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StationJavaDao implements StationDao {
     private Long seq = 0L;
@@ -47,11 +48,11 @@ public class StationJavaDao implements StationDao {
         stations.stream()
             .filter(station -> station.isSameId(id))
             .findAny()
-            .ifPresent(station -> stations.remove(station));
+            .ifPresent(stations::remove);
     }
 
     @Override
-    public Station findByName(String name) {
+    public Optional<Station> findByName(String name) {
         return null;
     }
 }

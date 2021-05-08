@@ -5,7 +5,6 @@ import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.NoLineException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LineService {
@@ -24,20 +23,24 @@ public class LineService {
     }
 
     private void validateDuplicatedName(String name) {
-        Optional.ofNullable(lineDao.findByName(name))
-            .orElseThrow(LineDuplicationException::new);
+        lineDao.findByName(name)
+            .ifPresent(this::throwDuplicationException);
     }
 
     private void validateDuplicatedColor(String color) {
-        Optional.ofNullable(lineDao.findByColor(color))
-            .orElseThrow(LineDuplicationException::new);
+        lineDao.findByColor(color)
+            .ifPresent(this::throwDuplicationException);
+    }
+
+    private void throwDuplicationException(Line line) {
+        throw new LineDuplicationException();
     }
 
     public List<Line> lines() {
         return lineDao.findAll();
     }
 
-    public Line line(Long id){
+    public Line line(Long id) {
         return lineDao.findById(id)
             .orElseThrow(NoLineException::new);
     }
