@@ -19,7 +19,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
-        final Line line = lineService.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        final Line line = lineService.create(new Line(lineRequest.getName(), lineRequest.getColor()));
 
         final LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
@@ -33,7 +33,7 @@ public class LineController {
                 .map(line -> new LineResponse(line))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
@@ -41,13 +41,13 @@ public class LineController {
         final Line line = lineService.findById(id);
 
         final LineResponse lineResponse = new LineResponse(line);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> update(@RequestBody final LineRequest lineRequest,
                                                @PathVariable final Long id) {
-        lineService.save(new Line(id, lineRequest.getName(), lineRequest.getColor()));
+        lineService.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
 
         return ResponseEntity.ok().build();
     }

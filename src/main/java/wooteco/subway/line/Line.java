@@ -8,14 +8,14 @@ public class Line {
     public Line() {
     }
 
-    public Line(final String name, final String color) {
-        this(null, name, color);
-    }
-
     public Line(final Long id, final String name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(final String name, final String color) {
+        this(null, name, color);
     }
 
     public Long getId() {

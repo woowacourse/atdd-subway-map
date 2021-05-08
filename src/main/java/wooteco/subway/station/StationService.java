@@ -15,16 +15,16 @@ public class StationService {
     }
 
     public Station save(final Station station) {
-        if (stationDao.isExistingName(station.getName())) {
-            throw new StationException("이미 존재하는 역 이름입니다.");
-        }
+        validateName(station.getName());
 
         final Long id = stationDao.save(station.getName());
         return findById(id);
     }
 
-    public Station findById(final Long id) {
-        return stationDao.findById(id);
+    private void validateName(final String name){
+        if (stationDao.isExistingName(name)) {
+            throw new StationException("이미 존재하는 역 이름입니다.");
+        }
     }
 
     public List<Station> findAll() {
@@ -32,6 +32,17 @@ public class StationService {
     }
 
     public void delete(final Long id) {
+        validateExisting(id);
+
         stationDao.delete(id);
+    }
+
+    private void validateExisting(final Long id){
+        findById(id);
+    }
+
+    public Station findById(final Long id) {
+        return stationDao.findById(id)
+                .orElseThrow(()-> new StationException("존재하지 않는 역입니다."));
     }
 }

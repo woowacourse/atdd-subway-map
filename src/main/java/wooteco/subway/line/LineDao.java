@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -22,13 +23,15 @@ public class LineDao {
 
     public Long save(final String name, final String color) {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, name);
             ps.setString(2, color);
             return ps;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+
+        return keyHolder.getKeyAs(Long.TYPE);
     }
 
     public void delete(final Long id) {
@@ -44,14 +47,7 @@ public class LineDao {
     public Optional<Line> findById(final Long id) {
         try {
             final String sql = "SELECT * FROM LINE WHERE id = ?";
-            final Line result = jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    ),
-                    id);
+            final Line result = jdbcTemplate.queryForObject(sql, rowMapper(), id);
             return Optional.of(result);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -65,13 +61,14 @@ public class LineDao {
 
     public List<Line> findAll() {
         final String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(
-                sql,
-                (rs, rn) -> new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                )
+        return jdbcTemplate.query(sql, rowMapper());
+    }
+
+    private RowMapper<Line> rowMapper() {
+        return (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color")
         );
     }
 }
