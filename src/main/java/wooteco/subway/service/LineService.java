@@ -13,6 +13,8 @@ import wooteco.subway.domain.Line;
 public class LineService {
 
     private static final int NOT_FOUND = 0;
+    private static final int EXPECTED_COUNT = 1;
+
     private final LineDao lineDao;
 
     public LineService(final LineDao lineDao) {
@@ -41,7 +43,7 @@ public class LineService {
         Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
-            throw new EmptyResultDataAccessException(0);
+            throw new EmptyResultDataAccessException(EXPECTED_COUNT);
         }
     }
 

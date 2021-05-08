@@ -10,26 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.dao.line.LineDaoCache;
 import wooteco.subway.controller.dto.response.LineResponse;
-import wooteco.subway.dao.station.StationDaoCache;
 
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    private static final LineDaoCache lineDaoCache = new LineDaoCache();
-    private static final StationDaoCache stationDaoCache = new StationDaoCache();
-
-    @AfterEach
-    void cleanTestResidue() {
-        stationDaoCache.clean();
-        lineDaoCache.clean();
-    }
 
     @DisplayName("지하철노선을 생성한다.")
     @Test
