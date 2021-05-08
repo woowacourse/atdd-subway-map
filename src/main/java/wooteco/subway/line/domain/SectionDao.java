@@ -15,4 +15,6 @@ public interface SectionDao {
     void delete(Long id);
 
     List<SectionEntity> findByLineId(Long id);
+
+    Optional<SectionEntity> findByLineIdWithUpStationId(Long lineId, Long id);
 }

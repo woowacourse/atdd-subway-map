@@ -11,10 +11,7 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,15 +40,59 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLine(final Long id) {
-        LineEntity findLineEntity = findLineEntityById(id);
+    public LineResponse findLine(final Long lineId) {
+        LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
-
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
         List<Section> sections = sectionEntities.stream()
                 .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
                 .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sections));
+
+        Section headSection = findHeadSection(sections);
+        List<Section> sortedSections = toSortedSections(sections, headSection);
+
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sortedSections));
+    }
+
+    private Section findHeadSection(final List<Section> sections) {
+        for (Section source : sections) {
+            if (matchesCount(sections, source) == 0) {
+                return source;
+            }
+        }
+        throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
+    }
+
+    private int matchesCount(List<Section> sections, Section source) {
+        Long headStationId = source.upStation().getId();
+        int checkCount = 0;
+        for (Section target : sections) {
+            if (source.equals(target)) {
+                continue;
+            }
+            if (headStationId.equals(target.upStation().getId()) || headStationId.equals(target.downStation().getId())) {
+                checkCount++;
+            }
+        }
+        return checkCount;
+    }
+
+    private List<Section> toSortedSections(List<Section> sections, Section headSection) {
+        List<Section> testSections = new LinkedList<>();
+        testSections.add(headSection);
+        for (int i = 0; i < sections.size(); i++) {
+            Section finalHeadSection = headSection;
+            Optional<Section> findSection = sections.stream()
+                    .filter(section -> !section.equals(finalHeadSection))
+                    .filter(section -> section.upStation().equals(finalHeadSection.downStation()))
+                    .findFirst();
+
+            if (findSection.isPresent()) {
+                testSections.add(findSection.get());
+                headSection = findSection.get();
+            }
+        }
+        return testSections;
     }
 
     @Transactional

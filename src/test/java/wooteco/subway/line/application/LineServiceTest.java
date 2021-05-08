@@ -79,15 +79,18 @@ class LineServiceTest {
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
         when(stationDao.findById(3L)).thenReturn(Optional.of(new Station(3L, "마찌역")));
-        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(new SectionEntity(1L, 1L, 1L, 2L, 10),
-                new SectionEntity(2L, 1L, 2L, 3L, 6)));
+        when(stationDao.findById(4L)).thenReturn(Optional.of(new Station(4L, "검검역")));
+
+        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
+                new SectionEntity(2L, 1L, 4L, 3L, 5),
+                new SectionEntity(3L, 1L, 1L, 4L, 5)));
 
         //when
         LineResponse response = lineService.findLine(1L);
 
         //then
         assertThat(response.getName()).isEqualTo("신분당선");
-        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "검프역", "마찌역" );
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "검검역", "마찌역" );
     }
 
     private List<String> stationResponsesToString(List<StationResponse> response) {

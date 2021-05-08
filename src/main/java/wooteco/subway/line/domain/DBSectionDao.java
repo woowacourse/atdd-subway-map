@@ -74,4 +74,18 @@ public class DBSectionDao implements SectionDao {
         List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
         return lineEntity;
     }
+
+    @Override
+    public Optional<SectionEntity> findByLineIdWithUpStationId(final Long lineId, final  Long id) {
+        String sql = "SELECT * FROM SECTION" +
+                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
+                " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
+        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper,lineId, id);
+
+        if (lineEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(lineEntity.get(0));
+    }
 }
