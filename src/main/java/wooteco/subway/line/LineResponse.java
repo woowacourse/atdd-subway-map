@@ -1,7 +1,8 @@
 package wooteco.subway.line;
 
-import java.util.List;
 import wooteco.subway.station.StationResponse;
+
+import java.util.List;
 
 public class LineResponse {
 
@@ -24,6 +25,12 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public LineResponse(Line line) {
+        this.id = line.getId();
+        this.name = line.getName();
+        this.color = line.getColor();
     }
 
     public Long getId() {
