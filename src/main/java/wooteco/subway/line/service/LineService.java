@@ -24,7 +24,7 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntity();
         Line newLine = lineRepository.save(line);
         log.info(newLine.getName() + " 노선 생성 성공");
         return new LineResponse(newLine);
@@ -41,8 +41,7 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line newLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line newLine = lineRepository.findById(id);
         log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine);
     }
@@ -62,8 +61,7 @@ public class LineService {
     }
 
     private Line validatesRequest(Long id, LineRequest lineRequest) {
-        Line currentLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line currentLine = lineRepository.findById(id);
 
         validateUsableName(lineRequest.getName(), currentLine.getName());
         return new Line(lineRequest.getName(), lineRequest.getColor());

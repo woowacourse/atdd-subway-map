@@ -23,7 +23,7 @@ public class StationService {
 
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
-        Station station = new Station(stationRequest.getName());
+        Station station = stationRequest.toEntity();
         Station newStation = stationRepository.save(station);
         log.info(newStation.getName() + "역이 생성되었습니다.");
         return new StationResponse(newStation);
