@@ -11,7 +11,7 @@ import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
-import wooteco.subway.ResponseError;
+import wooteco.subway.ErrorResponse;
 
 import java.net.URI;
 import java.util.Collections;
@@ -31,8 +31,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody LineRequest requestDto) {
-        LineResponse response = lineService.save(requestDto);
+    public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
+        LineResponse response = lineService.save(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
@@ -64,12 +64,4 @@ public class LineController {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
-    }
-
-
 }

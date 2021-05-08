@@ -1,13 +1,13 @@
 package wooteco.subway.dto;
 
-public class LineSaveRequestDto {
+public class LineSaveRequest {
     private String name;
     private String color;
 
-    public LineSaveRequestDto() {
+    public LineSaveRequest() {
     }
 
-    public LineSaveRequestDto(String name, String color) {
+    public LineSaveRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
