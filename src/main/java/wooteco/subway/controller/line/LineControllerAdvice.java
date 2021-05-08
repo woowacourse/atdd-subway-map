@@ -3,6 +3,7 @@ package wooteco.subway.controller.line;
 import java.sql.SQLNonTransientException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,7 +14,7 @@ public class LineControllerAdvice {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<Void> duplicateLineAccessExceptionResponse(final SQLNonTransientException e) {
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .build();
     }
 
