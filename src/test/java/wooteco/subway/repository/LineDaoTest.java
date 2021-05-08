@@ -65,7 +65,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 아이디로 찾아올 때 에러가 발생한다.")
     void cannotFindById() {
         assertThatThrownBy(() -> {
-            lineDao.findById(99L)
+            lineDao.findById(Long.MAX_VALUE)
                 .orElseThrow(LineNotFoundException::new);
         }).isInstanceOf(LineNotFoundException.class);
     }

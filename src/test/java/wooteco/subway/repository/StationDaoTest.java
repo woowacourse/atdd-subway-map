@@ -64,7 +64,7 @@ class StationDaoTest {
     @DisplayName("존재하지 않는 아이디로 찾아올 때 에러가 발생한다.")
     void cannotFindById() {
         assertThatThrownBy(() -> {
-            stationDao.findById(99L)
+            stationDao.findById(Long.MAX_VALUE)
                 .orElseThrow(StationNotFoundException::new);
         }).isInstanceOf(StationNotFoundException.class);
     }
