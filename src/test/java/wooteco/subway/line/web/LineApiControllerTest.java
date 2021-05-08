@@ -182,7 +182,13 @@ class LineApiControllerTest {
 
     @Test
     @DisplayName("노선 조회 - 실패(해당 노선이 없을 경우)")
-    void name() {
+    void readLine_fail_notExistLine() throws Exception {
+        // given & when
+        ResultActions result = mockMvc.perform(get("/lines/" + Long.MAX_VALUE));
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {
@@ -192,18 +198,4 @@ class LineApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
     }
-
-    private ResultActions 노선_생성(String lineName, String color, String upStationName, String downStationName, int distance) throws Exception {
-
-        Long upStationId = stationDao.save(Station.from(upStationName)).getId();
-        Long downStationId = stationDao.save(Station.from(downStationName)).getId();
-        final LineRequest lineRequest =
-                new LineRequest(lineName, color, upStationId, downStationId, distance);
-        return mockMvc.perform(post("/lines")
-                .content(objectMapper.writeValueAsString(lineRequest))
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        );
-    }
-
 }
