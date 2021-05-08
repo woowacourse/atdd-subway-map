@@ -5,10 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
     private Section section;
@@ -30,9 +28,18 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("이미 등록된 구간인지 확인한다.")
-    void isAlreadyRegistered() {
-        boolean alreadyRegistered = sections.isAlreadyRegistered(section);
+    @DisplayName("노선에 역이 하나만 등록되어 있는지 확인한다. - 두개다 이미 등록되어 있음")
+    void isOnlyOneRegistered1() {
+        boolean isOnlyOneRegistered = sections.isOnlyOneRegistered(section);
+
+        assertThat(isOnlyOneRegistered).isFalse();
+    }
+
+    @Test
+    @DisplayName("노선에 역이 하나만 등록되어 있는지 확인한다. - 하나만 등록되어 있음")
+    void isAlreadyRegistered2() {
+        Section newSection = new Section(new Station(1L), new Station(3L), 10);
+        boolean alreadyRegistered = sections.isOnlyOneRegistered(newSection);
 
         assertThat(alreadyRegistered).isTrue();
     }

@@ -88,8 +88,8 @@ public class Line {
     }
 
     private void checkAbleToAddSection(Section section) {
-        if (sections.isAlreadyRegistered(section)) {
-            throw new IllegalStateException("[ERROR] 이미 등록되어 있는 구간입니다.");
+        if (!sections.isOnlyOneRegistered(section)) {
+            throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
         }
     }
 }
