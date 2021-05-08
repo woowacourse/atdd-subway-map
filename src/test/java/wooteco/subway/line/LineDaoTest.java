@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DuplicateException;
@@ -20,7 +18,7 @@ import wooteco.subway.exception.NotExistItemException;
 @Sql("classpath:tableInit.sql")
 class LineDaoTest {
 
-    private LineDao lineDao;
+    private final LineDao lineDao;
 
     public LineDaoTest(LineDao lineDao) {
         this.lineDao = lineDao;
@@ -30,6 +28,7 @@ class LineDaoTest {
     @DisplayName("노선 한 개가 저장된다.")
     void save() {
         Line line = lineDao.save(new Line("2호선", "bg-green-600"));
+
         assertThat(line.getId()).isEqualTo(1L);
         assertThat(line.getName()).isEqualTo("2호선");
         assertThat(line.getColor()).isEqualTo("bg-green-600");
@@ -41,9 +40,8 @@ class LineDaoTest {
         Line line = new Line("2호선", "bg-green-600");
         lineDao.save(line);
 
-        assertThatThrownBy(() -> {
-            lineDao.save(line);
-        }).isInstanceOf(DuplicateException.class);
+        assertThatThrownBy(() -> lineDao.save(line))
+            .isInstanceOf(DuplicateException.class);
     }
 
     @Test
@@ -53,16 +51,11 @@ class LineDaoTest {
         Line line3 = lineDao.save(new Line("3호선", "bg-orange-600"));
         Line line4 = lineDao.save(new Line("4호선", "bg-skyBlue-600"));
 
-        List<Line> lines = Arrays.asList(line2, line3, line4);
-        List<Line> linesAll = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
-        assertThat(linesAll).hasSize(3);
+        assertThat(lines).hasSize(3);
 
-        for (int i = 0; i < linesAll.size(); i++) {
-            assertThat(lines.get(i).getId()).isEqualTo(lines.get(i).getId());
-            assertThat(lines.get(i).getName()).isEqualTo(lines.get(i).getName());
-            assertThat(lines.get(i).getColor()).isEqualTo(lines.get(i).getColor());
-        }
+        assertThat(lines).containsExactly(line2, line3, line4);
     }
 
     @Test
