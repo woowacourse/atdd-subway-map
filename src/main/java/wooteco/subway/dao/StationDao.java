@@ -1,15 +1,15 @@
 package wooteco.subway.dao;
 
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.station.StationNotExistException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -25,15 +25,14 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Station insert(String name) {
+    public Long insert(Station station) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("station")
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> params = new HashMap<>(1);
-        params.put("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Station(id, name);
+        params.put("name", station.getName());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public List<Station> findAll() {
@@ -41,13 +40,18 @@ public class StationDao {
         return jdbcTemplate.query(query, STATION_MAPPER);
     }
 
-    public Station findByName(String name) {
+    public Optional<Station> findById(Long id) {
+        String query = "SELECT * FROM station WHERE id=?";
+        return jdbcTemplate.query(query, STATION_MAPPER, id)
+                .stream()
+                .findAny();
+    }
+
+    public Optional<Station> findByName(String name) {
         String query = "SELECT * FROM station WHERE name=?";
-        final Station station = DataAccessUtils.singleResult(jdbcTemplate.query(query, STATION_MAPPER, name));
-        if (Objects.isNull(station)) {
-            throw new StationNotExistException();
-        }
-        return station;
+        return jdbcTemplate.query(query, STATION_MAPPER, name)
+                .stream()
+                .findAny();
     }
 
     public void deleteById(Long id) {

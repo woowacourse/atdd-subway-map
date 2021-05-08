@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.controller.response.StationResponse;
+import wooteco.subway.dto.StationRequest;
+import wooteco.subway.exception.station.StationNotExistException;
 import wooteco.subway.service.dto.StationDto;
 
 import java.util.List;
@@ -18,8 +20,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationDto create(String name) {
-        return new StationDto(stationDao.insert(name));
+    public StationDto create(StationRequest stationRequest) {
+        final Long id = stationDao.insert(stationRequest.toEntity());
+        final Station station = stationDao.findById(id).orElseThrow(StationNotExistException::new);
+        return new StationDto(station);
     }
 
     public List<StationDto> findAll() {

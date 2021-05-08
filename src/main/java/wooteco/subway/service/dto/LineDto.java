@@ -17,6 +17,11 @@ public class LineDto {
         this.name = name;
     }
 
+    public LineDto(String color, String name) {
+        this.color = color;
+        this.name = name;
+    }
+
     public LineDto(Line line) {
         this(line.getId(), line.getColor(), line.getName());
     }

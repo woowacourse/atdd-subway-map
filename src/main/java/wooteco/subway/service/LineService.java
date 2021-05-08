@@ -3,10 +3,12 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.service.dto.LineDto;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,8 +20,10 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineDto create(String color, String name) {
-        return new LineDto(lineDao.insert(color, name));
+    public LineDto create(LineRequest lineRequest) {
+        final Long id = lineDao.insert(lineRequest.toEntity());
+        final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        return new LineDto(line);
     }
 
     public List<LineDto> findAllById() {
@@ -30,12 +34,12 @@ public class LineService {
     }
 
     public LineDto findById(Long id) {
-        Line line = lineDao.findById(id);
+        final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
         return new LineDto(line);
     }
 
-    public void updateById(Long id, String color, String name) {
-        lineDao.update(id, color, name);
+    public void updateById(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.toEntity());
     }
 
     public void deleteById(Long id) {

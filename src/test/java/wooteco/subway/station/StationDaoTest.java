@@ -9,11 +9,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.StationNotExistException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static wooteco.subway.Fixture.makeStation;
 
 @JdbcTest
 public class StationDaoTest {
@@ -30,48 +33,54 @@ public class StationDaoTest {
     @DisplayName("Station 추가 테스트")
     void insert() {
         //when
-        Station expected = stationDao.insert("A역");
+        Long id = stationDao.insert(makeStation("A역"));
+        Station station = stationDao.findById(id).orElseThrow(StationNotExistException::new);
 
         //then
-        assertThat(expected.getName()).isEqualTo("A역");
+        assertThat(station.getName()).isEqualTo("A역");
     }
 
     @Test
     @DisplayName("Station 중복된 이름 추가 예외처리 테스트")
     void duplicate_exception() {
         //given
-        stationDao.insert("A역");
+        stationDao.insert(makeStation("A역"));
 
         //when - then
-        assertThatThrownBy(() -> stationDao.insert("A역")).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> stationDao.insert(makeStation("A역"))).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     @DisplayName("Station 전체 목록 조회 테스트")
     void findAll() {
         //given
-        stationDao.insert("A역");
-        stationDao.insert("B역");
-        stationDao.insert("C역");
+        final Long a역_아이디 = stationDao.insert(makeStation("A역"));
+        final Long b역_아이디 = stationDao.insert(makeStation("B역"));
+        final Long c역_아이디 = stationDao.insert(makeStation("C역"));
 
         //when
-        List<Station> stations = stationDao.findAll();
+        final List<Long> stationIds = stationDao.findAll().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
 
         //then
-        assertThat(stations).hasSize(3);
+        assertThat(stationIds).containsExactly(a역_아이디, b역_아이디, c역_아이디);
     }
 
     @Test
     @DisplayName("삭제 요청 시 테스트")
     void delete() {
         //given
-        Station station = stationDao.insert("A역");
-        stationDao.insert("B역");
+        final Long id = stationDao.insert(makeStation("A역"));
+        final Long expected_id = stationDao.insert(makeStation("B역"));
 
         //when
-        stationDao.deleteById(station.getId());
+        stationDao.deleteById(id);
 
         // then
-        assertThat(stationDao.findAll()).hasSize(1);
+        assertThat(stationDao.findAll().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList()))
+                .containsExactly(expected_id);
     }
 }

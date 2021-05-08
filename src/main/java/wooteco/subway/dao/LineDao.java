@@ -25,16 +25,15 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Line insert(String color, String name) {
+    public Long insert(Line line) {
         final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("line")
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> params = new HashMap<>(2);
-        params.put("color", color);
-        params.put("name", name);
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Line(id, color, name);
+        params.put("color", line.getColor());
+        params.put("name", line.getName());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public List<Line> findAll() {
@@ -42,18 +41,16 @@ public class LineDao {
         return jdbcTemplate.query(query, LINE_MAPPER);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
-        final Line line = DataAccessUtils.singleResult(jdbcTemplate.query(query, LINE_MAPPER, id));
-        if (Objects.isNull(line)) {
-            throw new LineNotExistException();
-        }
-        return line;
+        return jdbcTemplate.query(query, LINE_MAPPER, id)
+                .stream()
+                .findAny();
     }
 
-    public void update(Long id, String color, String name) {
+    public void update(Long id, Line line) {
         String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
-        jdbcTemplate.update(query, color, name, id);
+        jdbcTemplate.update(query, line.getColor(), line.getName(), id);
     }
 
     public void delete(Long id) {
