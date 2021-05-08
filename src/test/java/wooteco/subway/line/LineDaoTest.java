@@ -105,7 +105,7 @@ public class LineDaoTest {
     @Test
     void failModifyLineNotExistsTest() {
         assertThatThrownBy(
-                () -> lineDao.modify(1L, new LineRequest())
+                () -> lineDao.modify(1L, new Line())
         ).isInstanceOf(SubwayException.class);
     }
 
@@ -115,7 +115,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "black"));
         assertThatThrownBy(
-                () -> lineDao.modify(2L, new LineRequest("신분당선", "red"))
+                () -> lineDao.modify(2L, new Line("신분당선", "red"))
         ).isInstanceOf(SubwayException.class);
     }
 
@@ -124,7 +124,7 @@ public class LineDaoTest {
     void modifyLineTest() {
         lineDao.save(new Line("신분당선", "black"));
         assertDoesNotThrow(
-                () -> lineDao.modify(1L, new LineRequest("2호선", "black"))
+                () -> lineDao.modify(1L, new Line("2호선", "black"))
         );
     }
 }

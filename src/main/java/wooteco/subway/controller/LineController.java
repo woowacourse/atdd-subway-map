@@ -21,7 +21,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.createLine();
         long id = lineDao.save(line);
         LineResponse lineResponse = new LineResponse(id, line);
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
@@ -45,7 +45,7 @@ public class LineController {
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
                                                          @RequestBody LineRequest lineRequest) {
-        lineDao.modify(id, lineRequest);
+        lineDao.modify(id, lineRequest.createLine());
         return ResponseEntity.ok().build();
     }
 

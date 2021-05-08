@@ -1,7 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.StationDao;
@@ -24,7 +22,7 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(
             @RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        Station station = stationRequest.createStation();
         long id = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(id, station);
         return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);

@@ -79,21 +79,21 @@ public class LineDao {
                 }, id);
     }
 
-    public void modify(Long id, LineRequest lineRequest) {
+    public void modify(Long id, Line line) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
         int affectedRowNumber = 0;
 
-        affectedRowNumber = executeUpdateQuery(id, lineRequest, query);
+        affectedRowNumber = executeUpdateQuery(id, line, query);
 
         if (affectedRowNumber == 0) {
             throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_MODIFY);
         }
     }
 
-    private int executeUpdateQuery(Long id, LineRequest lineRequest, String query) {
+    private int executeUpdateQuery(Long id, Line line, String query) {
         int affectedRowNumber;
         try {
-            affectedRowNumber = jdbcTemplate.update(query, lineRequest.getName(), lineRequest.getColor(), id);
+            affectedRowNumber = jdbcTemplate.update(query, line.getName(), line.getColor(), id);
         } catch (DuplicateKeyException e) {
             throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_MODIFY);
         }
