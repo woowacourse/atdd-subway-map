@@ -12,18 +12,6 @@ class StationResponseTest {
     private static final String NAME = "부산역";
 
     @Test
-    @DisplayName("역 관련 답변 생성")
-    void createStationResponse() {
-        // given
-
-        // when
-        StationResponse stationResponse = new StationResponse();
-
-        // then
-        assertThat(stationResponse).isInstanceOf(StationResponse.class);
-    }
-
-    @Test
     @DisplayName("역 관련 Id 확인 생성")
     void checkStationIdResponse() {
         //given

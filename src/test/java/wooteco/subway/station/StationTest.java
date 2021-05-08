@@ -8,18 +8,6 @@ import org.junit.jupiter.api.Test;
 class StationTest {
 
     @Test
-    @DisplayName("역 생성")
-    void createStation() {
-        // given
-
-        // when
-        Station station = new Station();
-
-        // then
-        assertThat(station).isInstanceOf(Station.class);
-    }
-
-    @Test
     @DisplayName("이름으로 역 생성")
     void createStationWithName() {
         // given

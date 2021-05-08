@@ -9,18 +9,6 @@ import wooteco.subway.station.dto.StationRequest;
 class StationRequestTest {
 
     @Test
-    @DisplayName("역 관련 요청 생성")
-    void createStationRequest() {
-        // given
-
-        // when
-        StationRequest stationRequest = new StationRequest();
-
-        // then
-        assertThat(stationRequest).isInstanceOf(StationRequest.class);
-    }
-
-    @Test
     @DisplayName("역 이름과 함께 역 관련 요청 생성")
     void createStationRequestWithName() {
         // given
