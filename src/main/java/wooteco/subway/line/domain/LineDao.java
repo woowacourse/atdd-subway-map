@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LineDao {
-    Line save(Line line);
+    LineEntity save(LineEntity lineEntity);
 
-    List<Line> findAll();
+    List<LineEntity> findAll();
 
-    Optional<Line> findById(Long id);
+    Optional<LineEntity> findById(Long id);
 
-    Optional<Line> findByName(String name);
+    Optional<LineEntity> findByName(String name);
 
     void clear();
 

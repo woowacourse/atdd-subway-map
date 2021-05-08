@@ -9,63 +9,63 @@ import java.util.Optional;
 
 public class MemoryLineDao implements LineDao {
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static List<LineEntity> lineEntities = new ArrayList<>();
 
     public MemoryLineDao() {
     }
 
     @Override
-    public Line save(final Line line) {
-        if (findByName(line.name()).isPresent()) {
+    public LineEntity save(final LineEntity lineEntity) {
+        if (findByName(lineEntity.name()).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 역 입니다.");
         }
-        Line persistLine = createNewObject(line);
-        lines.add(persistLine);
-        return persistLine;
+        LineEntity persistLineEntity = createNewObject(lineEntity);
+        lineEntities.add(persistLineEntity);
+        return persistLineEntity;
     }
 
     @Override
-    public List<Line> findAll() {
-        return lines;
+    public List<LineEntity> findAll() {
+        return lineEntities;
     }
 
-    private Line createNewObject(final Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
+    private LineEntity createNewObject(final LineEntity lineEntity) {
+        Field field = ReflectionUtils.findField(LineEntity.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
+        ReflectionUtils.setField(field, lineEntity, ++seq);
+        return lineEntity;
     }
 
     @Override
-    public Optional<Line> findById(final Long id) {
-        return lines.stream()
+    public Optional<LineEntity> findById(final Long id) {
+        return lineEntities.stream()
                 .filter(line -> line.sameId(id))
                 .findAny();
     }
 
     @Override
-    public Optional<Line> findByName(final String name) {
-        return lines.stream()
+    public Optional<LineEntity> findByName(final String name) {
+        return lineEntities.stream()
                 .filter(line -> line.sameName(name))
                 .findAny();
     }
 
     @Override
     public void clear() {
-        lines.clear();
+        lineEntities.clear();
         seq = 0L;
     }
 
     @Override
     public void update(final Long id, final String name, final String color) {
-        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        line.changeName(name);
-        line.changeColor(color);
+        LineEntity lineEntity = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        lineEntity.changeName(name);
+        lineEntity.changeColor(color);
     }
 
     @Override
     public void delete(Long id) {
-        Line findLine = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        lines.remove(findLine);
+        LineEntity findLineEntity = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        lineEntities.remove(findLineEntity);
     }
 }
