@@ -65,9 +65,10 @@ public class LineDaoCache implements LineDao {
             .findAny()
             .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
 
-        targetLine.setColor(line.getColor());
-        targetLine.setName(line.getName());
-
+        int index = lines.indexOf(targetLine);
+        lines.remove(index);
+        Line updatedLine = new Line(id, line.getName(), line.getColor());
+        lines.add(updatedLine);
         return 1;
     }
 
