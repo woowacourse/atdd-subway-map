@@ -1,69 +1,40 @@
 package wooteco.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import wooteco.subway.AcceptanceTest;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicatedNameException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 
-class StationServiceTest extends AcceptanceTest {
+@ExtendWith(MockitoExtension.class)
+class StationServiceTest {
 
-    @Autowired
+    @InjectMocks
     private StationService stationService;
 
-    @DisplayName("역 추가 기능")
+    @Mock
+    private StationDao stationDao;
+
+    @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         final String name = "잠실역";
-        stationService.createStation(new StationRequest(name));
+        final Station station = new Station(name);
+        final StationRequest stationRequest = spy(new StationRequest(name));
+        given(stationDao.save(station)).willReturn(new Station(1L, name));
 
-        final Station station = stationService.findByName(name);
-        assertThat(station.getName()).isEqualTo(name);
-    }
+        final StationResponse createdStation = stationService.createStation(stationRequest);
 
-    @DisplayName("중복된 이름의 지하철역 추가할 때 실패하는지 확인")
-    @Test
-    void checkDuplicatedStationName() {
-        final String name = "잠실역";
-        stationService.createStation(new StationRequest(name));
-
-        assertThatThrownBy(() -> stationService.createStation(new StationRequest(name)))
-            .isInstanceOf(DuplicatedNameException.class)
-            .hasMessage("중복된 이름의 지하철역입니다.");
-    }
-
-    @DisplayName("역 조회 기능이 실패하는지 확인")
-    @Test
-    void findStationsFail() {
-        final String name = "잠실역";
-        assertThatThrownBy(() -> stationService.findByName(name))
-            .isInstanceOf(DataNotFoundException.class)
-            .hasMessage("해당 이름의 지하철역이 없습니다.");
-    }
-
-    @DisplayName("역 제거 기능이 성공하는지 확인")
-    @Test
-    void deleteStation() {
-        final String name = "잠실역";
-        stationService.createStation(new StationRequest(name));
-        final Station station = stationService.findByName(name);
-
-        stationService.deleteStation(station.getId());
-        assertThatThrownBy(() -> stationService.findById(station.getId()))
-            .isInstanceOf(DataNotFoundException.class)
-            .hasMessage("해당 Id의 지하철역이 없습니다.");
-    }
-
-    @DisplayName("역 제거 기능이 실패하는지 확인")
-    @Test
-    void deleteStationFail() {
-        assertThatThrownBy(() -> stationService.deleteStation(20000L))
-            .isInstanceOf(DataNotFoundException.class)
-            .hasMessage("해당 Id의 지하철역이 없습니다.");
+        verify(stationRequest, times(1)).getName();
+        verify(stationDao, times(1)).save(station);
+        assertThat(createdStation.getId()).isEqualTo(1L);
     }
 }
