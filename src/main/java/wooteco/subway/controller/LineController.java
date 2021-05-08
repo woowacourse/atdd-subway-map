@@ -46,8 +46,7 @@ public class LineController {
             .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok()
-            .body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,9 +58,7 @@ public class LineController {
             lineServiceDto.getColor()
         );
 
-        return ResponseEntity.ok()
-            .body(lineResponse);
-
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +70,6 @@ public class LineController {
 
         return ResponseEntity.ok()
             .build();
-
     }
 
     @DeleteMapping("/{id}")
