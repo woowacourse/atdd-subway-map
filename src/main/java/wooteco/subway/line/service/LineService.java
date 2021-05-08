@@ -81,13 +81,13 @@ public class LineService {
     }
 
     private void validateIsExistStationById(Long id) {
-        if(stationDao.findById(id).isPresent()) {
+        if(!stationDao.findById(id).isPresent()) {
             throw new IllegalArgumentException("해당 지하철역이 존재하지 않습니다");
         }
     }
 
     private void validateIsExistLineById(Long id) {
-        if(lineDao.findById(id).isPresent()) {
+        if(!lineDao.findById(id).isPresent()) {
             throw new IllegalArgumentException("해당 노선이 존재하지 않습니다");
         }
     }
