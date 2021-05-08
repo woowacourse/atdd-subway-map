@@ -13,15 +13,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
-@DisplayName("지하철 노선 api")
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Sql("classpath:tableInit.sql")
+@DisplayName("지하철 노선 api")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")

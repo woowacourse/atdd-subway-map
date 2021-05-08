@@ -13,9 +13,9 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DuplicateException;
 
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:tableInit.sql")
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@SpringBootTest
 class StationDaoTest {
 
     private final StationDao stationDao;
@@ -24,8 +24,8 @@ class StationDaoTest {
         this.stationDao = stationDao;
     }
 
-    @Test
     @DisplayName("역 한개가 저장된다.")
+    @Test
     void save() {
         Station station = stationDao.save(new Station("잠실역"));
         System.out.println(station.getId());
@@ -33,8 +33,8 @@ class StationDaoTest {
         assertThat(station.getName()).isEqualTo("잠실역");
     }
 
-    @Test
     @DisplayName("중복된 이름을 갖는 역은 저장이 안된다.")
+    @Test
     void duplicateSaveValidate() {
         Station station = new Station("잠실역");
         stationDao.save(station);
@@ -44,8 +44,8 @@ class StationDaoTest {
         }).isInstanceOf(DuplicateException.class);
     }
 
-    @Test
     @DisplayName("전체 가져오기 테스트")
+    @Test
     void findAll() {
         Station station1 = stationDao.save(new Station("잠실역"));
         Station station2 = stationDao.save(new Station("잠실새내역"));
@@ -61,8 +61,8 @@ class StationDaoTest {
         }
     }
 
-    @Test
     @DisplayName("id를 이용해 한개 삭제한다.")
+    @Test
     void delete() {
         stationDao.save(new Station("잠실역"));
         assertThatCode(() -> stationDao.delete(1L)).doesNotThrowAnyException();
