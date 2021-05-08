@@ -1,5 +1,8 @@
 package wooteco.subway.domain.line;
 
+import wooteco.subway.domain.section.Section;
+
+import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -7,6 +10,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+    private List<Section> sections;
 
     public Line(Long id, String name, String color) {
         this.id = id;
