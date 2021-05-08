@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,10 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header("Location")).isEqualTo("/stations/1");
+
+        assertThat(response.body().jsonPath().getString("id")).isEqualTo("1");
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationNameToCreate);
     }
 
     private ExtractableResponse<Response> requestCreateStationWithNameAndGetResponse(String name) {
@@ -73,27 +77,31 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getAllStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = requestCreateStationWithNameAndGetResponse("강남역");
-        ExtractableResponse<Response> createResponse2 = requestCreateStationWithNameAndGetResponse("역삼역");
-
-        List<Long> createdStationIds = Stream.of(createResponse1, createResponse2)
-            .map(createResponse -> Long.parseLong(createResponse.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
+        String firstStationName = "강남역";
+        ExtractableResponse<Response> createResponse1 = requestCreateStationWithNameAndGetResponse(firstStationName);
+        String secondStationName = "역삼역";
+        ExtractableResponse<Response> createResponse2 = requestCreateStationWithNameAndGetResponse(secondStationName);
 
         // when
-        List<Long> retrievedStationIds = requestAndGetAllSavedStationIds();
+        List<StationResponseDto> stationResponseDtosInOrder = requestAndGetAllSavedStationResponseDtosInOrder();
 
         // then
-        assertThat(retrievedStationIds).containsExactlyInAnyOrderElementsOf(createdStationIds);
+        StationResponseDto firstStationResponseDto = stationResponseDtosInOrder.get(0);
+        assertThat(firstStationResponseDto.getId()).isEqualTo(1L);
+        assertThat(firstStationResponseDto.getName()).isEqualTo(firstStationName);
+
+        StationResponseDto secondStationResponseDto = stationResponseDtosInOrder.get(1);
+        assertThat(secondStationResponseDto.getId()).isEqualTo(2L);
+        assertThat(secondStationResponseDto.getName()).isEqualTo(secondStationName);
     }
 
     private List<Long> requestAndGetAllSavedStationIds() {
-        return requestAndGetAllSavedStationResponseDtos().stream()
+        return requestAndGetAllSavedStationResponseDtosInOrder().stream()
             .map(StationResponseDto::getId)
             .collect(Collectors.toList());
     }
 
-    private List<StationResponseDto> requestAndGetAllSavedStationResponseDtos() {
+    private List<StationResponseDto> requestAndGetAllSavedStationResponseDtosInOrder() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -105,8 +113,9 @@ class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-
-        return response.jsonPath().getList(".", StationResponseDto.class);
+        List<StationResponseDto> stationResponseDtos = new ArrayList<>(response.jsonPath().getList(".", StationResponseDto.class));
+        stationResponseDtos.sort(Comparator.comparingLong(StationResponseDto::getId));
+        return stationResponseDtos;
     }
 
     @DisplayName("지하철역을 Id로 제거한다.")
