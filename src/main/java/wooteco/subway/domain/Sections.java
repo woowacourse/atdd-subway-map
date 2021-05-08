@@ -7,7 +7,6 @@ import wooteco.subway.exception.section.InvalidSectionException;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
@@ -24,10 +23,38 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Station> stations() {
+    public List<Station> asStations() {
+        LinkedList<Station> sortedStation = new LinkedList<>();
+        final Section pivotSection = sections.get(0);
+        sortPreviousSections(sortedStation, pivotSection);
+        sortFollowingSections(sortedStation, pivotSection);
+        return sortedStation;
+    }
+
+    private void sortPreviousSections(LinkedList<Station> sortedSections, Section section) {
+        final Station upStation = section.getUpStation();
+        sortedSections.addFirst(upStation);
+        findSectionByDownStation(upStation)
+                .ifPresent(sec -> sortPreviousSections(sortedSections, sec));
+    }
+
+    private Optional<Section> findSectionByDownStation(Station targetStation) {
         return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toList());
+                .filter(section -> section.isDownStation(targetStation))
+                .findAny();
+    }
+
+    private void sortFollowingSections(LinkedList<Station> sortedSections, Section section) {
+        final Station downStation = section.getDownStation();
+        sortedSections.addLast(downStation);
+        findSectionByUpStation(downStation)
+                .ifPresent(sec -> sortFollowingSections(sortedSections, sec));
+    }
+
+    private Optional<Section> findSectionByUpStation(Station targetStation) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(targetStation))
+                .findAny();
     }
 
     public Optional<Section> affectedSection(Section newSection) {

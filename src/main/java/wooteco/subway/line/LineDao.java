@@ -33,4 +33,11 @@ public class LineDao {
                 .filter(line -> line.isSameName(name) || line.isSameColor(color))
                 .findAny();
     }
+
+    public Optional<Line> findLineById(Long lineId) {
+        return lines.stream()
+                .filter(line -> line.isSameId(lineId))
+                .findAny();
+
+    }
 }

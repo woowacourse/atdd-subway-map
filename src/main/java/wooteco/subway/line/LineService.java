@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.DuplicatedLineInformationException;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.section.SectionDao;
 
 @RequiredArgsConstructor
@@ -25,4 +27,12 @@ public class LineService {
         line.addSection(section);
         return line;
     }
+
+    public Line findLine(Long lineId) {
+        Line line = lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
+        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        line.insertSections(sections);
+        return line;
+    }
+
 }
