@@ -22,7 +22,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
             @RequestBody StationRequest stationRequest) {
         String name = stationRequest.getName();
-        if (stationDao.findStationByName(name).isPresent()) {
+        if (stationDao.isExistStationByName(name)) {
             return ResponseEntity.badRequest().build();
         }
         Station station = Station.of(name);

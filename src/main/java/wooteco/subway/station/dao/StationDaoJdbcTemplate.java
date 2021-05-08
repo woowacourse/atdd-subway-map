@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class StationDaoJdbcTemplate implements StationDao {
@@ -47,9 +46,9 @@ public class StationDaoJdbcTemplate implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
+    public boolean isExistStationByName(String name) {
         String sql = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.query(sql, stationRowMapper, name).stream().findAny();
+        return jdbcTemplate.query(sql, stationRowMapper, name).stream().findAny().isPresent();
     }
 
     @Override

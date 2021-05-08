@@ -6,7 +6,6 @@ import wooteco.subway.station.Station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class StationDaoLocal implements StationDao {
 
@@ -33,10 +32,9 @@ public class StationDaoLocal implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
+    public boolean isExistStationByName(String name) {
         return stations.stream()
-                .filter(station -> station.isSameName(name))
-                .findAny();
+                .anyMatch(station -> station.isSameName(name));
     }
 
     @Override
