@@ -2,11 +2,8 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
-import wooteco.subway.exception.StationDuplicationException;
-import wooteco.subway.line.Line;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StationService {
