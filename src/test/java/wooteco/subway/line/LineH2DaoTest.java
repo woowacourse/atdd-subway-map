@@ -19,7 +19,7 @@ class LineH2DaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("DELETE FROM LINE");
+        jdbcTemplate.execute("TRUNCATE TABLE LINE");
         jdbcTemplate.execute("ALTER TABLE LINE ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("INSERT INTO LINE (name, color) VALUES (?, ?)", "2호선", "초록색");
     }

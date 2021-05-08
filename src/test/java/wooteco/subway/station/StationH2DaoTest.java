@@ -19,7 +19,7 @@ class StationH2DaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("DELETE FROM STATION");
+        jdbcTemplate.execute("TRUNCATE TABLE STATION");
         jdbcTemplate.execute("ALTER TABLE STATION ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("INSERT INTO STATION (name) VALUES (?)", "강남역");
     }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
+@Sql("/truncate.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 생성한다.")
     @Test
