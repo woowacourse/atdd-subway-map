@@ -57,11 +57,10 @@ public class LineRepository {
 //                    resultSet.getString("name"),
 //                    resultSet.getString("color"));
 //
-//    public Long edit(Long lineId, String color, String name) {
-//        String query = "UPDATE LINE SET color = ?, name = ? WHERE id = ?";
-//        return (long) jdbcTemplate.update(query, color, name, lineId);
-//    }
-//
+    public int edit(Long lineId, String name, String color) {
+        return lineDao.edit(lineId, name, color);
+    }
+
     public Long deleteLineWithSectionByLineId(Long lineId) {
         String selectSectionQuery = "SELECT * FROM section WHERE line_id = ?";
         List<Long> sectionIds = jdbcTemplate.query(

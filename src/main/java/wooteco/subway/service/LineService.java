@@ -2,6 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.SectionDto;
+import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
@@ -65,10 +66,10 @@ public class LineService {
 //        return new LineResponse(foundLine.getId(), foundLine.getName(), foundLine.getName());
 //    }
 //
-//    public long editLine(Long lineId, LineEditRequest request) {
-//        return lineJdbcDao.edit(lineId, request.getColor(), request.getName());
-//    }
-//
+    public long editLine(Long lineId, LineEditRequestDto request) {
+        return lineRepository.edit(lineId, request.getName(), request.getColor());
+    }
+
     public long deleteLine(Long lineId) {
         return lineRepository.deleteLineWithSectionByLineId(lineId);
     }
