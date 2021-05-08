@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.line.exception.LineIllegalArgumentException;
-import wooteco.subway.section.exception.SectionIllegalArgumentException;
 import wooteco.subway.station.exception.StationIllegalArgumentException;
 
 @ControllerAdvice
@@ -29,11 +28,6 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(LineIllegalArgumentException.class)
     public ResponseEntity<String> LineIllegalArgumentExceptionHandler(LineIllegalArgumentException error) {
-        return ResponseEntity.badRequest().body(error.getMessage());
-    }
-
-    @ExceptionHandler(SectionIllegalArgumentException.class)
-    public ResponseEntity<String> SectionIllegalArgumentExceptionHandler(SectionIllegalArgumentException error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 }

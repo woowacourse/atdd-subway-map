@@ -4,15 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRoute;
 import wooteco.subway.line.dto.LineCreateRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.exception.LineIllegalArgumentException;
-import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.domain.Section;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +18,10 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
     }
 
     @Transactional
@@ -39,7 +33,6 @@ public class LineService {
         Line line = Line.of(lineCreateRequest);
         Line savedLine = lineDao.save(line);
 
-        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
         return LineResponse.from(savedLine);
     }
 
@@ -72,15 +65,8 @@ public class LineService {
     public LineResponse find(Long id) {
         Line line = lineDao.findById(id)
                 .orElseThrow(() -> new LineIllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
-        List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        List<StationResponse> stations = lineRoute.getOrderedStations()
-                .stream()
-                .map(stationDao::findById)
-                .map(Optional::get)
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-        return LineResponse.of(line, stations);
+
+        return LineResponse.from(line);
     }
 
     public void delete(Long id) {

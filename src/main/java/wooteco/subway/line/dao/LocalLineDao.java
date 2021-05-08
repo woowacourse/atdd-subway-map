@@ -14,7 +14,7 @@ import java.util.Optional;
 public class LocalLineDao implements LineDao {
 
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
 
     @Override
     public Line save(Line line) {
