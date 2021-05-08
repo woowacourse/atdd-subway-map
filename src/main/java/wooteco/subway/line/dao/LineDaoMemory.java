@@ -8,7 +8,7 @@ import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
 
-public class LineDaoCache implements LineDao {
+public class LineDaoMemory implements LineDao {
 
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();

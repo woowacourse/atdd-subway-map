@@ -11,15 +11,15 @@ import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
 
-class LineDaoCacheTest {
+class LineDaoMemoryTest {
 
-    private static final LineDaoCache lineDaoCache = new LineDaoCache();
+    private static final LineDaoMemory LINE_DAO_MEMORY = new LineDaoMemory();
     private static Line line;
 
     @BeforeEach
     public void setTest() {
-        lineDaoCache.clean();
-        line = lineDaoCache.create(new Line("1호선", "파란색"));
+        LINE_DAO_MEMORY.clean();
+        line = LINE_DAO_MEMORY.create(new Line("1호선", "파란색"));
     }
 
     @DisplayName("노선 저장")
@@ -29,7 +29,7 @@ class LineDaoCacheTest {
         Line line = new Line("10호선", "붉은색");
 
         //when
-        Line requestedLine = lineDaoCache.create(line);
+        Line requestedLine = LINE_DAO_MEMORY.create(line);
 
         //then
         assertThat(requestedLine.getName()).isEqualTo(line.getName());
@@ -44,10 +44,10 @@ class LineDaoCacheTest {
         Line line2 = new Line("2호선", "파란색");
 
         //then
-        assertThatThrownBy(() -> lineDaoCache.create(line1))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.create(line1))
             .isInstanceOf(DuplicateLineException.class);
 
-        assertThatThrownBy(() -> lineDaoCache.create(line2))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.create(line2))
             .isInstanceOf(DuplicateLineException.class);
     }
 
@@ -56,11 +56,11 @@ class LineDaoCacheTest {
     public void findLine() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = lineDaoCache.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.create(line1);
         long id = saveLine.getId();
 
         //when
-        Line requestedLine = lineDaoCache.show(id);
+        Line requestedLine = LINE_DAO_MEMORY.show(id);
 
         //then
         assertThat(requestedLine.getId()).isEqualTo(id);
@@ -77,7 +77,7 @@ class LineDaoCacheTest {
         long id = -1;
 
         //then
-        assertThatThrownBy(() -> lineDaoCache.show(id))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
@@ -87,7 +87,7 @@ class LineDaoCacheTest {
         //given
 
         //when
-        List<Line> lines = lineDaoCache.showAll();
+        List<Line> lines = LINE_DAO_MEMORY.showAll();
 
         //then
         assertThat(lines.get(0)).isEqualTo(line);
@@ -98,15 +98,15 @@ class LineDaoCacheTest {
     void update() {
         //given
         Line line1 = new Line("11호선", "보라색");
-        Line saveLine = lineDaoCache.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.create(line1);
         long id = saveLine.getId();
         String requestName = "분당선";
         String requestColor = "노란색";
         Line requestLine = new Line(requestName, requestColor);
 
         //when
-        lineDaoCache.update((int) id, requestLine);
-        Line responseLine = lineDaoCache.show(id);
+        LINE_DAO_MEMORY.update((int) id, requestLine);
+        Line responseLine = LINE_DAO_MEMORY.show(id);
 
         //then
         assertThat(responseLine.getName()).isEqualTo(requestName);
@@ -118,14 +118,14 @@ class LineDaoCacheTest {
     void remove() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = lineDaoCache.create(line1);
+        Line saveLine = LINE_DAO_MEMORY.create(line1);
         long id = saveLine.getId();
 
         //when
-        lineDaoCache.delete(id);
+        LINE_DAO_MEMORY.delete(id);
 
         //then
-        assertThatThrownBy(() -> lineDaoCache.show(id))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
@@ -138,7 +138,7 @@ class LineDaoCacheTest {
         //when
 
         //then
-        assertThatThrownBy(() -> lineDaoCache.delete(id))
+        assertThatThrownBy(() -> LINE_DAO_MEMORY.delete(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 }

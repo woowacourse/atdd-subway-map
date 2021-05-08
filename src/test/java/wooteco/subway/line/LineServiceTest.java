@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.line.dao.LineDaoCache;
+import wooteco.subway.line.dao.LineDaoMemory;
 import wooteco.subway.line.dto.LineDto;
 
 public class LineServiceTest {
@@ -52,7 +52,7 @@ public class LineServiceTest {
             new Line((long) 3, "울산선", "검은색")
         );
 
-        LineDaoCache mockLineDao = mock(LineDaoCache.class);
+        LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
         when(mockLineDao.showAll()).thenReturn(lines);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
@@ -83,7 +83,7 @@ public class LineServiceTest {
         //given
         Line line = new Line((long) 1, "창원선", "청록색");
 
-        LineDaoCache mockLineDao = mock(LineDaoCache.class);
+        LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
         when(mockLineDao.show(any())).thenReturn(line);
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
