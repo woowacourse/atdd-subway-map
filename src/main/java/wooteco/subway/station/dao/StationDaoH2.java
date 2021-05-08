@@ -41,7 +41,7 @@ public class StationDaoH2 implements StationDao {
 
     @Override
     public int countByName(final String name) {
-       String statement = "count * FROM STATION WHERE name = ?";
+       String statement = "SELECT * FROM STATION WHERE name = ?";
        List<Station> stations =  jdbcTemplate.query(statement, rowMapper, name);
        return stations.size();
     }
