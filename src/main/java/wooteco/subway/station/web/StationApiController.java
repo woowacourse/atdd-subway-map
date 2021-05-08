@@ -13,17 +13,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 
 @RestController
+@RequestMapping("/stations")
 @RequiredArgsConstructor
 public class StationApiController {
 
     private final StationService stationService;
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity createStation(
         @RequestBody @Valid StationRequest stationRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -36,7 +38,7 @@ public class StationApiController {
             .body(StationResponse.create(newStation));
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
 
@@ -48,7 +50,7 @@ public class StationApiController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.remove(id);
         return ResponseEntity.noContent().build();
