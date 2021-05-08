@@ -23,17 +23,17 @@ public class StationJdbcDao implements StationDao {
     }
 
     @Override
-    public Station save(StationRequest stationRequest) {
+    public Station save(Station station) {
         String sql = "INSERT INTO STATION (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, stationRequest.getName());
+            ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
 
         Long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Station(generatedId, stationRequest.getName());
+        return new Station(generatedId, station.getName());
     }
 
     @Override

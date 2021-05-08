@@ -1,13 +1,12 @@
 package wooteco.subway.dao;
 
-import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.domain.Station;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface StationDao {
-    Station save(StationRequest stationRequest);
+    Station save(Station station);
 
     List<Station> findAll();
 
