@@ -18,8 +18,8 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
+@DisplayName("Line api")
 @Sql("classpath:tableInit.sql")
-@DisplayName("지하철 노선 api")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")

@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.line.service.LineService;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
@@ -20,24 +22,23 @@ import wooteco.subway.line.dto.LineResponse;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
+        Line newLine = lineService.createLine(line);
         LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-
+        List<Line> lines = lineService.showLines();
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::new)
             .collect(Collectors.toList());
@@ -46,7 +47,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id);
+        Line line = lineService.showLine(id);
         LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.ok(lineResponse);
     }
@@ -55,13 +56,13 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(line);
+        lineService.updateLine(line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 

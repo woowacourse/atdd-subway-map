@@ -1,6 +1,6 @@
 package wooteco.subway.line.dto;
 
-import wooteco.subway.line.Line;
+import wooteco.subway.line.domain.Line;
 
 public class LineResponse {
 
