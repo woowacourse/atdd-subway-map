@@ -26,9 +26,15 @@ public class StationService {
     }
 
     public StationDto save(final NonIdStationDto nonIdStationDto) {
-        Station station = new Station(nonIdStationDto.getName());
-        Station saveStation = stationDao.save(station);
+        String targetName = nonIdStationDto.getName();
 
+        int matchedStationNumber = stationDao.countByName(targetName);
+        if(matchedStationNumber != 0) {
+            throw new NotFoundStationException("[ERROR] 해당하는 역은 이미 존재합니다.");
+        }
+
+        Station station = new Station(targetName);
+        Station saveStation = stationDao.save(station);
         return new StationDto(saveStation.getId(), saveStation.getName());
     }
 
