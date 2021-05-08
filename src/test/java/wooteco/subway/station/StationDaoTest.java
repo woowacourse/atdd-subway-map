@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateStationNameException;
 
 @Sql("classpath:tableInit.sql")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -40,7 +40,7 @@ class StationDaoTest {
 
         assertThatThrownBy(() -> {
             stationDao.save(station);
-        }).isInstanceOf(DuplicateException.class);
+        }).isInstanceOf(DuplicateStationNameException.class);
     }
 
     @DisplayName("전체 가져오기 테스트")

@@ -4,14 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NotExistItemException;
 
 @Sql("classpath:tableInit.sql")
@@ -42,7 +41,7 @@ class LineDaoTest {
 
         assertThatThrownBy(() -> {
             lineDao.save(line);
-        }).isInstanceOf(DuplicateException.class);
+        }).isInstanceOf(DuplicateLineNameException.class);
     }
 
     @DisplayName("모든 노선 목록을 조회한다")

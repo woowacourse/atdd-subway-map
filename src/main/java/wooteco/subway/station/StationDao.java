@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateStationNameException;
 
 @Repository
 public class StationDao {
@@ -31,7 +31,7 @@ public class StationDao {
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException();
+            throw new DuplicateStationNameException(e);
         }
 
         return createNewObject(station, keyHolder.getKey().longValue());
@@ -56,4 +56,5 @@ public class StationDao {
         String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }

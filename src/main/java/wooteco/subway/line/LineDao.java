@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.DuplicateException;
+import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NotExistItemException;
 
 @Repository
@@ -40,7 +40,7 @@ public class LineDao {
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateException();
+            throw new DuplicateLineNameException(e);
         }
 
         return createNewObject(line, keyHolder.getKey().longValue());
@@ -65,7 +65,7 @@ public class LineDao {
         try {
             return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotExistItemException();
+            throw new NotExistItemException(e);
         }
     }
 
@@ -79,4 +79,5 @@ public class LineDao {
         String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }
