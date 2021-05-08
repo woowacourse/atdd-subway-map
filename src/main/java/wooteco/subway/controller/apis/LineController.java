@@ -31,18 +31,16 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor(), new ArrayList<>());
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
+        LineResponse lineResponse = new LineResponse(line, new ArrayList<>());
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> shwLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor(),
-                new ArrayList<>()))
+            .map(line -> new LineResponse(line, new ArrayList<>()))
             .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
@@ -50,8 +48,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
-            new ArrayList<>());
+        LineResponse lineResponse = new LineResponse(line, new ArrayList<>());
         return ResponseEntity.ok().body(lineResponse);
     }
 
