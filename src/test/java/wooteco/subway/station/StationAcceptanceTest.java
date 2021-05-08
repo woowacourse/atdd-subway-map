@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    StationDao stationDao;
+    private StationDao stationDao;
 
     @AfterEach
     void afterEach() {
