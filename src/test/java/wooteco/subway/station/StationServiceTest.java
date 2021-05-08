@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.station.dao.StationDaoCache;
+import wooteco.subway.station.dao.StationDaoMemory;
 import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 
@@ -24,7 +24,7 @@ class StationServiceTest {
         Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
         Station station = new Station(requestStationDto.getName());
 
-        StationDaoCache mockDao = mock(StationDaoCache.class);
+        StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.save(any())).thenReturn(savedStation);
 
         StationService stationService = new StationService(mockDao);
@@ -47,7 +47,7 @@ class StationServiceTest {
             new Station((long) 3, "용산역")
         );
 
-        StationDaoCache mockDao = mock(StationDaoCache.class);
+        StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.showAll()).thenReturn(stations);
         StationService stationService = new StationService(mockDao);
 

@@ -3,7 +3,7 @@ package wooteco.subway.assembler;
 import wooteco.subway.line.LineService;
 import wooteco.subway.line.dao.LineDaoMemory;
 import wooteco.subway.station.StationService;
-import wooteco.subway.station.dao.StationDaoCache;
+import wooteco.subway.station.dao.StationDaoMemory;
 
 public class Assembler {
 
@@ -11,7 +11,7 @@ public class Assembler {
     private final LineService lineService;
 
     public Assembler() {
-        this.stationService = new StationService(new StationDaoCache());
+        this.stationService = new StationService(new StationDaoMemory());
         this.lineService = new LineService(new LineDaoMemory());
     }
 

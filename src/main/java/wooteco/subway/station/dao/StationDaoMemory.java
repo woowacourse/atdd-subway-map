@@ -8,7 +8,7 @@ import wooteco.subway.exception.DuplicateStationException;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.Station;
 
-public class StationDaoCache implements StationDao {
+public class StationDaoMemory implements StationDao {
 
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
