@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -38,9 +41,10 @@ class LineH2DaoTest {
     @Test
     void findAll() {
         Line line = new Line("3호선", "주황색");
+        List<Line> savedLines = Arrays.asList(line, new Line("2호선", "초록색"));
         lineDao.save(line);
 
-        assertThat(lineDao.findAll()).hasSize(2);
+        assertThat(lineDao.findAll()).containsExactlyInAnyOrderElementsOf(savedLines);
     }
 
     @DisplayName("노선 수정 테스트")
@@ -73,6 +77,8 @@ class LineH2DaoTest {
         Line savedLine = lineDao.save(line);
         lineDao.delete(savedLine.getId());
 
-        assertThat(lineDao.findAll()).hasSize(1);
+        List<Line> remainLines = Arrays.asList(new Line("2호선", "초록색"));
+
+        assertThat(lineDao.findAll()).containsExactlyInAnyOrderElementsOf(remainLines);
     }
 }

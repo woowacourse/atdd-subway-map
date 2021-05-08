@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -37,9 +40,10 @@ class StationH2DaoTest {
     @Test
     void findAll() {
         Station station = new Station("잠실역");
+        List<Station> savedStation = Arrays.asList(station, new Station("강남역"));
         stationDao.save(station);
 
-        assertThat(stationDao.findAll()).hasSize(2);
+        assertThat(stationDao.findAll()).containsExactlyInAnyOrderElementsOf(savedStation);
     }
 
     @DisplayName("역 삭제 테스트")
@@ -49,6 +53,8 @@ class StationH2DaoTest {
         Station savedStation = stationDao.save(station);
         stationDao.delete(savedStation.getId());
 
-        assertThat(stationDao.findAll()).hasSize(1);
+        List<Station> remainStation = Arrays.asList(new Station("강남역"));
+
+        assertThat(stationDao.findAll()).containsExactlyInAnyOrderElementsOf(remainStation);
     }
 }
