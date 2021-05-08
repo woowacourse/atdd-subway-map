@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.request.LineRequest;

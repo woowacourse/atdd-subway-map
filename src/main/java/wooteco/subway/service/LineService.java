@@ -1,11 +1,9 @@
 package wooteco.subway.service;
 
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.response.LineResponse;
-import wooteco.subway.exception.line.LineDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
 
 import java.util.List;

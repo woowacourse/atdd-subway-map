@@ -19,7 +19,7 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<String> handleDaoException(DuplicateKeyException e){
+    public ResponseEntity<String> handleDaoException(DuplicateKeyException e) {
         logger.error(String.valueOf(e.getMessage()));
         return ResponseEntity.badRequest().body("중복된 값이 존재합니다.");
     }
