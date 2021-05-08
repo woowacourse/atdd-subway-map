@@ -1,32 +1,23 @@
 package wooteco.subway.line;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class Line {
 
     private Long id;
     private String name;
     private String color;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public static Line create(String name, String color) {
+        return create(null, name, color);
     }
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public static Line create(Long id, String name, String color) {
+        return new Line(id, name, color);
     }
 
     public boolean isSameName(String name) {
@@ -44,5 +35,9 @@ public class Line {
 
     public boolean isNotSameId(Long id) {
         return !this.id.equals(id);
+    }
+
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
     }
 }

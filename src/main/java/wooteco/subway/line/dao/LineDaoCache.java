@@ -54,4 +54,11 @@ public class LineDaoCache implements LineDao {
     public void update(Long id, String name, String color) {
         findLineById(id).get().changeInfo(name, color);
     }
+
+    @Override
+    public Optional<Line> findLineByNameOrColor(String name, String color) {
+        return lines.stream()
+            .filter(line -> line.isSameName(name) || line.isSameColor(color))
+            .findAny();
+    }
 }
