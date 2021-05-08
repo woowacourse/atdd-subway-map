@@ -11,53 +11,50 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
-    private LineRepository lineRepository;
+    private LineService lineService;
 
-    public LineController(final LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineController(final LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody final Line lineRequest) {
-        final Line line = lineRepository.save(lineRequest);
-        final LineResponse lineResponse = lineResponseById(line.getId());
+    public ResponseEntity<LineResponse> create(@RequestBody final LineRequest lineRequest) {
+        final Line line = lineService.save(new Line(lineRequest.getName(), lineRequest.getColor()));
 
+        final LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> line(@PathVariable final Long id) {
-        final LineResponse lineResponse = lineResponseById(id);
-        return ResponseEntity.ok().body(lineResponse);
-    }
-
-    private LineResponse lineResponseById(final Long id) {
-        final Line line = lineRepository.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> lines() {
-        final List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineService.findAll();
 
         final List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(line -> new LineResponse(line))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(lineResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> line(@PathVariable final Long id) {
+        final Line line = lineService.findById(id);
+
+        final LineResponse lineResponse = new LineResponse(line);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@RequestBody final Line line) {
-        lineRepository.save(line);
+    public ResponseEntity<LineResponse> update(@RequestBody final LineRequest lineRequest,
+                                               @PathVariable final Long id) {
+        lineService.save(new Line(id, lineRequest.getName(), lineRequest.getColor()));
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable final Long id) {
-        final Line line = lineRepository.findById(id);
-        lineRepository.delete(line);
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+        lineService.delete(id);
 
         return ResponseEntity.noContent().build();
     }

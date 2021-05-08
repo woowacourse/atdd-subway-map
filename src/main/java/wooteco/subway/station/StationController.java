@@ -12,34 +12,33 @@ import java.util.stream.Collectors;
 @RequestMapping("/stations")
 public class StationController {
 
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StationController(final StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody final Station stationRequest) {
-        final Station station = stationRepository.save(stationRequest);
+    public ResponseEntity<StationResponse> create(@RequestBody final Station stationRequest) {
+        final Station station = stationService.save(stationRequest);
 
-        final StationResponse stationResponse = new StationResponse(station.getId(), station.getName());
+        final StationResponse stationResponse = new StationResponse(station);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
-        final List<Station> stations = stationRepository.findAll();
+    public ResponseEntity<List<StationResponse>> stations() {
+        final List<Station> stations = stationService.findAll();
 
         final List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStation(@PathVariable final Long id) {
-        final Station station = stationRepository.findById(id);
-        stationRepository.delete(station);
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+        stationService.delete(id);
 
         return ResponseEntity.noContent().build();
     }

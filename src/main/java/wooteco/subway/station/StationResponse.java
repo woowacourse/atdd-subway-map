@@ -4,7 +4,8 @@ public class StationResponse {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    public StationResponse(final Station station) {
+        this(station.getId(), station.getName());
     }
 
     public StationResponse(final Long id, final String name) {

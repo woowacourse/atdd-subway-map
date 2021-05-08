@@ -3,10 +3,12 @@ package wooteco.subway.station;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 
+@Repository
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -25,7 +27,7 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
-    public boolean isDuplicatedName(final String name) {
+    public boolean isExistingName(final String name) {
         final String sql = "SELECT EXISTS(SELECT * FROM STATION WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
@@ -42,7 +44,7 @@ public class StationDao {
     }
 
     public void delete(final Long id) {
-        String sql = "DELETE FROM STATION WHERE id = ?";
+        final String sql = "DELETE FROM STATION WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 

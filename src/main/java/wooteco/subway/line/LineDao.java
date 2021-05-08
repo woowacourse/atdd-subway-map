@@ -1,12 +1,16 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -37,10 +41,10 @@ public class LineDao {
         jdbcTemplate.update(sql, name, color, id);
     }
 
-    public Line findById(final Long id) {
+    public Optional<Line> findById(final Long id) {
         try {
             final String sql = "SELECT * FROM LINE WHERE id = ?";
-            return jdbcTemplate.queryForObject(
+            final Line result = jdbcTemplate.queryForObject(
                     sql,
                     (rs, rowNum) -> new Line(
                             rs.getLong("id"),
@@ -48,12 +52,13 @@ public class LineDao {
                             rs.getString("color")
                     ),
                     id);
-        } catch (Exception e) {
-            throw new LineException("존재하지 않는 노선입니다.");
+            return Optional.of(result);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
-    public boolean isDuplicatedName(final String name) {
+    public boolean isExistingName(final String name) {
         final String sql = "SELECT EXISTS(SELECT from LINE WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }

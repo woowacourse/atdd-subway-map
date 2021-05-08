@@ -1,20 +1,20 @@
 package wooteco.subway.line;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-@Repository
+@Service
 @Transactional
-public class LineRepository {
+public class LineService {
 
     private final LineDao lineDao;
 
-    public LineRepository(final JdbcTemplate jdbcTemplate) {
-        this.lineDao = new LineDao(jdbcTemplate);
+    public LineService(final LineDao lineDao) {
+        this.lineDao = lineDao;
     }
 
     public Line save(final Line line) {
@@ -27,28 +27,29 @@ public class LineRepository {
         return update(line);
     }
 
-    private void validateName(final String name) {
-        if (lineDao.isDuplicatedName(name)) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
     private Line create(final Line line) {
         final Long id = lineDao.save(line.getName(), line.getColor());
-        return lineDao.findById(id);
+        return findById(id);
     }
 
     private Line update(final Line line) {
         lineDao.update(line.getId(), line.getName(), line.getColor());
-        return lineDao.findById(line.getId());
+        return findById(line.getId());
     }
 
-    public void delete(final Line line) {
-        lineDao.delete(line.getId());
+    private void validateName(final String name) {
+        if (lineDao.isExistingName(name)) {
+            throw new LineException("이미 존재하는 노선 이름입니다.");
+        }
+    }
+
+    public void delete(final Long id) {
+        lineDao.delete(id);
     }
 
     public Line findById(final Long id) {
-        return lineDao.findById(id);
+        final Optional<Line> line = lineDao.findById(id);
+        return line.orElseThrow(() -> new LineException("존재하지 않는 노선입니다."));
     }
 
     public List<Line> findAll() {

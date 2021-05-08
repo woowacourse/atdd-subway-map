@@ -1,20 +1,21 @@
 package wooteco.subway.station;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-public class StationRepository {
+@Service
+@Transactional
+public class StationService {
     private final StationDao stationDao;
 
-    public StationRepository(final JdbcTemplate jdbcTemplate) {
-        this.stationDao = new StationDao(jdbcTemplate);
+    public StationService(final StationDao stationDao) {
+        this.stationDao = stationDao;
     }
 
     public Station save(final Station station) {
-        if (stationDao.isDuplicatedName(station.getName())) {
+        if (stationDao.isExistingName(station.getName())) {
             throw new StationException("이미 존재하는 역 이름입니다.");
         }
 
@@ -30,7 +31,7 @@ public class StationRepository {
         return stationDao.findAll();
     }
 
-    public void delete(final Station station) {
-        stationDao.delete(station.getId());
+    public void delete(final Long id) {
+        stationDao.delete(id);
     }
 }
