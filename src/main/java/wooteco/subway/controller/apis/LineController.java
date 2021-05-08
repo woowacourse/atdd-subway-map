@@ -42,14 +42,14 @@ public class LineController {
         List<LineResponse> lineResponses = lines.stream()
             .map(line -> new LineResponse(line, new ArrayList<>()))
             .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(line, new ArrayList<>());
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{id}")
