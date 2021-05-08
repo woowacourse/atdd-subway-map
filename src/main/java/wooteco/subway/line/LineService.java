@@ -19,10 +19,24 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineDto createLine(final NonIdLineDto NoneIdlineDto) {
-        Line line = new Line(NoneIdlineDto.getName(), NoneIdlineDto.getColor());
+    public LineDto createLine(final NonIdLineDto NonIdlineDto) {
+        checkExistedNameAndColor(NonIdlineDto);
+        Line line = new Line(NonIdlineDto.getName(), NonIdlineDto.getColor());
         Line saveLine = lineDao.save(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
+    }
+
+    private void checkExistedNameAndColor(NonIdLineDto nonIdlineDto) {
+        String name = nonIdlineDto.getName();
+        String color = nonIdlineDto.getColor();
+
+        if (lineDao.countByColor(color) != 0) {
+            throw new NotFoundLineException("[ERROR] 해당하는 노선의 색이 존재합니다.");
+        }
+
+        if (lineDao.countByName(name) != 0) {
+            throw new NotFoundLineException("[ERROR] 해당하는 노선의 이름이 존재합니다.");
+        }
     }
 
     public List<LineDto> findAll() {
