@@ -38,15 +38,23 @@ npm run dev
 ```
 <br>
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+## 🚀 기능 구현 목록
 
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
+- [x] 같은 이름 지하철역 생성 불가 기능 추가 
+- [x] 역 삭제 기능 추가
+- [x] 서비스 레이어 분리
+- [x] 노선 CRUD 구현
+    - [x] 노선 등록
+        - [x] 예외: 상행 하행 같으면 안됨.
+        - [x] 예외: 상행역이 존재해야함.
+        - [x] 예외: 하행역이 존재해야함.
+        - [x] 에외: 중복된 노선 이름 등록 불가.
+    - [x] 노선 조회
+    - [x] 노선 전체 조회
+    - [x] 노선 업데이트
+        - [x] 예외: 중복된 노선 이름으로 수정 불가.
+    - [x] 노선 삭제
+   
 <br>
 
 ## 📝 License
