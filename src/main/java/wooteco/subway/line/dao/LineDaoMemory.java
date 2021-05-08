@@ -3,10 +3,12 @@ package wooteco.subway.line.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
+import wooteco.subway.station.Station;
 
 public class LineDaoMemory implements LineDao {
 
@@ -56,6 +58,22 @@ public class LineDaoMemory implements LineDao {
         ReflectionUtils.setField(field, line, ++seq);
 
         return line;
+    }
+
+    @Override
+    public int countByName(String name) {
+        List<Line> matchedlines = lines.stream()
+            .filter(line -> (line.getName()).equals(name))
+            .collect(Collectors.toList());
+        return matchedlines.size();
+    }
+
+    @Override
+    public int countByColor(String color) {
+        List<Line> matchedLines = lines.stream()
+            .filter(line -> (line.getColor()).equals(color))
+            .collect(Collectors.toList());
+        return matchedLines.size();
     }
 
     @Override

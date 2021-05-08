@@ -54,6 +54,20 @@ public class LineDaoH2 implements LineDao {
     }
 
     @Override
+    public int countByName(final String name) {
+        String statement = "SELECT * FROM LINE WHERE name = ?";
+        List<Line> lines =  jdbcTemplate.query(statement, rowMapper, name);
+        return lines.size();
+    }
+
+    @Override
+    public int countByColor(final String color) {
+        String statement = "SELECT * FROM LINE WHERE color = ?";
+        List<Line> lines =  jdbcTemplate.query(statement, rowMapper, color);
+        return lines.size();
+    }
+
+    @Override
     public int update(final long id, final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);

@@ -48,6 +48,37 @@ class LineDaoH2Test {
         assertThatThrownBy(() -> lineDao.save(line2)).isInstanceOf(DuplicateKeyException.class);
     }
 
+    @Test
+    @DisplayName("주어진 이름과 같은 노선 세기")
+    public void countByName() {
+        String name = "1호선";
+        String color = "파란색";
+        Line line1 = new Line(name, color);
+        lineDao.save(line1);
+
+        // when
+        int number = lineDao.countByName(name);
+
+        // then
+        assertThat(number).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("주어진 색깔과 같은 노선 세기")
+    public void countByColor() {
+        String name = "1호선";
+        String color = "파란색";
+        Line line1 = new Line(name, color);
+        lineDao.save(line1);
+
+        // when
+        int number = lineDao.countByColor(color);
+
+        // then
+        assertThat(number).isEqualTo(1);
+    }
+
+
     @DisplayName("id값에 맞는 노선 반환")
     @Test
     public void findLine() {

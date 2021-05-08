@@ -13,13 +13,13 @@ import wooteco.subway.line.Line;
 
 class LineDaoMemoryTest {
 
-    private static final LineDaoMemory LINE_DAO_MEMORY = new LineDaoMemory();
+    private static final LineDaoMemory lineDao = new LineDaoMemory();
     private static Line line;
 
     @BeforeEach
     public void setTest() {
-        LINE_DAO_MEMORY.clean();
-        line = LINE_DAO_MEMORY.save(new Line("1호선", "파란색"));
+        lineDao.clean();
+        line = lineDao.save(new Line("1호선", "파란색"));
     }
 
     @DisplayName("노선 저장")
@@ -29,7 +29,7 @@ class LineDaoMemoryTest {
         Line line = new Line("10호선", "붉은색");
 
         //when
-        Line requestedLine = LINE_DAO_MEMORY.save(line);
+        Line requestedLine = lineDao.save(line);
 
         //then
         assertThat(requestedLine.getName()).isEqualTo(line.getName());
@@ -44,11 +44,38 @@ class LineDaoMemoryTest {
         Line line2 = new Line("2호선", "파란색");
 
         //then
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.save(line1))
+        assertThatThrownBy(() -> lineDao.save(line1))
             .isInstanceOf(DuplicateLineException.class);
 
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.save(line2))
+        assertThatThrownBy(() -> lineDao.save(line2))
             .isInstanceOf(DuplicateLineException.class);
+    }
+
+    @Test
+    @DisplayName("주어진 이름과 같은 노선 세기")
+    public void countByName() {
+
+        String name = "1호선";
+        String color = "파란색";
+
+        // when
+        int number = lineDao.countByColor(color);
+
+        // then
+        assertThat(number).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("주어진 색깔과 같은 노선 세기")
+    public void countByColor() {
+        String name = "1호선";
+        String color = "파란색";
+
+        // when
+        int number = lineDao.countByColor(color);
+
+        // then
+        assertThat(number).isEqualTo(1);
     }
 
     @DisplayName("id값에 맞는 노선 반환")
@@ -56,11 +83,11 @@ class LineDaoMemoryTest {
     public void findLine() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = LINE_DAO_MEMORY.save(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
 
         //when
-        Line requestedLine = LINE_DAO_MEMORY.show(id);
+        Line requestedLine = lineDao.show(id);
 
         //then
         assertThat(requestedLine.getId()).isEqualTo(id);
@@ -77,7 +104,7 @@ class LineDaoMemoryTest {
         long id = -1;
 
         //then
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.show(id))
+        assertThatThrownBy(() -> lineDao.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
@@ -87,7 +114,7 @@ class LineDaoMemoryTest {
         //given
 
         //when
-        List<Line> lines = LINE_DAO_MEMORY.showAll();
+        List<Line> lines = lineDao.showAll();
 
         //then
         assertThat(lines.get(0)).isEqualTo(line);
@@ -98,15 +125,15 @@ class LineDaoMemoryTest {
     void update() {
         //given
         Line line1 = new Line("11호선", "보라색");
-        Line saveLine = LINE_DAO_MEMORY.save(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
         String requestName = "분당선";
         String requestColor = "노란색";
         Line requestLine = new Line(requestName, requestColor);
 
         //when
-        LINE_DAO_MEMORY.update((int) id, requestLine);
-        Line responseLine = LINE_DAO_MEMORY.show(id);
+        lineDao.update((int) id, requestLine);
+        Line responseLine = lineDao.show(id);
 
         //then
         assertThat(responseLine.getName()).isEqualTo(requestName);
@@ -118,14 +145,14 @@ class LineDaoMemoryTest {
     void remove() {
         //given
         Line line1 = new Line("12호선", "분홍색");
-        Line saveLine = LINE_DAO_MEMORY.save(line1);
+        Line saveLine = lineDao.save(line1);
         long id = saveLine.getId();
 
         //when
-        LINE_DAO_MEMORY.delete(id);
+        lineDao.delete(id);
 
         //then
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.show(id))
+        assertThatThrownBy(() -> lineDao.show(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 
@@ -138,7 +165,7 @@ class LineDaoMemoryTest {
         //when
 
         //then
-        assertThatThrownBy(() -> LINE_DAO_MEMORY.delete(id))
+        assertThatThrownBy(() -> lineDao.delete(id))
             .isInstanceOf(NotFoundLineException.class);
     }
 }

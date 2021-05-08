@@ -9,6 +9,10 @@ public interface LineDao {
 
     Line show(Long id);
 
+    int countByName(String name);
+
+    int countByColor(String color);
+
     List<Line> showAll();
 
     int update(long id, Line line);
