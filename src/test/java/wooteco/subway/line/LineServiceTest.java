@@ -15,6 +15,8 @@ import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDaoMemory;
 import wooteco.subway.line.dto.LineDto;
+import wooteco.subway.line.dto.LineIdDto;
+import wooteco.subway.line.dto.NonIdLineDto;
 
 public class LineServiceTest {
 
@@ -32,10 +34,10 @@ public class LineServiceTest {
         // given
         String name = "부산1호선";
         String color = "주홍색";
-        LineDto lineDto = new LineDto(name, color);
+        NonIdLineDto nonIdlineDto = new NonIdLineDto(name, color);
 
         // when
-        LineDto createdLineDto = lineService.createLine(lineDto);
+        LineDto createdLineDto = lineService.createLine(nonIdlineDto);
 
         // then
         assertThat(createdLineDto.getName()).isEqualTo(name);
@@ -88,7 +90,7 @@ public class LineServiceTest {
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         //when
-        LineDto requestedDto = lineServiceWithMock.findOne(new LineDto((long) 1));
+        LineDto requestedDto = lineServiceWithMock.findOne(new LineIdDto((long) 1));
 
         //then
         assertThat(requestedDto.getId()).isEqualTo(line.getId());
@@ -100,14 +102,15 @@ public class LineServiceTest {
     @DisplayName("특정 노선 업데이트")
     void update() {
         //given
-        LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
+        NonIdLineDto initiatedRequestDto = new NonIdLineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
         LineDto requestDto = new LineDto(index, "7호선", "녹담색");
+        LineIdDto requestLineIdDto = new LineIdDto(index);
 
         //when
         lineService.update(requestDto);
-        LineDto responseDto = lineService.findOne(requestDto);
+        LineDto responseDto = lineService.findOne(requestLineIdDto);
 
         //then
         assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
@@ -118,16 +121,17 @@ public class LineServiceTest {
     @DisplayName("특정 노선 삭제")
     void delete() {
         //given
-        LineDto initiatedRequestDto = new LineDto("문화선", "무지개색");
+        NonIdLineDto initiatedRequestDto = new NonIdLineDto("문화선", "무지개색");
         LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
         long index = initiatedResponseDto.getId();
         LineDto requestDto = new LineDto(index, "7호선", "녹담색");
+        LineIdDto lineIdDto = new LineIdDto(index);
 
         //when
         lineService.delete(requestDto);
 
         //then
-        assertThatThrownBy(() -> lineService.findOne(requestDto))
+        assertThatThrownBy(() -> lineService.findOne(lineIdDto))
             .isInstanceOf(NotFoundLineException.class);
     }
 }

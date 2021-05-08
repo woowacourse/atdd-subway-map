@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineDto;
+import wooteco.subway.line.dto.LineIdDto;
+import wooteco.subway.line.dto.NonIdLineDto;
 
 @Service
 public class LineService {
@@ -17,8 +19,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineDto createLine(final LineDto lineDto) {
-        Line line = new Line(lineDto.getName(), lineDto.getColor());
+    public LineDto createLine(final NonIdLineDto NoneIdlineDto) {
+        Line line = new Line(NoneIdlineDto.getName(), NoneIdlineDto.getColor());
         Line saveLine = lineDao.save(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
     }
@@ -30,8 +32,8 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineDto findOne(final LineDto lineDto) {
-        Line line = lineDao.show(lineDto.getId());
+    public LineDto findOne(final LineIdDto lineIdDto) {
+        Line line = lineDao.show(lineIdDto.getId());
         return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 

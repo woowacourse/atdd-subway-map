@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.dto.LineDto;
+import wooteco.subway.line.dto.LineIdDto;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.NonIdLineDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -29,8 +31,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        LineDto lineDto = new LineDto(lineRequest.getName(), lineRequest.getColor());
-        LineDto createdLineDto = lineService.createLine(lineDto);
+        NonIdLineDto nonIdLineDto = new NonIdLineDto(lineRequest.getName(), lineRequest.getColor());
+        LineDto createdLineDto = lineService.createLine(nonIdLineDto);
         LineResponse lineResponse = new LineResponse(createdLineDto.getId(),
             createdLineDto.getName(), createdLineDto.getColor());
 
@@ -51,7 +53,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        LineDto lineDto = lineService.findOne(new LineDto(id));
+        LineDto lineDto = lineService.findOne(new LineIdDto(id));
         LineResponse lineResponse = new LineResponse(
             lineDto.getId(),
             lineDto.getName(),
