@@ -13,6 +13,7 @@ import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 
@@ -45,7 +46,7 @@ class LineServiceTest {
     void save() {
         //given
         when(lineDao.save(any(Line.class))).thenReturn(new Line(1L, "신분당선", "화이트"));
-        when(sectionDao.save(any(Section.class))).thenReturn(new Section(1L, 1L, 1L, 2L, 10));
+        when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(1L, 1L, 1L, 2L, 10));
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
 
