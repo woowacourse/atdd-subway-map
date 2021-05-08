@@ -32,4 +32,20 @@ public class SectionService {
             sectionH2Dao.updateDownStation(originalSection.getId(), newSection.getUpStationId(), newDistance);
         };
     }
+
+    public void delete(Long lineId, Long stationId) {
+        //여기서 유효성 검사
+        Sections sections = new Sections(sectionH2Dao.findByStation(lineId, stationId));
+        merge(lineId, stationId, sections);
+        for (Long sectionId : sections.sectionIds()) {
+            sectionH2Dao.delete(sectionId);
+        }
+    }
+
+    private void merge(Long lineId, Long stationId, Sections sections) {
+        if (sections.isBiggerThanOne()) {
+            Section mergedSection = sections.merge(stationId);
+            sectionH2Dao.save(lineId, mergedSection);
+        }
+    }
 }

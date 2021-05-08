@@ -108,10 +108,10 @@ npm run dev
 - [x] 상행역과 하행역 둘 중 하나는 무조건 해당 노선에 포함
 
 ### 구간 제거 
-- [ ] URI 정보 `/lines/{line_id}/sections?stationId={station_id}`
-- [ ] 종점이 제거될 경우 다음으로 오던 역이 종점
-- [ ] 중간역이 제거될 경우 재배치
-  - [ ] Distance 변경
+- [x] URI 정보 `/lines/{line_id}/sections?stationId={station_id}`
+- [x] 종점이 제거될 경우 다음으로 오던 역이 종점
+- [x] 중간역이 제거될 경우 재배치
+  - [x] Distance 변경
 - [ ] 구간이 하나인 노선에서 마지막 구간 제거 불가
 
 ### 노선 조회 기능 수정

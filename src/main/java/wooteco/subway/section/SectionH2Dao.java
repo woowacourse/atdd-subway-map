@@ -59,4 +59,23 @@ public class SectionH2Dao {
         String sql = "UPDATE SECTION SET down_station_id=?, distance=? WHERE id=?";
         jdbcTemplate.update(sql, downStationId, distance, id);
     }
+
+    public List<Section> findByStation(Long lineId, Long stationId) {
+        String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
+        return jdbcTemplate.query(sql,
+            (rs, rowNum) -> {
+                Section section = new Section(
+                    rs.getLong("id"),
+                    rs.getLong("up_station_id"),
+                    rs.getLong("down_station_id"),
+                    rs.getInt("distance")
+                );
+                return section;
+            }, lineId, stationId, lineId, stationId);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM SECTION WHERE id=?";
+        jdbcTemplate.update(sql, id);
+    }
 }
