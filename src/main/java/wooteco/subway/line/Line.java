@@ -7,8 +7,7 @@ public class Line {
     private String color;
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
     public Line(Long id, String name, String color) {
@@ -43,6 +42,6 @@ public class Line {
     }
 
     public boolean isNotSameId(Long id) {
-        return !this.id.equals(id);
+        return !isSameId(id);
     }
 }
