@@ -20,9 +20,11 @@
               outlined
               dense
             ></v-select>
-            <!--            <SectionCreateButton />-->
           </div>
           <v-divider />
+          <div class="d-flex justify-end mr-4 section-create-button-container">
+            <SectionCreateButton />
+          </div>
           <div class="mt-10 overflow-y-auto">
             <v-card v-if="activeLine.id" class="mx-5" outlined>
               <v-toolbar :color="activeLine.color" dense flat>
@@ -30,7 +32,9 @@
               </v-toolbar>
               <v-card-text class="overflow-y-auto py-0">
                 <v-list dense class="max-height-300px">
-                  <template v-if="activeLine.stations.length > 0">
+                  <template
+                    v-if="activeLine.stations && activeLine.stations.length > 0"
+                  >
                     <v-list-item
                       v-for="(station, index) in activeLine.stations"
                       :key="index"
@@ -41,10 +45,10 @@
                         ></v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action class="flex-row">
-                        <!--                        <SectionDeleteButton-->
-                        <!--                          :line-id="activeLine.id"-->
-                        <!--                          :station-id="station.id"-->
-                        <!--                        />-->
+                        <SectionDeleteButton
+                          :line-id="activeLine.id"
+                          :station-id="station.id"
+                        />
                       </v-list-item-action>
                     </v-list-item>
                   </template>
@@ -71,14 +75,20 @@
 import { mapGetters, mapMutations } from "vuex";
 import { SHOW_SNACKBAR } from "../../store/shared/mutationTypes";
 import { SNACKBAR_MESSAGES } from "../../utils/constants";
+import SectionCreateButton from "./components/SectionCreateButton";
+import SectionDeleteButton from "./components/SectionDeleteButton";
 
 export default {
   name: "SectionPage",
-  created() {
+  components: { SectionDeleteButton, SectionCreateButton },
+  async created() {
+    // TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
+    // const lines = await fetch("/api/lines");
+    // this.setLines([lines]);
     this.initLinesView();
   },
   computed: {
-    ...mapGetters(["lines"]),
+    ...mapGetters(["lines", "line"]),
   },
   watch: {
     line() {
@@ -89,26 +99,30 @@ export default {
   },
   methods: {
     ...mapMutations([SHOW_SNACKBAR]),
-    async initLinesView() {
+    initLinesView() {
       try {
-        await this.fetchLines();
-        if (this.lines.length > 0) {
-          this.lineNamesViews = this.lines.map((line) => {
-            return {
-              text: line.name,
-              value: line.id,
-            };
-          });
+        if (this.lines.length < 1) {
+          return;
         }
+        this.lineNamesViews = this.lines.map(({ name, id }) => {
+          return {
+            text: name,
+            value: id,
+          };
+        });
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL);
+        throw new Error(e);
       }
     },
     async onChangeLine() {
       try {
-        this.activeLine = await this.fetchLine(this.activeLineId);
+        // TODO 선택한 노선 데이터를 불러오는 API를 추가해주세요.
+        // this.activeLine = await fetch("/lines/{id}");
+        this.activeLine = this.lines.find(({ id }) => id === this.activeLineId); // TODO 위 API를 추가한 후에는 이 코드를 제거해 주세요.
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL);
+        throw new Error(e);
       }
     },
   },
@@ -117,8 +131,13 @@ export default {
       lineNamesViews: [],
       activeLineId: {},
       activeLine: {},
-      line: {},
     };
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.section-create-button-container {
+  height: 25px;
+}
+</style>

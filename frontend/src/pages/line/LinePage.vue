@@ -5,9 +5,7 @@
         <v-card-title class="font-weight-bold justify-center relative">
           노선 관리
         </v-card-title>
-        <v-card-text
-          class="relative px-0 pb-0 mb-6 line-list-container d-flex flex-column"
-        >
+        <v-card-text class="relative px-0 pb-0 mb-6 d-flex flex-column">
           <v-divider />
           <div class="d-flex justify-end mr-4 line-create-button-container">
             <LineCreateButton />
@@ -52,9 +50,10 @@ export default {
   computed: {
     ...mapGetters(["lines"]),
   },
-  created() {
-    //TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
-    this.setLines([...this.lines]);
+  async created() {
+    // TODO 초기 노선 데이터를 불러오는 API를 추가해주세요.
+    // const lines = await fetch("/api/lines")
+    // this.setLines([...lines])
   },
   methods: {
     ...mapMutations([SET_LINES]),
@@ -72,10 +71,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.line-list-container {
-  height: calc(100% - 80px);
-}
-
 .line-create-button-container {
   height: 25px;
 }

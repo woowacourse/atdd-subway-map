@@ -35,12 +35,12 @@
       <v-card width="500" height="500px" class="overflow-y-auto pl-3">
         <v-list>
           <template v-for="station in stations">
-            <v-list-item :key="station._id">
+            <v-list-item :key="station.id">
               <v-list-item-content>
                 <v-list-item-title v-text="station.name"></v-list-item-title>
               </v-list-item-content>
               <v-list-item-action>
-                <v-btn @click="onDeleteStation(station._id)" icon>
+                <v-btn @click="onDeleteStation(station.id)" icon>
                   <v-icon color="grey lighten-1">mdi-delete</v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -73,14 +73,15 @@ export default {
     isValid() {
       return this.$refs.stationForm.validate();
     },
-    onCreateStation() {
+    async onCreateStation() {
       if (!this.isValid()) {
         return;
       }
       try {
         // TODO 역을 추가하는 API를 추가해주세요.
+        // const newStation = await fetch("/api/stations");
         const newStation = {
-          _id: shortid.generate(),
+          id: shortid.generate(),
           name: this.stationName,
         };
         this.setStations([...this.stations, newStation]);
@@ -98,13 +99,15 @@ export default {
     async onDeleteStation(stationId) {
       try {
         // TODO 역을 삭제하는 API를 추가해주세요.
+        // await fetch("/api/stations/{id}");
         const idx = this.stations.findIndex(
-          (station) => station._id === stationId
+          (station) => station.id === stationId
         );
         this.stations.splice(idx, 1);
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.DELETE.SUCCESS);
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.DELETE.FAIL);
+        throw new Error(e);
       }
     },
   },

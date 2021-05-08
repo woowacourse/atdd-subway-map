@@ -15,14 +15,19 @@
       text
       >{{ navItem.text }}</v-btn
     >
+    <v-btn v-if="!member" to="/login" text>로그인</v-btn>
   </v-app-bar>
 </template>
 
 <script>
 import { NAV_ITEMS } from "../../utils/constants";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Header",
+  computed: {
+    ...mapGetters(["member"]),
+  },
   data() {
     return {
       navItems: [...NAV_ITEMS],

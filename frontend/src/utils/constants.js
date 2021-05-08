@@ -16,6 +16,11 @@ export const NAV_ITEMS = [
     link: "/sections",
     text: "구간 관리",
   },
+  {
+    _id: shortid.generate(),
+    link: "/path",
+    text: "경로 검색",
+  },
 ];
 
 export const SNACKBAR_MESSAGES = {
