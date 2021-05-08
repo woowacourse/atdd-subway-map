@@ -1,6 +1,5 @@
 package wooteco.subway.line.dto;
 
-import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.entity.SectionEntity;
 
 public class SectionAddRequest {

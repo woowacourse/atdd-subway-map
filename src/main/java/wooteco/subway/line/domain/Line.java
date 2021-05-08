@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Line {
-    private Long id;
-    private Name name;
-    private String color;
-    private List<Section> sections = new ArrayList<>();
+    private final Long id;
+    private final Name name;
+    private final String color;
+    private final List<Section> sections = new ArrayList<>();
 
     public Line(String name, String color) {
         this(0L, new LineName(name), color);

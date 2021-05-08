@@ -19,7 +19,7 @@ public class DBStationDao implements StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    static RowMapper<Station> stationsMapper  = (rs, rowNum) -> new Station(
+    static RowMapper<Station> stationsMapper = (rs, rowNum) -> new Station(
             rs.getLong("id"),
             rs.getString("name")
     );

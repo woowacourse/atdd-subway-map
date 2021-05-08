@@ -86,7 +86,7 @@ public class DBLineDao implements LineDao {
         String sql = "DELETE FROM LINE WHERE id = ?";
         int rowCount = jdbcTemplate.update(sql, id);
 
-        if(rowCount == 0) {
+        if (rowCount == 0) {
             throw new IllegalStateException("존재하지 않는 id임");
         }
     }

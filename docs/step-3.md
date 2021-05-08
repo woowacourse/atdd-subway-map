@@ -40,7 +40,7 @@
     - [ ] 예외
 - [x] 노선 조회 시 구간에 포함된 역 목록 응답
 - [x] 노선에 포함된 구간 정보를 통해 상행 종점부터 하행 종점까지의 역 목록을 응답
-  - [ ] Controller Method 구현 
+  - [x] Controller Method 구현 
     ```json
     HTTP/1.1 201 
     Location: /lines/1

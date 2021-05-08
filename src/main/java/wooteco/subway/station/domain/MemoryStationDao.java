@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class MemoryStationDao implements StationDao {
     private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new ArrayList<>();
 
     @Override
     public Station save(final Station station) {

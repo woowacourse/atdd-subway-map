@@ -107,6 +107,9 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "신분당선");
         params1.put("color", "bg-red-600");
+        params1.put("upStationId", "1");
+        params1.put("downStationId", "2");
+        params1.put("distance", "3");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -118,6 +121,10 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "백기선");
         params2.put("color", "bg-red-600");
+        params2.put("upStationId", "2");
+        params2.put("downStationId", "3");
+        params2.put("distance", "4");
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -154,6 +161,9 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "3");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -176,6 +186,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.jsonPath().getLong("id")).isEqualTo(id);
         assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo(name);
         assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
+        assertThat(findLineResponse.jsonPath().getList("stations", Station.class)).containsExactly(new Station(1L, "백기역"), new Station(2L, "흑기역"));
     }
 
     @DisplayName("노선을 수정한다.")

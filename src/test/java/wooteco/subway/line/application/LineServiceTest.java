@@ -83,7 +83,7 @@ class LineServiceTest {
                 new SectionEntity(2L, 1L, 2L, 3L, 6)));
 
         //when
-        LineResponse response = lineService.getLine(1L);
+        LineResponse response = lineService.findLine(1L);
 
         //then
         assertThat(response.getName()).isEqualTo("신분당선");

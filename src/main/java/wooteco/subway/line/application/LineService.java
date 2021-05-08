@@ -45,7 +45,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse getLine(final Long id) {
+    public LineResponse findLine(final Long id) {
         LineEntity findLineEntity = findLineEntityById(id);
 
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());

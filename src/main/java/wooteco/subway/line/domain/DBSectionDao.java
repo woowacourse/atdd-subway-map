@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.entity.SectionEntity;
-import wooteco.subway.station.domain.DBStationDao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -59,21 +58,20 @@ public class DBSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<SectionEntity> findById(Long id) {
+    public Optional<SectionEntity> findById(final Long id) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
     }
 
     @Override
-    public List<SectionEntity> findByLineId(Long id) {
+    public List<SectionEntity> findByLineId(final Long id) {
         String sql = "SELECT * FROM SECTION" +
-                " LEFT OUTER JOIN LINE ON SECTION.ID = LINE.ID" +
-                " WHERE id = ?";
+                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
+                " WHERE Line.id = ?";
         List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
-
         return lineEntity;
     }
 }

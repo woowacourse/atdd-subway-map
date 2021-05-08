@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.common.ResponseError;
 import wooteco.subway.line.application.LineService;
-import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.domain.LineDao;
+import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
-import wooteco.subway.common.ResponseError;
 
 import java.net.URI;
 import java.util.Collections;
@@ -47,10 +47,8 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineEntity findLineEntity = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        LineResponse response = new LineResponse(findLineEntity.id(), findLineEntity.name(), findLineEntity.color(), Collections.emptyList());
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/{id}")

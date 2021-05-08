@@ -1,10 +1,14 @@
 package wooteco.subway.name.domain;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class StationName implements Name {
     private static final Pattern PATTERN = Pattern.compile("^[가-힣|0-9]*역$");
-    private final String name;
+    private String name;
+
+    public StationName() {
+    }
 
     public StationName(final String name) {
         validateName(name);
@@ -30,5 +34,18 @@ public class StationName implements Name {
     @Override
     public Name changeName(String name) {
         return new StationName(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StationName that = (StationName) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
