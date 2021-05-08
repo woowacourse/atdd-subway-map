@@ -34,10 +34,7 @@ public class StationController {
 
         StationServiceDto stationServiceDto = new StationServiceDto(stationRequest.getName());
         StationServiceDto savedStationServiceDto = stationService.save(stationServiceDto);
-        StationResponse stationResponse = new StationResponse(
-            savedStationServiceDto.getId(),
-            savedStationServiceDto.getName()
-        );
+        StationResponse stationResponse = StationResponse.from(savedStationServiceDto);
 
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
             .body(stationResponse);
@@ -47,7 +44,7 @@ public class StationController {
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationServiceDto> stationServiceDtos = stationService.showStations();
         List<StationResponse> stationResponses = stationServiceDtos.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
+            .map(StationResponse::from)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(stationResponses);

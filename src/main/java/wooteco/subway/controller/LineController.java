@@ -33,8 +33,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
         LineServiceDto lineServiceDto = LineServiceDto.from(lineRequest);
         LineServiceDto createdLineServiceDto = lineService.createLine(lineServiceDto);
-        LineResponse lineResponse = new LineResponse(createdLineServiceDto.getId(),
-            createdLineServiceDto.getName(), createdLineServiceDto.getColor());
+        LineResponse lineResponse = LineResponse.from(createdLineServiceDto);
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
@@ -44,7 +43,7 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineServiceDto> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(lineResponses);
@@ -53,20 +52,16 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         LineServiceDto lineServiceDto = lineService.findOne(new LineServiceDto(id));
-        LineResponse lineResponse = new LineResponse(
-            lineServiceDto.getId(),
-            lineServiceDto.getName(),
-            lineServiceDto.getColor()
-        );
+        LineResponse lineResponse = LineResponse.from(lineServiceDto);
 
         return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(@Valid @RequestBody final LineRequest lineRequest,
-        @PathVariable final Long id) {
+    public ResponseEntity<LineResponse> updateLine(
+        @Valid @RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
 
-        LineServiceDto lineServiceDto = new LineServiceDto(id, lineRequest.getName(), lineRequest.getColor());
+        LineServiceDto lineServiceDto = LineServiceDto.from(id, lineRequest);
         lineService.update(lineServiceDto);
 
         return ResponseEntity.ok()

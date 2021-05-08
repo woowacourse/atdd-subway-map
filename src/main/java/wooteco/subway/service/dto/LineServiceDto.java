@@ -25,6 +25,14 @@ public class LineServiceDto {
         this.color = color;
     }
 
+    public static LineServiceDto from(final Long id, final LineRequest lineRequest) {
+        return new LineServiceDto(id, lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public static LineServiceDto from(final LineRequest lineRequest) {
+        return new LineServiceDto(lineRequest.getName(), lineRequest.getColor());
+    }
+
     public Long getId() {
         return id;
     }

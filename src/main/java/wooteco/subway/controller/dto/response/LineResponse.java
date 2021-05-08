@@ -2,6 +2,8 @@ package wooteco.subway.controller.dto.response;
 
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.service.dto.LineServiceDto;
 
 public class LineResponse {
 
@@ -29,6 +31,10 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public static LineResponse from(final LineServiceDto lineServiceDto) {
+        return new LineResponse(lineServiceDto.getId(), lineServiceDto.getName(), lineServiceDto.getColor());
     }
 
     public Long getId() {
