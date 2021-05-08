@@ -25,22 +25,31 @@ class LineServiceTest {
     @Mock
     private LineDao lineDao;
 
+    @Mock
+    private SectionService sectionService;
+
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
         String name = "testLine";
         String color = "black";
+        long upStationId = 1;
+        long downStationId = 2;
+        int distance = 10;
+        long lineId = 1L;
         Line line = new Line(name, color);
-        Line retrievedLine = new Line(1L, name, color);
+        Line retrievedLine = new Line(lineId, name, color);
 
-        given(lineDao.save(line)).willReturn(1L);
+        given(lineDao.save(line)).willReturn(lineId);
+        given(sectionService.createSection(upStationId, downStationId, distance, lineId)).willReturn(1L);
         given(lineDao.findById(1L)).willReturn(Optional.of(retrievedLine));
 
-        Line savedLine = lineService.createLine(name, color);
+        Line savedLine = lineService.createLine(name, color, upStationId, downStationId, distance);
 
         assertThat(savedLine).isEqualTo(retrievedLine);
         verify(lineDao, times(1)).save(line);
         verify(lineDao, times(1)).findById(1L);
+        verify(sectionService, times(1)).createSection(upStationId, downStationId, distance, lineId);
     }
 
     @DisplayName("노선 조회에 성공한다.")

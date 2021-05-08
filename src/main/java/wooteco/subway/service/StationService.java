@@ -31,4 +31,9 @@ public class StationService {
     public void deleteById(long id) {
         stationDao.deleteById(id);
     }
+
+    public Station findById(long id) {
+        return stationDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
+    }
 }

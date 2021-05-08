@@ -12,14 +12,17 @@ import java.util.List;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
-    public Line createLine(String name, String color) {
+    public Line createLine(String name, String color, long upStationId, long downStationId, int distance) {
         Line line = new Line(name, color);
         long id = lineDao.save(line);
+        sectionService.createSection(upStationId, downStationId, distance, id);
         return lineDao.findById(id)
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
     }
