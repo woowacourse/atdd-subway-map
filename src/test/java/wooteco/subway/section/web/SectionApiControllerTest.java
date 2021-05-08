@@ -21,6 +21,7 @@ import wooteco.subway.station.StationDao;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -253,6 +254,30 @@ class SectionApiControllerTest {
         result.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("잘못된 구간입니다."));
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 성공")
+    void deleteSection_success() throws Exception {
+        // given
+        final Station upStation = upStation();
+        final Station downStation = downStation();
+        Line line = createLine(upStation, downStation);
+
+        Station newStation = stationDao.save(Station.from("강남역"));
+
+        SectionRequest sectionRequest =
+                new SectionRequest(newStation.getId(), upStation.getId(), 4);
+
+        구간_추가(sectionRequest, line.getId());
+
+        // when
+        ResultActions result = mockMvc.perform(delete("/lines/" + line.getId() + "/sections?stationId=" + upStation.getId()));
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(upStation.getId().toString()));
     }
 
     private ResultActions 구간_추가(SectionRequest sectionRequest, Long lineId) throws Exception {
