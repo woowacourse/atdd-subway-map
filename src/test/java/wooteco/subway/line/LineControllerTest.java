@@ -38,8 +38,8 @@ class LineControllerTest extends ControllerTest {
         final LineResponse lineResponse = response.body().as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isEqualTo("/lines/" + lineResponse.getId());
-        assertThat(lineResponse.getName()).isEqualTo("신분당선");
-        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse).usingRecursiveComparison()
+                .isEqualTo(new LineResponse(lineResponse.getId(), "신분당선", "bg-red-600"));
     }
 
     @DisplayName("노선 생성 - 실패(이름 중복)")
@@ -133,8 +133,8 @@ class LineControllerTest extends ControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         final LineResponse lineResponse = response.body().as(LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo("신분당선");
-        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse).usingRecursiveComparison()
+                .isEqualTo(new LineResponse(lineResponse.getId(), "신분당선", "bg-red-600"));
     }
 
     @DisplayName("노선 조회 - 실패(노선 정보 없음)")
