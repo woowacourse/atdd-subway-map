@@ -62,29 +62,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
-    }
-
-    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
-        ExtractableResponse<Response> createResponse2) {
-        return Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-    }
-
-    private ExtractableResponse<Response> getLineAllAPI() {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .extract();
-    }
-
     @Test
     @DisplayName("id를 이용하여 지하철역을 조회한다.")
     public void getLine() {
@@ -121,17 +98,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> updateLineAPI(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(lineRequest)
-            .when()
-            .put("/lines/1")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .extract();
-    }
-
     @Test
     @DisplayName("id를 이용해 노선을 삭제한다")
     public void deleteLine() {
@@ -146,14 +112,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> deleteLineAPI(String uri) {
-        return RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
-    }
-
     private ExtractableResponse<Response> createLineAPI(String name, String color) {
         LineRequest lineRequest = new LineRequest(name, color);
 
@@ -163,6 +121,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .post("/lines")
             .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLineAPI(String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
+
+    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
+        ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
+    private ExtractableResponse<Response> getLineAllAPI() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract();
+    }
+
+    private ExtractableResponse<Response> updateLineAPI(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(lineRequest)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
             .extract();
     }
 }

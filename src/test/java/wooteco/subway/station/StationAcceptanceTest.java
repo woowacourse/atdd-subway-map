@@ -67,6 +67,39 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @Test
+    @DisplayName("지하철역을 제거한다.")
+    void deleteStation() {
+        // given
+        ExtractableResponse<Response> createResponse = createStationAPI("강남역");
+
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = deleteStationAPI(uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> createStationAPI(String name) {
+        StationRequest stationRequest = new StationRequest(name);
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStationAPI(String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
+
     private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
         ExtractableResponse<Response> createResponse2) {
         return Stream.of(createResponse1, createResponse2)
@@ -84,39 +117,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
             .when()
             .get("/stations")
-            .then().log().all()
-            .extract();
-    }
-
-    @Test
-    @DisplayName("지하철역을 제거한다.")
-    void deleteStation() {
-        // given
-        ExtractableResponse<Response> createResponse = createStationAPI("강남역");
-
-        // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = deleteStationAPI(uri);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> deleteStationAPI(String uri) {
-        return RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> createStationAPI(String name) {
-        StationRequest stationRequest = new StationRequest(name);
-        return RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
             .then().log().all()
             .extract();
     }
