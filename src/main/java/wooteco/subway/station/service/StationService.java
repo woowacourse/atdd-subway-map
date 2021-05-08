@@ -24,22 +24,18 @@ public class StationService {
 
     @Transactional
     public StationResponse save(StationRequest stationRequest) {
-        validateStationName(stationRequest);
+        validatesNameDuplication(stationRequest);
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
         log.info(newStation.getName() + "역이 생성되었습니다.");
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 
-    private void validateStationName(StationRequest stationRequest) {
-        if (checkNameDuplicate(stationRequest)) {
-            throw new IllegalArgumentException("중복된 이름의 역이 존재합니다.");
-        }
-    }
-
-    private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return stationDao.findByName(stationRequest.getName())
-                .isPresent();
+    private void validatesNameDuplication(StationRequest stationRequest) {
+        stationDao.findByName(stationRequest.getName())
+                .ifPresent(l -> {
+                    throw new IllegalArgumentException("중복된 이름의 역이 존재합니다");
+                });
     }
 
     public List<StationResponse> findAll() {
