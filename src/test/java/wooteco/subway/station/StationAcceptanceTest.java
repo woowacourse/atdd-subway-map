@@ -13,11 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.LineRequest;
-import wooteco.subway.line.LineResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     private static final StationRequest 강남역 = new StationRequest("강남역");
     private static final StationRequest 역삼역 = new StationRequest("역삼역");
 
