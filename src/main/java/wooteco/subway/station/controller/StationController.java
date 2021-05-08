@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private final StationService stationService;
 
@@ -18,19 +19,19 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse newStation = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(newStation);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> allStations = stationService.findAllStations();
         return ResponseEntity.ok().body(allStations);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStationById(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
