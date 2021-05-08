@@ -2,6 +2,7 @@ package wooteco.subway.dao.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,10 +28,10 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Station save(Station station) {
-        String query = "insert into STATION (name) values (?)";
+        String sql = "INSERT INTO station (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((con) -> {
-            PreparedStatement ps = con.prepareStatement(query, new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
@@ -39,19 +40,28 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAll() {
-        String query = "select * from STATION";
-        return jdbcTemplate.query(query, mapper);
+        String sql = "SELECT * FROM station";
+        return jdbcTemplate.query(sql, mapper);
+    }
+
+    @Override
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.query(sql, mapper, id)
+            .stream()
+            .findAny();
+    }
+
+    @Override
+    public boolean isExistName(String name) {
+        String sql = "SELECT count(*) FROM station WHERE name = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count == 1;
     }
 
     @Override
     public void deleteById(Long id) {
-        String query = "delete from STATION where id = ?";
-        jdbcTemplate.update(query, id);
-    }
-
-    @Override
-    public Station findById(Long id) {
-        String query = "select * from STATION where id = ?";
-        return jdbcTemplate.queryForObject(query, mapper, id);
+        String sql = "DELETE FROM station WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

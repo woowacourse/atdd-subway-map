@@ -3,6 +3,7 @@ package wooteco.subway.dao.station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.station.Station;
@@ -38,16 +39,22 @@ public class CollectionStationDao implements StationDao {
         return station;
     }
 
+    @Override
+    public boolean isExistName(String name) {
+        return stations
+            .stream()
+            .anyMatch(station -> station.getName().equals(name));
+    }
+
     public void deleteById(Long id) {
         stations.removeIf(station -> station.getId().equals(id));
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stations
             .stream()
             .filter(station -> station.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+            .findFirst();
     }
 }

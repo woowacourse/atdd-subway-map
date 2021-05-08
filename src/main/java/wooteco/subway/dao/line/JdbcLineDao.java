@@ -2,6 +2,7 @@ package wooteco.subway.dao.line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,10 +29,10 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Line save(Line line) {
-        String query = "insert into LINE (name, color) values (?, ?)";
+        String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((con) -> {
-            PreparedStatement ps = con.prepareStatement(query, new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
             return ps;
@@ -41,26 +42,34 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        String query = "SELECT * FROM Line";
-        return jdbcTemplate.query(query, mapper);
+        String sql = "SELECT * FROM Line";
+        return jdbcTemplate.query(sql, mapper);
     }
 
     @Override
-    public Line findById(Long id) {
-        String query = "select * from LINE where id = ?";
-        return jdbcTemplate.queryForObject(query, mapper, id);
+    public Optional<Line> findById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.query(sql, mapper, id)
+            .stream().findAny();
+    }
+
+    @Override
+    public boolean isExistName(String name) {
+        String sql = "SELECT count(*) FROM line WHERE name = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count == 1;
     }
 
     @Override
     public void update(Line updatedLine) {
-        String query = "update LINE set name = ?, color = ? where id = ?";
+        String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         jdbcTemplate
-            .update(query, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
+            .update(sql, updatedLine.getName(), updatedLine.getColor(), updatedLine.getId());
     }
 
     @Override
     public void deleteById(Long id) {
-        String query = "delete from LINE where id = ?";
+        String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
 }
