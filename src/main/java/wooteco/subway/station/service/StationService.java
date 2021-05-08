@@ -43,11 +43,10 @@ public class StationService {
     @Transactional
     public void delete(final Long id) {
         final Optional<Station> station = stationRepository.findById(id);
-        if (station.isPresent()) {
-            stationRepository.delete(id);
-            return;
+        if (!station.isPresent()) {
+            throw new StationException("지우려고 하는 역이 존재하지 않습니다");
         }
 
-        throw new StationException("지우려고 하는 역이 존재하지 않습니다");
+        stationRepository.delete(id);
     }
 }
