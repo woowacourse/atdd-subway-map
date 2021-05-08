@@ -58,7 +58,7 @@ class LineRepositoryTest {
         assertThat(line.getColor()).isEqualTo("bg-green-600");
     }
 
-    @DisplayName("없는 노선을 조회하면, false를 반환한다..")
+    @DisplayName("없는 노선을 조회하면, false를 반환한다.")
     @Test
     void notExistLineFindException() {
         assertThat(lineRepository.findById(1L).isPresent()).isEqualTo(false);

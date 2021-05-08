@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NotExistLineException;
-import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.repository.LineRepository;
 
 @Service
 public class LineService {
@@ -20,7 +20,6 @@ public class LineService {
 
     @Transactional
     public Line createLine(Line line) {
-        System.out.println( "########## : "  + lineRepository.isExistName(line));
         if (lineRepository.isExistName(line)) {
             throw new DuplicateLineNameException();
         }

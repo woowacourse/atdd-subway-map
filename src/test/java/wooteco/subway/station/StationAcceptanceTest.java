@@ -17,11 +17,11 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
+@DisplayName("Station api")
 @Sql("classpath:tableInit.sql")
-@DisplayName("지하철 역 api")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 역을 생성한다.")
+    @DisplayName("역을 생성한다.")
     @Test
     void createStation() {
         // given
@@ -41,7 +41,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("중복된 이름으로 지하철 역을 생성할 수 없다.")
+    @DisplayName("중복된 이름으로 역을 생성할 수 없다.")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -69,7 +69,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("모든 역을 조회한다.")
     @Test
     void getStations() {
         /// given
@@ -111,7 +111,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("역을 삭제한다.")
     @Test
     void deleteStation() {
         // given

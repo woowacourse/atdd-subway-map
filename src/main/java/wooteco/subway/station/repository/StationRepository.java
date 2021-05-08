@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.repository;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -10,18 +10,19 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateStationNameException;
+import wooteco.subway.station.domain.Station;
 
 @Repository
-public class StationDao {
+public class StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public Station save(Station station) {
-        String sql = "INSERT INTO STATION (name) VALUES (?)";
+        String sql = "INSERT INTO station (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -31,14 +32,14 @@ public class StationDao {
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateStationNameException(e);
+            throw new DuplicateStationNameException();
         }
 
         return createNewObject(station, keyHolder.getKey().longValue());
     }
 
     public List<Station> findAll() {
-        String sql = "SELECT * FROM STATION";
+        String sql = "SELECT * FROM station";
         return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
@@ -52,9 +53,14 @@ public class StationDao {
         return station;
     }
 
-    public void delete(Long id) {
-        String sql = "DELETE FROM STATION WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public Integer delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
+
+    public Boolean isExistName(Station station) {
+        String sql = "SELECT EXISTS(SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, station.getName());
     }
 
 }

@@ -63,7 +63,7 @@ public class LineRepository {
         return jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
     }
 
-    public int delete(Long id) {
+    public Integer delete(Long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
