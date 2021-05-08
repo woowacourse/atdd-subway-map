@@ -1,9 +1,14 @@
 package wooteco.subway.web.dto;
 
+import javax.validation.constraints.Min;
+
 public class SectionRequest {
 
+    @Min(1)
     private Long upStationId;
+    @Min(1)
     private Long downStationId;
+    @Min(0)
     private int distance;
 
     public SectionRequest() {

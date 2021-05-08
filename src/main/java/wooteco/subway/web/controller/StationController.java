@@ -3,8 +3,10 @@ package wooteco.subway.web.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import wooteco.subway.web.dto.StationResponse;
 
 @RestController
 @RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+@Validated
 public class StationController {
 
     private final StationService stationService;
@@ -28,8 +31,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> create(
-            @RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> create(@Valid @RequestBody StationRequest stationRequest) {
         Station station = stationService.add(stationRequest.toEntity());
 
         return ResponseEntity
