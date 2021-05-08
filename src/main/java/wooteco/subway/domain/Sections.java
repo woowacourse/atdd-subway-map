@@ -11,7 +11,14 @@ public class Sections {
     }
 
     public void add(Section section) {
+        checkAbleToAddSection(section);
         sections.add(section);
+    }
+
+    private void checkAbleToAddSection(Section section) {
+        if (!isOnlyOneRegistered(section)) {
+            throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
+        }
     }
 
     public boolean isOnlyOneRegistered(Section anotherSection) {
