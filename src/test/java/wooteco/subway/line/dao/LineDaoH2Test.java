@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.dao.line.LineDaoH2;
+import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.domain.Line;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,7 +19,7 @@ import wooteco.subway.domain.Line;
 class LineDaoH2Test {
 
     @Autowired
-    private LineDaoH2 lineDao;
+    private LineDao lineDao;
 
     @DisplayName("노선 저장")
     @Test
