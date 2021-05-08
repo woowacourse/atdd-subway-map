@@ -1,7 +1,5 @@
 package wooteco.subway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dao.LineDao;
@@ -29,7 +27,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines")
     public ResponseEntity<List<LineResponse>> showLine() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
@@ -38,13 +36,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
         Line line = lineDao.find(id);
         return ResponseEntity.ok().body(new LineResponse(line));
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
                                                          @RequestBody LineRequest lineRequest) {
         lineDao.modify(id, lineRequest);
