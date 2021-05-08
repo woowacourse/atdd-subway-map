@@ -35,19 +35,20 @@ class SectionDaoTest {
     @DisplayName("구간을 등록한다.")
     @Test
     void save() {
-        long upwardStationId = stationDao.save(new Station("강남역"));
-        long downwardStationId = stationDao.save(new Station("천호역"));
+        long upStationId = stationDao.save(new Station("강남역"));
+        long downStationId = stationDao.save(new Station("천호역"));
         long lastStationId = stationDao.save(new Station("강릉역"));
-        Station upwardStation = stationDao.findById(upwardStationId).get();
-        Station downwardStation = stationDao.findById(downwardStationId).get();
+        Station upStation = stationDao.findById(upStationId).get();
+        Station downStation = stationDao.findById(downStationId).get();
         Station lastStation = stationDao.findById(lastStationId).get();
-        Section firstSection = new Section(upwardStation, downwardStation, 10, 1L);
-        Section lastSection = new Section(downwardStation, lastStation, 5, 1L);
+        Section firstSection = new Section(upStation, downStation, 10, 1L);
+        Section lastSection = new Section(downStation, lastStation, 5, 1L);
 
-        sectionDao.save(firstSection);
-        sectionDao.save(lastSection);
+        long firstSectionId = sectionDao.save(firstSection);
+        long lastSectionId = sectionDao.save(lastSection);
         List<Section> sections = sectionDao.findAllByLineId(1L);
 
-        assertThat(sections).hasSize(2);
+        assertThat(sections).containsExactly(new Section(firstSectionId, upStation, downStation, 10, 1L),
+                new Section(lastSectionId, downStation, lastStation, 5, 1L));
     }
 }
