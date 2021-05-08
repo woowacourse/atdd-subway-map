@@ -49,24 +49,14 @@ public class LineDao {
         }
     }
 
-    private boolean isDuplicateColor(Line newLine) {
-        String sql = "SELECT id FROM line WHERE color = ?";
-        try {
-            jdbcTemplate.queryForObject(sql, Long.class, newLine.getColor());
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+    private boolean isDuplicateName(Line newLine) {
+        String sql = "SELECT EXISTS(SELECT id FROM line WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, newLine.getName()).booleanValue();
     }
 
-    private boolean isDuplicateName(Line newLine) {
-        String sql = "SELECT id FROM line WHERE name = ?";
-        try {
-            jdbcTemplate.queryForObject(sql, Long.class, newLine.getName());
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+    private boolean isDuplicateColor(Line newLine) {
+        String sql = "SELECT EXISTS(SELECT id FROM line WHERE color = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, newLine.getColor()).booleanValue();
     }
 
     public List<Line> findAll() {

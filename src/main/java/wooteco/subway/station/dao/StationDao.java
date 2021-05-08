@@ -3,7 +3,6 @@ package wooteco.subway.station.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +14,7 @@ import wooteco.subway.station.model.Station;
 
 @Repository
 public class StationDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
@@ -43,13 +43,8 @@ public class StationDao {
     }
 
     private boolean isDuplicate(Station newStation) {
-        String sql = "SELECT id FROM station WHERE name = ?";
-        try {
-            jdbcTemplate.queryForObject(sql, Long.class, newStation.getName());
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+        String sql = "SELECT EXISTS(SELECT id FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, newStation.getName());
     }
 
     public List<Station> findAll() {
