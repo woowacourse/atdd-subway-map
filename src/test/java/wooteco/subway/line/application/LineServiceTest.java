@@ -1,6 +1,5 @@
 package wooteco.subway.line.application;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,13 +12,13 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
-import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -55,5 +54,14 @@ class LineServiceTest {
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).hasSize(2);
         assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("노선에 구간을 추가한다.")
+    void addSection() {
+        Long lineId = 1L;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, 2L, 10);
+        when(sectionDao.save(sectionAddRequest.toEntity(lineId))).thenReturn(null);
+        lineService.addSection(1L, sectionAddRequest);
     }
 }
