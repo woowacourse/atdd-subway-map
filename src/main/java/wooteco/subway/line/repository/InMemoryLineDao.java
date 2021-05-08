@@ -6,7 +6,6 @@ import wooteco.subway.line.Line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class InMemoryLineDao implements LineRepository {
     private static Long seq = 0L;
@@ -38,10 +37,10 @@ public class InMemoryLineDao implements LineRepository {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))
-                .findAny();
+                .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     @Override
@@ -61,8 +60,7 @@ public class InMemoryLineDao implements LineRepository {
     }
 
     private Line findByIdIfExist(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        return findById(id);
     }
 
     @Override

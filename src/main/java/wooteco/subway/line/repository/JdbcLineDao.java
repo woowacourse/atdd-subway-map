@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,12 +9,24 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcLineDao implements LineRepository {
     private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Line> lineRowMapper = new RowMapper<Line>() {
+        @Override
+        public Line mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+            );
+        }
+    };
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,7 +51,7 @@ public class JdbcLineDao implements LineRepository {
     @Override
     public List<Line> findAll() {
         String query = "SELECT * FROM line";
-        return jdbcTemplate.query(query, lineRowMapper());
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
     @Override
@@ -50,24 +63,14 @@ public class JdbcLineDao implements LineRepository {
     @Override
     public boolean validateUsableName(String newName, String oldName) {
         String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
-        Integer integer = jdbcTemplate.queryForObject(query, Integer.class, newName, oldName);
-        return integer > 0;
-    }
-
-    private RowMapper<Line> lineRowMapper() {
-        return (rs, rowNum) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")
-        );
+        return jdbcTemplate.queryForObject(query, Integer.class, newName, oldName) > 0;
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
-        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), id);
-        return results.stream()
-                .findAny();
+        List<Line> results = jdbcTemplate.query(query, lineRowMapper, id);
+        return DataAccessUtils.singleResult(results);
     }
 
     @Override
