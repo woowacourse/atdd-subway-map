@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.station.StationDuplicatedNameException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
@@ -34,7 +35,7 @@ public class StationService {
     private void validatesNameDuplication(StationRequest stationRequest) {
         stationDao.findByName(stationRequest.getName())
                 .ifPresent(l -> {
-                    throw new IllegalArgumentException("중복된 이름의 역이 존재합니다");
+                    throw new StationDuplicatedNameException();
                 });
     }
 

@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.line.LineDuplicatedNameException;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
@@ -35,15 +37,19 @@ public class LineService {
     private void validatesNameDuplication(LineCreateRequest lineCreateRequest) {
         lineDao.findByName(lineCreateRequest.getName())
                 .ifPresent(l -> {
-                    throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다");
+                    throw new LineDuplicatedNameException();
                 });
     }
 
     public LineResponse findBy(Long id) {
-        Line newLine = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line newLine = findById(id);
         log.info(newLine.getName() + "노선 조회 성공");
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+    }
+
+    private Line findById(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(LineNotFoundException::new);
     }
 
     public List<LineResponse> findAll() {
@@ -56,8 +62,7 @@ public class LineService {
 
     @Transactional
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line line = findById(id);
 
         validatesNameDuplicationExceptOriginalName(lineUpdateRequest, line);
 
@@ -70,7 +75,7 @@ public class LineService {
     private void validatesNameDuplicationExceptOriginalName(LineUpdateRequest lineUpdateRequest, Line line) {
         lineDao.findByNameAndNotInOriginalName(lineUpdateRequest.getName(), line.getName())
                 .ifPresent(l -> {
-                    throw new IllegalArgumentException("중복된 이름입니다.");
+                    throw new LineDuplicatedNameException();
                 });
     }
 

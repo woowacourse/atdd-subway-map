@@ -1,4 +1,4 @@
-package wooteco.subway;
+package wooteco.subway.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
     private static final Logger log = LoggerFactory.getLogger(ExceptionAdvice.class);
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(SubwayException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(SubwayException e) {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
