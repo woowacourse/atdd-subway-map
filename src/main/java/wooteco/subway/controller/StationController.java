@@ -2,12 +2,15 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.request.StationRequest;
 import wooteco.subway.dto.response.StationResponse;
 import wooteco.subway.service.StationService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -20,10 +23,15 @@ public class StationController {
         this.stationService = stationService;
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        StationValidator stationValidator = new StationValidator();
+        webDataBinder.addValidators(stationValidator);
+    }
+
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest, Errors errors) {
-        new StationValidator().validate(stationRequest, errors);
-        if (errors.hasErrors()) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
         StationResponse stationResponse = stationService.create(stationRequest.getName());
