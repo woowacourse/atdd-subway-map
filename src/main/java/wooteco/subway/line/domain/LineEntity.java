@@ -1,26 +1,15 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.name.domain.LineName;
-import wooteco.subway.name.domain.Name;
-
 public class LineEntity {
     private Long id;
-    private Name name;
+    private String name;
     private String color;
 
     public LineEntity(final String name, final String color) {
-        this(new LineName(name), color);
-    }
-
-    public LineEntity(final Name name, final String color) {
         this(0L, name, color);
     }
 
     public LineEntity(final Long id, final String name, final String color) {
-        this(id, new LineName(name), color);
-    }
-
-    public LineEntity(final Long id, final Name name, final String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -31,7 +20,7 @@ public class LineEntity {
     }
 
     public String name() {
-        return name.name();
+        return name;
     }
 
     public String color() {
@@ -39,7 +28,7 @@ public class LineEntity {
     }
 
     public boolean sameName(final String name) {
-        return this.name.sameName(name);
+        return this.name.equals(name);
     }
 
     public boolean sameId(final Long id) {
@@ -47,7 +36,7 @@ public class LineEntity {
     }
 
     public void changeName(final String name) {
-        this.name = this.name.changeName(name);
+        this.name = name;
     }
 
     public void changeColor(String color) {
