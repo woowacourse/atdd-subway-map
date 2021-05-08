@@ -71,7 +71,7 @@ public class LineH2Dao implements LineDao {
 
     @Override
     public Optional<Line> findByName(String name) {
-        String sql = "SELECT COUNT(*) FROM LINE WHERE name=?";
+        String sql = "SELECT * FROM LINE WHERE name=?";
         List<Line> lines = jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> {
