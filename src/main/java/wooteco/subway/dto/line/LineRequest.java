@@ -1,14 +1,22 @@
-package wooteco.subway.dto;
+package wooteco.subway.dto.line;
+
+import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class LineRequest {
-    @NotBlank @Pattern(regexp = "^[가-힣|0-9]*선$")
+    @NotBlank
+    @Pattern(regexp = "^[가-힣|0-9]*선$")
     private String name;
+    @NotBlank
     private String color;
+    @NotNull(groups = LineInfo.save.class)
     private Long upStationId;
+    @NotNull(groups = LineInfo.save.class)
     private Long downStationId;
+    @NotNull(groups = LineInfo.save.class)
     private int distance;
 
     public LineRequest() {

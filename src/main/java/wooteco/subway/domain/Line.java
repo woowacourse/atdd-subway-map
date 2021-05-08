@@ -5,19 +5,15 @@ import java.util.List;
 
 public class Line {
     private Long id;
-    private Name name;
+    private String name;
     private String color;
     private List<Section> sections = new ArrayList<>();
 
     public Line(String name, String color) {
-        this(0L, new LineName(name), color);
+        this(0L, name, color);
     }
 
     public Line(Long id, String name, String color) {
-        this(id, new LineName(name), color);
-    }
-
-    public Line(Long id, Name name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -27,7 +23,7 @@ public class Line {
         return id;
     }
 
-    public Name getName() {
+    public String getName() {
         return name;
     }
 

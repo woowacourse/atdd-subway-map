@@ -5,13 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionAddRequest;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionAddRequest;
 import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.dto.station.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +34,8 @@ public class LineService {
     public LineResponse save(final LineRequest lineRequest) {
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         sectionDao.save(new SectionEntity(savedLineEntity.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
-        List<Station> stations = Arrays.asList(stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")), stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")));
+        List<Station> stations = Arrays.asList(stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")),
+                stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")));
         return new LineResponse(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color(), stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList())
