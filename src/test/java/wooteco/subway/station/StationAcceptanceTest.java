@@ -21,124 +21,140 @@ import wooteco.subway.web.dto.StationResponse;
 @DisplayName("역 인수 테스트")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final Map<String, String> params1 = new HashMap<>();
-    private static final Map<String, String> params2 = new HashMap<>();
+    private static final Map<String, String> DATA1 = new HashMap<>();
+    private static final Map<String, String> DATA2 = new HashMap<>();
+    private static final Map<String, String> DATA_EMPTY_STRING = new HashMap<>();
+    private static final Map<String, String> DATA_NULL = new HashMap<>();
+    private static final Long INVALID_ID = 999999999999999L;
+
+    private static final String STATIONS_PATH = "/stations/";
+    private static final String LOCATION = "Location";
+    private static final String NAME = "name";
 
     static {
-        params1.put("name", "잠실역");
-        params2.put("name", "강남역");
+        DATA1.put(NAME, "잠실역");
+        DATA2.put(NAME, "강남역");
+        DATA_EMPTY_STRING.put(NAME, "");
+        DATA_NULL.put(NAME, null);
     }
 
     @Test
     @DisplayName("역 생성")
-    void createStation() {
+    void create() {
         // when
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .body(params1)
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postStation(DATA1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header(LOCATION)).isNotBlank();
     }
 
     @Test
     @DisplayName("중복이름 역 생성불가")
-    void cannotCreateStationWithDuplicatedName() {
+    void createFail_duplicatedName() {
         // when
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .body(params1)
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> response2 = getRequestSpecification()
-                .body(params1)
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response1 = postStation(DATA1);
+        ExtractableResponse<Response> response2 = postStation(DATA1);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    @DisplayName("역 조회")
-    void listStations() {
-        /// given
-        ExtractableResponse<Response> createResponse1 = getRequestSpecification()
-                .body(params1)
-                .post("/stations")
-                .then().log().all()
-                .extract();
+    @DisplayName("name 빈 문자열: 역 생성불가")
+    void createFail_emptyString() {
+        // when
+        ExtractableResponse<Response> response = postStation(DATA_EMPTY_STRING);
 
-        ExtractableResponse<Response> createResponse2 = getRequestSpecification()
-                .body(params2)
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("name null: 역 생성불가")
+    void createFail_null() {
+        // when
+        ExtractableResponse<Response> response = postStation(DATA_NULL);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("역 목록 조회")
+    void list() {
+        /// given
+        ExtractableResponse<Response> postResponse1 = postStation(DATA1);
+        ExtractableResponse<Response> postResponse2 = postStation(DATA2);
 
         // when
-        ExtractableResponse<Response> listResponse = getStationListResponse();
+        ExtractableResponse<Response> listResponse = listStation();
 
         // then
         assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationResponse> expectedStations = Stream.of(createResponse1, createResponse2)
-                .map(response -> response.jsonPath()
-                        .getObject(".", StationResponse.class))
+        List<StationResponse> expectedList = Stream.of(postResponse1, postResponse2)
+                .map(response -> response.jsonPath().getObject(".", StationResponse.class))
                 .collect(Collectors.toList());
 
-        List<StationResponse> resultStations = listResponse.jsonPath().getList(".", StationResponse.class);
+        List<StationResponse> resultList = listResponse.jsonPath()
+                .getList(".", StationResponse.class);
 
-        for (int i = 0; i < resultStations.size(); i++) {
-            StationResponse result = resultStations.get(i);
-            StationResponse expected = expectedStations.get(i);
-            assertThat(result.getId()).isEqualTo(expected.getId());
-            assertThat(result.getName()).isEqualTo(expected.getName());
-        }
+        assertThat(resultList).containsAll(expectedList);
     }
 
     @Test
     @DisplayName("역 삭제")
-    void deleteStation() {
+    void delete() {
         // given
-        ExtractableResponse<Response> createResponse = getRequestSpecification()
-                .body(params1)
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        getRequestSpecification()
-                .body(params2)
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse1 = postStation(DATA1);
+        ExtractableResponse<Response> postResponse2 = postStation(DATA2);
+        String uri = postResponse1.header(LOCATION);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = deleteStation(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> stationListResponse = getStationListResponse();
+        ExtractableResponse<Response> stationListResponse = listStation();
         assertThat(stationListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<StationResponse> stationResponses = stationListResponse.jsonPath()
+                .getList(".", StationResponse.class);
 
-        List<StationResponse> stationResponses = stationListResponse.jsonPath().getList(".", StationResponse.class);
         assertThat(stationResponses.size()).isEqualTo(1);
-        assertThat(stationResponses.get(0).getName()).isEqualTo(params2.get("name"));
+        assertThat(stationResponses.get(0).getName()).isEqualTo(DATA2.get(NAME));
     }
 
-    private ExtractableResponse<Response> getStationListResponse() {
+    @Test
+    @DisplayName("존재하지 않는 역 삭제불가")
+    void deleteLineByInvalidId() {
+        // when
+        ExtractableResponse<Response> response = deleteStation(STATIONS_PATH + INVALID_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    private ExtractableResponse<Response> postStation(Map<String, String> data) {
         return getRequestSpecification()
-                .get("/stations")
+                .body(data)
+                .post(STATIONS_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> listStation() {
+        return getRequestSpecification()
+                .get(STATIONS_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(String uri) {
+        return getRequestSpecification()
+                .delete(uri)
                 .then().log().all()
                 .extract();
     }

@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,132 +22,149 @@ import wooteco.subway.web.dto.LineResponse;
 @DisplayName("노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final Map<String, String> lineData1 = new HashMap<>();
-    private static final Map<String, String> lineData2 = new HashMap<>();
-    private static final Map<String, String> lineDataForUpdate = new HashMap<>();
+    private static final Map<String, String> DATA1 = new HashMap<>();
+    private static final Map<String, String> DATA2 = new HashMap<>();
+    private static final Map<String, String> DATA_FOR_UPDATE = new HashMap<>();
+    private static final Map<String, String> DATA_EMPTY_STRING = new HashMap<>();
+    private static final Map<String, String> DATA_NULL = new HashMap<>();
+    private static final long INVALID_ID = 999999999999999L;
+
+    private static final String LINES_PATH = "/lines/";
+    private static final String LOCATION = "Location";
+    private static final String NAME = "name";
+    private static final String COLOR = "color";
 
     static {
-        lineData1.put("name", "신분당선");
-        lineData1.put("color", "bg-red-600");
-        lineData2.put("name", "2호선");
-        lineData2.put("color", "bg-green-600");
-        lineDataForUpdate.put("name", "수정된 이름");
-        lineDataForUpdate.put("color", "수정된 색");
+        put(DATA1, "신분당선", "bg-red-600");
+        put(DATA2, "2호선", "bg-green-600");
+        put(DATA_FOR_UPDATE, "수정된 이름", "수정된 색");
+        put(DATA_EMPTY_STRING, "", "");
+        put(DATA_NULL, null, null);
+    }
+
+    private static void put(Map<String, String> data, String name, String color) {
+        data.put(NAME, name);
+        data.put(COLOR, color);
     }
 
     @Test
     @DisplayName("노선 생성")
     void create() {
         // when
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postLine(DATA1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
-        compare(lineResponse, lineData1);
+        assertLineResponse(lineResponse, DATA1);
     }
 
     @Test
     @DisplayName("중복이름 노선 생성불가")
-    void cannotCreateLineWithDuplicatedName() {
+    void createFail_duplicatedName() {
         // when
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> response2 = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response1 = postLine(DATA1);
+        ExtractableResponse<Response> response2 = postLine(DATA1);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("name,color 빈 문자열: 노선 생성불가")
+    void createFail_emptyString() {
+        // when
+        ExtractableResponse<Response> response = postLine(DATA_EMPTY_STRING);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("name,color null: 노선 생성불가")
+    void createFail_null() {
+        // when
+        ExtractableResponse<Response> response = postLine(DATA_NULL);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     @DisplayName("노선 목록 조회")
     void listLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> createResponse2 = getRequestSpecification()
-                .body(lineData2)
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse1 = postLine(DATA1);
+        ExtractableResponse<Response> postResponse2 = postLine(DATA2);
 
         // when
-        ExtractableResponse<Response> listResponse = getLineListResponse();
+        ExtractableResponse<Response> listResponse = listLine();
 
         // then
         assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<LineResponse> expectedLines = Stream.of(createResponse1, createResponse2)
+        List<LineResponse> expectedLines = Stream.of(postResponse1, postResponse2)
                 .map(response -> response.jsonPath().getObject(".", LineResponse.class))
                 .collect(Collectors.toList());
 
-        List<LineResponse> results = new ArrayList<>(
-                listResponse.jsonPath().getList(".", LineResponse.class));
+        List<LineResponse> results = listResponse.jsonPath().getList(".", LineResponse.class);
 
-        for (int i = 0; i < results.size(); i++) {
-            LineResponse result = results.get(i);
-            LineResponse expected = expectedLines.get(i);
-            assertThat(result.getId()).isEqualTo(expected.getId());
-            assertThat(result.getName()).isEqualTo(expected.getName());
-            assertThat(result.getColor()).isEqualTo(expected.getColor());
-        }
+        assertThat(results).containsAll(expectedLines);
     }
 
     @Test
     @DisplayName("노선 수정")
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse = postLine(DATA1);
 
         // when
-        ExtractableResponse<Response> updateResponse = getRequestSpecification()
-                .body(lineDataForUpdate)
-                .put(createResponse.header("Location"))
-                .then().log().all()
-                .extract();
+        String uri = postResponse.header(LOCATION);
+        ExtractableResponse<Response> updateResponse = putLine(DATA_FOR_UPDATE, uri);
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> resultResponse = getRequestSpecification()
-                .get(createResponse.header("Location"))
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> resultResponse = getLine(uri);
 
         LineResponse lineResponse = resultResponse.jsonPath().getObject(".", LineResponse.class);
-        compare(lineResponse, lineDataForUpdate);
+        assertLineResponse(lineResponse, DATA_FOR_UPDATE);
+    }
+
+    @Test
+    @DisplayName("이름에 빈 문자열: 노선 수정불가")
+    void updateFail_emptyString() {
+        // given
+        ExtractableResponse<Response> response1 = postLine(DATA1);
+        String uri = response1.header(LOCATION);
+
+        // when
+        ExtractableResponse<Response> putResponse = putLine(DATA_EMPTY_STRING, uri);
+
+        // then
+        assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("이름에 null: 노선 수정불가")
+    void updateFail_null() {
+        // given
+        ExtractableResponse<Response> response1 = postLine(DATA1);
+        String uri = response1.header(LOCATION);
+
+        // when
+        ExtractableResponse<Response> putResponse = putLine(DATA_NULL, uri);
+
+        // then
+        assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 수정불가")
     void updateLineByInvalidId() {
-        long invalidId = -1L;
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .body(lineDataForUpdate)
-                .put("/lines/" + invalidId)
-                .then().log().all()
-                .extract();
+        // when
+        ExtractableResponse<Response> response = putLine(DATA_FOR_UPDATE, LINES_PATH + INVALID_ID);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -158,52 +174,68 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 삭제")
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = getRequestSpecification()
-                .body(lineData1)
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        getRequestSpecification()
-                .body(lineData2)
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse1 = postLine(DATA1);
+        ExtractableResponse<Response> postResponse2 = postLine(DATA2);
+        String uri = postResponse1.header(LOCATION);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = deleteLine(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> lineListResponse = getLineListResponse();
+        ExtractableResponse<Response> lineListResponse = listLine();
         assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<LineResponse> lineResponses = lineListResponse.jsonPath()
                 .getList(".", LineResponse.class);
+
         assertThat(lineResponses.size()).isEqualTo(1);
-        compare(lineResponses.get(0), lineData2);
+        assertLineResponse(lineResponses.get(0), DATA2);
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 삭제불가")
     void deleteLineByInvalidId() {
-        long invalidId = -1L;
-        ExtractableResponse<Response> response = getRequestSpecification()
-                .delete("/lines/" + invalidId)
-                .then().log().all()
-                .extract();
+        // when
+        ExtractableResponse<Response> response = deleteLine(LINES_PATH + INVALID_ID);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> getLineListResponse() {
+    private ExtractableResponse<Response> postLine(Map<String, String> data) {
         return getRequestSpecification()
-                .get("/lines")
+                .body(data)
+                .post(LINES_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> listLine() {
+        return getRequestSpecification()
+                .get(LINES_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getLine(String path) {
+        return getRequestSpecification()
+                .get(path)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> putLine(Map<String, String> data, String path) {
+        return getRequestSpecification()
+                .body(data)
+                .put(path)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLine(String path) {
+        return getRequestSpecification()
+                .delete(path)
                 .then().log().all()
                 .extract();
     }
@@ -213,8 +245,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private void compare(LineResponse result, Map<String, String> expected) {
-        assertThat(result.getName()).isEqualTo(expected.get("name"));
-        assertThat(result.getColor()).isEqualTo(expected.get("color"));
+    private void assertLineResponse(LineResponse result, Map<String, String> expected) {
+        assertThat(result.getName()).isEqualTo(expected.get(NAME));
+        assertThat(result.getColor()).isEqualTo(expected.get(COLOR));
     }
 }
