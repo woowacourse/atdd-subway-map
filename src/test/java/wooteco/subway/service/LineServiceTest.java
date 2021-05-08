@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,11 +30,15 @@ class LineServiceTest {
     @Test
     @DisplayName("새로운 노선을 생성한다.")
     void createLine() {
+        // given
         Line line = new Line("2호선", "green");
         given(lineDao.save(any())).willReturn(1L);
         given(lineDao.findById(1L)).willReturn(Optional.of(line));
 
+        // when
         Line line2 = lineService.createLine("2호선", "green");
+
+        // then
         assertThat(line2).isEqualTo(line);
         assertThat(line2.getId()).isEqualTo(line.getId());
     }
@@ -41,13 +46,18 @@ class LineServiceTest {
     @Test
     @DisplayName("생성된 노선들을 불러온다.")
     void findAll() {
+        // given
         Line line1 = new Line("2호선", "green");
         Line line2 = new Line("3호선", "red");
-
         given(lineDao.findAll()).willReturn(Arrays.asList(
             line1, line2
         ));
-        assertThat(lineService.findAll())
+
+        // when
+        List<Line> lines = lineService.findAll();
+
+        // then
+        assertThat(lines)
             .contains(line1)
             .contains(line2);
     }
@@ -55,18 +65,27 @@ class LineServiceTest {
     @Test
     @DisplayName("아이디로 특정 노선을 조회한다.")
     void findById() {
-        Line line = new Line(1L, "2호선", "green");
-        given(lineDao.findById(any())).willReturn(Optional.of(line));
+        // given
+        Line line1 = new Line(1L, "2호선", "green");
+        given(lineDao.findById(any())).willReturn(Optional.of(line1));
 
-        assertThat(lineService.findById(1L))
-            .isEqualTo(line);
+        // when
+        Line line2 = lineService.findById(1L);
+
+        // then
+        assertThat(line2).isEqualTo(line1);
     }
 
     @Test
     @DisplayName("노선 정보를 수정한다.")
     void editLine() {
+        // given
         Line line = new Line(1L, "3호선", "red");
+
+        // when
         lineService.editLine(line);
+
+        // then
         verify(lineDao, times(1))
             .updateLine(line);
     }
@@ -74,7 +93,10 @@ class LineServiceTest {
     @Test
     @DisplayName("생성된 노선을 삭제한다.")
     void deleteLine() {
+        // when
         lineService.deleteLine(1L);
+
+        // then
         verify(lineDao, times(1))
             .deleteById(1L);
     }

@@ -3,6 +3,7 @@ package wooteco.subway.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,34 +30,46 @@ class StationDaoTest {
     @Test
     @DisplayName("지하철 역을 생성 및 저장한다.")
     void save() {
+        // given
         Station station = new Station("잠실역");
-        long id = stationDao.save(station);
 
+        // when
+        long id = stationDao.save(station);
         Station savedStation = stationDao.findById(id)
             .orElseThrow(StationNotFoundException::new);
+
+        // then
         assertThat(id).isEqualTo(savedStation.getId());
     }
 
     @Test
     @DisplayName("생성된 역들을 불러온다.")
     void findAll() {
+        // given
         Station station1 = new Station("잠실역");
         Station station2 = new Station("역삼역");
-
         stationDao.save(station1);
         stationDao.save(station2);
 
-        assertThat(stationDao.findAll().size()).isEqualTo(2);
+        // when
+        List<Station> stations = stationDao.findAll();
+
+        // then
+        assertThat(stations).hasSize(2);
     }
 
     @Test
     @DisplayName("특정 역을 아이디로 찾아온다.")
     void findById() {
+        // given
         Station station1 = new Station("잠실역");
         Long id = stationDao.save(station1);
 
+        // when
         Station station2 = stationDao.findById(id)
             .orElseThrow(StationNotFoundException::new);
+
+        // then
         assertThat(station2.getName()).isEqualTo(station1.getName());
     }
 
@@ -72,11 +85,15 @@ class StationDaoTest {
     @Test
     @DisplayName("등록된 역을 제거한다.")
     void deleteById() {
+        // given
         Station station = new Station("잠실역");
         Long id = stationDao.save(station);
 
+        // when
         stationDao.deleteById(id);
 
+
+        // then
         assertThatThrownBy(() -> {
             stationDao.findById(id)
                 .orElseThrow(StationNotFoundException::new);
