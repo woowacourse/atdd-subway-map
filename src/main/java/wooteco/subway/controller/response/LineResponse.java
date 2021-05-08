@@ -28,7 +28,7 @@ public class LineResponse {
         this.name = name;
     }
 
-    public LineResponse(Long id, String color, String name,  List<StationResponse> stations) {
+    public LineResponse(Long id, String color, String name, List<StationResponse> stations) {
         this.id = id;
         this.color = color;
         this.name = name;

@@ -1,7 +1,6 @@
 package wooteco.subway.dto;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.LineDto;
 
 public class LineRequest {
     private String name;

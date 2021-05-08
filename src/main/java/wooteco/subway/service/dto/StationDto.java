@@ -6,7 +6,7 @@ public class StationDto {
     private Long id;
     private String name;
 
-    public StationDto () {
+    public StationDto() {
 
     }
 
