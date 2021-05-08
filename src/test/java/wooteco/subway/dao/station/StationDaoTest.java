@@ -6,20 +6,28 @@ import static org.assertj.core.api.Assertions.linesOf;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.station.Station;
 
-@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
-@Transactional
+@JdbcTest
 class StationDaoTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
     private StationDao stationDao;
+
+    @BeforeEach
+    void setUp() {
+        stationDao = new JdbcStationDao(jdbcTemplate);
+    }
 
     @Test
     void dependency() {
