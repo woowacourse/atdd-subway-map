@@ -30,4 +30,4 @@
    - [x] Use SimpleJdbcInsert
    - [x] extract methods in tests
    - [x] leave logs
-   - [ ] findAll size말고 다른 방식으로 검증하기
+   - [x] findAll size말고 다른 방식으로 검증하기
