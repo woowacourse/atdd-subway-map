@@ -65,6 +65,15 @@ public class DBSectionDao implements SectionDao {
 
     @Override
     public void delete(Long id) {
+    }
 
+    @Override
+    public List<SectionEntity> findByLineId(Long id) {
+        String sql = "SELECT * FROM SECTION" +
+                " LEFT OUTER JOIN LINE ON SECTION.ID = LINE.ID" +
+                " WHERE id = ?";
+        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, id);
+
+        return lineEntity;
     }
 }

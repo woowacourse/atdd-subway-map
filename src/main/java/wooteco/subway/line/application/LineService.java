@@ -12,6 +12,8 @@ import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,12 +41,33 @@ public class LineService {
 
         Section section = new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
 
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), section.line().getSections()
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(section.line()));
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse getLine(final Long id) {
+        LineEntity findLineEntity = findLineEntityById(id);
+
+        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
+        sectionEntities.forEach(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()));
+
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(line));
+    }
+
+    private List<StationResponse> toStationsResponses(final Line line) {
+        return line.getSections()
                 .stream()
                 .map(singleSection -> Arrays.asList(singleSection.upStation(), singleSection.downStation()))
-                .flatMap(stations -> stations.stream().map(StationResponse::new))
-                .collect(Collectors.toList())
-        );
+                .flatMap(Collection::stream)
+                .distinct()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    private LineEntity findLineEntityById(Long id) {
+        return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
     }
 
     private Station findStationById(Long stationId) {

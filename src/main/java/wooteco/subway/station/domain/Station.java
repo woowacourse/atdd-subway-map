@@ -3,6 +3,8 @@ package wooteco.subway.station.domain;
 import wooteco.subway.name.domain.Name;
 import wooteco.subway.name.domain.StationName;
 
+import java.util.Objects;
+
 public class Station {
     private Long id;
     private Name name;
@@ -37,6 +39,19 @@ public class Station {
 
     public boolean sameId(final Long id) {
         return this.id.equals(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
 
