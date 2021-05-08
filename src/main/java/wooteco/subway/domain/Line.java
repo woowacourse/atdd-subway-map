@@ -23,7 +23,7 @@ public class Line {
     }
 
     public List<Station> stations() {
-        return sections.stations();
+        return sections.asStations();
     }
 
     public boolean isSameName(String name) {
@@ -32,5 +32,13 @@ public class Line {
 
     public boolean isSameColor(String color) {
         return this.color.equals(color);
+    }
+
+    public boolean isSameId(Long lineId) {
+        return id.equals(lineId);
+    }
+
+    public void insertSections(Sections sections) {
+        this.sections = sections;
     }
 }

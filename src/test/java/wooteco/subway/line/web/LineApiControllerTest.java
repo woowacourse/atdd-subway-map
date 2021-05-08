@@ -180,6 +180,11 @@ class LineApiControllerTest {
                 .andExpect(jsonPath("stations[*].name", Matchers.containsInRelativeOrder("강남역", "석촌역", "잠실역")));
     }
 
+    @Test
+    @DisplayName("노선 조회 - 실패(해당 노선이 없을 경우)")
+    void name() {
+    }
+
     private ResultActions 노선_생성(LineRequest lineRequest) throws Exception {
         return mockMvc.perform(post("/lines")
                 .content(objectMapper.writeValueAsString(lineRequest))
