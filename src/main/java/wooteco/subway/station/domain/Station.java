@@ -31,5 +31,23 @@ public class Station {
     public boolean equalId(Long id) {
         return this.id.equals(id);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Station)) return false;
+
+        Station station = (Station) o;
+
+        if (!getId().equals(station.getId())) return false;
+        return getName().equals(station.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getName().hashCode();
+        return result;
+    }
 }
 

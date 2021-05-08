@@ -55,4 +55,26 @@ public class Line {
     public boolean equalId(Long id) {
         return this.id.equals(id);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Line)) return false;
+
+        Line line = (Line) o;
+
+        if (!getId().equals(line.getId())) return false;
+        if (!getName().equals(line.getName())) return false;
+        if (!getColor().equals(line.getColor())) return false;
+        return getStations().equals(line.getStations());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + getColor().hashCode();
+        result = 31 * result + getStations().hashCode();
+        return result;
+    }
 }
