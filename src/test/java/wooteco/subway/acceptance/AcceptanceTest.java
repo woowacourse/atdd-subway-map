@@ -23,8 +23,8 @@ public class AcceptanceTest {
 
     @AfterEach
     public void tearDown() {
-        jdbcTemplate.execute("TRUNCATE TABLE station");
-        jdbcTemplate.execute("TRUNCATE TABLE line");
-        jdbcTemplate.execute("TRUNCATE TABLE section");
+        jdbcTemplate.execute("TRUNCATE TABLE station RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE line RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE section RESTART IDENTITY");
     }
 }

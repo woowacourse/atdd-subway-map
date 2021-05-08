@@ -62,4 +62,8 @@ public class LineRepository {
         String deleteLineQuery = "DELETE FROM LINE WHERE id = ?";
         return (long) jdbcTemplate.update(deleteLineQuery, lineId);
     }
+
+    public Long createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return sectionDao.create(lineId, upStationId, downStationId, distance);
+    }
 }

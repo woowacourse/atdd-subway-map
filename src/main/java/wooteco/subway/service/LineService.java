@@ -94,4 +94,8 @@ public class LineService {
     public long deleteLine(Long lineId) {
         return lineRepository.deleteLineWithSectionByLineId(lineId);
     }
+
+    public Long createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return lineRepository.createSectionInLine(lineId, upStationId, downStationId, distance);
+    }
 }

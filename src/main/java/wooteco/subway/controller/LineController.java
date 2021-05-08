@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
+import wooteco.subway.controller.dto.request.SectionCreateRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.controller.dto.response.LineFindResponseDto;
@@ -46,6 +47,20 @@ public class LineController {
         LineFindResponseDto lineResponse = lineService.showLine(lineId);
         return ResponseEntity.ok().body(lineResponse);
     }
+
+    @PostMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity createLine(@PathVariable Long lineId, @RequestBody SectionCreateRequestDto requestDto) {
+        Long sectionId = lineService.createSectionInLine(
+                lineId,
+                requestDto.getUpStationId(),
+                requestDto.getDownStationId(),
+                requestDto.getDistance()
+        );
+        return ResponseEntity.created(
+                URI.create("/lines/" + lineId + "/sections/" + sectionId)
+        ).build();
+    }
+
 
     @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {
