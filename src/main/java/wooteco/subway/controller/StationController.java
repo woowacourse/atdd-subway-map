@@ -30,10 +30,7 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         StationResponse stationResponse = stationService.create(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }

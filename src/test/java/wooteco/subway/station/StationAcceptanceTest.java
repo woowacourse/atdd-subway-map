@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,14 +20,14 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // given
-        Map<String, String> params = setStation("name", "강남역");
+        Map<String, String> params = setStation("name", "영통역");
 
         // when
         ExtractableResponse<Response> response = extractResponseWhenPost(params);

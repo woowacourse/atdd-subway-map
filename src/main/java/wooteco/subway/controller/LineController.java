@@ -3,7 +3,6 @@ package wooteco.subway.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.request.LineRequest;
@@ -31,10 +30,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse lineResponse = lineService.create(lineRequest.getColor(), lineRequest.getName());
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
