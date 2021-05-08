@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value="/lines")
+@RequestMapping(value = "/lines")
 public class LineController {
     private LineDao lineDao;
 
