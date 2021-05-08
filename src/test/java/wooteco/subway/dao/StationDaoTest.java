@@ -56,7 +56,8 @@ public class StationDaoTest {
     @DisplayName("특정 Station을 정상적으로 삭제하는 지 테스트")
     public void deleteById() {
         Long id = stationDao.create("강남역");
-        stationDao.deleteById(id);
+        int affectedRowCount = stationDao.deleteById(id);
+        assertThat(affectedRowCount).isEqualTo(1);
         assertThat(stationDao.findById(id).isPresent()).isFalse();
     }
 }

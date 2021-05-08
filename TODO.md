@@ -52,3 +52,7 @@
 - [ ] 노선 목록 조회
 - [ ] 노선 수정
 - [ ] 노선(Line)에 구간을(Section) 추가하는 API 만들기 - POST /lines/1/sections
+
+### 기타
+- [ ] RestAssured에서 QueryParams, PathParams 활용해서 리팩토링하기
+- [ ] 예외 처리를 커스텀 예외 활용하도록 바꾸기

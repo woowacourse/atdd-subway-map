@@ -9,6 +9,6 @@ public class AdviceController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

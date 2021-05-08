@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StationService {
+    private static final int ANY_ROW_NOT_DELETED = 0;
     private final StationDao stationDao;
 
     public StationService(StationDao stationDao) {
@@ -34,6 +35,10 @@ public class StationService {
     }
 
     public long deleteStation(Long id) {
-        return stationDao.deleteById(id);
+        int affectedRowCount = stationDao.deleteById(id);
+        if (affectedRowCount == ANY_ROW_NOT_DELETED) {
+            throw new IllegalArgumentException("역이 삭제되지 않았습니다.");
+        }
+        return affectedRowCount;
     }
 }
