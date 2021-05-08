@@ -10,12 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.repository.StationRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,11 +31,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> param = new HashMap<>();
-        param.put("name", "신논현역");
+        StationRequest 신논현역 = new StationRequest("신논현역");
 
         // when
-        ExtractableResponse<Response> response = createPostResponse(param);
+        ExtractableResponse<Response> response = createPostResponse(신논현역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,8 +45,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> 강남역 = new HashMap<>();
-        강남역.put("name", "강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
         createPostResponse(강남역);
 
         // when
@@ -62,12 +59,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> 강남역 = new HashMap<>();
-        강남역.put("name", "강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse1 = createPostResponse(강남역);
 
-        Map<String, String> 역삼역 = new HashMap<>();
-        역삼역.put("name", "역삼역");
+        StationRequest 역삼역 = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 = createPostResponse(역삼역);
 
         // when
@@ -92,8 +87,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> 강남역 = new HashMap<>();
-        강남역.put("name", "강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse = createPostResponse(강남역);
 
         int originalSize = stationRepository.findAll().size();
@@ -107,9 +101,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(stationRepository.findAll()).hasSize(originalSize - 1);
     }
 
-    private ExtractableResponse<Response> createPostResponse(Map<String, String> params) {
+    private ExtractableResponse<Response> createPostResponse(StationRequest stationRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")

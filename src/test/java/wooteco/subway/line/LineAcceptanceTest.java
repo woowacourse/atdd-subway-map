@@ -10,12 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.LineRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,9 +31,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 분당선 = new HashMap<>();
-        분당선.put("name", "분당선");
-        분당선.put("color", "bg-red-600");
+        LineRequest 분당선 =
+                new LineRequest("분당선", "bg-red-600", null, null, 0);
+
 
         // when
         ExtractableResponse<Response> response = createPostResponse(분당선);
@@ -48,9 +47,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWhenDuplicateLineName() {
         // given
-        Map<String, String> 분당선 = new HashMap<>();
-        분당선.put("name", "분당선");
-        분당선.put("color", "bg-red-600");
+        LineRequest 분당선 =
+                new LineRequest("분당선", "bg-red-600", null, null, 0);
 
         // when
         createPostResponse(분당선);
@@ -65,15 +63,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> 분당선 = new HashMap<>();
-        분당선.put("name", "분당선");
-        분당선.put("color", "bg-red-600");
+        LineRequest 분당선 =
+                new LineRequest("분당선", "bg-red-600", null, null, 0);
         ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
-        Map<String, String> 역삼역 = new HashMap<>();
-        역삼역.put("name", "역삼역");
-        역삼역.put("color", "bg-red-600");
-        ExtractableResponse<Response> createResponse2 = createPostResponse(역삼역);
+        LineRequest 신분당선 =
+                new LineRequest("신분당선", "bg-red-600", null, null, 0);
+        ExtractableResponse<Response> createResponse2 = createPostResponse(신분당선);
 
         // when
         ExtractableResponse<Response> response = createGetResponse("/lines");
@@ -95,9 +91,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> 분당선 = new HashMap<>();
-        분당선.put("name", "분당선");
-        분당선.put("color", "bg-red-600");
+        LineRequest 분당선 =
+                new LineRequest("분당선", "bg-red-600", null, null, 0);
         ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
         // when
@@ -115,13 +110,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> 이호선 = new HashMap<>();
-        이호선.put("name", "2호선");
-        이호선.put("color", "bg-blue-600");
+        LineRequest 이호선 =
+                new LineRequest("이호선", "bg-blue-600", null, null, 0);
 
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당");
-        신분당선.put("color", "bg-red-600");
+        LineRequest 신분당선 =
+                new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         createPostResponse(이호선);
 
@@ -131,9 +124,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(updatedResponse.body().jsonPath().getString("name"))
-                .isEqualTo("신분당");
-        assertThat(updatedResponse.body().jsonPath().getString("color"))
+        assertThat(updatedResponse.body().as(LineResponse.class).getName())
+                .isEqualTo("신분당선");
+        assertThat(updatedResponse.body().as(LineResponse.class).getColor())
                 .isEqualTo("bg-red-600");
     }
 
@@ -141,13 +134,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        Map<String, String> 이호선 = new HashMap<>();
-        이호선.put("name", "2호선");
-        이호선.put("color", "bg-blue-600");
+        LineRequest 이호선 =
+                new LineRequest("이호선", "bg-blue-600", null, null, 0);
 
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-red-600");
+        LineRequest 신분당선 =
+                new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
         createPostResponse(이호선);
         createPostResponse(신분당선);
@@ -163,9 +154,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> 분당선 = new HashMap<>();
-        분당선.put("name", "분당선");
-        분당선.put("color", "bg-red-600");
+        LineRequest 분당선 =
+                new LineRequest("분당선", "bg-red-600", null, null, 0);
 
         ExtractableResponse<Response> createResponse = createPostResponse(분당선);
         int originalSize = lineRepository.findAll().size();
@@ -179,9 +169,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineRepository.findAll()).hasSize(originalSize - 1);
     }
 
-    private ExtractableResponse<Response> createPostResponse(Map<String, String> params) {
+    private ExtractableResponse<Response> createPostResponse(LineRequest lineRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -197,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createPutResponse(String path, Map<String, String> params) {
+    private ExtractableResponse<Response> createPutResponse(String path, LineRequest params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
