@@ -67,7 +67,7 @@ class LineDaoTest {
 
         // when
         Line persistedLine = lineDao.save(line);
-        Line selectedLine = lineDao.findById(persistedLine.getId());
+        Line selectedLine = lineDao.findById(persistedLine.getId()).get();
 
         // then
         assertAll(
@@ -85,7 +85,7 @@ class LineDaoTest {
         // when
         Line persistedLine = lineDao.save(line);
         lineDao.update(new Line(persistedLine.getId(), "4호선", "bg-blue-600"));
-        Line updatedLine = lineDao.findById(persistedLine.getId());
+        Line updatedLine = lineDao.findById(persistedLine.getId()).get();
 
         // then
         assertAll(
@@ -105,7 +105,6 @@ class LineDaoTest {
         lineDao.deleteById(persistedLine.getId());
 
         // then
-        assertThatThrownBy(() -> lineDao.findById(persistedLine.getId()))
-            .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(lineDao.findById(persistedLine.getId()).isPresent()).isFalse();
     }
 }
