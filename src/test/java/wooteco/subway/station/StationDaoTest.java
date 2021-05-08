@@ -28,7 +28,6 @@ class StationDaoTest {
     @Test
     void save() {
         Station station = stationDao.save(new Station("잠실역"));
-        System.out.println(station.getId());
         assertThat(station.getId()).isEqualTo(1L);
         assertThat(station.getName()).isEqualTo("잠실역");
     }
