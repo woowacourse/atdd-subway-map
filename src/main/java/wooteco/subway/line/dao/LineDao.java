@@ -60,4 +60,14 @@ public class LineDao {
         String sql = "SELECT count(*) FROM line WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
+
+    public Line findLineById(Long id) {
+        String sql = "SELECT * FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")),
+                id);
+    }
 }

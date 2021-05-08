@@ -53,4 +53,13 @@ public class StationDao {
         String sql = "SELECT count(*) FROM station WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
+
+    public Station findStationById(Long id) {
+        String sql = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql,
+                (rs, rowNum) -> new Station(
+                        rs.getLong("id"),
+                        rs.getString("name")),
+                id);
+    }
 }

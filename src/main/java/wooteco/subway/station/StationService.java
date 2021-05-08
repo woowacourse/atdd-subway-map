@@ -15,12 +15,11 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station save(Station station) {
+    public Long save(Station station) {
         if (stationDao.countStationByName(station.getName()) > 0) {
             throw new IllegalArgumentException("중복된 지하철 역입니다.");
         }
-        Long id = stationDao.save(station);
-        return new Station(id, station.getName());
+        return stationDao.save(station);
     }
 
     public List<Station> findAll() {
@@ -29,5 +28,9 @@ public class StationService {
 
     public void delete(Long id) {
         stationDao.delete(id);
+    }
+
+    public Station findStationById(Long id) {
+        return stationDao.findStationById(id);
     }
 }

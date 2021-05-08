@@ -23,16 +23,26 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineService.save(line);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(
-                new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor()));
+        Long id = lineService.save(line);
+        Line newLine = lineService.findLineById(id);
+        return ResponseEntity.created(
+                URI.create("/lines/" + newLine.getId()))
+                .body(
+                        new LineResponse(
+                                newLine.getId(),
+                                newLine.getName(),
+                                newLine.getColor()));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(line ->
+                        new LineResponse(
+                                line.getId(),
+                                line.getName(),
+                                line.getColor()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }

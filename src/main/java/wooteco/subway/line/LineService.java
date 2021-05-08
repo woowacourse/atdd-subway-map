@@ -15,12 +15,11 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line save(Line line) {
+    public Long save(Line line) {
         if (lineDao.countLineByName(line.getName()) > 0) {
             throw new IllegalArgumentException("중복된 노선입니다.");
         }
-        Long id = lineDao.save(line);
-        return new Line(id, line.getName(), line.getColor());
+        return lineDao.save(line);
     }
 
     public List<Line> findAll() {
@@ -33,5 +32,9 @@ public class LineService {
 
     public void delete(Long id) {
         lineDao.delete(id);
+    }
+
+    public Line findLineById(Long id) {
+        return lineDao.findLineById(id);
     }
 }
