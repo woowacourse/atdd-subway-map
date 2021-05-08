@@ -59,11 +59,11 @@ public class StationDaoTest {
         stationDao.save(new Station("송파역"));
         stationDao.save(new Station("잠실역"));
         List<Station> stations = stationDao.findAll();
-        assertThat(stations).hasSize(2);
-        assertThat(stations).containsExactly(
-                new Station("송파역"),
-                new Station("잠실역")
-        );
+        assertThat(stations).hasSize(2).
+                containsExactly(
+                        new Station("송파역"),
+                        new Station("잠실역")
+                );
     }
 
     @DisplayName("station 삭제 성공 테스트")

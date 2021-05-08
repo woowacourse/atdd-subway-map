@@ -64,11 +64,11 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "white"));
         List<Line> lines = lineDao.findAll();
-        assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(
-                new Line(1L, "신분당선", "black"),
-                new Line(2L, "2호선", "white")
-        );
+        assertThat(lines).hasSize(2)
+                .containsExactly(
+                        new Line(1L, "신분당선", "black"),
+                        new Line(2L, "2호선", "white")
+                );
     }
 
     @DisplayName("line 단일 조회 실패 테스트")
