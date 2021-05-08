@@ -34,7 +34,7 @@ public class LineService {
     @Transactional
     public void update(Long id, String name, String color) {
         lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
-        if (lineDao.findLineByNameOrColor(name, color).isPresent()) {
+        if (lineDao.findLineByNameOrColor(name, color, id).isPresent()) {
             throw new LineInfoDuplicatedException();
         }
         lineDao.update(id, name, color);

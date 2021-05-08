@@ -24,13 +24,6 @@ public class StationDaoCache implements StationDao {
         return stations;
     }
 
-    private Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
-    }
-
     @Override
     public Optional<Station> findStationByName(String name) {
         return stations.stream()
@@ -41,6 +34,13 @@ public class StationDaoCache implements StationDao {
     @Override
     public void remove(Long id) {
         stations.removeIf(station -> station.isSameId(id));
+    }
+
+    private Station createNewObject(Station station) {
+        Field field = ReflectionUtils.findField(Station.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, station, ++seq);
+        return station;
     }
 
     @Override

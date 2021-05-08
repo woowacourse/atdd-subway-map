@@ -77,8 +77,8 @@ public class LineDaoJdbcTemplate implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineByNameOrColor(String name, String color) {
-        String sql = "SELECT * FROM line where name = ? OR color = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), name, color).stream().findAny();
+    public Optional<Line> findLineByNameOrColor(String name, String color, Long lineId) {
+        String sql = "SELECT * FROM line where (name = ? OR color = ?) AND id != ?";
+        return jdbcTemplate.query(sql, lineRowMapper(), name, color, lineId).stream().findAny();
     }
 }

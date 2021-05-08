@@ -26,13 +26,6 @@ public class LineDaoCache implements LineDao {
         return persistLine;
     }
 
-    private Line createNewObject(Line line) {
-        Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
-        return line;
-    }
-
     @Override
     public List<Line> findAll() {
         return lines;
@@ -56,9 +49,16 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineByNameOrColor(String name, String color) {
+    public Optional<Line> findLineByNameOrColor(String name, String color, Long lineId) {
         return lines.stream()
-            .filter(line -> line.isSameName(name) || line.isSameColor(color))
+            .filter(line -> (line.isSameName(name) || line.isSameColor(color)) && line.isNotSameId(lineId))
             .findAny();
+    }
+
+    private Line createNewObject(Line line) {
+        Field field = ReflectionUtils.findField(Line.class, "id");
+        field.setAccessible(true);
+        ReflectionUtils.setField(field, line, ++seq);
+        return line;
     }
 }

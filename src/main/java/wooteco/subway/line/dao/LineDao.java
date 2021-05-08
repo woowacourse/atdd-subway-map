@@ -18,5 +18,5 @@ public interface LineDao {
 
     void update(Long id, String name, String color);
 
-    Optional<Line> findLineByNameOrColor(String name, String color);
+    Optional<Line> findLineByNameOrColor(String name, String color, Long lineId);
 }

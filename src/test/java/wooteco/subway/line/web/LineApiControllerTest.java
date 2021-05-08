@@ -1,23 +1,18 @@
-package wooteco.subway.line;
+package wooteco.subway.line.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.web.LineRequest;
-import wooteco.subway.line.web.LineResponse;
 
 @DisplayName("노선 관련 기능")
 class LineApiControllerTest extends AcceptanceTest {
@@ -85,10 +80,9 @@ class LineApiControllerTest extends AcceptanceTest {
         final LineRequest lineRequest = LineRequest.create("신분당선", "bg-red-600");
         final ExtractableResponse<Response> createResponse =
             노선_생성(lineRequest);
-
+        int lineId = createResponse.body().path("id");
 
         // when
-        int lineId = createResponse.body().path("id");
         ExtractableResponse<Response> response = 노선_조회((long) lineId);
 
         // then
@@ -115,134 +109,75 @@ class LineApiControllerTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+        String lineName = "신분당선";
+        String lineColor = "bg-red-600";
+        final String uri = 노선_생성(LineRequest.create(lineName, lineColor)).header("Location");
 
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        String newLineName = "1호선";
+        final LineRequest lineRequest = LineRequest.create(newLineName, lineColor);
 
         // when
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
-            .when()
-            .put(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
 
         // then
-        RestAssured.given().log().all()
-            .when()
-            .get(uri)
+        final LineResponse lineResponse = 노선_조회(uri).as(LineResponse.class);
 
-            .then().log().all()
-            .body("name", equalTo("구분당선"))
-            .body("color", equalTo("bg-blue-600"));
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo(newLineName);
+        assertThat(lineResponse.getName()).isNotEqualTo(lineName);
+        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
     }
 
     @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
     @Test
     void updateLine_duplicatedName() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+        String originalName = "구분당선";
+        String originalColor = "bg-blue-600";
+        노선_생성(LineRequest.create(originalName, originalColor));
 
-        params.put("color", "bg-red-600");
-        params.put("name", "구분당선");
-        RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines");
-
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        String targetName = "신분당선";
+        String targetColor = "bg-red-600";
+        final String uri = 노선_생성(LineRequest.create(targetName, targetColor)).header("Location");
 
         // when
-        RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
+        final LineRequest lineRequest = LineRequest.create("1호선", originalColor);
+        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
 
-            .when()
-            .put(uri)
-
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body(equalTo("이미 등록되어 있는 노선 정보입니다."));
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 정보입니다.");
     }
 
     @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
     @Test
     void updateLine_notFound() {
         /// given
-        Map<String, String> params = new HashMap<>();
-
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        final LineRequest lineRequest = LineRequest.create("구분당선", "bg-blue-600");
 
         // when
-        RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
+        final ExtractableResponse<Response> result = 노선_수정("/lines/" + Long.MAX_VALUE, lineRequest);
 
-            .when()
-            .put("/lines/-1")
-
-            .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
     @Test
     void removeLine() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+        final LineRequest lineRequest = LineRequest.create("신분당선", "bg-red-600");
+        final String uri = 노선_생성(lineRequest).header("Location");
 
         // when
-        RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+        final ExtractableResponse<Response> result = 노선_삭제(uri);
 
         // then
-        RestAssured.given().log().all()
-            .when()
-            .get(uri)
-
-            .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(노선_조회(uri).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-
-    ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
+    private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
         return RestAssured
             .given()
             .body(lineRequest)
@@ -253,7 +188,7 @@ class LineApiControllerTest extends AcceptanceTest {
             .extract();
     }
 
-    ExtractableResponse<Response> 노선_조회() {
+    private ExtractableResponse<Response> 노선_조회() {
         return RestAssured
             .given()
             .when()
@@ -267,6 +202,31 @@ class LineApiControllerTest extends AcceptanceTest {
             .when()
             .get("/lines/"+lineId)
             .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 노선_조회(String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .get(uri)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 노선_수정(String uri, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(ContentType.JSON)
+            .when()
+            .put(uri)
+            .then().extract();
+    }
+
+    private ExtractableResponse<Response> 노선_삭제(String uri) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete(uri)
+            .then()
             .extract();
     }
 }
