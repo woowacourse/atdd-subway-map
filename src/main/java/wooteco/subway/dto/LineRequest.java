@@ -1,6 +1,10 @@
 package wooteco.subway.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 public class LineRequest {
+    @NotBlank @Pattern(regexp = "^[가-힣|0-9]*선$")
     private String name;
     private String color;
     private Long upStationId;

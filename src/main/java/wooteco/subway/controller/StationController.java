@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.ResponseError;
+import wooteco.subway.ErrorResponse;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.domain.Station;
@@ -47,11 +47,5 @@ public class StationController {
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationDao.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
 }
