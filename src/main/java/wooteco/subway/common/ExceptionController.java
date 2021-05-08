@@ -10,12 +10,12 @@ import wooteco.subway.exception.LineNotFoundException;
 public class ExceptionController {
 
     @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity lineNotFound() {
+    public ResponseEntity<Void>lineNotFound() {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(LineNameDuplicatedException.class)
-    public ResponseEntity lineNameDuplicated(Exception e) {
+    public ResponseEntity<String> lineNameDuplicated(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
