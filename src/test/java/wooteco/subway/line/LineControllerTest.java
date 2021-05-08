@@ -36,11 +36,10 @@ class LineControllerTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract();
-
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
         final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isEqualTo("/lines/" + lineResponse.getId());
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }

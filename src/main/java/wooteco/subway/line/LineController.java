@@ -22,7 +22,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         final String name = lineRequest.getName();
         final String color = lineRequest.getColor();
         if (lineDao.findLineByName(name).isPresent()) {
@@ -30,7 +30,7 @@ public class LineController {
         }
         Line line = new Line(name, color);
         Line createdLine = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(line);
+        LineResponse lineResponse = new LineResponse(createdLine);
         return ResponseEntity.created(URI.create("/lines/" + createdLine.getId()))
             .body(lineResponse);
     }
