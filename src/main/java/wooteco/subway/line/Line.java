@@ -38,7 +38,7 @@ public class Line {
     }
 
     public Line update(LineUpdateRequest updatedLine) {
-        return new Line(updatedLine.getName(), updatedLine.getColor());
+        return new Line(id, updatedLine.getName(), updatedLine.getColor());
     }
 
     public Long getId() {
