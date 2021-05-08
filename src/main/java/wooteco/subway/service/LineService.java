@@ -2,14 +2,18 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.SectionDto;
+import wooteco.subway.controller.dto.StationDto;
 import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
-import wooteco.subway.repository.LineRepository;
+import wooteco.subway.controller.dto.response.LineFindResponseDto;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.repository.StationRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +24,11 @@ public class LineService {
     private static final int FIRST_INDEX = 0;
 
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineCreateResponseDto createLine(LineRequestDto lineRequest) {
@@ -59,13 +65,21 @@ public class LineService {
                 .map(it -> new LineFindAllResponseDto(it.getId(), it.getName(), it.getColor()))
                 .collect(Collectors.toList());
     }
-//
-//    public LineResponse showLine(Long lineId) {
-//        Line foundLine = lineJdbcDao.findById(lineId)
-//                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE_ID));
-//        return new LineResponse(foundLine.getId(), foundLine.getName(), foundLine.getName());
-//    }
-//
+
+    public LineFindResponseDto showLine(Long lineId) {
+        Line line = lineRepository.findLineWithSectionsById(lineId);
+        List<Section> sections = line.getSections();
+        List<StationDto> stationDtos = new ArrayList<>();
+        for (Section section : sections) {
+            // TODO - List<Section>을 바탕으로 Station의 정보를 조회해서 stationDtos 만들기
+            // TODO - 이 때, List<Section>이 Station 순서대로 조회되야 한다!
+        }
+
+        return new LineFindResponseDto(
+                line, stationDtos
+        );
+    }
+
     public long editLine(Long lineId, LineEditRequestDto request) {
         return lineRepository.edit(lineId, request.getName(), request.getColor());
     }

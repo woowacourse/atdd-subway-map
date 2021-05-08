@@ -13,6 +13,7 @@ import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
+import wooteco.subway.controller.dto.response.LineFindResponseDto;
 import wooteco.subway.service.LineService;
 
 import java.net.URI;
@@ -40,11 +41,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-//    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
-//        LineResponse lineResponse = lineService.showLine(lineId);
-//        return ResponseEntity.ok().body(lineResponse);
-//    }
+    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineFindResponseDto> showLine(@PathVariable Long lineId) {
+        LineFindResponseDto lineResponse = lineService.showLine(lineId);
+        return ResponseEntity.ok().body(lineResponse);
+    }
 
     @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {

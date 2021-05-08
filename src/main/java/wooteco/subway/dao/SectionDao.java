@@ -36,8 +36,7 @@ public class SectionDao {
 
     public List<Section> findAll() {
         String query = "SELECT * FROM section";
-        return jdbcTemplate.query(query, sectionRowMapper()
-        );
+        return jdbcTemplate.query(query, sectionRowMapper());
     }
 
     public Optional<Section> findById(Long sectionId) {
@@ -45,6 +44,11 @@ public class SectionDao {
         Section result = DataAccessUtils.singleResult(
                 jdbcTemplate.query(query, sectionRowMapper(), sectionId));
         return Optional.ofNullable(result);
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        String query = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(query, sectionRowMapper(), lineId);
     }
 
     private RowMapper<Section> sectionRowMapper() {

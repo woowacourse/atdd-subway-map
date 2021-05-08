@@ -9,6 +9,7 @@ import wooteco.subway.domain.Section;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineRepository {
@@ -35,28 +36,12 @@ public class LineRepository {
         return lineDao.findAll();
     }
 
-//    public Optional<Line> findById(Long lineId) {
-//        String query = "SELECT * FROM LINE WHERE id = ?";
-//        Line result = DataAccessUtils.singleResult(
-//                jdbcTemplate.query(query, lineRowMapper, lineId)
-//        );
-//        return Optional.ofNullable(result);
-//    }
-//
-//    public Optional<Line> findByName(String name) {
-//        String query = "SELECT * FROM LINE WHERE name = ?";
-//        Line result = DataAccessUtils.singleResult(
-//                jdbcTemplate.query(query, lineRowMapper, name)
-//        );
-//        return Optional.ofNullable(result);
-//    }
-//
-//    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-//            new Line(
-//                    resultSet.getLong("id"),
-//                    resultSet.getString("name"),
-//                    resultSet.getString("color"));
-//
+    public Line findLineWithSectionsById(Long lineId) {
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        Optional<Line> line = lineDao.findById(lineId);
+        return new Line(line.get(), sections);
+    }
+
     public int edit(Long lineId, String name, String color) {
         return lineDao.edit(lineId, name, color);
     }

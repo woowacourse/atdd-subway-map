@@ -10,15 +10,19 @@ public class Line {
     private final String color;
     private final List<Section> sections;
 
+    public Line(Line line, List<Section> sections) {
+        this(line.getId(), line.getName(), line.getColor(), new ArrayList<>(sections));
+    }
+
     public Line(Long id, String name, String color) {
-        this(id, name, color, new ArrayList());
+        this(id, name, color, null);
     }
 
     public Line(Long id, String name, String color, List<Section> sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = new ArrayList<>(sections);
+        this.sections = sections;
     }
 
     public Long getId() {
