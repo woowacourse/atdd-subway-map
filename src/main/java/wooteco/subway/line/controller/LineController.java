@@ -13,6 +13,7 @@ import wooteco.subway.line.domain.Line;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequestMapping("/lines")
@@ -35,7 +36,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            throw new IllegalArgumentException(fieldError.getDefaultMessage());
+            throw new IllegalArgumentException(Objects.requireNonNull(fieldError).getDefaultMessage());
         }
 
         Long id = lineService.save(lineRequest.toEntity());
