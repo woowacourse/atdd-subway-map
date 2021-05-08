@@ -22,15 +22,6 @@ import wooteco.subway.station.dao.StationDaoCache;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineDaoMemory LINE_DAO_MEMORY = new LineDaoMemory();
-    private static final StationDaoCache stationDaoCache = new StationDaoCache();
-
-    @AfterEach
-    void cleanTestResidue() {
-        stationDaoCache.clean();
-        LINE_DAO_MEMORY.clean();
-    }
-
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void createLine() {
