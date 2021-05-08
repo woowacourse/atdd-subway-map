@@ -1,30 +1,61 @@
 package wooteco.subway.station;
 
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class StationDao {
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
 
-    public static Station save(Station station) {
-        Station persistStation = createNewObject(station);
-        stations.add(persistStation);
-        return persistStation;
+    public static final RowMapper<StationEntity> STATION_ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
+        resultSet.getLong("id"), resultSet.getString("name"));
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public static List<Station> findAll() {
-        return stations;
+    public StationEntity save(StationEntity stationEntity) {
+        String sql = "INSERT INTO station (name) values (?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, stationEntity.getName());
+            return ps;
+        }, keyHolder);
+
+        return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+            stationEntity.getName());
     }
 
-    private static Station createNewObject(Station station) {
-        Field field = ReflectionUtils.findField(Station.class, "id");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, station, ++seq);
-        return station;
+    public List<StationEntity> findAll() {
+        String sql = "SELECT * FROM station";
+
+        return jdbcTemplate.query(sql, STATION_ROW_MAPPER);
+    }
+
+    public void delete(Long id) {
+        String sql = "DELETE FROM station WHERE id = (?)";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean hasStationWithName(String name) {
+        String sql = "SELECT COUNT(*) FROM station WHERE name = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, name) > 0;
+    }
+
+    public boolean hasStationWithId(Long id) {
+        String sql = "SELECT COUNT(*) FROM station WHERE id = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }

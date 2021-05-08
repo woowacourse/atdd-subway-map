@@ -1,17 +1,17 @@
 package wooteco.subway.station;
 
-public class Station {
+public class StationEntity {
 
     private Long id;
     private String name;
 
-    public Station(Long id, String name) {
+    public StationEntity(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public StationEntity(String name) {
+        this(null, name);
     }
 
     public Long getId() {
@@ -22,4 +22,3 @@ public class Station {
         return name;
     }
 }
-
