@@ -1,7 +1,11 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Station;
@@ -20,16 +24,16 @@ public class StationDao {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("station")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Long insert(Station station) {
-        final SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("station")
-                .usingGeneratedKeyColumns("id");
-
         Map<String, Object> params = new HashMap<>(1);
         params.put("name", station.getName());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -38,6 +42,11 @@ public class StationDao {
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
         return jdbcTemplate.query(query, STATION_MAPPER);
+    }
+
+    public String findNameById(Long id) {
+        String query = "SELECT name FROM station WHERE id=?";
+        return jdbcTemplate.queryForObject(query, String.class, id);
     }
 
     public Optional<Station> findById(Long id) {
@@ -57,5 +66,10 @@ public class StationDao {
     public void deleteById(Long id) {
         String query = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    public int countsBy(String name) {
+        String query = "SELECT COUNT(name) FROM station WHERE name =?";
+        return jdbcTemplate.queryForObject(query, Integer.class, name);
     }
 }
