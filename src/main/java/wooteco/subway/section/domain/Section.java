@@ -1,4 +1,4 @@
-package wooteco.subway.line.section.domain;
+package wooteco.subway.section.domain;
 
 import wooteco.subway.station.domain.Station;
 

@@ -1,4 +1,4 @@
-package wooteco.subway.line.section.domain;
+package wooteco.subway.section.domain;
 
 public class SectionDistance {
     private static final int ZERO = 0;
