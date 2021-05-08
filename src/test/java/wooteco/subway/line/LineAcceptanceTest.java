@@ -32,10 +32,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract();
+        LineResponse responseBody = response.body().as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(responseBody.getName()).isEqualTo(lineRequest.getName());
     }
 
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
