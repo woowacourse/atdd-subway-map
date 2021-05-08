@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.exception;
 
 public class StationException extends IllegalArgumentException {
 

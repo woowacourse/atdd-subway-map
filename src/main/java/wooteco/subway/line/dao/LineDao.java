@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineRepository;
 
 @Repository
 public class LineDao implements LineRepository {

@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.controller.dto.StationDto;
+import wooteco.subway.station.controller.dto.StationRequest;
+import wooteco.subway.station.controller.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 @RestController
 @RequestMapping("/stations")

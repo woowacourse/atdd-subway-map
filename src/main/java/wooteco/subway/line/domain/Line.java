@@ -1,12 +1,14 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import wooteco.subway.station.Station;
+import wooteco.subway.line.controller.dto.LineRequest;
+import wooteco.subway.station.domain.Station;
 
 public class Line {
+
     private final Long id;
     private final String name;
     private final String color;

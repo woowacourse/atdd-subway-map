@@ -1,6 +1,7 @@
-package wooteco.subway.station;
+package wooteco.subway.station.domain;
 
 import java.util.Objects;
+import wooteco.subway.station.controller.dto.StationRequest;
 
 public class Station {
 
