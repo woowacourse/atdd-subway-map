@@ -201,7 +201,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get("/lines/" + id)
+            .get("/lines/{lineId}", id)
             .then().log().all()
             .extract();
 
@@ -239,7 +239,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .put("/lines/" + id)
+            .put("/lines/{lineId}", id)
             .then().log().all()
             .extract();
 
@@ -268,7 +268,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/" + id)
+            .delete("/lines/{lineId}", id)
             .then()
             .log().all()
             .extract();
@@ -297,7 +297,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long id = response1.jsonPath().getObject(".", LineResponse.class).getId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get("/lines/" + (id + 1L))
+            .get("/lines/{lineId}", id + 1L)
             .then().log().all()
             .extract();
 
@@ -326,7 +326,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/" + (id + 1))
+            .delete("/lines/{lineId}", id + 1)
             .then()
             .log().all()
             .extract();

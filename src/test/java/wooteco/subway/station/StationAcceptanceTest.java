@@ -180,7 +180,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/stations/" + id)
+            .delete("/stations/{stationId}", id)
             .then()
             .log().all()
             .extract();
@@ -209,7 +209,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/stations/" + (id + 1))
+            .delete("/stations/{stationId}", id + 1)
             .then()
             .log().all()
             .extract();
