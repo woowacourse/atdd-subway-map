@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.exception.EmptyInputException;
+import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.line.LineSuffixException;
 
 import java.util.Objects;
@@ -21,9 +23,23 @@ public class Line {
     }
 
     public Line(String name, String color) {
+        validateNotNull(name, color);
+        validateNotEmpty(name, color);
         validateSuffix(name);
         this.name = name;
         this.color = color;
+    }
+
+    private void validateNotNull(String name, String color) {
+        if (name == null || color == null) {
+            throw new NullInputException();
+        }
+    }
+
+    private void validateNotEmpty(String name, String color) {
+        if ("".equals(name) || "".equals(color)) {
+            throw new EmptyInputException();
+        }
     }
 
     private void validateSuffix(String name) {

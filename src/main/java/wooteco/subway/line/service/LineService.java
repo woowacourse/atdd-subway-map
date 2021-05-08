@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.IllegalIdException;
 import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.exception.line.NoLineException;
 import wooteco.subway.line.domain.Line;
@@ -44,15 +45,24 @@ public class LineService {
     }
 
     public Line line(Long id) {
+        validateId(id);
         return lineDao.findById(id)
             .orElseThrow(NoLineException::new);
     }
 
     public void update(Long id, LineRequest lineRequest) {
+        validateId(id);
         lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void delete(Long id) {
+        validateId(id);
         lineDao.delete(id);
+    }
+
+    private void validateId(Long id) {
+        if (id <= 0) {
+            throw new IllegalIdException();
+        }
     }
 }

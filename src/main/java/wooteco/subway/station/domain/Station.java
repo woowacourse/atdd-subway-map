@@ -1,5 +1,7 @@
 package wooteco.subway.station.domain;
 
+import wooteco.subway.exception.EmptyInputException;
+import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.station.StationSuffixException;
 
 import java.util.Objects;
@@ -19,8 +21,22 @@ public class Station {
     }
 
     public Station(String name) {
+        validateNotNull(name);
+        validateNotEmpty(name);
         validateSuffix(name);
         this.name = name;
+    }
+
+    private void validateNotNull(String name) {
+        if (name == null) {
+            throw new NullInputException();
+        }
+    }
+
+    private void validateNotEmpty(String name) {
+        if ("".equals(name)) {
+            throw new EmptyInputException();
+        }
     }
 
     private void validateSuffix(String name) {

@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.IllegalIdException;
 import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -37,6 +38,13 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        validateId(id);
         stationDao.delete(id);
+    }
+
+    private void validateId(Long id) {
+        if (id <= 0) {
+            throw new IllegalIdException();
+        }
     }
 }
