@@ -47,11 +47,11 @@ public class InMemoryLineDao implements LineDao {
 
     @Override
     public void update(Long id, Line updatedLine) {
-        Line line = findByIdIfExist(id);
-        lines.stream()
-                .filter(line::equals)
-                .findAny()
-                .ifPresent(l -> l.update(updatedLine));
+        findById(id)
+                .ifPresent(line -> {
+                    int index = lines.indexOf(line);
+                    lines.set(index, updatedLine);
+                });
     }
 
     private Line findByIdIfExist(Long id) {
@@ -63,5 +63,14 @@ public class InMemoryLineDao implements LineDao {
     public void delete(Long id) {
         Line line = findByIdIfExist(id);
         lines.remove(line);
+    }
+
+    @Override
+    public Optional<String> findByNameAndNotInOriginalName(String name, String originalName) {
+        return lines.stream()
+                .filter(line -> !line.isSameName(originalName))
+                .filter(line -> line.isSameName(name))
+                .map(Line::getName)
+                .findAny();
     }
 }

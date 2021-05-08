@@ -33,13 +33,13 @@ public class LineService {
     }
 
     private void validateLineName(LineCreateRequest lineCreateRequest) {
-        if (checkNameDuplicate(lineCreateRequest)) {
+        if (checkNameDuplicate(lineCreateRequest.getName())) {
             throw new IllegalArgumentException("중복된 이름의 노선이 존재합니다.");
         }
     }
 
-    private boolean checkNameDuplicate(LineCreateRequest lineCreateRequest) {
-        return lineDao.findByName(lineCreateRequest.getName())
+    private boolean checkNameDuplicate(String name) {
+        return lineDao.findByName(name)
                 .isPresent();
     }
 
@@ -58,30 +58,20 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
-        validatesRequest(id, lineUpdateRequest);
-
-        Line updatedLine = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        lineDao.update(id, updatedLine);
-        log.info("노선 정보 수정 완료");
-    }
-
-    private void validatesRequest(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line currentLine = lineDao.findById(id)
+        Line line = lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
-        String oldName = currentLine.getName();
-        String newName = lineUpdateRequest.getName();
+        lineDao.findByNameAndNotInOriginalName(lineUpdateRequest.getName(), line.getName())
+                .ifPresent(s -> {
+                    throw new IllegalArgumentException("중복된 이름입니다.");
+                });
 
-        if (validatesName(oldName, newName)) {
-            throw new IllegalArgumentException("변경할 수 없는 이름입니다.");
-        }
-    }
+        Line updatedLine = line.update(lineUpdateRequest);
 
-    private boolean validatesName(String oldName, String newName) {
-        return lineDao.findAll().stream()
-                .filter(line -> !line.isSameName(oldName))
-                .anyMatch(line -> line.isSameName(newName));
+        lineDao.update(id, updatedLine);
+        log.info("노선 정보 수정 완료");
     }
 
     public void delete(Long id) {

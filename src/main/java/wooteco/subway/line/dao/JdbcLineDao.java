@@ -53,8 +53,7 @@ public class JdbcLineDao implements LineDao {
     public Optional<Line> findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         List<Line> results = jdbcTemplate.query(query, lineRowMapper(), id);
-        return results.stream()
-                .findAny();
+        return results.stream().findAny();
     }
 
     @Override
@@ -76,5 +75,17 @@ public class JdbcLineDao implements LineDao {
     public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public Optional<String> findByNameAndNotInOriginalName(String name, String originalName) {
+        String query = "SELECT name FROM line WHERE name = ? AND name NOT IN (?)";
+        List<String> results = jdbcTemplate.query(query, NameRowMapper(), name, originalName);
+        return results.stream().findAny();
+    }
+
+    private RowMapper<String> NameRowMapper() {
+        return (rs, rowNum) ->
+                rs.getString("name");
     }
 }
