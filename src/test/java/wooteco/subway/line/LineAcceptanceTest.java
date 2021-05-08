@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = linePostRequest(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("errorMessage"))
+        assertThat(response.body().asString())
             .isEqualTo(new LineDuplicationException().getMessage());
     }
 
@@ -56,7 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = linePostRequest(afterRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("errorMessage"))
+        assertThat(response.body().asString())
             .isEqualTo(new LineDuplicationException().getMessage());
     }
 
@@ -99,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse expectedResponse = createResponse.body().as(LineResponse.class);
-        LineResponse resultResponse = response.body().as(LineResponse.class);
+        LineResponse resultResponse = response.jsonPath().getList(".", LineResponse.class).get(0);
 
         assertThat(resultResponse.getId()).isEqualTo(expectedResponse.getId());
         assertThat(resultResponse.getName()).isEqualTo(expectedResponse.getName());

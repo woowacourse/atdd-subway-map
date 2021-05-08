@@ -2,7 +2,7 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.IllegalIdException;
-import wooteco.subway.exception.line.LineDuplicationException;
+import wooteco.subway.exception.station.StationDuplicationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
@@ -30,7 +30,7 @@ public class StationService {
     }
 
     private void throwDuplicationException(Station station) {
-        throw new LineDuplicationException();
+        throw new StationDuplicationException();
     }
 
     public List<Station> stations() {

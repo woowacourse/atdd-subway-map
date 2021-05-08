@@ -41,7 +41,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = stationPostRequest(request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("errorMessage"))
+        assertThat(response.body().asString())
             .isEqualTo(new StationDuplicationException().getMessage());
     }
 
