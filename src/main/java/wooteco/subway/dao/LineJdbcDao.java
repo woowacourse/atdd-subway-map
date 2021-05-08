@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
@@ -23,18 +22,18 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public Line save(LineRequest lineRequest) {
+    public Line save(final Line line) {
         String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, lineRequest.getName());
-            ps.setString(2, lineRequest.getColor());
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
 
         Long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Line(generatedId, lineRequest);
+        return new Line(generatedId, line);
     }
 
     @Override
@@ -77,9 +76,9 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, LineRequest lineRequest) {
+    public void update(final Long id, final Line line) {
         String sql = "UPDATE LINE l SET l.name = ?, l.color = ? WHERE l.id = ?";
-        jdbcTemplate.update(sql, lineRequest.getName(), lineRequest.getColor(), id);
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     @Override
