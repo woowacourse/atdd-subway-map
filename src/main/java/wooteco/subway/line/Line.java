@@ -14,10 +14,6 @@ public class Line {
     private final String color;
     private final List<Station> stations;
 
-    public Line(LineUpdateRequest updatedLine) {
-        this(NOT_EXIST_ID, updatedLine.getName(), updatedLine.getColor(), Collections.emptyList());
-    }
-
     public Line(String name, String color) {
         this(NOT_EXIST_ID, name, color, Collections.emptyList());
     }
@@ -42,7 +38,7 @@ public class Line {
     }
 
     public Line update(LineUpdateRequest updatedLine) {
-        return new Line(updatedLine);
+        return new Line(updatedLine.getName(), updatedLine.getColor());
     }
 
     public Long getId() {
