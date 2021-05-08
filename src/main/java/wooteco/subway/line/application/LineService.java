@@ -2,9 +2,7 @@ package wooteco.subway.line.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.LineEntity;
-import wooteco.subway.line.domain.LineDao;
-import wooteco.subway.line.domain.SectionDao;
+import wooteco.subway.line.domain.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionAddRequest;
@@ -14,7 +12,6 @@ import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +30,25 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
-        sectionDao.save(new SectionEntity(savedLineEntity.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
-        List<Station> stations = Arrays.asList(stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")), stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")));
-        return new LineResponse(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color(), stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+
+        Line line = new Line(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color());
+
+        SectionEntity sectionEntity = sectionDao.save(new SectionEntity(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance()));
+
+        Section section = new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
+
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), section.line().getSections()
+                .stream()
+                .map(singleSection -> Arrays.asList(singleSection.upStation(), singleSection.downStation()))
+                .flatMap(stations -> stations.stream().map(StationResponse::new))
                 .collect(Collectors.toList())
         );
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationDao.findById(stationId).orElseThrow(() -> new IllegalStateException("없는 역임!"));
     }
 
     @Transactional

@@ -34,6 +34,10 @@ public class Line {
         return name;
     }
 
+    public String nameAsString() {
+        return name.name();
+    }
+
     public String getColor() {
         return color;
     }
