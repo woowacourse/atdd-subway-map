@@ -12,8 +12,6 @@ import wooteco.subway.line.dto.LineCreateRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -77,19 +75,19 @@ public class LineService {
 
     private void validateDuplicateNameExceptMyself(Long id, String lineName) {
         Optional<Line> lineByName = lineDao.findByName(lineName);
-        if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
+        if (lineByName.isPresent() && !lineByName.get().equalId(id)) {
             throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
         }
     }
 
     private void validateIsExistStationById(Long id) {
-        if(!stationDao.findById(id).isPresent()) {
+        if (!stationDao.findById(id).isPresent()) {
             throw new IllegalArgumentException("해당 지하철역이 존재하지 않습니다");
         }
     }
 
     private void validateIsExistLineById(Long id) {
-        if(!lineDao.findById(id).isPresent()) {
+        if (!lineDao.findById(id).isPresent()) {
             throw new IllegalArgumentException("해당 노선이 존재하지 않습니다");
         }
     }

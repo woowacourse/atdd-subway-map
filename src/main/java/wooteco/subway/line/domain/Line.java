@@ -34,4 +34,8 @@ public class Line {
     public String getColor() {
         return color;
     }
+
+    public boolean equalId(Long id) {
+        return this.id.equals(id);
+    }
 }
