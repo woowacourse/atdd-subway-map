@@ -3,6 +3,7 @@ package wooteco.subway.station.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
@@ -21,6 +22,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse save(StationRequest stationRequest) {
         validateStationName(stationRequest);
         Station station = new Station(stationRequest.getName());

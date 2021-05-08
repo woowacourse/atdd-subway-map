@@ -3,6 +3,7 @@ package wooteco.subway.line.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
@@ -22,6 +23,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateLineName(lineCreateRequest);
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
