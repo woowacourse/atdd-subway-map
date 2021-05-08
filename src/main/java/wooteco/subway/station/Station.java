@@ -5,16 +5,20 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    private Station() {
     }
 
-    public Station(Long id, String name) {
+    private Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public static Station of(Long id, String name) {
+        return new Station(id, name);
+    }
+
+    public static Station of(String name) {
+        return of(null, name);
     }
 
     public Long getId() {

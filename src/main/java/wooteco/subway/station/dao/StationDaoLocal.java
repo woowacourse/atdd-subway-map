@@ -1,11 +1,12 @@
 package wooteco.subway.station.dao;
 
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.Station;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.Station;
 
 public class StationDaoLocal implements StationDao {
 
@@ -34,8 +35,8 @@ public class StationDaoLocal implements StationDao {
     @Override
     public Optional<Station> findStationByName(String name) {
         return stations.stream()
-            .filter(station -> station.isSameName(name))
-            .findAny();
+                .filter(station -> station.isSameName(name))
+                .findAny();
     }
 
     @Override

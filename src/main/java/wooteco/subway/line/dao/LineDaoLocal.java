@@ -1,11 +1,12 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.Line;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.line.Line;
 
 public class LineDaoLocal implements LineDao {
 
@@ -15,8 +16,8 @@ public class LineDaoLocal implements LineDao {
     @Override
     public Optional<Line> findLineByName(String name) {
         return lines.stream()
-            .filter(line -> line.isSameName(name))
-            .findAny();
+                .filter(line -> line.isSameName(name))
+                .findAny();
     }
 
     @Override
@@ -41,8 +42,8 @@ public class LineDaoLocal implements LineDao {
     @Override
     public Optional<Line> findLineById(Long id) {
         return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findAny();
+                .filter(line -> line.isSameId(id))
+                .findAny();
     }
 
     @Override
