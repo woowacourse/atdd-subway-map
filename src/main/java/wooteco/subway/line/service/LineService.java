@@ -23,13 +23,16 @@ public class LineService {
 
     @Transactional
     public LineDto save(final Line requestedLine) {
-        final Optional<Line> line = lineRepository.findByName(requestedLine.getName());
-        if (line.isPresent()) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
-        }
+        validateName(requestedLine.getName());
 
         final Line createdLine = lineRepository.save(requestedLine);
         return LineDto.of(createdLine);
+    }
+
+    public LineDto show(Long id) {
+        final Line line = validateExisting(id);
+
+        return LineDto.of(line);
     }
 
     public List<LineDto> showAll() {
@@ -42,32 +45,31 @@ public class LineService {
 
     @Transactional
     public void update(final Line requestedLine) {
-        final Optional<Line> line = lineRepository.findById(requestedLine.getId());
-        if (line.isPresent()) {
-            lineRepository.update(requestedLine);
-            return;
-        }
+        validateExisting(requestedLine.getId());
+        validateName(requestedLine.getName());
 
-        throw new LineException("수정하려는 노선이 존재하지 않습니다.");
+        lineRepository.update(requestedLine);
     }
 
     @Transactional
     public void delete(final Long id) {
-        final Optional<Line> line = lineRepository.findById(id);
-        if (line.isPresent()) {
-            lineRepository.delete(id);
-            return;
-        }
+        validateExisting(id);
+        lineRepository.delete(id);
 
-        throw new LineException("지우려고 하는 노선이 존재하지 않습니다");
     }
 
-    public LineDto show(Long id) {
+    private Line validateExisting(final Long id) {
         final Optional<Line> line = lineRepository.findById(id);
-        if (line.isPresent()) {
-            return LineDto.of(line.get());
+        if (!line.isPresent()) {
+            throw new LineException("노선이 존재하지 않습니다.");
         }
+        return line.get();
+    }
 
-        throw new LineException("해당 id의 노선이 존재하지 않습니다.");
+    private void validateName(final String name) {
+        final Optional<Line> line = lineRepository.findByName(name);
+        if (line.isPresent()) {
+            throw new LineException("이미 존재하는 노선 이름입니다.");
+        }
     }
 }
