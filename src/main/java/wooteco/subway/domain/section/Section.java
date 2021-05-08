@@ -24,6 +24,10 @@ public class Section {
         this.lineId = lineId;
     }
 
+    public boolean isConnectedWith(Section nextSection) {
+        return this.downStation == nextSection.upStation;
+    }
+
     public Station getUpStation() {
         return upStation;
     }

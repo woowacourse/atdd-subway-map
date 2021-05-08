@@ -5,6 +5,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 
+import java.util.List;
+
 @Service
 public class SectionService {
 
@@ -21,5 +23,10 @@ public class SectionService {
         Station downStation = stationService.findById(downStationId);
         Section section = new Section(upStation, downStation, distance, lineId);
         return sectionDao.save(section);
+    }
+
+    public List<Station> findStationsOfLine(long lineId) {
+        List<Section> sections = sectionDao.findAllByLineId(lineId);
+        return null;
     }
 }
