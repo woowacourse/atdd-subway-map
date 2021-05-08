@@ -74,15 +74,16 @@ class LineDaoTest {
     @Test
     @DisplayName("노선 정보를 수정한다.")
     void updateLine() {
-        Line line = new Line("2호선", "green");
-        Long id = lineDao.save(line);
+        Line line1 = new Line("2호선", "green");
+        long id = lineDao.save(line1);
 
-        lineDao.updateLine(id, "3호선", "red");
+        Line line2 = new Line(id, "3호선", "red");
+        lineDao.updateLine(line2);
 
-        Line line2 = lineDao.findById(id)
+        Line line3 = lineDao.findById(id)
             .orElseThrow(LineNotFoundException::new);
-        assertThat(line2.getName()).isEqualTo("3호선");
-        assertThat(line2.getColor()).isEqualTo("red");
+        assertThat(line3.getName()).isEqualTo(line2.getName());
+        assertThat(line3.getColor()).isEqualTo(line2.getColor());
     }
 
     @Test

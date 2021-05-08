@@ -57,9 +57,9 @@ public class LineDao {
             .findAny();
     }
 
-    public void updateLine(Long id, String name, String color) {
+    public void updateLine(Line line) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        int rowCounts = jdbcTemplate.update(query, name, color, id);
+        int rowCounts = jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
         if (rowCounts == 0) {
             throw new LineNotFoundException();
         }

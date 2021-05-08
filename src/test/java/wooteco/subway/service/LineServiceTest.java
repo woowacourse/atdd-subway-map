@@ -65,9 +65,10 @@ class LineServiceTest {
     @Test
     @DisplayName("노선 정보를 수정한다.")
     void editLine() {
-        lineService.editLine(1L, "3호선", "red");
+        Line line = new Line(1L, "3호선", "red");
+        lineService.editLine(line);
         verify(lineDao, times(1))
-            .updateLine(1L, "3호선", "red");
+            .updateLine(line);
     }
 
     @Test

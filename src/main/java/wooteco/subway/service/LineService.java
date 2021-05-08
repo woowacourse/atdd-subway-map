@@ -32,9 +32,9 @@ public class LineService {
             .orElseThrow(LineNotFoundException::new);
     }
 
-    public void editLine(Long id, String name, String color) {
-        validateDuplication(name);
-        lineDao.updateLine(id, name, color);
+    public void editLine(Line line) {
+        validateDuplication(line.getName());
+        lineDao.updateLine(line);
     }
 
     public void deleteLine(Long id) {
