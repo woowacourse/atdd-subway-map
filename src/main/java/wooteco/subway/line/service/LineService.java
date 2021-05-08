@@ -56,7 +56,7 @@ public class LineService {
 
     public void update(Long id, LineRequest lineRequest) {
         Line updatedLine = validatesRequest(id, lineRequest);
-        lineRepository.updateById(id, updatedLine);
+        lineRepository.update(updatedLine);
         log.info("노선 정보 수정 완료");
     }
 

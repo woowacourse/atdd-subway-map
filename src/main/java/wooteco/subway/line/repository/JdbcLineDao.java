@@ -74,11 +74,11 @@ public class JdbcLineDao implements LineRepository {
     }
 
     @Override
-    public void updateById(Long id, Line updatedLine) {
+    public void update(Line updatedLine) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         String newName = updatedLine.getName();
         String newColor = updatedLine.getColor();
-        jdbcTemplate.update(query, newName, newColor, id);
+        jdbcTemplate.update(query, newName, newColor, updatedLine.getId());
     }
 
     @Override

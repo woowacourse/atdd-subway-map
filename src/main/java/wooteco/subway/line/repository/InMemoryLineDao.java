@@ -51,8 +51,8 @@ public class InMemoryLineDao implements LineRepository {
     }
 
     @Override
-    public void updateById(Long id, Line updatedLine) {
-        Line line = findByIdIfExist(id);
+    public void update(Line updatedLine) {
+        Line line = findByIdIfExist(updatedLine.getId());
         lines.stream()
                 .filter(line::equals)
                 .findAny()
