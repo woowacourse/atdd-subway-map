@@ -9,7 +9,7 @@ import wooteco.subway.dao.section.DBSectionDao;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.dao.station.DBStationDao;
 import wooteco.subway.dao.station.StationDao;
-import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.dto.SectionEntity;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 

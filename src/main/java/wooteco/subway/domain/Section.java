@@ -6,7 +6,12 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section(){}
+    public Section() {
+    }
+
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this(0L, new Station(upStationId), new Station(downStationId), distance);
+    }
 
     public Section(final Station upStation, final Station downStation, final int distance) {
         this(0L, upStation, downStation, distance);
@@ -45,5 +50,9 @@ public class Section {
 
     public void changeDistance(int distance) {
         this.distance = distance;
+    }
+
+    public boolean has(Station station) {
+        return upStation.sameId(station) || downStation.sameId(station);
     }
 }

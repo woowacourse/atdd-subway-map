@@ -2,7 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.dto.SectionEntity;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.dao.station.StationDao;
@@ -11,7 +11,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
-import wooteco.subway.dto.section.SectionAddRequest;
+import wooteco.subway.dto.section.SectionRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,15 +45,14 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
-        Line lineEntity = lineDao.findById(lineId)
-                .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 노선입니다."));
-        List<Section> sections = sectionDao.findAllByLineId(lineId)
-                .stream()
-                .map(section ->
-                        new Section(section.getId(), findStationById(section.getUpStationId()),
-                                findStationById(section.getDownStationId()), section.getDistance()))
-                .collect(Collectors.toList());
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        List<Section> sections = findSectionsByLineId(lineId);
+        line.initSections(sections);
+
+        //
+        line.addSection(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
+
         // TODO : 예외
         //  lineId가 존재하는지
         //  line의 section에 upstationId와 downStationId 둘다 존재하는지 - 노선의 구간에 이미 등록되어있음
@@ -73,6 +72,20 @@ public class LineService {
 
         // TODO : section save
 
-        sectionDao.save(sectionAddRequest.toEntity(lineId));
+        sectionDao.save(sectionRequest.toEntity(lineId));
+    }
+
+    private List<Section> findSectionsByLineId(Long lineId) {
+        return sectionDao.findAllByLineId(lineId)
+                .stream()
+                .map(section ->
+                        new Section(section.getId(), findStationById(section.getUpStationId()),
+                                findStationById(section.getDownStationId()), section.getDistance()))
+                .collect(Collectors.toList());
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 노선입니다."));
     }
 }
