@@ -3,30 +3,28 @@ package wooteco.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.dao.station.StationDaoH2;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.StationService;
 import wooteco.subway.service.dto.StationServiceDto;
 
+@ExtendWith(MockitoExtension.class)
 class StationServiceTest {
 
+    @Mock
     private StationDaoH2 mockStationDao;
+    @InjectMocks
     private StationService stationService;
-
-    @BeforeEach
-    void setUp() {
-        mockStationDao = mock(StationDaoH2.class);
-        stationService = new StationService(mockStationDao);
-    }
-
 
     @DisplayName("서비스에서 저장 테스트")
     @Test
