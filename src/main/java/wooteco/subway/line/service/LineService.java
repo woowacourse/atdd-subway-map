@@ -43,13 +43,6 @@ public class LineService {
         }
     }
 
-    public Line lineRequestToLine(LineCreateRequest lineCreateRequest) {
-        findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId());
-        findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
-
-        return lineCreateRequest.toLine();
-    }
-
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
