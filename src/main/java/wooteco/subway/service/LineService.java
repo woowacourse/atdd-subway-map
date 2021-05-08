@@ -20,7 +20,8 @@ public class LineService {
         validateDuplication(name);
         Line line = new Line(name, color);
         long id = lineDao.save(line);
-        return findById(id);
+        line.setId(id);
+        return line;
     }
 
     public List<Line> findAll() {

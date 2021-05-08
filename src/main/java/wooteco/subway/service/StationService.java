@@ -20,7 +20,8 @@ public class StationService {
         validateDuplication(name);
         Station station = new Station(name);
         long id = stationDao.save(station);
-        return findById(id);
+        station.setId(id);
+        return station;
     }
 
     private Station findById(long id) {
