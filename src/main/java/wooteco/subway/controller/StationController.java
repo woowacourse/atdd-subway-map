@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StationController {
 
     private final StationService stationService;
@@ -20,7 +21,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest, Errors errors) {
         new StationValidator().validate(stationRequest, errors);
         if (errors.hasErrors()) {
@@ -30,13 +31,13 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<StationResponse>> showStations() {
         List<StationResponse> stationResponses = stationService.showAll();
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteById(id);
         return ResponseEntity.noContent().build();

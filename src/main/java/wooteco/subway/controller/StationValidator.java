@@ -25,10 +25,13 @@ public class StationValidator implements Validator {
         String name = stationRequest.getName();
         if (name == null) {
             errors.rejectValue("name", "required", "역 이름은 필수로 입력해야합니다.");
-        } else if (!PATTERN.matcher(name).matches()) {
-            errors.rejectValue("name", "bad", "올바르지 않은 역 이름입니다.");
+            addLog(errors);
+            return;
         }
-        addLog(errors);
+        if (!PATTERN.matcher(name).matches()) {
+            errors.rejectValue("name", "bad", "올바르지 않은 역 이름입니다.");
+            addLog(errors);
+        }
     }
 
     private void addLog(Errors errors) {

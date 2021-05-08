@@ -44,20 +44,15 @@ class LineDaoTest {
     @DisplayName("노선 목록 조회")
     void findAll() {
         //given
-        Line 거북선 = new Line("bg-red-100", "거북선");
-        Line 원양어선 = new Line("bg-black-200", "원양어선");
-        lineDao.insert(거북선);
-        lineDao.insert(원양어선);
+        Line 거북선 = lineDao.insert(new Line("bg-red-100", "거북선"));
+        Line 원양어선 = lineDao.insert(new Line("bg-black-200", "원양어선"));
 
         //when
         List<Line> lines = lineDao.findAll();
 
         //then
         assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(
-                new Line(1L, "bg-red-100", "거북선"),
-                new Line(2L, "bg-black-200", "원양어선")
-        );
+        assertThat(lines).containsExactly(거북선, 원양어선);
     }
 
     @Test

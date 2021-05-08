@@ -1,6 +1,5 @@
 package wooteco.subway.service;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
@@ -21,12 +20,8 @@ public class LineService {
     }
 
     public LineResponse create(String color, String name) {
-        Line line = new Line(color, name);
-        try {
-            return new LineResponse(lineDao.insert(line));
-        } catch (DataIntegrityViolationException e) {
-            throw new LineDuplicateException();
-        }
+        validateDuplicateColorAndName(color, name);
+        return new LineResponse(lineDao.insert(new Line(color, name)));
     }
 
     public List<LineResponse> showAll() {
@@ -38,19 +33,27 @@ public class LineService {
 
     public LineResponse showById(Long id) {
         Line line = lineDao.findById(id)
-                .orElseThrow(LineNotExistException::new);
+                .orElseThrow(() -> new LineNotExistException(id));
         return new LineResponse(line);
     }
 
     public void updateById(Long id, String color, String name) {
-        try {
-            lineDao.update(id, color, name);
-        } catch (DataIntegrityViolationException e) {
-            throw new LineDuplicateException();
-        }
+        validateDuplicateColorAndName(color, name);
+        lineDao.update(id, color, name);
     }
 
     public void deleteById(Long id) {
         lineDao.delete(id);
+    }
+
+    private void validateDuplicateColorAndName(String color, String name) {
+        lineDao.findByColor(color)
+                .ifPresent(line -> {
+                    throw new LineDuplicateException(line.getColor());
+                });
+        lineDao.findByName(name)
+                .ifPresent(line -> {
+                    throw new LineDuplicateException(line.getName());
+                });
     }
 }
