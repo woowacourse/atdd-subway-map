@@ -9,7 +9,7 @@ import wooteco.subway.name.domain.LineName;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LineNameTest {
+class LineEntityNameTest {
 
     @Test
     @DisplayName("name 객체를 생성한다.")

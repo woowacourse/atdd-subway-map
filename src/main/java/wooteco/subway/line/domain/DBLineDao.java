@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public class DBLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Line> lineRowMapper = (rs, rowNum) ->
-            new Line(rs.getLong("id"),
+    private final RowMapper<LineEntity> lineRowMapper = (rs, rowNum) ->
+            new LineEntity(rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("color"));
 
@@ -23,50 +23,50 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public Line save(final Line line) {
-        validateDuplicate(line);
+    public LineEntity save(final LineEntity lineEntity) {
+        validateDuplicate(lineEntity);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, line.name());
-            ps.setString(2, line.color());
+            ps.setString(1, lineEntity.name());
+            ps.setString(2, lineEntity.color());
             return ps;
         }, keyHolder);
         long newId = keyHolder.getKey().longValue();
-        return new Line(newId, line.name(), line.color());
+        return new LineEntity(newId, lineEntity.name(), lineEntity.color());
     }
 
     @Override
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String sql = "SELECT * FROM LINE";
 
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
     @Override
-    public Optional<Line> findById(final Long id) {
+    public Optional<LineEntity> findById(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
-        List<Line> line = jdbcTemplate.query(sql, lineRowMapper, id);
-        if (line.isEmpty()) {
+        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, id);
+        if (lineEntity.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(line.get(0));
+        return Optional.ofNullable(lineEntity.get(0));
     }
 
     @Override
-    public Optional<Line> findByName(final String name) {
+    public Optional<LineEntity> findByName(final String name) {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
-        List<Line> line = jdbcTemplate.query(sql, lineRowMapper, name);
-        if (line.isEmpty()) {
+        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, name);
+        if (lineEntity.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(line.get(0));
+        return Optional.ofNullable(lineEntity.get(0));
     }
 
     @Override
@@ -91,8 +91,8 @@ public class DBLineDao implements LineDao {
         }
     }
 
-    private void validateDuplicate(final Line line) {
-        if (findByName(line.name()).isPresent()) {
+    private void validateDuplicate(final LineEntity lineEntity) {
+        if (findByName(lineEntity.name()).isPresent()) {
             throw new IllegalStateException("이미 있는 역임!");
         }
     }

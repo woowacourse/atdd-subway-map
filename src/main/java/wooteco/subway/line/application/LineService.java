@@ -2,9 +2,8 @@ package wooteco.subway.line.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.domain.LineDao;
-import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -33,11 +32,10 @@ public class LineService {
 
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
-        Line savedLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-
-        sectionDao.save(new SectionEntity(savedLine.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+        LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        sectionDao.save(new SectionEntity(savedLineEntity.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
         List<Station> stations = Arrays.asList(stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")), stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")));
-        return new LineResponse(savedLine.id(), savedLine.name(), savedLine.color(), stations.stream()
+        return new LineResponse(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color(), stations.stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList())
         );

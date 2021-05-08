@@ -38,10 +38,10 @@ class DBSectionDaoTest {
         //given
         Station station = stationDao.save(new Station("백기역"));
         Station station2 = stationDao.save(new Station("흑기역"));
-        Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
+        LineEntity lineEntity = lineDao.save(new LineEntity("신분당선", "bg-red-600"));
 
         //when
-        SectionEntity sectionEntity = new SectionEntity(line.id(), station.getId(), station2.getId(), 15);
+        SectionEntity sectionEntity = new SectionEntity(lineEntity.id(), station.getId(), station2.getId(), 15);
         SectionEntity savedSectionEntity = sectionDao.save(sectionEntity);
 
         //then
