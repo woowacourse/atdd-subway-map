@@ -18,5 +18,5 @@ public interface LineDao {
 
     void delete(Long id);
 
-    Optional<String> findByNameAndNotInOriginalName(String name, String name1);
+    Optional<String> findByNameAndNotInOriginalName(String name, String originalName);
 }
