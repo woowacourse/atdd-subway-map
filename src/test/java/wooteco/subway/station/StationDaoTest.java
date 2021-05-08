@@ -52,7 +52,7 @@ public class StationDaoTest {
 
     @Test
     @DisplayName("Id로 Station을 조회")
-    void findById(){
+    void findById() {
         //given
         final Long id = stationDao.insert(makeStation("잠실역"));
 
@@ -65,7 +65,7 @@ public class StationDaoTest {
 
     @Test
     @DisplayName("Name으로 Station을 조회")
-    void findByName(){
+    void findByName() {
         //given
         final Long id = stationDao.insert(makeStation("잠실역"));
 

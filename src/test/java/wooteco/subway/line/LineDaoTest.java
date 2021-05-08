@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixture.makeLine;
-import static wooteco.subway.Fixture.makeStation;
 
 @JdbcTest
 @Rollback
@@ -159,7 +158,7 @@ class LineDaoTest {
     @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
     void countsByName2() {
         //given
-        final Long id = lineDao.insert(makeLine("bg-red-100","잠실역"));
+        final Long id = lineDao.insert(makeLine("bg-red-100", "잠실역"));
         final String name = lineDao.findNameById(id);
 
         //when
@@ -183,7 +182,7 @@ class LineDaoTest {
     @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
     void countsByColor2() {
         //given
-        final Long id = lineDao.insert(makeLine("bg-red-100","잠실역"));
+        final Long id = lineDao.insert(makeLine("bg-red-100", "잠실역"));
         final String color = lineDao.findColorById(id);
 
         //when
