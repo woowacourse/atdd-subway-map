@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import javax.sql.DataSource;
+
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,12 +63,12 @@ class LineDaoTest {
         List<Line> lines = lineDao.findAll();
 
         // then
-        assertAll(
-            () -> assertThat(lines.get(0).getName()).isEqualTo(line1.getName()),
-            () -> assertThat(lines.get(0).getColor()).isEqualTo(line1.getColor()),
-            () -> assertThat(lines.get(1).getName()).isEqualTo(line2.getName()),
-            () -> assertThat(lines.get(1).getColor()).isEqualTo(line2.getColor())
-        );
+        assertThat(lines)
+            .extracting("name", "color")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(line1.getName(), line1.getColor()),
+                Tuple.tuple(line2.getName(), line2.getColor())
+            );
     }
 
     @Test

@@ -3,6 +3,7 @@ package wooteco.subway.dao.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.linesOf;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -60,10 +61,12 @@ class StationDaoTest {
         List<Station> stations = stationDao.findAll();
 
         // then
-        assertAll(
-            () -> assertThat(stations.get(0).getName()).isEqualTo(station1.getName()),
-            () -> assertThat(stations.get(1).getName()).isEqualTo(station2.getName())
-        );
+        assertThat(stations)
+            .extracting("name")
+            .containsExactlyInAnyOrder(
+                station1.getName(),
+                station2.getName()
+            );
     }
 
     @Test
