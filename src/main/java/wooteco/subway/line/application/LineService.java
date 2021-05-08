@@ -13,6 +13,7 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,44 +35,23 @@ public class LineService {
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-
         Line line = new Line(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color());
 
         SectionEntity sectionEntity = sectionDao.save(new SectionEntity(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance()));
-
         Section section = new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
-
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(section.line()));
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(Collections.singletonList(section)));
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
         LineEntity findLineEntity = findLineEntityById(id);
-
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-
         List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
-        sectionEntities.forEach(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()));
 
-        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(line));
-    }
-
-    private List<StationResponse> toStationsResponses(final Line line) {
-        return line.getSections()
-                .stream()
-                .map(singleSection -> Arrays.asList(singleSection.upStation(), singleSection.downStation()))
-                .flatMap(Collection::stream)
-                .distinct()
-                .map(StationResponse::new)
+        List<Section> sections = sectionEntities.stream()
+                .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
                 .collect(Collectors.toList());
-    }
-
-    private LineEntity findLineEntityById(Long id) {
-        return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-    }
-
-    private Station findStationById(Long stationId) {
-        return stationDao.findById(stationId).orElseThrow(() -> new IllegalStateException("없는 역임!"));
+        return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sections));
     }
 
     @Transactional
@@ -96,5 +76,22 @@ public class LineService {
         // TODO : section save
 
         sectionDao.save(sectionAddRequest.toEntity(lineId));
+    }
+
+    private List<StationResponse> toStationsResponses(final List<Section> sections) {
+        return sections.stream()
+                .map(singleSection -> Arrays.asList(singleSection.upStation(), singleSection.downStation()))
+                .flatMap(Collection::stream)
+                .distinct()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    private LineEntity findLineEntityById(Long id) {
+        return lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationDao.findById(stationId).orElseThrow(() -> new IllegalStateException("없는 역임!"));
     }
 }

@@ -68,6 +68,4 @@ public class LineController {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
-
-
 }
