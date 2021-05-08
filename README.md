@@ -1,54 +1,48 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <img alt="npm" src="https://img.shields.io/badge/npm-%3E%3D%205.5.0-blue">
-  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D%209.3.0-blue">
-  <a href="https://techcourse.woowahan.com/c/Dr6fhku7" alt="woowacuorse subway">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/woowacourse/atdd-subway-map">
-</p>
+# 지하철 미션
 
-<br>
+## 1단계 기능 요구 사항
 
-# 지하철 노선도 미션
-스프링 과정 실습을 위한 지하철 노선도 애플리케이션
+### 도메인
 
-<br>
+1. 역
+    - [x] 역 입력 기능
+        - [x] [예외] 역 이름이 중복되면 예외
+        - [x] [예외] 역 이름은 20자를 초과하면 예외
+        - [x] 띄어쓰기가 2개가 연속되었을 경우 1개로 줄여주는 기능
+        - [x] [예외] 영어, 한글, 숫자, 일부 특수문자만(띄어쓰기 1개, 괄호, ·)이외의 문자를 입력하면 예외
+        - [x] 첫 글자와 마지막 글자에 공백이 들어가면 trim하는 기능
+    - [x] 역 삭제 기능
+        - [x] [예외] 없는 ID의 역을 삭제하려고 하면 예외
+2. 노선
+    - [x] 노선 생성 기능
+        - [x] [예외] 노선 명이 겹치면 예외
+        - [x] [예외] 노선 색상이 겹치면 예외
+        - [x] [예외] 노선 명이 20자를 넘어가면 예외
+        - [x] 노선 명이 띄어쓰기가 2개 이상일 경우 1개로 줄여주는 기능
+        - [x] [예외] 노선 명이 영어, 한글, 숫자, 일부 특수문자만(띄어쓰기 1개, 괄호, ·)이외의 문자를 입력하면 예외
+        - [x] 노선명에 첫 글자와 마지막 글자에 공백이 들어가면 trim하는 기능
+    - [x] 노선 조회 기능
+        - [x] 개별 노선 조회 기능
+            - [x] id, 이름, 색상을 반환해야한다.
+        - [x] 모든 노선 조회 기능
+            - [x] id, 이름, 색상을 포함한 노선 목록을 반환해야한다.
+    - [x] 노선 수정 기능
+        - [x] 노선 이름을 수정할 수 있다.
+            - [x] [예외] 노선 생성기능의 노선명 유효성검사를 통과해야한다.
+        - [x] 노선 색상을 수정할 수 있다.
+            - [x] [예외] 노선 색상이 겹치면 예외
+    - [x] 노선 삭제 기능
 
-## 🚀 Getting Started
+### 테스트
 
-### Install
-#### npm 설치
-```
-cd frontend
-npm install
-```
-> `frontend` 디렉토리에서 수행해야 합니다.
+1. End to End테스트를 구현해야 한다.
 
-### Usage
-#### webpack server 구동
-```
-npm run dev
-```
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+## 2단계 기능 요구 사항
+1. 스프링 JDBC 활용하여 H2 DB에 저장하기
+   - [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
+   - [x] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
+2. H2 DB를 통해 저장된 값 확인하기
+   - [x] log, console 등 실제로 DB에 저장이 잘 되었는지 확인할 수 있도록 설정하기
+3. 스프링 빈 활용하기
+   - [x] 매번 생성하지 않아도 되는 객체와 싱글톤이나 static으로 구현되었던 객체들을 스프링 빈으로 관리해도 좋음
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/woowacourse/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master/LICENSE) licensed.
