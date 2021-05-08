@@ -106,10 +106,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        System.out.println("asdf" + response.jsonPath());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .peek(it -> System.out.println("fda" + it.header("Location")))
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
