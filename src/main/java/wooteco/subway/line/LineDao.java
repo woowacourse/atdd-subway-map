@@ -1,70 +1,70 @@
 package wooteco.subway.line;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class LineDao {
+public class LineDao implements LineRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final KeyHolder keyHolder = new GeneratedKeyHolder();
+
+    private RowMapper<Line> rowMapper = (rs, rn) ->
+            new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color"),
+                    new ArrayList<>()
+            );
 
     public LineDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(final String name, final String color) {
-        if (isDuplicatedName(name)) {
-            throw new LineException("이미 존재하는 노선 이름입니다.");
-        }
-
+    public Line save(final Line line) {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, color);
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKey().longValue();
+        return new Line(id, line.getName(), line.getColor(), new ArrayList<>());
+    }
+
+    @Override
+    public Optional<Line> findByName(final String name) {
+        final String sql = "SELECT * FROM LINE WHERE name = ?";
+        return jdbcTemplate.query(sql, rowMapper, name).stream()
+                .findFirst();
+    }
+
+    public Optional<Line> findById(final Long id) {
+        final String sql = "SELECT * FROM LINE WHERE id = ?";
+        return jdbcTemplate.query(sql, rowMapper, id).stream()
+                .findFirst();
+    }
+
+    public List<Line> findAll() {
+        final String sql = "SELECT * FROM LINE";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public void update(final Line line) {
+        final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
+        jdbcTemplate.update(sql, line.getName(), line.getColor(), line.getId());
     }
 
     public void delete(final Long id) {
         final String sql = "DELETE FROM LINE WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public void update(final Long id, final String name, final String color) {
-        final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
-        jdbcTemplate.update(sql, name, color, id);
-    }
-
-    public Line findById(final Long id) {
-        try {
-            final String sql = "SELECT * FROM LINE WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, Line.class, id);
-        } catch (Exception e) {
-            throw new LineException("존재하지 않는 노선입니다.");
-        }
-    }
-
-    private boolean isDuplicatedName(final String name) {
-        final String sql = "SELECT EXISTS(SELECT from LINE WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
-    }
-
-    public List<Line> findAll() {
-        final String sql = "SELECT * FROM LINE";
-        return jdbcTemplate.query(
-                sql,
-                (rs, rn) -> new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                )
-        );
     }
 }

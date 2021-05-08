@@ -1,6 +1,6 @@
 package wooteco.subway.line;
 
-public final class LineException extends IllegalArgumentException {
+public class LineException extends IllegalArgumentException {
 
     public LineException() {
         super("유효하지 않은 노선입니다.");
