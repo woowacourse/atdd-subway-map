@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -57,13 +59,23 @@ class LineH2DaoTest {
         assertThat(line.getColor()).isEqualTo(color);
     }
 
-    @DisplayName("노선 조회 테스트")
+    @DisplayName("노선 조회 테스트 - id")
     @Test
     void findById() {
         Long id = 1L;
         Line line = lineDao.findById(id);
 
         assertThat(line.getId()).isEqualTo(id);
+    }
+
+    @DisplayName("노선 조회 테스트 - name")
+    @Test
+    void findByName() {
+        String name = "2호선";
+        Optional<Line> line = lineDao.findByName(name);
+
+        assertThat(line.isPresent()).isTrue();
+        assertThat(line.get().getName()).isEqualTo(name);
     }
 
     @DisplayName("노선 삭제 테스트")
