@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
+import wooteco.subway.exception.NoLineException;
 
 import java.util.List;
 
@@ -37,7 +38,8 @@ public class LineService {
     }
 
     public Line line(Long id) {
-        return lineDao.findById(id);
+        return lineDao.findById(id)
+            .orElseThrow(NoLineException::new);
     }
 
     public void update(Long id, LineRequest lineRequest) {

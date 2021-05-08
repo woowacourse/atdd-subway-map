@@ -7,6 +7,7 @@ import wooteco.subway.exception.NoLineException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LineJavaDao implements LineDao {
 
@@ -51,16 +52,15 @@ public class LineJavaDao implements LineDao {
 
     @Override
     public void update(Long id, String name, String color) {
-        Line line = findById(id);
+        Line line = findById(id).orElseThrow(NoLineException::new);
         line = new Line(id, name, color);
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
             .filter(line -> line.isSameId(id))
-            .findAny()
-            .orElseThrow(NoLineException::new);
+            .findAny();
     }
 
     @Override

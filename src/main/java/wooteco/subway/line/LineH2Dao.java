@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class LineH2Dao implements LineDao {
@@ -54,18 +55,9 @@ public class LineH2Dao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id=?";
-        return jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                }, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Line.class, id));
     }
 
     @Override
