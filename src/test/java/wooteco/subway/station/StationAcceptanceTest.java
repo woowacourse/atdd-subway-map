@@ -74,7 +74,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         final StationRequest stationRequest1 = new StationRequest("수원역");
-        ExtractableResponse<Response> createResponse1 = RestAssured
+        final ExtractableResponse<Response> createResponse1 = RestAssured
                 .given().log().all()
                     .body(stationRequest1)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -84,7 +84,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                     .extract();
 
         final StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured
+        final ExtractableResponse<Response> createResponse2 = RestAssured
                 .given().log().all()
                     .body(stationRequest2)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -94,7 +94,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                     .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured
+        final ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when()
                     .get("/stations")
@@ -102,8 +102,8 @@ class StationAcceptanceTest extends AcceptanceTest {
                     .extract();
 
         // then
-        List<Long> expectedStationIds = Arrays.asList(stationId(createResponse1), stationId(createResponse2));
-        List<Long> resultStationIds = resultStationsIds(response);
+        final List<Long> resultStationIds = resultStationsIds(response);
+        final List<Long> expectedStationIds = Arrays.asList(stationId(createResponse1), stationId(createResponse2));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultStationIds).containsAll(expectedStationIds);
@@ -138,8 +138,8 @@ class StationAcceptanceTest extends AcceptanceTest {
                     .extract();
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured
+        final String uri = createResponse.header("Location");
+        final ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when()
                     .delete(uri)
