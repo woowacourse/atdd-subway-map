@@ -21,14 +21,8 @@ import wooteco.subway.station.controller.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철역을 생성한다.")
-    @Test
-    void createStation() {
-        // given
-        final StationRequest stationRequest = new StationRequest("수원역");
-
-        // when
-        final ExtractableResponse<Response> response = RestAssured
+    private ExtractableResponse<Response> postStation(final StationRequest stationRequest) {
+        return RestAssured
                 .given().log().all()
                     .body(stationRequest)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -36,6 +30,16 @@ class StationAcceptanceTest extends AcceptanceTest {
                     .post("/stations")
                 .then().log().all()
                     .extract();
+    }
+
+    @DisplayName("지하철역을 생성한다.")
+    @Test
+    void createStation() {
+        // given
+        final StationRequest stationRequest = new StationRequest("수원역");
+
+        // when
+        final ExtractableResponse<Response> response = postStation(stationRequest);
 
         // then
         final StationResponse stationResponse = response.body().as(StationResponse.class);
@@ -48,24 +52,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final StationRequest stationRequest = new StationRequest("수원역");
-        RestAssured
-                .given().log().all()
-                    .body(stationRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
+        postStation(stationRequest);
 
         // when
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                    .body(stationRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> response = postStation(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -76,24 +66,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         final StationRequest stationRequest1 = new StationRequest("수원역");
-        final ExtractableResponse<Response> createResponse1 = RestAssured
-                .given().log().all()
-                    .body(stationRequest1)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> createResponse1 = postStation(stationRequest1);
 
         final StationRequest stationRequest2 = new StationRequest("역삼역");
-        final ExtractableResponse<Response> createResponse2 = RestAssured
-                .given().log().all()
-                    .body(stationRequest2)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> createResponse2 = postStation(stationRequest2);
 
         // when
         final ExtractableResponse<Response> response = RestAssured
@@ -130,14 +106,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         final StationRequest stationRequest = new StationRequest("수원역");
-        final ExtractableResponse<Response> createResponse = RestAssured
-                .given().log().all()
-                    .body(stationRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> createResponse = postStation(stationRequest);
 
         // when
         final String uri = createResponse.header("Location");

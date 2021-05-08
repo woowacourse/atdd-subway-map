@@ -31,12 +31,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         final ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(lineRequest)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                    .post("/lines")
                 .then().log().all()
-                .extract();
+                    .extract();
 
         // then
         final LineResponse lineResponse = response.body().as(LineResponse.class);
