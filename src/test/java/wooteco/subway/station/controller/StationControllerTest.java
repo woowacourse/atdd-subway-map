@@ -3,12 +3,12 @@ package wooteco.subway.station.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dao.StationDao;
 
@@ -26,12 +26,8 @@ public class StationControllerTest extends AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
-    @AfterEach
-    void cleanDB() {
-        stationDao.deleteAll();
-    }
-
     @DisplayName("지하철역을 생성한다.")
+    @Transactional
     @Test
     void createStation() {
         // given
@@ -54,6 +50,7 @@ public class StationControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @Transactional
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -80,6 +77,7 @@ public class StationControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철역을 조회한다.")
+    @Transactional
     @Test
     void getStations() {
         /// given
@@ -119,6 +117,7 @@ public class StationControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철역을 제거한다.")
+    @Transactional
     @Test
     void deleteStation() {
         // given
@@ -143,6 +142,7 @@ public class StationControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("없는 ID의 지하철역을 삭제하려고 하면 예외")
+    @Transactional
     @Test
     void whenTryDeleteWrongIdStation() {
         // given

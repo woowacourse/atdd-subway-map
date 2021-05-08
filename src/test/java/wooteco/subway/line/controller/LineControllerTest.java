@@ -3,12 +3,12 @@ package wooteco.subway.line.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dao.LineDao;
 
@@ -30,12 +30,8 @@ class LineControllerTest extends AcceptanceTest {
     @Autowired
     private LineDao dao;
 
-    @AfterEach
-    void cleanDB() {
-        dao.deleteAll();
-    }
-
     @DisplayName("지하철노선을 생성한다.")
+    @Transactional
     @Test
     void createLine() {
         // given
@@ -57,6 +53,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @Transactional
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -85,6 +82,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 지하철노선 색상으로 지하철노선을 생성한다.")
+    @Transactional
     @Test
     void createLineWithDuplicateColor() {
         // given
@@ -113,6 +111,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철노선을 id로 조회한다")
+    @Transactional
     @Test
     void getLineById() {
         /// given
@@ -140,6 +139,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철노선을 조회한다.")
+    @Transactional
     @Test
     void getLines() {
         /// given
@@ -180,6 +180,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("노선 정보를 업데이트한다.")
+    @Transactional
     @Test
     void updateLine() {
         // given
@@ -221,6 +222,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철노선을 제거한다.")
+    @Transactional
     @Test
     void deleteLine() {
         // given
@@ -246,6 +248,7 @@ class LineControllerTest extends AcceptanceTest {
     }
 
     @DisplayName("없는 ID의 지하철노선을 삭제하려고 하면 예외")
+    @Transactional
     @Test
     void whenTryDeleteWrongIdLine() {
         // given
