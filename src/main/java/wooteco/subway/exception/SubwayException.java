@@ -3,18 +3,14 @@ package wooteco.subway.exception;
 import org.springframework.http.HttpStatus;
 
 public class SubwayException extends RuntimeException {
-    private final ExceptionInformation information;
+    private final HttpStatus httpStatus;
 
-    public SubwayException(ExceptionInformation information) {
-        super(information.getMessage());
-        this.information = information;
+    public SubwayException(HttpStatus httpStatus, String message) {
+        super(message);
+        this.httpStatus = httpStatus;
     }
 
     public HttpStatus getHttpStatus() {
-        return this.information.getHttpStatus();
-    }
-
-    public String getMessage() {
-        return this.information.getMessage();
+        return this.httpStatus;
     }
 }

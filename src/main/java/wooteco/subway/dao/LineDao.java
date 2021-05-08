@@ -1,15 +1,13 @@
 package wooteco.subway.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.ExceptionInformation;
 import wooteco.subway.exception.SubwayException;
 
 import java.sql.PreparedStatement;
@@ -41,7 +39,7 @@ public class LineDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_INSERT);
+            throw new SubwayException(HttpStatus.CONFLICT, "이미 존재하는 노선 이름은 추가할 수 없습니다.");
         }
     }
 
@@ -63,7 +61,7 @@ public class LineDao {
         try {
             return selectLine(id, query);
         } catch (EmptyResultDataAccessException e) {
-            throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_LOOKUP);
+            throw new SubwayException(HttpStatus.NOT_FOUND, "노선 이름이 존재하지 않아 조회할 수 없습니다.");
         }
     }
 
@@ -86,7 +84,7 @@ public class LineDao {
         affectedRowNumber = executeUpdateQuery(id, line, query);
 
         if (affectedRowNumber == 0) {
-            throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_MODIFY);
+            throw new SubwayException(HttpStatus.NOT_FOUND, "노선 이름이 존재하지 않아 수정할 수 없습니다.");
         }
     }
 
@@ -95,7 +93,7 @@ public class LineDao {
         try {
             affectedRowNumber = jdbcTemplate.update(query, line.getName(), line.getColor(), id);
         } catch (DuplicateKeyException e) {
-            throw new SubwayException(ExceptionInformation.DUPLICATE_LINE_NAME_WHEN_MODIFY);
+            throw new SubwayException(HttpStatus.NOT_FOUND, "이미 존재하는 노선 이름으로 수정할 수 없습니다.");
         }
         return affectedRowNumber;
     }
@@ -105,7 +103,7 @@ public class LineDao {
         int affectedRowNumber = jdbcTemplate.update(query, id);
 
         if (affectedRowNumber == 0) {
-            throw new SubwayException(ExceptionInformation.LINE_NOT_FOUND_WHEN_DELETE);
+            throw new SubwayException(HttpStatus.BAD_REQUEST, "노선 이름이 존재하지 않아 삭제할 수 없습니다.");
         }
     }
 }
