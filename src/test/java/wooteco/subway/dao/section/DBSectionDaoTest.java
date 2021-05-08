@@ -32,16 +32,6 @@ class DBSectionDaoTest {
     }
 
     @Test
-    @DisplayName("구간을 추가시 존재하지 않는 역이면 예외가 발생한다.")
-    void saveException1() {
-        assertThatThrownBy(() ->
-                sectionDao.save(new SectionEntity(1L, 3L, 4L, 10)))
-                .isInstanceOf(IllegalStateException.class);
-
-
-    }
-
-    @Test
     void findAll() {
     }
 

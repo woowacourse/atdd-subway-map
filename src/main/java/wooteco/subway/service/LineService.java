@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.dto.section.SectionAddRequest;
@@ -33,13 +35,16 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        List<Station> stations = Arrays.asList(
+                findStationById(lineRequest.getUpStationId()),
+                findStationById(lineRequest.getDownStationId()));
         sectionDao.save(new SectionEntity(savedLineEntity.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
-        List<Station> stations = Arrays.asList(stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")),
-                stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalStateException("없는 역임!")));
-        return new LineResponse(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color(), stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList())
-        );
+        return new LineResponse(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color(), stations);
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationDao.findById(stationId)
+                .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 역입니다."));
     }
 
     @Transactional
