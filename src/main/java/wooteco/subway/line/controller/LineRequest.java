@@ -41,6 +41,6 @@ public class LineRequest {
     }
 
     public Line toEntity() {
-        return new Line(name, color);
+        return new Line(null, name, color);
     }
 }

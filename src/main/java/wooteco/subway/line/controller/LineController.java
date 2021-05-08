@@ -2,10 +2,15 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.LineService;
+import wooteco.subway.line.LineValidator;
 import wooteco.subway.line.domain.Line;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +25,20 @@ public class LineController {
         this.lineService = lineService;
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        LineValidator lineValidator = new LineValidator();
+        webDataBinder.addValidators(lineValidator);
+    }
+
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
-        Long id = lineService.save(line);
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            throw new IllegalArgumentException(fieldError.getDefaultMessage());
+        }
+
+        Long id = lineService.save(lineRequest.toEntity());
         Line newLine = lineService.findLineById(id);
         return ResponseEntity.created(
                 URI.create("/lines/" + newLine.getId()))

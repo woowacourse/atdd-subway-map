@@ -15,18 +15,23 @@ public class LineService {
     }
 
     public Long save(Line line) {
+        validateLine(line);
+        return lineDao.save(line);
+    }
+
+    public void update(Long id, Line line) {
+        validateLine(line);
+        lineDao.update(id, line);
+    }
+
+    private void validateLine(Line line) {
         if (lineDao.countLineByName(line.getName()) > 0) {
             throw new IllegalArgumentException("중복된 노선입니다.");
         }
-        return lineDao.save(line);
     }
 
     public List<Line> findAll() {
         return lineDao.findAll();
-    }
-
-    public void update(Long id, Line line) {
-        lineDao.update(id, line);
     }
 
     public void delete(Long id) {
