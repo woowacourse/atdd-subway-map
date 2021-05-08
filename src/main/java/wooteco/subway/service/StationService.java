@@ -5,8 +5,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.common.exception.NotFoundException;
-import wooteco.subway.common.exception.SubwayHttpException;
+import wooteco.subway.web.exception.NotFoundException;
+import wooteco.subway.web.exception.SubwayHttpException;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.dao.StationDao;
 

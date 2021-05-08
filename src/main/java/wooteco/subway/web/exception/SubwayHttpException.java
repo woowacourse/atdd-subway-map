@@ -1,4 +1,4 @@
-package wooteco.subway.common.exception;
+package wooteco.subway.web.exception;
 
 import org.springframework.http.HttpStatus;
 

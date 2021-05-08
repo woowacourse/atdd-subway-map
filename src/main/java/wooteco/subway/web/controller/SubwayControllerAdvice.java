@@ -3,7 +3,7 @@ package wooteco.subway.web.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.common.exception.SubwayHttpException;
+import wooteco.subway.web.exception.SubwayHttpException;
 
 @RestControllerAdvice
 public class SubwayControllerAdvice {
