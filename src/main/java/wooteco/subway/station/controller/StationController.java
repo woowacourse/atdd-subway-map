@@ -27,11 +27,10 @@ public final class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         final Station requestedStation = new Station(stationRequest);
 
-        final StationDto createdLineInfo = stationService.save(requestedStation);
-        final Long stationId = createdLineInfo.getId();
-        final String stationName = createdLineInfo.getName();
+        final StationDto createdStationInfo = stationService.save(requestedStation);
 
-        final StationResponse stationResponse = new StationResponse(stationId, stationName);
+        final StationResponse stationResponse = StationResponse.of(createdStationInfo);
+        final Long stationId = stationResponse.getId();
         return ResponseEntity.created(URI.create("/stations/" + stationId)).body(stationResponse);
     }
 
@@ -40,9 +39,9 @@ public final class StationController {
         final List<StationDto> stationsInfo = stationService.showAll();
 
         final List<StationResponse> stationResponses = stationsInfo.stream()
-                .map(info -> new StationResponse(info.getId(), info.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
