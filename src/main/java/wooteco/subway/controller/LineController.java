@@ -4,14 +4,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.request.LineRequest;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.LineRequest;
+import wooteco.subway.controller.response.LineResponse;
 import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.LineDto;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -31,19 +33,22 @@ public class LineController {
 
     @PostMapping()
     public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.create(lineRequest.getColor(), lineRequest.getName());
+        LineResponse lineResponse = new LineResponse(lineService.create(lineRequest.getColor(), lineRequest.getName()));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.findAllById();
+        final List<LineDto> lines = lineService.findAllById();
+        final List<LineResponse> lineResponses = lines.stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotExistException {
-        LineResponse lineResponse = lineService.findById(id);
+        LineResponse lineResponse = new LineResponse(lineService.findById(id));
         return ResponseEntity.ok().body(lineResponse);
     }
 

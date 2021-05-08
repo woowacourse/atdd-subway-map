@@ -1,32 +1,37 @@
-package wooteco.subway.dto.response;
+package wooteco.subway.controller.response;
 
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.LineDto;
 
 import java.util.List;
 
 public class LineResponse {
     private Long id;
-    private String name;
     private String color;
+    private String name;
     private List<StationResponse> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor());
+        this(line.getId(), line.getColor(), line.getName());
     }
 
-    public LineResponse(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public LineResponse(LineDto lineDto) {
+        this(lineDto.getId(), lineDto.getColor(), lineDto.getName());
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String color, String name) {
         this.id = id;
-        this.name = name;
         this.color = color;
+        this.name = name;
+    }
+
+    public LineResponse(Long id, String color, String name,  List<StationResponse> stations) {
+        this.id = id;
+        this.color = color;
+        this.name = name;
         this.stations = stations;
     }
 

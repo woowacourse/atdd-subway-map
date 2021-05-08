@@ -4,13 +4,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.request.StationRequest;
-import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.controller.response.StationResponse;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.StationDto;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stations")
@@ -30,13 +32,16 @@ public class StationController {
 
     @PostMapping()
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
-        StationResponse stationResponse = stationService.create(stationRequest.getName());
+        StationResponse stationResponse = new StationResponse(stationService.create(stationRequest.getName()));
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.findAll();
+        final List<StationDto> stations = stationService.findAll();
+        final List<StationResponse> stationResponses = stations.stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
 

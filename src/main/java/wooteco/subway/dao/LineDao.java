@@ -3,7 +3,7 @@ package wooteco.subway.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 import java.util.HashMap;
 import java.util.List;

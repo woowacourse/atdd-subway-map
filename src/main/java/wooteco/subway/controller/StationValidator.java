@@ -2,7 +2,7 @@ package wooteco.subway.controller;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import wooteco.subway.dto.request.StationRequest;
+import wooteco.subway.dto.StationRequest;
 import wooteco.subway.exception.station.StationNameFormatException;
 import wooteco.subway.exception.station.StationNameNullException;
 

@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.Line;
 
 import java.util.List;
 
