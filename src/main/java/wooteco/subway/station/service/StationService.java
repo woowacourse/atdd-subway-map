@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.line.exception.LineIllegalArgumentException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
@@ -33,6 +34,8 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        stationDao.findById(id)
+                .orElseThrow(() -> new StationIllegalArgumentException("삭제하려는 역이 존재하지 않습니다"));
         stationDao.delete(id);
     }
 }
