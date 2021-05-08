@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LineDao implements LineRepository {
+public class InMemoryLineDao implements LineRepository {
     private static Long seq = 0L;
     private static List<Line> lines = new ArrayList<>();
 

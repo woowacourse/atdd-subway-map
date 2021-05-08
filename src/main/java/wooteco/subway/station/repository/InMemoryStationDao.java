@@ -6,9 +6,8 @@ import wooteco.subway.station.Station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class StationDao implements StationRepository {
+public class InMemoryStationDao implements StationRepository {
     private static Long seq = 0L;
     private static List<Station> stations = new ArrayList<>();
 

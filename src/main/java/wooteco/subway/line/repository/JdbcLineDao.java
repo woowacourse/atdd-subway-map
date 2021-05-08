@@ -4,16 +4,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-public class LineJdbcDao implements LineRepository {
+@Repository
+public class JdbcLineDao implements LineRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public LineJdbcDao(JdbcTemplate jdbcTemplate) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
