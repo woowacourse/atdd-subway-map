@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LineService {
@@ -13,6 +14,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         validateToCreateLine(lineRequest);
         LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
@@ -31,6 +33,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public List<LineResponse> showLines() {
         List<LineEntity> lineEntities = lineDao.findAll();
         return lineEntities.stream()
@@ -38,6 +41,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public LineResponse showLine(Long id) {
         validateToExistId(id);
         LineEntity lineEntity = lineDao.findById(id);
@@ -50,6 +54,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         validateToUpdateLine(id, lineRequest);
         lineDao.updateById(id, new LineEntity(id, lineRequest.getName(), lineRequest.getColor()));
@@ -73,6 +78,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         validateToExistId(id);
         lineDao.deleteById(id);

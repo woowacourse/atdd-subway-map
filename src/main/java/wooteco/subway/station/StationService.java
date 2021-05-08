@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StationService {
@@ -13,6 +14,7 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         validateNotToDuplicateName(stationRequest.getName());
         StationEntity stationEntity = new StationEntity(stationRequest.getName());
@@ -26,6 +28,7 @@ public class StationService {
         }
     }
 
+    @Transactional
     public List<StationResponse> showStations() {
         List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
@@ -34,6 +37,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         validateToExistId(id);
         stationDao.delete(id);
