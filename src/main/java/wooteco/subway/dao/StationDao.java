@@ -1,16 +1,15 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.station.StationNotExistException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class StationDao {
@@ -42,11 +41,13 @@ public class StationDao {
         return jdbcTemplate.query(query, STATION_MAPPER);
     }
 
-    public Optional<Station> findByName(String name) {
+    public Station findByName(String name) {
         String query = "SELECT * FROM station WHERE name=?";
-        return jdbcTemplate.query(query,STATION_MAPPER, name)
-                .stream()
-                .findAny();
+        final Station station = DataAccessUtils.singleResult(jdbcTemplate.query(query, STATION_MAPPER, name));
+        if (Objects.isNull(station)) {
+            throw new StationNotExistException();
+        }
+        return station;
     }
 
     public void deleteById(Long id) {

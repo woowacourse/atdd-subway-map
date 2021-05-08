@@ -30,8 +30,7 @@ public class LineService {
     }
 
     public LineDto findById(Long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(LineNotExistException::new);
+        Line line = lineDao.findById(id);
         return new LineDto(line);
     }
 

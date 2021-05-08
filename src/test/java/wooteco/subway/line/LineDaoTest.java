@@ -60,8 +60,7 @@ class LineDaoTest {
         Line line = lineDao.insert("bg-red-100", "거북선");
 
         //when
-        Line expectedLine = lineDao.findById(line.getId())
-                .get();
+        Line expectedLine = lineDao.findById(line.getId());
 
         //then
         assertThat(expectedLine.getName()).isEqualTo("거북선");
@@ -78,8 +77,7 @@ class LineDaoTest {
         lineDao.update(line.getId(), "bg-yellow-100", "크로플선");
 
         //then
-        Line expectedLine = lineDao.findById(line.getId())
-                .get();
+        Line expectedLine = lineDao.findById(line.getId());
         assertThat(expectedLine.getColor()).isEqualTo("bg-yellow-100");
         assertThat(expectedLine.getName()).isEqualTo("크로플선");
     }

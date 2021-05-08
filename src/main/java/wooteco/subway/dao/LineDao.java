@@ -1,15 +1,14 @@
 package wooteco.subway.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.line.LineNotExistException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class LineDao {
@@ -43,11 +42,13 @@ public class LineDao {
         return jdbcTemplate.query(query, LINE_MAPPER);
     }
 
-    public Optional<Line> findById(Long id) {
+    public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(query, LINE_MAPPER, id)
-                .stream()
-                .findAny();
+        final Line line = DataAccessUtils.singleResult(jdbcTemplate.query(query, LINE_MAPPER, id));
+        if (Objects.isNull(line)) {
+            throw new LineNotExistException();
+        }
+        return line;
     }
 
     public void update(Long id, String color, String name) {
