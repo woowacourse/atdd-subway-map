@@ -65,4 +65,16 @@ public class LineH2Dao implements LineDao {
         String sql = "DELETE FROM LINE WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public Line findByName(String name) {
+        String sql = "SELECT * FROM LINE WHERE name=?";
+        return jdbcTemplate.queryForObject(sql, Line.class, name);
+    }
+
+    @Override
+    public Line findByColor(String color) {
+        String sql = "SELECT * FROM LINE WHERE color=?";
+        return jdbcTemplate.queryForObject(sql, Line.class, color);
+    }
 }

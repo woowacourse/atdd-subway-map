@@ -70,4 +70,14 @@ public class LineJavaDao implements LineDao {
             .findAny()
             .ifPresent(line -> lines.remove(line));
     }
+
+    @Override
+    public Line findByName(String name) {
+        return null;
+    }
+
+    @Override
+    public Line findByColor(String color) {
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -49,5 +50,11 @@ public class StationH2Dao implements StationDao {
     public void delete(Long id) {
         String sql = "DELETE FROM STATION WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Station findByName(String name) {
+        String sql = "SELECT * FROM STATION WHERE name=?";
+        return jdbcTemplate.queryForObject(sql, Station.class, name);
     }
 }

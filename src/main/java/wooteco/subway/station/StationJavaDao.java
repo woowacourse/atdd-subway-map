@@ -49,4 +49,9 @@ public class StationJavaDao implements StationDao {
             .findAny()
             .ifPresent(station -> stations.remove(station));
     }
+
+    @Override
+    public Station findByName(String name) {
+        return null;
+    }
 }

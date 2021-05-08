@@ -8,4 +8,6 @@ public interface StationDao {
     List<Station> findAll();
 
     void delete(Long id);
+
+    Station findByName(String name);
 }
