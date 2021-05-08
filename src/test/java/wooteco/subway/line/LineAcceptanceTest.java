@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.exception.response.ErrorResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
     @DisplayName("모든 노선을 조회한다.")
@@ -181,6 +183,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 
+    @DisplayName("존재하지 않는 단일 노선을 조회한다.")
+    @Test
+    void getLineThatDoesNotExists() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .log()
+                                                            .all()
+                                                            .when()
+                                                            .get("/lines/2")
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 ID에 해당하는 노선이 존재하지 않습니다.");
+    }
+
     @DisplayName("노선을 수정한다.")
     @Test
     void editLine() {
@@ -223,6 +244,47 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse lineResponse = RestAssured.get(uri).as(LineResponse.class);
         assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
         assertThat(lineResponse.getName()).isEqualTo("2호선");
+    }
+
+    @DisplayName("중복된 이름으로 노선을 수정한다.")
+    @Test
+    void editLineAsDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        ExtractableResponse<Response> createResponse = RestAssured.given()
+                                                                  .log()
+                                                                  .all()
+                                                                  .body(params)
+                                                                  .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                                  .when()
+                                                                  .post("/lines")
+                                                                  .then()
+                                                                  .log()
+                                                                  .all()
+                                                                  .extract();
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-green-600");
+        params2.put("name", "신분당선");
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .log()
+                                                            .all()
+                                                            .body(params2)
+                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                            .when()
+                                                            .put(uri)
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
     @DisplayName("노선을 제거한다.")
