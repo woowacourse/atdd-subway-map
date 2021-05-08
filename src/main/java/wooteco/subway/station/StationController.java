@@ -27,17 +27,15 @@ public class StationController {
         }
         Station station = Station.of(name);
         Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(),
-                newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
-                .body(stationResponse);
+                .body(StationResponse.of(newStation));
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(stationResponses);
     }
