@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.service.dto.StationServiceDto;
 import wooteco.subway.domain.Station;
@@ -35,7 +35,7 @@ public class StationService {
 
     public void delete(final StationServiceDto stationServiceDto) {
         if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
-            throw new NotFoundStationException("[ERROR] 존재하지 않는 역입니다.");
+            throw new NotFoundStationException();
         }
     }
 }

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.dao.line.LineDaoH2;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineServiceDto;
 

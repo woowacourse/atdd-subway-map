@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.dto.LineServiceDto;
 
 @Service
@@ -41,13 +41,13 @@ public class LineService {
         Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
-            throw new NotFoundLineException("[ERROR] 해당노선이 존재하지 않습니다.");
+            throw new NotFoundLineException();
         }
     }
 
     public void delete(final LineServiceDto lineServiceDto) {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
-            throw new NotFoundLineException("[ERROR] 해당노선이 존재하지 않습니다.");
+            throw new NotFoundLineException();
         }
     }
 }
