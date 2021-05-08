@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.station.Station;
 
-@Component
 public class CollectionStationDao implements StationDao {
 
     private static final List<Station> stations = new ArrayList<>();

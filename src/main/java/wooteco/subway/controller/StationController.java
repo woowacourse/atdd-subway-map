@@ -24,7 +24,6 @@ import wooteco.subway.domain.station.Station;
 public class StationController {
 
     @Autowired
-    @Qualifier("jdbc")
     private StationDao stationDao;
 
     @ExceptionHandler(IllegalArgumentException.class)

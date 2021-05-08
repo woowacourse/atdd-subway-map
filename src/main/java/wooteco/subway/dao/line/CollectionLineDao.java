@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.line.Line;
 
-@Component
 public class CollectionLineDao implements LineDao {
 
     private static final List<Line> lines = new ArrayList<>();

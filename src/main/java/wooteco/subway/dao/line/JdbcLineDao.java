@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 
 @Repository
-@Qualifier("jdbc")
 public class JdbcLineDao implements LineDao {
 
     private static final RowMapper<Line> mapper = (rs, rowNum) -> {

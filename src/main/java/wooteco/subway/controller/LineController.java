@@ -24,7 +24,6 @@ import wooteco.subway.domain.line.Line;
 public class LineController {
 
     @Autowired
-    @Qualifier("jdbc")
     private LineDao lineDao;
 
     @ExceptionHandler(IllegalArgumentException.class)

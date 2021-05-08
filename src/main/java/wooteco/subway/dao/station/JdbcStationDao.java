@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.station.Station;
 
 @Repository
-@Qualifier("jdbc")
 public class JdbcStationDao implements StationDao {
 
     private static final RowMapper<Station> mapper = (rs, rowNum) -> {
