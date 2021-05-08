@@ -16,18 +16,6 @@ class LineResponseTest {
     private static final String COLOR = "bg-red-600";
 
     @Test
-    @DisplayName("노선 관련 답변 생성")
-    void createLineResponse() {
-        // given
-
-        // when
-        LineResponse lineResponse = new LineResponse();
-
-        // then
-        assertThat(lineResponse).isInstanceOf(LineResponse.class);
-    }
-
-    @Test
     @DisplayName("노선 관련 Id 확인 생성")
     void checkLineIdResponse() {
         //given

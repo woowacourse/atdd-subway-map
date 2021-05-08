@@ -9,18 +9,6 @@ import wooteco.subway.line.dto.LineRequest;
 class LineRequestTest {
 
     @Test
-    @DisplayName("노선 관련 요청 생성")
-    void createStationRequest() {
-        // given
-
-        // when
-        LineRequest lineRequest = new LineRequest();
-
-        // then
-        assertThat(lineRequest).isInstanceOf(LineRequest.class);
-    }
-
-    @Test
     @DisplayName("노선 이름과 함께 노선 관련 요청 생성")
     void createStationRequestWithName() {
         // given
