@@ -1,19 +1,17 @@
 package wooteco.subway.line.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.swing.SwingUtilities2.Section;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineCreateRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.station.dao.StationDao;
-
-import java.util.List;
-import java.util.stream.Collectors;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -34,42 +32,34 @@ public class LineService {
         Line savedLine = lineDao.save(line);
 
         findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
-        findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId);
+        findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId());
 
-        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
         return LineResponse.from(savedLine);
     }
 
-    private void validateIfDownStationIsEqualToUpStation(LineRequest lineRequest) {
-        if (lineRequest.isSameStations()) {
+    private void validateIfDownStationIsEqualToUpStation(LineCreateRequest lineCreateRequest) {
+        if (lineCreateRequest.isSameStations()) {
             throw new IllegalArgumentException("상행과 하행 종점은 같을 수 없습니다.");
         }
     }
 
-    public Line lineRequestToLine(LineRequest lineRequest) {
-        findStationByIdOrElseThrowException(lineRequest.getUpStationId());
-        findStationByIdOrElseThrowException(lineRequest.getDownStationId());
+    public Line lineRequestToLine(LineCreateRequest lineCreateRequest) {
+        findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId());
+        findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
 
-        return new Line(lineRequest.getName(), lineRequest.getColor());
+        return Line.of(lineCreateRequest);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
     }
 
     public LineResponse find(Long id) {
         Line line = findLineByIdOrElseThrowException(id);
-        List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        List<StationResponse> stations = lineRoute.getOrderedStations()
-                .stream()
-                .map(staitonId -> findStationByIdOrElseThrowException(staitonId))
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-        return LineResponse.of(line, stations);
+        return LineResponse.of(line, null);
     }
 
     public void delete(Long id) {
@@ -89,6 +79,14 @@ public class LineService {
             throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
         }
     }
+
+    private void validateDuplicateNameExceptMyself(Long id, String lineName) {
+        Optional<Line> lineByName = lineDao.findByName(lineName);
+        if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
+            throw new IllegalArgumentException("같은 이름의 노선이 있습니다;");
+        }
+    }
+
 
     private Station findStationByIdOrElseThrowException(Long id) {
         return stationDao.findById(id)
