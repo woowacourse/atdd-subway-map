@@ -15,40 +15,35 @@ import java.util.Map;
 public class StationDaoJdbcTemplate implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Station> stationRowMapper;
+    private final DataSource dataSource;
 
     public StationDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("STATION").usingGeneratedKeyColumns("id");
-
-        this.stationRowMapper = (rs, rowNum) -> {
-            Long foundId = rs.getLong("id");
-            final String name = rs.getString("name");
-            return Station.of(foundId, name);
-        };
+        this.dataSource = dataSource;
     }
 
     @Override
     public Station save(Station station) {
         Map<String, String> map = new HashMap<>();
         map.put("name", station.getName());
+
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("STATION").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(map).longValue();
+
         return Station.of(id, station.getName());
     }
 
     @Override
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, stationRowMapper);
+        return jdbcTemplate.query(sql, stationRowMapper());
     }
 
     @Override
     public boolean isExistStationByName(String name) {
         String sql = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.query(sql, stationRowMapper, name).stream().findAny().isPresent();
+        return jdbcTemplate.query(sql, stationRowMapper(), name).stream().findAny().isPresent();
     }
 
     @Override
@@ -61,5 +56,13 @@ public class StationDaoJdbcTemplate implements StationDao {
     public void removeAll() {
         String sql = "DELETE FROM station";
         jdbcTemplate.update(sql);
+    }
+
+    private RowMapper<Station> stationRowMapper() {
+        return (rs, rowNum) -> {
+            Long foundId = rs.getLong("id");
+            final String name = rs.getString("name");
+            return Station.of(foundId, name);
+        };
     }
 }

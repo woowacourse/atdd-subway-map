@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public class LineDaoJdbcTemplate implements LineDao {
+
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
@@ -25,10 +26,7 @@ public class LineDaoJdbcTemplate implements LineDao {
     @Override
     public Optional<Line> findLineByName(String name) {
         final String sql = "SELECT * FROM line WHERE name = ?";
-
-        RowMapper<Line> lineRowMapper = getLineRowMapper();
-
-        return jdbcTemplate.query(sql, lineRowMapper, name)
+        return jdbcTemplate.query(sql, lineRowMapper(), name)
                 .stream()
                 .findAny();
     }
@@ -49,19 +47,13 @@ public class LineDaoJdbcTemplate implements LineDao {
     @Override
     public List<Line> findAll() {
         final String sql = "SELECT * FROM line";
-
-        RowMapper<Line> lineRowMapper = getLineRowMapper();
-
-        return jdbcTemplate.query(sql, lineRowMapper);
+        return jdbcTemplate.query(sql, lineRowMapper());
     }
 
     @Override
     public Optional<Line> findLineById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-
-        RowMapper<Line> lineRowMapper = getLineRowMapper();
-
-        return jdbcTemplate.query(sql, lineRowMapper, id).stream().findAny();
+        return jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
     }
 
     @Override
@@ -76,7 +68,7 @@ public class LineDaoJdbcTemplate implements LineDao {
         jdbcTemplate.update(sql, name, color, id);
     }
 
-    private RowMapper<Line> getLineRowMapper() {
+    private RowMapper<Line> lineRowMapper() {
         return (rs, rowNum) -> {
             Long foundId = rs.getLong("id");
             final String color = rs.getString("color");
