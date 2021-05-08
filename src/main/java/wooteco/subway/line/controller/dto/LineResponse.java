@@ -25,12 +25,15 @@ public class LineResponse {
         this.color = color;
     }
 
-    public LineResponse(final Long id, final String name, final String color,
-            final List<StationResponse> stations) {
+    public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public static LineResponse of(LineDto lineDto) {
+        return new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor());
     }
 
     public Long getId() {

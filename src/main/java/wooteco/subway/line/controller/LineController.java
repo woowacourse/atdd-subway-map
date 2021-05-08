@@ -33,11 +33,9 @@ public class LineController {
         final Line requestedLine = new Line(lineRequest);
 
         final LineDto createdLineInfo = lineService.save(requestedLine);
-        final Long lineId = createdLineInfo.getId();
-        final String lineName = createdLineInfo.getName();
-        final String lineColor = createdLineInfo.getColor();
 
-        final LineResponse lineResponse = new LineResponse(lineName, lineColor);
+        final LineResponse lineResponse = LineResponse.of(createdLineInfo);
+        final Long lineId = lineResponse.getId();
         return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
     }
 
@@ -45,8 +43,8 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         final LineDto lineInfo = lineService.show(id);
 
-        final LineResponse lineResponse = new LineResponse(id, lineInfo.getName(), lineInfo.getColor());
-        return ResponseEntity.ok().body(lineResponse);
+        final LineResponse lineResponse = LineResponse.of(lineInfo);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @GetMapping
@@ -54,9 +52,9 @@ public class LineController {
         final List<LineDto> linesInfo = lineService.showAll();
 
         final List<LineResponse> lineResponses = linesInfo.stream()
-                .map(info -> new LineResponse(info.getId(), info.getName(), info.getColor()))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @PutMapping("/{id}")
