@@ -78,7 +78,7 @@ class JDBCLineDaoTest {
         Long targetId = savedLine.getId();
 
         Line updateLine = new Line(targetId, "4호선", "bg-green-600", new ArrayList<>());
-        jdbcLineDao.update(updateLine);
+        jdbcLineDao.update(updateLine, targetId);
 
         Line findByIdLine = jdbcLineDao.findById(targetId);
 

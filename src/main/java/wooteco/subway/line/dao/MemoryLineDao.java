@@ -48,9 +48,9 @@ public class MemoryLineDao implements LineDao {
     }
 
     @Override
-    public void update(Line line) {
+    public void update(Line line, Long id) {
         validateDuplicateName(line);
-        delete(line.getId());
+        delete(id);
         lines.add(line);
     }
 
