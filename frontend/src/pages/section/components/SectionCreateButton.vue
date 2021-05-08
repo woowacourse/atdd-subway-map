@@ -6,6 +6,7 @@
         class="mx-2 section-create-button"
         fab
         color="amber"
+        depressed
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -63,7 +64,11 @@
       </v-form>
     </template>
     <template slot="action">
-      <v-btn :disabled="!valid" @click.prevent="onCreateSection" color="amber"
+      <v-btn
+        :disabled="!valid"
+        @click.prevent="onCreateSection"
+        color="amber"
+        depressed
         >확인</v-btn
       >
     </template>

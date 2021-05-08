@@ -6,4 +6,5 @@ const sectionRoutes = [
     component: SectionPage,
   },
 ];
+
 export default sectionRoutes;

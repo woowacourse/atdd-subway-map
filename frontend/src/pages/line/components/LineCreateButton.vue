@@ -6,6 +6,7 @@
         class="mx-2 line-create-button"
         fab
         color="amber"
+        depressed
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -104,7 +105,11 @@
       </v-form>
     </template>
     <template slot="action">
-      <v-btn :disabled="!valid" @click.prevent="onCreateLine" color="amber"
+      <v-btn
+        :disabled="!valid"
+        @click.prevent="onCreateLine"
+        color="amber"
+        depressed
         >확인</v-btn
       >
     </template>

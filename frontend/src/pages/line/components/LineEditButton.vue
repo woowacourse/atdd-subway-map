@@ -62,7 +62,11 @@
       </v-form>
     </template>
     <template slot="action">
-      <v-btn :disabled="!valid" @click.prevent="onEditLine" color="amber"
+      <v-btn
+        :disabled="!valid"
+        @click.prevent="onEditLine"
+        color="amber"
+        depressed
         >확인</v-btn
       >
     </template>
@@ -89,7 +93,7 @@ export default {
   components: { Dialog },
   mixins: [dialog],
   computed: {
-    ...mapGetters("lines"),
+    ...mapGetters(["lines"]),
   },
   created() {
     this.lineEditForm = { ...this.line };

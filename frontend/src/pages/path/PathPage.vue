@@ -38,7 +38,7 @@
               <v-btn
                 @click="onSearchResult"
                 color="amber"
-                class="search-button"
+                class="w-100"
                 depressed
                 >검색</v-btn
               >
@@ -231,9 +231,5 @@ export default {
 
 .arrow-right-icon {
   bottom: 15px;
-}
-
-.search-button {
-  width: 100%;
 }
 </style>

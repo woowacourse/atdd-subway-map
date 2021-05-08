@@ -6,4 +6,5 @@ const stationRoutes = [
     component: StationPage
   }
 ];
+
 export default stationRoutes;

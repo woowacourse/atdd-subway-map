@@ -6,4 +6,5 @@ const mainRoutes = [
     component: MainPage,
   },
 ];
+
 export default mainRoutes;

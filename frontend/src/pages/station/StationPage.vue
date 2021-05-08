@@ -24,6 +24,7 @@
                 :disabled="!valid"
                 color="amber"
                 @click.prevent="onCreateStation"
+                depressed
                 >추가</v-btn
               >
             </div>

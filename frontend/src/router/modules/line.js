@@ -6,4 +6,5 @@ const lineRoutes = [
     component: LinePage
   }
 ];
+
 export default lineRoutes;

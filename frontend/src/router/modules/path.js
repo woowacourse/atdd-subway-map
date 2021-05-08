@@ -6,4 +6,5 @@ const pathRoutes = [
     component: PathPage,
   },
 ];
+
 export default pathRoutes;
