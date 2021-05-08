@@ -28,7 +28,7 @@ public class LineService {
         validateDuplicateName(lineCreateRequest.getName());
         validateIfDownStationIsEqualToUpStation(lineCreateRequest);
 
-        Line line = Line.of(lineCreateRequest);
+        Line line = lineCreateRequest.toLine();
         Line savedLine = lineDao.save(line);
 
         findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
@@ -47,7 +47,7 @@ public class LineService {
         findStationByIdOrElseThrowException(lineCreateRequest.getUpStationId());
         findStationByIdOrElseThrowException(lineCreateRequest.getDownStationId());
 
-        return Line.of(lineCreateRequest);
+        return lineCreateRequest.toLine();
     }
 
     public List<LineResponse> findAll() {
@@ -70,7 +70,7 @@ public class LineService {
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
         findLineByIdOrElseThrowException(id);
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
-        Line line = Line.of(id, lineUpdateRequest);
+        Line line = lineUpdateRequest.toLine(id);
         lineDao.update(line);
     }
 
