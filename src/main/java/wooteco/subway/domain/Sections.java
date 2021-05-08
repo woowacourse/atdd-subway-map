@@ -14,12 +14,12 @@ public class Sections {
         sections.add(section);
     }
 
-    public boolean isAlreadyRegistered(Section anotherSection) {
+    public boolean isOnlyOneRegistered(Section anotherSection) {
         boolean hasUpStation = sections.stream()
                 .anyMatch(section -> section.has(anotherSection.upStation()));
         boolean hasDownStation = sections.stream()
                 .anyMatch(section -> section.has(anotherSection.downStation()));
-        return hasUpStation && hasDownStation;
+        return (hasUpStation && !hasDownStation) || (!hasUpStation && hasDownStation);
     }
 
     public List<Section> sections() {
