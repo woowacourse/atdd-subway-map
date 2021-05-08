@@ -48,6 +48,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("올바르지 않은 이름으로 노선을 생성한다.")
+    @Test
+    void createLineWithWrongName() {
+        // given
+        Map<String, String> params = setLine("bg-red-600", "1호");
+        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+
+        // when - then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("이름이 null로 들어왔을 때 예외처리.")
+    @Test
+    void createLineWithNullName() {
+        // given
+        Map<String, String> params = setLine("bg-red-600", null);
+        extractResponseWhenPost(params);
+
+        // when
+        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("기존에 존재하는 색으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
@@ -60,17 +85,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = extractResponseWhenPost(params2);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("올바르지 않은 이름으로 노선을 생성한다.")
-    @Test
-    void createLineWithWrongName() {
-        // given
-        Map<String, String> params = setLine("bg-red-600", "1호");
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
-
-        // when - then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

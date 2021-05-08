@@ -48,6 +48,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("이름이 null일 때 지하철역을 생성한다.")
+    @Test
+    void createStationWithNullName() {
+        // given
+        Map<String, String> params = setStation("name", null);
+        extractResponseWhenPost(params);
+
+        // when
+        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("올바르지 않은 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithWrongName() {
