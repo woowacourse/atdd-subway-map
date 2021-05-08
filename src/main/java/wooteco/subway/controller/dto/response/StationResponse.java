@@ -1,8 +1,12 @@
 package wooteco.subway.controller.dto.response;
 
+import javax.validation.constraints.NotEmpty;
+
 public class StationResponse {
 
+    @NotEmpty
     private Long id;
+    @NotEmpty
     private String name;
 
     public StationResponse() {

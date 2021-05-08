@@ -1,7 +1,10 @@
 package wooteco.subway.controller.dto.request;
 
+import javax.validation.constraints.NotEmpty;
+
 public class StationRequest {
 
+    @NotEmpty
     private String name;
 
     public StationRequest() {

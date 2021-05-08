@@ -1,8 +1,11 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class StationServiceDto {
 
     private final Long id;
+    @NotEmpty
     private final String name;
 
     public StationServiceDto(final Long id) {

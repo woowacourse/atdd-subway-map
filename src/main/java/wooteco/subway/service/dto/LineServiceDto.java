@@ -1,9 +1,14 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.constraints.NotEmpty;
+import wooteco.subway.controller.dto.request.LineRequest;
+
 public class LineServiceDto {
 
     private final Long id;
+    @NotEmpty
     private final String name;
+    @NotEmpty
     private final String color;
 
     public LineServiceDto(final Long id) {

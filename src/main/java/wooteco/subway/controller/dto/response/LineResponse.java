@@ -1,11 +1,15 @@
 package wooteco.subway.controller.dto.response;
 
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 
 public class LineResponse {
 
+    @NotEmpty
     private Long id;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String color;
     private List<StationResponse> stations;
 
