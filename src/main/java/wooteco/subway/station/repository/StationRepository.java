@@ -18,7 +18,6 @@ import java.util.Objects;
 public class StationRepository {
     public static final int NO_EXIST_COUNT = 0;
     private final JdbcTemplate jdbcTemplate;
-
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
