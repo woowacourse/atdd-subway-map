@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import com.sun.tools.internal.ws.wsdl.framework.DuplicateEntityException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
@@ -35,6 +34,7 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        return lineDao.findLineById(id);
+        return lineDao.findLineById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 없습니다."));
     }
 }

@@ -42,7 +42,7 @@ public class StationController {
                                 station.getId(),
                                 station.getName()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")

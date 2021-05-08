@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -8,6 +9,7 @@ import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -61,13 +63,17 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 
-    public Line findLineById(Long id) {
-        String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")),
-                id);
+    public Optional<Line> findLineById(Long id) {
+        try {
+            String sql = "SELECT * FROM line WHERE id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
+                    (rs, rowNum) -> new Line(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("color")),
+                    id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

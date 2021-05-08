@@ -31,6 +31,7 @@ public class StationService {
     }
 
     public Station findStationById(Long id) {
-        return stationDao.findStationById(id);
+        return stationDao.findStationById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 존재하지 않습니다."));
     }
 }

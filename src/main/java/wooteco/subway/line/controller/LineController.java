@@ -22,7 +22,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRequest.toEntity();
         Long id = lineService.save(line);
         Line newLine = lineService.findLineById(id);
         return ResponseEntity.created(
@@ -44,7 +44,7 @@ public class LineController {
                                 line.getName(),
                                 line.getColor()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @PutMapping("/{id}")
