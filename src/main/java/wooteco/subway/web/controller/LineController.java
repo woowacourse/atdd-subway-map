@@ -31,11 +31,10 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody LineRequest lineRequest) {
         Line line = lineService.add(lineRequest.toEntity());
-        LineResponse lineResponse = new LineResponse(line);
 
         return ResponseEntity
                 .created(URI.create("/lines/" + line.getId()))
-                .body(lineResponse);
+                .body(new LineResponse(line));
     }
 
     @GetMapping
@@ -46,25 +45,21 @@ public class LineController {
                 .collect(Collectors.toList());
 
         return ResponseEntity
-                .ok()
-                .body(lineResponses);
+                .ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> find(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line);
 
         return ResponseEntity
-                .ok()
-                .body(lineResponse);
+                .ok(new LineResponse(line));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
             @RequestBody LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
-        lineService.update(id, line);
+        lineService.update(id, lineRequest.toEntity());
 
         return ResponseEntity
                 .ok()
