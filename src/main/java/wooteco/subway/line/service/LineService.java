@@ -56,28 +56,23 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        validatesRequest(id, lineRequest);
-        Line updatedLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        Line updatedLine = validatesRequest(id, lineRequest);
         lineRepository.updateById(id, updatedLine);
         log.info("노선 정보 수정 완료");
     }
 
-    private void validatesRequest(Long id, LineRequest lineRequest) {
+    private Line validatesRequest(Long id, LineRequest lineRequest) {
         Line currentLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
 
-        String oldName = currentLine.getName();
-        String newName = lineRequest.getName();
-
-        if (validatesName(oldName, newName)) {
-            throw new IllegalArgumentException("변경할 수 없는 이름입니다.");
-        }
+        validateUsableName(lineRequest.getName(), currentLine.getName());
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
-    private boolean validatesName(String oldName, String newName) {
-        return lineRepository.findAll().stream()
-                .filter(line -> !line.isSameName(oldName))
-                .anyMatch(line -> line.isSameName(newName));
+    private void validateUsableName(String newName, String oldName) {
+        if (lineRepository.validateUsableName(newName, oldName)) {
+            throw new IllegalArgumentException("변경할 수 없는 이름입니다.");
+        }
     }
 
     public void delete(Long id) {

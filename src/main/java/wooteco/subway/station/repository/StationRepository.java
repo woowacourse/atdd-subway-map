@@ -11,5 +11,5 @@ public interface StationRepository {
 
     void deleteById(Long id);
 
-    boolean validateDuplicateName(String name);
+    boolean findByName(String name);
 }

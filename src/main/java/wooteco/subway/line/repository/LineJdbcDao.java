@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class LineJdbcDao implements LineRepository {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public LineJdbcDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,6 +43,13 @@ public class LineJdbcDao implements LineRepository {
     public boolean validateDuplicateName(String name) {
         String query = "SELECT COUNT(*) FROM line WHERE name = (?)";
         return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
+    }
+
+    @Override
+    public boolean validateUsableName(String newName, String oldName) {
+        String query = "SELECT COUNT(*) FROM line WHERE name IN (?) AND name NOT IN (?)";
+        Integer integer = jdbcTemplate.queryForObject(query, Integer.class, newName, oldName);
+        return integer > 0;
     }
 
     private RowMapper<Line> lineRowMapper() {

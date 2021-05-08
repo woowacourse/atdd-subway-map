@@ -6,6 +6,7 @@ import wooteco.subway.station.Station;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StationDao implements StationRepository {
     private static Long seq = 0L;
@@ -39,7 +40,7 @@ public class StationDao implements StationRepository {
     }
 
     @Override
-    public boolean validateDuplicateName(String name) {
+    public boolean findByName(String name) {
         return stations.stream()
                 .anyMatch(station -> station.isSameName(name));
     }

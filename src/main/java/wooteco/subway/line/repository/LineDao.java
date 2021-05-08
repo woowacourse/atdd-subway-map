@@ -45,6 +45,13 @@ public class LineDao implements LineRepository {
     }
 
     @Override
+    public boolean validateUsableName(String oldName, String newName) {
+        return lines.stream()
+                .filter(line -> !line.isSameName(oldName))
+                .anyMatch(line -> line.isSameName(newName));
+    }
+
+    @Override
     public void updateById(Long id, Line updatedLine) {
         Line line = findByIdIfExist(id);
         lines.stream()

@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createPostResponse(이호선);
 
         // when
-        ExtractableResponse<Response> expectedResponse = createPutResponse(신분당선, "/lines/1");
+        ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
         ExtractableResponse<Response> updatedResponse = createGetResponse("/lines/1");
 
         // then
@@ -147,13 +147,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         Map<String, String> 신분당선 = new HashMap<>();
         신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-blue-600");
+        신분당선.put("color", "bg-red-600");
 
         createPostResponse(이호선);
         createPostResponse(신분당선);
 
         // when
-        ExtractableResponse<Response> expectedResponse = createPutResponse(신분당선, "/lines/1");
+        ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -197,7 +197,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> createPutResponse(Map<String, String> params, String path) {
+    private ExtractableResponse<Response> createPutResponse(String path, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

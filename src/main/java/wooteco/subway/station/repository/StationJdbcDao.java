@@ -39,7 +39,7 @@ public class StationJdbcDao implements StationRepository {
     }
 
     @Override
-    public boolean validateDuplicateName(String name) {
+    public boolean findByName(String name) {
         String query = "SELECT COUNT(*) FROM station WHERE name = (?)";
         return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
     }

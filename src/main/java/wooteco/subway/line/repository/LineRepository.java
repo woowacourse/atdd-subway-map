@@ -17,4 +17,6 @@ public interface LineRepository {
     void updateById(Long id, Line updatedLine);
 
     void delete(Long id);
+
+    boolean validateUsableName(String oldName, String newName);
 }

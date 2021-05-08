@@ -33,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
         // given
         Map<String, String> param = new HashMap<>();
-        param.put("name", "강남역");
+        param.put("name", "신논현역");
 
         // when
         ExtractableResponse<Response> response = createPostResponse(param);
