@@ -7,11 +7,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,12 +27,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final Map<String, String> DATA_FOR_UPDATE = new HashMap<>();
     private static final Map<String, String> DATA_EMPTY_STRING = new HashMap<>();
     private static final Map<String, String> DATA_NULL = new HashMap<>();
-    private static final long INVALID_ID = 999999999999999L;
 
     private static final String LINES_PATH = "/lines/";
     private static final String LOCATION = "Location";
     private static final String NAME = "name";
     private static final String COLOR = "color";
+    private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
         put(DATA1, "신분당선", "bg-red-600");
@@ -104,13 +104,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<LineResponse> expectedLines = Stream.of(postResponse1, postResponse2)
-                .map(response -> response.jsonPath().getObject(".", LineResponse.class))
-                .collect(Collectors.toList());
-
+        List<LineResponse> expectedLines = toLineDtos(postResponse1, postResponse2);
         List<LineResponse> results = listResponse.jsonPath().getList(".", LineResponse.class);
 
         assertThat(results).containsAll(expectedLines);
+    }
+
+    private List<LineResponse> toLineDtos(ExtractableResponse<Response>... responses) {
+        return Arrays.stream(responses)
+                .map(response -> response.jsonPath().getObject(".", LineResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Test
@@ -126,9 +129,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> resultResponse = getLine(uri);
-
-        LineResponse lineResponse = resultResponse.jsonPath().getObject(".", LineResponse.class);
+        LineResponse lineResponse = getLine(uri).jsonPath()
+                .getObject(".", LineResponse.class);
         assertLineResponse(lineResponse, DATA_FOR_UPDATE);
     }
 
@@ -184,11 +186,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> lineListResponse = listLine();
-        assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<LineResponse> lineResponses = lineListResponse.jsonPath()
+        List<LineResponse> lineResponses = listLine().jsonPath()
                 .getList(".", LineResponse.class);
-
         assertThat(lineResponses.size()).isEqualTo(1);
         assertLineResponse(lineResponses.get(0), DATA2);
     }

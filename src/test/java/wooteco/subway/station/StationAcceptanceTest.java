@@ -6,11 +6,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -25,11 +25,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private static final Map<String, String> DATA2 = new HashMap<>();
     private static final Map<String, String> DATA_EMPTY_STRING = new HashMap<>();
     private static final Map<String, String> DATA_NULL = new HashMap<>();
-    private static final Long INVALID_ID = 999999999999999L;
 
     private static final String STATIONS_PATH = "/stations/";
     private static final String LOCATION = "Location";
     private static final String NAME = "name";
+    private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
         DATA1.put(NAME, "잠실역");
@@ -94,14 +94,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationResponse> expectedList = Stream.of(postResponse1, postResponse2)
-                .map(response -> response.jsonPath().getObject(".", StationResponse.class))
-                .collect(Collectors.toList());
-
+        List<StationResponse> expectedList = toStationDtos(postResponse1, postResponse2);
         List<StationResponse> resultList = listResponse.jsonPath()
                 .getList(".", StationResponse.class);
 
         assertThat(resultList).containsAll(expectedList);
+    }
+
+    private List<StationResponse> toStationDtos(ExtractableResponse<Response>... responses) {
+        return Arrays.stream(responses)
+                .map(response -> response.jsonPath().getObject(".", StationResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Test
@@ -118,11 +121,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> stationListResponse = listStation();
-        assertThat(stationListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<StationResponse> stationResponses = stationListResponse.jsonPath()
+        List<StationResponse> stationResponses = listStation().jsonPath()
                 .getList(".", StationResponse.class);
-
         assertThat(stationResponses.size()).isEqualTo(1);
         assertThat(stationResponses.get(0).getName()).isEqualTo(DATA2.get(NAME));
     }
