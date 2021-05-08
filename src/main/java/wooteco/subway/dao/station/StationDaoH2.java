@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Id;
+import wooteco.subway.domain.Name;
 import wooteco.subway.domain.Station;
 
 @Repository
@@ -34,9 +36,9 @@ public class StationDaoH2 implements StationDao {
         Map<String, String> params = new HashMap<>();
         params.put("name", station.getName());
 
-        long key = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Station(key, station.getName());
+        return new Station(id, station.getName());
     }
 
     @Override

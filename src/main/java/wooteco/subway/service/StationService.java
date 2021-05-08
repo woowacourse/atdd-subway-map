@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.domain.Name;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.service.dto.StationServiceDto;
@@ -30,7 +31,7 @@ public class StationService {
         Station station = new Station(stationServiceDto.getName());
         Station saveStation = stationDao.save(station);
 
-        return new StationServiceDto(saveStation.getId(), saveStation.getName());
+        return StationServiceDto.from(saveStation);
     }
 
     public void delete(final StationServiceDto stationServiceDto) {
