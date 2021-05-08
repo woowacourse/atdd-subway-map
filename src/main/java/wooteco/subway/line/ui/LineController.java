@@ -12,6 +12,7 @@ import wooteco.subway.line.domain.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
+import wooteco.subway.line.dto.SectionAddRequest;
 
 import java.net.URI;
 import java.util.Collections;
@@ -61,6 +62,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionAddRequest sectionAddRequest) {
+        lineService.addSection(id, sectionAddRequest);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})

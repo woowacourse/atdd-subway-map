@@ -92,8 +92,7 @@ public class DBSectionDao implements SectionDao {
     @Override
     public void deleteByLineIdWithUpStationId(Long lineId, Long upStationId) {
         String sql = "DELETE FROM SECTION" +
-                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
-                " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
+                " WHERE SECTION.line_id = ? AND SECTION.up_station_id = ?";
         jdbcTemplate.update(sql, lineId, upStationId);
     }
 
@@ -113,8 +112,7 @@ public class DBSectionDao implements SectionDao {
     @Override
     public void deleteByLineIdWithDownStationId(Long lineId, Long downStationId) {
         String sql = "DELETE FROM SECTION" +
-                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
-                " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
+                " WHERE SECTION.line_id = ? AND SECTION.down_station_id = ?";
         jdbcTemplate.update(sql, lineId, downStationId);
     }
 }

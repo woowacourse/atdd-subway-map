@@ -11,10 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.application.LineService;
-import wooteco.subway.line.domain.*;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineDao;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,13 +39,21 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Autowired
     private LineService lineService;
 
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
+    private Line line;
+
     @BeforeEach
     void init() {
         //given
-        Station station = stationDao.save(new Station("백기역"));
-        Station station2 = stationDao.save(new Station("흑기역"));
-        Station station3 = stationDao.save(new Station("아마찌역"));
-        Station station4 = stationDao.save(new Station("검프역"));
+        this.station1 = stationDao.save(new Station("백기역"));
+        this.station2 = stationDao.save(new Station("흑기역"));
+        this.station3 = stationDao.save(new Station("아마찌역"));
+        this.station4 = stationDao.save(new Station("검프역"));
+        LineResponse lineResponse = lineService.save(new LineRequest("백기선", "bg-red-600", station1.getId(), station2.getId(), 7));
+        this.line = new Line(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor());
     }
 
     @DisplayName("노선을 생성한다.")
@@ -186,7 +197,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.jsonPath().getLong("id")).isEqualTo(id);
         assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo(name);
         assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
-        assertThat(findLineResponse.jsonPath().getList("stations", Station.class)).containsExactly(new Station(1L, "백기역"), new Station(2L, "흑기역"));
+        assertThat(stationResponsesToStrings(findLineResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly("백기역", "흑기역");
     }
 
     @DisplayName("노선을 수정한다.")
@@ -269,5 +280,44 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("상행 종점역을 저장한다")
+    void upwardEndPointRegistration() {
+        //given
+        String uri = "/lines/{id}/sections";
+        String findUri = "/lines/{id}";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(station3.getId()));
+        params.put("downStationId", String.valueOf(station1.getId()));
+        params.put("distance", "5");
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(uri, line.getId())
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get(findUri, line.getId())
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.jsonPath().getLong("id")).isEqualTo(line.getId());
+        assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station3.getName(), station1.getName(), station2.getName());
+    }
+
+    private List<String> stationResponsesToStrings(List<StationResponse> response) {
+        return response.stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
     }
 }
