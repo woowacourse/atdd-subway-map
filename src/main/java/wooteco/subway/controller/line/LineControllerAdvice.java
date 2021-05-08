@@ -11,12 +11,6 @@ import wooteco.subway.exception.NotFoundLineException;
 @RestControllerAdvice
 public class LineControllerAdvice {
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<Void> voidLineAccessExceptionResponse(final EmptyResultDataAccessException e) {
-        return ResponseEntity.badRequest()
-            .build();
-    }
-
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<Void> duplicateLineAccessExceptionResponse(final SQLNonTransientException e) {
         return ResponseEntity.badRequest()

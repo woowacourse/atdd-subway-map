@@ -2,18 +2,16 @@ package wooteco.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.dao.line.LineDao;
-import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.service.dto.LineServiceDto;
 
 @Service
 public class LineService {
 
     private static final int NOT_FOUND = 0;
-    private static final int EXPECTED_COUNT = 1;
 
     private final LineDao lineDao;
 
@@ -43,7 +41,7 @@ public class LineService {
         Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
-            throw new EmptyResultDataAccessException(EXPECTED_COUNT);
+            throw new NotFoundLineException("[ERROR] 해당노선이 존재하지 않습니다.");
         }
     }
 
