@@ -18,6 +18,11 @@ import wooteco.subway.exception.NotExistItemException;
 public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNumber) -> new Line(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("color")
+    );
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -74,10 +79,4 @@ public class LineDao {
         String sql = "delete from LINE where id = ?";
         jdbcTemplate.update(sql, id);
     }
-
-    private final RowMapper<Line> lineRowMapper = (resultSet, rowNumber) -> new Line(
-        resultSet.getLong("id"),
-        resultSet.getString("name"),
-        resultSet.getString("color")
-    );
 }
