@@ -1,6 +1,6 @@
 package wooteco.subway.station;
 
-public final class StationException extends IllegalArgumentException {
+public class StationException extends IllegalArgumentException {
 
     public StationException() {
         super("유효하지 않은 역입니다.");

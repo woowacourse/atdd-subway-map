@@ -3,10 +3,15 @@ package wooteco.subway.station;
 import java.util.Objects;
 
 public class Station {
+
     private final Long id;
     private final String name;
 
-    public Station(Long id, String name) {
+    public Station(StationRequest stationRequest) {
+        this(null, stationRequest.getName());
+    }
+
+    public Station(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
