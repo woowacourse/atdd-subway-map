@@ -23,8 +23,11 @@ import wooteco.subway.domain.station.Station;
 @RestController
 public class StationController {
 
-    @Autowired
-    private StationDao stationDao;
+    private final StationDao stationDao;
+
+    public StationController(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<StationResponse> exceptionHandler(IllegalArgumentException e) {

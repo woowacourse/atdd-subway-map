@@ -23,8 +23,11 @@ import wooteco.subway.domain.line.Line;
 @RestController
 public class LineController {
 
-    @Autowired
-    private LineDao lineDao;
+    private final LineDao lineDao;
+
+    public LineController(LineDao lineDao) {
+        this.lineDao = lineDao;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<LineResponse> exceptionHandler(IllegalArgumentException e) {
