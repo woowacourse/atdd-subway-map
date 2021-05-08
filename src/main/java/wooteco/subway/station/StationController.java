@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -30,8 +31,8 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
         @RequestBody final StationRequest stationRequest) {
 
-        StationDto stationDto = new StationDto(stationRequest.getName());
-        StationDto savedStationDto = stationService.save(stationDto);
+        NonIdStationDto nonIdstationDto = new NonIdStationDto(stationRequest.getName());
+        StationDto savedStationDto = stationService.save(nonIdstationDto);
         StationResponse stationResponse = new StationResponse(
             savedStationDto.getId(),
             savedStationDto.getName()

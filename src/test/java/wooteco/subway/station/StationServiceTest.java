@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.station.dao.StationDaoCache;
+import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 
 class StationServiceTest {
@@ -19,7 +20,7 @@ class StationServiceTest {
     @Test
     void save() {
         //given
-        StationDto requestStationDto = new StationDto("스타벅스 선정릉역");
+        NonIdStationDto requestStationDto = new NonIdStationDto("스타벅스 선정릉역");
         Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
         Station station = new Station(requestStationDto.getName());
 

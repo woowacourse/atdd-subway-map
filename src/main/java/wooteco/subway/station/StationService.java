@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 
 @Service
@@ -24,8 +25,8 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    public StationDto save(final StationDto stationDto) {
-        Station station = new Station(stationDto.getName());
+    public StationDto save(final NonIdStationDto nonIdStationDto) {
+        Station station = new Station(nonIdStationDto.getName());
         Station saveStation = stationDao.save(station);
 
         return new StationDto(saveStation.getId(), saveStation.getName());
