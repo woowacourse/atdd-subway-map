@@ -1,21 +1,19 @@
-package wooteco.subway.station;
+package wooteco.subway.acceptanceTest.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestAndGetAllSavedStationIds;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestAndGetAllSavedStationResponseDtosInOrder;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.requestCreateStationWithNameAndGetResponse;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.AcceptanceTest;
+import wooteco.subway.acceptanceTest.AcceptanceTest;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 
 @DisplayName("지하철역 관련 기능")
@@ -37,20 +35,6 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.body().jsonPath().getString("id")).isEqualTo("1");
         assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationNameToCreate);
-    }
-
-    private ExtractableResponse<Response> requestCreateStationWithNameAndGetResponse(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -78,9 +62,9 @@ class StationAcceptanceTest extends AcceptanceTest {
     void getAllStations() {
         /// given
         String firstStationName = "강남역";
-        ExtractableResponse<Response> createResponse1 = requestCreateStationWithNameAndGetResponse(firstStationName);
+        requestCreateStationWithNameAndGetResponse(firstStationName);
         String secondStationName = "역삼역";
-        ExtractableResponse<Response> createResponse2 = requestCreateStationWithNameAndGetResponse(secondStationName);
+        requestCreateStationWithNameAndGetResponse(secondStationName);
 
         // when
         List<StationResponseDto> stationResponseDtosInOrder = requestAndGetAllSavedStationResponseDtosInOrder();
@@ -93,29 +77,6 @@ class StationAcceptanceTest extends AcceptanceTest {
         StationResponseDto secondStationResponseDto = stationResponseDtosInOrder.get(1);
         assertThat(secondStationResponseDto.getId()).isEqualTo(2L);
         assertThat(secondStationResponseDto.getName()).isEqualTo(secondStationName);
-    }
-
-    private List<Long> requestAndGetAllSavedStationIds() {
-        return requestAndGetAllSavedStationResponseDtosInOrder().stream()
-            .map(StationResponseDto::getId)
-            .collect(Collectors.toList());
-    }
-
-    private List<StationResponseDto> requestAndGetAllSavedStationResponseDtosInOrder() {
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        List<StationResponseDto> stationResponseDtos = new ArrayList<>(response.jsonPath().getList(".", StationResponseDto.class));
-        stationResponseDtos.sort(Comparator.comparingLong(StationResponseDto::getId));
-        return stationResponseDtos;
     }
 
     @DisplayName("지하철역을 Id로 제거한다.")

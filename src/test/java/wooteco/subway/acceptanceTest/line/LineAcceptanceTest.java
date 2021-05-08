@@ -1,21 +1,30 @@
-package wooteco.subway.line;
+package wooteco.subway.acceptanceTest.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.assertLineResponseDto;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetAllSavedLineResponseDtosInOrder;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetAllSavedLinesIds;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetSingleSavedLineResponseDto;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestCreateLineAndGetResponse;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestUpdateLineAndGetResponse;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.DEFAULT_SECTION_DISTANCE;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_COLOR;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_ID;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_NAME;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_1;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_2;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.requestCreateAndSetLineWithSectionsAndGetResponse;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.AcceptanceTest;
+import wooteco.subway.acceptanceTest.AcceptanceTest;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -24,54 +33,37 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        String lineNameToCreate = "신분당선";
-        String lineColorToCreate = "bg-red-600";
-
-        // when
-        ExtractableResponse<Response> response = requestCreateLineAndGetResponse(lineNameToCreate, lineColorToCreate);
+        // given, when
+        ExtractableResponse<Response> response
+            = requestCreateAndSetLineWithSectionsAndGetResponse(Arrays.asList(STATION_1, STATION_2));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(response.header("Location")).isEqualTo("/lines/1");
+        assertThat(response.header("Location")).isEqualTo("/lines/" + LINE_ID);
 
-        assertThat(response.body().jsonPath().getString("id")).isEqualTo("1");
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineNameToCreate);
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineColorToCreate);
-    }
-
-    private ExtractableResponse<Response> requestCreateLineAndGetResponse(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-
-        return RestAssured.given().log().all()
-            .body(params)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(LINE_ID);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
+        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(STATION_1.getId());
+        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(STATION_2.getId());
+        assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(DEFAULT_SECTION_DISTANCE);
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        String duplicateLineName = "신분당선";
-        requestCreateLineAndGetResponse(duplicateLineName, "bg-red-600");
+        requestCreateAndSetLineWithSectionsAndGetResponse(Arrays.asList(STATION_1, STATION_2));
         Long savedLineIdBeforeRequest = requestAndGetAllSavedLinesIds().get(0);
 
         // when
-        ExtractableResponse<Response> response = requestCreateLineAndGetResponse(duplicateLineName, "bg-green-600");
+        ExtractableResponse<Response> response
+            = requestCreateLineAndGetResponse(LINE_NAME, LINE_COLOR + 1, 100L, 200L, 200);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         List<Long> allSavedLineIds = requestAndGetAllSavedLinesIds();
-        assertThat(allSavedLineIds).hasSize(1);
         assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
     }
 
@@ -79,18 +71,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        String duplicateLineColor = "bg-red-600";
-        requestCreateLineAndGetResponse("신분당선", duplicateLineColor);
+        requestCreateAndSetLineWithSectionsAndGetResponse(Arrays.asList(STATION_1, STATION_2));
         Long savedLineIdBeforeRequest = requestAndGetAllSavedLinesIds().get(0);
 
         // when
-        ExtractableResponse<Response> response = requestCreateLineAndGetResponse("2호선", duplicateLineColor);
+        ExtractableResponse<Response> response
+            = requestCreateLineAndGetResponse(LINE_NAME + 1, LINE_COLOR, 100L, 200L, 200);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         List<Long> allSavedLineIds = requestAndGetAllSavedLinesIds();
-        assertThat(allSavedLineIds).hasSize(1);
         assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
     }
 
@@ -137,37 +128,10 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         LineResponseDto firstLineResponseDto = lineResponseDtosInOrder.get(0);
-        assertThat(firstLineResponseDto.getId()).isEqualTo(1L);
-        assertThat(firstLineResponseDto.getName()).isEqualTo(firstLineName);
-        assertThat(firstLineResponseDto.getColor()).isEqualTo(firstLineColor);
+        assertLineResponseDto(firstLineResponseDto, 1L, firstLineName, firstLineColor);
 
         LineResponseDto secondLineResponseDto = lineResponseDtosInOrder.get(1);
-        assertThat(secondLineResponseDto.getId()).isEqualTo(2L);
-        assertThat(secondLineResponseDto.getName()).isEqualTo(secondLineName);
-        assertThat(secondLineResponseDto.getColor()).isEqualTo(secondLineColor);
-    }
-
-    private List<Long> requestAndGetAllSavedLinesIds() {
-        return requestAndGetAllSavedLineResponseDtosInOrder().stream()
-            .map(LineResponseDto::getId)
-            .collect(Collectors.toList());
-    }
-
-    private List<LineResponseDto> requestAndGetAllSavedLineResponseDtosInOrder() {
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .get("/lines")
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        List<LineResponseDto> lineResponseDtos = new ArrayList<>(response.jsonPath().getList(".", LineResponseDto.class));
-        lineResponseDtos.sort(Comparator.comparingLong(LineResponseDto::getId));
-        return lineResponseDtos;
+        assertLineResponseDto(secondLineResponseDto, 2L, secondLineName, secondLineColor);
     }
 
     @DisplayName("노선을 수정한다.")
@@ -180,26 +144,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         String newLineName = "구분당선";
         String newColor = "bg-blue-600";
-        Map<String, String> params = new HashMap<>();
-        params.put("name", newLineName);
-        params.put("color", newColor);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .pathParam("id", lineIdToUpdate)
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/{id}")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestUpdateLineAndGetResponse(lineIdToUpdate, newLineName, newColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         LineResponseDto updatedLineResponseDto = requestAndGetAllSavedLineResponseDtosInOrder().get(0);
-        assertThat(updatedLineResponseDto.getId()).isEqualTo(1L);
-        assertThat(updatedLineResponseDto.getName()).isEqualTo(newLineName);
-        assertThat(updatedLineResponseDto.getColor()).isEqualTo(newColor);
+        assertLineResponseDto(updatedLineResponseDto, 1L, newLineName, newColor);
     }
 
     @DisplayName("이미 존재하는 이름으로 노선을 수정한다.")
@@ -216,30 +167,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         String newLineName = "신분당선";
         String newColor = "bg-blue-600";
-        Map<String, String> params = new HashMap<>();
-        params.put("name", newLineName);
-        params.put("color", newColor);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .pathParam("id", lineIdToUpdate)
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/{id}")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestUpdateLineAndGetResponse(lineIdToUpdate, newLineName, newColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        LineResponseDto savedLineResponseDto = requestAndGetAllSavedLineResponseDtosInOrder().stream()
-            .filter(lineResponseDto -> lineResponseDto.getId().equals(lineIdToUpdate))
-            .collect(Collectors.toList())
-            .get(0);
-
-        assertThat(savedLineResponseDto.getId()).isEqualTo(lineIdToUpdate);
-        assertThat(savedLineResponseDto.getName()).isEqualTo(oldLineName);
-        assertThat(savedLineResponseDto.getColor()).isEqualTo(oldColor);
+        LineResponseDto savedLineResponseDto = requestAndGetSingleSavedLineResponseDto(lineIdToUpdate);
+        assertLineResponseDto(savedLineResponseDto,
+            savedLineResponseDto.getId(), savedLineResponseDto.getName(), savedLineResponseDto.getColor());
     }
 
     @DisplayName("이미 존재하는 색깔로 노선을 수정한다.")
@@ -256,30 +191,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         String newLineName = "2호선";
         String newColor = "bg-green-600";
-        Map<String, String> params = new HashMap<>();
-        params.put("name", newLineName);
-        params.put("color", newColor);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .pathParam("id", lineIdToUpdate)
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/{id}")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = requestUpdateLineAndGetResponse(lineIdToUpdate, newLineName, newColor);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        LineResponseDto savedLineResponseDto = requestAndGetAllSavedLineResponseDtosInOrder().stream()
-            .filter(lineResponseDto -> lineResponseDto.getId().equals(lineIdToUpdate))
-            .collect(Collectors.toList())
-            .get(0);
-
-        assertThat(savedLineResponseDto.getId()).isEqualTo(lineIdToUpdate);
-        assertThat(savedLineResponseDto.getName()).isEqualTo(oldLineName);
-        assertThat(savedLineResponseDto.getColor()).isEqualTo(oldColor);
+        LineResponseDto savedLineResponseDto = requestAndGetSingleSavedLineResponseDto(lineIdToUpdate);
+        assertLineResponseDto(savedLineResponseDto,
+            savedLineResponseDto.getId(), savedLineResponseDto.getName(), savedLineResponseDto.getColor());
     }
 
     @DisplayName("노선을 Id로 제거한다.")
