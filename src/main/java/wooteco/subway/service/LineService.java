@@ -32,6 +32,11 @@ public class LineService {
         return lineDao.findAll();
     }
 
+    public Line findById(Long id) {
+        return lineDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다"));
+    }
+
     public void update(Long id, Line line) {
         findById(id);
         lineDao.update(id, line);
@@ -40,10 +45,5 @@ public class LineService {
     public void delete(Long id) {
         findById(id);
         lineDao.delete(id);
-    }
-
-    public Line findById(Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다"));
     }
 }

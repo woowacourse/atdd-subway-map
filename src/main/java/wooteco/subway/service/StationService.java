@@ -32,13 +32,13 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void delete(Long id) {
-        findById(id);
-        stationDao.delete(id);
-    }
-
     private Station findById(Long id) {
         return stationDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 역입니다"));
+    }
+
+    public void delete(Long id) {
+        findById(id);
+        stationDao.delete(id);
     }
 }
