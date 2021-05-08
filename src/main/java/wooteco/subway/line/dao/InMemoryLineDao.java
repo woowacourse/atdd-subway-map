@@ -32,6 +32,13 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
+    public Optional<Line> findByName(String name) {
+        return lines.stream()
+                .filter(line -> line.isSameName(name))
+                .findAny();
+    }
+
+    @Override
     public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))

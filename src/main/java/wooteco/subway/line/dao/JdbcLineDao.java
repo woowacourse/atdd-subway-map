@@ -58,6 +58,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM line WHERE name = ?";
+        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), name);
+        return results.stream().findAny();
+    }
+
+    @Override
     public void update(Long id, Line updatedLine) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         String newName = updatedLine.getName();

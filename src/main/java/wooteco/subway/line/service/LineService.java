@@ -39,8 +39,8 @@ public class LineService {
     }
 
     private boolean checkNameDuplicate(LineCreateRequest lineCreateRequest) {
-        return lineDao.findAll().stream()
-                .anyMatch(line -> line.isSameName(lineCreateRequest.getName()));
+        return lineDao.findByName(lineCreateRequest.getName())
+                .isPresent();
     }
 
     public LineResponse findBy(Long id) {

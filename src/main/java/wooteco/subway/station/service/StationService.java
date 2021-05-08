@@ -38,8 +38,8 @@ public class StationService {
     }
 
     private boolean checkNameDuplicate(StationRequest stationRequest) {
-        return stationDao.findAll().stream()
-                .anyMatch(station -> station.isSameName(stationRequest.getName()));
+        return stationDao.findByName(stationRequest.getName())
+                .isPresent();
     }
 
     public List<StationResponse> findAll() {
