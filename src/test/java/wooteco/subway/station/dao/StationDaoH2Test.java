@@ -21,11 +21,6 @@ class StationDaoH2Test {
     @DisplayName("전체 역 반환 테스트")
     @Test
     public void checkAllStation() {
-        List<Station> stationeee = stationDao.showAll();
-
-        for (Station station : stationeee) {
-            System.out.println(station.getName());
-        }
         //given
         Station station1 = new Station("상봉역");
         stationDao.save(station1);
