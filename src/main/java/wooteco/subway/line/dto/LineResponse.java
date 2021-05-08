@@ -1,7 +1,7 @@
 package wooteco.subway.line.dto;
 
-import com.sun.tools.javac.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -23,7 +23,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line){
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
     public static LineResponse of(Line line, List<StationResponse> stations){

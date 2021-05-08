@@ -1,5 +1,6 @@
 package wooteco.subway.line.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationResponse;
 
 @Service
 public class LineService {
@@ -52,7 +54,7 @@ public class LineService {
 
     public LineResponse find(Long id) {
         Line line = findLineById(id);
-        return LineResponse.of(line, null);
+        return LineResponse.of(line, new ArrayList<>());
     }
 
     public void delete(Long id) {
