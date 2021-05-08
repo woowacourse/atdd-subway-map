@@ -18,6 +18,21 @@ class StationDaoH2Test {
     @Autowired
     private StationDaoH2 stationDao;
 
+    @Test
+    @DisplayName("이름으로 역 세기")
+    public void countByName() {
+        //given
+        String name = "상봉역";
+        Station station1 = new Station(name);
+        stationDao.save(station1);
+
+        //when
+        int number = stationDao.countByName(name);
+
+        //then
+        assertThat(number).isEqualTo(1);
+    }
+
     @DisplayName("전체 역 반환 테스트")
     @Test
     public void checkAllStation() {

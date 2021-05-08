@@ -3,6 +3,7 @@ package wooteco.subway.station.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateStationException;
 import wooteco.subway.exception.NotFoundStationException;
@@ -30,6 +31,14 @@ public class StationDaoMemory implements StationDao {
 
             throw new DuplicateStationException("[ERROR] 역의 이름이 중복됩니다.");
         }
+    }
+
+    @Override
+    public int countByName(final String name) {
+        List<Station> matchedStations = stations.stream()
+            .filter(station -> (station.getName()).equals(name))
+            .collect(Collectors.toList());
+        return matchedStations.size();
     }
 
     @Override

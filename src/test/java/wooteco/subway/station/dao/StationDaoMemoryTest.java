@@ -1,5 +1,6 @@
 package wooteco.subway.station.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -48,4 +49,16 @@ class StationDaoMemoryTest {
         assertTrue(stations.containsAll(Arrays.asList(STATION1, STATION2, station)));
     }
 
+    @Test
+    @DisplayName("이름으로 역 세기")
+    public void checkByName() {
+        //given
+        String givenName = "정릉역";
+
+        //when
+        int number = stationDaoMemory.countByName(givenName);
+
+        //then
+        assertThat(number).isEqualTo(1);
+    }
 }

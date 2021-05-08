@@ -7,6 +7,8 @@ public interface StationDao {
 
     Station save(Station station);
 
+    int countByName(String name);
+
     List<Station> showAll();
 
     int delete(long id);
