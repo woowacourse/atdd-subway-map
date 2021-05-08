@@ -10,6 +10,7 @@ import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.controller.dto.response.LineFindResponseDto;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 
@@ -52,10 +53,10 @@ public class LineService {
                 )
         );
         return new LineCreateResponseDto(
-            newLine.getId(),
-            newLine.getName(),
-            newLine.getColor(),
-            sectionDtos
+                newLine.getId(),
+                newLine.getName(),
+                newLine.getColor(),
+                sectionDtos
         );
     }
 
@@ -68,12 +69,18 @@ public class LineService {
 
     public LineFindResponseDto showLine(Long lineId) {
         Line line = lineRepository.findLineWithSectionsById(lineId);
-        List<Section> sections = line.getSections();
-        List<StationDto> stationDtos = new ArrayList<>();
+        List<Section> sections = line.sortSections();
+        List<Station> stations = new ArrayList<>();
+        Station firstStation = stationRepository.findStationById(sections.get(0).getUpStationId()).get();
+        stations.add(firstStation);
         for (Section section : sections) {
-            // TODO - List<Section>을 바탕으로 Station의 정보를 조회해서 stationDtos 만들기
-            // TODO - 이 때, List<Section>이 Station 순서대로 조회되야 한다!
+            Station station = stationRepository.findStationById(section.getDownStationId()).get();
+            stations.add(station);
         }
+
+        List<StationDto> stationDtos = stations.stream()
+                .map(station -> new StationDto(station.getId(), station.getName()))
+                .collect(Collectors.toList());
 
         return new LineFindResponseDto(
                 line, stationDtos

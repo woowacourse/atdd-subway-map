@@ -1,5 +1,6 @@
 package wooteco.subway.controller.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import wooteco.subway.controller.dto.StationDto;
 import wooteco.subway.domain.Line;
 
@@ -35,6 +36,7 @@ public class LineFindResponseDto {
         return color;
     }
 
+    @JsonProperty("stations")
     public List<StationDto> getStationDtos() {
         return stationDtos;
     }

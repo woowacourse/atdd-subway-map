@@ -53,7 +53,7 @@ public class LineRequest {
 
     public static Map<String, String> section1() {
         Map<String, String> params = new HashMap<>();
-        params.put("downStationId", "4");
+        params.put("downStationId", "1");
         params.put("upStationId", "2");
         params.put("distance", "10");
         return params;
