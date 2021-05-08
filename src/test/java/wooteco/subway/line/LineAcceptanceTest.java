@@ -51,23 +51,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = createLineAPI("3호선", "bg-orange-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = getLineAllAPI();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Long> expectedLineIds = getExpectedLineIds(createResponse1, createResponse2);
+        List<Long> resultLineIds = getResultLineIds(response);
+
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> getResultLineIds(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getExpectedLineIds(ExtractableResponse<Response> createResponse1,
+        ExtractableResponse<Response> createResponse2) {
+        return Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+    }
+
+    private ExtractableResponse<Response> getLineAllAPI() {
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines")
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @Test
@@ -77,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAPI("2호선", "bg-green-600");
         createLineAPI("3호선", "bg-orange-600");
 
-        // when
+        // when // then
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -97,11 +112,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void putLine() {
         /// given
         createLineAPI("2호선", "bg-green-600");
-
         LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = updateLineAPI(lineRequest);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> updateLineAPI(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(lineRequest)
             .when()
@@ -109,8 +130,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
@@ -121,14 +140,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = deleteLineAPI(uri);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> deleteLineAPI(String uri) {
+        return RestAssured.given().log().all()
             .when()
             .delete(uri)
             .then().log().all()
             .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLineAPI(String name, String color) {
