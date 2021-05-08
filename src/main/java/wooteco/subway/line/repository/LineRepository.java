@@ -1,7 +1,5 @@
 package wooteco.subway.line.repository;
 
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,25 +25,21 @@ public class LineRepository {
     }
 
     public Line save(final Line line) {
-        try {
-            String query = "INSERT INTO line(color, name) VALUES(?, ?)";
+        String query = "INSERT INTO line(color, name) VALUES(?, ?)";
 
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-                ps.setString(1, line.getColor());
-                ps.setString(2, line.getName());
-                return ps;
-            }, keyHolder);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+            ps.setString(1, line.getColor());
+            ps.setString(2, line.getName());
+            return ps;
+        }, keyHolder);
 
-            return new Line(
-                    Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                    line.getColor(),
-                    line.getName()
-            );
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateLineNameException();
-        }
+        return new Line(
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                line.getColor(),
+                line.getName()
+        );
     }
 
     public List<Line> getLines() {
@@ -54,29 +48,32 @@ public class LineRepository {
     }
 
     public Line getLine(final Long id) {
-        try {
-            String query = "SELECT id, color, name FROM line WHERE id = ?";
-            return jdbcTemplate.queryForObject(query, lineRowMapper, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchLineException();
-        }
+        String query = "SELECT id, color, name FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, lineRowMapper, id);
     }
 
     public void update(final Line line) {
         String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
-
-        if (rowsAffected < 1) {
-            throw new NoSuchLineException();
-        }
+        jdbcTemplate.update(query, line.getColor(), line.getName(), line.getId());
     }
 
     public void deleteById(final Long id) {
         String query = "DELETE FROM line WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(query, id);
+        jdbcTemplate.update(query, id);
+    }
 
-        if (rowsAffected < 1) {
-            throw new NoSuchLineException();
-        }
+    public boolean doesNameExist(final Line line) {
+        String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
+    }
+
+    public boolean doesIdNotExist(final Line line) {
+        String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, line.getId());
+    }
+
+    public boolean doesIdNotExist(final Long id) {
+        String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 }

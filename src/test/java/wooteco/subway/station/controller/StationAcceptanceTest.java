@@ -23,7 +23,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> firstStationCreateResponse;
     private ExtractableResponse<Response> secondStationCreateResponse;
     private final StationRequest firstStationRequest = new StationRequest("강남역");
-    ;
 
     @Override
     @BeforeEach

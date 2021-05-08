@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
@@ -69,8 +68,8 @@ class LineRepositoryTest {
     @DisplayName("id를 통해 line 수정 요청을 보내면, DB에있는 line정보를 수정한다")
     @Test
     void update() {
-        Line bundangLine = new Line(1L, "bg-white-600", "분당선");
-        lineRepository.update(bundangLine);
+        Line bunDangLine = new Line(1L, "bg-white-600", "분당선");
+        lineRepository.update(bunDangLine);
 
         String query = "SELECT color, name FROM line WHERE id = ?";
         Line line = jdbcTemplate.queryForObject(
@@ -80,7 +79,7 @@ class LineRepositoryTest {
                         resultSet.getString("name")
                 ), 1L);
 
-        assertThat(bundangLine).isEqualTo(line);
+        assertThat(bunDangLine).isEqualTo(line);
     }
 
     @DisplayName("id를 통해 line을 삭제하면, DB에 있는 line을 삭제한다.")
@@ -93,35 +92,5 @@ class LineRepositoryTest {
 
         lineRepository.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
-    }
-
-    @DisplayName("이미 존재하는 이름의 line을 저장하려하면 DuplicateLineNameException을 반환한다")
-    @Test
-    void save_DuplicateLineNameException() {
-        Line line = new Line("bg-black-600", "신분당선");
-        assertThatThrownBy(() -> lineRepository.save(line))
-                .isInstanceOf(DuplicateLineNameException.class);
-    }
-
-    @DisplayName("없는 id의 line을 가져오려하면 NoSuchLineException을 반환한다")
-    @Test
-    void getLine_NoSuchLineException() {
-        assertThatThrownBy(() -> lineRepository.getLine(3L))
-                .isInstanceOf(NoSuchLineException.class);
-    }
-
-    @DisplayName("없는 id의 line을 삭제하려하면 NoSuchLineException을 반환한다")
-    @Test
-    void deleteById_NoSuchLineException() {
-        assertThatThrownBy(() -> lineRepository.deleteById(3L))
-                .isInstanceOf(NoSuchLineException.class);
-    }
-
-    @DisplayName("없는 id의 line을 수정하려하면 NoSuchLineException을 반환한다")
-    @Test
-    void update_NoSuchLineException() {
-        Line line = new Line(3L, "bg-yellow-600", "지노선");
-        assertThatThrownBy(() -> lineRepository.update(line))
-                .isInstanceOf(NoSuchLineException.class);
     }
 }

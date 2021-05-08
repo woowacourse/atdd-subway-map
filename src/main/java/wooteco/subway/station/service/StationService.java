@@ -17,6 +17,9 @@ public class StationService {
     }
 
     public Station createStation(final Station station) {
+        if (stationRepository.doesNameExist(station)) {
+            throw new DuplicateStationNameException();
+        }
         return stationRepository.save(station);
     }
 
@@ -25,6 +28,9 @@ public class StationService {
     }
 
     public void delete(final Long id) {
+        if (stationRepository.doesIdNotExist(id)) {
+            throw new NoSuchStationException();
+        }
         stationRepository.deleteById(id);
     }
 }

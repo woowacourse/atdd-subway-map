@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("classpath:tableInit.sql")
@@ -66,12 +65,5 @@ public class StationRepositoryTest {
 
         stationRepository.deleteById(id);
         assertThat(jdbcTemplate.queryForObject(query, Boolean.class, id)).isFalse();
-    }
-
-    @DisplayName("없는 id의 station을 삭제하려하면 NoSuchStationException을 반환한다")
-    @Test
-    void deleteById_NoSuchStationException() {
-        assertThatThrownBy(() -> stationRepository.deleteById(3L))
-                .isInstanceOf(NoSuchStationException.class);
     }
 }
