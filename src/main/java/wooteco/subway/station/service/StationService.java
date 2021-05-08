@@ -3,6 +3,7 @@ package wooteco.subway.station.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -31,7 +32,7 @@ public class StationService {
 
     private void validateStationName(StationRequest stationRequest) {
         if (checkNameDuplicate(stationRequest)) {
-            throw new IllegalArgumentException("중복된 이름의 역이 존재합니다.");
+            throw new DuplicatedNameException("중복된 이름의 역이 존재합니다.");
         }
     }
 

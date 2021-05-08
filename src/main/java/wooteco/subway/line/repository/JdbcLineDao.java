@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 public class JdbcLineDao implements LineRepository {
     private final JdbcTemplate jdbcTemplate;
-
     private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
             rs.getLong("id"),
             rs.getString("name"),
