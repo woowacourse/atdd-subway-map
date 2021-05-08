@@ -19,14 +19,15 @@ import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.service.line.LineService;
 
 @RestController
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -36,43 +37,31 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        Line newLine = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(),
-            newLine.getColor(), null);
-        return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
+        LineResponse lineResponse = lineService.createLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineDao.findAll();
-        List<LineResponse> linesResponse = lines
-            .stream()
-            .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor(), null))
-            .collect(Collectors.toList());
+        List<LineResponse> linesResponse = lineService.showLines();
         return ResponseEntity.ok().body(linesResponse);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineDao.findById(id);
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(),
-            null);
+        LineResponse lineResponse = lineService.showLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        Line persistedLine = lineDao.findById(id);
-        Line updatedLine = new Line(persistedLine.getId(), lineRequest.getName(),
-            lineRequest.getColor());
-        lineDao.update(updatedLine);
+    public ResponseEntity<Object> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineDao.deleteById(id);
+    public ResponseEntity<Object> deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }

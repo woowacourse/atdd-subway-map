@@ -1,5 +1,7 @@
 package wooteco.subway.controller.dto.request;
 
+import wooteco.subway.domain.line.Line;
+
 public class LineRequest {
 
     private String name;
@@ -38,5 +40,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line toDomain() {
+        return new Line(name, color);
     }
 }

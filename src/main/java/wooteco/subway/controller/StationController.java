@@ -19,14 +19,15 @@ import wooteco.subway.controller.dto.request.StationRequest;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.service.station.StationService;
 
 @RestController
 public class StationController {
 
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -40,28 +41,21 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(),
-            newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        StationResponse stationResponse = stationService.createStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
             .body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
+        List<StationResponse> stationResponses = stationService.showStations();
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationDao.deleteById(id);
+    public ResponseEntity<Object> deleteStation(@PathVariable Long id) {
+        stationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
