@@ -22,7 +22,7 @@ public class StationService {
         List<Station> stations = stationDao.showAll();
 
         return stations.stream()
-            .map(station -> new StationServiceDto(station.getId(), station.getName()))
+            .map(StationServiceDto::from)
             .collect(Collectors.toList());
     }
 

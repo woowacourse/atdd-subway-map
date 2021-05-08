@@ -2,6 +2,7 @@ package wooteco.subway.service.dto;
 
 import javax.validation.constraints.NotEmpty;
 import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.domain.Line;
 
 public class LineServiceDto {
 
@@ -31,6 +32,10 @@ public class LineServiceDto {
 
     public static LineServiceDto from(final LineRequest lineRequest) {
         return new LineServiceDto(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public static LineServiceDto from(final Line line) {
+        return new LineServiceDto(line.getId(), line.getName(), line.getColor());
     }
 
     public Long getId() {

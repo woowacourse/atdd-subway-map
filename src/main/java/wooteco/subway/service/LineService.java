@@ -23,19 +23,19 @@ public class LineService {
     public LineServiceDto createLine(@Valid final LineServiceDto lineServiceDto) {
         Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
         Line saveLine = lineDao.create(line);
-        return new LineServiceDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
+        return LineServiceDto.from(saveLine);
     }
 
     public List<LineServiceDto> findAll() {
         return lineDao.showAll()
             .stream()
-            .map(it -> new LineServiceDto(it.getId(), it.getName(), it.getColor()))
+            .map(LineServiceDto::from)
             .collect(Collectors.toList());
     }
 
     public LineServiceDto findOne(@Valid final LineServiceDto lineServiceDto) {
         Line line = lineDao.show(lineServiceDto.getId());
-        return new LineServiceDto(line.getId(), line.getName(), line.getColor());
+        return LineServiceDto.from(line);
     }
 
     public void update(@Valid final LineServiceDto lineServiceDto) {
