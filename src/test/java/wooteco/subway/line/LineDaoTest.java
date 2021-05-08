@@ -52,16 +52,10 @@ class LineDaoTest {
         Line line3 = lineDao.save(new Line("3호선", "bg-orange-600"));
         Line line4 = lineDao.save(new Line("4호선", "bg-skyBlue-600"));
 
-        List<Line> lines = Arrays.asList(line2, line3, line4);
-        List<Line> linesAll = lineDao.findAll();
+        List<Line> lines = lineDao.findAll();
 
-        assertThat(linesAll).hasSize(3);
-
-        for (int i = 0; i < linesAll.size(); i++) {
-            assertThat(lines.get(i).getId()).isEqualTo(lines.get(i).getId());
-            assertThat(lines.get(i).getName()).isEqualTo(lines.get(i).getName());
-            assertThat(lines.get(i).getColor()).isEqualTo(lines.get(i).getColor());
-        }
+        assertThat(lines).hasSize(3);
+        assertThat(lines).containsExactly(line2, line3, line4);
     }
 
     @DisplayName("id를 이용하여 노선을 조회한다.")
