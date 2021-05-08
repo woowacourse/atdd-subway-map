@@ -39,7 +39,6 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void init() {
         //given
-        System.out.println("11111111 = ");
         Station station = stationDao.save(new Station("백기역"));
         Station station2 = stationDao.save(new Station("흑기역"));
         Station station3 = stationDao.save(new Station("아마찌역"));
@@ -50,8 +49,6 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        System.out.println("2222222 = ");
-
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
