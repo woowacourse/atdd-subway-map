@@ -1,17 +1,21 @@
 package wooteco.subway.line;
 
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.exception.DuplicateNameException;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.util.ReflectionUtils;
-
-import wooteco.subway.exception.DuplicateNameException;
-
 public class LineFakeDao implements LineDao {
-    private static Long seq = 0L;
     static final List<Line> LINES = new ArrayList<>();
+    private static Long seq = 0L;
+
+    private static boolean isDuplicateLineName(LineRequest lineRequest) {
+        final String lineName = lineRequest.getName();
+        return LINES.stream().anyMatch(storedLine -> storedLine.getName().equals(lineName));
+    }
 
     @Override
     public Line save(LineRequest lineRequest) {
@@ -24,12 +28,6 @@ public class LineFakeDao implements LineDao {
         return persistLine;
     }
 
-    private static boolean isDuplicateLineName(LineRequest lineRequest) {
-        final String lineName = lineRequest.getName();
-        return LINES.stream()
-                    .anyMatch(storedLine -> storedLine.getName().equals(lineName));
-    }
-
     @Override
     public List<Line> findAll() {
         return LINES;
@@ -37,16 +35,12 @@ public class LineFakeDao implements LineDao {
 
     @Override
     public Optional<Line> findById(Long id) {
-        return LINES.stream()
-                    .filter(line -> line.getId().equals(id))
-                    .findAny();
+        return LINES.stream().filter(line -> line.getId().equals(id)).findAny();
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        return LINES.stream()
-                    .filter(line -> line.getName().equals(name))
-                    .findAny();
+        return LINES.stream().filter(line -> line.getName().equals(name)).findAny();
     }
 
     @Override
