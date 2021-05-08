@@ -170,7 +170,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineByID() {
         // given
-        String name = "신분당선";
+        String name = "9호선";
         String color = "bg-red-600";
         Long id = 1L;
         Map<String, String> params = new HashMap<>();

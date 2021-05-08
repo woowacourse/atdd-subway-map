@@ -2,20 +2,18 @@ package wooteco.subway.domain;
 
 public class Section {
     private Long id;
-    private Line line;
     private Station upStation;
     private Station downStation;
     private int distance;
 
     public Section(){}
 
-    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(0L, line, upStation, downStation, distance);
+    public Section(final Station upStation, final Station downStation, final int distance) {
+        this(0L, upStation, downStation, distance);
     }
 
-    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
+    public Section(final Long id, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
-        changeLine(line);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -23,16 +21,6 @@ public class Section {
 
     public Long id() {
         return id;
-    }
-
-    public Line line() {
-        return line;
-    }
-
-    public void changeLine(Line line) {
-        this.line = line;
-
-        line.getSections().add(this);
     }
 
     public Station upStation() {

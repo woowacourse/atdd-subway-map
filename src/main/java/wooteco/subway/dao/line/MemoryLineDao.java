@@ -1,7 +1,7 @@
 package wooteco.subway.dao.line;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.dao.entity.LineEntity;
+import wooteco.subway.domain.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,63 +10,63 @@ import java.util.Optional;
 
 public class MemoryLineDao implements LineDao {
     private static Long seq = 0L;
-    private static List<LineEntity> lineEntities = new ArrayList<>();
+    private static List<Line> lines = new ArrayList<>();
 
     public MemoryLineDao() {
     }
 
     @Override
-    public LineEntity save(final LineEntity lineEntity) {
-        if (findByName(lineEntity.name()).isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 역 입니다.");
+    public Line save(final Line line) {
+        if (findByName(line.name()).isPresent()) {
+            throw new IllegalArgumentException("[ERROR] 이미 등록된 역 입니다.");
         }
-        LineEntity persistLineEntity = createNewObject(lineEntity);
-        lineEntities.add(persistLineEntity);
-        return persistLineEntity;
+        Line persistLine = createNewObject(line);
+        lines.add(persistLine);
+        return persistLine;
     }
 
     @Override
-    public List<LineEntity> findAll() {
-        return lineEntities;
+    public List<Line> findAll() {
+        return lines;
     }
 
-    private LineEntity createNewObject(final LineEntity lineEntity) {
-        Field field = ReflectionUtils.findField(LineEntity.class, "id");
+    private Line createNewObject(final Line line) {
+        Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, lineEntity, ++seq);
-        return lineEntity;
+        ReflectionUtils.setField(field, line, ++seq);
+        return line;
     }
 
     @Override
-    public Optional<LineEntity> findById(final Long id) {
-        return lineEntities.stream()
+    public Optional<Line> findById(final Long id) {
+        return lines.stream()
                 .filter(line -> line.sameId(id))
                 .findAny();
     }
 
     @Override
-    public Optional<LineEntity> findByName(final String name) {
-        return lineEntities.stream()
+    public Optional<Line> findByName(final String name) {
+        return lines.stream()
                 .filter(line -> line.sameName(name))
                 .findAny();
     }
 
     @Override
     public void clear() {
-        lineEntities.clear();
+        lines.clear();
         seq = 0L;
     }
 
     @Override
     public void update(final Long id, final String name, final String color) {
-        LineEntity lineEntity = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        lineEntity.changeName(name);
-        lineEntity.changeColor(color);
+        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 노선입니다."));
+        line.changeName(name);
+        line.changeColor(color);
     }
 
     @Override
     public void delete(Long id) {
-        LineEntity findLineEntity = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        lineEntities.remove(findLineEntity);
+        Line findLine = findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 노선입니다."));
+        lines.remove(findLine);
     }
 }

@@ -1,16 +1,13 @@
 package wooteco.subway.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineInfo;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
-import wooteco.subway.dto.line.LineUpdateRequest;
 import wooteco.subway.service.LineService;
 
 import javax.validation.Valid;
@@ -38,9 +35,9 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        List<LineEntity> lineEntities = lineDao.findAll();
+        List<Line> line = lineDao.findAll();
         // TODO : 구간에 포함된 지하철 역 조회 로직
-        List<LineResponse> lineResponses = lineEntities.stream()
+        List<LineResponse> lineResponses = line.stream()
                 .map(it -> new LineResponse(it.id(), it.name(), it.color(), Collections.emptyList()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
@@ -48,8 +45,8 @@ public class LineController {
 
     @GetMapping("/{id:[\\d]+}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineEntity findLineEntity = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        LineResponse response = new LineResponse(findLineEntity.id(), findLineEntity.name(), findLineEntity.color(), Collections.emptyList());
+        Line findLine = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        LineResponse response = new LineResponse(findLine.id(), findLine.name(), findLine.color(), Collections.emptyList());
         return ResponseEntity.ok().body(response);
     }
 

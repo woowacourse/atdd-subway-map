@@ -17,12 +17,4 @@ class LineTest {
         assertThatCode(() -> new Line("신분당선", "bg-red-600"))
                 .doesNotThrowAnyException();
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"아마찌", "아마찌선!"})
-    @DisplayName("잘 못된 이름의 라인이 들어올 시 예외가 발생한다")
-    void createException(String name) {
-        assertThatThrownBy(() -> new Line(1L, name, "bg-red-600"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }

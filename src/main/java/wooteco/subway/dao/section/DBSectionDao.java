@@ -39,14 +39,13 @@ public class DBSectionDao implements SectionDao {
         String sql = "INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-                    PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-                    ps.setLong(1, sectionEntity.getLineId());
-                    ps.setLong(2, sectionEntity.getUpStationId());
-                    ps.setLong(3, sectionEntity.getDownStationId());
-                    ps.setInt(4, sectionEntity.getDistance());
-                    return ps;
-                },
-                keyHolder);
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, sectionEntity.getLineId());
+            ps.setLong(2, sectionEntity.getUpStationId());
+            ps.setLong(3, sectionEntity.getDownStationId());
+            ps.setInt(4, sectionEntity.getDistance());
+            return ps;
+        }, keyHolder);
 
         long newId = keyHolder.getKey().longValue();
         return new SectionEntity(newId, sectionEntity.getLineId(), sectionEntity.getUpStationId(), sectionEntity.getDownStationId(), sectionEntity.getDistance());
@@ -65,5 +64,15 @@ public class DBSectionDao implements SectionDao {
     @Override
     public void delete(Long id) {
 
+    }
+
+    @Override
+    public List<SectionEntity> findAllByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+        List<SectionEntity> sectionEntities = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId);
+        if (sectionEntities.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 노선에 구간이 등록되어 있지 않습니다.");
+        }
+        return sectionEntities;
     }
 }

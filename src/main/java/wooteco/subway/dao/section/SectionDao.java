@@ -13,4 +13,6 @@ public interface SectionDao {
     Optional<SectionEntity> findById(Long id);
 
     void delete(Long id);
+
+    List<SectionEntity> findAllByLineId(Long lineId);
 }
