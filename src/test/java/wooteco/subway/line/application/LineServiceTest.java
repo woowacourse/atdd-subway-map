@@ -48,7 +48,7 @@ class LineServiceTest {
     @DisplayName("노선 정상 저장된다")
     void save() {
         //given
-        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "화이트"));
+        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "bg-red-600"));
         when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(1L, 1L, 1L, 2L, 10));
         when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
         when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
@@ -75,25 +75,58 @@ class LineServiceTest {
     @DisplayName("노선에 포함된 구간을 찾는다")
     void findBy() {
         //given
-        when(lineDao.findById(1L)).thenReturn(Optional.of(new LineEntity(1L, "신분당선", "화이트")));
-        when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
-        when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
-        when(stationDao.findById(3L)).thenReturn(Optional.of(new Station(3L, "마찌역")));
-        when(stationDao.findById(4L)).thenReturn(Optional.of(new Station(4L, "검검역")));
-
+        baseLine();
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, 1L, 4L, 3L, 5),
-                new SectionEntity(3L, 1L, 1L, 4L, 5)));
+                new SectionEntity(3L, 1L, 1L, 4L, 7)));
 
         //when
         LineResponse response = lineService.findLine(1L);
 
         //then
         assertThat(response.getName()).isEqualTo("신분당선");
-        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "검검역", "마찌역" );
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "검검역", "마찌역");
+    }
+
+    @Test
+    @DisplayName("상행 종점 등록 로직")
+    void upwardEndPointRegistration() {
+        //given
+        baseLine();
+        long lineId = 1L;
+        long upStationId = 2L;
+        long downStationId = 1L;
+        int distance = 10;
+
+        when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(lineId, upStationId, downStationId, distance));
+        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
+                new SectionEntity(2L, lineId, 4L, 3L, 5),
+                new SectionEntity(3L, lineId, downStationId, 4L, 7),
+                new SectionEntity(4L, lineId, upStationId, downStationId, distance)
+                ));
+
+        //when
+        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+
+        LineResponse response = lineService.findLine(lineId);
+
+        //then
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("검프역", "아마찌역", "검검역", "마찌역");
+
+    }
+
+    private void baseLine() {
+        when(lineDao.findById(1L)).thenReturn(Optional.of(new LineEntity(1L, "신분당선", "bg-red-600")));
+        when(stationDao.findById(1L)).thenReturn(Optional.of(new Station(1L, "아마찌역")));
+        when(stationDao.findById(2L)).thenReturn(Optional.of(new Station(2L, "검프역")));
+        when(stationDao.findById(3L)).thenReturn(Optional.of(new Station(3L, "마찌역")));
+        when(stationDao.findById(4L)).thenReturn(Optional.of(new Station(4L, "검검역")));
     }
 
     private List<String> stationResponsesToString(List<StationResponse> response) {
-        return response.stream().map(StationResponse::getName).collect(Collectors.toList());
+        return response.stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
     }
 }

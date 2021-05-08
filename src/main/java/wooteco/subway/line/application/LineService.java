@@ -11,7 +11,10 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,60 +46,27 @@ public class LineService {
     public LineResponse findLine(final Long lineId) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
-        List<Section> sections = sectionEntities.stream()
-                .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
-                .collect(Collectors.toList());
+        Sections sections = new Sections(toSections(lineId, line));
 
-        Section headSection = findHeadSection(sections);
-        List<Section> sortedSections = toSortedSections(sections, headSection);
-
+        List<Section> sortedSections = sections.sortedSections();
         return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sortedSections));
-    }
-
-    private Section findHeadSection(final List<Section> sections) {
-        for (Section source : sections) {
-            if (matchesCount(sections, source) == 0) {
-                return source;
-            }
-        }
-        throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
-    }
-
-    private int matchesCount(List<Section> sections, Section source) {
-        Long headStationId = source.upStation().getId();
-        int checkCount = 0;
-        for (Section target : sections) {
-            if (source.equals(target)) {
-                continue;
-            }
-            if (headStationId.equals(target.upStation().getId()) || headStationId.equals(target.downStation().getId())) {
-                checkCount++;
-            }
-        }
-        return checkCount;
-    }
-
-    private List<Section> toSortedSections(List<Section> sections, Section headSection) {
-        List<Section> testSections = new LinkedList<>();
-        testSections.add(headSection);
-        for (int i = 0; i < sections.size(); i++) {
-            Section finalHeadSection = headSection;
-            Optional<Section> findSection = sections.stream()
-                    .filter(section -> !section.equals(finalHeadSection))
-                    .filter(section -> section.upStation().equals(finalHeadSection.downStation()))
-                    .findFirst();
-
-            if (findSection.isPresent()) {
-                testSections.add(findSection.get());
-                headSection = findSection.get();
-            }
-        }
-        return testSections;
     }
 
     @Transactional
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
+        LineEntity findLineEntity = findLineEntityById(lineId);
+        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+        Sections sections = new Sections(toSections(lineId, line));
+        Sections originSections = new Sections(sections.sections());
+
+        Station targetUpStation = findStationById(sectionAddRequest.getUpStationId());
+        Station targetDownStation = findStationById(sectionAddRequest.getDownStationId());
+        int targetDistance = sectionAddRequest.getDistance();
+
+        sections.upwardEndPointRegistration(line, targetUpStation, targetDownStation, targetDistance);
+
+        dirtyChecking(originSections, sections);
+
         // TODO : 예외
         //  lineId가 존재하는지
         //  line의 section에 upstationId와 downStationId 둘다 존재하는지 - 노선의 구간에 이미 등록되어있음
@@ -115,8 +85,28 @@ public class LineService {
         //  찾은 section의 distance를 sectionAddRequest의 distance를 뺀 값으로 수정한다.
 
         // TODO : section save
+    }
 
-        sectionDao.save(sectionAddRequest.toEntity(lineId));
+    private void dirtyChecking(final Sections originSections, final Sections sections) {
+        List<Section> changedSections = originSections.changedSections(sections);
+        for (Section section : changedSections) {
+            SectionEntity sectionEntity = new SectionEntity(section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
+            if (sectionDao.findByLineIdWithUpStationId(sectionEntity.getLineId(), sectionEntity.getUpStationId()).isPresent()) {
+                sectionDao.deleteByLineIdWithUpStationId(sectionEntity.getLineId(), sectionEntity.getUpStationId());
+            }
+
+            if (sectionDao.findByLineIdWithDownStationId(sectionEntity.getLineId(), sectionEntity.getDownStationId()).isPresent()) {
+                sectionDao.deleteByLineIdWithDownStationId(sectionEntity.getLineId(), sectionEntity.getDownStationId());
+            }
+            sectionDao.save(sectionEntity);
+        }
+    }
+
+    private List<Section> toSections(final Long lineId, final Line line) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
+        return sectionEntities.stream()
+                .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
+                .collect(Collectors.toList());
     }
 
     private List<StationResponse> toStationsResponses(final List<Section> sections) {

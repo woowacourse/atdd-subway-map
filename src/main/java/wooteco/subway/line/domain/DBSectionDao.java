@@ -76,16 +76,45 @@ public class DBSectionDao implements SectionDao {
     }
 
     @Override
-    public Optional<SectionEntity> findByLineIdWithUpStationId(final Long lineId, final  Long id) {
+    public Optional<SectionEntity> findByLineIdWithUpStationId(final Long lineId, final Long id) {
         String sql = "SELECT * FROM SECTION" +
                 " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
                 " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
-        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper,lineId, id);
+        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, id);
 
         if (lineEntity.isEmpty()) {
             return Optional.empty();
         }
 
         return Optional.ofNullable(lineEntity.get(0));
+    }
+
+    @Override
+    public void deleteByLineIdWithUpStationId(Long lineId, Long upStationId) {
+        String sql = "DELETE FROM SECTION" +
+                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
+                " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
+        jdbcTemplate.update(sql, lineId, upStationId);
+    }
+
+    @Override
+    public Optional<SectionEntity> findByLineIdWithDownStationId(Long lineId, Long downStationId) {
+        String sql = "SELECT * FROM SECTION" +
+                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
+                " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
+        List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, downStationId);
+
+        if (lineEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(lineEntity.get(0));    }
+
+    @Override
+    public void deleteByLineIdWithDownStationId(Long lineId, Long downStationId) {
+        String sql = "DELETE FROM SECTION" +
+                " LEFT OUTER JOIN LINE ON SECTION.line_id = LINE.id" +
+                " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
+        jdbcTemplate.update(sql, lineId, downStationId);
     }
 }

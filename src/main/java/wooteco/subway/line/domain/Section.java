@@ -75,4 +75,8 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
+    public boolean sameUpStation(Station targetStation) {
+        return this.upStation.equals(targetStation);
+    }
 }
