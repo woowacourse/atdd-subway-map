@@ -33,11 +33,11 @@ public class StationController {
         List<StationResponse> stationResponses = stationService.findAll().stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }

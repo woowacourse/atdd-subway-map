@@ -33,24 +33,24 @@ public class LineController {
         List<LineResponse> lineResponses = lineService.findAll().stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
         LineResponse lineResponse = LineResponse.from(line);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
+    public ResponseEntity<Void> updateLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
         Line line = Line.from(lineRequest);
         lineService.update(line, id);
         return ResponseEntity.ok().build();
