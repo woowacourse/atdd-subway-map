@@ -1,14 +1,12 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.controller.dto.LineRequest;
-
 public class Line {
     private final Long id;
     private final String name;
     private final String color;
 
-    public Line(Long id, LineRequest lineRequest) {
-        this(id, lineRequest.getName(), lineRequest.getColor());
+    public Line(final Long id, final Line line) {
+        this(id, line.getName(), line.color);
     }
 
     public Line(Long id, String name, String color) {

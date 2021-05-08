@@ -5,9 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.service.LineService;
 
 import java.net.URI;
 import java.util.List;
@@ -17,20 +16,16 @@ import java.util.stream.Collectors;
 @RestController
 public class LineController {
 
-    private final LineDao lineDao;
+    private final LineService lineService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        boolean existsName = lineDao.findByName(lineRequest.getName()).isPresent();
-        if (existsName) {
-            throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
-        }
-
-        final Line newLine = lineDao.save(lineRequest);
+        final Line line = lineRequest.toEntity();
+        final Line newLine = lineService.save(line);
         final LineResponse lineResponse = new LineResponse(newLine);
         final URI uri = URI.create("/lines/" + newLine.getId());
         return ResponseEntity.created(uri).body(lineResponse);
@@ -38,35 +33,30 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<LineResponse> lineResponses = lineDao.findAll()
-                                                        .stream()
-                                                        .map(LineResponse::new)
-                                                        .collect(Collectors.toList());
+        final List<LineResponse> lineResponses = lineService.findAll()
+                                                            .stream()
+                                                            .map(LineResponse::new)
+                                                            .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        final Line line = lineDao.findById(id)
-                                 .orElseThrow(() -> new IllegalArgumentException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
+        final Line line = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> editLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        boolean existsName = lineDao.findByName(lineRequest.getName()).isPresent();
-        if (existsName) {
-            throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
-        }
-
-        lineDao.update(id, lineRequest);
+        final Line line = lineRequest.toEntity();
+        lineService.update(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+        lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
