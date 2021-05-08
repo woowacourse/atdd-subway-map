@@ -1,17 +1,14 @@
 package wooteco.subway.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.ErrorResponse;
-import wooteco.subway.dto.StationRequest;
-import wooteco.subway.dto.StationResponse;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.domain.Station;
+import wooteco.subway.dto.station.StationRequest;
+import wooteco.subway.dto.station.StationResponse;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +17,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/stations")
 public class StationController {
     private final StationDao stationDao;
-    private final Logger logger = LoggerFactory.getLogger(StationController.class);
 
     public StationController(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@Valid  @RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
@@ -43,7 +39,7 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:[\\d]+}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationDao.delete(id);
         return ResponseEntity.noContent().build();

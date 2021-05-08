@@ -9,10 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.controller.AcceptanceTest;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.service.LineService;
-import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.line.LineResponse;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
 
@@ -36,14 +35,14 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Autowired
     private LineService lineService;
 
-    @BeforeEach
-    void init() {
-        //given
-        Station station = stationDao.save(new Station("백기역"));
-        Station station2 = stationDao.save(new Station("흑기역"));
-        Station station3 = stationDao.save(new Station("아마찌역"));
-        Station station4 = stationDao.save(new Station("검프역"));
-    }
+//    @BeforeEach
+//    void init() {
+//        //given
+//        Station station = stationDao.save(new Station("백기역"));
+//        Station station2 = stationDao.save(new Station("흑기역"));
+//        Station station3 = stationDao.save(new Station("아마찌역"));
+//        Station station4 = stationDao.save(new Station("검프역"));
+//    }
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -70,12 +69,35 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("노선을 생성 시 필요한 정보가 빠졌을 경우 예외가 발생한다.")
+    @Test
+    void createStationException1() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("distance", "10");
+
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("기존에 존재하는 노선역 이름으로 노선을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
+        params.put("name", "9호선");
         params.put("color", "bg-red-600");
 
         RestAssured.given().log().all()
@@ -182,36 +204,45 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "백기선");
-        params1.put("color", "bg-red-600");
-
-        // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "흑기선");
         params2.put("color", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        long newId = response1.body().jsonPath().getLong("id");
+        long dummyId = 1L;
 
         ExtractableResponse<Response> response2 = RestAssured.given().log().all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/{id}", newId)
+                .put("/lines/{id}", dummyId)
                 .then().log().all()
                 .extract();
 
         // then
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선을 수정시 필요한 정보가 빠졌을 경우 예외가 발생한다.")
+    @Test
+    void updateLineException() {
+        // given
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-red-600");
+
+        // when
+        long dummyId = 1L;
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/{id}", dummyId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선을 제거한다.")

@@ -9,13 +9,12 @@ import org.mockito.MockitoAnnotations;
 import wooteco.subway.dao.entity.LineEntity;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.section.SectionDao;
-import wooteco.subway.dto.LineRequest;
-import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionAddRequest;
+import wooteco.subway.dto.line.LineRequest;
+import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionAddRequest;
 import wooteco.subway.dao.entity.SectionEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
-import wooteco.subway.service.LineService;
 
 import java.util.Optional;
 
