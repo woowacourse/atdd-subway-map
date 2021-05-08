@@ -113,7 +113,33 @@ class LineServiceTest {
         //then
         assertThat(response.getName()).isEqualTo("신분당선");
         assertThat(stationResponsesToString(response.getStations())).containsExactly("검프역", "아마찌역", "검검역", "마찌역");
+    }
 
+    @Test
+    @DisplayName("하행 종점 등록 로직")
+    void downwardEndPointRegistration() {
+        //given
+        baseLine();
+        long lineId = 1L;
+        long upStationId = 3L;
+        long downStationId = 2L;
+        int distance = 10;
+
+        when(sectionDao.save(any(SectionEntity.class))).thenReturn(new SectionEntity(lineId, upStationId, downStationId, distance));
+        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
+                new SectionEntity(2L, lineId, 4L, 3L, 5),
+                new SectionEntity(3L, lineId, 1L, 4L, 7),
+                new SectionEntity(4L, lineId, upStationId, downStationId, distance)
+        ));
+
+        //when
+        lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance));
+
+        LineResponse response = lineService.findLine(lineId);
+
+        //then
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "검검역", "마찌역", "검프역");
     }
 
     private void baseLine() {

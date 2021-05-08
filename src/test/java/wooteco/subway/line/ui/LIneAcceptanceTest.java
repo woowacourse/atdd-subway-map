@@ -315,6 +315,39 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station3.getName(), station1.getName(), station2.getName());
     }
 
+    @Test
+    @DisplayName("허향 종점역을 저장한다")
+    void downwardEndPointRegistration() {
+        //given
+        String uri = "/lines/{id}/sections";
+        String findUri = "/lines/{id}";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(station2.getId()));
+        params.put("downStationId", String.valueOf(station3.getId()));
+        params.put("distance", "5");
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(uri, line.getId())
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get(findUri, line.getId())
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.jsonPath().getLong("id")).isEqualTo(line.getId());
+        assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station1.getName(), station2.getName(), station3.getName());
+    }
+
     private List<String> stationResponsesToStrings(List<StationResponse> response) {
         return response.stream()
                 .map(StationResponse::getName)

@@ -48,16 +48,46 @@ public class Sections {
         }
     }
 
-    private Section headSection() {
+    public void downwardEndPointRegistration(Line line, Station targetUpStation, Station targetDownStation, int targetDistance) {
+        Section tailSection = tailSection();
+        if (tailSection.sameDownStation(targetUpStation)) {
+            this.sections.add(new Section(line, targetUpStation, targetDownStation, targetDistance));
+        }
+    }
+
+    private Section tailSection() {
         for (Section source : sections) {
-            if (matchesCount(sections, source) == 0) {
+            if (tailMatchesCount(source) == 0) {
                 return source;
             }
         }
         throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
     }
 
-    private int matchesCount(List<Section> sections, Section section) {
+    private Section headSection() {
+        for (Section source : sections) {
+            if (headMatchesCount(source) == 0) {
+                return source;
+            }
+        }
+        throw new IllegalStateException("구간이 제대로 등록되어있지 않음!");
+    }
+
+    private int tailMatchesCount(Section section) {
+        Long tailStationId = section.downStation().getId();
+        int checkCount = 0;
+        for (Section target : sections) {
+            if (section.equals(target)) {
+                continue;
+            }
+            if (tailStationId.equals(target.upStation().getId()) || tailStationId.equals(target.downStation().getId())) {
+                checkCount++;
+            }
+        }
+        return checkCount;
+    }
+
+    private int headMatchesCount(Section section) {
         Long headStationId = section.upStation().getId();
         int checkCount = 0;
         for (Section target : sections) {

@@ -79,4 +79,8 @@ public class Section {
     public boolean sameUpStation(Station targetStation) {
         return this.upStation.equals(targetStation);
     }
+
+    public boolean sameDownStation(Station targetStation) {
+        return this.downStation.equals(targetStation);
+    }
 }

@@ -64,6 +64,7 @@ public class LineService {
         int targetDistance = sectionAddRequest.getDistance();
 
         sections.upwardEndPointRegistration(line, targetUpStation, targetDownStation, targetDistance);
+        sections.downwardEndPointRegistration(line, targetUpStation, targetDownStation, targetDistance);
 
         dirtyChecking(originSections, sections);
 
