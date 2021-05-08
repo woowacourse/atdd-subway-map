@@ -41,25 +41,26 @@ public class LineController {
         List<LineResponse> lineResponses = lines.stream()
             .map(it -> new LineResponse(it.getId(), it.getName(), it.getColor()))
             .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineDao.findById(id);
         LineResponse lineResponse = new LineResponse(line);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+        @RequestBody LineRequest lineRequest) {
         Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
     }
