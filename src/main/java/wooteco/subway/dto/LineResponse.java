@@ -3,6 +3,7 @@ package wooteco.subway.dto;
 import wooteco.subway.domain.line.Line;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class LineResponse {
@@ -25,8 +26,12 @@ public class LineResponse {
         this(id, name, color, new ArrayList<>());
     }
 
+    public static LineResponse of(Line line, List<StationResponse> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
     public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
     }
 
     public Long getId() {

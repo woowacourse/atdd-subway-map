@@ -4,9 +4,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 import java.net.URI;
 import java.util.List;
@@ -17,16 +20,24 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        LineResponse lineResponse = LineResponse.from(savedLine);
-        URI uri = URI.create("/lines/" + savedLine.getId());
+        long lineId = savedLine.getId();
+        Sections sections = sectionService.findSectionsOfLine(lineId);
+        List<StationResponse> stationResponses = sections.getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(savedLine, stationResponses);
+        URI uri = URI.create("/lines/" + lineId);
         return ResponseEntity.created(uri)
                 .body(lineResponse);
     }
@@ -43,7 +54,12 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = LineResponse.from(line);
+        Sections sections = sectionService.findSectionsOfLine(id);
+        List<StationResponse> stationResponses = sections.getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(line, stationResponses);
         return ResponseEntity.ok(lineResponse);
     }
 
