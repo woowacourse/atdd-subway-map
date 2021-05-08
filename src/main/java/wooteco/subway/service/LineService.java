@@ -1,6 +1,6 @@
 package wooteco.subway.service;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
@@ -21,11 +21,7 @@ public class LineService {
     }
 
     public LineResponse create(String color, String name) {
-        try {
-            return new LineResponse(lineDao.insert(color, name));
-        } catch (DataIntegrityViolationException e) {
-            throw new LineDuplicateException();
-        }
+        return new LineResponse(lineDao.insert(color, name));
     }
 
     public List<LineResponse> findAllById() {
@@ -42,11 +38,7 @@ public class LineService {
     }
 
     public void updateById(Long id, String color, String name) {
-        try {
-            lineDao.update(id, color, name);
-        } catch (DataIntegrityViolationException e) {
-            throw new LineDuplicateException();
-        }
+        lineDao.update(id, color, name);
     }
 
     public void deleteById(Long id) {
