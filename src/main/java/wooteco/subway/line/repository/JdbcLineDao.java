@@ -9,24 +9,17 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
 public class JdbcLineDao implements LineRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Line> lineRowMapper = new RowMapper<Line>() {
-        @Override
-        public Line mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-            );
-        }
-    };
+    private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("color")
+    );
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

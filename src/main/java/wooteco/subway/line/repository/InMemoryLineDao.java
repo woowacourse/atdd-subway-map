@@ -4,17 +4,19 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class InMemoryLineDao implements LineRepository {
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static Map<Long, Line> lines = new ConcurrentHashMap<>();
 
     @Override
     public Line save(Line line) {
         Line persistLine = createNewObject(line);
-        lines.add(persistLine);
+        lines.put(persistLine.getId(), persistLine);
         return persistLine;
     }
 
@@ -27,25 +29,29 @@ public class InMemoryLineDao implements LineRepository {
 
     @Override
     public List<Line> findAll() {
-        return lines;
+        return lines.keySet().stream()
+                .sorted()
+                .map(id -> lines.get(id))
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean validateDuplicateName(String name) {
-        return lines.stream()
+        return lines.values().stream()
                 .anyMatch(line -> line.isSameName(name));
     }
 
     @Override
     public Line findById(Long id) {
-        return lines.stream()
+        return lines.values().stream()
                 .filter(line -> line.isSameId(id))
-                .findFirst().orElseThrow(IllegalArgumentException::new);
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     @Override
     public boolean validateUsableName(String oldName, String newName) {
-        return lines.stream()
+        return lines.values().stream()
                 .filter(line -> !line.isSameName(oldName))
                 .anyMatch(line -> line.isSameName(newName));
     }
@@ -53,7 +59,7 @@ public class InMemoryLineDao implements LineRepository {
     @Override
     public void update(Line updatedLine) {
         Line line = findByIdIfExist(updatedLine.getId());
-        lines.stream()
+        lines.values().stream()
                 .filter(line::equals)
                 .findAny()
                 .ifPresent(l -> l.update(updatedLine));
