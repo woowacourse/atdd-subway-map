@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixture.makeLine;
+import static wooteco.subway.Fixture.makeStation;
 
 @JdbcTest
 @Rollback
@@ -116,5 +117,79 @@ class LineDaoTest {
                 .map(Line::getId)
                 .collect(Collectors.toList()))
                 .containsExactly(expected_id);
+    }
+
+    @Test
+    @DisplayName("id로 노선명 조회")
+    void findNameById() {
+        //given
+        final Long id = lineDao.insert(makeLine("bg-red-100", "여객선"));
+
+        //when
+        final String name = lineDao.findNameById(id);
+
+        //then
+        assertThat(name).isEqualTo("여객선");
+    }
+
+    @Test
+    @DisplayName("id로 색 조회")
+    void findColorById() {
+        //given
+        final Long id = lineDao.insert(makeLine("bg-red-100", "여객선"));
+
+        //when
+        final String color = lineDao.findColorById(id);
+
+        //then
+        assertThat(color).isEqualTo("bg-red-100");
+    }
+
+    @Test
+    @DisplayName("같은 이름을 가진 노선이 존재하지 않을 때 개수 조회")
+    void countsByName1() {
+        //given - when
+        final int cnt = lineDao.countsByName("테스트노선");
+
+        //then
+        assertThat(cnt).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
+    void countsByName2() {
+        //given
+        final Long id = lineDao.insert(makeLine("bg-red-100","잠실역"));
+        final String name = lineDao.findNameById(id);
+
+        //when
+        final int cnt = lineDao.countsByName(name);
+
+        //then
+        assertThat(cnt).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("같은 색을 가진 노선이 존재하지 않을 때 개수 조회")
+    void countsByColor1() {
+        //given - when
+        final int cnt = lineDao.countsByColor("bg-red-100");
+
+        //then
+        assertThat(cnt).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
+    void countsByColor2() {
+        //given
+        final Long id = lineDao.insert(makeLine("bg-red-100","잠실역"));
+        final String color = lineDao.findColorById(id);
+
+        //when
+        final int cnt = lineDao.countsByColor(color);
+
+        //then
+        assertThat(cnt).isEqualTo(1);
     }
 }

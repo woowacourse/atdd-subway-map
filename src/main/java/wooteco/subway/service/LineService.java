@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
+import wooteco.subway.exception.line.LineColorDuplicateException;
+import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.service.dto.LineDto;
 
@@ -20,6 +22,7 @@ public class LineService {
     }
 
     public LineDto create(LineRequest lineRequest) {
+        validate(lineRequest);
         final Long id = lineDao.insert(lineRequest.toEntity());
         final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
         return new LineDto(line);
@@ -43,5 +46,24 @@ public class LineService {
 
     public void deleteById(Long id) {
         lineDao.delete(id);
+    }
+
+    private void validate(LineRequest lineRequest) {
+        validateDuplicateName(lineRequest.getName());
+        validateDuplicateColor(lineRequest.getColor());
+    }
+
+    private void validateDuplicateName(String name) {
+        final int cnt = lineDao.countsByName(name);
+        if (cnt > 0) {
+            throw new LineNameDuplicateException();
+        }
+    }
+
+    private void validateDuplicateColor(String color) {
+        final int cnt = lineDao.countsByColor(color);
+        if (cnt > 0) {
+            throw new LineColorDuplicateException();
+        }
     }
 }

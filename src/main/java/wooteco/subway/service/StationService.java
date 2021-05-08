@@ -40,7 +40,7 @@ public class StationService {
 
     private void validate(StationRequest stationRequest) {
         final String name = stationRequest.getName();
-        final int counts = stationDao.countsBy(name);
+        final int counts = stationDao.countsByName(name);
         if (counts > 0) {
             throw new StationDuplicateException();
         }

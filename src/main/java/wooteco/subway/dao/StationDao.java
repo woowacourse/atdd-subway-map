@@ -68,7 +68,7 @@ public class StationDao {
         jdbcTemplate.update(query, id);
     }
 
-    public int countsBy(String name) {
+    public int countsByName(String name) {
         String query = "SELECT COUNT(name) FROM station WHERE name =?";
         return jdbcTemplate.queryForObject(query, Integer.class, name);
     }

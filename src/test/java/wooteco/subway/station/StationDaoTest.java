@@ -127,7 +127,7 @@ public class StationDaoTest {
     @DisplayName("같은 이름을 가진 역이 존재하지 않을 때 개수 조회")
     void countsBy1() {
         //given - when
-        final int cnt = stationDao.countsBy("테스트역");
+        final int cnt = stationDao.countsByName("테스트역");
 
         //then
         assertThat(cnt).isEqualTo(0);
@@ -141,7 +141,7 @@ public class StationDaoTest {
         final String name = stationDao.findNameById(id);
 
         //when
-        final int cnt = stationDao.countsBy(name);
+        final int cnt = stationDao.countsByName(name);
 
         //then
         assertThat(cnt).isEqualTo(1);

@@ -49,6 +49,16 @@ public class LineDao {
                 .findAny();
     }
 
+    public String findNameById(Long id) {
+        String query = "SELECT name FROM line WHERE id=?";
+        return jdbcTemplate.queryForObject(query, String.class, id);
+    }
+
+    public String findColorById(Long id) {
+        String query = "SELECT color FROM line WHERE id=?";
+        return jdbcTemplate.queryForObject(query, String.class, id);
+    }
+
     public void update(Long id, Line line) {
         String query = "UPDATE line SET color = ?, name = ? WHERE id = ?";
         jdbcTemplate.update(query, line.getColor(), line.getName(), id);
@@ -57,5 +67,15 @@ public class LineDao {
     public void delete(Long id) {
         String query = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    public int countsByName(String name) {
+        String query = "SELECT COUNT(name) FROM line WHERE name =?";
+        return jdbcTemplate.queryForObject(query, Integer.class, name);
+    }
+
+    public int countsByColor(String color) {
+        String query = "SELECT COUNT(name) FROM line WHERE color =?";
+        return jdbcTemplate.queryForObject(query, Integer.class, color);
     }
 }
