@@ -16,18 +16,19 @@ public class StationDaoJdbcTemplate implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Station> stationRowMapper;
 
     public StationDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
 
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
             .withTableName("STATION").usingGeneratedKeyColumns("id");
+    }
 
-        this.stationRowMapper = (rs, rowNum) -> {
+    private RowMapper<Station> rowMapperForStation() {
+        return (rs, rowNum) -> {
             Long foundId = rs.getLong("id");
             final String name = rs.getString("name");
-            return new Station(foundId, name);
+            return Station.create(foundId, name);
         };
     }
 
@@ -36,19 +37,19 @@ public class StationDaoJdbcTemplate implements StationDao {
         Map<String, String> map = new HashMap<>();
         map.put("name", station.getName());
         final long id = jdbcInsert.executeAndReturnKey(map).longValue();
-        return new Station(id, station.getName());
+        return Station.create(id, station.getName());
     }
 
     @Override
     public List<Station> findAll() {
         String sql = "SELECT * FROM station";
-        return jdbcTemplate.query(sql, stationRowMapper);
+        return jdbcTemplate.query(sql, rowMapperForStation());
     }
 
     @Override
     public Optional<Station> findStationByName(String name) {
         String sql = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.query(sql, stationRowMapper, name).stream().findAny();
+        return jdbcTemplate.query(sql, rowMapperForStation(), name).stream().findAny();
     }
 
     @Override

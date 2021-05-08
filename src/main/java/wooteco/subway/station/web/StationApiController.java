@@ -1,54 +1,56 @@
-package wooteco.subway.station;
+package wooteco.subway.station.web;
 
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationService;
 
 @RestController
-public class StationController {
+@RequiredArgsConstructor
+public class StationApiController {
 
-    private final StationDao stationDao;
-
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
-    }
+    private final StationService stationService;
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(
-        @RequestBody StationRequest stationRequest) {
-        String name = stationRequest.getName();
-        if (stationDao.findStationByName(name).isPresent()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity createStation(
+        @RequestBody @Valid StationRequest stationRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult);
         }
-        Station station = new Station(name);
-        Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(),
-            newStation.getName());
+        final Station newStation =
+            stationService.createStation(Station.create(stationRequest.getName()));
+
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
-            .body(stationResponse);
+            .body(StationResponse.create(newStation));
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
-            .collect(Collectors.toList());
+        List<Station> stations = stationService.findAll();
+
+        List<StationResponse> stationResponses =
+            stations.stream()
+                .map(StationResponse::create)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationDao.remove(id);
+        stationService.remove(id);
         return ResponseEntity.noContent().build();
     }
 }
