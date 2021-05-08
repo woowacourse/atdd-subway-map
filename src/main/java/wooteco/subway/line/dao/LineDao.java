@@ -1,6 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
 
 import java.util.List;
 import java.util.Optional;

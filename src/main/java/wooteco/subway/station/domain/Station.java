@@ -1,6 +1,6 @@
-package wooteco.subway.station;
+package wooteco.subway.station.domain;
 
-import wooteco.subway.exception.StationSuffixException;
+import wooteco.subway.exception.station.StationSuffixException;
 
 import java.util.Objects;
 

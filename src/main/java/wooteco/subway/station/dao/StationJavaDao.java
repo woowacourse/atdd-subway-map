@@ -1,7 +1,8 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.StationDuplicationException;
+import wooteco.subway.exception.station.StationDuplicationException;
+import wooteco.subway.station.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -1,8 +1,9 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.exception.LineDuplicationException;
-import wooteco.subway.exception.NoLineException;
+import wooteco.subway.exception.line.LineDuplicationException;
+import wooteco.subway.exception.line.NoLineException;
+import wooteco.subway.line.domain.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

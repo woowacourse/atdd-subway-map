@@ -1,7 +1,10 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.LineDuplicationException;
+import wooteco.subway.exception.line.LineDuplicationException;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
 
 import java.util.List;
 

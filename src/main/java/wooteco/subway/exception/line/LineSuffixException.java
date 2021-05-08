@@ -1,6 +1,7 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.line;
 
 import org.springframework.http.HttpStatus;
+import wooteco.subway.exception.SubwayException;
 
 public class LineSuffixException extends SubwayException {
     public LineSuffixException() {

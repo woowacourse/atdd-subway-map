@@ -1,6 +1,6 @@
-package wooteco.subway.line;
+package wooteco.subway.line.domain;
 
-import wooteco.subway.exception.LineSuffixException;
+import wooteco.subway.exception.line.LineSuffixException;
 
 import java.util.Objects;
 
