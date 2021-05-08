@@ -1,7 +1,6 @@
 package wooteco.subway.station.dao;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,10 +15,6 @@ import wooteco.subway.station.model.Station;
 
 @Repository
 public class StationDao {
-
-    private static Long seq = 0L;
-    private static List<Station> stations = new ArrayList<>();
-
     private final JdbcTemplate jdbcTemplate;
 
     public StationDao(JdbcTemplate jdbcTemplate) {
