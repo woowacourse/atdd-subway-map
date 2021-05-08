@@ -11,10 +11,10 @@ import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
-import wooteco.subway.dto.section.SectionAddRequest;
-import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.dto.SectionEntity;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.dto.section.SectionRequest;
 
 import java.util.Optional;
 
@@ -60,8 +60,8 @@ class LineEntityServiceTest {
     @DisplayName("노선에 구간을 추가한다.")
     void addSection() {
         Long lineId = 1L;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, 2L, 10);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
         when(sectionDao.save(any(SectionEntity.class))).thenReturn(null);
-        lineService.addSection(1L, sectionAddRequest);
+        lineService.addSection(1L, sectionRequest);
     }
 }

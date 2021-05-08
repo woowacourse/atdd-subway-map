@@ -8,6 +8,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.line.LineInfo;
 import wooteco.subway.dto.line.LineRequest;
 import wooteco.subway.dto.line.LineResponse;
+import wooteco.subway.dto.section.SectionRequest;
 import wooteco.subway.service.LineService;
 
 import javax.validation.Valid;
@@ -61,5 +62,10 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineDao.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id:[\\d]+}/sections")
+    public ResponseEntity addSection(@Valid @RequestBody SectionRequest sectionRequest) {
+        return ResponseEntity.ok().build();
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.dto.SectionEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;

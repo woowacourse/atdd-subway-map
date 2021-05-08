@@ -1,6 +1,6 @@
 package wooteco.subway.dao.section;
 
-import wooteco.subway.dao.entity.SectionEntity;
+import wooteco.subway.dao.dto.SectionEntity;
 
 import java.util.List;
 import java.util.Optional;

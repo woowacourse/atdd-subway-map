@@ -7,6 +7,10 @@ public class Station {
     public Station() {
     }
 
+    public Station(Long id) {
+        this(id, "");
+    }
+
     public Station(final String name) {
         this(0L, name);
     }
@@ -26,6 +30,10 @@ public class Station {
 
     public boolean sameId(final Long id) {
         return this.id.equals(id);
+    }
+
+    public boolean sameId(final Station station) {
+        return this.id.equals(station.id);
     }
 
     public boolean sameName(final String name) {
