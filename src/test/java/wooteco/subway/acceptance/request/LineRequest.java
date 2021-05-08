@@ -39,4 +39,23 @@ public class LineRequest {
         params.put("distance", "5");
         return params;
     }
+
+    public static ExtractableResponse<Response> createSectionRequest(Map<String, String> params, Long lineId) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    public static Map<String, String> section1() {
+        Map<String, String> params = new HashMap<>();
+        params.put("downStationId", "4");
+        params.put("upStationId", "2");
+        params.put("distance", "10");
+        return params;
+    }
 }

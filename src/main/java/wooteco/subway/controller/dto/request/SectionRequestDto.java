@@ -1,14 +1,14 @@
 package wooteco.subway.controller.dto.request;
 
-public class SectionRequest {
+public class SectionRequestDto {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionRequest() {
+    public SectionRequestDto() {
     }
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public SectionRequestDto(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

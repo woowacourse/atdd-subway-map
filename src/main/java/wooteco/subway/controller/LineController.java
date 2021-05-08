@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.controller.dto.request.LineRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.service.LineService;
@@ -25,7 +25,7 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineCreateResponseDto> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineCreateResponseDto> createLine(@RequestBody LineRequestDto lineRequest) {
         LineCreateResponseDto lineResponse = lineService.createLine(lineRequest);
         return ResponseEntity.created(
                 URI.create("/lines/" + lineResponse.getId())
@@ -37,13 +37,13 @@ public class LineController {
         List<LineFindAllResponseDto> lineResponses = lineService.showLines();
         return ResponseEntity.ok().body(lineResponses);
     }
-//
+
 //    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
 //        LineResponse lineResponse = lineService.showLine(lineId);
 //        return ResponseEntity.ok().body(lineResponse);
 //    }
-//
+
 //    @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequest request) {
 //        lineService.editLine(lineId, request);

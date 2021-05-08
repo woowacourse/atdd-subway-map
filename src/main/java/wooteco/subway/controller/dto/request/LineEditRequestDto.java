@@ -1,13 +1,13 @@
 package wooteco.subway.controller.dto.request;
 
-public class LineEditRequest {
+public class LineEditRequestDto {
     private String name;
     private String color;
 
-    public LineEditRequest() {
+    public LineEditRequestDto() {
     }
 
-    public LineEditRequest(String name, String color) {
+    public LineEditRequestDto(String name, String color) {
         this.name = name;
         this.color = color;
     }
