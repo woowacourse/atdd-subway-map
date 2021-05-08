@@ -30,14 +30,8 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line savedLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        long lineId = savedLine.getId();
-        Sections sections = sectionService.findSectionsOfLine(lineId);
-        List<StationResponse> stationResponses = sections.getStations()
-                .stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
-        LineResponse lineResponse = LineResponse.of(savedLine, stationResponses);
-        URI uri = URI.create("/lines/" + lineId);
+        LineResponse lineResponse = LineResponse.from(savedLine);
+        URI uri = URI.create("/lines/" + savedLine.getId());
         return ResponseEntity.created(uri)
                 .body(lineResponse);
     }

@@ -16,10 +16,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.StationService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,18 +40,24 @@ class LineAcceptanceTest {
     @Autowired
     private LineService lineService;
 
+    @Autowired
+    private StationService stationService;
+
     private List<Long> testLineIds;
+    private List<Long> testStationIds;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
         testLineIds = new ArrayList<>();
+        testStationIds = new ArrayList<>();
     }
 
     @AfterEach
     void tearDown() {
         try {
             testLineIds.forEach(testLineId -> lineService.deleteLine(testLineId));
+            testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
         } catch (SubwayException ignored) {
         }
     }
@@ -79,7 +88,9 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() throws Exception {
-        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest = new LineRequest("2호선", "red", upStationId, downStationId, 7);
         ValidatableResponse validatableResponse = postLineApi(lineRequest);
         long id = testLineIds.get(0);
 
@@ -90,10 +101,19 @@ class LineAcceptanceTest {
                 .body(is(responseBody));
     }
 
+    private long createStationApi(String name) {
+        long id = stationService.createStation(name)
+                .getId();
+        testStationIds.add(id);
+        return id;
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 등록을 시도한다.")
     @Test
     void cannotCreateLine() throws Exception {
-        LineRequest lineRequest = new LineRequest("2호선", "red", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest = new LineRequest("2호선", "red", upStationId, downStationId, 7);
         postLineApi(lineRequest);
 
         postLineApi(lineRequest)
@@ -103,8 +123,10 @@ class LineAcceptanceTest {
     @DisplayName("전체 노선을 조회한다.")
     @Test
     void showLines() throws Exception {
-        LineRequest lineRequest1 = new LineRequest("3호선", "red", 1L, 3L, 7);
-        LineRequest lineRequest2 = new LineRequest("4호선", "blue", 2L, 3L, 4);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest1 = new LineRequest("3호선", "red", upStationId, downStationId, 7);
+        LineRequest lineRequest2 = new LineRequest("4호선", "blue", upStationId, downStationId, 4);
         postLineApi(lineRequest1);
         postLineApi(lineRequest2);
 
@@ -125,11 +147,15 @@ class LineAcceptanceTest {
     @DisplayName("아이디로 노선을 조회한다.")
     @Test
     void showLine() throws JsonProcessingException {
-        LineRequest lineRequest = new LineRequest("5호선", "red", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest = new LineRequest("5호선", "red", upStationId, downStationId, 7);
         postLineApi(lineRequest);
 
         long id = testLineIds.get(0);
-        LineResponse lineResponse = new LineResponse(id, "5호선", "red");
+        List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
+                new StationResponse(downStationId, "강남역"));
+        LineResponse lineResponse = new LineResponse(id, "5호선", "red", stationResponses);
         String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
 
         RestAssured.given().log().all()
