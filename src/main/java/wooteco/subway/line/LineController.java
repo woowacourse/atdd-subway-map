@@ -51,7 +51,7 @@ public class LineController {
     }
 
     @PutMapping(value = "/lines/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
 
         final Optional<Line> lineByName = lineDao.findLineByName(lineRequest.getName());
@@ -64,7 +64,7 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity removeLine(@PathVariable Long id) {
+    public ResponseEntity<Void> removeLine(@PathVariable Long id) {
         lineDao.removeLine(id);
         return ResponseEntity.noContent().build();
     }
