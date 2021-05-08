@@ -8,9 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exceptions.StationNotFoundException;
 
 @JdbcTest
 @DisplayName("역 레포지토리 레이어 테스트")
@@ -32,7 +32,8 @@ class StationDaoTest {
         Station station = new Station("잠실역");
         long id = stationDao.save(station);
 
-        Station savedStation = stationDao.findById(id);
+        Station savedStation = stationDao.findById(id)
+            .orElseThrow(StationNotFoundException::new);
         assertThat(id).isEqualTo(savedStation.getId());
     }
 
@@ -54,7 +55,8 @@ class StationDaoTest {
         Station station1 = new Station("잠실역");
         Long id = stationDao.save(station1);
 
-        Station station2 = stationDao.findById(id);
+        Station station2 = stationDao.findById(id)
+            .orElseThrow(StationNotFoundException::new);
         assertThat(station2.getName()).isEqualTo(station1.getName());
     }
 
@@ -62,8 +64,9 @@ class StationDaoTest {
     @DisplayName("존재하지 않는 아이디로 찾아올 때 에러가 발생한다.")
     void cannotFindById() {
         assertThatThrownBy(() -> {
-            stationDao.findById(99L);
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+            stationDao.findById(99L)
+                .orElseThrow(StationNotFoundException::new);
+        }).isInstanceOf(StationNotFoundException.class);
     }
 
     @Test
@@ -75,7 +78,8 @@ class StationDaoTest {
         stationDao.deleteById(id);
 
         assertThatThrownBy(() -> {
-            stationDao.findById(id);
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+            stationDao.findById(id)
+                .orElseThrow(StationNotFoundException::new);
+        }).isInstanceOf(StationNotFoundException.class);
     }
 }

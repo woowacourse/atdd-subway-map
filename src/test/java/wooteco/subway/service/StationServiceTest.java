@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ public class StationServiceTest {
     void createStation() {
         Station station = new Station(1L, "잠실역");
         given(stationDao.save(any())).willReturn(1L);
-        given(stationDao.findById(1L)).willReturn(station);
+        given(stationDao.findById(1L)).willReturn(Optional.of(station));
 
         Station station2 = stationService.createStation("잠실역");
         assertThat(station2).isEqualTo(station);

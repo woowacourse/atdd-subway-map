@@ -8,9 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.exceptions.LineNotFoundException;
 
 @JdbcTest
 @DisplayName("노선 레포지토리 레이어 테스트")
@@ -32,7 +32,8 @@ class LineDaoTest {
         Line line = new Line("2호선", "green");
         long id = lineDao.save(line);
 
-        Line savedLine = lineDao.findById(id);
+        Line savedLine = lineDao.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         assertThat(id).isEqualTo(savedLine.getId());
     }
 
@@ -54,7 +55,8 @@ class LineDaoTest {
         Line line = new Line("2호선", "green");
         Long id = lineDao.save(line);
 
-        Line line2 = lineDao.findById(id);
+        Line line2 = lineDao.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         assertThat(line2.getName()).isEqualTo(line.getName());
         assertThat(line2.getColor()).isEqualTo(line.getColor());
     }
@@ -63,8 +65,9 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 아이디로 찾아올 때 에러가 발생한다.")
     void cannotFindById() {
         assertThatThrownBy(() -> {
-            lineDao.findById(99L);
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+            lineDao.findById(99L)
+                .orElseThrow(LineNotFoundException::new);
+        }).isInstanceOf(LineNotFoundException.class);
     }
 
 
@@ -76,7 +79,8 @@ class LineDaoTest {
 
         lineDao.updateLine(id, "3호선", "red");
 
-        Line line2 = lineDao.findById(id);
+        Line line2 = lineDao.findById(id)
+            .orElseThrow(LineNotFoundException::new);
         assertThat(line2.getName()).isEqualTo("3호선");
         assertThat(line2.getColor()).isEqualTo("red");
     }
@@ -90,7 +94,8 @@ class LineDaoTest {
         lineDao.deleteById(id);
 
         assertThatThrownBy(() -> {
-            lineDao.findById(id);
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+            lineDao.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+        }).isInstanceOf(LineNotFoundException.class);
     }
 }

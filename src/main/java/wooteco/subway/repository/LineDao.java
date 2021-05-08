@@ -2,6 +2,8 @@ package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.exceptions.LineNotFoundException;
 
 @Repository
 public class LineDao {
@@ -20,6 +23,7 @@ public class LineDao {
         String color = resultSet.getString("color");
         return new Line(id, name, color);
     };
+    private static final int AFFECTED_NONE = 0;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -46,21 +50,26 @@ public class LineDao {
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String query = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
+        return jdbcTemplate.query(query, ROW_MAPPER, id)
+            .stream()
+            .findAny();
     }
 
     public void updateLine(Long id, String name, String color) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
         int rowCounts = jdbcTemplate.update(query, name, color, id);
         if (rowCounts == 0) {
-            throw new EmptyResultDataAccessException(0);
+            throw new LineNotFoundException();
         }
     }
 
     public void deleteById(Long id) {
         String query = "DELETE FROM LINE WHERE ID = ?";
-        jdbcTemplate.update(query, id);
+        int rowCounts = jdbcTemplate.update(query, id);
+        if (rowCounts == AFFECTED_NONE) {
+            throw new LineNotFoundException();
+        }
     }
 }

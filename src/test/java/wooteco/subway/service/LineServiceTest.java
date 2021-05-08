@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class LineServiceTest {
     void createLine() {
         Line line = new Line("2호선", "green");
         given(lineDao.save(any())).willReturn(1L);
-        given(lineDao.findById(1L)).willReturn(line);
+        given(lineDao.findById(1L)).willReturn(Optional.of(line));
 
         Line line2 = lineService.createLine("2호선", "green");
         assertThat(line2).isEqualTo(line);
@@ -55,7 +56,7 @@ class LineServiceTest {
     @DisplayName("아이디로 특정 노선을 조회한다.")
     void findById() {
         Line line = new Line(1L, "2호선", "green");
-        given(lineDao.findById(any())).willReturn(line);
+        given(lineDao.findById(any())).willReturn(Optional.of(line));
 
         assertThat(lineService.findById(1L))
             .isEqualTo(line);
