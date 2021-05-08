@@ -1,17 +1,16 @@
 package wooteco.subway.line.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestConstructor;
+import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.DBStationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class DBSectionDaoTest {
@@ -42,11 +41,11 @@ class DBSectionDaoTest {
         Line line = lineDao.save(new Line("신분당선", "bg-red-600"));
 
         //when
-        Section section = new Section(line.id(), station.getId(), station2.getId(), 15);
-        Section savedSection = sectionDao.save(section);
+        SectionEntity sectionEntity = new SectionEntity(line.id(), station.getId(), station2.getId(), 15);
+        SectionEntity savedSectionEntity = sectionDao.save(sectionEntity);
 
         //then
-        assertThat(section.lineId()).isEqualTo(savedSection.lineId());
+        assertThat(sectionEntity.getLineId()).isEqualTo(savedSectionEntity.getLineId());
     }
 
     @Test
