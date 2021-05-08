@@ -16,6 +16,7 @@ import wooteco.subway.exception.NotExistItemException;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:tableInit.sql")
+@DisplayName("노선 DAO 관련 기능")
 class LineDaoTest {
 
     private final LineDao lineDao;

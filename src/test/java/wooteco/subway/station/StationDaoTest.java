@@ -15,6 +15,7 @@ import wooteco.subway.exception.DuplicateException;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:tableInit.sql")
+@DisplayName("역 DAO 관련 기능")
 class StationDaoTest {
 
     private final StationDao stationDao;
