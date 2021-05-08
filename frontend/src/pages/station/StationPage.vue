@@ -58,7 +58,6 @@ import validator from "../../utils/validator";
 import { SNACKBAR_MESSAGES } from "../../utils/constants";
 import { mapGetters, mapMutations } from "vuex";
 import { SET_STATIONS, SHOW_SNACKBAR } from "../../store/shared/mutationTypes";
-import shortid from "shortid";
 
 export default {
   name: "StationPage",
@@ -79,12 +78,21 @@ export default {
         return;
       }
       try {
-        // TODO 역을 추가하는 API를 추가해주세요.
-        // const newStation = await fetch("/api/stations");
-        const newStation = {
-          id: shortid.generate(),
-          name: this.stationName,
-        };
+        // TODO 역을 추가하는 API Sample
+        const response = await fetch("/api/stations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: this.stationName,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(`${response.status}`);
+        }
+        const newStation = await response.json();
+
         this.setStations([...this.stations, newStation]);
         this.initStationForm();
         this.showSnackbar(SNACKBAR_MESSAGES.STATION.CREATE.SUCCESS);
