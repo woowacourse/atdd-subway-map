@@ -3,6 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
-    public List<Station> findStationsOfLine(long lineId) {
+    public Sections findSectionsOfLine(long lineId) {
         List<Section> sections = sectionDao.findAllByLineId(lineId);
-        return null;
+        return new Sections(sections);
     }
 }

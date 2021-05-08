@@ -3,6 +3,7 @@ package wooteco.subway.domain.section;
 import wooteco.subway.domain.station.Station;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Section {
 
@@ -26,6 +27,10 @@ public class Section {
 
     public boolean isConnectedWith(Section nextSection) {
         return this.downStation == nextSection.upStation;
+    }
+
+    public Stream<Station> getStations() {
+        return Stream.of(upStation, downStation);
     }
 
     public Station getUpStation() {

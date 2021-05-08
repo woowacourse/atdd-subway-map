@@ -1,8 +1,11 @@
 package wooteco.subway.domain.section;
 
+import wooteco.subway.domain.station.Station;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -48,6 +51,13 @@ public class Sections {
             sections.remove(sectionCounts - 1);
             sections.add(0, lastSection);
         }
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .flatMap(Section::getStations)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public List<Section> toList() {
