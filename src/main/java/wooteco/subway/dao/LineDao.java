@@ -20,7 +20,6 @@ import java.util.Objects;
 public class LineDao {
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

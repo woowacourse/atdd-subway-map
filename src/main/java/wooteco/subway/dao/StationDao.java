@@ -18,7 +18,6 @@ import java.util.Objects;
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

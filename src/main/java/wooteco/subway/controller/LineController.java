@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class LineController {
     private LineDao lineDao;
 
-    @Autowired
     public LineController(LineDao lineDao) {
         this.lineDao = lineDao;
     }
