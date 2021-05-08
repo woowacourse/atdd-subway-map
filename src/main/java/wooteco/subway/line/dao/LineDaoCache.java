@@ -46,7 +46,7 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public void removeLine(Long id) {
+    public void removeById(Long id) {
         lines.removeIf(line -> line.isSameId(id));
     }
 
