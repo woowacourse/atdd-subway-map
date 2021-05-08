@@ -1,14 +1,14 @@
 create table if not exists STATION (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
-    primary key(id)
+    PRIMARY KEY(id)
     );
 
 create table if not exists LINE (
     id bigint auto_increment not null,
     name varchar(255) not null unique,
     color varchar(20) not null,
-    primary key(id)
+    PRIMARY KEY(id)
     );
 
 create table if not exists SECTION (
@@ -17,5 +17,8 @@ create table if not exists SECTION (
     up_station_id bigint not null,
     down_station_id bigint not null,
     distance int,
-    primary key(id)
+    PRIMARY KEY(id),
+    FOREIGN KEY (line_id) REFERENCES line(id) ON UPDATE CASCADE,
+    FOREIGN KEY (up_station_id) REFERENCES station(id) ON UPDATE CASCADE,
+    FOREIGN KEY (down_station_id) REFERENCES station(id) ON UPDATE CASCADE
     );
