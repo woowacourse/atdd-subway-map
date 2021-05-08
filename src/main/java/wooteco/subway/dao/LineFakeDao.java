@@ -1,6 +1,8 @@
-package wooteco.subway.line;
+package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.controller.dto.LineRequest;
+import wooteco.subway.domain.Line;
 import wooteco.subway.exception.DuplicateNameException;
 
 import java.lang.reflect.Field;

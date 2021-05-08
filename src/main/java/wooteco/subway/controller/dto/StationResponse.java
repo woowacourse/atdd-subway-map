@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.controller.dto;
 
 public class StationResponse {
     private final Long id;

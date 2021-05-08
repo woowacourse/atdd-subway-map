@@ -1,4 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.dao;
+
+import wooteco.subway.controller.dto.LineRequest;
+import wooteco.subway.domain.Line;
 
 import java.util.List;
 import java.util.Optional;

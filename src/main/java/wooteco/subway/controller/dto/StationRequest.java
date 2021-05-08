@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
