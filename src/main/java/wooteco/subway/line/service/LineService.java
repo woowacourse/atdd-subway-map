@@ -43,6 +43,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -50,16 +51,19 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public LineResponse find(Long id) {
         Line line = findLineById(id);
         return LineResponse.of(line, new ArrayList<>());
     }
 
+    @Transactional
     public void delete(Long id) {
         validateIsExistLineById(id);
         lineDao.delete(id);
     }
 
+    @Transactional
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
         validateIsExistLineById(id);
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
