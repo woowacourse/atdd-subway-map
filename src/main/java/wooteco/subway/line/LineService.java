@@ -19,9 +19,9 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public LineDto createLine(final NonIdLineDto NonIdlineDto) {
-        checkExistedNameAndColor(NonIdlineDto);
-        Line line = new Line(NonIdlineDto.getName(), NonIdlineDto.getColor());
+    public LineDto createLine(final NonIdLineDto nonIdLineDto) {
+        checkExistedNameAndColor(nonIdLineDto);
+        Line line = new Line(nonIdLineDto.getName(), nonIdLineDto.getColor());
         Line saveLine = lineDao.save(line);
         return new LineDto(saveLine.getId(), saveLine.getName(), saveLine.getColor());
     }
