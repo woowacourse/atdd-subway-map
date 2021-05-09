@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,14 +28,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private LineDao lineDao;
 
-    private static final Map<String, String> params1 = new HashMap<>();
-    private static final Map<String, String> params2 = new HashMap<>();
+    private LineRequest lineRequest1;
+    private LineRequest lineRequest2;
 
-    static {
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
-        params2.put("name", "2호선");
-        params2.put("color", "bg-green-600");
+    @BeforeEach
+    void init() {
+        lineRequest1 = new LineRequest("신분당선", "bg-red-600");
+        lineRequest2 = new LineRequest("2호선", "bg-green-600");
     }
 
     @AfterEach
@@ -43,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineDao.clear();
     }
 
-    private ExtractableResponse<Response> postLines(Map<String, String> params) {
+    private ExtractableResponse<Response> postLines(LineRequest params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -57,7 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = postLines(params1);
+        ExtractableResponse<Response> response = postLines(lineRequest1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -69,11 +68,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void invalidLineName() {
         // given
-        Map<String, String> invalidParam = new HashMap<>();
-        invalidParam.put("name", "노선은선이라는단어로끝나야함");
+        LineRequest invalidRequest = new LineRequest("노선은선이라는단어로끝나야함", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = postLines(invalidParam);
+        ExtractableResponse<Response> response = postLines(invalidRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -84,8 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void cannotCreateDuplicatedLine() {
         // when
-        ExtractableResponse<Response> response = postLines(params1);
-        ExtractableResponse<Response> response2 = postLines(params1);
+        ExtractableResponse<Response> response = postLines(lineRequest1);
+        ExtractableResponse<Response> response2 = postLines(lineRequest1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -99,8 +97,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = postLines(params1);
-        ExtractableResponse<Response> createResponse2 = postLines(params2);
+        ExtractableResponse<Response> createResponse1 = postLines(lineRequest1);
+        ExtractableResponse<Response> createResponse2 = postLines(lineRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -124,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = postLines(params1);
+        ExtractableResponse<Response> createResponse = postLines(lineRequest1);
 
         // when
         String uri = createResponse.header("Location");
