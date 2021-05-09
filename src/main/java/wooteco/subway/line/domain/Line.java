@@ -1,11 +1,25 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.section.domain.Section;
+
 import java.util.Objects;
 
 public class Line {
     private Long id;
     private final String color;
     private final String name;
+    private Section section;
+
+    public Line(final String color, final String name) {
+        this.color = color;
+        this.name = name;
+    }
+
+    public Line(final String color, final String name, final Section section) {
+        this.color = color;
+        this.name = name;
+        this.section = section;
+    }
 
     public Line(final Long id, final String color, final String name) {
         this.id = id;
@@ -13,9 +27,11 @@ public class Line {
         this.name = name;
     }
 
-    public Line(final String color, final String name) {
+    public Line(final Long id, final String color, final String name, final Section section) {
+        this.id = id;
         this.color = color;
         this.name = name;
+        this.section = section;
     }
 
     public Long getId() {
@@ -28,6 +44,10 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public Section getSection() {
+        return section;
     }
 
     @Override
