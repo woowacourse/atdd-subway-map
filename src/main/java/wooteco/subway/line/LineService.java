@@ -1,13 +1,14 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.section.Distance;
-import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.*;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationResponse;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +50,24 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("노선 ID가 존재하지 않습니다."));
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(id);
+
+        Set<Section> sections = new HashSet<>();
+        for (SectionEntity sectionEntity : sectionEntities) {
+            Station upStation = stationDao.findById(sectionEntity.getUpStationId()).get();
+            Station downStation = stationDao.findById(sectionEntity.getDownStationId()).get();
+            sections.add(new Section(upStation, downStation, Distance.of(sectionEntity.getDistance())));
+        }
+
+        Line lineWithSections = new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
+
+        List<StationResponse> stationResponses = lineWithSections.path()
+                .stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     public void updateById(Long id, Line line) {

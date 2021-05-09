@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.StationResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -197,6 +198,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(oldResponse.header("Location").split("/")[2]));
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        List<StationResponse> stationResponses = Arrays.asList(new StationResponse(stationIds.get(0), "강남역"),
+                new StationResponse(stationIds.get(1), "잠실역"));
+        assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(stationResponses);
     }
 
     private ExtractableResponse<Response> getLine(String path) {
