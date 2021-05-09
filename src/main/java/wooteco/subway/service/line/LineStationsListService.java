@@ -19,7 +19,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.HttpException;
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class LineStationsListService {
     private final StationDao stationDao;
