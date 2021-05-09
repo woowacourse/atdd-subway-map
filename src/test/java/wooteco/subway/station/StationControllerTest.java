@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,68 +35,46 @@ public class StationControllerTest extends ControllerTest {
     @DisplayName("지하철역 -  생성")
     @Test
     void createStation() {
+        역_생성("강남역").statusCode(HttpStatus.CREATED.value());
+    }
+
+    private ValidatableResponse 역_생성(String name) {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        StationRequest stationRequest = new StationRequest(name);
 
         // when
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+                .then().log().all();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> stationRequest = 역_생성("강남역").extract();
 
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then()
                 .log().all()
-                .extract();
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
         /// given
-        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse1 = 역_생성("강남역").extract();
+        ExtractableResponse<Response> createResponse2 = 역_생성("역삼역").extract();
 
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(stationRequest2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -117,40 +96,21 @@ public class StationControllerTest extends ControllerTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
+        ExtractableResponse<Response> createResponse = 역_생성("강남역").extract();
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-        // when
+        // when and then
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
-                .extract();
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("역 제거 - 실패(존재하지 않는 역)")
     @Test
     void deleteStation_notExistStation() {
-        //given
-        StationRequest stationRequest = new StationRequest("강남역");
-
-        // when
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+        역_생성("강남역").statusCode(HttpStatus.BAD_REQUEST.value())
                 .body(equalTo("역을 찾을 수 없습니다."));
     }
 
@@ -158,15 +118,8 @@ public class StationControllerTest extends ControllerTest {
     @Test
     void createStation_duplicatedName() throws Exception {
         //given
-        StationRequest stationRequest = new StationRequest("강남역");
+        ValidatableResponse stationRequest = 역_생성("강남역").statusCode(HttpStatus.CREATED.value());
 
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
         //when and then
         RestAssured
                 .given().log().all()
