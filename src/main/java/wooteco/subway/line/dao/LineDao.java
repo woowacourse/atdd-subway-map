@@ -7,13 +7,15 @@ import java.util.Optional;
 
 public interface LineDao {
 
-    Optional<Line> findByName(String name);
+    boolean existsByName(String name);
 
     Line save(Line line);
 
     List<Line> findAll();
 
-    Optional<Line> findById(Long id);
+    boolean existsById(Long id);
+
+    Line findById(Long id);
 
     void removeById(Long id);
 

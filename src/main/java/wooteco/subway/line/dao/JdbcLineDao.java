@@ -18,11 +18,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findByName(String name) {
-        final String sql = "SELECT * FROM line WHERE name = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), name)
-                .stream()
-                .findAny();
+    public boolean existsByName(String name) {
+        final String sql = "SELECT count(id) FROM line WHERE name = ?";
+        Integer count = this.jdbcTemplate.queryForObject(sql, int.class, name);
+
+        return count >= 1;
     }
 
     @Override
@@ -45,9 +45,17 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findById(Long id) {
+    public boolean existsById(Long id) {
+        final String sql = "SELECT count(id) FROM line WHERE id = ?";
+        Integer count = this.jdbcTemplate.queryForObject(sql, int.class, id);
+
+        return count >= 1;
+    }
+
+    @Override
+    public Line findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
+        return jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
     }
 
     @Override

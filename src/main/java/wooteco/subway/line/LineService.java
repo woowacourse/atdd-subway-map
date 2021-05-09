@@ -7,7 +7,6 @@ import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 
 import java.util.List;
-import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -21,9 +20,7 @@ public class LineService {
 
     @Transactional
     public Line create(Line line) {
-        if (lineDao.findByName(line.getName()).isPresent()) {
-            throw new LineNameDuplicatedException();
-        }
+        validateDuplicatedByName(line);
         return lineDao.save(line);
     }
 
@@ -32,22 +29,38 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineDao.findById(id).orElseThrow(LineNotFoundException::new);
+        validateExistById(id);
+
+        return lineDao.findById(id);
     }
 
     @Transactional
     public void update(Long id, Line line) {
-        this.findById(id);
-        final Optional<Line> lineByName = lineDao.findByName(line.getName());
-        if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
+        validateDuplicatedByName(line);
+        validateExistById(id);
+
+        Line previousLine = lineDao.findById(id);
+        previousLine.changeInfo(line.getName(), line.getColor());
+
+        lineDao.update(id, previousLine);
+    }
+
+    private void validateDuplicatedByName(Line line) {
+        if (lineDao.existsByName(line.getName())) {
             throw new LineNameDuplicatedException();
         }
-        lineDao.update(id, line);
     }
 
     @Transactional
     public void removeById(Long id) {
+        validateExistById(id);
         lineDao.removeById(id);
+    }
+
+    private void validateExistById(Long id) {
+        if (!lineDao.existsById(id)) {
+            throw new LineNotFoundException();
+        }
     }
 
 }
