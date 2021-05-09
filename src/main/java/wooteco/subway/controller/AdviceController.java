@@ -9,7 +9,7 @@ import wooteco.subway.exception.SubwayException;
 public class AdviceController {
 
     @ExceptionHandler(SubwayException.class)
-    public ResponseEntity handleException(SubwayException e) {
+    public ResponseEntity<String> handleException(SubwayException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.request.LineEditRequestDto;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
 
@@ -29,7 +31,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping("")
     public ResponseEntity<LineCreateResponseDto> createLine(@RequestBody LineRequestDto lineRequest) {
         LineCreateResponseDto lineResponse = lineService.createLine(lineRequest);
         return ResponseEntity.created(
@@ -37,20 +39,20 @@ public class LineController {
         ).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineFindAllResponseDto>> showLines() {
         List<LineFindAllResponseDto> lineResponses = lineService.showLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineFindResponseDto> showLine(@PathVariable Long lineId) {
         LineFindResponseDto lineResponse = lineService.showLine(lineId);
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PostMapping(value = "/lines/{lineId}/sections")
-    public ResponseEntity createLine(@PathVariable Long lineId, @RequestBody SectionCreateRequestDto requestDto) {
+    @PostMapping(value = "/{lineId}/sections")
+    public ResponseEntity<Void> createLine(@PathVariable Long lineId, @RequestBody SectionCreateRequestDto requestDto) {
         Long sectionId = lineService.createSectionInLine(
                 lineId,
                 requestDto.getUpStationId(),
@@ -63,20 +65,20 @@ public class LineController {
     }
 
 
-    @PutMapping(value = "/lines/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {
+    @PutMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> editLine(@PathVariable Long lineId, @RequestBody LineEditRequestDto request) {
         lineService.editLine(lineId, request);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).build();
     }
 
-    @DeleteMapping("/lines/{lineId}")
-    public ResponseEntity deleteLine(@PathVariable Long lineId) {
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
         lineService.deleteLine(lineId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/lines/{lineId}/sections")
-    public ResponseEntity deleteSectionInLine(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> deleteSectionInLine(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
         lineService.deleteSectionInLine(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
