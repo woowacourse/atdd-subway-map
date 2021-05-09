@@ -11,7 +11,6 @@ import wooteco.subway.line.ui.dto.LineResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -82,7 +81,7 @@ public class LineController {
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineService.update(line);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
