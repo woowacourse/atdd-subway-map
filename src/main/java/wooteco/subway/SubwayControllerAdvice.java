@@ -1,5 +1,6 @@
 package wooteco.subway;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,16 +13,16 @@ public class SubwayControllerAdvice {
 
     @ExceptionHandler(DuplicatedNameException.class)
     public ResponseEntity<Void> duplicatedException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity<Void> notFoundStationException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(NotFoundLineException.class)
     public ResponseEntity<Void> notFoundLineException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 }
