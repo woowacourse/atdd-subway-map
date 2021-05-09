@@ -43,17 +43,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineDao.clear();
     }
 
-    @DisplayName("노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params1)
+    private ExtractableResponse<Response> postLines(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    @DisplayName("노선을 생성한다.")
+    @Test
+    void createLine() {
+        // when
+        ExtractableResponse<Response> response = postLines(params1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -69,13 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         invalidParam.put("name", "노선은선이라는단어로끝나야함");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(invalidParam)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postLines(invalidParam);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -86,21 +84,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void cannotCreateDuplicatedLine() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = postLines(params1);
+        ExtractableResponse<Response> response2 = postLines(params1);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -114,21 +99,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = postLines(params1);
+        ExtractableResponse<Response> createResponse2 = postLines(params2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -152,21 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = postLines(params1);
 
         // when
         String uri = createResponse.header("Location");
