@@ -30,8 +30,8 @@ public class StationService {
         stationDao.delete(id);
     }
 
-    public Station findStationById(Long id) {
-        return stationDao.findStationById(id)
+    public Station findById(Long id) {
+        return stationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 존재하지 않습니다."));
     }
 }

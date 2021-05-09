@@ -34,7 +34,7 @@ public class LineController {
         }
 
         Long id = lineService.save(lineRequest.toEntity());
-        Line newLine = lineService.findLineById(id);
+        Line newLine = lineService.findById(id);
         return ResponseEntity.created(
                 URI.create("/lines/" + newLine.getId()))
                 .body(new LineResponse(newLine));

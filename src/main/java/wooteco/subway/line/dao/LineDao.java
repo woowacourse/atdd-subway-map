@@ -63,7 +63,7 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 
-    public Optional<Line> findLineById(Long id) {
+    public Optional<Line> findById(Long id) {
         try {
             String sql = "SELECT * FROM line WHERE id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql,

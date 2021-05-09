@@ -35,7 +35,7 @@ public class StationController {
 
         Station station = new Station(stationRequest.getName());
         Long id = stationService.save(station);
-        Station newStation = stationService.findStationById(id);
+        Station newStation = stationService.findById(id);
         return ResponseEntity.created(
                 URI.create("/stations/" + newStation.getId()))
                 .body(new StationResponse(newStation));

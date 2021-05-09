@@ -38,8 +38,8 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    public Line findLineById(Long id) {
-        return lineDao.findLineById(id)
+    public Line findById(Long id) {
+        return lineDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역이 없습니다."));
     }
 }
