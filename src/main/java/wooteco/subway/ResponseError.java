@@ -1,4 +1,4 @@
-package wooteco.subway.service;
+package wooteco.subway;
 
 public class ResponseError {
     final String message;
