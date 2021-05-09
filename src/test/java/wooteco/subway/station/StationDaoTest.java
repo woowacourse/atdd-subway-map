@@ -72,8 +72,8 @@ class StationDaoTest {
 
         long stationId = stationDao.save(station);
 
-        StationResponse stationResponse = stationDao.findById(stationId);
+        Station foundStation = stationDao.findById(stationId);
 
-        assertThat(stationResponse.getName()).isEqualTo(station);
+        assertThat(foundStation.getName()).isEqualTo(station);
     }
 }

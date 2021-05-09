@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -19,7 +20,10 @@ public class StationService {
     }
 
     public List<StationResponse> showStations() {
-        return stationDao.findAll();
+        final List<Station> stations = stationDao.findAll();
+        return stations.stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
     }
 
     public void deleteStation(long id) {

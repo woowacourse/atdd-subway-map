@@ -13,7 +13,7 @@ import java.util.List;
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<StationResponse> stationRowMapper = (resultSet, rowNum) -> new StationResponse(
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) -> new Station(
             resultSet.getLong("id"),
             resultSet.getString("name")
     );
@@ -35,7 +35,7 @@ public class StationDao {
         return keyHolder.getKey().longValue();
     }
 
-    public List<StationResponse> findAll() {
+    public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(sql, stationRowMapper);
     }
@@ -45,7 +45,7 @@ public class StationDao {
         jdbcTemplate.update(sql, stationId);
     }
 
-    public StationResponse findById(Long id) {
+    public Station findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
