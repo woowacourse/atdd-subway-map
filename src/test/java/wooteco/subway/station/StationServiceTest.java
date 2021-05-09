@@ -21,7 +21,7 @@ class StationServiceTest {
     void save() {
         //given
         NonIdStationDto requestStationDto = new NonIdStationDto("스타벅스 선정릉역");
-        Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
+        Station savedStation = new Station(2L, "스타벅스 선정릉역");
 
         StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.save(any())).thenReturn(savedStation);
@@ -41,9 +41,9 @@ class StationServiceTest {
     void load() {
         //given
         List<Station> stations = Arrays.asList(
-            new Station((long) 1, "성서공단역"),
-            new Station((long) 2, "이곡역"),
-            new Station((long) 3, "용산역")
+            new Station(1L, "성서공단역"),
+            new Station(2L, "이곡역"),
+            new Station(3L, "용산역")
         );
 
         StationDaoMemory mockDao = mock(StationDaoMemory.class);
@@ -51,9 +51,9 @@ class StationServiceTest {
         StationService stationService = new StationService(mockDao);
 
         List<StationDto> expectedDtos = Arrays.asList(
-            new StationDto((long) 1, "성서공단역"),
-            new StationDto((long) 2, "이곡역"),
-            new StationDto((long) 3, "용산역")
+            new StationDto(1L, "성서공단역"),
+            new StationDto(2L, "이곡역"),
+            new StationDto(3L, "용산역")
         );
 
         //when

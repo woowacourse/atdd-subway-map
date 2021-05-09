@@ -59,9 +59,9 @@ class LineResponseTest {
     void checkStationsOfLineResponse() {
         // given
         List<StationResponse> givenStations = Arrays.asList(
-            new StationResponse((long) 1, "건대입구역"),
-            new StationResponse((long) 2, "군자역"),
-            new StationResponse((long) 3, "면목역")
+            new StationResponse(1L, "건대입구역"),
+            new StationResponse(2L, "군자역"),
+            new StationResponse(3L, "면목역")
         );
         LineResponse lineResponse = new LineResponse(ID, NAME, COLOR, givenStations);
 

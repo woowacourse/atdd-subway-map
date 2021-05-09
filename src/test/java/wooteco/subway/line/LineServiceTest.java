@@ -49,9 +49,9 @@ public class LineServiceTest {
     void showAllLines() {
         //given
         List<Line> lines = Arrays.asList(
-            new Line((long) 1, "대구선", "노란색"),
-            new Line((long) 2, "광주선", "분홍색"),
-            new Line((long) 3, "울산선", "검은색")
+            new Line(1L, "대구선", "노란색"),
+            new Line(2L, "광주선", "분홍색"),
+            new Line(3L, "울산선", "검은색")
         );
 
         LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
@@ -59,9 +59,9 @@ public class LineServiceTest {
         LineService lineServiceWithMock = new LineService(mockLineDao);
 
         List<LineDto> expectedDtos = Arrays.asList(
-            new LineDto((long) 1, "대구선", "노란색"),
-            new LineDto((long) 2, "광주선", "분홍색"),
-            new LineDto((long) 3, "울산선", "검은색")
+            new LineDto(1L, "대구선", "노란색"),
+            new LineDto(2L, "광주선", "분홍색"),
+            new LineDto(3L, "울산선", "검은색")
         );
 
         //when
@@ -83,7 +83,7 @@ public class LineServiceTest {
     @DisplayName("특정 노선 반환")
     void findOne() {
         //given
-        Line line = new Line((long) 1, "창원선", "청록색");
+        Line line = new Line(1L, "창원선", "청록색");
 
         LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
         when(mockLineDao.show(any())).thenReturn(line);
