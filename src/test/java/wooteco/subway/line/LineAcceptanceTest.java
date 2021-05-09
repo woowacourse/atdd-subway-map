@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 
 @DisplayName("노선 관련 기능")
-class LineControllerTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 생성 - 성공")
     @Test

@@ -27,14 +27,14 @@ import wooteco.subway.station.dao.StationDao;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    StationDao stationDao;
+    private StationDao stationDao;
 
     @AfterEach
     void afterEach() {
         stationDao.removeAll();
     }
 
-    @DisplayName("지하철역 -  생성")
+    @DisplayName("지하철역 생성 - 성공")
     @Test
     void createStation() {
         // given
@@ -51,7 +51,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("지하철역 생성 - 실패(기존에 존재하는 지하철역 이름으로 지하철역을 생성)")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -79,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 조회 - 성공")
     @Test
     void getStations() {
         /// given
@@ -116,12 +116,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-            .map(it -> it.getId())
+            .map(StationResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("지하철역 제거 - 성공")
     @Test
     void deleteStation() {
         // given
