@@ -30,16 +30,6 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<StationResponse> exceptionHandler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<StationResponse> sqlExceptionHandler(SQLException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse stationResponse = stationService.createStation(stationRequest);

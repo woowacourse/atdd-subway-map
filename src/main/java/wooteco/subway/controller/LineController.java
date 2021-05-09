@@ -30,11 +30,6 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<LineResponse> exceptionHandler(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.createLine(lineRequest);
