@@ -45,6 +45,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createInValidLine() {
         ExtractableResponse<Response> response = createLineInsertResponse(" ", " ");
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getDetail()).contains("Validation failed for argument [0] in public org.springframework.http.ResponseEntity<wooteco.subway.line.LineResponse> wooteco.subway.line.LineController.createLine(wooteco.subway.line.LineRequest) with 2 errors:");
         assertThat(errorResponse.getMessage()).isEqualTo("VALIDATION_FAILED");
@@ -87,6 +88,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -103,10 +105,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .extract();
 
-        assertThat(response.jsonPath()
-                .getString("name")).isEqualTo("2호선");
-        assertThat(response.jsonPath()
-                .getString("color")).isEqualTo("초록색");
+        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("초록색");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -145,6 +145,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     public void modifyWithInValidLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
+
         LineRequest lineRequest = new LineRequest(" ", " ", 0L, 0L, 0);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
@@ -172,11 +173,13 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .delete(uri)
                 .then()
                 .extract();
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
         LineRequest lineRequest = new LineRequest(name, color, null, null, 0);
+
         return RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

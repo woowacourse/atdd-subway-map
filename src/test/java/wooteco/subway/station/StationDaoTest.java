@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class StationDaoTest {
@@ -33,7 +31,7 @@ class StationDaoTest {
     @DisplayName("이름으로 역 검색")
     void findByName() {
         Optional<Station> findStation = stationDao.findByName(stationName1);
-        assertTrue(findStation.isPresent());
+        assertThat(findStation.isPresent()).isTrue();
     }
 
     @Test
@@ -53,10 +51,9 @@ class StationDaoTest {
     @DisplayName("역 삭제 확인")
     void delete() {
         Station savedStation = stationDao.save(stationName2);
-        assertTrue(stationDao.findByName(savedStation.getName())
-                .isPresent());
+        assertThat(stationDao.findByName(savedStation.getName()).isPresent()).isTrue();
+
         stationDao.delete(savedStation.getId());
-        assertFalse(stationDao.findByName(savedStation.getName())
-                .isPresent());
+        assertThat(stationDao.findByName(savedStation.getName()).isPresent()).isFalse();
     }
 }

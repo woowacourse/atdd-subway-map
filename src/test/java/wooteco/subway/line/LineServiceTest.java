@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.exception.LineExistenceException;
 import wooteco.subway.line.exception.LineNotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class LineServiceTest {
@@ -31,7 +31,7 @@ class LineServiceTest {
     @DisplayName("노선 정상 생성 테스트")
     void createStation() {
         Line savedLine = lineService.createLine(lineRequest);
-        assertEquals("2호선", savedLine.getName());
+        assertThat("2호선").isEqualTo(savedLine.getName());
     }
 
     @Test
@@ -47,6 +47,7 @@ class LineServiceTest {
     void findNoneExistLineById() {
         String sql = "insert into Line (name, color) values (?, ?)";
         jdbcTemplate.update(sql, "2호선", "초록색");
+
         assertThatThrownBy(() -> lineService.findById(2L))
                 .isInstanceOf(LineNotFoundException.class);
     }

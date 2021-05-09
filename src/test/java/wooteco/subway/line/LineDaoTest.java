@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class LineDaoTest {
@@ -41,7 +42,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 노선 검색")
     void findNoneExistLineById() {
         Optional<Line> findStation = lineDao.findByName(lineName2);
-        assertFalse(findStation.isPresent());
+        assertThat(findStation.isPresent()).isFalse();
     }
 
     @Test
@@ -53,8 +54,12 @@ class LineDaoTest {
     @Test
     @DisplayName("노선 생성 저장 확인")
     void save() {
-        lineDao.save(lineName2, color2);
-        assertThat(lineDao.findAll()).hasSize(2);
+        Line savedLine1 = new Line(1L, "2호선", "초록색");
+        Line savedLine2 = lineDao.save(lineName2, color2);
+        List<Line> lines = lineDao.findAll();
+
+        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).containsExactlyInAnyOrderElementsOf(Arrays.asList(savedLine1, savedLine2));
     }
 
     @Test
@@ -64,18 +69,17 @@ class LineDaoTest {
         lineDao.update(savedLine.getId(), "3호선", "주황색");
 
         Line findLine = lineDao.findById(savedLine.getId()).get();
-        assertEquals(findLine.getName(), "3호선");
-        assertEquals(findLine.getColor(), "주황색");
+        assertThat("9호선").isEqualTo(findLine.getName());
+        assertThat("3호선").isEqualTo(findLine.getName());
     }
 
     @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
         Line savedLine = lineDao.save(lineName2, color2);
-        assertTrue(lineDao.findByName(savedLine.getName())
-                .isPresent());
+        assertThat(lineDao.findByName(savedLine.getName()).isPresent()).isTrue();
+
         lineDao.delete(savedLine.getId());
-        assertFalse(lineDao.findByName(savedLine.getName())
-                .isPresent());
+        assertThat(lineDao.findByName(savedLine.getName()).isPresent()).isFalse();
     }
 }
