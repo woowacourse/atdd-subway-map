@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 @DisplayName("지하철 역 비즈니스 로직 테스트")
@@ -38,8 +38,8 @@ class StationServiceTest {
     void save() {
         // given
         StationRequest 왕십리역 = new StationRequest("왕십리");
-        when(stationDao.save(any(Station.class)))
-                .thenReturn(new Station(1L, "왕십리"));
+        given(stationDao.save(any(Station.class)))
+                .willReturn(new Station(1L, "왕십리"));
 
         // when
         StationResponse stationResponse = stationService.save(왕십리역);
@@ -55,8 +55,8 @@ class StationServiceTest {
     void StationDuplicatedNameException() {
         // given
         StationRequest 왕십리역 = new StationRequest("왕십리");
-        when(stationDao.findByName(any(String.class)))
-                .thenThrow(StationDuplicatedNameException.class);
+        given(stationDao.findByName(any(String.class)))
+                .willThrow(StationDuplicatedNameException.class);
 
         // when & then
         assertThatThrownBy(() -> stationService.save(왕십리역))
@@ -68,8 +68,8 @@ class StationServiceTest {
     @Test
     void findAll() {
         // given
-        when(stationDao.findAll())
-                .thenReturn(Arrays.asList(
+        given(stationDao.findAll())
+                .willReturn(Arrays.asList(
                         new Station("왕십리"),
                         new Station("잠실"),
                         new Station("강남")

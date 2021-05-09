@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 비즈니스 로직 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -40,8 +40,8 @@ class LineServiceTest {
     void save() {
         // given
         LineCreateRequest 분당선 = new LineCreateRequest("분당선", "red");
-        when(lineDao.save(any(Line.class)))
-                .thenReturn(new Line(1L, "분당선", "red"));
+        given(lineDao.save(any(Line.class)))
+                .willReturn(new Line(1L, "분당선", "red"));
 
         // when
         LineResponse lineResponse = lineService.save(분당선);
@@ -57,8 +57,8 @@ class LineServiceTest {
     void LineDuplicatedNameException() {
         // given
         LineCreateRequest 분당선 = new LineCreateRequest("분당선", "red");
-        when(lineDao.findByName(any(String.class)))
-                .thenThrow(LineDuplicatedNameException.class);
+        given(lineDao.findByName(any(String.class)))
+                .willThrow(LineDuplicatedNameException.class);
 
         // when & then
         assertThatThrownBy(() -> lineService.save(분당선))
@@ -70,8 +70,8 @@ class LineServiceTest {
     @Test
     void findBy() {
         // given
-        when(lineDao.findById(1L))
-                .thenReturn(Optional.of(new Line(1L, "분당선", "red")));
+        given(lineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
 
         // when
         LineResponse result = lineService.findBy(1L);
@@ -86,8 +86,8 @@ class LineServiceTest {
     @Test
     void LineNotFoundException() {
         // given
-        when(lineDao.findById(1L))
-                .thenReturn(Optional.empty());
+        given(lineDao.findById(1L))
+                .willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> lineService.findBy(1L))
@@ -99,8 +99,8 @@ class LineServiceTest {
     @Test
     void findAll() {
         // given
-        when(lineDao.findAll())
-                .thenReturn(Arrays.asList(
+        given(lineDao.findAll())
+                .willReturn(Arrays.asList(
                         new Line("분당선", "red"),
                         new Line("신분당선", "green"),
                         new Line("2호선", "blue")
@@ -127,10 +127,10 @@ class LineServiceTest {
     @Test
     void update() {
         // given
-        when(lineDao.findById(1L))
-                .thenReturn(Optional.of(new Line(1L, "분당선", "red")));
-        when(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
-                .thenReturn(Optional.empty());
+        given(lineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
+        given(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
+                .willReturn(Optional.empty());
 
         // when
         lineService.update(1L, new LineUpdateRequest("2호선", "green"));
@@ -143,8 +143,8 @@ class LineServiceTest {
     @Test
     void updateNotExist() {
         // given
-        when(lineDao.findById(1L))
-                .thenThrow(LineNotFoundException.class);
+        given(lineDao.findById(1L))
+                .willThrow(LineNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> lineService.update(1L, new LineUpdateRequest("2호선", "green")))
@@ -155,10 +155,10 @@ class LineServiceTest {
     @Test
     void updateDuplicatedName() {
         // given
-        when(lineDao.findById(1L))
-                .thenReturn(Optional.of(new Line(1L, "분당선", "red")));
-        when(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
-                .thenReturn(Optional.of("2호선"));
+        given(lineDao.findById(1L))
+                .willReturn(Optional.of(new Line(1L, "분당선", "red")));
+        given(lineDao.findByNameAndNotInOriginalName("2호선", "분당선"))
+                .willReturn(Optional.of("2호선"));
 
         // when & then
         assertThatThrownBy(() -> lineService.update(1L, new LineUpdateRequest("2호선", "green")))

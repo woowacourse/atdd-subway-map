@@ -43,6 +43,7 @@ class LineTest {
         assertFalse(notSameId);
     }
 
+    @DisplayName("지하철 노선 정보 수정")
     @Test
     void update() {
         // given
