@@ -6,7 +6,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.response.LineResponse;
 import wooteco.subway.dto.LineRequest;
-import wooteco.subway.exception.line.LineNotExistException;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineDto;
 
@@ -32,14 +32,14 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity<LineResponse> createStation(@RequestBody @Valid LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse lineResponse = new LineResponse(lineService.create(lineRequest));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        final List<LineDto> lines = lineService.findAllById();
+        final List<LineDto> lines = lineService.findAll();
         final List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -47,19 +47,19 @@ public class LineController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotExistException {
+    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotFoundException {
         LineResponse lineResponse = new LineResponse(lineService.findById(id));
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateById(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

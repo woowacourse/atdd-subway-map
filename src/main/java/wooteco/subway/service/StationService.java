@@ -5,7 +5,7 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.exception.station.StationDuplicateException;
-import wooteco.subway.exception.station.StationNotExistException;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.service.dto.StationDto;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class StationService {
     public StationDto create(StationRequest stationRequest) {
         validate(stationRequest);
         final Long id = stationDao.insert(stationRequest.toEntity());
-        final Station station = stationDao.findById(id).orElseThrow(StationNotExistException::new);
+        final Station station = stationDao.findById(id).orElseThrow(StationNotFoundException::new);
         return new StationDto(station);
     }
 

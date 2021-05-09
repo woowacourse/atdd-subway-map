@@ -9,7 +9,6 @@ import wooteco.subway.domain.Line;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -42,11 +41,9 @@ public class LineDao {
         return jdbcTemplate.query(query, LINE_MAPPER);
     }
 
-    public Optional<Line> findById(Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(query, LINE_MAPPER, id)
-                .stream()
-                .findAny();
+    public Line findById(Long id) {
+        String query = "SELECT id, color, name FROM line WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, LINE_MAPPER, id);
     }
 
     public String findNameById(Long id) {
@@ -69,13 +66,21 @@ public class LineDao {
         jdbcTemplate.update(query, id);
     }
 
-    public int countsByName(String name) {
-        String query = "SELECT COUNT(name) FROM line WHERE name =?";
-        return jdbcTemplate.queryForObject(query, Integer.class, name);
+    public boolean isExistById(Long id) {
+        String query = "SELECT COUNT(name) FROM line WHERE id =?";
+        final int counts = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return counts > 0;
     }
 
-    public int countsByColor(String color) {
+    public boolean isExistByName(String name) {
+        String query = "SELECT COUNT(name) FROM line WHERE name =?";
+        final int counts = jdbcTemplate.queryForObject(query, Integer.class, name);
+        return counts > 0;
+    }
+
+    public boolean isExistByColor(String color) {
         String query = "SELECT COUNT(name) FROM line WHERE color =?";
-        return jdbcTemplate.queryForObject(query, Integer.class, color);
+        final int counts = jdbcTemplate.queryForObject(query, Integer.class, color);
+        return counts > 0;
     }
 }

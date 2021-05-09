@@ -6,7 +6,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
-import wooteco.subway.exception.line.LineNotExistException;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.dto.LineDto;
 
 import java.util.List;
@@ -24,11 +24,11 @@ public class LineService {
     public LineDto create(LineRequest lineRequest) {
         validate(lineRequest);
         final Long id = lineDao.insert(lineRequest.toEntity());
-        final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        final Line line = lineDao.findById(id);
         return new LineDto(line);
     }
 
-    public List<LineDto> findAllById() {
+    public List<LineDto> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
                 .map(LineDto::new)
@@ -36,7 +36,10 @@ public class LineService {
     }
 
     public LineDto findById(Long id) {
-        final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        if (!lineDao.isExistById(id)) {
+            throw new LineNotFoundException();
+        }
+        final Line line = lineDao.findById(id);
         return new LineDto(line);
     }
 
@@ -54,15 +57,13 @@ public class LineService {
     }
 
     private void validateDuplicateName(String name) {
-        final int cnt = lineDao.countsByName(name);
-        if (cnt > 0) {
+        if (lineDao.isExistByName(name)) {
             throw new LineNameDuplicateException();
         }
     }
 
     private void validateDuplicateColor(String color) {
-        final int cnt = lineDao.countsByColor(color);
-        if (cnt > 0) {
+        if (lineDao.isExistByColor(color)) {
             throw new LineColorDuplicateException();
         }
     }

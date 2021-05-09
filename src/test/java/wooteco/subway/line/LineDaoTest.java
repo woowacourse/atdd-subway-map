@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.exception.line.LineNotExistException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static wooteco.subway.Fixture.makeLine;
 
 @JdbcTest
-@Rollback
 class LineDaoTest {
     LineDao lineDao;
 
@@ -37,7 +35,7 @@ class LineDaoTest {
     void insert() {
         // given
         Long id = lineDao.insert(makeLine("bg-red-100", "코다선"));
-        final Line line = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        final Line line = lineDao.findById(id);
 
         assertThat(line.getColor()).isEqualTo("bg-red-100");
         assertThat(line.getName()).isEqualTo("코다선");
@@ -66,7 +64,7 @@ class LineDaoTest {
         Long id = lineDao.insert((makeLine("bg-red-100", "거북선")));
 
         //when
-        Line expectedLine = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        Line expectedLine = lineDao.findById(id);
 
         //then
         assertThat(expectedLine.getName()).isEqualTo("거북선");
@@ -83,7 +81,7 @@ class LineDaoTest {
         lineDao.update(id, makeLine("bg-yellow-100", "크로플선"));
 
         //then
-        Line expectedLine = lineDao.findById(id).orElseThrow(LineNotExistException::new);
+        Line expectedLine = lineDao.findById(id);
 
         assertThat(expectedLine.getColor()).isEqualTo("bg-yellow-100");
         assertThat(expectedLine.getName()).isEqualTo("크로플선");
@@ -145,50 +143,32 @@ class LineDaoTest {
     }
 
     @Test
-    @DisplayName("같은 이름을 가진 노선이 존재하지 않을 때 개수 조회")
-    void countsByName1() {
-        //given - when
-        final int cnt = lineDao.countsByName("테스트노선");
-
-        //then
-        assertThat(cnt).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
-    void countsByName2() {
+    @DisplayName("해당 이름을 가진 노선이 존재하는지 확인")
+    void isExistByName() {
         //given
         final Long id = lineDao.insert(makeLine("bg-red-100", "잠실역"));
-        final String name = lineDao.findNameById(id);
 
-        //when
-        final int cnt = lineDao.countsByName(name);
-
-        //then
-        assertThat(cnt).isEqualTo(1);
+        //when-then
+        assertThat(lineDao.isExistByName("잠실역")).isTrue();
     }
 
     @Test
-    @DisplayName("같은 색을 가진 노선이 존재하지 않을 때 개수 조회")
-    void countsByColor1() {
-        //given - when
-        final int cnt = lineDao.countsByColor("bg-red-100");
-
-        //then
-        assertThat(cnt).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("같은 이름을 가진 역이 존재할 때 개수 조회")
-    void countsByColor2() {
+    @DisplayName("해당 색을 가진 노선이 존재하는지 확인")
+    void isExistByColor() {
         //given
         final Long id = lineDao.insert(makeLine("bg-red-100", "잠실역"));
-        final String color = lineDao.findColorById(id);
 
-        //when
-        final int cnt = lineDao.countsByColor(color);
+        //when-then
+        assertThat(lineDao.isExistByColor("bg-red-100")).isTrue();
+    }
 
-        //then
-        assertThat(cnt).isEqualTo(1);
+    @Test
+    @DisplayName("해당 아이디를 가진 노선이 존재하는지 확인")
+    void isExistById() {
+        //given
+        final Long id = lineDao.insert(makeLine("bg-red-100", "잠실역"));
+
+        //when-then
+        assertThat(lineDao.isExistById(id)).isTrue();
     }
 }

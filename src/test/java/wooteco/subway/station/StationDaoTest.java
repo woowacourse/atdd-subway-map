@@ -9,7 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.exception.station.StationNotExistException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +34,7 @@ public class StationDaoTest {
     void insert() {
         //when
         Long id = stationDao.insert(makeStation("잠실역"));
-        Station station = stationDao.findById(id).orElseThrow(StationNotExistException::new);
+        Station station = stationDao.findById(id).orElseThrow(StationNotFoundException::new);
 
         //then
         assertThat(station.getName()).isEqualTo("잠실역");
@@ -58,7 +58,7 @@ public class StationDaoTest {
 
         //when - then
         assertThat(stationDao.findById(id)
-                .orElseThrow(StationNotExistException::new)
+                .orElseThrow(StationNotFoundException::new)
                 .getId())
                 .isEqualTo(id);
     }
@@ -71,7 +71,7 @@ public class StationDaoTest {
 
         //when - then
         assertThat(stationDao.findByName("잠실역")
-                .orElseThrow(StationNotExistException::new)
+                .orElseThrow(StationNotFoundException::new)
                 .getId())
                 .isEqualTo(id);
     }
