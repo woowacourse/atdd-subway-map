@@ -32,7 +32,7 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
-    public boolean isExistStationByName(String name) {
+    public boolean isExistByName(String name) {
         return stations.stream()
                 .anyMatch(station -> station.isSameName(name));
     }

@@ -10,7 +10,7 @@ public interface StationDao {
 
     List<Station> findAll();
 
-    boolean isExistStationByName(String name);
+    boolean isExistByName(String name);
 
     void remove(Long id);
 

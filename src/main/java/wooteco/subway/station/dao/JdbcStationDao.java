@@ -41,7 +41,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean isExistStationByName(String name) {
+    public boolean isExistByName(String name) {
         String sql = "SELECT * FROM station WHERE name = ?";
         return jdbcTemplate.query(sql, stationRowMapper(), name).stream().findAny().isPresent();
     }

@@ -14,7 +14,7 @@ public class InMemoryLineDao implements LineDao {
     private Long seq = 0L;
 
     @Override
-    public Optional<Line> findLineByName(String name) {
+    public Optional<Line> findByName(String name) {
         return lines.stream()
                 .filter(line -> line.isSameName(name))
                 .findAny();
@@ -40,7 +40,7 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.isSameId(id))
                 .findAny();
@@ -53,6 +53,6 @@ public class InMemoryLineDao implements LineDao {
 
     @Override
     public void update(Long id, String name, String color) {
-        findLineById(id).get().changeInfo(name, color);
+        findById(id).get().changeInfo(name, color);
     }
 }

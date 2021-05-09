@@ -17,24 +17,24 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(String name, String color) {
-        if (lineDao.findLineByName(name).isPresent()) {
+    public Line create(String name, String color) {
+        if (lineDao.findByName(name).isPresent()) {
             throw new LineNameDuplicatedException();
         }
         Line line = Line.of(name, color);
         return lineDao.save(line);
     }
 
-    public List<Line> showLines() {
+    public List<Line> showAll() {
         return lineDao.findAll();
     }
 
-    public Line findLineById(Long id) {
-        return lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+    public Line findById(Long id) {
+        return lineDao.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
-    public void updateLine(Long id, String name, String color) {
-        final Optional<Line> lineByName = lineDao.findLineByName(name);
+    public void update(Long id, String name, String color) {
+        final Optional<Line> lineByName = lineDao.findByName(name);
         if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
             throw new LineNameDuplicatedException();
         }

@@ -19,10 +19,10 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(
+    public ResponseEntity<StationResponse> create(
             @RequestBody StationRequest stationRequest) {
         String name = stationRequest.getName();
-        if (stationDao.isExistStationByName(name)) {
+        if (stationDao.isExistByName(name)) {
             return ResponseEntity.badRequest().build();
         }
         Station station = Station.of(name);
@@ -32,7 +32,7 @@ public class StationController {
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponse>> showAll() {
         List<Station> stations = stationDao.findAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::of)
@@ -41,7 +41,7 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         stationDao.remove(id);
         return ResponseEntity.noContent().build();
     }
