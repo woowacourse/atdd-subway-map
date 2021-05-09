@@ -246,9 +246,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
-    @DisplayName("중복된 이름으로 노선을 수정한다.")
+    @DisplayName("노선의 이름은 그대로, 색상만을 수정한다.")
     @Test
-    void editLineAsDuplicateName() {
+    void editOnlyColorOfLine() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -274,6 +274,65 @@ public class LineAcceptanceTest extends AcceptanceTest {
                                                             .log()
                                                             .all()
                                                             .body(params2)
+                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                            .when()
+                                                            .put(uri)
+                                                            .then()
+                                                            .log()
+                                                            .all()
+                                                            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        final LineResponse lineResponse = RestAssured.get(uri).as(LineResponse.class);
+        assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+    }
+
+    @DisplayName("노선을 중복된 이름으로 수정한다.")
+    @Test
+    void editLineAsDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        RestAssured.given()
+                   .log()
+                   .all()
+                   .body(params)
+                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when()
+                   .post("/lines")
+                   .then()
+                   .log()
+                   .all()
+                   .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("color", "bg-green-600");
+        params2.put("name", "2호선");
+        ExtractableResponse<Response> createResponse = RestAssured.given()
+                                                                  .log()
+                                                                  .all()
+                                                                  .body(params2)
+                                                                  .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                                  .when()
+                                                                  .post("/lines")
+                                                                  .then()
+                                                                  .log()
+                                                                  .all()
+                                                                  .extract();
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("color", "bg-green-600");
+        params3.put("name", "신분당선");
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssured.given()
+                                                            .log()
+                                                            .all()
+                                                            .body(params3)
                                                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                                                             .when()
                                                             .put(uri)
