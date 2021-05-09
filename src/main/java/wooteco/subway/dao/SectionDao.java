@@ -42,12 +42,6 @@ public class SectionDao {
         return new Section(id, section);
     }
 
-    public List<Section> findAllByLineIdAndStationId(Long lineId, Long stationId) {
-        String query = "SELECT * FROM SECTION "
-            + "WHERE (line_id = ?) AND (up_station_id = ? OR down_station_id = ?)";
-        return jdbcTemplate.query(query, sectionRowMapper, lineId, stationId, stationId);
-    }
-
     public List<Section> findAllByLineId(Long lineId) {
         String query = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(query, sectionRowMapper, lineId);
