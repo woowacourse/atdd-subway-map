@@ -2,16 +2,12 @@ package wooteco.subway.entity;
 
 public class StationEntity {
 
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public StationEntity(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public StationEntity(String name) {
-        this(null, name);
     }
 
     public Long getId() {

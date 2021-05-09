@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Station;
 import wooteco.subway.entity.StationEntity;
 
 @Repository
@@ -23,18 +24,18 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public StationEntity save(StationEntity stationEntity) {
+    public StationEntity save(Station station) {
         String sql = "INSERT INTO station (name) values (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, stationEntity.getName());
+            ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
 
         return new StationEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(),
-            stationEntity.getName());
+            station.getName());
     }
 
     public StationEntity findById(Long id) {

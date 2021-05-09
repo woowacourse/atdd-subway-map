@@ -1,40 +1,65 @@
 package wooteco.subway.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.entity.LineEntity;
+import wooteco.subway.domain.Distance;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
+import wooteco.subway.domainmapper.SubwayMapper;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.entity.LineEntity;
 import wooteco.subway.repository.LineDao;
-import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.StationResponse;
+import wooteco.subway.repository.SectionDao;
+import wooteco.subway.repository.StationDao;
 
 @Service
 @Transactional
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationService stationService;
-    private final SectionService sectionService;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
+    private final SubwayMapper subwayMapper;
 
-    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
+    public LineService(LineDao lineDao, StationDao stationDao,
+        SectionDao sectionDao, SubwayMapper subwayMapper) {
         this.lineDao = lineDao;
-        this.stationService = stationService;
-        this.sectionService = sectionService;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
+        this.subwayMapper = subwayMapper;
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
         validateNameAndColor(lineRequest);
-        validateDuplicateStationId(lineRequest);
 
-        LineEntity newLineEntity = lineDao
-            .save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
-        createSection(lineRequest, newLineEntity);
+        Line line = subwayMapper
+            .line(lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor())));
 
-        return new LineResponse(newLineEntity, stationResponses(lineRequest));
+        Section newSection = createSection(lineRequest, line);
+
+        return new LineResponse(line, newSection);
+    }
+
+    private Section createSection(LineRequest lineRequest, Line line) {
+        validateToExistStationId(lineRequest.getUpStationId());
+        validateToExistStationId(lineRequest.getDownStationId());
+        Station upStation = subwayMapper.station(stationDao.findById(lineRequest.getUpStationId()));
+        Station downStation = subwayMapper
+            .station(stationDao.findById(lineRequest.getDownStationId()));
+        Section section = new Section(line, upStation, downStation,
+            new Distance(lineRequest.getDistance()));
+        return subwayMapper
+            .section(sectionDao.save(section), line, upStation, downStation);
+    }
+
+    private void validateToExistStationId(Long id) {
+        if (!stationDao.hasStationWithId(id)) {
+            throw new IllegalArgumentException("존재하지 않는 ID입니다.");
+        }
     }
 
     private void validateNameAndColor(LineRequest lineRequest) {
@@ -49,31 +74,20 @@ public class LineService {
         }
     }
 
-    private void createSection(LineRequest lineRequest, LineEntity newLineEntity) {
-        SectionRequest sectionRequest = new SectionRequest(newLineEntity.getId(),
-            lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(),
-            lineRequest.getDistance());
-        sectionService.createSection(sectionRequest);
-    }
-
-    private List<StationResponse> stationResponses(LineRequest lineRequest) {
-        return Arrays.asList(stationService.showStation(lineRequest.getUpStationId()),
-            stationService.showStation(lineRequest.getDownStationId()));
-    }
-
     @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         List<LineEntity> lineEntities = lineDao.findAll();
         return lineEntities.stream()
-            .map(LineResponse::new)
+            .map(lineEntity -> new LineResponse(lineEntity.getId(), lineEntity.getName(),
+                lineEntity.getColor()))
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         validateToExistId(id);
-        return new LineResponse(lineDao.findById(id));
+        LineEntity lineEntity = lineDao.findById(id);
+        return new LineResponse(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
     }
 
     private void validateToExistId(Long id) {

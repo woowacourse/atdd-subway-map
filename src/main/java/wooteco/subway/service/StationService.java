@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.repository.StationDao;
-import wooteco.subway.entity.StationEntity;
 import wooteco.subway.dto.StationRequest;
 import wooteco.subway.dto.StationResponse;
+import wooteco.subway.entity.StationEntity;
+import wooteco.subway.repository.StationDao;
 
 @Service
 @Transactional
@@ -21,8 +21,10 @@ public class StationService {
 
     public StationResponse createStation(StationRequest stationRequest) {
         validateNotToDuplicateName(stationRequest.getName());
-        StationEntity stationEntity = new StationEntity(stationRequest.getName());
-        return new StationResponse(stationDao.save(stationEntity));
+
+        StationEntity newStationEntity = stationDao
+            .save(stationRequest.toDomain());
+        return new StationResponse(newStationEntity.getId(), newStationEntity.getName());
     }
 
     private void validateNotToDuplicateName(String name) {
@@ -31,16 +33,12 @@ public class StationService {
         }
     }
 
-    public StationResponse showStation(Long id) {
-        validateToExistId(id);
-        return new StationResponse(stationDao.findById(id));
-    }
-
     @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
-        List<StationEntity> stations = stationDao.findAll();
-        return stations.stream()
-            .map(StationResponse::new)
+        List<StationEntity> stationEntities = stationDao.findAll();
+        return stationEntities.stream()
+            .map(stationEntity -> new StationResponse(stationEntity.getId(),
+                stationEntity.getName()))
             .collect(Collectors.toList());
     }
 

@@ -1,9 +1,13 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+import org.springframework.lang.NonNull;
+
 public class Station {
 
-    private Long id;
-    private String name;
+    private final Long id;
+    @NonNull
+    private final String name;
 
     public Station(Long id, String name) {
         this.id = id;
@@ -11,7 +15,7 @@ public class Station {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Long getId() {
@@ -20,6 +24,23 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Station station = (Station) o;
+        return Objects.equals(id, station.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 

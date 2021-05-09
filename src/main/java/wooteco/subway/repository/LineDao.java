@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.Line;
 import wooteco.subway.entity.LineEntity;
 
 @Repository
@@ -22,19 +23,19 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public LineEntity save(LineEntity lineEntity) {
+    public LineEntity save(Line line) {
         String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, lineEntity.getName());
-            ps.setString(2, lineEntity.getColor());
+            ps.setString(1, line.getName());
+            ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
 
         return new LineEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(),
-            lineEntity.getName(), lineEntity.getColor());
+            line.getName(), line.getColor());
     }
 
     public List<LineEntity> findAll() {
