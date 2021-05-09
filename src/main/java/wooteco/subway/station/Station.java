@@ -5,9 +5,6 @@ public class Station {
     private Long id;
     private String name;
 
-    private Station() {
-    }
-
     private Station(Long id, String name) {
         this.id = id;
         this.name = name;

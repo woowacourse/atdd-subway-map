@@ -5,7 +5,7 @@
 - [ ] jdbcTemplate이 가지고 있는 datasource로 변경
 - [x] exceptionController ResponseEntity 리턴타입 명시
 - [ ] transactional 어노테이션 사용
-- [ ] 각 생성자 간단하게 정리 (정적팩토리메소드 사용)
+- [x] 각 생성자 간단하게 정리 (정적팩토리메소드 사용)
 - [ ] 메소드 이름 정리 (lineDao에서라면 굳이 line이 메소드 이름 자체에 없어도 됨)
 - [ ] Station 도 Service 레이어 생성 (컨트롤러는 http 처리만 하는 것이 좋음)
 - [ ] Dao - DataSource 필요할까?

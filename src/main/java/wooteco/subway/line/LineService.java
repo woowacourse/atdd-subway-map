@@ -21,7 +21,7 @@ public class LineService {
         if (lineDao.findLineByName(name).isPresent()) {
             throw new LineNameDuplicatedException();
         }
-        Line line = new Line(name, color);
+        Line line = Line.of(name, color);
         return lineDao.save(line);
     }
 

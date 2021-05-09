@@ -41,7 +41,7 @@ public class JdbcLineDao implements LineDao {
                 .withTableName("LINE").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Line(id, line.getName(), line.getColor());
+        return Line.of(id, line.getName(), line.getColor());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class JdbcLineDao implements LineDao {
             Long foundId = rs.getLong("id");
             final String color = rs.getString("color");
             final String name = rs.getString("name");
-            return new Line(foundId, name, color);
+            return Line.of(foundId, name, color);
         };
     }
 }

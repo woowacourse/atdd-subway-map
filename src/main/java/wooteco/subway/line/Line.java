@@ -6,14 +6,18 @@ public class Line {
     private String name;
     private String color;
 
-    public Line(String name, String color) {
-        this(null, name, color);
-    }
-
-    public Line(Long id, String name, String color) {
+    private Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(null, name, color);
+    }
+
+    public static Line of(Long id, String name, String color) {
+        return new Line(id, name, color);
     }
 
     public Long getId() {
