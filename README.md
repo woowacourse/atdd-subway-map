@@ -148,14 +148,18 @@
   ```
 
 ## 3단계 요구사항
-- [ ] 지하철 노선 추가 API 수정
+- [x] 지하철 노선 추가 API 수정
   - 노 추가시 3가지 정보 추가 입력
     - upStationId : 상행 종점
     - downStationId : 하행 종점
     - distance : 두 종점간의 거리
   - 두 종점간의 연결 정보 이용하여 노선 추가 시 구간 정보도 함께 등록
-    - [ ] 요청이 들어오면 upStationId 와 downStationId 간의 구간을 생성한다. - service 로직
-  
+    - [x] 요청이 들어오면 upStationId 와 downStationId 간의 구간을 생성한다. - service 로직
+    
+  - [ ] 예외: 존재하지 않는 역 사이의 구간이 입력됐을 경우 예외
+  - [ ] exception: when get a new Line Request that has already existing line name.
+  - [ ] exception: when has a section information that has a same up station id and down station id, but different distance  in storage
+
 - [ ] 지하철 구간 추가 API 구현
   - 노선에 구간을 추가하는 API 만들기
   - path는 /lines/{lineId}/sections 활용
