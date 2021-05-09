@@ -13,7 +13,6 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     private LineResponse() {
-
     }
 
     private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
