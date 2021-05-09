@@ -33,7 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = createRequest(분당선_RED);
+        ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -45,10 +45,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWhenDuplicateLineName() {
         // given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        createRequest(분당선_RED);
+        createRequest("/lines", 분당선_RED);
 
         // when
-        ExtractableResponse<Response> response = createRequest(분당선_RED);
+        ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -60,11 +60,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
         LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
-        ExtractableResponse<Response> 신분당선생성 = createRequest(신분당선_YELLOW);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
+        ExtractableResponse<Response> 신분당선생성 = createRequest("/lines", 신분당선_YELLOW);
 
         // when
-        ExtractableResponse<Response> response = findAllRequest();
+        ExtractableResponse<Response> response = findAllRequest("/lines");
         List<Long> expectedLineIds = expectedLineIdsList(Arrays.asList(분당선생성, 신분당선생성));
         List<Long> resultLineIds = resultLineIdsList(response);
 
@@ -90,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         /// given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
 
         // when
         ExtractableResponse<Response> response = findByIdRequest("1");
@@ -108,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
         LineUpdateRequest 신분당선_YELLOW = new LineUpdateRequest("신분당선", "bg-yellow-600");
-        createRequest(분당선_RED);
+        createRequest("/lines", 분당선_RED);
 
         // when
         ExtractableResponse<Response> expectedResponse = updateRequest("1", 신분당선_YELLOW);
@@ -128,8 +128,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
         LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
-        createRequest(분당선_RED);
-        createRequest(신분당선_YELLOW);
+        createRequest("/lines", 분당선_RED);
+        createRequest("/lines", 신분당선_YELLOW);
 
         // when
         ExtractableResponse<Response> response = updateRequest("1", new LineUpdateRequest("신분당선", "bg-yellow-600"));
@@ -143,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
+        ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         int originalSize = lineDao.findAll().size();
 
         // when

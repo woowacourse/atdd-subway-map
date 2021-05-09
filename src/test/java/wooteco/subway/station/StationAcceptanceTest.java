@@ -32,7 +32,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest 강남역 = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = createRequest(강남역);
+        ExtractableResponse<Response> response = createRequest("/stations", 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,10 +44,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        createRequest(강남역);
+        createRequest("/stations", 강남역);
 
         // when
-        ExtractableResponse<Response> response = createRequest(강남역);
+        ExtractableResponse<Response> response = createRequest("/stations", 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,11 +59,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         StationRequest 강남역 = new StationRequest("강남역");
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> 강남역생성 = createRequest(강남역);
-        ExtractableResponse<Response> 역삼역생성 = createRequest(역삼역);
+        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
+        ExtractableResponse<Response> 역삼역생성 = createRequest("/stations", 역삼역);
 
         // when
-        ExtractableResponse<Response> response = findAllRequest();
+        ExtractableResponse<Response> response = findAllRequest("/stations");
         List<Long> expectedStationIds = expectedStationIdsList(Arrays.asList(강남역생성, 역삼역생성));
         List<Long> resultStationIds = resultStationIdsList(response);
 
@@ -89,7 +89,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> 강남역생성 = createRequest(강남역);
+        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
 
         int originalSize = stationDao.findAll().size();
 
