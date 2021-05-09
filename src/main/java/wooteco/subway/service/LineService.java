@@ -8,7 +8,9 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EntityNotFoundException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class LineService {
@@ -23,26 +25,16 @@ public class LineService {
 
     public Line save(final Line line, final Section section) {
         checkDuplicateLineName(line);
-        verifyStationIsExist(section);
-        return lineDao.save(line);
+        final Line newLine = lineDao.save(line);
+        final Section sectionWithNewLineId = Section.ofLineId(newLine.getId(), section);
+        sectionDao.save(sectionWithNewLineId);
+        return newLine;
     }
 
     private void checkDuplicateLineName(final Line line) {
         boolean existsName = lineDao.findByName(line.getName()).isPresent();
         if (existsName) {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
-    private void verifyStationIsExist(final Section section) {
-        boolean existsUpStation = sectionDao.findById(section.getUpStationId()).isPresent();
-        if (!existsUpStation) {
-            throw new EntityNotFoundException("해당 상행역 ID에 해당하는 역이 존재하지 않습니다.");
-        }
-
-        boolean existsDownStation = sectionDao.findById(section.getDownStationId()).isPresent();
-        if (!existsDownStation) {
-            throw new EntityNotFoundException("해당 하행역 ID에 해당하는 역이 존재하지 않습니다.");
         }
     }
 
@@ -65,5 +57,17 @@ public class LineService {
 
     public void delete(final Long id) {
         lineDao.delete(id);
+    }
+
+    public Set<Long> findStationIdsByLineId(final Long id) {
+        final List<Section> sections = sectionDao.findAllById(id);
+
+        Set<Long> stationsIds = new HashSet<>();
+        for (Section section : sections) {
+            stationsIds.add(section.getUpStationId());
+            stationsIds.add(section.getDownStationId());
+        }
+
+        return stationsIds;
     }
 }

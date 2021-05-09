@@ -16,6 +16,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section ofLineId(final Long lineId, final Section section) {
+        return new Section(null, lineId, section.upStationId, section.downStationId, section.distance);
+    }
+
+    public static Section ofSectionId(final Long id, final Section section) {
+        return new Section(id, section.lineId, section.upStationId, section.downStationId, section.distance);
+    }
+
     public Long getId() {
         return id;
     }
