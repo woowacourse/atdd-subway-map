@@ -1,13 +1,12 @@
 package wooteco.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.RestAssuredHelper;
 import wooteco.subway.controller.dto.StationResponse;
 
 import java.util.HashMap;
@@ -29,17 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         params.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
-                                                            .body(params)
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .post("/stations")
-                                                            .then()
-                                                            .log()
-                                                            .all()
-                                                            .extract();
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -52,30 +41,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .body(params)
-                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                   .when()
-                   .post("/stations")
-                   .then()
-                   .log()
-                   .all()
-                   .extract();
+        RestAssuredHelper.jsonPost(params, "/stations");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
-                                                            .body(params)
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when()
-                                                            .post("/stations")
-                                                            .then()
-                                                            .log()
-                                                            .all()
-                                                            .extract();
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -87,42 +56,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given()
-                                                                   .log()
-                                                                   .all()
-                                                                   .body(params1)
-                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                                   .when()
-                                                                   .post("/stations")
-                                                                   .then()
-                                                                   .log()
-                                                                   .all()
-                                                                   .extract();
+        ExtractableResponse<Response> createResponse1 = RestAssuredHelper.jsonPost(params1, "/stations");
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given()
-                                                                   .log()
-                                                                   .all()
-                                                                   .body(params2)
-                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                                   .when()
-                                                                   .post("/stations")
-                                                                   .then()
-                                                                   .log()
-                                                                   .all()
-                                                                   .extract();
+        ExtractableResponse<Response> createResponse2 = RestAssuredHelper.jsonPost(params2, "/stations");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
-                                                            .when()
-                                                            .get("/stations")
-                                                            .then()
-                                                            .log()
-                                                            .all()
-                                                            .extract();
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonGet("/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -143,29 +84,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given()
-                                                                  .log()
-                                                                  .all()
-                                                                  .body(params)
-                                                                  .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                                  .when()
-                                                                  .post("/stations")
-                                                                  .then()
-                                                                  .log()
-                                                                  .all()
-                                                                  .extract();
+        ExtractableResponse<Response> createResponse = RestAssuredHelper.jsonPost(params, "/stations");
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given()
-                                                            .log()
-                                                            .all()
-                                                            .when()
-                                                            .delete(uri)
-                                                            .then()
-                                                            .log()
-                                                            .all()
-                                                            .extract();
+        String createdLocation = createResponse.header("Location");
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonDelete(createdLocation);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
