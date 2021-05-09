@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.domain.type.Direction;
@@ -93,5 +95,26 @@ public class Section {
             return Direction.UP;
         }
         return Direction.DOWN;
+    }
+
+    public boolean canBeSplitBy(Section newSection) {
+        return newSection.getDistance() < this.getDistance();
+    }
+
+    public int getSplitDistanceBy(Section newSection) {
+        return this.getDistance() - newSection.getDistance();
+    }
+
+    public Section getNewSplitSectionBy(Section newSection, Long newStationId, Direction directionOfInsertCriteriaStationInNewSection) {
+        Direction reversedDirectionOfInsertCriteriaStation = directionOfInsertCriteriaStationInNewSection.getReversed();
+        int splitDistance = this.getSplitDistanceBy(newSection);
+        if (reversedDirectionOfInsertCriteriaStation == Direction.UP) {
+            return new Section(lineId, this.getUpStationId(), newStationId, splitDistance);
+        }
+        return new Section(lineId, newStationId, this.getDownStationId(), splitDistance);
+    }
+
+    public List<Long> getAllStationIds() {
+        return Arrays.asList(getUpStationId(), getDownStationId());
     }
 }

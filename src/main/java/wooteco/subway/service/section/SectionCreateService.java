@@ -1,5 +1,6 @@
 package wooteco.subway.service.section;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,10 @@ import wooteco.subway.exception.HttpException;
 @Transactional
 @Service
 public class SectionCreateService {
+    private static final int VALID_NUMBER_OF_INSERT_CRITERIA_STATION = 1;
+    private static final int NUMBER_OF_SECTIONS_WHEN_INSERT_FIRST_OR_LAST = 1;
+    private static final String CREATE_SECTION_ERROR_MESSAGE = "구간 추가 에러";
+
     private final SectionDao sectionDao;
 
     public SectionCreateService(SectionDao sectionDao) {
@@ -25,82 +30,139 @@ public class SectionCreateService {
     }
 
     public SectionCreateResponseDto createSection(Long lineId, SectionCreateRequestDto sectionCreateRequestDto) {
-        Section newSection = new Section(lineId,
-            sectionCreateRequestDto.getUpStationId(), sectionCreateRequestDto.getDownStationId(), sectionCreateRequestDto.getDistance());
-
         List<Section> allSectionsOfLine = sectionDao.findAllByLineId(lineId);
-
-        Set<Long> stationIdsOfRequest = new HashSet<>();
-        stationIdsOfRequest.add(newSection.getUpStationId());
-        stationIdsOfRequest.add(newSection.getDownStationId());
-
-        List<Section> sectionsHavingStationIdsOfRequest = allSectionsOfLine.stream()
-            .filter(section ->
-                stationIdsOfRequest.contains(section.getUpStationId())
-                    || stationIdsOfRequest.contains(section.getDownStationId()))
-            .collect(Collectors.toList());
-
-        Set<Long> stationIdsOfSectionHavingStationsOfRequest = new HashSet<>();
-        for (Section section : sectionsHavingStationIdsOfRequest) {
-            stationIdsOfSectionHavingStationsOfRequest.add(section.getUpStationId());
-            stationIdsOfSectionHavingStationsOfRequest.add(section.getDownStationId());
+        Section newSection = new Section(lineId, sectionCreateRequestDto.getUpStationId(), sectionCreateRequestDto.getDownStationId(), sectionCreateRequestDto.getDistance());
+        validateNewSectionStations(newSection, allSectionsOfLine);
+        if (isConditionOfFirstOrLastInsert(newSection, allSectionsOfLine)) {
+            Section savedSection = sectionDao.save(newSection);
+            return new SectionCreateResponseDto(savedSection);
         }
+        validateDistance(newSection, allSectionsOfLine);
+        Section savedNewSection = insertNewSectionToMiddleOfSectionAndGet(newSection, allSectionsOfLine);
+        return new SectionCreateResponseDto(savedNewSection);
+    }
 
-        List<Long> standardSingleIdInList = stationIdsOfSectionHavingStationsOfRequest.stream()
+    private void validateNewSectionStations(Section newSection, List<Section> allSectionsOfLine) {
+        List<Long> sectionInsertCriteriaStationIdsNew = getSectionInsertCriteriaStationIds(newSection, allSectionsOfLine);
+        validateNumberOfSectionInsertCriteriaStations(sectionInsertCriteriaStationIdsNew);
+    }
+
+    private boolean isConditionOfFirstOrLastInsert(Section newSection, List<Section> allSectionsOfLine) {
+        List<Section> sectionsHavingStationIdsOfNewSection = getSectionsHavingStationIdsOfNewSection(allSectionsOfLine, newSection.getAllStationIds());
+        List<Long> sectionInsertCriteriaStationIdsNew = getSectionInsertCriteriaStationIds(newSection, allSectionsOfLine);
+        Long sectionInsertCriteriaStationId = sectionInsertCriteriaStationIdsNew.get(0);
+        List<Section> sectionsInLineHavingCriteriaStation = getSectionsInLineHavingCriteriaStation(sectionsHavingStationIdsOfNewSection, sectionInsertCriteriaStationId);
+        if (sectionsInLineHavingCriteriaStation.size() != NUMBER_OF_SECTIONS_WHEN_INSERT_FIRST_OR_LAST) {
+            return false;
+        }
+        Section sectionInLineHavingCriteriaStation = sectionsInLineHavingCriteriaStation.get(0);
+        return isFirstInsert(newSection, sectionInsertCriteriaStationId, sectionInLineHavingCriteriaStation)
+            || isLastInsert(newSection, sectionInsertCriteriaStationId, sectionInLineHavingCriteriaStation);
+    }
+
+    private void validateDistance(Section newSection, List<Section> allSectionsOfLine) {
+        List<Section> sectionsHavingStationIdsOfNewSection = getSectionsHavingStationIdsOfNewSection(allSectionsOfLine, newSection.getAllStationIds());
+        List<Long> sectionInsertCriteriaStationIds = getSectionInsertCriteriaStationIds(newSection, allSectionsOfLine);
+        Long sectionInsertCriteriaStationId = sectionInsertCriteriaStationIds.get(0);
+        List<Section> sectionsInLineHavingCriteriaStation = getSectionsInLineHavingCriteriaStation(sectionsHavingStationIdsOfNewSection, sectionInsertCriteriaStationId);
+        Direction directionOfInsertCriteriaStationInNewSection = newSection.getDirectionOf(sectionInsertCriteriaStationId);
+        Section sectionToBeSplit = getSectionToBeSplit(sectionInsertCriteriaStationId, sectionsInLineHavingCriteriaStation, directionOfInsertCriteriaStationInNewSection);
+        if (!sectionToBeSplit.canBeSplitBy(newSection)) {
+            throw new HttpException(HttpStatus.BAD_REQUEST, "추가할 구간의 길이가 너무 큽니다.");
+        }
+    }
+
+    private Section insertNewSectionToMiddleOfSectionAndGet(Section newSection, List<Section> allSectionsOfLine) {
+        List<Section> sectionsHavingStationIdsOfNewSection = getSectionsHavingStationIdsOfNewSection(allSectionsOfLine, newSection.getAllStationIds());
+        Long sectionInsertCriteriaStationId = getOneSectionInsertCriteriaStationIds(newSection, allSectionsOfLine);
+        List<Section> sectionsInLineHavingInsertCriteriaStation = getSectionsInLineHavingCriteriaStation(sectionsHavingStationIdsOfNewSection, sectionInsertCriteriaStationId);
+        Direction directionOfInsertCriteriaStationInNewSection = newSection.getDirectionOf(sectionInsertCriteriaStationId);
+        Section sectionToBeSplit = getSectionToBeSplit(sectionInsertCriteriaStationId, sectionsInLineHavingInsertCriteriaStation, directionOfInsertCriteriaStationInNewSection);
+        Long newStationId = getNewStationId(newSection, sectionInsertCriteriaStationId);
+        Section newSplitSection = sectionToBeSplit.getNewSplitSectionBy(newSection, newStationId, directionOfInsertCriteriaStationInNewSection);
+        sectionDao.deleteById(Objects.requireNonNull(sectionToBeSplit).getId());
+        sectionDao.save(newSplitSection);
+        return sectionDao.save(newSection);
+    }
+
+
+    private List<Long> getSectionInsertCriteriaStationIds(Section newSection, List<Section> allSectionsOfLine) {
+        List<Long> stationIdsOfNewSection = Arrays.asList(newSection.getUpStationId(), newSection.getDownStationId());
+        List<Section> sectionsHavingStationIdsOfNewSection = getSectionsHavingStationIdsOfNewSection(allSectionsOfLine, stationIdsOfNewSection);
+        Set<Long> stationIdsInSectionsHavingStationIdsOfNewSection = getStationIdsInSectionsHavingStationIdsOfNewSection(sectionsHavingStationIdsOfNewSection);
+        return getSectionInsertCriteriaStationIds(newSection, stationIdsInSectionsHavingStationIdsOfNewSection);
+    }
+
+    private Long getOneSectionInsertCriteriaStationIds(Section newSection, List<Section> allSectionsOfLine) {
+        List<Long> stationIdsOfNewSection = Arrays.asList(newSection.getUpStationId(), newSection.getDownStationId());
+        List<Section> sectionsHavingStationIdsOfNewSection = getSectionsHavingStationIdsOfNewSection(allSectionsOfLine, stationIdsOfNewSection);
+        Set<Long> stationIdsInSectionsHavingStationIdsOfNewSection = getStationIdsInSectionsHavingStationIdsOfNewSection(sectionsHavingStationIdsOfNewSection);
+        List<Long> sectionInsertCriteriaStationIds = getSectionInsertCriteriaStationIds(newSection, stationIdsInSectionsHavingStationIdsOfNewSection);
+        if (sectionInsertCriteriaStationIds.size() != 1) {
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, CREATE_SECTION_ERROR_MESSAGE);
+        }
+        return sectionInsertCriteriaStationIds.get(0);
+    }
+
+    private Section getSectionToBeSplit(Long sectionInsertCriteriaStationId, List<Section> sectionsInLineHavingCriteriaStation, Direction directionOfInsertCriteriaStationInNewSection) {
+        return sectionsInLineHavingCriteriaStation.stream()
+            .filter(section -> section.getDirectionOf(sectionInsertCriteriaStationId) == directionOfInsertCriteriaStationInNewSection)
+            .findFirst()
+            .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, CREATE_SECTION_ERROR_MESSAGE));
+    }
+
+    private boolean isFirstInsert(Section newSection, Long sectionInsertCriteriaStationId, Section sectionInLineHavingCriteriaStation) {
+        return sectionInsertCriteriaStationId.equals(sectionInLineHavingCriteriaStation.getUpStationId()) && sectionInsertCriteriaStationId.equals(newSection.getDownStationId());
+    }
+
+    private boolean isLastInsert(Section newSection, Long sectionInsertCriteriaStationId, Section sectionInLineHavingCriteriaStation) {
+        return sectionInsertCriteriaStationId.equals(newSection.getUpStationId()) && sectionInsertCriteriaStationId.equals(sectionInLineHavingCriteriaStation.getDownStationId());
+    }
+
+    private List<Section> getSectionsInLineHavingCriteriaStation(List<Section> sectionsHavingStationIdsOfNewSection, Long sectionInsertCriteriaStationId) {
+        return sectionsHavingStationIdsOfNewSection.stream()
+            .filter(sectionInLine ->
+                sectionInLine.getUpStationId().equals(sectionInsertCriteriaStationId)
+                    || sectionInLine.getDownStationId().equals(sectionInsertCriteriaStationId))
+            .collect(Collectors.toList());
+    }
+
+    private Long getNewStationId(Section newSection, Long sectionInsertCriteriaStationId) {
+        List<Long> stationIdsOfNewSection = Arrays.asList(newSection.getUpStationId(), newSection.getDownStationId());
+        return stationIdsOfNewSection.stream()
+            .filter(stationId -> !stationId.equals(sectionInsertCriteriaStationId))
+            .findFirst()
+            .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, CREATE_SECTION_ERROR_MESSAGE));
+    }
+
+    private void validateNumberOfSectionInsertCriteriaStations(List<Long> sectionInsertCriteriaStationIds) {
+        if (sectionInsertCriteriaStationIds.size() != VALID_NUMBER_OF_INSERT_CRITERIA_STATION) {
+            throw new HttpException(HttpStatus.BAD_REQUEST, "추가할 구간의 한 개의 역만 기존 노선에 존재해야 합니다.");
+        }
+    }
+
+    private List<Section> getSectionsHavingStationIdsOfNewSection(List<Section> allSectionsOfLine, List<Long> stationIdsOfNewSection) {
+        return allSectionsOfLine.stream()
+            .filter(section ->
+                stationIdsOfNewSection.contains(section.getUpStationId())
+                    || stationIdsOfNewSection.contains(section.getDownStationId()))
+            .collect(Collectors.toList());
+    }
+
+    private List<Long> getSectionInsertCriteriaStationIds(Section newSection, Set<Long> stationIdsInSectionsHavingStationIdsOfNewSection) {
+        return stationIdsInSectionsHavingStationIdsOfNewSection.stream()
             .filter(stationId ->
                 stationId.equals(newSection.getUpStationId())
                     || stationId.equals(newSection.getDownStationId()))
             .collect(Collectors.toList());
+    }
 
-        if (standardSingleIdInList.size() != 1) {
-            throw new HttpException(HttpStatus.BAD_REQUEST, "추가할 구간의 한 개의 역만 기존 노선에 존재해야 합니다.");
+    private Set<Long> getStationIdsInSectionsHavingStationIdsOfNewSection(List<Section> sectionsHavingStationIdsOfNewSection) {
+        Set<Long> stationIdsInSectionsHavingStationIdsOfNewSection = new HashSet<>();
+        for (Section section : sectionsHavingStationIdsOfNewSection) {
+            stationIdsInSectionsHavingStationIdsOfNewSection.add(section.getUpStationId());
+            stationIdsInSectionsHavingStationIdsOfNewSection.add(section.getDownStationId());
         }
-
-        Long standardStationId = standardSingleIdInList.get(0);
-        Long newStationId = stationIdsOfRequest.stream()
-            .filter(stationId -> !stationId.equals(standardStationId))
-            .findFirst()
-            .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "구간 추가 에러"));
-
-        List<Section> sectionsInLineHavingNewStation = sectionsHavingStationIdsOfRequest.stream()
-            .filter(section ->
-                section.getUpStationId().equals(standardStationId)
-                    || section.getDownStationId().equals(standardStationId))
-            .collect(Collectors.toList());
-
-        if (sectionsInLineHavingNewStation.size() == 1) {
-            Section sectionInLineHavingStandardStation = sectionsInLineHavingNewStation.get(0);
-            if ((standardStationId.equals(newSection.getUpStationId()) && standardStationId.equals(sectionInLineHavingStandardStation.getDownStationId()))
-                || (standardStationId.equals(sectionInLineHavingStandardStation.getUpStationId()) && standardStationId.equals(newSection.getDownStationId()))) {
-                Section savedSection = sectionDao.save(newSection);
-                return new SectionCreateResponseDto(savedSection);
-            }
-        }
-
-        Direction directionOfStandardStationInNewSection = newSection.getDirectionOf(standardStationId);
-
-        Section sectionToBeSplit = sectionsInLineHavingNewStation.stream()
-            .filter(section -> section.getDirectionOf(standardStationId) == directionOfStandardStationInNewSection)
-            .findFirst()
-            .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "구간 추가 에러"));
-
-        if (newSection.getDistance() >= sectionToBeSplit.getDistance()) {
-            throw new HttpException(HttpStatus.BAD_REQUEST, "추가할 구간의 길이가 너무 큽니다.");
-        }
-
-        Direction reverseDirectionOfStandardStation = directionOfStandardStationInNewSection.getReversed();
-
-        Section splitSection = null;
-        int splitDistance = sectionToBeSplit.getDistance() - newSection.getDistance();
-        if (reverseDirectionOfStandardStation == Direction.UP) {
-            splitSection = new Section(lineId, sectionToBeSplit.getUpStationId(), newStationId, splitDistance);
-        }
-        if (reverseDirectionOfStandardStation == Direction.DOWN) {
-            splitSection = new Section(lineId, newStationId, sectionToBeSplit.getDownStationId(), splitDistance);
-        }
-        sectionDao.deleteById(Objects.requireNonNull(sectionToBeSplit).getId());
-        sectionDao.save(splitSection);
-        Section savedNewSection = sectionDao.save(newSection);
-        return new SectionCreateResponseDto(savedNewSection);
+        return stationIdsInSectionsHavingStationIdsOfNewSection;
     }
 }
