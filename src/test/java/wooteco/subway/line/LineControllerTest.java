@@ -28,12 +28,12 @@ class LineControllerTest extends ControllerTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
         // then
         final LineResponse lineResponse = response.body().as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -49,20 +49,20 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.header("Location")).isBlank();
@@ -92,36 +92,36 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600");
 
         final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(lineRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -132,20 +132,20 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
-            .extract();
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -159,10 +159,10 @@ class LineControllerTest extends ControllerTest {
     void getStationById_notFound() {
         /// given
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/-1")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/lines/-1")
+                .then().log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -174,31 +174,31 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         final String uri = RestAssured.given()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         LineRequest lineRequest2 = new LineRequest("구분당선", "bg-blue-600");
 
         // when
         RestAssured.given().log().all()
-            .body(lineRequest2)
-            .contentType(ContentType.JSON)
-            .when()
-            .put(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+                .body(lineRequest2)
+                .contentType(ContentType.JSON)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
         // then
         RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
-            .body("name", equalTo("구분당선"))
-            .body("color", equalTo("bg-blue-600"));
+                .when()
+                .get(uri)
+                .then().log().all()
+                .body("name", equalTo("구분당선"))
+                .body("color", equalTo("bg-blue-600"));
     }
 
     @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
@@ -208,33 +208,33 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         final String uri = RestAssured.given()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         LineRequest lineRequest2 = new LineRequest("구분당선", "bg-red-600");
 
         RestAssured.given()
-            .body(lineRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines");
+                .body(lineRequest2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines");
 
         LineRequest lineRequest3 = new LineRequest("구분당선", "bg-blue-600");
 
         // when
         RestAssured
-            .given().log().all()
-            .body(lineRequest3)
-            .contentType(ContentType.JSON)
-            .when()
-            .put(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
+                .given().log().all()
+                .body(lineRequest3)
+                .contentType(ContentType.JSON)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
     }
 
     @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
@@ -245,13 +245,13 @@ class LineControllerTest extends ControllerTest {
 
         // when
         RestAssured
-            .given().log().all()
-            .body(lineRequest)
-            .contentType(ContentType.JSON)
-            .when()
-            .put("/lines/-1")
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+                .given().log().all()
+                .body(lineRequest)
+                .contentType(ContentType.JSON)
+                .when()
+                .put("/lines/-1")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
@@ -261,25 +261,25 @@ class LineControllerTest extends ControllerTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         final String uri = RestAssured.given()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         // when
         RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         // then
         RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
+                .when()
+                .get(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

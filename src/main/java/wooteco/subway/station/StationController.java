@@ -24,15 +24,15 @@ public class StationController {
         Station newStation = stationService.save(station);
         StationResponse stationResponse = new StationResponse(newStation);
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
-            .body(stationResponse);
+                .body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         List<Station> stations = stationService.findAll();
         List<StationResponse> stationResponses = stations.stream()
-            .map(StationResponse::new)
-            .collect(Collectors.toList());
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(stationResponses);
     }
 

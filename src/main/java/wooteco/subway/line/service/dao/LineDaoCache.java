@@ -16,8 +16,8 @@ public class LineDaoCache implements LineDao {
     @Override
     public Optional<Line> findLineByName(String name) {
         return lines.stream()
-            .filter(line -> line.isSameName(name))
-            .findAny();
+                .filter(line -> line.isSameName(name))
+                .findAny();
     }
 
     @Override
@@ -42,8 +42,8 @@ public class LineDaoCache implements LineDao {
     @Override
     public Optional<Line> findLineById(Long id) {
         return lines.stream()
-            .filter(line -> line.isSameId(id))
-            .findAny();
+                .filter(line -> line.isSameId(id))
+                .findAny();
     }
 
     @Override

@@ -17,6 +17,7 @@ public class StationResponse {
         this.id = station.getId();
         this.name = station.getName();
     }
+
     public Long getId() {
         return id;
     }

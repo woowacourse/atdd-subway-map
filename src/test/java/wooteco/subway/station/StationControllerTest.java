@@ -39,12 +39,12 @@ public class StationControllerTest extends ControllerTest {
 
         // when
         RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -54,21 +54,21 @@ public class StationControllerTest extends ControllerTest {
         StationRequest stationRequest = new StationRequest("강남역");
 
         RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .extract();
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -80,36 +80,36 @@ public class StationControllerTest extends ControllerTest {
         StationRequest stationRequest = new StationRequest("강남역");
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         StationRequest stationRequest2 = new StationRequest("역삼역");
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(stationRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+                .body(stationRequest2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -120,19 +120,19 @@ public class StationControllerTest extends ControllerTest {
         StationRequest stationRequest = new StationRequest("강남역");
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
         // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

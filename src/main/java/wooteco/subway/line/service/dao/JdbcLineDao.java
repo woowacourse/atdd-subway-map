@@ -23,7 +23,7 @@ public class JdbcLineDao implements LineDao {
         this.jdbcTemplate = jdbcTemplate;
 
         jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("LINE").usingGeneratedKeyColumns("id");
+                .withTableName("LINE").usingGeneratedKeyColumns("id");
 
         this.lineRowMapper = (rs, rowNum) -> {
             Long foundId = rs.getLong("id");
@@ -37,8 +37,8 @@ public class JdbcLineDao implements LineDao {
     public Optional<Line> findLineByName(String name) {
         final String sql = "SELECT * FROM line WHERE name = ?";
         return jdbcTemplate.query(sql, lineRowMapper, name)
-            .stream()
-            .findAny();
+                .stream()
+                .findAny();
     }
 
     @Override

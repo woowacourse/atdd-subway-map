@@ -31,15 +31,15 @@ public class LineController {
         Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
         LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-            .body(lineResponse);
+                .body(lineResponse);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(LineResponse::new)
-            .collect(Collectors.toList());
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(lineResponses);
     }
 
@@ -50,7 +50,7 @@ public class LineController {
     }
 
     @PutMapping(value = "/lines/{id}")
-    public ResponseEntity<Void>updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.findLineById(id);
 
         final Optional<Line> lineByName = lineService.findLineByName(lineRequest.getName());
@@ -64,7 +64,7 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity<Void>removeLine(@PathVariable Long id) {
+    public ResponseEntity<Void> removeLine(@PathVariable Long id) {
         lineService.removeLine(id);
         return ResponseEntity.noContent().build();
     }

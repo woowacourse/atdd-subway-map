@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.SubwayException;
 
 @RestControllerAdvice
-public class ExceptionController {
+public class SubwayAdvice {
 
     @ExceptionHandler({SubwayException.class})
     public ResponseEntity<String> lineNameDuplicated(Exception e) {

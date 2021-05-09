@@ -23,7 +23,7 @@ public class JdbcStationDao implements StationDao {
         this.jdbcTemplate = jdbcTemplate;
 
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("STATION").usingGeneratedKeyColumns("id");
+                .withTableName("STATION").usingGeneratedKeyColumns("id");
 
         this.stationRowMapper = (rs, rowNum) -> {
             Long foundId = rs.getLong("id");
