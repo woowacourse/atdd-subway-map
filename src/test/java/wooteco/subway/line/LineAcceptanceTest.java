@@ -64,16 +64,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = getAll();
-        List<Long> expectedLineIds = Stream.of(분당선생성, 신분당선생성)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = expectedLineIdsList(Arrays.asList(분당선생성, 신분당선생성));
+        List<Long> resultLineIds = resultLineIdsList(response);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private List<Long> expectedLineIdsList(List<ExtractableResponse<Response>> lines) {
+        return Stream.of(lines.get(0), lines.get(1))
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> resultLineIdsList(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
     }
 
     @DisplayName("노선 하나를 조회한다.")

@@ -64,16 +64,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = get();
-        List<Long> expectedLineIds = Stream.of(강남역생성, 역삼역생성)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> expectedStationIds = expectedStationIdsList(Arrays.asList(강남역생성, 역삼역생성));
+        List<Long> resultStationIds = resultStationIdsList(response);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultStationIds).containsAll(expectedStationIds);
+    }
+
+    private List<Long> expectedStationIdsList(List<ExtractableResponse<Response>> stations) {
+        return Stream.of(stations.get(0), stations.get(1))
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> resultStationIdsList(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
     }
 
     @DisplayName("지하철역을 제거한다.")
