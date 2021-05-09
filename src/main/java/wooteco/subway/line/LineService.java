@@ -13,7 +13,7 @@ public class LineService {
     }
 
     public Line createLine(LineRequest lineRequest) {
-        if (isStationExist(lineRequest.getName())) {
+        if (isExistingLine(lineRequest.getName())) {
             throw new LineExistenceException();
         }
         return lineDao.save(lineRequest.getName(), lineRequest.getColor());
@@ -28,7 +28,7 @@ public class LineService {
                 .orElseThrow(LineExistenceException::new);
     }
 
-    private boolean isStationExist(String name) {
+    private boolean isExistingLine(String name) {
         return lineDao.findByName(name)
                 .isPresent();
     }

@@ -13,7 +13,7 @@ public class StationService {
     }
 
     public Station createStation(StationRequest stationRequest) {
-        if (isStationExist(stationRequest.getName())) {
+        if (isExistingStation(stationRequest.getName())) {
             throw new StationExistenceException();
         }
         return stationDao.save(stationRequest.getName());
@@ -23,7 +23,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    private boolean isStationExist(String name) {
+    private boolean isExistingStation(String name) {
         return stationDao.findByName(name).isPresent();
     }
 
