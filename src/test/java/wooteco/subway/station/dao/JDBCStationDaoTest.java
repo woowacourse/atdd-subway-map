@@ -1,5 +1,6 @@
 package wooteco.subway.station.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +23,7 @@ class JDBCStationDaoTest {
     }
 
     @Test
+    @DisplayName("역 추가 테스트")
     void save() {
         Station station = new Station("강남역");
 
@@ -31,6 +33,7 @@ class JDBCStationDaoTest {
     }
 
     @Test
+    @DisplayName("역 조회 테스트")
     void findAll() {
         Station station1 = new Station("강남역");
         Station station2 = new Station("역삼역");
@@ -44,6 +47,7 @@ class JDBCStationDaoTest {
     }
 
     @Test
+    @DisplayName("아이디로 역 조회 테스트")
     void findById() {
         Station station1 = new Station("강남역");
         Station savedStation = jdbcStationDao.save(station1);
@@ -53,6 +57,7 @@ class JDBCStationDaoTest {
     }
 
     @Test
+    @DisplayName("역 삭제 테스트")
     void delete() {
         Station station1 = new Station("강남역");
         Station station2 = new Station("역삼역");

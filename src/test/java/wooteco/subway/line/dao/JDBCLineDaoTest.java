@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,6 +24,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("노선 추가 테스트")
     void save() {
         Line line = new Line("2호선", "bg-red-600");
 
@@ -33,6 +35,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("노선 조회 테스트")
     void findAll() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
@@ -47,6 +50,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("노선 아이디로 조회 테스트")
     void findById() {
         Line line = new Line("2호선", "bg-red-600");
 
@@ -57,6 +61,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("노선 삭제 테스트")
     void delete() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
@@ -72,6 +77,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("노선 정보 수정 테스트")
     void update() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
@@ -89,6 +95,7 @@ class JDBCLineDaoTest {
     }
 
     @Test
+    @DisplayName("모든 노선 삭제 테스트")
     void deleteAll() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
