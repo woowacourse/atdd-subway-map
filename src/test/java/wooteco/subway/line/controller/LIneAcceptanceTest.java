@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineSaveRequestDto;
+import wooteco.subway.line.service.LineService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LIneAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private LineDao lineDao;
+    private LineService lineService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -181,7 +181,6 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(lineDao.findById(deleteId)).isEmpty();
     }
 
     @DisplayName("노선 제거시 없는 노선이면 예외가 발생한다.")
