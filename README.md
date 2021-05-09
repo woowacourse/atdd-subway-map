@@ -38,6 +38,51 @@ npm run dev
 ```
 <br>
 
+## 🚟 기능 요구사항 
+
+> 1 단계 
+
+### 역 관리
+- [x] 역 추가
+  - 제한 사항
+    - [x] 같은 이름 지하철 역 생성 불가
+    - [x] "-역"을 접미사로 가지고 있음
+- [x] 역 조회
+- [x] 역 삭제
+
+### 노선 관리 
+- [x] 노선 생성
+  - 제한 사항
+    - [x] 같은 이름 || 같은 색깔 노선 생성 불가
+    - [x] "-선"을 접미사로 가지고 있음
+- [x] 노선 목록 조회 
+- [x] 노선 조회  
+  - [x] 해당 노선에 포함된 역 출력 
+- [x] 노선 수정
+  - [x] 이름 || 색깔 수정 가능
+- [x] 노선 삭제 
+
+### E2E 테스트 작성
+- [x] 노선 기능
+<br>
+
+> 2 단계
+
+### Spring Bean 활용
+- [x] Service Bean 등록
+- [x] DAO Bean 등록 
+
+### 스프링 JDBC H2 DB 저장
+- [x] DB 연결
+- [x] DB 생성
+- [x] DAO 쿼리 작성 
+- [x] H2 log/console 확인 
+
+### 스프링 JDBC H2 DB 테스트
+- [x] DAO 테스트 작성 
+
+<br>
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
