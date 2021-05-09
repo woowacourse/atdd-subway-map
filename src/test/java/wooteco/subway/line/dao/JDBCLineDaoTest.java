@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class JDBCLineDaoTest {
 
-    private JDBCLineDao jdbcLineDao;
+    private final JDBCLineDao jdbcLineDao;
 
     public JDBCLineDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcLineDao = new JDBCLineDao(jdbcTemplate);
@@ -35,16 +35,14 @@ class JDBCLineDaoTest {
     void findAll() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
-        jdbcLineDao.save(line1);
-        jdbcLineDao.save(line2);
+
+        Line savedLine1 = jdbcLineDao.save(line1);
+        Line savedLine2 = jdbcLineDao.save(line2);
 
         List<Line> lines = jdbcLineDao.findAll();
 
         assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(
-                new Line(1L, "2호선", "bg-red-600", new ArrayList<>()),
-                new Line(2L, "3호선", "bg-red-600", new ArrayList<>())
-        );
+        assertThat(lines).containsExactly(savedLine1, savedLine2);
     }
 
     @Test
@@ -54,21 +52,22 @@ class JDBCLineDaoTest {
         Line savedLine = jdbcLineDao.save(line);
         Line findByIdLine = jdbcLineDao.findById(savedLine.getId());
 
-        assertThat(line.getName()).isEqualTo(findByIdLine.getName());
+        assertThat(findByIdLine).isEqualTo(savedLine);
     }
 
     @Test
     void delete() {
         Line line1 = new Line("2호선", "bg-red-600");
         Line line2 = new Line("3호선", "bg-red-600");
-        jdbcLineDao.save(line1);
-        Line savedLine = jdbcLineDao.save(line2);
+        Line savedLine1 = jdbcLineDao.save(line1);
+        Line savedLine2 = jdbcLineDao.save(line2);
 
-        jdbcLineDao.delete(savedLine.getId());
+        jdbcLineDao.delete(savedLine2.getId());
 
         List<Line> lines = jdbcLineDao.findAll();
 
         assertThat(lines).hasSize(1);
+        assertThat(lines).containsExactly(savedLine1);
     }
 
     @Test
