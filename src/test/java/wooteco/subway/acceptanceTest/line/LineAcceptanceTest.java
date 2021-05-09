@@ -9,6 +9,7 @@ import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.D
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_COLOR;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_ID;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_NAME;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.NEW_STATION;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_1;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_2;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_3;
@@ -75,6 +76,42 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = createLineWithSectionsOf(LINE_NAME + 1, LINE_COLOR, STATIONS);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        List<Long> allSavedLineIds = requestAndGetAllSavedLinesIds();
+        assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
+    }
+
+    @DisplayName("존재하지 않는 상행 종점역으로 노선을 생성한다.")
+    @Test
+    void createLineWithUpStationNotExists() {
+        // given
+        createLineWithSectionsOf(STATIONS);
+        Long savedLineIdBeforeRequest = requestAndGetAllSavedLinesIds().get(0);
+
+        // when
+        ExtractableResponse<Response> response = LineAcceptanceTestUtils
+            .createLine(LINE_NAME + 1, LINE_COLOR + 1, STATION_1.getId(), NEW_STATION.getId(), DEFAULT_SECTION_DISTANCE);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        List<Long> allSavedLineIds = requestAndGetAllSavedLinesIds();
+        assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
+    }
+
+    @DisplayName("존재하지 않는 하행 종점역으로 노선을 생성한다.")
+    @Test
+    void createLineWithDownStationNotExists() {
+        // given
+        createLineWithSectionsOf(STATIONS);
+        Long savedLineIdBeforeRequest = requestAndGetAllSavedLinesIds().get(0);
+
+        // when
+        ExtractableResponse<Response> response = LineAcceptanceTestUtils
+            .createLine(LINE_NAME + 1, LINE_COLOR + 1, NEW_STATION.getId(), STATION_1.getId(), DEFAULT_SECTION_DISTANCE);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

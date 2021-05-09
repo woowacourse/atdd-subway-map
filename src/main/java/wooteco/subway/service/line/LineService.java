@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,6 @@ import wooteco.subway.exception.HttpException;
 @Transactional
 @Service
 public class LineService {
-    private static final String LINE_NAME_OR_COLOR_DUPLICATE_ERROR_MESSAGE = "노선의 이름 또는 색깔이 이미 존재합니다.";
-
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
@@ -38,8 +37,8 @@ public class LineService {
             Section newSection = new Section(savedLine, lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
             Section savedSection = sectionDao.save(newSection);
             return new LineCreateResponseDto(savedLine, savedSection);
-        } catch (DuplicateKeyException e) {
-            throw new HttpException(BAD_REQUEST, LINE_NAME_OR_COLOR_DUPLICATE_ERROR_MESSAGE);
+        } catch (DataIntegrityViolationException e) {
+            throw new HttpException(BAD_REQUEST, "생성할 노선의 이름 또는 색깔이 중복되었거나, 상행 종점역 또는 하행 종점역이 존재하지 않습니다.");
         }
     }
 
@@ -58,11 +57,7 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
-        try {
-            return lineDao.update(id, lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
-        } catch (DuplicateKeyException e) {
-            throw new HttpException(BAD_REQUEST, LINE_NAME_OR_COLOR_DUPLICATE_ERROR_MESSAGE);
-        }
+        return lineDao.update(id, lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
     }
 
     public int deleteLineById(Long id) {
