@@ -1,11 +1,6 @@
 package wooteco.subway.acceptanceTest.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.assertSectionCreatedResponseBody;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.assertStationsList;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createSection;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.deleteSection;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.DEFAULT_SECTION_DISTANCE;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_ID;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.NEW_SECTION_DISTANCE;
@@ -16,6 +11,11 @@ import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_1;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_2;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_3;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_4;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.assertSectionCreatedResponseBody;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.assertStationsList;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createSection;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.deleteSection;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

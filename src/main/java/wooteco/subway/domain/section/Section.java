@@ -1,12 +1,10 @@
 package wooteco.subway.domain.section;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.section.type.Direction;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.HttpException;
 
 public class Section {

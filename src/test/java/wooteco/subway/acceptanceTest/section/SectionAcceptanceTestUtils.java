@@ -1,13 +1,13 @@
 package wooteco.subway.acceptanceTest.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.createLine;
-import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.createStationWithName;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.DEFAULT_SECTION_DISTANCE;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_COLOR;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_ID;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_NAME;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.NEW_STATION;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.createLine;
+import static wooteco.subway.acceptanceTest.station.StationAcceptanceTestUtils.createStationWithName;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;

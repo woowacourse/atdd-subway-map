@@ -14,8 +14,8 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineStationsInOrder;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.HttpException;
 
 @Transactional(readOnly = true)

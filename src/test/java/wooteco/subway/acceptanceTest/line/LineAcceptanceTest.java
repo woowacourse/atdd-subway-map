@@ -1,11 +1,6 @@
 package wooteco.subway.acceptanceTest.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.assertLineResponseDto;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.getAllLinesInIdOrder;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetAllSavedLinesIds;
-import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestUpdateLine;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.DEFAULT_SECTION_DISTANCE;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_COLOR;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_ID;
@@ -14,6 +9,11 @@ import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.NEW_STATION;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_1;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_2;
 import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_3;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.assertLineResponseDto;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.getAllLinesInIdOrder;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetAllSavedLinesIds;
+import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestUpdateLine;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
