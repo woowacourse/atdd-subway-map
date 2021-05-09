@@ -2,11 +2,14 @@ package wooteco.subway.line;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.exception.LineElementNullPointException;
 import wooteco.subway.exception.LineNameDuplicatedException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +25,11 @@ public class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new LineElementNullPointException();
+        }
+
         final String name = lineRequest.getName();
         final String color = lineRequest.getColor();
         if (lineDao.findLineByName(name).isPresent()) {

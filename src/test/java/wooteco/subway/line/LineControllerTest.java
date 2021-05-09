@@ -68,6 +68,23 @@ class LineControllerTest extends ControllerTest {
         assertThat(response.header("Location")).isBlank();
     }
 
+    @DisplayName("노선 생성 - 실패(필수 값 누락)")
+    @Test
+    void createLine_nullElement() {
+        // given
+        LineRequest lineRequest = new LineRequest("신분당선", "");
+
+        // when and then
+        RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(equalTo("필수 요소가 누락 되었습니다."));
+    }
+
     @DisplayName("노선 목록 조회 - 성공")
     @Test
     void getLines() {
