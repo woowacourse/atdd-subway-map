@@ -18,9 +18,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        final long id = lineRepository.save(line);
-
-        return new Line(id, line.getName(), line.getColor());
+        return lineRepository.save(line);
     }
 
     public List<Line> allLines() {

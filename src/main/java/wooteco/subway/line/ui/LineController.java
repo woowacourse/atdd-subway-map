@@ -7,12 +7,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.section.Section;
+import wooteco.subway.line.domain.section.Sections;
+import wooteco.subway.line.domain.value.LineColor;
+import wooteco.subway.line.domain.value.LineId;
+import wooteco.subway.line.domain.value.LineName;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -29,18 +35,29 @@ public class LineController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) throws URISyntaxException {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        final Section section = new Section(
+                lineRequest.getUpStationId(),
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance()
+        );
+
+        final Sections sections = new Sections(Collections.singletonList(section));
+
+        final Line line = new Line(
+                new LineName(lineRequest.getName()),
+                new LineColor(lineRequest.getColor()),
+                sections
+        );
+
         final Line savedLine = lineService.save(line);
 
         return ResponseEntity
-                .created(
-                        new URI("/lines/" + savedLine.getId())
-                )
+                .created(URI.create("/lines/" + savedLine.getLineId()))
                 .body(
                         new LineResponse(
-                                savedLine.getId(),
-                                savedLine.getName(),
-                                savedLine.getColor()
+                                savedLine.getLineId(),
+                                savedLine.getLineName(),
+                                savedLine.getLineColor()
                         )
                 );
     }
@@ -50,9 +67,9 @@ public class LineController {
         final List<LineResponse> lineResponses = lineService.allLines().stream()
                 .map(line ->
                         new LineResponse(
-                                line.getId(),
-                                line.getName(),
-                                line.getColor()
+                                line.getLineId(),
+                                line.getLineName(),
+                                line.getLineColor()
                         )
                 ).collect(toList());
 
@@ -65,19 +82,17 @@ public class LineController {
 
         return ResponseEntity.ok(
                 new LineResponse(
-                        line.getId(),
-                        line.getName(),
-                        line.getColor()
+                        line.getLineId(),
+                        line.getLineName(),
+                        line.getLineColor()
                 )
         );
     }
 
-    @PutMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+
         lineService.update(line);
 
         return ResponseEntity.ok().build();

@@ -8,8 +8,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.section.Section;
+import wooteco.subway.line.domain.section.Sections;
+import wooteco.subway.line.domain.value.LineColor;
+import wooteco.subway.line.domain.value.LineId;
+import wooteco.subway.line.domain.value.LineName;
+import wooteco.util.LineFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,26 +39,28 @@ class LineDaoTest {
 
     @Test
     void save() {
-        lineDao.save(new Line("신분당선", "red"));
+        lineDao.save(
+                LineFactory.create("신분당선", "red", Collections.emptyList())
+        );
 
         Line line = lineDao.findById(1L);
-        Line expected = new Line(1L, "신분당선", "red");
+        Line expected = LineFactory.create(1L, "신분당선", "red", Collections.emptyList());
 
         assertThat(line).isEqualTo(expected);
     }
 
     @Test
     void allLines() {
-        lineDao.save(new Line("강남역", "red"));
-        lineDao.save(new Line("신분당역", "red"));
-        lineDao.save(new Line("잠실역", "green"));
+        lineDao.save(LineFactory.create("강남역", "red", Collections.emptyList()));
+        lineDao.save(LineFactory.create("신분당선", "red", Collections.emptyList()));
+        lineDao.save(LineFactory.create("잠실역", "green", Collections.emptyList()));
 
         List<Line> lines = lineDao.allLines();
 
         List<Line> expected = Arrays.asList(
-                new Line(1L, "강남역", "red"),
-                new Line(2L, "신분당역", "red"),
-                new Line(3L, "잠실역", "green")
+                LineFactory.create(1L, "강남역", "red", Collections.emptyList()),
+                LineFactory.create(2L, "신분당선", "red", Collections.emptyList()),
+                LineFactory.create(3L, "잠실역", "green", Collections.emptyList())
         );
 
         assertThat(lines).containsAll(expected);
@@ -59,33 +68,33 @@ class LineDaoTest {
 
     @Test
     void findById() {
-        lineDao.save(new Line("신분당선", "red"));
+        lineDao.save(LineFactory.create("신분당선", "red", Collections.emptyList()));
 
         Line line = lineDao.findById(1L);
-        Line expected = new Line(1L, "신분당선", "red");
+        Line expected = LineFactory.create(1L, "신분당선", "red", Collections.emptyList());
 
         assertThat(line).isEqualTo(expected);
     }
 
     @Test
     void update() {
-        lineDao.save(new Line("신분당선", "red"));
-
-        lineDao.update(new Line(1L, "강남역", "red"));
+        Line savedLine = lineDao.save(LineFactory.create("신분당선", "red", Collections.emptyList()));
+        lineDao.update(LineFactory.create(savedLine.getLineId(), "강남역", "yellow", Collections.emptyList()));
 
         Line line = lineDao.findById(1L);
-        Line expected = new Line(1L, "강남역", "red");
+        Line expected = LineFactory.create(1L, "강남역", "yellow", Collections.emptyList());
 
         assertThat(line).isEqualTo(expected);
     }
 
     @Test
     void deleteById() {
-        lineDao.save(new Line("강남역", "red"));
+        lineDao.save(LineFactory.create("강남역", "red", Collections.emptyList()));
 
         lineDao.deleteById(1L);
 
         assertThatThrownBy(() -> lineDao.findById(1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
+
 }
