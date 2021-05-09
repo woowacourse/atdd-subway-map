@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.line.exception.LineIllegalArgumentException;
-import wooteco.subway.section.exception.SectionIllegalArgumentException;
-import wooteco.subway.station.exception.StationIllegalArgumentException;
+import wooteco.subway.exception.LineIllegalArgumentException;
+import wooteco.subway.exception.SectionIllegalArgumentException;
+import wooteco.subway.exception.StationIllegalArgumentException;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice {

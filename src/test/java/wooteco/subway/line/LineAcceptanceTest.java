@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.dto.LineResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
