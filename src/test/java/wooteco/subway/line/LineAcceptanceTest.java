@@ -41,6 +41,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("노선 생성 실패 - 존재하지 않는 상행역 ID")
+    @Test
+    void createLineWithDoesNotExistsStation() {
+
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/lines");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 상행역 ID에 해당하는 역이 존재하지 않습니다.");
+    }
+
     @DisplayName("노선 생성 실패 - 기존에 존재하는 노선 이름으로 노선을 생성")
     @Test
     void createLineWithDuplicateName() {
