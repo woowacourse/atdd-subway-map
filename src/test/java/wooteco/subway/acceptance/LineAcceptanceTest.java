@@ -50,20 +50,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선에 구간 추가")
-    @Test
-    void createSection() {
-        // given
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
-        Long lineId = createLineResponse.jsonPath().getLong("id");
-
-        // when
-        ExtractableResponse<Response> response = LineRequest.createSectionRequest(LineRequest.section1(2L, 150L), lineId);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
     @DisplayName("노선들의 목록을 조회한다.")
     @Test
     void getLines() {
