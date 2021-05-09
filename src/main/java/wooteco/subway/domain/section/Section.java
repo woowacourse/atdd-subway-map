@@ -1,6 +1,8 @@
 package wooteco.subway.domain.section;
 
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -27,6 +29,27 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
         this.lineId = lineId;
+    }
+
+    public Section splitLongerSectionBy(Section shorterSection) {
+        validateSplitCondition(shorterSection);
+        int adjustedDistance = this.distance - shorterSection.distance;
+        if (this.upStation == shorterSection.upStation) {
+            return new Section(this.id, shorterSection.downStation, this.downStation, adjustedDistance, this.lineId);
+        }
+        return new Section(this.id, this.upStation, shorterSection.upStation, adjustedDistance, this.lineId);
+    }
+
+    private void validateSplitCondition(Section shorterSection) {
+        if (this.distance <= shorterSection.distance) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
+        if (this.upStation == shorterSection.upStation && this.downStation == shorterSection.downStation) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
+        if (this.upStation != shorterSection.upStation && this.downStation != shorterSection.downStation) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
     }
 
     public boolean isConnectedWith(Section nextSection) {
