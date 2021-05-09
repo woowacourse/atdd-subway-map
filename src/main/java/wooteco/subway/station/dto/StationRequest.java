@@ -1,6 +1,9 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dto;
+
+import wooteco.subway.station.Station;
 
 public class StationRequest {
+
     private String name;
 
     public StationRequest() {
@@ -12,5 +15,9 @@ public class StationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public Station stationWithoutId() {
+        return Station.of(name);
     }
 }
