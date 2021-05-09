@@ -398,4 +398,181 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선에 상행 종점 구간을 추가 한다.")
+    @Test
+    void addFirstSectionToLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(0)));
+        params2.put("distance", "10");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params2);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("노선에 하행 종점 구간을 추가 한다.")
+    @Test
+    void addLastSectionToLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        // when
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params2);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("노선의 구간 사이에 왼쪽 구간을 추가 한다.")
+    @Test
+    void addLeftSectionInBetweenToLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        postSection(oldResponse.header("Location"), params2);
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("upStationId", String.valueOf(stationIds.get(1)));
+        params3.put("downStationId", String.valueOf(stationIds.get(3)));
+        params3.put("distance", "5");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    private ExtractableResponse<Response> postSection(String path, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path + "/sections")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    @DisplayName("노선의 구간 사이에 오른쪽 구간을 추가 한다.")
+    @Test
+    void addRightSectionInBetweenToLine() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        postSection(oldResponse.header("Location"), params2);
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("upStationId", String.valueOf(stationIds.get(3)));
+        params3.put("downStationId", String.valueOf(stationIds.get(1)));
+        params3.put("distance", "5");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("노선의 구간 사이에 기존 구간과 같은 길이의 왼쪽 구간을 추가 한다.")
+    @Test
+    void addLeftSectionInBetweenToLineWithSameLength() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        postSection(oldResponse.header("Location"), params2);
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("upStationId", String.valueOf(stationIds.get(1)));
+        params3.put("downStationId", String.valueOf(stationIds.get(3)));
+        params3.put("distance", "10");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선의 구간 사이에 기존 구간보다 긴 오른쪽 구간을 추가 한다.")
+    @Test
+    void addRightSectionInBetweenToLineWithLongerLength() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        postSection(oldResponse.header("Location"), params2);
+
+        // when
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("upStationId", String.valueOf(stationIds.get(3)));
+        params3.put("downStationId", String.valueOf(stationIds.get(1)));
+        params3.put("distance", "20");
+        ExtractableResponse<Response> response = postSection(oldResponse.header("Location"), params3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 
@@ -44,5 +45,13 @@ public class Line {
 
     public List<Station> path() {
         return sections.path();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public Sections sections() {
+        return sections;
     }
 }
