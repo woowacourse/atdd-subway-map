@@ -40,21 +40,22 @@ public class StationDao implements StationRepository {
     @Override
     public Optional<Station> findByName(final String name) {
         final String sql = "SELECT * FROM STATION WHERE name = ?";
-        return jdbcTemplate.query(sql, rowMapper, name).stream()
-                .findFirst();
-    }
-
-    // query()는 null 반환이 아닌데, Optional로 포장할 이유가 있을까에 대한 고민
-    public List<Station> findByName1(final String name) {
-        final String sql = "SELECT * FROM STATION WHERE name = ?";
-        return jdbcTemplate.query(sql, rowMapper, name);
+        final List<Station> result = jdbcTemplate.query(sql, rowMapper, name);
+        return optionalOf(result);
     }
 
     @Override
     public Optional<Station> findById(Long id) {
         final String sql = "SELECT * FROM STATION WHERE id = ?";
-        return jdbcTemplate.query(sql, rowMapper, id).stream()
-                .findFirst();
+        final List<Station> result = jdbcTemplate.query(sql, rowMapper, id);
+        return optionalOf(result);
+    }
+
+    private Optional<Station> optionalOf(final List<Station> result) {
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(result.get(0));
     }
 
     @Override

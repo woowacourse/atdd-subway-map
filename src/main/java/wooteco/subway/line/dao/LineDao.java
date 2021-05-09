@@ -45,14 +45,21 @@ public class LineDao implements LineRepository {
     @Override
     public Optional<Line> findByName(final String name) {
         final String sql = "SELECT * FROM LINE WHERE name = ?";
-        return jdbcTemplate.query(sql, rowMapper, name).stream()
-                .findFirst();
+        final List<Line> result = jdbcTemplate.query(sql, rowMapper, name);
+        return optionalOf(result);
     }
 
     public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.query(sql, rowMapper, id).stream()
-                .findFirst();
+        final List<Line> result = jdbcTemplate.query(sql, rowMapper, id);
+        return optionalOf(result);
+    }
+
+    private Optional<Line> optionalOf(final List<Line> result) {
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(result.get(0));
     }
 
     public List<Line> findAll() {
