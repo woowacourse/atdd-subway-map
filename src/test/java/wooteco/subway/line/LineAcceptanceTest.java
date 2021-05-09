@@ -27,18 +27,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        Map<String, String> lineInfo = 노선_정보("신분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 노선_생성(lineInfo);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -52,25 +44,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_duplicatedName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
+        노선_생성(params);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 노선_생성(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -81,33 +59,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Map<String, String> params1 = 노선_정보("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse1 = 노선_생성(params1);
 
-        params.put("color", "bg-green-600");
-        params.put("name", "2호선");
-        final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Map<String, String> params2 = 노선_정보("2호선", "bg-green-600");
+        final ExtractableResponse<Response> createResponse2 = 노선_생성(params2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 한_노선_조회("/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -124,24 +83,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = 노선_생성(params);
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 한_노선_조회(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -154,11 +101,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getStationById_notFound() {
         /// given
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/-1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 한_노선_조회("/lines/-1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -168,129 +111,102 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .extract().header("Location");
-
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(params).header("Location");
+        Map<String, String> params1 = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(ContentType.JSON)
-                .when()
-                .put(uri)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+        ExtractableResponse<Response> result = 노선_수정(params1, uri);
 
         // then
-        RestAssured.given().log().all()
-                .when()
-                .get(uri)
-
-                .then().log().all()
-                .body("name", equalTo("구분당선"))
-                .body("color", equalTo("bg-blue-600"));
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
     @Test
     void updateLine_duplicatedName() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .extract().header("Location");
-
-        params.put("color", "bg-red-600");
-        params.put("name", "구분당선");
-        RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines");
-
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(params).header("Location");
+        Map<String, String> params1 = 노선_정보("구분당선", "bg-red-600");
+        노선_생성(params1);
+        Map<String, String> params2 = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(ContentType.JSON)
+        ExtractableResponse<Response> result = 노선_수정(params2, uri);
 
-                .when()
-                .put(uri)
-
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 이름입니다.");
     }
 
     @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
     @Test
     void updateLine_notFound() {
         /// given
-        Map<String, String> params = new HashMap<>();
-
-        params.put("color", "bg-blue-600");
-        params.put("name", "구분당선");
+        Map<String, String> params = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(ContentType.JSON)
+        ExtractableResponse<Response> result = 노선_수정(params, "/lines/-1");
 
-                .when()
-                .put("/lines/-1")
-
-                .then().log().all()
-                .statusCode(HttpStatus.NOT_FOUND.value());
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
     @Test
     void removeLine() {
         /// given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        final String uri = RestAssured.given()
+        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(params).header("Location");
+
+        // when
+        ExtractableResponse<Response> result = 노선_삭제(uri);
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 노선_삭제(String uri) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 노선_수정(Map<String, String> params1, String uri) {
+        return RestAssured.given().log().all()
+                .body(params1)
+                .contentType(ContentType.JSON)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 한_노선_조회(String url) {
+        return RestAssured.given().log().all()
+                .when()
+                .get(url)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 노선_생성(Map<String, String> params) {
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then()
-                .extract().header("Location");
-
-        // when
-        RestAssured.given().log().all()
-                .when()
-                .delete(uri)
                 .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                .extract();
+    }
 
-        // then
-        RestAssured.given().log().all()
-                .when()
-                .get(uri)
-
-                .then().log().all()
-                .statusCode(HttpStatus.NOT_FOUND.value());
+    private Map<String, String> 노선_정보(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("color", color);
+        params.put("name", name);
+        return params;
     }
 }
