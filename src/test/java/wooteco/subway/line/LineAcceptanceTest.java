@@ -128,10 +128,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         requestParam.put("color", "blue");
 
         ExtractableResponse<Response> putLineResponse = Rest.put(requestParam, "/lines/1");
+        LineResponse lineResponse = Rest.get("/lines/1").jsonPath().getObject(".", LineResponse.class);
 
         //then
         assertThat(putLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
+        assertThat(lineResponse.getName()).isEqualTo("수정한선");
+        assertThat(lineResponse.getColor()).isEqualTo("blue");
 
     }
 
