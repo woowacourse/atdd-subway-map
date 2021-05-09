@@ -72,6 +72,6 @@ public class LineDao {
     public boolean hasLineWithNameAndColorWithoutId(Long id, String name, String color) {
         String sql = "SELECT COUNT(*) FROM line WHERE (name = (?) OR color = (?)) AND id <> (?)";
 
-        return jdbcTemplate.queryForObject(sql, Integer.class, name, id, color) > 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, name, color, id) > 0;
     }
 }

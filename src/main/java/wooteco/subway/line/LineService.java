@@ -12,6 +12,7 @@ import wooteco.subway.station.StationEntity;
 import wooteco.subway.station.StationResponse;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -29,7 +30,6 @@ public class LineService {
         validateStationIds(lineRequest);
     }
 
-    @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         validateToCreateLine(lineRequest);
 
@@ -65,7 +65,7 @@ public class LineService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         List<LineEntity> lineEntities = lineDao.findAll();
         return lineEntities.stream()
@@ -73,7 +73,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         validateToExistId(id);
         return new LineResponse(lineDao.findById(id));
@@ -85,7 +85,6 @@ public class LineService {
         }
     }
 
-    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         validateToUpdateLine(id, lineRequest);
         lineDao.updateById(id, new LineEntity(id, lineRequest.getName(), lineRequest.getColor()));
@@ -102,7 +101,6 @@ public class LineService {
         }
     }
 
-    @Transactional
     public void deleteLine(Long id) {
         validateToExistId(id);
         lineDao.deleteById(id);

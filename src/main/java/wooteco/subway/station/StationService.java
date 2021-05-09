@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -14,7 +15,6 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         validateNotToDuplicateName(stationRequest.getName());
         StationEntity stationEntity = new StationEntity(stationRequest.getName());
@@ -27,7 +27,7 @@ public class StationService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
@@ -35,7 +35,6 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
     public void delete(Long id) {
         validateToExistId(id);
         stationDao.delete(id);
