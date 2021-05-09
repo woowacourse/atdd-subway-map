@@ -22,9 +22,10 @@ class StationServiceTest {
         //given
         NonIdStationDto requestStationDto = new NonIdStationDto("스타벅스 선정릉역");
         Station savedStation = new Station(2L, "스타벅스 선정릉역");
+        Station station = new Station("스타벅스 선정릉역");
 
         StationDaoMemory mockDao = mock(StationDaoMemory.class);
-        when(mockDao.save(any())).thenReturn(savedStation);
+        when(mockDao.save(station)).thenReturn(savedStation);
 
         StationService stationService = new StationService(mockDao);
 
@@ -32,7 +33,7 @@ class StationServiceTest {
         StationDto savedStationDto = stationService.save(requestStationDto);
 
         //then
-        assertThat(savedStationDto.getId()).isEqualTo(savedStation.getId());
+        assertThat(savedStationDto.getId()).isNotNull();
         assertThat(savedStationDto.getName()).isEqualTo(savedStation.getName());
     }
 
