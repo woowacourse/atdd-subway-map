@@ -163,9 +163,8 @@ class LineControllerTest extends ControllerTest {
             .get("/lines/-1")
             .then().log().all()
             .extract();
-
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선 수정 - 성공")
@@ -197,7 +196,6 @@ class LineControllerTest extends ControllerTest {
         RestAssured.given().log().all()
             .when()
             .get(uri)
-
             .then().log().all()
             .body("name", equalTo("구분당선"))
             .body("color", equalTo("bg-blue-600"));
@@ -232,10 +230,8 @@ class LineControllerTest extends ControllerTest {
             .given().log().all()
             .body(lineRequest3)
             .contentType(ContentType.JSON)
-
             .when()
             .put(uri)
-
             .then().log().all()
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
@@ -252,12 +248,10 @@ class LineControllerTest extends ControllerTest {
             .given().log().all()
             .body(lineRequest)
             .contentType(ContentType.JSON)
-
             .when()
             .put("/lines/-1")
-
             .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
@@ -285,8 +279,7 @@ class LineControllerTest extends ControllerTest {
         RestAssured.given().log().all()
             .when()
             .get(uri)
-
             .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

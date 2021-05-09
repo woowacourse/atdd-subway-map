@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.line.service.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.line.Line;
