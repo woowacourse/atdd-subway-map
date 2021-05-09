@@ -4,7 +4,8 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    public Station(String name) {
+        this(null, name);
     }
 
     public Station(Long id, String name) {
@@ -12,8 +13,12 @@ public class Station {
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
     }
 
     public Long getId() {
