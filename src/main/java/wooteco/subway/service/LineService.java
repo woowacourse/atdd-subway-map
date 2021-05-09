@@ -16,9 +16,8 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(String name, String color) {
-        validateDuplication(name);
-        Line line = new Line(name, color);
+    public Line createLine(Line line) {
+        validateDuplication(line.getName());
         long id = lineDao.save(line);
         line.setId(id);
         return line;
