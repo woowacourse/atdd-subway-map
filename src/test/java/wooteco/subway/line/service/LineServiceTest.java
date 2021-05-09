@@ -108,12 +108,11 @@ class LineServiceTest {
 
         // when
         List<LineResponse> results = lineService.findAll();
-
-        // then
         List<Line> lines = results.stream()
                 .map(response -> new Line(response.getName(), response.getColor()))
                 .collect(Collectors.toList());
 
+        // then
         assertThat(lines).usingRecursiveFieldByFieldElementComparator()
                 .containsAll(Arrays.asList(
                         new Line("분당선", "red"),

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.line.LineRequest.*;
@@ -63,15 +64,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = getAll();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(분당선생성, 신분당선생성).stream()
+        List<Long> expectedLineIds = Stream.of(분당선생성, 신분당선생성)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -84,12 +85,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = getOne("1");
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         Long expectedLineId = Long.parseLong(분당선생성.header("Location").split("/")[2]);
         Long resultLineId = response.as(LineResponse.class).getId();
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineId).isEqualTo(expectedLineId);
     }
 

@@ -77,12 +77,11 @@ class StationServiceTest {
 
         // when
         List<StationResponse> results = stationService.findAll();
-
-        // then
         List<Station> stations = results.stream()
                 .map(response -> new Station(response.getName()))
                 .collect(Collectors.toList());
 
+        // then
         assertThat(stations).usingRecursiveFieldByFieldElementComparator()
                 .containsAll(Arrays.asList(
                         new Station("왕십리"),
