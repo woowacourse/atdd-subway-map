@@ -10,7 +10,6 @@ import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -26,13 +25,13 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) throws URISyntaxException {
+    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line savedLine = lineService.save(line);
 
         return ResponseEntity
                 .created(
-                        new URI("/lines/" + savedLine.getId())
+                        URI.create("/lines/" + savedLine.getId())
                 )
                 .body(
                         new LineResponse(
