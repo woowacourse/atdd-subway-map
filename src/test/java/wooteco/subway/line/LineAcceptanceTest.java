@@ -12,9 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -119,11 +117,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     void modifyLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("color", "남색");
-        params2.put("name", "9호선");
+        LineRequest lineRequest = new LineRequest("9호선", "남색", 0L, 0L, 0);
         ExtractableResponse<Response> response = RestAssured.given()
-                .body(params2)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
