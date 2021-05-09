@@ -44,10 +44,6 @@ public class Line {
         return color;
     }
 
-    public void setSections(Sections sections) {
-        this.sections = sections;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,5 +55,13 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color, sections);
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void setSections(Sections sections) {
+        this.sections = sections;
     }
 }

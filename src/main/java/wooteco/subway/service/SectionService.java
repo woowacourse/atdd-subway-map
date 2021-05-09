@@ -1,21 +1,18 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
-
-import java.util.List;
+import wooteco.subway.repository.SectionRepository;
 
 @Service
 public class SectionService {
 
-    private final SectionDao sectionDao;
+    private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public SectionService(SectionDao sectionDao, StationService stationService) {
-        this.sectionDao = sectionDao;
+    public SectionService(SectionRepository sectionRepository, StationService stationService) {
+        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
@@ -23,11 +20,6 @@ public class SectionService {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         Section section = new Section(upStation, downStation, distance, lineId);
-        return sectionDao.save(section);
-    }
-
-    public Sections findSectionsOfLine(long lineId) {
-        List<Section> sections = sectionDao.findAllByLineId(lineId);
-        return new Sections(sections);
+        return sectionRepository.save(section);
     }
 }
