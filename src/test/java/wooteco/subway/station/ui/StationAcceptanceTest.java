@@ -1,7 +1,5 @@
-package wooteco.subway.station.controller;
+package wooteco.subway.station.ui;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -11,12 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,45 +26,50 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() throws JsonProcessingException {
+    void createStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
 
         // when
-        ExtractableResponse<Response> response = addStation(content);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> addStation(String content) {
-        return RestAssured.given().log().all()
-                .body(content)
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @Test
+    void createStationWithDuplicateName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        RestAssured.given().log().all()
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
-    }
-
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
-    @Test
-    void createStationWithDuplicateName() throws JsonProcessingException {
-        // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
-
-        addStation(content);
 
         // when
-        ExtractableResponse<Response> response = addStation(content);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -73,16 +77,27 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() throws JsonProcessingException {
-        // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
+    void getStations() {
+        /// given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
-        ExtractableResponse<Response> createResponse1 = addStation(content);
-
-        StationRequest stationRequest2 = new StationRequest("역삼역");
-        String content2 = objectMapper.writeValueAsString(stationRequest2);
-        ExtractableResponse<Response> createResponse2 = addStation(content2);
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -104,12 +119,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() throws JsonProcessingException {
+    void deleteStation() {
         // given
-        StationRequest stationRequest = new StationRequest("강남역");
-        String content = objectMapper.writeValueAsString(stationRequest);
-
-        ExtractableResponse<Response> createResponse = addStation(content);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         // when
         String uri = createResponse.header("Location");

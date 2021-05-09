@@ -1,7 +1,7 @@
 package wooteco.subway.line.domain;
 
-import wooteco.subway.name.LineName;
-import wooteco.subway.name.Name;
+import wooteco.subway.name.domain.LineName;
+import wooteco.subway.name.domain.Name;
 
 import java.util.Objects;
 

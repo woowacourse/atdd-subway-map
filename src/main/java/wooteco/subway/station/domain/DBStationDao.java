@@ -1,11 +1,10 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.domain;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -14,15 +13,16 @@ import java.util.Optional;
 @Repository
 public class DBStationDao implements StationDao {
 
-    static RowMapper<Station> stationsMapper = (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-    );
     private final JdbcTemplate jdbcTemplate;
 
     public DBStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    static RowMapper<Station> stationsMapper  = (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     @Override
     public Station save(final Station station) {

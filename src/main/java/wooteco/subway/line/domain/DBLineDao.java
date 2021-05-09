@@ -1,11 +1,10 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.line.domain;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -25,6 +24,7 @@ public class DBLineDao implements LineDao {
 
     @Override
     public Line save(final Line line) {
+        validateDuplicate(line);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -75,10 +75,10 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public void update(final Line line) {
+    public void update(final Long id, final String name, final String color) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ? ";
 
-        jdbcTemplate.update(sql, line.name(), line.color(), line.id());
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class DBLineDao implements LineDao {
         String sql = "DELETE FROM LINE WHERE id = ?";
         int rowCount = jdbcTemplate.update(sql, id);
 
-        if (rowCount == 0) {
+        if(rowCount == 0) {
             throw new IllegalStateException("존재하지 않는 id임");
         }
     }

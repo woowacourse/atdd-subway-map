@@ -1,6 +1,4 @@
-package wooteco.subway.station.dao;
-
-import wooteco.subway.station.domain.Station;
+package wooteco.subway.station.domain;
 
 import java.util.List;
 import java.util.Optional;

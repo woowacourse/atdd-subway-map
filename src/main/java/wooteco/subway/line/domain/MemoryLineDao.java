@@ -1,7 +1,6 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.line.domain;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.line.domain.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 public class MemoryLineDao implements LineDao {
     private static Long seq = 0L;
-    private static final List<Line> lines = new ArrayList<>();
+    private static List<Line> lines = new ArrayList<>();
 
     public MemoryLineDao() {
     }
@@ -58,17 +57,15 @@ public class MemoryLineDao implements LineDao {
     }
 
     @Override
-    public void update(final Line line) {
-        Line findLine = findById(line.id())
-                .orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
-        findLine.changeName(line.name());
-        findLine.changeColor(line.color());
+    public void update(final Long id, final String name, final String color) {
+        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        line.changeName(name);
+        line.changeColor(color);
     }
 
     @Override
     public void delete(Long id) {
-        Line findLine = findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        Line findLine = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
         lines.remove(findLine);
     }
 }

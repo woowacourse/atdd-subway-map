@@ -1,7 +1,7 @@
 package wooteco.subway.station.domain;
 
-import wooteco.subway.name.Name;
-import wooteco.subway.name.StationName;
+import wooteco.subway.name.domain.Name;
+import wooteco.subway.name.domain.StationName;
 
 public class Station {
     private Long id;
