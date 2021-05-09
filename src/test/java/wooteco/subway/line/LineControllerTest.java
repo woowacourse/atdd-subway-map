@@ -157,14 +157,13 @@ class LineControllerTest extends ControllerTest {
     @DisplayName("노선 조회 - 실패(노선 정보 없음)")
     @Test
     void getStationById_notFound() {
-        /// given
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        // when and then
+        RestAssured.given().log().all()
                 .when()
                 .get("/lines/-1")
                 .then().log().all()
-                .extract();
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(equalTo("노선을 찾을 수 없습니다."));
     }
 
     @DisplayName("노선 수정 - 성공")
@@ -251,7 +250,7 @@ class LineControllerTest extends ControllerTest {
                 .when()
                 .put("/lines/-1")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
@@ -280,6 +279,6 @@ class LineControllerTest extends ControllerTest {
                 .when()
                 .get(uri)
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }

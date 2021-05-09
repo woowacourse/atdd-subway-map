@@ -137,9 +137,26 @@ public class StationControllerTest extends ControllerTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("역 제거 - 실패(존재하지 않는 역)")
+    @Test
+    void deleteStation_notExistStation() {
+        //given
+        StationRequest stationRequest = new StationRequest("강남역");
+
+        // when
+        RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/stations")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(equalTo("역을 찾을 수 없습니다."));
+    }
+
     @DisplayName("역 생성 - 실패(중복된 이름)")
     @Test
-    void test() throws Exception {
+    void createStation_duplicatedName() throws Exception {
         //given
         StationRequest stationRequest = new StationRequest("강남역");
 
