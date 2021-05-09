@@ -18,8 +18,7 @@ public class StationService {
     public StationResponse createStation(StationRequest stationRequest) {
         validateNotToDuplicateName(stationRequest.getName());
         StationEntity stationEntity = new StationEntity(stationRequest.getName());
-        StationEntity newStationEntity = stationDao.save(stationEntity);
-        return new StationResponse(newStationEntity.getId(), newStationEntity.getName());
+        return new StationResponse(stationDao.save(stationEntity));
     }
 
     private void validateNotToDuplicateName(String name) {
@@ -32,8 +31,7 @@ public class StationService {
     public List<StationResponse> showStations() {
         List<StationEntity> stations = stationDao.findAll();
         return stations.stream()
-            .map(stationEntity -> new StationResponse(stationEntity.getId(),
-                stationEntity.getName()))
+            .map(StationResponse::new)
             .collect(Collectors.toList());
     }
 

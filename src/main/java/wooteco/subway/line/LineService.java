@@ -1,27 +1,50 @@
 package wooteco.subway.line;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.SectionEntity;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationEntity;
+import wooteco.subway.station.StationResponse;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         validateToCreateLine(lineRequest);
-        LineEntity lineEntity = new LineEntity(lineRequest.getName(), lineRequest.getColor());
-        LineEntity newLineEntity = lineDao.save(lineEntity);
 
-        return new LineResponse(newLineEntity.getId(), newLineEntity.getName(),
-            newLineEntity.getColor());
+        LineEntity newLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        createSection(lineRequest, newLineEntity);
+
+        return new LineResponse(newLineEntity, stationResponses(lineRequest));
+    }
+
+    private void createSection(LineRequest lineRequest, LineEntity newLineEntity) {
+        SectionEntity sectionEntity = new SectionEntity(newLineEntity.getId(),
+            lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionDao.save(sectionEntity);
+    }
+
+    private List<StationResponse> stationResponses(LineRequest lineRequest) {
+        StationEntity upStation = stationDao.findById(lineRequest.getUpStationId());
+        StationEntity downStation = stationDao.findById(lineRequest.getDownStationId());
+        return Arrays.asList(new StationResponse(upStation), new StationResponse(downStation));
     }
 
     private void validateToCreateLine(LineRequest lineRequest) {
@@ -37,15 +60,14 @@ public class LineService {
     public List<LineResponse> showLines() {
         List<LineEntity> lineEntities = lineDao.findAll();
         return lineEntities.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+            .map(LineResponse::new)
             .collect(Collectors.toList());
     }
 
     @Transactional
     public LineResponse showLine(Long id) {
         validateToExistId(id);
-        LineEntity lineEntity = lineDao.findById(id);
-        return new LineResponse(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        return new LineResponse(lineDao.findById(id));
     }
 
     private void validateToExistId(Long id) {

@@ -22,7 +22,7 @@ public class LineDao {
     }
 
     public LineEntity save(LineEntity lineEntity) {
-        String sql = "INSERT INTO line (name, color) values (?, ?)";
+        String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {

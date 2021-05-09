@@ -36,6 +36,12 @@ public class StationDao {
             stationEntity.getName());
     }
 
+    public StationEntity findById(Long id) {
+        String sql = "SELECT * FROM station WHERE id = (?)";
+
+        return jdbcTemplate.queryForObject(sql, STATION_ROW_MAPPER, id);
+    }
+
     public List<StationEntity> findAll() {
         String sql = "SELECT * FROM station";
 
