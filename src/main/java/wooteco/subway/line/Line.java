@@ -1,11 +1,15 @@
 package wooteco.subway.line;
 
+import wooteco.subway.station.Sections;
+import wooteco.subway.station.Station;
+
 import java.util.Objects;
 
 public class Line {
     private Long id;
     private final String name;
     private final String color;
+    private Sections sections;
 
     public Line(String name, String color) {
         this.name = name;
@@ -16,6 +20,12 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -50,5 +60,9 @@ public class Line {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
+    }
+
+    public Sections getSections() {
+        return this.sections;
     }
 }
