@@ -18,9 +18,9 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Long lineId, Station upStation, Station downStation, int distance) {
+    public void save(Long lineId, Long upStationId, Long downStationId, int distance) {
         String sql = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, upStation.getId(), downStation.getId(), distance);
+        jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
     public Map<Station, Station> findSectionById(Long lineId) {
