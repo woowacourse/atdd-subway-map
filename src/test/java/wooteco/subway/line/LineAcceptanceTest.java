@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.RestAssuredHelper;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.domain.Section;
 import wooteco.subway.exception.response.ErrorResponse;
 
 import java.util.HashMap;
@@ -137,6 +138,46 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("널이어서는 안됩니다");
+    }
+
+    @DisplayName("구간 생성 성공")
+    @Test
+    void createSection() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("downStationId", "3");
+        params.put("upStationId", "4");
+        params.put("distance", "10");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/lines/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+
+        final Section section = response.body().as(Section.class);
+        assertThat(section.getLineId()).isEqualTo(1L);
+        assertThat(section.getDownStationId()).isEqualTo(3L);
+        assertThat(section.getUpStationId()).isEqualTo(4L);
+        assertThat(section.getDistance()).isEqualTo(10);
+    }
+
+    @DisplayName("구간 생성 실패 - 거리가 음수이면 예외 발생")
+    @Test
+    void createSectionWithMinusDistance() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("downStationId", "3");
+        params.put("upStationId", "4");
+        params.put("distance", "-1");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/lines/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("0보다 커야 합니다");
     }
 
     @DisplayName("모든 노선 조회 성공")

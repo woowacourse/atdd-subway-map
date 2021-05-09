@@ -6,10 +6,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.controller.dto.SectionRequest;
 import wooteco.subway.controller.dto.StationResponse;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
 
 import javax.validation.Valid;
@@ -22,10 +24,13 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
     private final StationService stationService;
 
-    public LineController(final LineService lineService, final StationService stationService) {
+    public LineController(final LineService lineService, final SectionService sectionService,
+                          final StationService stationService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
         this.stationService = stationService;
     }
 
@@ -53,6 +58,20 @@ public class LineController {
                                                                   .collect(Collectors.toList());
 
         return new LineResponse(line, stationResponses);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<Section> createSection(@PathVariable Long id,
+                                                 @Valid @RequestBody SectionRequest sectionRequest,
+                                                 BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new IllegalArgumentException(bindingResult.getFieldError().getDefaultMessage());
+        }
+
+        Section section = sectionRequest.toEntity(id);
+        final Section savedSection = sectionService.save(section);
+        final URI uri = URI.create(String.format("/lines/%d/%d", id, savedSection.getId()));
+        return ResponseEntity.created(uri).body(savedSection);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
