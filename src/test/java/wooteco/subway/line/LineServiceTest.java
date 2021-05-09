@@ -11,6 +11,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.assembler.Assembler;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDaoMemory;
@@ -18,10 +22,16 @@ import wooteco.subway.line.dto.LineDto;
 import wooteco.subway.line.dto.LineIdDto;
 import wooteco.subway.line.dto.NonIdLineDto;
 
+@ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
 
-    private LineService lineService;
 
+    @Mock
+    private LineDaoMemory mockDao;
+
+    @InjectMocks
+    private LineService lineService;
+    
     @BeforeEach
     void setUp() {
         Assembler assembler = new Assembler();
@@ -54,9 +64,8 @@ public class LineServiceTest {
             new Line(3L, "울산선", "검은색")
         );
 
-        LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
-        when(mockLineDao.showAll()).thenReturn(lines);
-        LineService lineServiceWithMock = new LineService(mockLineDao);
+        when(mockDao.showAll()).thenReturn(lines);
+        LineService lineServiceWithMock = new LineService(mockDao);
 
         List<LineDto> expectedDtos = Arrays.asList(
             new LineDto(1L, "대구선", "노란색"),
@@ -85,9 +94,8 @@ public class LineServiceTest {
         //given
         Line line = new Line(1L, "창원선", "청록색");
 
-        LineDaoMemory mockLineDao = mock(LineDaoMemory.class);
-        when(mockLineDao.show(any())).thenReturn(line);
-        LineService lineServiceWithMock = new LineService(mockLineDao);
+        when(mockDao.show(any())).thenReturn(line);
+        LineService lineServiceWithMock = new LineService(mockDao);
 
         //when
         LineDto requestedDto = lineServiceWithMock.findOne(new LineIdDto((long) 1));
