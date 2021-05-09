@@ -25,7 +25,6 @@ public class DBLineDao implements LineDao {
 
     @Override
     public Line save(final Line line) {
-        validateDuplicate(line);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -76,10 +75,10 @@ public class DBLineDao implements LineDao {
     }
 
     @Override
-    public void update(final Long id, final String name, final String color) {
+    public void update(final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ? ";
 
-        jdbcTemplate.update(sql, name, color, id);
+        jdbcTemplate.update(sql, line.name(), line.color(), line.id());
     }
 
     @Override

@@ -10,6 +10,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineSaveRequestDto;
 import wooteco.subway.line.dto.LineUpdateRequest;
+import wooteco.subway.line.service.LineService;
 import wooteco.subway.service.ResponseError;
 
 import java.net.URI;
@@ -20,16 +21,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineDao lineDao;
+    private final LineService lineService;
     private final Logger logger = LoggerFactory.getLogger(LineController.class);
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody LineSaveRequestDto requestDto) {
-        Line newLine = lineDao.save(new Line(requestDto.getName(), requestDto.getColor()));
+        Line newLine = lineService.save(new Line(requestDto.getName(), requestDto.getColor()));
         // TODO : 구간에 포함된 지하철 역 조회 로직
         LineResponse response = new LineResponse(newLine.id(), newLine.name(), newLine.color(), Collections.emptyList());
         return ResponseEntity.created(URI.create("/lines/" + newLine.id())).body(response);
@@ -37,7 +38,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineService.findAll();
         // TODO : 구간에 포함된 지하철 역 조회 로직
         List<LineResponse> lineResponses = lines.stream()
                 .map(it -> new LineResponse(it.id(), it.name(), it.color(), Collections.emptyList()))
@@ -47,20 +48,20 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        Line findLine = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        Line findLine = lineService.findById(id);
         LineResponse response = new LineResponse(findLine.id(), findLine.name(), findLine.color(), Collections.emptyList());
         return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
-        lineDao.update(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        lineService.update(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+        lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -69,6 +70,4 @@ public class LineController {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
     }
-
-
 }

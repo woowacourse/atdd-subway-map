@@ -118,7 +118,7 @@ class DBLineDaoTest {
     void update() {
         String updatedName = "흑기선";
         String updatedColor = "bg-red-700";
-        lineDao.update(id, updatedName, updatedColor);
+        lineDao.update(new Line(id, updatedName, updatedColor));
 
         Line line = lineDao.findById(id).get();
 

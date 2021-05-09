@@ -62,7 +62,7 @@ class MemoryLineDaoTest {
         String updateName = "흑기선";
         String updateColor = "bg-red-700";
 
-        lineDao.update(id, updateName, updateColor);
+        lineDao.update(new Line(id, updateName, updateColor));
         Line findLine = lineDao.findById(id).get();
 
         assertThat(findLine).isEqualTo(save);
