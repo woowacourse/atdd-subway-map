@@ -1,5 +1,6 @@
 package wooteco.subway.line.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,15 +10,19 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.model.Line;
+import wooteco.subway.section.dao.SectionDao;
 
 @Service
 @Transactional
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    @Autowired
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
