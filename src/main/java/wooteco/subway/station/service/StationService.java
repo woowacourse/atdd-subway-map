@@ -26,7 +26,7 @@ public class StationService {
         validateStationName(stationRequest);
         Station station = stationRequest.toEntity();
         Station newStation = stationRepository.save(station);
-        log.info(newStation.getName() + "역이 생성되었습니다.");
+        log.info("{} 생성 성공.", newStation.getName());
         return new StationResponse(newStation);
     }
 

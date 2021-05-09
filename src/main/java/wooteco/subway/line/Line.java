@@ -36,6 +36,7 @@ public class Line {
     }
 
     public void update(Line updatedLine) {
+        this.id = updatedLine.getId();
         this.name = updatedLine.getName();
         this.color = updatedLine.getColor();
     }

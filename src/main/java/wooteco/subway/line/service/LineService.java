@@ -27,7 +27,7 @@ public class LineService {
         validateLineName(lineRequest);
         Line line = lineRequest.toEntity();
         Line newLine = lineRepository.save(line);
-        log.info(newLine.getName() + " 노선 생성 성공");
+        log.info("{} 노선 생성 성공", newLine.getName());
         return new LineResponse(newLine);
     }
 
@@ -43,7 +43,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line newLine = lineRepository.findById(id);
-        log.info(newLine.getName() + "노선 조회 성공");
+        log.info("{} 노선 조회 성공", newLine.getName());
         return new LineResponse(newLine);
     }
 
@@ -65,7 +65,7 @@ public class LineService {
         Line currentLine = lineRepository.findById(id);
 
         validateUsableName(lineRequest.getName(), currentLine.getName());
-        return new Line(lineRequest.getName(), lineRequest.getColor());
+        return new Line(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     private void validateUsableName(String newName, String oldName) {

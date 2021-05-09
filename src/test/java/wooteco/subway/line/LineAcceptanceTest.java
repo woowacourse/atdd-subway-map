@@ -52,7 +52,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         createPostResponse(분당선);
-
         ExtractableResponse<Response> response = createPostResponse(분당선);
 
         // then
@@ -65,13 +64,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         LineRequest 분당선 =
                 new LineRequest("분당선", "bg-red-600", null, null, 0);
-        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
         LineRequest 신분당선 =
                 new LineRequest("신분당선", "bg-red-600", null, null, 0);
-        ExtractableResponse<Response> createResponse2 = createPostResponse(신분당선);
 
         // when
+        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
+        ExtractableResponse<Response> createResponse2 = createPostResponse(신분당선);
         ExtractableResponse<Response> response = createGetResponse("/lines");
 
         // then
@@ -93,14 +92,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         /// given
         LineRequest 분당선 =
                 new LineRequest("분당선", "bg-red-600", null, null, 0);
-        ExtractableResponse<Response> createResponse1 = createPostResponse(분당선);
 
         // when
+        ExtractableResponse<Response> createResponse = createPostResponse(분당선);
         ExtractableResponse<Response> response = createGetResponse("/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Long expectedLineId = Long.parseLong(createResponse1.header("Location").split("/")[2]);
+        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         Long resultLineId = response.as(LineResponse.class).getId();
 
         assertThat(resultLineId).isEqualTo(expectedLineId);
@@ -114,11 +113,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 new LineRequest("이호선", "bg-blue-600", null, null, 0);
 
         LineRequest 신분당선 =
-                new LineRequest("신분당선", "bg-red-600", null, null, 0);
+                new LineRequest("신분당선", "bg-red-400", null, null, 0);
 
-        createPostResponse(이호선);
 
         // when
+        createPostResponse(이호선);
         ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
         ExtractableResponse<Response> updatedResponse = createGetResponse("/lines/1");
 
@@ -127,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updatedResponse.body().as(LineResponse.class).getName())
                 .isEqualTo("신분당선");
         assertThat(updatedResponse.body().as(LineResponse.class).getColor())
-                .isEqualTo("bg-red-600");
+                .isEqualTo("bg-red-400");
     }
 
     @DisplayName("이미 존재하는 이름으로 수정 시 BAD_REQUEST를 응답한다.")
@@ -140,10 +139,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest 신분당선 =
                 new LineRequest("신분당선", "bg-red-600", null, null, 0);
 
-        createPostResponse(이호선);
-        createPostResponse(신분당선);
 
         // when
+        createPostResponse(이호선);
+        createPostResponse(신분당선);
         ExtractableResponse<Response> expectedResponse = createPutResponse("/lines/1", 신분당선);
 
         // then
