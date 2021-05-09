@@ -34,7 +34,7 @@ public class StationDao implements StationRepository {
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+        return new Station(keyHolder.getKeyAs(Long.class), station.getName());
     }
 
     @Override

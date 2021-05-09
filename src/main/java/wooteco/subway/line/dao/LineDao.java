@@ -38,7 +38,7 @@ public class LineDao implements LineRepository {
             ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
-        final Long id = keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKeyAs(Long.class);
         return new Line(id, line.getName(), line.getColor(), new ArrayList<>());
     }
 
