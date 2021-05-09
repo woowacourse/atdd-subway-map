@@ -4,9 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.StationValidator;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -26,12 +24,6 @@ public class StationController {
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        StationValidator stationValidator = new StationValidator();
-        webDataBinder.addValidators(stationValidator);
     }
 
     @PostMapping

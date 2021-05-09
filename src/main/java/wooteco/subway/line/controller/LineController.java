@@ -4,9 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.LineValidator;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -26,12 +24,6 @@ public class LineController {
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        LineValidator lineValidator = new LineValidator();
-        webDataBinder.addValidators(lineValidator);
     }
 
     @PostMapping

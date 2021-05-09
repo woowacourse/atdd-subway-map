@@ -2,7 +2,10 @@ package wooteco.subway.line.dto;
 
 import wooteco.subway.line.domain.Line;
 
+import javax.validation.constraints.Pattern;
+
 public class LineRequest {
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]*선$", message = "지하철 노선 이름이 잘못되었습니다.")
     private String name;
     private String color;
     private Long upStationId;
