@@ -36,10 +36,13 @@ public class LineService {
         validateAllStationsIsExist(lineCreateRequest);
         validateIfDownStationIsEqualToUpStation(lineCreateRequest);
 
-        Line line = Line.of(lineCreateRequest);
+        Line line = Line.of(null, lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line savedLine = lineDao.save(line);
 
-        sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
+        sectionDao.save(Section.of(savedLine.getId(),
+                lineCreateRequest.getUpStationId(),
+                lineCreateRequest.getDownStationId(),
+                lineCreateRequest.getDistance()));
         return LineResponse.from(savedLine);
     }
 
@@ -93,7 +96,7 @@ public class LineService {
         lineDao.findById(id)
                 .orElseThrow(() -> new LineIllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
-        Line line = Line.of(id, lineUpdateRequest);
+        Line line = Line.of(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         lineDao.update(line);
     }
 

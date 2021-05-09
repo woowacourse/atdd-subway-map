@@ -20,14 +20,6 @@ public class Line {
         return new Line(id, name, color);
     }
 
-    public static Line of(LineCreateRequest lineCreateRequest) {
-        return new Line(null, lineCreateRequest.getName(), lineCreateRequest.getColor());
-    }
-
-    public static Line of(Long id, LineUpdateRequest lineUpdateRequest) {
-        return new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-    }
-
     public Long getId() {
         return id;
     }

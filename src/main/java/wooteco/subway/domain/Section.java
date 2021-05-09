@@ -37,22 +37,6 @@ public class Section {
                 distance);
     }
 
-    public static Section of(Long id, LineCreateRequest lineCreateRequest) {
-        return new Section(null,
-                id,
-                lineCreateRequest.getUpStationId(),
-                lineCreateRequest.getDownStationId(),
-                lineCreateRequest.getDistance());
-    }
-
-    public static Section of(Long id, SectionRequest sectionRequest) {
-        return new Section(null,
-                id,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance());
-    }
-
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
         if (upStationId.equals(downStationId)) {
             throw new SectionIllegalArgumentException("구간의 상행과 하행이 같을 수 없습니다.");

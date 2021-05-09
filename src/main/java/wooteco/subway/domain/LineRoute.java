@@ -61,11 +61,19 @@ public class LineRoute {
     public Section getSectionNeedToBeUpdatedForInsert(Section section) {
         if (upToDownStationMap.containsKey(section.getUpStationId())) {
             Section updateSection = upToDownStationMap.get(section.getUpStationId());
-            return Section.of(updateSection.getId(), updateSection.getLineId(), section.getDownStationId(), updateSection.getDownStationId(), updateSection.getDistance() - section.getDistance());
+            return Section.of(updateSection.getId(),
+                    updateSection.getLineId(),
+                    section.getDownStationId(),
+                    updateSection.getDownStationId(),
+                    updateSection.getDistance() - section.getDistance());
         }
 
         Section updateSection = downToUpStationMap.get(section.getDownStationId());
-        return Section.of(updateSection.getId(), updateSection.getLineId(), updateSection.getUpStationId(), section.getUpStationId(), updateSection.getDistance() - section.getDistance());
+        return Section.of(updateSection.getId(),
+                updateSection.getLineId(),
+                updateSection.getUpStationId(),
+                section.getUpStationId(),
+                updateSection.getDistance() - section.getDistance());
     }
 
     public Optional<Section> getSectionFromUpToDownStationMapByStationId(Long stationId) {
