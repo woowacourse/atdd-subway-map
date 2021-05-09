@@ -33,6 +33,8 @@ public class StationService {
     }
 
     public void delete(Long id) {
+        stationDao.findById(id)
+                .orElseThrow(() -> new StationIllegalArgumentException("삭제하려는 역이 존재하지 않습니다"));
         stationDao.delete(id);
     }
 }
