@@ -25,13 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = createLine(lineRequest);
         LineResponse responseBody = response.body().as(LineResponse.class);
 
         // then
@@ -46,13 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest givenLineRequest = new LineRequest("1호선", "bg-blue-100");
 
-        RestAssured.given().log().all()
-            .body(givenLineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        createLine(givenLineRequest);
 
         // when
         LineRequest lineRequest = new LineRequest("1호선", "bg-red-101");
@@ -193,13 +181,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void updateLine() {
         //given
         LineRequest givenLineRequest = new LineRequest("구미선", "bg-white-400");
-        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(givenLineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> formResponse = createLine
+
+            (givenLineRequest);
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
         //when
@@ -256,23 +240,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         LineRequest givenLineRequest1 = new LineRequest("구미선", "bg-white-400");
 
-        ExtractableResponse<Response> requestResponse = RestAssured.given().log().all()
-            .body(givenLineRequest1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> requestResponse = createLine(givenLineRequest1);
 
         LineRequest givenLineRequest2 = new LineRequest("황천선", "bg-white-401");
 
-        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(givenLineRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> formResponse = createLine(givenLineRequest2);
+
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
         //when
@@ -309,13 +282,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final String name = "울산선";
         LineRequest lineRequest = new LineRequest(name, color);
 
-        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> formResponse = createLine(lineRequest);
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
         //when
@@ -344,4 +311,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    private ExtractableResponse<Response> createLine(LineRequest givenLineRequest) {
+        return RestAssured.given().log().all()
+            .body(givenLineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();}
 }
