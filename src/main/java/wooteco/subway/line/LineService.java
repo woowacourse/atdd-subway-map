@@ -1,6 +1,11 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.section.Distance;
+import wooteco.subway.section.Section;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,16 +14,29 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
-    public LineResponse save(Line line) {
-        if (lineDao.existsByNameOrColor(line.getName(), line.getColor())) {
+    public LineResponse save(LineRequest lineRequest) {
+        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
             throw new IllegalArgumentException("노선 이름 또는 색이 이미 존재합니다.");
         }
-        Line newLine = lineDao.save(line);
+        Station upStation = stationDao.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("노선 ID가 존재하지 않습니다."));
+        Station downStation = stationDao.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("노선 ID가 존재하지 않습니다."));
+        if (lineRequest.getUpStationId().equals(lineRequest.getDownStationId())) {
+            throw new IllegalArgumentException("상행 종점역과 하행 종점역이 같으면 안됩니다.");
+        }
+        Section section = new Section(upStation, downStation, Distance.of(lineRequest.getDistance()));
+
+        Line newLine = lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        sectionDao.save(newLine.getId(), section);
+
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 

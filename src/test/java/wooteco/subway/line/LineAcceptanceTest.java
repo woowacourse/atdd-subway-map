@@ -3,15 +3,14 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,6 +18,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private final List<Long> stationIds = new ArrayList<>();
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        stationIds.add(postStation("강남역"));
+        stationIds.add(postStation("잠실역"));
+        stationIds.add(postStation("양재역"));
+        stationIds.add(postStation("석촌역"));
+        stationIds.add(postStation("판교역"));
+        stationIds.add(postStation("교대역"));
+    }
+
+    private Long postStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return Long.parseLong(RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .log().all()
+                .extract()
+                .header("Location").split("/")[2]);
+    }
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -27,6 +53,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(1)));
+        params.put("distance", "10");
 
         // when
         ExtractableResponse<Response> response = postLine(params);
@@ -58,12 +87,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         postLine(params1);
 
         // when
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "신분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         ExtractableResponse<Response> response = postLine(params2);
 
         // then
@@ -77,12 +112,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         postLine(params1);
 
         // when
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-red-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         ExtractableResponse<Response> response = postLine(params2);
 
         // then
@@ -96,11 +137,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> createResponse1 = postLine(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         ExtractableResponse<Response> createResponse2 = postLine(params2);
 
         // when
@@ -128,11 +175,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> oldResponse = postLine(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         postLine(params2);
 
         // when
@@ -161,11 +214,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         postLine(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         postLine(params2);
 
         // when
@@ -182,6 +241,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> oldResponse = postLine(params1);
 
         // when
@@ -201,6 +263,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         postLine(params1);
 
         // when
@@ -220,11 +285,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> oldResponse = postLine(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         postLine(params2);
 
         // when
@@ -244,11 +315,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> oldResponse = postLine(params1);
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("color", "bg-blue-600");
         params2.put("name", "분당선");
+        params2.put("upStationId", String.valueOf(stationIds.get(2)));
+        params2.put("downStationId", String.valueOf(stationIds.get(3)));
+        params2.put("distance", "10");
         postLine(params2);
 
         // when
@@ -278,6 +355,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         ExtractableResponse<Response> oldResponse = postLine(params1);
 
         // when
@@ -303,6 +383,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params1 = new HashMap<>();
         params1.put("color", "bg-red-600");
         params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
         postLine(params1);
 
         // when
