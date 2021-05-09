@@ -6,6 +6,7 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class LineRepository {
         Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
         Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
         if (!upSectionOptional.isPresent() || !downSectionOptional.isPresent()) {
-            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 삭제할 수 없습니다.");
+            throw new SubwayException("구간이 하나인 노선에서는 역을 삭제할 수 없습니다.");
         }
         Section upSection = upSectionOptional.get();
         Section downSection = downSectionOptional.get();

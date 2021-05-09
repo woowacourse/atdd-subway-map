@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.SubwayException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +73,7 @@ public class Line {
                 return section;
             }
         }
-        throw new IllegalArgumentException("Line에 Section이 존재하지 않습니다.");
+        throw new SubwayException("Line에 Section이 존재하지 않습니다.");
     }
 
     private Optional<Section> findSectionByUpStationId(Long upStationId) {

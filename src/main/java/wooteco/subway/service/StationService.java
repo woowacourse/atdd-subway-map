@@ -5,6 +5,7 @@ import wooteco.subway.controller.dto.request.StationRequestDto;
 import wooteco.subway.controller.dto.response.StationResponseDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ public class StationService {
 
     public StationResponseDto createStation(StationRequestDto stationRequest) {
         stationDao.findByName(stationRequest.getName()).ifPresent(station -> {
-            throw new IllegalArgumentException("이미 존재하는 역 이름입니다.");
+            throw new SubwayException("이미 존재하는 역 이름입니다.");
         });
         Long createdStationId = stationDao.create(stationRequest.getName());
         Station newStation = new Station(createdStationId, stationRequest.getName());
@@ -37,7 +38,7 @@ public class StationService {
     public long deleteStation(Long id) {
         int affectedRowCount = stationDao.deleteById(id);
         if (affectedRowCount == ANY_ROW_NOT_DELETED) {
-            throw new IllegalArgumentException("역이 삭제되지 않았습니다.");
+            throw new SubwayException("역이 삭제되지 않았습니다.");
         }
         return affectedRowCount;
     }

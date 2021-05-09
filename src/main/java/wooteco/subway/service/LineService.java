@@ -34,7 +34,7 @@ public class LineService {
 
     public LineCreateResponseDto createLine(LineRequestDto lineRequest) {
 //        lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
-//            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+//            throw new SubwayException("이미 존재하는 노선 이름입니다.");
 //        });
         Line newLine = lineRepository.saveLineWithSection(
                 lineRequest.getName(),
