@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.station.exception.StationExistenceException;
 
 import java.util.List;
 

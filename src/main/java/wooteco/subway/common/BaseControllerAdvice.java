@@ -3,8 +3,8 @@ package wooteco.subway.common;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.line.LineExistenceException;
-import wooteco.subway.station.StationExistenceException;
+import wooteco.subway.line.exception.LineExistenceException;
+import wooteco.subway.station.exception.StationExistenceException;
 
 @ControllerAdvice
 public class BaseControllerAdvice {

@@ -1,6 +1,8 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.line.exception.LineExistenceException;
+import wooteco.subway.line.exception.LineNotFoundException;
 
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(LineExistenceException::new);
+                .orElseThrow(LineNotFoundException::new);
     }
 
     private boolean isExistingLine(String name) {
