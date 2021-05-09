@@ -108,4 +108,11 @@ public class Sections {
                 .findAny()
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.INVALID_SECTION));
     }
+
+    public boolean isEndStationReduction(Sections target) {
+        if (sections.size() == 1) {
+            return false;
+        }
+        return target.sections.size() == 1;
+    }
 }

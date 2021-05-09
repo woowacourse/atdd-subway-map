@@ -6,6 +6,8 @@ import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.SectionRepository;
 
+import java.util.List;
+
 @Service
 public class SectionService {
 
@@ -36,5 +38,20 @@ public class SectionService {
         Section editableSection = sections.splitLongerSectionAfterAdding(section);
         sectionRepository.update(editableSection);
         sectionRepository.save(section);
+    }
+
+    public void delete(long lineId, long stationId) {
+        Sections sections = sectionRepository.findSectionsByLineId(lineId);
+        List<Section> sectionList = sectionRepository.findByStationId(stationId);
+        Sections appendableSections = new Sections(sectionList);
+        if (sections.isEndStationReduction(appendableSections)) {
+            sectionRepository.delete(sectionList.get(0));
+            return;
+        }
+        Section left = appendableSections.toList().get(0);
+        Section right = appendableSections.toList().get(1);
+        Section append = left.append(right);
+        sectionRepository.save(append);
+        sectionList.forEach(sectionRepository::delete);
     }
 }

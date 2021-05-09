@@ -51,4 +51,21 @@ public class SectionRepository {
     public void update(Section section) {
         sectionDao.update(section);
     }
+
+    public Section findById(long id) {
+        Section section = sectionDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
+        addStations(section);
+        return section;
+    }
+
+    public void delete(Section section) {
+        sectionDao.delete(section);
+    }
+
+    public List<Section> findByStationId(long stationId) {
+        List<Section> sections = sectionDao.findByStationId(stationId);
+        sections.forEach(this::addStations);
+        return sections;
+    }
 }

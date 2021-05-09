@@ -121,4 +121,8 @@ public class Section {
     public long getId() {
         return id;
     }
+
+    public Section append(Section section) {
+        return new Section(this.upStation, section.downStation, this.distance + section.distance, this.lineId);
+    }
 }

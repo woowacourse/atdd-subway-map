@@ -20,6 +20,7 @@ import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
 
 import java.util.ArrayList;
@@ -40,6 +41,9 @@ class LineAcceptanceTest {
 
     @Autowired
     private LineService lineService;
+
+    @Autowired
+    private SectionService sectionService;
 
     @Autowired
     private StationService stationService;
@@ -243,6 +247,28 @@ class LineAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(requestBody)
                 .when().post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body(is(lineResponse));
+    }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() throws JsonProcessingException {
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        long newStationId = createStationApi("의정부역");
+        LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
+        postLineApi(lineRequest);
+        long lineId = testLineIds.get(0);
+        long sectionId = sectionService.createSection(upStationId, newStationId, 3, lineId);
+
+        List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
+                new StationResponse(downStationId, "강남역"));
+        String lineResponse = OBJECT_MAPPER.writeValueAsString(new LineResponse(lineId, "6호선", "red", stationResponses));
+
+        RestAssured.given().log().all()
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + newStationId)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body(is(lineResponse));

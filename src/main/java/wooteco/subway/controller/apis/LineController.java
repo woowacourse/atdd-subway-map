@@ -85,4 +85,17 @@ public class LineController {
         return ResponseEntity.noContent()
                 .build();
     }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> deleteSection(@PathVariable long id, @RequestParam long stationId) {
+        sectionService.delete(id, stationId);
+        Line line = lineService.findById(id);
+        Sections sections = line.getSections();
+        List<StationResponse> stationResponses = sections.getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(line, stationResponses);
+        return ResponseEntity.ok(lineResponse);
+    }
 }
