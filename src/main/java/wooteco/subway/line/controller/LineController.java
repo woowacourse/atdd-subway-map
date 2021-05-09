@@ -2,8 +2,6 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
@@ -13,7 +11,6 @@ import wooteco.subway.line.service.LineService;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequestMapping("/lines")
@@ -27,12 +24,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            throw new IllegalArgumentException(Objects.requireNonNull(fieldError).getDefaultMessage());
-        }
-
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Long id = lineService.save(lineRequest.toEntity());
         Line newLine = lineService.findById(id);
         return ResponseEntity.created(
@@ -50,7 +42,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         Line line = lineRequest.toEntity();
         lineService.update(id, line);
         return ResponseEntity.ok().build();
