@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -35,22 +38,20 @@ public class LineDao {
             ps.setString(2, color);
             return ps;
         }, keyHolder);
-        return new Line(keyHolder.getKey()
-                                 .longValue(), name, color);
+        return new Line(Objects.requireNonNull(keyHolder.getKey())
+                               .longValue(), name, color);
     }
 
-    public Optional<Line> findById(Long id) {
+    public Optional<Line> findById(Long id) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where id = ?";
         List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), id);
-        return result.stream()
-                     .findAny();
+        return Optional.ofNullable(DataAccessUtils.singleResult(result));
     }
 
-    public Optional<Line> findByName(String name) {
+    public Optional<Line> findByName(String name) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where name = ?";
         List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), name);
-        return result.stream()
-                     .findAny();
+        return Optional.ofNullable(DataAccessUtils.singleResult(result));
     }
 
     public List<Line> findAll() {

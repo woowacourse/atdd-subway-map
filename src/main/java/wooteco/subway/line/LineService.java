@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.exception.ErrorCode;
 import wooteco.subway.line.exception.LineException;
@@ -14,6 +15,19 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    public List<Line> findAll() {
+        return lineDao.findAll();
+    }
+
+    public Line findById(Long id) {
+        try {
+            return lineDao.findById(id)
+                          .orElseThrow(() -> new LineException(ErrorCode.NOT_EXIST_LINE_ID));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new LineException(ErrorCode.INCORRECT_SIZE_LINE_FIND_BY_ID);
+        }
+    }
+
     public Line createLine(String name, String color) {
         if (isStationExist(name)) {
             throw new LineException(ErrorCode.ALREADY_EXIST_LINE_NAME);
@@ -21,18 +35,13 @@ public class LineService {
         return lineDao.save(name, color);
     }
 
-    public List<Line> findAll() {
-        return lineDao.findAll();
-    }
-
-    public Line findById(Long id) {
-        return lineDao.findById(id)
-                      .orElseThrow(() -> new LineException(ErrorCode.NOT_EXIST_LINE_ID));
-    }
-
     private boolean isStationExist(String name) {
-        return lineDao.findByName(name)
-                      .isPresent();
+        try {
+            return lineDao.findByName(name)
+                          .isPresent();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new LineException(ErrorCode.INCORRECT_SIZE_LINE_FIND_BY_NAME);
+        }
     }
 
     public void modifyLine(Long id, String name, String color) {
