@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("노선을 생성한다.")
+    @DisplayName("노선 생성 성공")
     @Test
     void createLine() {
 
@@ -41,7 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")
+    @DisplayName("노선 생성 실패 - 기존에 존재하는 노선 이름으로 노선을 생성")
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -58,7 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
-    @DisplayName("모든 노선을 조회한다.")
+    @DisplayName("모든 노선 조회 성공")
     @Test
     void getLines() {
         /// given
@@ -88,7 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("단일 노선을 조회한다.")
+    @DisplayName("단일 노선 조회 성공")
     @Test
     void getLine() {
         // given
@@ -109,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 
-    @DisplayName("존재하지 않는 단일 노선을 조회한다.")
+    @DisplayName("단일 노선 조회 실패 - 존재하지 않는 노선 조회")
     @Test
     void getLineThatDoesNotExists() {
         // when
@@ -120,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 ID에 해당하는 노선이 존재하지 않습니다.");
     }
 
-    @DisplayName("노선을 수정한다.")
+    @DisplayName("노선 수정 성공")
     @Test
     void editLine() {
         // given
@@ -144,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
-    @DisplayName("노선의 이름은 그대로, 색상만을 수정한다.")
+    @DisplayName("노선 수정 성공 - 노선의 이름은 그대로, 색상만을 수정")
     @Test
     void editOnlyColorOfLine() {
         // given
@@ -168,7 +168,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 
-    @DisplayName("노선을 중복된 이름으로 수정한다.")
+    @DisplayName("노선 수정 실패 - 노선을 중복된 이름으로 수정")
     @Test
     void editLineAsDuplicateName() {
         // given
@@ -194,7 +194,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("이미 존재하는 노선 이름입니다.");
     }
 
-    @DisplayName("노선을 제거한다.")
+    @DisplayName("노선 제거 성공")
     @Test
     void deleteLine() {
         // given
