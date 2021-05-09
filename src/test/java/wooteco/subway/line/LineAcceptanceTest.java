@@ -11,10 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.station.controller.dto.StationRequest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,22 +38,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("지하철 노선 목록을 보여준다.")
     @Test
+    @DisplayName("지하철 노선 목록을 보여준다.")
     void showLines() {
         // given
         LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
         ExtractableResponse<Response> createResponse1 = createLine(lineRequest1);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        StationRequest stationRequest = new StationRequest("역삼역");
+        ExtractableResponse<Response> createResponse2 = createStation(stationRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -92,6 +84,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        System.out.println("@@@@@@@@@@@" + createResponse.body().toString());
+        System.out.println("@@@@@@@@@@@" + createResponse.response().toString());
         Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         Long resultLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
         assertThat(resultLineId).isEqualTo(expectedLineId);
@@ -134,13 +128,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = createLine(lineRequest1);
 
         // when
-        Map<String, String> updateParams = new HashMap<>();
-        updateParams.put("name", "3호선");
-        updateParams.put("color", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("3호선", "bg-red-600", 0L, 0L, 0);
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(updateParams)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(uri)
@@ -160,4 +152,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    private ExtractableResponse<Response> createStation(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
 }

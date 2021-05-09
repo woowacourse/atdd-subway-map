@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @DisplayName("지하철역 관련 기능")
+@Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철역을 생성한다.")
+
     @Test
-    @Transactional
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
-        // given
         StationRequest stationRequest = new StationRequest("강남역");
 
         // when
@@ -36,13 +36,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    @Transactional
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
-        // given
         StationRequest stationRequest = new StationRequest("강남역");
-        createStation(stationRequest);
 
         // when
         ExtractableResponse<Response> response = createStation(stationRequest);
@@ -51,9 +48,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
-    @Transactional
+    @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
         StationRequest stationRequest1 = new StationRequest("강남역");
@@ -80,9 +76,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
     @Test
-    @Transactional
+    @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
         StationRequest stationRequest1 = new StationRequest("강남역");
