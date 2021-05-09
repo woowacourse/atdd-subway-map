@@ -23,7 +23,7 @@ public class LineRequest {
     public static Map<String, String> line1(Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        params.put("name", "1호선");
         params.put("upStationId", upStationId.toString());
         params.put("downStationId", downStationId.toString());
         params.put("distance", "10");

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.acceptance.request.LineAndStationRequest;
 import wooteco.subway.acceptance.request.LineRequest;
 import wooteco.subway.acceptance.request.StationRequest;
 
@@ -131,29 +132,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> station1 = StationRequest.station1();
-        Map<String, String> station2 = StationRequest.station2();
-        Map<String, String> station3 = StationRequest.station3();
-        Map<String, String> line = LineRequest.line1(1L, 2L);
-        ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
-        ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
-        ExtractableResponse<Response> createStationResponse3 = StationRequest.createStationRequest(StationRequest.station3());
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
-        Long stationId1 = createStationResponse1.jsonPath().getLong("id");
-        Long stationId2 = createStationResponse2.jsonPath().getLong("id");
-        Long stationId3 = createStationResponse3.jsonPath().getLong("id");
-        Long lineId = createLineResponse.jsonPath().getLong("id");
+        Map<String, Long> ids = LineAndStationRequest.createLineWithStationsAndSectionsRequest();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", lineId)
-                .pathParam("stationId", stationId2)
+                .pathParam("lineId", ids.get("line"))
+                .pathParam("stationId", ids.get("station2"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete("/lines/{lineId}/sections?stationId={stationId}")
                 .then().log().all()
                 .extract();
-        JsonPath jsonPath = response.jsonPath();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
