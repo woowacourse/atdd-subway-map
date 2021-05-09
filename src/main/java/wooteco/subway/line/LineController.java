@@ -40,7 +40,7 @@ public class LineController {
         List<LineResponse> lineResponses = lines.stream()
             .map(LineResponse::new)
             .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping(value = "/lines/{id}")
