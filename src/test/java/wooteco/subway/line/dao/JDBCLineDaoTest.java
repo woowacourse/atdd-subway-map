@@ -41,8 +41,10 @@ class JDBCLineDaoTest {
         List<Line> lines = jdbcLineDao.findAll();
 
         assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(new Line(1L, "2호선", "bg-red-600", new ArrayList<>()),
-                new Line(2L, "3호선", "bg-red-600", new ArrayList<>()));
+        assertThat(lines).containsExactly(
+                new Line(1L, "2호선", "bg-red-600", new ArrayList<>()),
+                new Line(2L, "3호선", "bg-red-600", new ArrayList<>())
+        );
     }
 
     @Test
