@@ -26,14 +26,14 @@ public class LocalLineDao implements LineDao {
     @Override
     public Optional<Line> findById(Long id) {
         return lines.stream()
-                .filter(line -> line.getId().equals(id))
+                .filter(line -> line.isSameId(id))
                 .findAny();
     }
 
     @Override
     public Optional<Line> findByName(String lineName) {
         return lines.stream()
-                .filter(line -> line.getName().equals(lineName))
+                .filter(line -> line.isSameName(lineName))
                 .findAny();
     }
 
@@ -44,13 +44,13 @@ public class LocalLineDao implements LineDao {
 
     @Override
     public void delete(Long id) {
-        lines.removeIf(line -> line.getId().equals(id));
+        lines.removeIf(line -> line.isSameId(id));
     }
 
     @Override
     public void update(Line newLine) {
         lines.stream()
-                .filter(line -> line.getId().equals(newLine.getId()))
+                .filter(line -> line.isSameId(newLine.getId()))
                 .map(line -> updateObject(line, newLine))
                 .findAny()
                 .orElseThrow(() -> new LineIllegalArgumentException("수정할 대상이 없습니다."));

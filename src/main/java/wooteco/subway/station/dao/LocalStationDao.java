@@ -24,14 +24,14 @@ public class LocalStationDao implements StationDao {
     @Override
     public Optional<Station> findById(Long stationId) {
         return stations.stream()
-                .filter(station -> station.getId().equals(stationId))
+                .filter(station -> station.isSameId(stationId))
                 .findAny();
     }
 
     @Override
     public Optional<Station> findByName(String stationName) {
         return stations.stream()
-                .filter(station -> station.getName().equals(stationName))
+                .filter(station -> station.isSameName(stationName))
                 .findAny();
     }
 
@@ -42,7 +42,7 @@ public class LocalStationDao implements StationDao {
 
     @Override
     public void delete(Long id) {
-        stations.removeIf(station -> station.getId().equals(id));
+        stations.removeIf(station -> station.isSameId(id));
     }
 
     private Station createNewObject(Station station) {
