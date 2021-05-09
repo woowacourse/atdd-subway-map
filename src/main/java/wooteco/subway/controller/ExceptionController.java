@@ -7,8 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.InvalidDistanceException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.NullException;
+import wooteco.subway.exception.NullIdException;
+import wooteco.subway.exception.NullNameException;
 import wooteco.subway.exception.line.NotFoundLineException;
+import wooteco.subway.exception.line.NullColorException;
 import wooteco.subway.exception.station.NotFoundStationException;
 
 @RestControllerAdvice
@@ -27,8 +32,21 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<Void> voidLineDeleteExceptionResponse(final EmptyResultDataAccessException e) {
+    public ResponseEntity<Void> voidLineDeleteExceptionResponse(
+        final EmptyResultDataAccessException e) {
         return ResponseEntity.notFound()
+            .build();
+    }
+
+    @ExceptionHandler(InvalidDistanceException.class)
+    public ResponseEntity<Void> invalidDistanceExceptionResponse(final InvalidDistanceException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .build();
+    }
+
+    @ExceptionHandler({NullIdException.class, NullNameException.class, NullColorException.class})
+    public ResponseEntity<Void> nullExceptionResponse(final NullException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }
 }
