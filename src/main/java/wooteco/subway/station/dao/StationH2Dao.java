@@ -1,13 +1,12 @@
 package wooteco.subway.station.dao;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
-
-import java.util.List;
-import java.util.Optional;
 
 @Primary
 @Repository
@@ -16,7 +15,7 @@ public class StationH2Dao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            Station.of(resultSet.getLong("id"), resultSet.getString("name"));
+        Station.of(resultSet.getLong("id"), resultSet.getString("name"));
 
 
     public StationH2Dao(JdbcTemplate jdbcTemplate) {

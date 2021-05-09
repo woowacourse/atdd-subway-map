@@ -1,9 +1,8 @@
 package wooteco.subway.section.dao;
 
+import java.util.List;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.section.domain.Section;
-
-import java.util.List;
 
 @Repository
 public interface SectionDao {

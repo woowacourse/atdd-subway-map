@@ -1,8 +1,12 @@
 package wooteco.subway.section;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -36,8 +35,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         jdbcTemplate.update("INSERT INTO line(name, color) VALUES('1호선', 'black')");
 
-        jdbcTemplate.update("INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '1', '3', '3')");
-        jdbcTemplate.update("INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '3', '2', '3')");
+        jdbcTemplate.update(
+            "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '1', '3', '3')");
+        jdbcTemplate.update(
+            "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '3', '2', '3')");
     }
 
     @Test
@@ -51,12 +52,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -73,12 +74,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -86,7 +87,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @ParameterizedTest(name = "구간 추가 - 실패(추가하려는 구간의 거리가 잘못된 경우")
     @CsvSource({"1, 2, 3", "1, 2, 4", "2, 3, 4"})
-    void createSectionFailuresWithDistance(String upStationId, String downStationId, String distance) {
+    void createSectionFailuresWithDistance(String upStationId, String downStationId,
+        String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("distance", distance);
         params.put("downStationId", downStationId);
@@ -95,19 +97,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @ParameterizedTest(name = "구간 추가 - 실패(null)")
-    @CsvSource(value = {"null, null, null", "1, null, 2", "null, 1, 2", "1, 2, null"}, nullValues = {"null"})
+    @CsvSource(value = {"null, null, null", "1, null, 2", "null, 1, 2",
+        "1, 2, null"}, nullValues = {"null"})
     void createSectionFailuresWhenNull(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("distance", distance);
@@ -117,12 +120,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -139,12 +142,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -155,12 +158,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection(String stationId) {
 
         ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
-                .param("stationId", stationId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .param("stationId", stationId)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -171,20 +174,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection(String stationId1, String stationId2) {
 
         ExtractableResponse<Response> beforeDeleteResponse = RestAssured.given().log().all()
-                .param("stationId", stationId1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .param("stationId", stationId1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
-                .param("stationId", stationId2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1/sections")
-                .then().log().all()
-                .extract();
+            .param("stationId", stationId2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/1/sections")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

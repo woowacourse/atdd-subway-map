@@ -1,6 +1,5 @@
 package wooteco.subway.line.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,11 +15,9 @@ import wooteco.subway.line.exception.LineIllegalArgumentException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import wooteco.subway.station.exception.StationIllegalArgumentException;
 
 @Service
 public class LineService {
@@ -40,11 +37,55 @@ public class LineService {
         validateAllStationsIsExist(lineCreateRequest);
         validateIfDownStationIsEqualToUpStation(lineCreateRequest);
 
-        Line line = Line.of(lineCreateRequest);
+        Line line = lineCreateRequest.toLine();
         Line savedLine = lineDao.save(line);
 
         sectionDao.save(Section.of(savedLine.getId(), lineCreateRequest));
         return LineResponse.from(savedLine);
+    }
+
+    @Transactional
+    public List<LineResponse> findAll() {
+        List<Line> lines = lineDao.findAll();
+        return lines.stream()
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public LineResponse find(Long id) {
+        Line line = findLineById(id);
+        List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
+        LineRoute lineRoute = new LineRoute(sectionsByLineId);
+        List<StationResponse> stations = lineRoute.getOrderedStations()
+            .stream()
+            .map(this::findStationById)
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+        return LineResponse.of(line, stations);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        validateIsExistLineById(id);
+        lineDao.delete(id);
+    }
+
+    @Transactional
+    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
+        validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
+        Line line = lineUpdateRequest.toLine(id);
+        lineDao.update(line);
+    }
+
+    private Station findStationById(Long id) {
+        return stationDao.findById(id)
+            .orElseThrow(() -> new StationIllegalArgumentException("해당 지하철 역이 존재하지 않습니다"));
+    }
+
+    private Line findLineById(Long id) {
+        return lineDao.findById(id)
+            .orElseThrow(() -> new LineIllegalArgumentException("해당 노선이 존재하지 않습니다"));
     }
 
     private void validateDuplicateName(String lineName) {
@@ -54,10 +95,8 @@ public class LineService {
     }
 
     private void validateAllStationsIsExist(LineCreateRequest lineCreateRequest) {
-        stationDao.findById(lineCreateRequest.getDownStationId())
-                .orElseThrow(() -> new LineIllegalArgumentException("입력하신 하행역이 존재하지 않습니다."));
-        stationDao.findById(lineCreateRequest.getUpStationId())
-                .orElseThrow(() -> new LineIllegalArgumentException("입력하신 상행역이 존재하지 않습니다."));
+        validateIsExistStationById(lineCreateRequest.getUpStationId());
+        validateIsExistStationById(lineCreateRequest.getDownStationId());
     }
 
     private void validateIfDownStationIsEqualToUpStation(LineCreateRequest lineCreateRequest) {
@@ -66,47 +105,22 @@ public class LineService {
         }
     }
 
-    public List<LineResponse> findAll() {
-        List<Line> lines = lineDao.findAll();
-        return lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public LineResponse find(Long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(() -> new LineIllegalArgumentException("해당하는 노선이 존재하지 않습니다."));
-        List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
-        LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        List<StationResponse> stations = lineRoute.getOrderedStations()
-                .stream()
-                .map(stationDao::findById)
-                .map(Optional::get)
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-        return LineResponse.of(line, stations);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        lineDao.findById(id)
-                .orElseThrow(() -> new LineIllegalArgumentException("삭제하려는 노선이 존재하지 않습니다"));
-        lineDao.delete(id);
-    }
-
-    public void update(Long id, LineUpdateRequest lineUpdateRequest) {
-        lineDao.findById(id)
-                .orElseThrow(() -> new LineIllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));
-        validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
-        Line line = Line.of(id, lineUpdateRequest);
-        lineDao.update(line);
-    }
-
     private void validateDuplicateNameExceptMyself(Long id, String lineName) {
         Optional<Line> lineByName = lineDao.findByName(lineName);
-        if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
+        if (lineByName.isPresent() && !lineByName.get().equalId(id)) {
             throw new LineIllegalArgumentException("같은 이름의 노선이 있습니다;");
+        }
+    }
+
+    private void validateIsExistStationById(Long id) {
+        if(!stationDao.findById(id).isPresent()) {
+            throw new StationIllegalArgumentException("해당 지하철 역이 존재하지 않습니다");
+        }
+    }
+
+    private void validateIsExistLineById(Long id) {
+        if(!lineDao.findById(id).isPresent()) {
+            throw new LineIllegalArgumentException("해당 노선이 존재하지 않습니다");
         }
     }
 }

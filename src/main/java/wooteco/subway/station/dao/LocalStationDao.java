@@ -1,18 +1,17 @@
 package wooteco.subway.station.dao;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.domain.Station;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.ReflectionUtils;
+import wooteco.subway.station.domain.Station;
 
 @Repository
 public class LocalStationDao implements StationDao {
-    private Long seq = 0L;
     private final List<Station> stations = new ArrayList<>();
+    private Long seq = 0L;
 
     @Override
     public Station save(Station station) {
@@ -24,15 +23,15 @@ public class LocalStationDao implements StationDao {
     @Override
     public Optional<Station> findById(Long stationId) {
         return stations.stream()
-                .filter(station -> station.getId().equals(stationId))
-                .findAny();
+            .filter(station -> station.getId().equals(stationId))
+            .findAny();
     }
 
     @Override
     public Optional<Station> findByName(String stationName) {
         return stations.stream()
-                .filter(station -> station.getName().equals(stationName))
-                .findAny();
+            .filter(station -> station.getName().equals(stationName))
+            .findAny();
     }
 
     @Override

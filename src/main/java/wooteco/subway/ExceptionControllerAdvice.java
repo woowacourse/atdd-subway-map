@@ -18,22 +18,26 @@ public class ExceptionControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException error) {
+    public ResponseEntity<String> methodArgumentNotValidExceptionHandler(
+        MethodArgumentNotValidException error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 
     @ExceptionHandler(StationIllegalArgumentException.class)
-    public ResponseEntity<String> StationIllegalArgumentExceptionHandler(StationIllegalArgumentException error) {
+    public ResponseEntity<String> StationIllegalArgumentExceptionHandler(
+        StationIllegalArgumentException error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 
     @ExceptionHandler(LineIllegalArgumentException.class)
-    public ResponseEntity<String> LineIllegalArgumentExceptionHandler(LineIllegalArgumentException error) {
+    public ResponseEntity<String> LineIllegalArgumentExceptionHandler(
+        LineIllegalArgumentException error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 
     @ExceptionHandler(SectionIllegalArgumentException.class)
-    public ResponseEntity<String> SectionIllegalArgumentExceptionHandler(SectionIllegalArgumentException error) {
+    public ResponseEntity<String> SectionIllegalArgumentExceptionHandler(
+        SectionIllegalArgumentException error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 }

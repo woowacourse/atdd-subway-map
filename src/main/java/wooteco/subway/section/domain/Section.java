@@ -23,34 +23,35 @@ public class Section {
 
     public static Section of(Long lineId, Long upStationId, Long downStationId, int distance) {
         return new Section(null,
-                lineId,
-                upStationId,
-                downStationId,
-                distance);
+            lineId,
+            upStationId,
+            downStationId,
+            distance);
     }
 
-    public static Section of(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public static Section of(Long id, Long lineId, Long upStationId, Long downStationId,
+        int distance) {
         return new Section(id,
-                lineId,
-                upStationId,
-                downStationId,
-                distance);
+            lineId,
+            upStationId,
+            downStationId,
+            distance);
     }
 
     public static Section of(Long id, LineCreateRequest lineCreateRequest) {
         return new Section(null,
-                id,
-                lineCreateRequest.getUpStationId(),
-                lineCreateRequest.getDownStationId(),
-                lineCreateRequest.getDistance());
+            id,
+            lineCreateRequest.getUpStationId(),
+            lineCreateRequest.getDownStationId(),
+            lineCreateRequest.getDistance());
     }
 
     public static Section of(Long id, SectionRequest sectionRequest) {
         return new Section(null,
-                id,
-                sectionRequest.getUpStationId(),
-                sectionRequest.getDownStationId(),
-                sectionRequest.getDistance());
+            id,
+            sectionRequest.getUpStationId(),
+            sectionRequest.getDownStationId(),
+            sectionRequest.getDistance());
     }
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {

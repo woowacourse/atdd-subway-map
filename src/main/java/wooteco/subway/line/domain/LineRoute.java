@@ -1,8 +1,14 @@
 package wooteco.subway.line.domain;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import wooteco.subway.section.domain.Section;
-
-import java.util.*;
 
 public class LineRoute {
     private final Map<Long, Section> upToDownStationMap = new HashMap<>();
@@ -27,7 +33,8 @@ public class LineRoute {
         do {
             downStationId = expandDownToUp(downStationId);
             upStationId = expandUptoDown(upStationId);
-        } while (downToUpStationMap.containsKey(downStationId) || upToDownStationMap.containsKey(upStationId));
+        } while (downToUpStationMap.containsKey(downStationId) || upToDownStationMap
+            .containsKey(upStationId));
     }
 
     private Long expandUptoDown(Long upStationId) {
@@ -57,17 +64,23 @@ public class LineRoute {
     }
 
     public boolean isInsertSectionInEitherEndsOfLine(Section section) {
-        return isEndOfUpLine(section.getUpStationId()) || isEndOfDownLine(section.getDownStationId());
+        return isEndOfUpLine(section.getUpStationId()) || isEndOfDownLine(
+            section.getDownStationId());
     }
 
     public Section getSectionNeedToBeUpdatedForInsert(Section section) {
         if (upToDownStationMap.containsKey(section.getUpStationId())) {
             Section updateSection = upToDownStationMap.get(section.getUpStationId());
-            return Section.of(updateSection.getId(), updateSection.getLineId(), section.getDownStationId(), updateSection.getDownStationId(), updateSection.getDistance() - section.getDistance());
+            return Section
+                .of(updateSection.getId(), updateSection.getLineId(), section.getDownStationId(),
+                    updateSection.getDownStationId(),
+                    updateSection.getDistance() - section.getDistance());
         }
 
         Section updateSection = downToUpStationMap.get(section.getDownStationId());
-        return Section.of(updateSection.getId(), updateSection.getLineId(), updateSection.getUpStationId(), section.getUpStationId(), updateSection.getDistance() - section.getDistance());
+        return Section
+            .of(updateSection.getId(), updateSection.getLineId(), updateSection.getUpStationId(),
+                section.getUpStationId(), updateSection.getDistance() - section.getDistance());
     }
 
     public Optional<Section> getSectionFromUpToDownStationMapByStationId(Long stationId) {

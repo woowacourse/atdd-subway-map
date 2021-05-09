@@ -1,13 +1,12 @@
 package wooteco.subway.line.dao;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
-
-import java.util.List;
-import java.util.Optional;
 
 @Primary
 @Repository
@@ -16,9 +15,9 @@ public class LineH2Dao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
-            Line.of(resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("color"));
+        Line.of(resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("color"));
 
     public LineH2Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,16 +36,16 @@ public class LineH2Dao implements LineDao {
     public Optional<Line> findById(Long id) {
         String findQuery = "SELECT * FROM line WHERE id = ?;";
         return jdbcTemplate.query(findQuery, lineRowMapper, id)
-                .stream()
-                .findAny();
+            .stream()
+            .findAny();
     }
 
     @Override
     public Optional<Line> findByName(String lineName) {
         String findQuery = "SELECT * FROM line WHERE name = ?;";
         return jdbcTemplate.query(findQuery, lineRowMapper, lineName)
-                .stream()
-                .findAny();
+            .stream()
+            .findAny();
     }
 
     @Override

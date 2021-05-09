@@ -1,10 +1,9 @@
 package wooteco.subway.station.dao;
 
-import org.springframework.stereotype.Repository;
-import wooteco.subway.station.domain.Station;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Repository;
+import wooteco.subway.station.domain.Station;
 
 @Repository
 public interface StationDao {

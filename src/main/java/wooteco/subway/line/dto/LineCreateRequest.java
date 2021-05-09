@@ -2,6 +2,7 @@ package wooteco.subway.line.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import wooteco.subway.line.domain.Line;
 
 public class LineCreateRequest {
     @NotBlank
@@ -18,7 +19,8 @@ public class LineCreateRequest {
     private LineCreateRequest() {
     }
 
-    private LineCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private LineCreateRequest(String name, String color, Long upStationId, Long downStationId,
+        int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
