@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.step;
+package wooteco.subway.acceptance.request;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class LineRequest {
     public static ExtractableResponse<Response> createLineRequest(Map<String, String> params) {
-        StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -21,22 +20,22 @@ public class LineRequest {
         return response;
     }
 
-    public static Map<String, String> line1() {
+    public static Map<String, String> line1(Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
         params.put("distance", "10");
         return params;
     }
 
-    public static Map<String, String> line2() {
+    public static Map<String, String> line2(Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-green-600");
         params.put("name", "2호선");
-        params.put("upStationId", "3");
-        params.put("downStationId", "4");
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
         params.put("distance", "5");
         return params;
     }
@@ -52,10 +51,10 @@ public class LineRequest {
         return response;
     }
 
-    public static Map<String, String> section1() {
+    public static Map<String, String> section1(Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
-        params.put("downStationId", "1");
-        params.put("upStationId", "2");
+        params.put("downStationId", downStationId.toString());
+        params.put("upStationId", upStationId.toString());
         params.put("distance", "10");
         return params;
     }

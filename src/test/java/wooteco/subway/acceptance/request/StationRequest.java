@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.step;
+package wooteco.subway.acceptance.request;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

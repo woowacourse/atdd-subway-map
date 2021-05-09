@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.acceptance.step.LineRequest;
-import wooteco.subway.acceptance.step.StationRequest;
+import wooteco.subway.acceptance.request.LineRequest;
+import wooteco.subway.acceptance.request.StationRequest;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given, when
-        Map<String, String> line = LineRequest.line1();
+        Map<String, String> line = LineRequest.line1(1L, 2L);
         ExtractableResponse<Response> response = LineRequest.createLineRequest(line);
         JsonPath jsonPath = response.body().jsonPath();
         Long id = response.jsonPath().getLong("id");
@@ -40,10 +40,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        LineRequest.createLineRequest(LineRequest.line1());
+        LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
 
         // when
-        ExtractableResponse<Response> response = LineRequest.createLineRequest(LineRequest.line1());
+        ExtractableResponse<Response> response = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -53,11 +53,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1());
+        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
         Long lineId = createLineResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = LineRequest.createSectionRequest(LineRequest.section1(), lineId);
+        ExtractableResponse<Response> response = LineRequest.createSectionRequest(LineRequest.section1(1L, 2L), lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -67,8 +67,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> line1 = LineRequest.line1();
-        Map<String, String> line2 = LineRequest.line2();
+        Map<String, String> line1 = LineRequest.line1(1L, 2L);
+        Map<String, String> line2 = LineRequest.line2(3L, 4L);
         ExtractableResponse<Response> lineRequest1 = LineRequest.createLineRequest(line1);
         ExtractableResponse<Response> lineRequest2 = LineRequest.createLineRequest(line2);
 
@@ -97,10 +97,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> station1 = StationRequest.station1();
         Map<String, String> station2 = StationRequest.station2();
-        Map<String, String> line = LineRequest.line1();
+        Map<String, String> line = LineRequest.line1(1L, 2L);
         ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1());
+        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
         Long stationId1 = createStationResponse1.jsonPath().getLong("id");
         Long stationId2 = createStationResponse2.jsonPath().getLong("id");
         Long lineId = createLineResponse.jsonPath().getLong("id");
@@ -134,11 +134,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> station1 = StationRequest.station1();
         Map<String, String> station2 = StationRequest.station2();
         Map<String, String> station3 = StationRequest.station3();
-        Map<String, String> line = LineRequest.line1();
+        Map<String, String> line = LineRequest.line1(1L, 2L);
         ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
         ExtractableResponse<Response> createStationResponse3 = StationRequest.createStationRequest(StationRequest.station3());
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1());
+        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
         Long stationId1 = createStationResponse1.jsonPath().getLong("id");
         Long stationId2 = createStationResponse2.jsonPath().getLong("id");
         Long stationId3 = createStationResponse3.jsonPath().getLong("id");
