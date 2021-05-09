@@ -31,7 +31,10 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return lineDao.findAll();
+        final List<Line> lines = lineDao.findAll();
+        return lines.stream()
+                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .collect(Collectors.toList());
     }
 
     public LineResponse showLine(long id) {
@@ -41,8 +44,8 @@ public class LineService {
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
 
-        LineResponse lineResponse = lineDao.findById(id);
-        return new LineResponse(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor(), stations);
+        final Line line = lineDao.findById(id);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public void updateLine(long id, String lineName, String lineColor) {

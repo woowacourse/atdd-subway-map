@@ -71,7 +71,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 ## 리팩토링 중점 사안
 - [ ] Controller에서만 Response/Request를 처리하도록 변경
     - [ ] 아래 Layer들에서는 Domain 객체를 활용토록 함
-- [ ] Dao에서 도메인을 반환하도록 반환
+- [x] Dao에서 도메인을 반환하도록 반환
 - [ ] DB Unique를 통해 중복 검사 하지 않을 것
     - [ ] findBy~ 로 Optional 처리
 - [ ] Response에서 null값을 포함하지 않도록 할 것

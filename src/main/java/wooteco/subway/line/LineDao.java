@@ -7,15 +7,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<LineResponse> lineRowMapper = (resultSet, rowNum) -> new LineResponse(
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
-            resultSet.getString("color")
+            resultSet.getString("color"),
+            new ArrayList<>()
     );
 
     public LineDao(JdbcTemplate jdbcTemplate) {
@@ -36,7 +38,7 @@ public class LineDao {
         return keyHolder.getKey().longValue();
     }
 
-    public List<LineResponse> findAll() {
+    public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(sql, lineRowMapper);
     }
@@ -48,7 +50,7 @@ public class LineDao {
         return jdbcTemplate.queryForList(sql, Long.class, id);
     }
 
-    public LineResponse findById(long id) {
+    public Line findById(long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }

@@ -76,10 +76,10 @@ class LineDaoTest {
         String color = "green";
         long lineId = lineDao.save(name, color);
 
-        LineResponse lineResponse = lineDao.findById(lineId);
+        final Line line = lineDao.findById(lineId);
 
-        assertThat(lineResponse.getName()).isEqualTo(name);
-        assertThat(lineResponse.getColor()).isEqualTo(color);
+        assertThat(line.getName()).isEqualTo(name);
+        assertThat(line.getColor()).isEqualTo(color);
     }
 
     @DisplayName("노선의 이름과 색상을 수정한다")
@@ -93,9 +93,9 @@ class LineDaoTest {
         String newColor = "orange";
         lineDao.update(lineId, newName, newColor);
 
-        LineResponse lineResponse = lineDao.findById(lineId);
-        assertThat(lineResponse.getName()).isEqualTo(newName);
-        assertThat(lineResponse.getColor()).isEqualTo(newColor);
+        final Line line = lineDao.findById(lineId);
+        assertThat(line.getName()).isEqualTo(newName);
+        assertThat(line.getColor()).isEqualTo(newColor);
     }
 
     @DisplayName("id로 노선을 삭제한다")
