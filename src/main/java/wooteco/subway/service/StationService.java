@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.HttpException;
 
+@Transactional
 @Service
 public class StationService {
     private final StationDao stationDao;
@@ -30,6 +32,7 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponseDto> getAllStations() {
         List<Station> stations = stationDao.findAll();
         return stations.stream()
