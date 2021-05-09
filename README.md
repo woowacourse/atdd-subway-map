@@ -13,32 +13,58 @@
 <br>
 
 # 지하철 노선도 미션
+
 스프링 과정 실습을 위한 지하철 노선도 애플리케이션
+
+## 구현 기능 목록
+
+1. 지하철 역 관리 기능 완성하기
+
+- [x] 같은 이름 예외처리
+- [x] 역 삭제
+
+2. 지하철 노선 관리 API 구현
+
+- [x] 노선 생성
+- [x] 노선 목록 조회
+- [x] 노선 조회
+- [x] 노선 수정
+- [x] 노선 삭제
+- [x] e2e 테스트 구현
 
 <br>
 
 ## 🚀 Getting Started
 
 ### Install
+
 #### npm 설치
+
 ```
 cd frontend
 npm install
 ```
+
 > `frontend` 디렉토리에서 수행해야 합니다.
 
 ### Usage
+
 #### webpack server 구동
+
 ```
 npm run dev
 ```
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
 <br>
 
 ## ✏️ Code Review Process
+
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
