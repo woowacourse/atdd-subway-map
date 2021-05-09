@@ -34,37 +34,35 @@ public class SectionAcceptanceTestUtils {
     public static final int NEW_SECTION_DISTANCE = 14;
     public static final int DEFAULT_SECTION_DISTANCE = 20;
 
-    public static ExtractableResponse<Response> createLineWithSectionsOf(List<Station> stations) {
-
-        List<Station> sortedStationsById = stations.stream()
-            .sorted(Comparator.comparingLong(Station::getId))
-            .collect(Collectors.toList());
-
-        for (Station station : sortedStationsById) {
-            createStationWithName(station.getName());
-        }
-
-        ExtractableResponse<Response> response = createLine(LINE_NAME, LINE_COLOR, stations.get(0).getId(), stations.get(1).getId(), DEFAULT_SECTION_DISTANCE);
-
-        for (int i = 1; i + 1 < stations.size(); i++) {
-            createSection(new Section(LINE_ID, stations.get(i).getId(), stations.get(i + 1).getId(), DEFAULT_SECTION_DISTANCE));
-        }
+    public static ExtractableResponse<Response> createLineWithSectionsOf(String lineName, String lineColor, List<Station> stations) {
+        List<Station> sortedStationsById = getSortedStationsById(stations);
+        createStations(sortedStationsById);
         createStationWithName(NEW_STATION.getName());
+        ExtractableResponse<Response> response = createLine(lineName, lineColor, stations.get(0).getId(), stations.get(1).getId(), DEFAULT_SECTION_DISTANCE);
+        createRemainedSections(stations);
         return response;
     }
 
-    public static ExtractableResponse<Response> createLineWithSectionsOf(String lineName, String lineColor, List<Station> stations) {
-        for (Station station : stations) {
+    public static ExtractableResponse<Response> createLineWithSectionsOf(List<Station> stations) {
+        return createLineWithSectionsOf(LINE_NAME, LINE_COLOR, stations);
+    }
+
+    private static List<Station> getSortedStationsById(List<Station> stations) {
+        return stations.stream()
+            .sorted(Comparator.comparingLong(Station::getId))
+            .collect(Collectors.toList());
+    }
+
+    private static void createStations(List<Station> sortedStationsById) {
+        for (Station station : sortedStationsById) {
             createStationWithName(station.getName());
         }
+    }
 
-        ExtractableResponse<Response> response = createLine(lineName, lineColor,
-            stations.get(0).getId(), stations.get(1).getId(), DEFAULT_SECTION_DISTANCE);
-
+    private static void createRemainedSections(List<Station> stations) {
         for (int i = 1; i + 1 < stations.size(); i++) {
-            createSection(new Section(stations.get(i), stations.get(i + 1), DEFAULT_SECTION_DISTANCE));
+            createSection(new Section(LINE_ID, stations.get(i).getId(), stations.get(i + 1).getId(), DEFAULT_SECTION_DISTANCE));
         }
-        return response;
     }
 
     public static ExtractableResponse<Response> createSection(Section newSection) {
@@ -95,7 +93,7 @@ public class SectionAcceptanceTestUtils {
         assertStationsListResponseDto(responseDto, stations);
     }
 
-    public static LineStationsListResponseDto getAllStationsListOf(Long lineId) {
+    private static LineStationsListResponseDto getAllStationsListOf(Long lineId) {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -103,15 +101,13 @@ public class SectionAcceptanceTestUtils {
             .get("/lines/{id}", lineId)
             .then().log().all()
             .extract();
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-
         return response.as(LineStationsListResponseDto.class);
     }
 
-    public static void assertStationsListResponseDto(LineStationsListResponseDto responseDto, List<Station> stations) {
+    private static void assertStationsListResponseDto(LineStationsListResponseDto responseDto, List<Station> stations) {
         assertDefaultLineInforms(responseDto);
         assertStationsListResponseDtosOrder(responseDto.getStations(), stations);
     }
@@ -122,7 +118,7 @@ public class SectionAcceptanceTestUtils {
         assertThat(responseDto.getColor()).isEqualTo(LINE_COLOR);
     }
 
-    public static void assertStationsListResponseDtosOrder(List<StationResponseDto> actualDtos, List<Station> expectedStations) {
+    private static void assertStationsListResponseDtosOrder(List<StationResponseDto> actualDtos, List<Station> expectedStations) {
         assertThat(actualDtos).hasSize(expectedStations.size());
         for (int i = 0; i < actualDtos.size(); i++) {
             StationResponseDto actualDto = actualDtos.get(i);

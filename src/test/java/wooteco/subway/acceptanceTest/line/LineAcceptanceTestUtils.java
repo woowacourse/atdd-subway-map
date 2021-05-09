@@ -17,12 +17,7 @@ import wooteco.subway.controller.dto.response.line.LineResponseDto;
 
 public class LineAcceptanceTestUtils {
 
-    public static ExtractableResponse<Response> createLine(String name, String color) {
-        return createLine(name, color, 10L, 20L, 10);
-    }
-
     public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
-
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -77,17 +72,6 @@ public class LineAcceptanceTestUtils {
             .put("/lines/{id}")
             .then().log().all()
             .extract();
-    }
-
-    public static LineResponseDto requestAndGetSingleSavedLineResponseDto(Long lineId) {
-
-        List<LineResponseDto> allLineResponseDtos = getAllLinesInIdOrder();
-        assertThat(allLineResponseDtos).hasSize(1);
-
-        return allLineResponseDtos.stream()
-            .filter(lineResponseDto -> lineResponseDto.getId().equals(lineId))
-            .collect(Collectors.toList())
-            .get(0);
     }
 
     public static void assertLineResponseDto(LineResponseDto lineResponseDto, long lineId, String newLineName, String newColor) {
