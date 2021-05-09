@@ -1,7 +1,6 @@
 package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
 
@@ -13,17 +12,6 @@ import java.util.Optional;
 public class StationFakeDao implements StationDao {
     static final List<Station> STATIONS = new ArrayList<>();
     private static Long seq = 0L;
-
-    @Override
-    public Station save(Station station) {
-        if (isDuplicateStationName(station)) {
-            throw new DuplicateNameException("이미 저장된 역 이름입니다.");
-        }
-
-        Station persistStation = createNewObject(station);
-        STATIONS.add(persistStation);
-        return persistStation;
-    }
 
     private static boolean isDuplicateStationName(Station station) {
         final String stationName = station.getName();
@@ -38,8 +26,24 @@ public class StationFakeDao implements StationDao {
     }
 
     @Override
+    public Station save(Station station) {
+        if (isDuplicateStationName(station)) {
+            throw new DuplicateNameException("이미 저장된 역 이름입니다.");
+        }
+
+        Station persistStation = createNewObject(station);
+        STATIONS.add(persistStation);
+        return persistStation;
+    }
+
+    @Override
     public List<Station> findAll() {
         return STATIONS;
+    }
+
+    @Override
+    public Optional<Station> findById(final Long stationId) {
+        return STATIONS.stream().filter(line -> line.getId().equals(stationId)).findAny();
     }
 
     @Override

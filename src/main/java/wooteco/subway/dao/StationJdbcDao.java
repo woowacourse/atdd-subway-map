@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.controller.dto.StationRequest;
 import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
@@ -44,6 +43,19 @@ public class StationJdbcDao implements StationDao {
             final String name = rs.getString("name");
             return new Station(id, name);
         });
+    }
+
+    @Override
+    public Optional<Station> findById(final Long stationId) {
+        String sql = "SELECT s.id, s.name FROM STATION s WHERE s.id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                final String name = rs.getString("name");
+                return Optional.of(new Station(stationId, name));
+            }, stationId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
