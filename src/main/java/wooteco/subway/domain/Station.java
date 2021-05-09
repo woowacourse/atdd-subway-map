@@ -1,13 +1,17 @@
-package wooteco.subway.station;
+package wooteco.subway.domain;
 
-public class StationResponse {
+public class Station {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    public Station() {
     }
 
-    public StationResponse(Long id, String name) {
+    public Station(String name) {
+        this.name = name;
+    }
+
+    public Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -20,3 +24,4 @@ public class StationResponse {
         return name;
     }
 }
+
