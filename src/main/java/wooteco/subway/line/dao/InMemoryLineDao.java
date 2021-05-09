@@ -52,7 +52,7 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, String name, String color) {
-        findById(id).get().changeInfo(name, color);
+    public void update(Long id, Line line) {
+        findById(id).get().changeInfo(line.getName(), line.getColor());
     }
 }

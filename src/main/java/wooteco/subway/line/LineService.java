@@ -20,11 +20,10 @@ public class LineService {
     }
 
     @Transactional
-    public Line create(String name, String color) {
-        if (lineDao.findByName(name).isPresent()) {
+    public Line create(Line line) {
+        if (lineDao.findByName(line.getName()).isPresent()) {
             throw new LineNameDuplicatedException();
         }
-        Line line = Line.of(name, color);
         return lineDao.save(line);
     }
 
@@ -37,12 +36,12 @@ public class LineService {
     }
 
     @Transactional
-    public void update(Long id, String name, String color) {
-        final Optional<Line> lineByName = lineDao.findByName(name);
+    public void update(Long id, Line line) {
+        final Optional<Line> lineByName = lineDao.findByName(line.getName());
         if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
             throw new LineNameDuplicatedException();
         }
-        lineDao.update(id, name, color);
+        lineDao.update(id, line);
     }
 
     @Transactional

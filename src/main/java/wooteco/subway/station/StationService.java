@@ -18,11 +18,10 @@ public class StationService {
     }
 
     @Transactional
-    public Station create(String name) {
-        if (stationDao.isExistByName(name)) {
+    public Station create(Station station) {
+        if (stationDao.isExistByName(station.getName())) {
             throw new StationNameDuplicatedException();
         }
-        Station station = Station.of(name);
         return stationDao.save(station);
     }
 
