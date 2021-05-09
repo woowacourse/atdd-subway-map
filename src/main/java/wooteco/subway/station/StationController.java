@@ -2,8 +2,6 @@ package wooteco.subway.station;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +22,7 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationRequest stationRequest) {
         Station newStation = stationService.createStation(stationRequest);
         StationResponse stationResponse = new StationResponse(newStation);
+
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
                 .body(stationResponse);
     }
@@ -34,13 +33,13 @@ public class StationController {
         List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.delete(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

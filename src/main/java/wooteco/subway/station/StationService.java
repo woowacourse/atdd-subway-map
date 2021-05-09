@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.exception.StationExistenceException;
+import wooteco.subway.station.exception.StationNotFoundException;
 
 import java.util.List;
 
@@ -24,11 +25,18 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    public void delete(Long id) {
+        if (!isExistingStation(id)) {
+            throw new StationNotFoundException();
+        }
+        stationDao.delete(id);
+    }
+
     private boolean isExistingStation(String name) {
         return stationDao.findByName(name).isPresent();
     }
 
-    public void delete(Long id) {
-        stationDao.delete(id);
+    private boolean isExistingStation(Long id) {
+        return stationDao.findById(id).isPresent();
     }
 }

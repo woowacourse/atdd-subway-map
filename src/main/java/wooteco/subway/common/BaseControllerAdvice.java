@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.exception.StationException;
 import wooteco.subway.station.exception.StationExistenceException;
 
 @ControllerAdvice
 public class BaseControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(StationExistenceException.class)
+    @ExceptionHandler(StationException.class)
     public ResponseEntity<ErrorResponse> stationExceptionHandling(Exception exception) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("STATION_EXCEPTION", exception.getMessage()));

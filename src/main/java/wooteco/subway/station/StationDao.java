@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -43,9 +44,14 @@ public class StationDao {
     }
 
     public Optional<Station> findByName(String name) {
-        String sql = "select id, name from STATION where name = ?";
-        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), name);
-        return result.stream().findAny();
+        String sql = "select id from STATION where name = ?";
+
+        try {
+            Long findStationId = Long.valueOf(jdbcTemplate.queryForObject(sql, String.class, name));
+            return Optional.of(new Station(findStationId, name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void delete(Long id) {
@@ -53,4 +59,13 @@ public class StationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public Optional<Station> findById(Long id) {
+        String sql = "select name from STATION where id = ?";
+
+        try {
+            return Optional.of(new Station(jdbcTemplate.queryForObject(sql, String.class, id)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
