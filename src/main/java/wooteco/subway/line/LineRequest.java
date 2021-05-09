@@ -1,7 +1,11 @@
 package wooteco.subway.line;
 
+import javax.validation.constraints.NotBlank;
+
 public class LineRequest {
+    @NotBlank(message = "노선 이름을 입력하셔야 합니다.")
     private String name;
+    @NotBlank(message = "색상을 지정하셔야 합니다.")
     private String color;
     private Long upStationId;
     private Long downStationId;
