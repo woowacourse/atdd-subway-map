@@ -28,7 +28,7 @@ public class StationService {
         validatesNameDuplication(stationRequest);
         Station station = new Station(stationRequest.getName());
         Station newStation = stationDao.save(station);
-        log.info(newStation.getName() + "역이 생성되었습니다.");
+        log.info("{} 이 생성되었습니다.", newStation.getName());
         return new StationResponse(newStation.getId(), newStation.getName());
     }
 

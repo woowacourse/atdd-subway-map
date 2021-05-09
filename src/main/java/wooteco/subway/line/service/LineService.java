@@ -30,7 +30,7 @@ public class LineService {
         validatesNameDuplication(lineCreateRequest);
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line newLine = lineDao.save(line);
-        log.info(newLine.getName() + " 노선 생성 성공");
+        log.info("{} 노선 생성 성공", newLine.getName());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
@@ -43,7 +43,7 @@ public class LineService {
 
     public LineResponse findBy(Long id) {
         Line newLine = findById(id);
-        log.info(newLine.getName() + "노선 조회 성공");
+        log.info("{} 노선 조회 성공", newLine.getName());
         return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
