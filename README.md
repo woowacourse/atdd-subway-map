@@ -65,6 +65,22 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 조회
     - [x] 노선 수정
     - [x] 노선 삭제
-  
 - [x] 스프링 빈 적용
-- [ ] H2 적용
+- [x] H2 적용
+
+## 리팩토링 중점 사안
+- [ ] Dao에서 도메인을 반환하도록 반환
+- [ ] DB Unique를 통해 중복 검사 하지 않을 것
+    - [ ] findBy~ 로 Optional 처리
+- [ ] Response에서 null값을 포함하지 않도록 할 것
+    - [ ] null대신 빈 리스트 "[]"를 반환할 것
+- [ ] Service -> Dao에 도메인 객체를 넘겨 줄 것
+    - [ ] dao가 column에 의존적이지 않도록!
+- [ ] line.from(lineResponse) 등으로 도메인 객체 활용
+    - [ ] Controller에서 Service에 정보 넘겨줄 때 해당 메서드 활용
+- [ ] 인수테스트 상태코드 말고도 내용 검증 할 것
+
+## 질문 사항
+- findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
+    - Service단에서 Id를 캐싱해두는 것도 방법이 되지 않을까?
+    - 2번 정도는 컴퓨팅 능력으로 커버 가능?
