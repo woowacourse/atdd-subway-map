@@ -3,7 +3,7 @@ package wooteco.subway.line;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import wooteco.subway.line.controller.LineRequest;
+import wooteco.subway.line.dto.LineRequest;
 
 import java.util.regex.Pattern;
 

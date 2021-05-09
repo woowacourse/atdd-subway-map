@@ -2,7 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import wooteco.subway.station.controller.StationRequest;
+import wooteco.subway.station.dto.StationRequest;
 
 import java.util.regex.Pattern;
 

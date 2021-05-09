@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.dao.StationDao;

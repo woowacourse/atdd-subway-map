@@ -6,9 +6,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.LineService;
 import wooteco.subway.line.LineValidator;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.service.LineService;
 
 import javax.validation.Valid;
 import java.net.URI;
