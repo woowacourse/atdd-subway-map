@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import wooteco.subway.line.domain.LineDao;
-import wooteco.subway.line.domain.LineEntity;
+import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.domain.SectionDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
@@ -60,15 +60,6 @@ class LineServiceTest {
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getStations()).hasSize(2);
         assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("노선에 구간을 추가한다.")
-    void addSection() {
-        Long lineId = 1L;
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, 2L, 10);
-        when(sectionDao.save(sectionAddRequest.toEntity(lineId))).thenReturn(null);
-        lineService.addSection(1L, sectionAddRequest);
     }
 
     @Test

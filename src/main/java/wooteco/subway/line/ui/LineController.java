@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.common.ResponseError;
 import wooteco.subway.line.application.LineService;
 import wooteco.subway.line.domain.LineDao;
-import wooteco.subway.line.domain.LineEntity;
+import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;

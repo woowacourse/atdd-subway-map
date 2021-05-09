@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.entity.LineEntity;
+
 import java.util.List;
 import java.util.Optional;
 

@@ -1,6 +1,7 @@
 package wooteco.subway.line.domain;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.entity.LineEntity;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

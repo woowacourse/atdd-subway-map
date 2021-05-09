@@ -6,6 +6,7 @@ import wooteco.subway.line.domain.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionAddRequest;
+import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;

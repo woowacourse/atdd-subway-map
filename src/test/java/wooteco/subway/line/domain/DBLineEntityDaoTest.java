@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.TestConstructor;
+import wooteco.subway.line.entity.LineEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
