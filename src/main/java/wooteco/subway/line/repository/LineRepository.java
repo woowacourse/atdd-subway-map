@@ -3,6 +3,7 @@ package wooteco.subway.line.repository;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,7 +38,7 @@ public class LineRepository {
             return prepareStatement;
         }, keyHolder);
 
-        return createNewObject(line, keyHolder.getKey().longValue());
+        return createNewObject(line, Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     private Line createNewObject(Line line, Long id) {
