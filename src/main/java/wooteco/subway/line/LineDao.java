@@ -53,9 +53,9 @@ public class LineDao {
         return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
     }
 
-    public void update(long id, String lineName, String lineColor) {
+    public int update(long id, Line line) {
         String sql = "UPDATE LINE set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, lineName, lineColor, id);
+        return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
     public void delete(long id) {

@@ -6,10 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationResponse;
 
 @Service
 public class LineService {
@@ -25,9 +24,8 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public Line createLine(Line line, Section section) {
+    public Line createLine(Line line) {
         long lineId = lineDao.save(line);
-        sectionDao.save(section);
 
         return new Line(lineId, line);
     }
@@ -38,15 +36,16 @@ public class LineService {
 
     public Line showLine(long id) {
         List<Long> stationsId = lineDao.findStationsIdByLineId(id);
-        List<StationResponse> stations = stationsId.stream()
+        List<Station> stations = stationsId.stream()
             .map(stationDao::findById)
             .collect(Collectors.toList());
 
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        return new Line(line, stations);
     }
 
-    public void updateLine(long id, String lineName, String lineColor) {
-        lineDao.update(id, lineName, lineColor);
+    public void updateLine(long id, Line line) {
+        lineDao.update(id, line);
     }
 
     public void deleteLine(long id) {

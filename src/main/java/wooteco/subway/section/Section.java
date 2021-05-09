@@ -1,9 +1,9 @@
 package wooteco.subway.section;
 
 public class Section {
+    private final long upStationId;
+    private final long downStationId;
     private long lineId;
-    private long upStationId;
-    private long downStationId;
 
     public Section(long upStationId, long downStationId) {
         this.upStationId = upStationId;

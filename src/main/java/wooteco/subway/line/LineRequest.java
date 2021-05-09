@@ -20,11 +20,7 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public static Line from(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor());
-    }
-
-    public static Section of(LineRequest lineRequest) {
+    public static Section from(LineRequest lineRequest) {
         return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId());
     }
 

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,25 +17,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import wooteco.subway.section.Section;
+import wooteco.subway.section.SectionService;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    @Autowired
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = LineRequest.from(lineRequest);
-        Section section = LineRequest.of(lineRequest);
+        Line line = Line.from(lineRequest);
+        Section section = LineRequest.from(lineRequest);
 
-        Line createdLine = lineService.createLine(line, section);
+        Line createdLine = lineService.createLine(line);
+        Section createdSection = sectionService.createSection(createdLine.getId(), section);
+
         LineResponse lineResponse = LineResponse.from(createdLine);
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + createdSection.getLineId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,9 +60,8 @@ public class LineController {
 
     @PutMapping("{id}")
     public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
-        String lineName = lineRequest.getName();
-        String lineColor = lineRequest.getColor();
-        lineService.updateLine(id, lineName, lineColor);
+        Line line = Line.from(lineRequest);
+        lineService.updateLine(id, line);
 
         return ResponseEntity.ok().build();
     }

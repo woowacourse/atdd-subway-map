@@ -18,7 +18,7 @@ public class StationService {
         return new StationResponse(stationId, stationName);
     }
 
-    public List<StationResponse> showStations() {
+    public List<Station> showStations() {
         return stationDao.findAll();
     }
 

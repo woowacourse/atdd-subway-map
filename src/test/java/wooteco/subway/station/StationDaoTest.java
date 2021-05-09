@@ -55,8 +55,8 @@ class StationDaoTest {
         String station2 = "잠실역";
         String station3 = "신림역";
 
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
+        stationDao.save(station1);
+        stationDao.save(station2);
         long stationId3 = stationDao.save(station3);
 
         stationDao.delete(stationId3);
@@ -71,8 +71,8 @@ class StationDaoTest {
 
         long stationId = stationDao.save(station);
 
-        StationResponse stationResponse = stationDao.findById(stationId);
+        Station foundStation = stationDao.findById(stationId);
 
-        assertThat(stationResponse.getName()).isEqualTo(station);
+        assertThat(foundStation.getName()).isEqualTo(station);
     }
 }

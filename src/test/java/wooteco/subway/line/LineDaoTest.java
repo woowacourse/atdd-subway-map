@@ -104,7 +104,8 @@ class LineDaoTest {
 
         String newName = "3호선";
         String newColor = "orange";
-        lineDao.update(lineId, newName, newColor);
+        Line updatedLine = new Line(newName, newColor);
+        lineDao.update(lineId, updatedLine);
 
         Line line = lineDao.findById(lineId);
         assertThat(line.getName()).isEqualTo(newName);

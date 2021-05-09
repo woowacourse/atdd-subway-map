@@ -24,27 +24,28 @@ public class Line {
         this.color = color;
     }
 
-    public Line(LineRequest lineRequest) {
-        this(lineRequest.getName(), lineRequest.getColor());
-    }
-
-    public Line(LineResponse lineResponse) {
-        this(lineResponse.getName(), lineResponse.getColor());
-    }
-
     public Line(long id, Line line) {
         this(line.getName(), line.getColor());
         this.id = id;
     }
 
+    public Line(Line line, List<Station> stations) {
+        this(line.getId(), line.getName(), line.getColor());
+        this.stations = stations;
+    }
+
+    public static Line from(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
     private void validateColor(String color) {
-        if (color == null) {
+        if (color == null || color.isEmpty()) {
             throw new IllegalInputException();
         }
     }
 
     private void validateName(String name) {
-        if (name == null) {
+        if (name == null || name.isEmpty()) {
             throw new IllegalInputException();
         }
     }

@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,10 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.showStations();
-        return ResponseEntity.ok().body(stationResponses);
+        List<StationResponse> stations = stationService.showStations().stream()
+            .map(station -> new StationResponse(station.getId(), station.getName()))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok().body(stations);
     }
 
     @DeleteMapping("{id}")
