@@ -3,9 +3,9 @@ package wooteco.subway.line.domain;
 import java.util.Objects;
 
 public class Line {
-    private Long id;
-    private LineName name;
-    private LineColor color;
+    private final Long id;
+    private final LineName name;
+    private final LineColor color;
 
     public Line(String name, String color) {
         this(null, name, color);
