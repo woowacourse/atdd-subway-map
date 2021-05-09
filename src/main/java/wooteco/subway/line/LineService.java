@@ -25,9 +25,9 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public Line createLine(long upStationId, long downStationId, String lineName, String lineColor) {
+    public Line createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
         long lineId = lineDao.save(lineName, lineColor);
-        sectionDao.save(lineId, upStationId, downStationId);
+        sectionDao.save(lineId, upStationId, downStationId, distance);
 
         return new Line(lineId, lineName, lineColor, Collections.emptyList());
     }

@@ -63,8 +63,8 @@ class LineDaoTest {
         String name = "2호선";
         String color = "green";
         long lineId = lineDao.save(name, color);
-        sectionDao.save(lineId, stationId1, stationId2);
-        sectionDao.save(lineId, stationId2, stationId3);
+        sectionDao.save(lineId, stationId1, stationId2, 0);
+        sectionDao.save(lineId, stationId2, stationId3, 0);
 
         assertTrue(lineDao.findStationsIdByLineId(lineId).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
     }

@@ -24,8 +24,9 @@ public class LineController {
         long downStationId = lineRequest.getDownStationId();
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
+        int distance = lineRequest.getDistance();
 
-        Line line = lineService.createLine(upStationId, downStationId, lineName, lineColor);
+        Line line = lineService.createLine(upStationId, downStationId, lineName, lineColor, distance);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(new LineResponse(line));
     }
 
