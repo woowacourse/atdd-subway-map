@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import wooteco.subway.controller.dto.response.line.LineStationsListResponseDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 public class SectionAcceptanceTestUtils {
     public static final Station STATION_1 = new Station(1L, "첫 번째 역");

@@ -26,7 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.acceptanceTest.AcceptanceTest;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {

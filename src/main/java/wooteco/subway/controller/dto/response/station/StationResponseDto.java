@@ -1,6 +1,6 @@
 package wooteco.subway.controller.dto.response.station;
 
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 public class StationResponseDto {
     private Long id;

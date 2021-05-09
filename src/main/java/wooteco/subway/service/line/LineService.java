@@ -13,7 +13,7 @@ import wooteco.subway.controller.dto.response.line.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Line;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.HttpException;
 

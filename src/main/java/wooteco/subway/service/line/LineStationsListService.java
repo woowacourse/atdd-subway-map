@@ -12,9 +12,9 @@ import wooteco.subway.controller.dto.response.station.StationResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.LineStationsInOrder;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.LineStationsInOrder;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.HttpException;
 

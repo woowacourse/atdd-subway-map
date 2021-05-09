@@ -1,8 +1,7 @@
-package wooteco.subway.domain.type;
+package wooteco.subway.domain.section.type;
 
 public enum Direction {
     UP, DOWN;
-
 
     public Direction getReversed() {
         if (this == UP) {

@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Station;
-import wooteco.subway.domain.type.Direction;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.section.type.Direction;
 import wooteco.subway.exception.HttpException;
 
 public class Section {
@@ -114,9 +114,5 @@ public class Section {
             return new Section(lineId, this.getUpStationId(), newStationId, splitDistance);
         }
         return new Section(lineId, newStationId, this.getDownStationId(), splitDistance);
-    }
-
-    public List<Long> getAllStationIds() {
-        return Arrays.asList(getUpStationId(), getDownStationId());
     }
 }

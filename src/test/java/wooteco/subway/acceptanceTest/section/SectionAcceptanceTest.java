@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.acceptanceTest.AcceptanceTest;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.Station;
+import wooteco.subway.domain.station.Station;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {

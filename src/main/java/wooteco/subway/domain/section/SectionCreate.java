@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
-import wooteco.subway.domain.type.Direction;
+import wooteco.subway.domain.section.type.Direction;
 import wooteco.subway.exception.HttpException;
 
 public class SectionCreate {
