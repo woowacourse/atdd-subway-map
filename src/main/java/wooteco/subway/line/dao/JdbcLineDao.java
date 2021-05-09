@@ -13,13 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class LineDaoJdbcTemplate implements LineDao {
+public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Line> lineRowMapper;
 
-    public LineDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
 
         jdbcInsert = new SimpleJdbcInsert(dataSource)

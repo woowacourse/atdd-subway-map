@@ -13,13 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class StationDaoJdbcTemplate implements StationDao {
+public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Station> stationRowMapper;
 
-    public StationDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
 
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
