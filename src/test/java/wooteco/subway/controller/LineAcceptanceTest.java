@@ -170,10 +170,12 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void editLine() throws JsonProcessingException {
-        LineRequest lineRequest = new LineRequest("6호선", "red", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
         postLineApi(lineRequest);
         long id = testLineIds.get(0);
-        LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+        LineRequest putRequest = new LineRequest("구분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
@@ -187,7 +189,9 @@ class LineAcceptanceTest {
     @DisplayName("없는 아이디의 지하철 노선은 수정할 수 없다.")
     @Test
     void cannotEditLineWhenNoId() throws JsonProcessingException {
-        LineRequest putRequest = new LineRequest("구분당선", "white", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest putRequest = new LineRequest("구분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
@@ -201,12 +205,14 @@ class LineAcceptanceTest {
     @DisplayName("이미 생성된 노선의 이름으로 수정할 수 없다.")
     @Test
     void cannotEditLineWhenDuplicateName() throws JsonProcessingException {
-        LineRequest lineRequest1 = new LineRequest("6호선", "red", 1L, 3L, 7);
-        LineRequest lineRequest2 = new LineRequest("신분당선", "red", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest1 = new LineRequest("6호선", "red", upStationId, downStationId, 7);
+        LineRequest lineRequest2 = new LineRequest("신분당선", "red", upStationId, downStationId, 7);
         postLineApi(lineRequest1);
         postLineApi(lineRequest2);
         long id = testLineIds.get(0);
-        LineRequest putRequest = new LineRequest("신분당선", "white", 1L, 3L, 7);
+        LineRequest putRequest = new LineRequest("신분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
         RestAssured.given().log().all()
@@ -220,7 +226,9 @@ class LineAcceptanceTest {
     @DisplayName("등록된 노선을 삭제한다.")
     @Test
     void deleteLine() throws JsonProcessingException {
-        LineRequest lineRequest = new LineRequest("7호선", "green", 1L, 3L, 7);
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        LineRequest lineRequest = new LineRequest("7호선", "green", upStationId, downStationId, 7);
         String uri = postLineApi(lineRequest).extract().header("Location");
 
         RestAssured.given().log().all()

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.repository.SectionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -22,7 +22,7 @@ class SectionServiceTest {
     private SectionService sectionService;
 
     @Mock
-    private SectionDao sectionDao;
+    private SectionRepository sectionRepository;
 
     @Mock
     private StationService stationService;
@@ -39,13 +39,13 @@ class SectionServiceTest {
         Section section = new Section(upStation, downStation, distance, lineId);
         given(stationService.findById(upStationId)).willReturn(upStation);
         given(stationService.findById(downStationId)).willReturn(downStation);
-        given(sectionDao.save(section)).willReturn(1L);
+        given(sectionRepository.save(section)).willReturn(1L);
 
         long createdSectionId = sectionService.createSection(upStationId, downStationId, distance, lineId);
 
         assertThat(createdSectionId).isEqualTo(1L);
         verify(stationService, times(1)).findById(1);
         verify(stationService, times(1)).findById(2);
-        verify(sectionDao, times(1)).save(section);
+        verify(sectionRepository, times(1)).save(section);
     }
 }
