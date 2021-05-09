@@ -24,6 +24,11 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    private void validateToCreateLine(LineRequest lineRequest) {
+        validateNameAndColor(lineRequest);
+        validateStationIds(lineRequest);
+    }
+
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         validateToCreateLine(lineRequest);
@@ -47,10 +52,13 @@ public class LineService {
         return Arrays.asList(new StationResponse(upStation), new StationResponse(downStation));
     }
 
-    private void validateToCreateLine(LineRequest lineRequest) {
+    private void validateNameAndColor(LineRequest lineRequest) {
         if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
         }
+    }
+
+    private void validateStationIds(LineRequest lineRequest) {
         if (!stationDao.hasStationWithId(lineRequest.getUpStationId()) ||
             !stationDao.hasStationWithId(lineRequest.getDownStationId())) {
             throw new IllegalArgumentException("존재하지 않는 역 ID 입니다.");
@@ -85,19 +93,12 @@ public class LineService {
 
     private void validateToUpdateLine(Long id, LineRequest lineRequest) {
         validateToExistId(id);
-        validateNotToDuplicateName(id, lineRequest.getName());
-        validateNotToDuplicateColor(id, lineRequest.getColor());
+        validateNotToDuplicateNameAndColor(id, lineRequest.getName(), lineRequest.getColor());
     }
 
-    private void validateNotToDuplicateName(Long id, String name) {
-        if (lineDao.hasLineWithNameAndWithoutId(id, name)) {
+    private void validateNotToDuplicateNameAndColor(Long id, String name, String color) {
+        if (lineDao.hasLineWithNameAndColorWithoutId(id, name, color)) {
             throw new IllegalArgumentException("이미 존재하는 이름 입니다.");
-        }
-    }
-
-    private void validateNotToDuplicateColor(Long id, String color) {
-        if (lineDao.hasLineWithColorAndWithoutId(id, color)) {
-            throw new IllegalArgumentException("이미 존재하는 색깔 입니다.");
         }
     }
 
