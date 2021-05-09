@@ -1,7 +1,12 @@
 package wooteco.subway.line.controller.dto;
 
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.controller.dto.StationResponse;
+import wooteco.subway.station.domain.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
@@ -20,19 +25,25 @@ public class LineResponse {
         this.stations = stations;
     }
 
+    public LineResponse(Line line) {
+        this.id = line.getId();
+        this.name = line.getName().text();
+        this.color = line.getColor().text();
+        this.stations = convertSectionsToStations(line.getSections());
+    }
+
+    private List<StationResponse> convertSectionsToStations(Sections sections) {
+        List<Section> sectionList = sections.sections();
+        List<StationResponse> stationResponses = new ArrayList<>();
+        stationResponses.add(new StationResponse(sectionList.get(0).getStations().get(0)));
+        for (Section section : sectionList) {
+            List<Station> stations = section.getStations();
+            stationResponses.add(new StationResponse(stations.get(1)));
+        }
+        return stationResponses;
+    }
+
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
     }
 }

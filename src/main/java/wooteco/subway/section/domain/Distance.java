@@ -13,4 +13,9 @@ public class Distance {
             throw new IllegalArgumentException("거리는 양수여야 합니다.");
         }
     }
+
+    public int distance() {
+        return distance;
+    }
+
 }
