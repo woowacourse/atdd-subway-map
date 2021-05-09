@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,17 +38,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
         String content = objectMapper.writeValueAsString(stationRequest);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = addStation(content);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    private ExtractableResponse<Response> addStation(String content) {
+        return RestAssured.given().log().all()
                 .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -55,23 +62,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("강남역");
         String content = objectMapper.writeValueAsString(stationRequest);
 
-        RestAssured.given().log().all()
-                .body(content)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        addStation(content);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(content)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = addStation(content);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -84,23 +78,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("강남역");
         String content = objectMapper.writeValueAsString(stationRequest);
 
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(content)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = addStation(content);
 
         StationRequest stationRequest2 = new StationRequest("역삼역");
         String content2 = objectMapper.writeValueAsString(stationRequest2);
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(content2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = addStation(content2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -127,13 +109,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("강남역");
         String content = objectMapper.writeValueAsString(stationRequest);
 
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(content)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = addStation(content);
 
         // when
         String uri = createResponse.header("Location");
