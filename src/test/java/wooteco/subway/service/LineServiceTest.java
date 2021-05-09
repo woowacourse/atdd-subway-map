@@ -6,10 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
-
-import java.util.Optional;
+import wooteco.subway.repository.LineRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -23,7 +21,7 @@ class LineServiceTest {
     private LineService lineService;
 
     @Mock
-    private LineDao lineDao;
+    private LineRepository lineRepository;
 
     @Mock
     private SectionService sectionService;
@@ -40,15 +38,15 @@ class LineServiceTest {
         Line line = new Line(name, color);
         Line retrievedLine = new Line(lineId, name, color);
 
-        given(lineDao.save(line)).willReturn(lineId);
+        given(lineRepository.save(line)).willReturn(lineId);
         given(sectionService.createSection(upStationId, downStationId, distance, lineId)).willReturn(1L);
-        given(lineDao.findById(1L)).willReturn(Optional.of(retrievedLine));
+        given(lineRepository.findById(1L)).willReturn(retrievedLine);
 
         Line savedLine = lineService.createLine(name, color, upStationId, downStationId, distance);
 
         assertThat(savedLine).isEqualTo(retrievedLine);
-        verify(lineDao, times(1)).save(line);
-        verify(lineDao, times(1)).findById(1L);
+        verify(lineRepository, times(1)).save(line);
+        verify(lineRepository, times(1)).findById(1L);
         verify(sectionService, times(1)).createSection(upStationId, downStationId, distance, lineId);
     }
 
@@ -57,12 +55,12 @@ class LineServiceTest {
     void findById() {
         long id = 1;
         Line line = new Line("testLine", "black");
-        given(lineDao.findById(id)).willReturn(Optional.of(line));
+        given(lineRepository.findById(id)).willReturn(line);
 
         Line retrievedLine = lineService.findById(id);
 
         assertThat(line).isEqualTo(retrievedLine);
-        verify(lineDao, times(1)).findById(id);
+        verify(lineRepository, times(1)).findById(id);
     }
 
     @DisplayName("노선의 이름을 수정한다.")
@@ -73,6 +71,6 @@ class LineServiceTest {
 
         lineService.editLine(1L, name, color);
 
-        verify(lineDao, times(1)).update(1L, name, color);
+        verify(lineRepository, times(1)).update(1L, name, color);
     }
 }

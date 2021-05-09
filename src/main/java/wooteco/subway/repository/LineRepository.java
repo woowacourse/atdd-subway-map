@@ -66,4 +66,12 @@ public class LineRepository {
         addSections(line);
         return line;
     }
+
+    public void update(long id, String name, String color) {
+        lineDao.update(id, name, color);
+    }
+
+    public void deleteById(long id) {
+        lineDao.deleteById(id);
+    }
 }
