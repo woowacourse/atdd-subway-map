@@ -14,16 +14,15 @@ import java.util.Optional;
 @Repository
 public class DBStationDao implements StationDao {
 
+    static RowMapper<Station> stationsMapper = (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
     private final JdbcTemplate jdbcTemplate;
 
     public DBStationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    static RowMapper<Station> stationsMapper  = (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-    );
 
     @Override
     public Station save(final Station station) {

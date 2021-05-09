@@ -10,7 +10,6 @@ import wooteco.subway.ResponseError;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.service.StationService;
 
 import java.net.URI;

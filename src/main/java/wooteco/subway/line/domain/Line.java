@@ -6,7 +6,7 @@ import wooteco.subway.name.Name;
 import java.util.Objects;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private Name name;
     private String color;
 

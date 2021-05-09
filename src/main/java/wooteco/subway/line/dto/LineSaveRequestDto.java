@@ -16,12 +16,12 @@ public class LineSaveRequestDto {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void setColor(String color) {
