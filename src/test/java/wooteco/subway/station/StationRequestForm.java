@@ -8,18 +8,18 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationRequest {
+public class StationRequestForm {
 
-    private StationRequest() {
+    private StationRequestForm() {
     }
 
-    public static Map<String, String> stationRequestForm(String name) {
+    public static Map<String, String> stationRequestBody(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return params;
     }
 
-    public static ExtractableResponse<Response> create(Map<String, String> body) {
+    public static ExtractableResponse<Response> createRequest(Map<String, String> body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -29,7 +29,7 @@ public class StationRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> get() {
+    public static ExtractableResponse<Response> findAllRequest() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/stations")
@@ -37,7 +37,7 @@ public class StationRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> delete(String uri) {
+    public static ExtractableResponse<Response> deleteRequest(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)

@@ -8,19 +8,19 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LineRequest {
+public class LineRequestForm {
 
-    private LineRequest() {
+    private LineRequestForm() {
     }
 
-    public static Map<String, String> LineRequestForm(String name, String color) {
+    public static Map<String, String> LineRequestBody(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         return params;
     }
 
-    public static ExtractableResponse<Response> create(Map<String, String> body) {
+    public static ExtractableResponse<Response> createRequest(Map<String, String> body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -30,7 +30,7 @@ public class LineRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> getAll() {
+    public static ExtractableResponse<Response> findAllRequest() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
@@ -38,7 +38,7 @@ public class LineRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> getOne(String id) {
+    public static ExtractableResponse<Response> findByIdRequest(String id) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + id)
@@ -46,9 +46,7 @@ public class LineRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> update(Map<String, String> body, String id) {
-        System.out.println("####");
-        System.out.println(body.toString());
+    public static ExtractableResponse<Response> updateRequest(Map<String, String> body, String id) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -58,7 +56,7 @@ public class LineRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> delete(String uri) {
+    public static ExtractableResponse<Response> deleteRequest(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)

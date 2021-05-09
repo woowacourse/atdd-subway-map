@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.line.LineRequest.*;
+import static wooteco.subway.line.LineRequestForm.*;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -29,10 +29,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = create(분당선_Red);
+        ExtractableResponse<Response> response = createRequest(분당선_Red);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -43,11 +43,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWhenDuplicateLineName() {
         // given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        create(분당선_Red);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        createRequest(분당선_Red);
 
         // when
-        ExtractableResponse<Response> response = create(분당선_Red);
+        ExtractableResponse<Response> response = createRequest(분당선_Red);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -57,13 +57,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestForm("신분당선", "bg-yellow-600");
-        ExtractableResponse<Response> 분당선생성 = create(분당선_Red);
-        ExtractableResponse<Response> 신분당선생성 = create(신분당선_Yellow);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
+        ExtractableResponse<Response> 신분당선생성 = createRequest(신분당선_Yellow);
 
         // when
-        ExtractableResponse<Response> response = getAll();
+        ExtractableResponse<Response> response = findAllRequest();
         List<Long> expectedLineIds = expectedLineIdsList(Arrays.asList(분당선생성, 신분당선생성));
         List<Long> resultLineIds = resultLineIdsList(response);
 
@@ -88,11 +88,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = create(분당선_Red);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
 
         // when
-        ExtractableResponse<Response> response = getOne("1");
+        ExtractableResponse<Response> response = findByIdRequest("1");
         Long expectedLineId = Long.parseLong(분당선생성.header("Location").split("/")[2]);
         Long resultLineId = response.as(LineResponse.class).getId();
 
@@ -105,13 +105,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestForm("신분당선", "bg-yellow-600");
-        create(분당선_Red);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
+        createRequest(분당선_Red);
 
         // when
-        ExtractableResponse<Response> expectedResponse = update(신분당선_Yellow, "1");
-        ExtractableResponse<Response> updatedResponse = getOne("1");
+        ExtractableResponse<Response> expectedResponse = updateRequest(신분당선_Yellow, "1");
+        ExtractableResponse<Response> updatedResponse = findByIdRequest("1");
 
         // then
         assertThat(expectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -125,13 +125,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestForm("신분당선", "bg-yellow-600");
-        create(분당선_Red);
-        create(신분당선_Yellow);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
+        createRequest(분당선_Red);
+        createRequest(신분당선_Yellow);
 
         // when
-        ExtractableResponse<Response> response = update(신분당선_Yellow, "1");
+        ExtractableResponse<Response> response = updateRequest(신분당선_Yellow, "1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -141,13 +141,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestForm("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = create(분당선_Red);
+        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
         int originalSize = lineDao.findAll().size();
 
         // when
         String uri = 분당선생성.header("Location");
-        ExtractableResponse<Response> response = delete(uri);
+        ExtractableResponse<Response> response = deleteRequest(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
