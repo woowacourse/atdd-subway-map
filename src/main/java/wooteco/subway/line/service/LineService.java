@@ -23,7 +23,7 @@ public class LineService {
 
     @Transactional
     public LineDto save(final Line requestedLine) {
-        validateName(requestedLine.getName());
+        validateExistingName(requestedLine.getName());
 
         final Line createdLine = lineRepository.save(requestedLine);
         return LineDto.of(createdLine);
@@ -45,8 +45,7 @@ public class LineService {
 
     @Transactional
     public void update(final Line requestedLine) {
-        validateExisting(requestedLine.getId());
-        validateName(requestedLine.getName());
+        validateNameById(requestedLine.getName(), requestedLine.getId());
 
         lineRepository.update(requestedLine);
     }
@@ -66,9 +65,23 @@ public class LineService {
         return line.get();
     }
 
-    private void validateName(final String name) {
+    private void validateExistingName(final String name) {
         final Optional<Line> line = lineRepository.findByName(name);
         if (line.isPresent()) {
+            throw new LineException("이미 존재하는 노선 이름입니다.");
+        }
+    }
+
+    private void validateNameById(final String name, final Long id) {
+        final Optional<Line> possibleLine = lineRepository.findByName(name);
+        if (possibleLine.isPresent()) {
+            final Line line = possibleLine.get();
+            checkId(id, line);
+        }
+    }
+
+    private void checkId(Long id, Line thisLine) {
+        if (!thisLine.isId(id)) {
             throw new LineException("이미 존재하는 노선 이름입니다.");
         }
     }

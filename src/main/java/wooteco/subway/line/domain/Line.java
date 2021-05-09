@@ -33,6 +33,10 @@ public class Line {
         this.stations = stations;
     }
 
+    public boolean isId(Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
