@@ -1,8 +1,8 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.LineNameDuplicatedException;
-import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.line.LineNameDuplicatedException;
+import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 
 import java.util.List;

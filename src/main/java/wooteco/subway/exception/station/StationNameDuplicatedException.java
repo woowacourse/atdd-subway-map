@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.station;
 
 public class StationNameDuplicatedException extends RuntimeException {
 

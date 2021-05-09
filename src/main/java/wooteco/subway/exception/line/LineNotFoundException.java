@@ -1,4 +1,4 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.line;
 
 public class LineNotFoundException extends RuntimeException {
 

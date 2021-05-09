@@ -1,4 +1,6 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dto;
+
+import wooteco.subway.line.Line;
 
 public class LineResponse {
 

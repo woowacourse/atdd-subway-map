@@ -1,11 +1,11 @@
-package wooteco.subway.common;
+package wooteco.subway.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.LineNameDuplicatedException;
-import wooteco.subway.exception.LineNotFoundException;
-import wooteco.subway.exception.StationNameDuplicatedException;
+import wooteco.subway.exception.line.LineNameDuplicatedException;
+import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.station.StationNameDuplicatedException;
 
 @RestControllerAdvice
 public class ExceptionController {

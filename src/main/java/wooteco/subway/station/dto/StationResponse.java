@@ -1,4 +1,6 @@
-package wooteco.subway.station;
+package wooteco.subway.station.dto;
+
+import wooteco.subway.station.Station;
 
 public class StationResponse {
 
