@@ -11,6 +11,7 @@ import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.L
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_NAME;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_1;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_2;
+import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_3;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
 
 import io.restassured.RestAssured;
@@ -74,6 +75,23 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = createLineWithSectionsOf(LINE_NAME + 1, LINE_COLOR, STATIONS);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        List<Long> allSavedLineIds = requestAndGetAllSavedLinesIds();
+        assertThat(allSavedLineIds).containsExactly(savedLineIdBeforeRequest);
+    }
+
+    @DisplayName("같은 상행 종점역과 하행 종점역으로 노선을 생성한다.")
+    @Test
+    void createLineWithSameUpStationAndDownStation() {
+        // given
+        createLineWithSectionsOf(STATIONS);
+        Long savedLineIdBeforeRequest = requestAndGetAllSavedLinesIds().get(0);
+
+        // when
+        ExtractableResponse<Response> response = createLineWithSectionsOf(LINE_NAME + 1, LINE_COLOR, Arrays.asList(STATION_3, STATION_3));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
