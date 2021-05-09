@@ -1,6 +1,8 @@
 package wooteco.subway.line.dto;
 
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Lines;
+import wooteco.subway.station.domain.Station;
 
 import javax.validation.constraints.Pattern;
 
@@ -47,7 +49,15 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
+    public Line toLineEntity() {
         return new Line(null, name, color);
+    }
+
+    public Lines toLinesEntity() {
+        return new Lines(
+                new Line(null, name, color),
+                new Station(upStationId),
+                new Station(downStationId),
+                distance);
     }
 }

@@ -13,10 +13,15 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public LineResponse() {
+
     }
 
     public LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor());
+        this(line.getId(), line.getName(), line.getColor(), Collections.emptyList());
+    }
+
+    public LineResponse(Line newLine, List<StationResponse> stations) {
+        this(newLine.getId(), newLine.getName(), newLine.getColor(), stations);
     }
 
     public LineResponse(Long id, String name, String color) {

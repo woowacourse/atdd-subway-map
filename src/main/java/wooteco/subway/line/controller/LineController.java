@@ -7,6 +7,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.station.dto.StationResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -25,7 +26,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
-        Long id = lineService.save(lineRequest.toEntity());
+        Long id = lineService.save(lineRequest.toLinesEntity());
         Line newLine = lineService.findById(id);
         return ResponseEntity.created(
                 URI.create("/lines/" + newLine.getId()))
@@ -41,9 +42,16 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showSections(@PathVariable Long id) {
+        Line line = lineService.findById(id);
+        List<StationResponse> section = lineService.findSectionById(id);
+        return ResponseEntity.ok(new LineResponse(line, section));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
-        Line line = lineRequest.toEntity();
+        Line line = lineRequest.toLineEntity();
         lineService.update(id, line);
         return ResponseEntity.ok().build();
     }

@@ -2,6 +2,7 @@ package wooteco.subway.line.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -18,6 +20,13 @@ public class LineDao {
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private RowMapper<Line> getLineRowMapper() {
+        return (rs, rowNum) -> new Line(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("color"));
     }
 
     public Long save(Line line) {
@@ -31,16 +40,12 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Line(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("color")
-        ));
+        return jdbcTemplate.query(sql, getLineRowMapper());
     }
 
     public void update(Long id, Line line) {
@@ -67,10 +72,7 @@ public class LineDao {
         try {
             String sql = "SELECT * FROM line WHERE id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    (rs, rowNum) -> new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")),
+                    getLineRowMapper(),
                     id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
