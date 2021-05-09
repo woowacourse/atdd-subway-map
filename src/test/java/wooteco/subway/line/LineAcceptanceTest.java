@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -97,10 +96,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }
 
-    @DisplayName("노선 조회 - 실패(노선 정보 없음)")
+    @DisplayName("한 노선 조회 - 실패(노선 정보 없음)")
     @Test
     void getStationById_notFound() {
-        /// given
+        // given & when
         ExtractableResponse<Response> response = 한_노선_조회("/lines/-1");
 
         // then
@@ -155,8 +154,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선 삭제 - 성공")
     @Test
-    void removeLine() {
-        /// given
+    void remove_success() {
+        // given
         Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
         final String uri = 노선_생성(params).header("Location");
 
@@ -165,6 +164,16 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 삭제 - 실패(존재하지 않는 노선 삭제)")
+    @Test
+    void remove_fail() {
+        // given & when
+        ExtractableResponse<Response> result = 노선_삭제("/lines/-1");
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 노선_삭제(String uri) {
