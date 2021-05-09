@@ -36,4 +36,10 @@ public class StationRequest {
         params.put("name", "잠실역");
         return params;
     }
+
+    public static Map<String, String> station4() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "주안역");
+        return params;
+    }
 }

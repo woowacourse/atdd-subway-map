@@ -11,6 +11,7 @@ import wooteco.subway.controller.dto.response.LineFindResponseDto;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 
@@ -33,9 +34,9 @@ public class LineService {
     }
 
     public LineCreateResponseDto createLine(LineRequestDto lineRequest) {
-//        lineJdbcDao.findByName(lineRequest.getName()).ifPresent(line -> {
-//            throw new SubwayException("이미 존재하는 노선 이름입니다.");
-//        });
+        lineRepository.findLineByName(lineRequest.getName()).ifPresent(line -> {
+            throw new SubwayException("이미 존재하는 노선 이름입니다.");
+        });
         Line newLine = lineRepository.saveLineWithSection(
                 lineRequest.getName(),
                 lineRequest.getColor(),

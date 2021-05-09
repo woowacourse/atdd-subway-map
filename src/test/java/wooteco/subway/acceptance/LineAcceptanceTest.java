@@ -68,8 +68,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> line1 = LineRequest.line1(1L, 2L);
-        Map<String, String> line2 = LineRequest.line2(3L, 4L);
+        ExtractableResponse<Response> stationRequest1 = StationRequest.createStationRequest(StationRequest.station1());
+        ExtractableResponse<Response> stationRequest2 = StationRequest.createStationRequest(StationRequest.station2());
+        ExtractableResponse<Response> stationRequest3 = StationRequest.createStationRequest(StationRequest.station3());
+        ExtractableResponse<Response> stationRequest4 = StationRequest.createStationRequest(StationRequest.station4());
+        long stationId1 = stationRequest1.jsonPath().getLong("id");
+        long stationId2 = stationRequest2.jsonPath().getLong("id");
+        long stationId3 = stationRequest3.jsonPath().getLong("id");
+        long stationId4 = stationRequest4.jsonPath().getLong("id");
+        Map<String, String> line1 = LineRequest.line1(stationId1, stationId2);
+        Map<String, String> line2 = LineRequest.line2(stationId3, stationId4);
         ExtractableResponse<Response> lineRequest1 = LineRequest.createLineRequest(line1);
         ExtractableResponse<Response> lineRequest2 = LineRequest.createLineRequest(line2);
 

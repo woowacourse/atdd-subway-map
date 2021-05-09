@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,11 @@ import java.util.Optional;
 @Repository
 public class LineDao {
     private JdbcTemplate jdbcTemplate;
+    private RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
+                new Line(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("color"));
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,23 +39,21 @@ public class LineDao {
 
     public List<Line> findAll() {
         String query = "SELECT * FROM line";
-        return jdbcTemplate.query(query, (resultSet, rowNum) ->
-                new Line(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("color"))
-        );
+        return jdbcTemplate.query(query, lineRowMapper);
     }
 
     public Optional<Line> findById(Long lineId) {
         String query = "SELECT * FROM line WHERE id = ?";
         Line result = DataAccessUtils.singleResult(
-                jdbcTemplate.query(query, (resultSet, rowNum) ->
-                        new Line(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("color")),
+                jdbcTemplate.query(query, lineRowMapper,
                         lineId));
+        return Optional.ofNullable(result);
+    }
+
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM line WHERE name = ?";
+        Line result = DataAccessUtils.singleResult(
+                jdbcTemplate.query(query, lineRowMapper, name));
         return Optional.ofNullable(result);
     }
 
