@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private final LineDao lineDao;
     private final StationDao stationDao;
@@ -30,7 +31,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public LineResponse save(LineCreateRequest lineCreateRequest) {
         validateDuplicateName(lineCreateRequest.getName());
         validateAllStationsIsExist(lineCreateRequest);
@@ -86,12 +87,14 @@ public class LineService {
         return LineResponse.of(line, stations);
     }
 
+    @Transactional(readOnly = false)
     public void delete(Long id) {
         lineDao.findById(id)
                 .orElseThrow(() -> new LineIllegalArgumentException("삭제하려는 노선이 존재하지 않습니다"));
         lineDao.delete(id);
     }
 
+    @Transactional(readOnly = false)
     public void update(Long id, LineUpdateRequest lineUpdateRequest) {
         lineDao.findById(id)
                 .orElseThrow(() -> new LineIllegalArgumentException("수정하려는 노선이 존재하지 않습니다"));

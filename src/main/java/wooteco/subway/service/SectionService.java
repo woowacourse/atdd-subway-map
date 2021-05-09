@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
 
     public static final int DELETE_STATION_IN_LINE_LIMIT = 2;
@@ -24,7 +25,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void insertSectionInLine(Long lineId, SectionRequest sectionRequest) {
         Section section = Section.of(lineId,
                 sectionRequest.getUpStationId(),
@@ -67,7 +68,7 @@ public class SectionService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(Long lineId, Long stationId) {
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(lineId);
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
