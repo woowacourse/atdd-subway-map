@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 
 @RestControllerAdvice
@@ -17,8 +18,8 @@ public class LineControllerAdvice {
             .build();
     }
 
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity duplicateLineAccessExceptionResponse(final SQLNonTransientException e) {
+    @ExceptionHandler(DuplicateLineException.class)
+    public ResponseEntity duplicateLineAccessExceptionResponse(final DuplicateLineException e) {
         return ResponseEntity.badRequest()
             .build();
     }
