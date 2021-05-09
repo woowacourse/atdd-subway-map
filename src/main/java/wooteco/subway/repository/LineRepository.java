@@ -66,4 +66,22 @@ public class LineRepository {
     public Long createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance) {
         return sectionDao.create(lineId, upStationId, downStationId, distance);
     }
+
+    public Long deleteSectionInLine(Long lineId, Long stationId) {
+        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
+        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+        if (!upSectionOptional.isPresent() || !downSectionOptional.isPresent()) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 삭제할 수 없습니다.");
+        }
+        Section upSection = upSectionOptional.get();
+        Section downSection = downSectionOptional.get();
+        sectionDao.deleteById(upSection.getId());
+        sectionDao.deleteById(downSection.getId());
+        return sectionDao.create(
+                lineId,
+                upSection.getUpStationId(),
+                downSection.getDownStationId(),
+                upSection.getDistance() + downSection.getDistance()
+        );
+    }
 }

@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.request;
+package wooteco.subway.acceptance.step;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -28,6 +28,12 @@ public class StationRequest {
     public static Map<String, String> station2() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "길동역");
+        return params;
+    }
+
+    public static Map<String, String> station3() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "잠실역");
         return params;
     }
 }

@@ -51,6 +51,20 @@ public class SectionDao {
         return jdbcTemplate.query(query, sectionRowMapper(), lineId);
     }
 
+    public Optional<Section> findByUpStationIdAndLineId(Long upStationId, Long lineId) {
+        String query = "SELECT * FROM section WHERE up_station_id = ? AND line_id = ?";
+        Section result = DataAccessUtils.singleResult(
+                jdbcTemplate.query(query, sectionRowMapper(), upStationId, lineId));
+        return Optional.ofNullable(result);
+    }
+
+    public Optional<Section> findByDownStationIdAndLineId(Long downStationId, Long lineId) {
+        String query = "SELECT * FROM section WHERE down_station_id = ? AND line_id = ?";
+        Section result = DataAccessUtils.singleResult(
+                jdbcTemplate.query(query, sectionRowMapper(), downStationId, lineId));
+        return Optional.ofNullable(result);
+    }
+
     private RowMapper<Section> sectionRowMapper() {
         return (resultSet, rowNum) ->
                 new Section(

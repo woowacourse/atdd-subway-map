@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.acceptance.request.LineRequest;
-import wooteco.subway.acceptance.request.StationRequest;
+import wooteco.subway.acceptance.step.LineRequest;
+import wooteco.subway.acceptance.step.StationRequest;
 
 import java.util.Map;
 
@@ -133,12 +133,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> station1 = StationRequest.station1();
         Map<String, String> station2 = StationRequest.station2();
+        Map<String, String> station3 = StationRequest.station3();
         Map<String, String> line = LineRequest.line1();
         ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
+        ExtractableResponse<Response> createStationResponse3 = StationRequest.createStationRequest(StationRequest.station3());
         ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1());
         Long stationId1 = createStationResponse1.jsonPath().getLong("id");
         Long stationId2 = createStationResponse2.jsonPath().getLong("id");
+        Long stationId3 = createStationResponse3.jsonPath().getLong("id");
         Long lineId = createLineResponse.jsonPath().getLong("id");
 
         // when

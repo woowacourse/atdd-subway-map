@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.request;
+package wooteco.subway.acceptance.step;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class LineRequest {
     public static ExtractableResponse<Response> createLineRequest(Map<String, String> params) {
+        StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
