@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,23 +21,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 테스트")
 class LineAcceptanceTest extends AcceptanceTest {
-    private static final String TEST_LINE_NAME = "강남노선";
+    private static final String TEST_LINE_NAME = "2호선";
     private static final String TEST_COLOR_NAME = "orange darken-4";
 
+    private static final LineRequest LINE_REQUEST = new LineRequest(TEST_LINE_NAME, TEST_COLOR_NAME, 1L, 2L, 10);
+
     @Autowired
-    private LineDao dao;
+    private LineDao lineDao;
 
-    static Map<String, String> param = new HashMap<>();
+    @Autowired
+    private StationDao stationDao;
 
-    @BeforeAll
-    static void fixtureSetup() {
-        param.put("name", TEST_LINE_NAME);
-        param.put("color", TEST_COLOR_NAME);
+    @BeforeEach
+    void set() {
+        stationDao.save(new Station(1L, "강남역"));
+        stationDao.save(new Station(2L, "역삼역"));
+        stationDao.save(new Station(3L, "잠실역"));
+        stationDao.save(new Station(4L, "구의역"));
     }
 
     @AfterEach
     void cleanDB() {
-        dao.deleteAll();
+        lineDao.deleteAll();
+        stationDao.deleteAll();
     }
 
     @DisplayName("지하철노선을 생성한다.")
@@ -43,7 +52,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -60,7 +69,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -68,11 +77,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        Map<String, String> duplicateNameParam = new HashMap<>(param);
-        duplicateNameParam.put("color", TEST_COLOR_NAME);
+        LineRequest duplicateNameRequest = new LineRequest(TEST_LINE_NAME, "dark", 3L, 4L, 5);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(duplicateNameParam)
+                .body(duplicateNameRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -89,7 +97,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateColor() {
         // given
         RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -97,11 +105,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // when
-        Map<String, String> duplicateNameParam = new HashMap<>(param);
-        duplicateNameParam.put("name", TEST_LINE_NAME);
+        LineRequest duplicateColorRequest = new LineRequest("3호선", TEST_COLOR_NAME, 3L, 4L, 5);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(param)
+                .body(duplicateColorRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -118,7 +125,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLineById() {
         /// given
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -145,19 +152,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         /// given
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "마이크로소프트호선");
-        params2.put("color", "gates darken-4");
+        LineRequest lineRequest2 = new LineRequest("3호선", "dark", 3L, 4L, 5);
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(lineRequest2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -187,7 +192,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -230,7 +235,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(param)
+                .body(LINE_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
