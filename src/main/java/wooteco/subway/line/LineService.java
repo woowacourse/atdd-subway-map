@@ -7,61 +7,52 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionEntity;
+import wooteco.subway.section.SectionRequest;
+import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationEntity;
 import wooteco.subway.station.StationResponse;
+import wooteco.subway.station.StationService;
 
 @Service
 @Transactional
 public class LineService {
 
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
-    private final StationDao stationDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
-    }
-
-    private void validateToCreateLine(LineRequest lineRequest) {
-        validateNameAndColor(lineRequest);
-        validateStationIds(lineRequest);
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        validateToCreateLine(lineRequest);
+        validateNameAndColor(lineRequest);
 
-        LineEntity newLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
+        LineEntity newLineEntity = lineDao
+            .save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         createSection(lineRequest, newLineEntity);
 
         return new LineResponse(newLineEntity, stationResponses(lineRequest));
     }
 
     private void createSection(LineRequest lineRequest, LineEntity newLineEntity) {
-        SectionEntity sectionEntity = new SectionEntity(newLineEntity.getId(),
+        SectionRequest sectionRequest = new SectionRequest(newLineEntity.getId(),
             lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionDao.save(sectionEntity);
+            lineRequest.getDownStationId(),
+            lineRequest.getDistance());
+        sectionService.createSection(sectionRequest);
     }
 
     private List<StationResponse> stationResponses(LineRequest lineRequest) {
-        StationEntity upStation = stationDao.findById(lineRequest.getUpStationId());
-        StationEntity downStation = stationDao.findById(lineRequest.getDownStationId());
-        return Arrays.asList(new StationResponse(upStation), new StationResponse(downStation));
+        return Arrays.asList(stationService.showStation(lineRequest.getUpStationId()),
+            stationService.showStation(lineRequest.getDownStationId()));
     }
 
     private void validateNameAndColor(LineRequest lineRequest) {
         if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
-        }
-    }
-
-    private void validateStationIds(LineRequest lineRequest) {
-        if (!stationDao.hasStationWithId(lineRequest.getUpStationId()) ||
-            !stationDao.hasStationWithId(lineRequest.getDownStationId())) {
-            throw new IllegalArgumentException("존재하지 않는 역 ID 입니다.");
         }
     }
 

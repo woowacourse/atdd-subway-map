@@ -27,6 +27,11 @@ public class StationService {
         }
     }
 
+    public StationResponse showStation(Long id) {
+        validateToExistId(id);
+        return new StationResponse(stationDao.findById(id));
+    }
+
     @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         List<StationEntity> stations = stationDao.findAll();
