@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class MemoryLineDao implements LineDao {
     private static Long seq = 0L;
-    private static List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new ArrayList<>();
 
     public MemoryLineDao() {
     }
