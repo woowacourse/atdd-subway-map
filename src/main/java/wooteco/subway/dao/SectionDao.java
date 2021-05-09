@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.section.Section;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -37,5 +38,15 @@ public class SectionDao {
             return new Section(id, distance, lineId);
         };
         return jdbcTemplate.query(query, sectionRowMapper, lineId);
+    }
+
+    public List<Long> findStationIdsById(long id) {
+        String query = "SELECT UP_STATION_ID, DOWN_STATION_ID FROM SECTION WHERE ID = ?";
+        RowMapper<List<Long>> stationIdsRowMapper = (resultSet, rowNumber) -> {
+            long upStationId = resultSet.getLong("UP_STATION_ID");
+            long downStationId = resultSet.getLong("DOWN_STATION_ID");
+            return Arrays.asList(upStationId, downStationId);
+        };
+        return jdbcTemplate.queryForObject(query, stationIdsRowMapper, id);
     }
 }
