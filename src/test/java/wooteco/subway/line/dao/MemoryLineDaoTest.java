@@ -15,12 +15,13 @@ class MemoryLineDaoTest {
     private String name;
     private Long id;
     private LineDao lineDao = new MemoryLineDao();
+    private Line save;
 
     @BeforeEach
     void setUp() {
         name = "아마찌선";
         id = 1L;
-        lineDao.save(new Line(id, name, "bg-red-600"));
+        save = lineDao.save(new Line(id, name, "bg-red-600"));
     }
 
     @AfterEach
@@ -31,7 +32,10 @@ class MemoryLineDaoTest {
     @Test
     @DisplayName("노선을 저장한다.")
     void save() {
-        assertThat(lineDao.findByName(name).get().name()).isEqualTo(name);
+        String saveName = "3호선";
+        Line save = lineDao.save(new Line("3호선", "bg-red-600"));
+
+        assertThat(lineDao.findByName(saveName).get()).isEqualTo(save);
     }
 
     @Test
@@ -61,7 +65,6 @@ class MemoryLineDaoTest {
         lineDao.update(id, updateName, updateColor);
         Line findLine = lineDao.findById(id).get();
 
-        assertThat(findLine.name()).isEqualTo(updateName);
-        assertThat(findLine.color()).isEqualTo(updateColor);
+        assertThat(findLine).isEqualTo(save);
     }
 }
