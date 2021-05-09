@@ -10,7 +10,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.station.exception.StationException;
-import wooteco.subway.station.exception.StationExistenceException;
 
 @ControllerAdvice
 public class BaseControllerAdvice extends ResponseEntityExceptionHandler {
