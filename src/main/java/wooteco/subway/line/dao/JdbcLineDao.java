@@ -64,8 +64,9 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, Line updatedLine) {
+    public void update(Line updatedLine) {
         String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+        Long id = updatedLine.getId();
         String newName = updatedLine.getName();
         String newColor = updatedLine.getColor();
         jdbcTemplate.update(query, newName, newColor, id);

@@ -46,8 +46,8 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public void update(Long id, Line updatedLine) {
-        findById(id)
+    public void update(Line updatedLine) {
+        findById(updatedLine.getId())
                 .ifPresent(line -> {
                     int index = lines.indexOf(line);
                     lines.set(index, updatedLine);

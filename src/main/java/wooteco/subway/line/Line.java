@@ -1,6 +1,5 @@
 package wooteco.subway.line;
 
-import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.station.Station;
 
 import java.util.Collections;
@@ -9,10 +8,10 @@ import java.util.List;
 public class Line {
     private static final Long NOT_EXIST_ID = -1L;
 
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<Station> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<Station> stations;
 
     public Line(String name, String color) {
         this(NOT_EXIST_ID, name, color, Collections.emptyList());
@@ -37,8 +36,9 @@ public class Line {
         return this.id.equals(id);
     }
 
-    public Line update(LineUpdateRequest updatedLine) {
-        return new Line(id, updatedLine.getName(), updatedLine.getColor());
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {

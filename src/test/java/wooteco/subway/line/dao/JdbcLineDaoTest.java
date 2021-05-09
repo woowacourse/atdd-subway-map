@@ -105,7 +105,7 @@ class JdbcLineDaoTest {
         jdbcLineDao.save(new Line("분당선", "red"));
 
         // when
-        jdbcLineDao.update(1L, new Line("2호선", "green"));
+        jdbcLineDao.update(new Line(1L, "2호선", "green"));
 
         // then
         assertThat(jdbcLineDao.findById(1L).get()).usingRecursiveComparison()

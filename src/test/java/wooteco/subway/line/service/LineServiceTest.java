@@ -136,7 +136,7 @@ class LineServiceTest {
         lineService.update(1L, new LineUpdateRequest("2호선", "green"));
 
         // then
-        verify(lineDao).update(any(Long.class), any(Line.class));
+        verify(lineDao).update(any(Line.class));
     }
 
     @DisplayName("존재하지 않는 노선 수정")

@@ -51,10 +51,10 @@ class LineTest {
         LineUpdateRequest 신분당선 = new LineUpdateRequest("신분당선", "bg-yellow-600");
 
         // when
-        Line updatedLine = 분당선.update(신분당선);
+        분당선.update(신분당선.getName(), 신분당선.getColor());
 
         // then
-        assertThat(updatedLine).usingRecursiveComparison()
+        assertThat(분당선).usingRecursiveComparison()
                 .isEqualTo(new Line(1L, "신분당선", "bg-yellow-600"));
     }
 }

@@ -66,9 +66,9 @@ public class LineService {
 
         validatesNameDuplicationExceptOriginalName(lineUpdateRequest, line);
 
-        Line updatedLine = line.update(lineUpdateRequest);
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 
-        lineDao.update(id, updatedLine);
+        lineDao.update(line);
         log.info("노선 정보 수정 완료");
     }
 
