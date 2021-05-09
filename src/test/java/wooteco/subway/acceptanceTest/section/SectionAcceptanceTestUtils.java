@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.controller.dto.response.line.LineStationsListResponseDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.Station;
 
 public class SectionAcceptanceTestUtils {

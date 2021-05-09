@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.HttpException;
 
 @Transactional

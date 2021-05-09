@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.line.LineCreateRequestDto;
@@ -15,7 +14,7 @@ import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.HttpException;
 
 @Transactional

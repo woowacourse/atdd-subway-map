@@ -1,7 +1,7 @@
 package wooteco.subway.controller.dto.response.line;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
+import wooteco.subway.domain.section.Section;
 
 public class LineCreateResponseDto {
     private Long id;
