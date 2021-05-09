@@ -17,7 +17,7 @@ import wooteco.subway.controller.dto.request.line.LineUpdateRequestDto;
 import wooteco.subway.controller.dto.response.line.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.line.LineResponseDto;
 import wooteco.subway.controller.dto.response.line.LineStationsListResponseDto;
-import wooteco.subway.service.LineService;
+import wooteco.subway.service.line.LineService;
 import wooteco.subway.service.line.LineStationsListService;
 
 @RequestMapping("/lines")

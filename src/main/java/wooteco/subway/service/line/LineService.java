@@ -1,4 +1,4 @@
-package wooteco.subway.service;
+package wooteco.subway.service.line;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -31,6 +31,7 @@ public class LineService {
     }
 
     public LineCreateResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
+        validateSection(lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId());
         try {
             Line newLine = new Line(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
             Line savedLine = lineDao.save(newLine);
@@ -39,6 +40,12 @@ public class LineService {
             return new LineCreateResponseDto(savedLine, savedSection);
         } catch (DuplicateKeyException e) {
             throw new HttpException(BAD_REQUEST, LINE_NAME_OR_COLOR_DUPLICATE_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateSection(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new HttpException(BAD_REQUEST, "상행 종점역과 하행 종점역은 같을 수 없습니다.");
         }
     }
 
