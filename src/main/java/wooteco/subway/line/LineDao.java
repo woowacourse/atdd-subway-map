@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -42,9 +44,13 @@ public class LineDao {
         return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM line WHERE id = (?)";
-        return jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, LINE_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void updateById(Long id, Line line) {
@@ -57,28 +63,15 @@ public class LineDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public int countName(String name) {
-        String sql = "SELECT count(*) FROM line WHERE `name` = (?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    public boolean existsByNameOrColor(String name, String color) {
+        String sql = "SELECT count(*) FROM line WHERE `name` = (?) OR color = (?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name, color);
+        return count > 0;
     }
 
-    public int countColor(String color) {
-        String sql = "SELECT count(*) FROM line WHERE color = (?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, color);
-    }
-
-    public int countId(Long id) {
-        String sql = "SELECT count(*) FROM line WHERE id = (?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id);
-    }
-
-    public int countNameWithDifferentId(String name, Long id) {
-        String sql = "SELECT count(*) FROM line WHERE `name` = (?) AND id <> (?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name, id);
-    }
-
-    public int countColorWithDifferentId(String color, Long id) {
-        String sql = "SELECT count(*) FROM line WHERE color = (?) AND id <> (?)";
-        return jdbcTemplate.queryForObject(sql, Integer.class, color, id);
+    public boolean existsByNameOrColorWithDifferentId(String name, String color, Long id) {
+        String sql = "SELECT count(*) FROM line WHERE (`name` = (?) OR color = (?)) AND id <> (?)";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, name, color, id);
+        return count > 0;
     }
 }
