@@ -5,9 +5,8 @@ import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SectionService {
@@ -21,15 +20,30 @@ public class SectionService {
         sectionDao.save(lineId, upStationId, downStationId, distance);
     }
 
-    public List<StationResponse> findSectionById(Long id) {  // TODO : 구간 순서 정렬하기
-        List<StationResponse> result = new ArrayList<>();
+    public List<StationResponse> findSectionById(Long id) {
+        List<Station> result = new ArrayList<>();
         Map<Station, Station> sectionMap = sectionDao.findSectionById(id);
-        for (Station upStation : sectionMap.keySet()) {
-            result.add(new StationResponse(upStation.getId(), upStation.getName()));
 
-            Station downStation = sectionMap.get(upStation);
-            result.add(new StationResponse(downStation.getId(), downStation.getName()));
+        Station key = findupStation(sectionMap);
+        result.add(key);
+        while (sectionMap.get(key) != null) {
+            key = sectionMap.get(key);
+            result.add(key);
         }
-        return result;
+
+        return result.stream()
+                .map(res ->
+                        new StationResponse(
+                                res.getId(),
+                                res.getName()
+                        ))
+                .collect(Collectors.toList());
+    }
+
+    private Station findupStation(Map<Station, Station> sectionMap) {
+        Set<Station> upStations = new HashSet<>(sectionMap.keySet());
+        Set<Station> downStations = new HashSet<>(sectionMap.values());
+        upStations.removeAll(downStations);
+        return upStations.iterator().next();
     }
 }

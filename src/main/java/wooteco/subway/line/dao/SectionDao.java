@@ -33,8 +33,8 @@ public class SectionDao {
     }
 
     private ResultSetExtractor<Map<Station, Station>> stationRowMapper() {
+        Map<Station, Station> stationMap = new HashMap<>();
         return (ResultSet rs) -> {
-            Map<Station, Station> stationMap = new HashMap<>();
             while (rs.next()) {
                 stationMap.put(
                         new Station(rs.getLong(1), rs.getString(2)),
