@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,12 +15,32 @@ import wooteco.subway.exception.response.ErrorResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    @Override
+    public void setUp() {
+        super.setUp();
+
+        Map<String, String> stationParams = new HashMap<>();
+        stationParams.put("name", "강남역");
+        RestAssuredHelper.jsonPost(stationParams, "/stations");
+
+        Map<String, String> stationParams2 = new HashMap<>();
+        stationParams2.put("name", "역삼역");
+        RestAssuredHelper.jsonPost(stationParams2, "/stations");
+
+        Map<String, String> lineParams = new HashMap<>();
+        lineParams.put("color", "bg-red-600");
+        lineParams.put("name", "신분당선");
+        lineParams.put("upStationId", "1");
+        lineParams.put("downStationId", "2");
+        lineParams.put("distance", "10");
+        RestAssuredHelper.jsonPost(lineParams, "/lines");
+    }
 
     @DisplayName("노선 생성 성공")
     @Test
@@ -27,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        params.put("color", "bg-green-600");
+        params.put("name", "2호선");
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("distance", "10");
@@ -39,6 +60,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
+        assertThat(lineResponse.getName()).isEqualTo("2호선");
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("역삼역");
     }
 
     @DisplayName("노선 생성 실패 - 존재하지 않는 상행역 ID")
@@ -47,10 +74,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
+        params.put("color", "bg-green-600");
+        params.put("name", "2호선");
+        params.put("upStationId", "3");
+        params.put("downStationId", "4");
         params.put("distance", "10");
 
         // when
@@ -58,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 상행역 ID에 해당하는 역이 존재하지 않습니다.");
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 ID와 일치하는 역이 존재하지 않습니다.");
     }
 
     @DisplayName("노선 생성 실패 - 기존에 존재하는 노선 이름으로 노선을 생성")
@@ -102,44 +129,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", "bg-red-600");
-        params1.put("name", "신분당선");
-        ExtractableResponse<Response> createResponse1 = RestAssuredHelper.jsonPost(params1, "/lines");
+        Map<String, String> stationParams3 = new HashMap<>();
+        stationParams3.put("name", "선릉역");
+        RestAssuredHelper.jsonPost(stationParams3, "/stations");
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("color", "bg-green-600");
-        params2.put("name", "2호선");
-        ExtractableResponse<Response> createResponse2 = RestAssuredHelper.jsonPost(params2, "/lines");
+        Map<String, String> stationParams4 = new HashMap<>();
+        stationParams4.put("name", "삼성역");
+        RestAssuredHelper.jsonPost(stationParams4, "/stations");
+
+        Map<String, String> lineParams2 = new HashMap<>();
+        lineParams2.put("color", "bg-green-600");
+        lineParams2.put("name", "2호선");
+        lineParams2.put("upStationId", "3");
+        lineParams2.put("downStationId", "4");
+        lineParams2.put("distance", "10");
+        RestAssuredHelper.jsonPost(lineParams2, "/lines");
 
         // when
         ExtractableResponse<Response> response = RestAssuredHelper.jsonGet("/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                                           .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                                           .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath()
-                                           .getList(".", LineResponse.class)
-                                           .stream()
-                                           .map(LineResponse::getId)
-                                           .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        final List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+
+        final LineResponse sinbundangResponse = lineResponses.get(0);
+        assertThat(sinbundangResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(sinbundangResponse.getName()).isEqualTo("신분당선");
+        assertThat(sinbundangResponse.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(sinbundangResponse.getStations().get(1).getName()).isEqualTo("역삼역");
+
+        final LineResponse secondLineResponse = lineResponses.get(1);
+        assertThat(secondLineResponse.getColor()).isEqualTo("bg-green-600");
+        assertThat(secondLineResponse.getName()).isEqualTo("2호선");
+        assertThat(secondLineResponse.getStations().get(0).getName()).isEqualTo("선릉역");
+        assertThat(secondLineResponse.getStations().get(1).getName()).isEqualTo("삼성역");
     }
 
     @DisplayName("단일 노선 조회 성공")
     @Test
     void getLine() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
-        ExtractableResponse<Response> createResponse = RestAssuredHelper.jsonPost(params, "/lines");
 
         // when
-        String createdLocation = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssuredHelper.jsonGet(createdLocation);
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonGet("/lines/1");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -152,6 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("단일 노선 조회 실패 - 존재하지 않는 노선 조회")
     @Test
     void getLineThatDoesNotExists() {
+
         // when
         ExtractableResponse<Response> response = RestAssuredHelper.jsonGet("/lines/2");
 
