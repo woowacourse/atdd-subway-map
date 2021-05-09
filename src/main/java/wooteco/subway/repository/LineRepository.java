@@ -30,14 +30,18 @@ public class LineRepository {
         return lineDao.save(line);
     }
 
-    public Line findById(long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
+    public List<Line> findAll() {
+        List<Line> lines = lineDao.findAll();
+        lines.forEach(this::addSections);
+        return lines;
+    }
+
+    private void addSections(Line line) {
+        long id = line.getId();
         List<Section> foundSections = sectionDao.findAllByLineId(id);
         foundSections.forEach(this::addStations);
         Sections sections = new Sections(foundSections);
         line.setSections(sections);
-        return line;
     }
 
     private void addStations(Section section) {
@@ -54,5 +58,12 @@ public class LineRepository {
     private Station findStationById(long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
+    }
+
+    public Line findById(long id) {
+        Line line = lineDao.findById(id)
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
+        addSections(line);
+        return line;
     }
 }
