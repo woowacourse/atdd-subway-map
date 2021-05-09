@@ -56,6 +56,18 @@ public class Section {
         return this.downStation == nextSection.upStation;
     }
 
+    public boolean hasOverlappedStation(Section section) {
+        return this.upStation == section.upStation || this.downStation == section.downStation;
+    }
+
+    public boolean hasSameUpStation(Section section) {
+        return this.upStation == section.upStation;
+    }
+
+    public boolean hasSameDownStation(Section section) {
+        return this.downStation == section.downStation;
+    }
+
     public Stream<Station> getStations() {
         return Stream.of(upStation, downStation);
     }

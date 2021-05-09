@@ -1,6 +1,8 @@
 package wooteco.subway.domain.section;
 
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,5 +78,34 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(sections);
+    }
+
+    public boolean isEndStationExtension(Section section) {
+        Section firstSection = sections.get(0);
+        Section lastSection = sections.get(sections.size() - 1);
+        return section.getDownStation() == firstSection.getUpStation() || section.getUpStation() == lastSection.getDownStation();
+    }
+
+    public Section splitLongerSectionAfterAdding(Section section) {
+        if (isNotAddableCondition(section)) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
+        Section longerSection = findTargetLongerSection(section);
+        return longerSection.splitLongerSectionBy(section);
+    }
+
+    private boolean isNotAddableCondition(Section section) {
+        boolean isUpStationExists = sections.stream()
+                .anyMatch(section::hasSameUpStation);
+        boolean isDownStationExists = sections.stream()
+                .anyMatch(section::hasSameDownStation);
+        return (isUpStationExists && isDownStationExists) || (!isUpStationExists && !isDownStationExists);
+    }
+
+    private Section findTargetLongerSection(Section section) {
+        return sections.stream()
+                .filter(targetSection -> targetSection.hasOverlappedStation(section))
+                .findAny()
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.INVALID_SECTION));
     }
 }
