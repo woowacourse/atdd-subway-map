@@ -1,5 +1,6 @@
 package wooteco.subway.line.service.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -18,6 +19,7 @@ public class JdbcLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Line> lineRowMapper;
+    private final ObjectMapper objectMapper;
 
     public JdbcLineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -31,6 +33,8 @@ public class JdbcLineDao implements LineDao {
             final String name = rs.getString("name");
             return new Line(foundId, name, color);
         };
+
+        objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -43,12 +47,9 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Line save(Line line) {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("name", line.getName());
-        parameters.put("color", line.getColor());
+        Map<String, String> parameters = objectMapper.convertValue(line, Map.class);
 
         final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
-
         return new Line(id, line.getName(), line.getColor());
     }
 

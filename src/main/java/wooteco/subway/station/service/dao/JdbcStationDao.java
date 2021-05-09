@@ -1,5 +1,6 @@
 package wooteco.subway.station.service.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -18,6 +19,7 @@ public class JdbcStationDao implements StationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Station> stationRowMapper;
+    private final ObjectMapper objectMapper;
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -30,13 +32,15 @@ public class JdbcStationDao implements StationDao {
             final String name = rs.getString("name");
             return new Station(foundId, name);
         };
+
+        objectMapper = new ObjectMapper();
     }
 
     @Override
     public Station save(Station station) {
-        Map<String, String> map = new HashMap<>();
-        map.put("name", station.getName());
-        final long id = jdbcInsert.executeAndReturnKey(map).longValue();
+        Map<String, String> parameters = objectMapper.convertValue(station, Map.class);
+
+        final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Station(id, station.getName());
     }
 
