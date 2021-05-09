@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.line.LineNameDuplicatedException;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
@@ -8,6 +9,7 @@ import wooteco.subway.line.dao.LineDao;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @Service
 public class LineService {
 
@@ -17,6 +19,7 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
+    @Transactional
     public Line create(String name, String color) {
         if (lineDao.findByName(name).isPresent()) {
             throw new LineNameDuplicatedException();
@@ -33,6 +36,7 @@ public class LineService {
         return lineDao.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
+    @Transactional
     public void update(Long id, String name, String color) {
         final Optional<Line> lineByName = lineDao.findByName(name);
         if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
@@ -41,6 +45,7 @@ public class LineService {
         lineDao.update(id, name, color);
     }
 
+    @Transactional
     public void removeById(Long id) {
         lineDao.removeById(id);
     }
