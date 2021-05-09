@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationResponse;
@@ -20,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.station.StationRequest.*;
 
 @DisplayName("지하철역 관련 기능")
-@Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired

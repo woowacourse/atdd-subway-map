@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.Station;
 
 import java.util.Arrays;
@@ -19,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 역 jdbc 테스트")
 @JdbcTest
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource("classpath:application-test.yml")
+@TestPropertySource("classpath:application.yml")
+@Sql("classpath:initialize.sql")
 class JdbcStationDaoTest {
 
     @Autowired
