@@ -45,7 +45,7 @@ public class LineRequest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/" + lineId + "/sections")
+                .post("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
         return response;

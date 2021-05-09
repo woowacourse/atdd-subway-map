@@ -117,10 +117,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", lineId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines/{lineId}")
+                .get("/lines/{lineId}", lineId)
                 .then().log().all()
                 .extract();
         JsonPath jsonPath = response.jsonPath();
@@ -145,11 +144,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("lineId", ids.get("line"))
-                .pathParam("stationId", ids.get("station2"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/{lineId}/sections?stationId={stationId}")
+                .delete("/lines/{lineId}/sections?stationId={stationId}", ids.get("line"), ids.get("station2"))
                 .then().log().all()
                 .extract();
 
