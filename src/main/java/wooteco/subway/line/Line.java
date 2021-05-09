@@ -54,4 +54,8 @@ public class Line {
     public Sections sections() {
         return sections;
     }
+
+    public void deleteSection(Station station) {
+        sections.deleteStation(station);
+    }
 }

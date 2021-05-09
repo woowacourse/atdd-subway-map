@@ -108,10 +108,30 @@ public class LineService {
 
         Line lineWithSections = new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
 
-        Station upStation = stationDao.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다.11"));
-        Station downStation = stationDao.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다.22"));
+        Station upStation = stationDao.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
+        Station downStation = stationDao.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
         Section section = new Section(upStation, downStation, Distance.of(sectionRequest.getDistance()));
         lineWithSections.addSection(section);
+        sectionDao.deleteAllByLineId(id);
+        sectionDao.save(id, lineWithSections.sections());
+    }
+
+    @Transactional
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineDao.findById(id).orElseThrow(() -> new IllegalArgumentException("노선 ID가 존재하지 않습니다."));
+
+        List<SectionEntity> sectionEntities = sectionDao.findAllByLineId(id);
+
+        Set<Section> sections = new HashSet<>();
+        for (SectionEntity sectionEntity : sectionEntities) {
+            Station upStation = stationDao.findById(sectionEntity.getUpStationId()).get();
+            Station downStation = stationDao.findById(sectionEntity.getDownStationId()).get();
+            sections.add(new Section(upStation, downStation, Distance.of(sectionEntity.getDistance())));
+        }
+
+        Line lineWithSections = new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
+        Station station = stationDao.findById(stationId).orElseThrow(() -> new IllegalArgumentException("역 ID가 존재하지 않습니다."));
+        lineWithSections.deleteSection(station);
         sectionDao.deleteAllByLineId(id);
         sectionDao.save(id, lineWithSections.sections());
     }

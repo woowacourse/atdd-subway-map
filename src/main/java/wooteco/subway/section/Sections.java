@@ -32,12 +32,6 @@ public class Sections {
                 .findFirst();
     }
 
-    private Optional<Section> before(Section now) {
-        return sections.stream()
-                .filter(before -> before.downStation().equals(now.upStation()))
-                .findFirst();
-    }
-
     private Optional<Section> lastSection() {
         return sections.stream()
                 .filter(section1 -> !sections.stream()
@@ -55,34 +49,44 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        Optional<Section> leftSection = sectionWithDownStation(section.upStation());
-        Optional<Section> rightSection = sectionWithUpStation(section.downStation());
-        if (!(leftSection.isPresent() ^ rightSection.isPresent())) {
+        if (!singleCommonStation(section).isPresent()) {
             throw new IllegalArgumentException("상행역이나 하행역 둘 중 하나만 노선에 존재해야 됩니다.");
         }
-        if (leftSection.isPresent()) {
-            if (next(leftSection.get()).isPresent()) {
-                Section temp = next(leftSection.get()).get();
-                if (section.distance().intValue() >= temp.distance().intValue()) {
-                    throw new IllegalArgumentException("추가할 구간 길이가 기존의 구간 길이보다 작아야 합니다.");
-                }
-                Section insert = new Section(section.downStation(), temp.downStation(), Distance.of(temp.distance().intValue() - section.distance().intValue()));
-                sections.add(insert);
-                sections.remove(temp);
-            }
+        Station station = singleCommonStation(section).get();
+        if ((section.downStation().equals(station) && sectionWithUpStation(station).equals(firstSection()))
+                || (section.upStation().equals(station) && sectionWithDownStation(station).equals(lastSection()))) {
+            sections.add(section);
+            return;
         }
-        if (rightSection.isPresent()) {
-            if (before(rightSection.get()).isPresent()) {
-                Section temp = before(rightSection.get()).get();
-                if (section.distance().intValue() >= temp.distance().intValue()) {
-                    throw new IllegalArgumentException("추가할 구간 길이가 기존의 구간 길이보다 작아야 합니다.");
-                }
-                Section insert = new Section(temp.upStation(), section.upStation(), Distance.of(temp.distance().intValue() - section.distance().intValue()));
-                sections.add(insert);
-                sections.remove(temp);
+        if (section.downStation().equals(station)) {
+            Section temp = sectionWithDownStation(station).get();
+            if (section.distance().intValue() >= temp.distance().intValue()) {
+                throw new IllegalArgumentException("추가할 구간 길이가 기존의 구간 길이보다 작아야 합니다.");
             }
+            Section insert = new Section(temp.upStation(), section.upStation(), Distance.of(temp.distance().intValue() - section.distance().intValue()));
+            sections.add(insert);
+            sections.remove(temp);
+        }
+        if (section.upStation().equals(station)) {
+            Section temp = sectionWithUpStation(station).get();
+            if (section.distance().intValue() >= temp.distance().intValue()) {
+                throw new IllegalArgumentException("추가할 구간 길이가 기존의 구간 길이보다 작아야 합니다.");
+            }
+            Section insert = new Section(section.downStation(), temp.downStation(), Distance.of(temp.distance().intValue() - section.distance().intValue()));
+            sections.add(insert);
+            sections.remove(temp);
         }
         sections.add(section);
+    }
+
+    private Optional<Station> singleCommonStation(Section section) {
+        if (path().contains(section.upStation()) && !path().contains(section.downStation())) {
+            return Optional.of(section.upStation());
+        }
+        if (!path().contains(section.upStation()) && path().contains(section.downStation())) {
+            return Optional.of(section.downStation());
+        }
+        return Optional.empty();
     }
 
     private Optional<Section> sectionWithDownStation(Station station) {
@@ -99,5 +103,35 @@ public class Sections {
 
     public List<Section> values() {
         return new ArrayList<>(sections);
+    }
+
+    public void deleteStation(Station station) {
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("구간이 하나일 때 지울수 업습니다.");
+        }
+        if (!singleCommonStation(station).isPresent()) {
+            throw new IllegalArgumentException("노선에 삭제할 역이 없습니다.");
+        }
+        if (sectionWithUpStation(station).equals(firstSection())) {
+            sections.remove(firstSection().get());
+            return;
+        }
+        if (sectionWithDownStation(station).equals(lastSection())) {
+            sections.remove(lastSection().get());
+            return;
+        }
+        Section leftSection = sectionWithDownStation(station).get();
+        Section rightSection = sectionWithUpStation(station).get();
+        Section insert = new Section(leftSection.upStation(), rightSection.downStation(), Distance.of(leftSection.distance().intValue() + rightSection.distance().intValue()));
+        sections.add(insert);
+        sections.remove(leftSection);
+        sections.remove(rightSection);
+    }
+
+    private Optional<Station> singleCommonStation(Station station) {
+        if (path().contains(station)) {
+            return Optional.of(station);
+        }
+        return Optional.empty();
     }
 }

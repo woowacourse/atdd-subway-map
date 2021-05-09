@@ -575,4 +575,57 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("노선의 구간을 제거한다.")
+    @Test
+    void deleteSecion() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStationId", String.valueOf(stationIds.get(1)));
+        params2.put("downStationId", String.valueOf(stationIds.get(2)));
+        params2.put("distance", "10");
+        postSection(oldResponse.header("Location"), params2);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(oldResponse.header("Location"), stationIds.get(1));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> deleteSection(String path, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(path + "/sections?stationId=" + stationId)
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    @DisplayName("구간이 하나일 때 노선의 구간을 제거한다.")
+    @Test
+    void deleteSecionWithSingleSection() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("color", "bg-red-600");
+        params1.put("name", "신분당선");
+        params1.put("upStationId", String.valueOf(stationIds.get(0)));
+        params1.put("downStationId", String.valueOf(stationIds.get(1)));
+        params1.put("distance", "10");
+        ExtractableResponse<Response> oldResponse = postLine(params1);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(oldResponse.header("Location"), stationIds.get(0));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
