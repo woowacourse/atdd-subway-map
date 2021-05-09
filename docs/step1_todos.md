@@ -3,7 +3,7 @@
 - [x] InMemory~Dao로 이름 변경
 - [ ] 쿼리 결과가 list가 아닌 것으로 변경 (findLineByName)
 - [ ] jdbcTemplate이 가지고 있는 datasource로 변경
-- [ ] exceptionController ResponseEntity 리턴타입 명시
+- [x] exceptionController ResponseEntity 리턴타입 명시
 - [ ] transactional 어노테이션 사용
 - [ ] 각 생성자 간단하게 정리 (정적팩토리메소드 사용)
 - [ ] 메소드 이름 정리 (lineDao에서라면 굳이 line이 메소드 이름 자체에 없어도 됨)
