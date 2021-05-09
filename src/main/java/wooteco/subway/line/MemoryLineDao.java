@@ -58,14 +58,16 @@ public class MemoryLineDao implements LineDao {
 
     @Override
     public void update(final Long id, final String name, final String color) {
-        Line line = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        Line line = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
         line.changeName(name);
         line.changeColor(color);
     }
 
     @Override
     public void delete(Long id) {
-        Line findLine = findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
+        Line findLine = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("없는 노선임!"));
         lines.remove(findLine);
     }
 }

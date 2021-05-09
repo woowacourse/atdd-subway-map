@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -21,25 +23,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
 public class LIneAcceptanceTest extends AcceptanceTest {
+
     @Autowired
     private LineDao lineDao;
 
-//    @AfterEach
-//    void clean() {
-//        lineDao.clear();
-//    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @DisplayName("노선을 생성한다.")
     @Test
-    void createStation() {
+    void createStation() throws JsonProcessingException {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        String content = objectMapper.writeValueAsString(lineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -53,14 +53,13 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 노선역 이름으로 노선을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createStationWithDuplicateName() throws JsonProcessingException {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        String content = objectMapper.writeValueAsString(lineRequest);
 
         RestAssured.given().log().all()
-                .body(params)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -69,7 +68,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -83,24 +82,24 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLines() {
+    void getLines() throws JsonProcessingException {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600");
+        String content1 = objectMapper.writeValueAsString(lineRequest1);
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(content1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "백기선");
-        params2.put("color", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("백기선", "bg-red-600");
+        String content2 = objectMapper.writeValueAsString(lineRequest2);
+
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(content2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -127,18 +126,18 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("단일 노선을 조회한다.")
     @Test
-    void findLineByID() {
+    void findLineByID() throws JsonProcessingException {
         // given
         String name = "신분당선";
         String color = "bg-red-600";
         Long id = 1L;
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+
+        LineRequest lineRequest = new LineRequest(name, color);
+        String content = objectMapper.writeValueAsString(lineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -161,20 +160,18 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 수정한다.")
     @Test
-    void updateLine() {
+    void updateLine() throws JsonProcessingException {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "백기선");
-        params1.put("color", "bg-red-600");
+        LineRequest lineRequest1 = new LineRequest("백기선", "bg-red-600");
+        String content1 = objectMapper.writeValueAsString(lineRequest1);
 
         // given
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "흑기선");
-        params2.put("color", "bg-red-600");
+        LineRequest lineRequest2 = new LineRequest("흑기선", "bg-red-600");
+        String content2 = objectMapper.writeValueAsString(lineRequest2);
 
         // when
         ExtractableResponse<Response> response1 = RestAssured.given().log().all()
-                .body(params1)
+                .body(content1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -184,7 +181,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         long newId = response1.body().jsonPath().getLong("id");
 
         ExtractableResponse<Response> response2 = RestAssured.given().log().all()
-                .body(params2)
+                .body(content2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put("/lines/{id}", newId)
@@ -197,15 +194,14 @@ public class LIneAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 제거한다.")
     @Test
-    void deleteLine() {
+    void deleteLine() throws JsonProcessingException {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "백기선");
-        params.put("color", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("백기선", "bg-red-600");
+        String content = objectMapper.writeValueAsString(lineRequest);
 
         // when
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(content)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
