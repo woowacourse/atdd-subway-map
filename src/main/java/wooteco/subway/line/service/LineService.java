@@ -33,6 +33,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
+        lineDao.findById(id).orElseThrow(NotFoundLineException::new);
         lineDao.delete(id);
     }
 
