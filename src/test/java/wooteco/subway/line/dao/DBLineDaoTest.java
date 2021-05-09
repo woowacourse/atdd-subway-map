@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.TestConstructor;
+import wooteco.subway.line.dao.DBLineDao;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;

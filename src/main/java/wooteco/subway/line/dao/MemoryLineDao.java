@@ -1,6 +1,7 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
 import org.springframework.util.ReflectionUtils;
+import wooteco.subway.line.domain.Line;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
