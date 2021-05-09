@@ -15,9 +15,9 @@ import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,13 +29,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private StationRequest stationRequest1;
     private StationRequest stationRequest2;
-    private StationRequest stationRequest3;
 
     @BeforeEach
     void init() {
-        stationRequest1 = new StationRequest("강남역");
-        stationRequest2 = new StationRequest("잠실역");
-        stationRequest3 = new StationRequest("송파역");
+        stationRequest1 = new StationRequest("사당역");
+        stationRequest2 = new StationRequest("종합운동장역");
     }
 
     @AfterEach
@@ -109,11 +107,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }

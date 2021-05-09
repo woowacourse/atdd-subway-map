@@ -33,8 +33,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void init() {
-        lineRequest1 = new LineRequest("신분당선", "bg-red-600");
-        lineRequest2 = new LineRequest("2호선", "bg-green-600");
+        lineRequest1 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        lineRequest2 = new LineRequest("2호선", "bg-green-600", 2L, 3L, 15);
     }
 
     @AfterEach
@@ -68,7 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void invalidLineName() {
         // given
-        LineRequest invalidRequest = new LineRequest("노선은선이라는단어로끝나야함", "bg-red-600");
+        LineRequest invalidRequest = new LineRequest("노선은선이라는단어로끝나야함", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = postLines(invalidRequest);

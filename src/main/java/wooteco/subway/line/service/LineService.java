@@ -4,13 +4,14 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.Lines;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -22,7 +23,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public Long save(Lines lines) {
+    public Long save(Section lines) {
         validateLine(lines.getLine());
         Long lineId = lineDao.save(lines.getLine());
         sectionDao.save(lineId, lines.getUpStation(), lines.getDownStation(), lines.getDistance());
@@ -30,12 +31,19 @@ public class LineService {
     }
 
     public void update(Long id, Line line) {
-        validateLine(line);
+        Line duplicateLine = lineDao.findByName(line.getName())
+                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+
+        if (!duplicateLine.getId().equals(id)) {
+            throw new IllegalArgumentException("중복된 노선입니다.");
+        }
+
         lineDao.update(id, line);
     }
 
     private void validateLine(Line line) {
-        if (lineDao.countLineByName(line.getName()) > 0) {
+        Optional<Line> duplicateLine = lineDao.findByName(line.getName());
+        if (duplicateLine.isPresent()) {
             throw new IllegalArgumentException("중복된 노선입니다.");
         }
     }

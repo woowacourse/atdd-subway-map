@@ -63,17 +63,23 @@ public class LineDao {
         jdbcTemplate.update(sql);
     }
 
-    public int countLineByName(String name) {
-        String sql = "SELECT count(*) FROM line WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
-    }
-
     public Optional<Line> findById(Long id) {
         try {
             String sql = "SELECT * FROM line WHERE id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
                     getLineRowMapper(),
                     id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Line> findByName(String name) {
+        try {
+            String sql = "SELECT * FROM line WHERE name = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
+                    getLineRowMapper(),
+                    name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
