@@ -68,12 +68,12 @@ class StationDaoTest {
     @DisplayName("id로 역을 조회한다")
     @Test
     void findById() {
-        String station = "강남역";
+        String stationName = "강남역";
 
-        long stationId = stationDao.save(station);
+        long stationId = stationDao.save(stationName);
 
-        StationResponse stationResponse = stationDao.findById(stationId);
+        Station station = stationDao.findById(stationId);
 
-        assertThat(stationResponse.getName()).isEqualTo(station);
+        assertThat(station.getName()).isEqualTo(stationName);
     }
 }

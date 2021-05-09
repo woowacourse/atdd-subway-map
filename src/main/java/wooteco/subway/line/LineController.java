@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -24,20 +25,22 @@ public class LineController {
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
 
-        LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor);
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+        Line line = lineService.createLine(upStationId, downStationId, lineName, lineColor);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(new LineResponse(line));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lineResponses = lineService.showLines();
+        List<LineResponse> lineResponses = lineService.showLines().stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable long id) {
-        LineResponse lineResponse = lineService.showLine(id);
-        return ResponseEntity.ok().body(lineResponse);
+        Line line = lineService.showLine(id);
+        return ResponseEntity.ok().body(new LineResponse(line));
     }
 
     @PutMapping("{id}")

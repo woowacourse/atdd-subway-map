@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationResponse;
 
@@ -23,25 +24,25 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor) {
+    public Line createLine(long upStationId, long downStationId, String lineName, String lineColor) {
         long lineId = lineDao.save(lineName, lineColor);
         sectionDao.save(lineId, upStationId, downStationId);
 
-        return new LineResponse(lineId, lineName, lineColor);
+        return Line.of(lineId, lineName, lineColor);
     }
 
-    public List<LineResponse> showLines() {
+    public List<Line> showLines() {
         return lineDao.findAll();
     }
 
-    public LineResponse showLine(long id) {
+    public Line showLine(long id) {
         List<Long> stationsId = lineDao.findStationsIdByLineId(id);
-        List<StationResponse> stations = stationsId.stream()
+        List<Station> stations = stationsId.stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
 
-        LineResponse lineResponse = lineDao.findById(id);
-        return new LineResponse(lineResponse.getId(), lineResponse.getName(), lineResponse.getColor(), stations);
+        Line line = lineDao.findById(id);
+        return line;
     }
 
     public void updateLine(long id, String lineName, String lineColor) {

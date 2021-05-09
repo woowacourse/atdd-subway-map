@@ -13,12 +13,12 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(String stationName) {
+    public Station createStation(String stationName) {
         long stationId = stationDao.save(stationName);
-        return new StationResponse(stationId, stationName);
+        return new Station(stationId, stationName);
     }
 
-    public List<StationResponse> showStations() {
+    public List<Station> showStations() {
         return stationDao.findAll();
     }
 
