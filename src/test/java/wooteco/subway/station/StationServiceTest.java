@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.station.StationDaoH2;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.service.StationService;
 import wooteco.subway.service.dto.StationServiceDto;
@@ -22,7 +22,7 @@ import wooteco.subway.service.dto.StationServiceDto;
 class StationServiceTest {
 
     @Mock
-    private StationDaoH2 mockStationDao;
+    private StationDao mockStationDao;
     @InjectMocks
     private StationService stationService;
 

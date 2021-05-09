@@ -11,12 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
-class LineDaoH2Test {
+class LineDaoTest {
 
     @Autowired
     private LineDao lineDao;

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.dao.line.LineDaoH2;
+import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.LineService;
@@ -24,7 +24,7 @@ import wooteco.subway.service.dto.LineServiceDto;
 public class LineServiceTest {
 
     @Mock
-    private LineDaoH2 mockLineDao;
+    private LineDao mockLineDao;
     @InjectMocks
     private LineService lineService;
 

@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
-class StationDaoH2Test {
+class StationDaoTest {
 
     @Autowired
     private StationDao stationDao;

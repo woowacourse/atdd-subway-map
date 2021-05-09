@@ -1,4 +1,4 @@
-package wooteco.subway.dao.line;
+package wooteco.subway.dao;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 @Repository
-public class LineDaoH2 implements LineDao {
+public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Line> rowMapper;
 
-    public LineDaoH2(final JdbcTemplate jdbcTemplate, final DataSource source) {
+    public LineDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
             .withTableName("LINE")
@@ -30,7 +30,6 @@ public class LineDaoH2 implements LineDao {
         };
     }
 
-    @Override
     public Line create(final Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
@@ -41,25 +40,21 @@ public class LineDaoH2 implements LineDao {
         return new Line(key, line.getName(), line.getColor());
     }
 
-    @Override
     public Line show(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    @Override
     public List<Line> showAll() {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    @Override
     public int update(final long id, final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
     }
 
-    @Override
     public int delete(final long id) {
         String sql = "DELETE FROM LINE WHERE id = ?";
         return jdbcTemplate.update(sql, id);
