@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.request.station.StationCreateRequestDto;
 import wooteco.subway.controller.dto.response.station.StationResponseDto;
-import wooteco.subway.service.StationService;
+import wooteco.subway.service.station.StationService;
 
 @RequestMapping("/stations")
 @RestController

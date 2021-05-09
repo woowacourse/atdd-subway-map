@@ -1,4 +1,4 @@
-package wooteco.subway.service;
+package wooteco.subway.service.station;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
