@@ -24,8 +24,8 @@ public class Station {
         return name;
     }
 
-    public boolean equalName(Station station) {
-        return this.name.equals(station.name);
+    public boolean equalName(String name) {
+        return this.name.equals(name);
     }
 
     public boolean equalId(Long id) {

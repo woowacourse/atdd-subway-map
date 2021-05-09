@@ -10,6 +10,7 @@ import wooteco.subway.line.domain.Line;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JDBCLineDao implements LineDao {
@@ -38,7 +39,7 @@ public class JDBCLineDao implements LineDao {
             ps.setString(2, line.getColor());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return new Line(keyHolder.getKey().longValue(), line.getName(), line.getColor(), new ArrayList<>());
     }
 
     @Override
@@ -48,9 +49,11 @@ public class JDBCLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         String query = "SELECT * FROM LINE WHERE id = ?";
-        return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
+        return this.jdbcTemplate.query(query, actorRowMapper, id)
+                .stream()
+                .findAny();
     }
 
     @Override
@@ -69,5 +72,13 @@ public class JDBCLineDao implements LineDao {
     public void deleteAll() {
         String query = "TRUNCATE TABLE LINE";
         this.jdbcTemplate.update(query);
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM LINE WHERE name = ?";
+        return this.jdbcTemplate.query(query, actorRowMapper, name)
+                .stream()
+                .findAny();
     }
 }

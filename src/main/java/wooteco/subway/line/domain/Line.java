@@ -48,8 +48,8 @@ public class Line {
         return stations;
     }
 
-    public boolean equalName(Line line) {
-        return this.name.equals(line.name);
+    public boolean equalName(String name) {
+        return this.name.equals(name);
     }
 
     public boolean equalId(Long id) {

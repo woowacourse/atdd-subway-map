@@ -1,6 +1,8 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 
@@ -16,6 +18,9 @@ public class LineService {
     }
 
     public Line save(Line line) {
+        if(lineDao.findByName(line.getName()).isPresent()) {
+            throw new DuplicatedNameException();
+        }
         return lineDao.save(line);
     }
 
@@ -24,7 +29,7 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineDao.findById(id);
+        return lineDao.findById(id).orElseThrow(NotFoundLineException::new);
     }
 
     public void delete(Long id) {

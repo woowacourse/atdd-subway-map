@@ -2,12 +2,14 @@ package wooteco.subway.station.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class MemoryStationDao implements StationDao {
     private Long seq = 0L;
@@ -36,21 +38,26 @@ public class MemoryStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stations.stream()
                 .filter(station -> station.equalId(id))
-                .findFirst()
-                .get();
+                .findAny();
     }
 
     @Override
     public void delete(Long id) {
-        Station findByIdStation = findById(id);
-        stations.remove(findByIdStation);
+        stations.removeIf(station -> station.equalId(id));
+    }
+
+    @Override
+    public Optional<Station> findStationByName(String name) {
+        return stations.stream()
+                .filter(station -> station.equalName(name))
+                .findAny();
     }
 
     private boolean validateDuplicateName(Station newStation) {
         return stations.stream()
-                .anyMatch(station -> station.equalName(newStation));
+                .anyMatch(station -> station.equalName(newStation.getName()));
     }
 }

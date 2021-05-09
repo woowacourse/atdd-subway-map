@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class MemoryLineDao implements LineDao {
 
@@ -34,17 +35,15 @@ public class MemoryLineDao implements LineDao {
     }
 
     @Override
-    public Line findById(Long id) {
+    public Optional<Line> findById(Long id) {
         return lines.stream()
                 .filter(line -> line.equalId(id))
-                .findFirst()
-                .get();
+                .findAny();
     }
 
     @Override
     public void delete(Long id) {
-        Line findByIdLine = findById(id);
-        lines.remove(findByIdLine);
+        lines.removeIf(line -> line.equalId(id));
     }
 
     @Override
@@ -59,9 +58,16 @@ public class MemoryLineDao implements LineDao {
         lines.clear();
     }
 
+    @Override
+    public Optional<Line> findByName(String name) {
+        return lines.stream()
+                .filter(line -> line.equalName(name))
+                .findAny();
+    }
+
     private void validateDuplicateName(Line newLine) {
         if (lines.stream()
-                .anyMatch(line -> line.equalName(newLine))) {
+                .anyMatch(line -> line.equalName(newLine.getName()))) {
             throw new DuplicatedNameException();
         }
     }

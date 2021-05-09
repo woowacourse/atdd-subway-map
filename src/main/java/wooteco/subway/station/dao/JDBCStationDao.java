@@ -9,6 +9,7 @@ import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JDBCStationDao implements StationDao {
@@ -34,7 +35,7 @@ public class JDBCStationDao implements StationDao {
             ps.setString(1, station.getName());
             return ps;
         }, keyHolder);
-        return findById(keyHolder.getKey().longValue());
+        return new Station(keyHolder.getKey().longValue(), station.getName());
     }
 
     @Override
@@ -44,14 +45,24 @@ public class JDBCStationDao implements StationDao {
     }
 
     @Override
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         String query = "SELECT * FROM station WHERE id = ?";
-        return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
+        return this.jdbcTemplate.query(query, actorRowMapper, id)
+                .stream()
+                .findAny();
     }
 
     @Override
     public void delete(Long id) {
         String query = "DELETE FROM STATION WHERE id = ?";
         this.jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public Optional<Station> findStationByName(String name) {
+        String query = "SELECT * FROM station WHERE name = ?";
+        return this.jdbcTemplate.query(query, actorRowMapper, name)
+                .stream()
+                .findAny();
     }
 }

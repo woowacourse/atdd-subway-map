@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
+import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
@@ -47,7 +48,7 @@ class JDBCStationDaoTest {
         Station station1 = new Station("강남역");
         Station savedStation = jdbcStationDao.save(station1);
 
-        Station findByIdStation = jdbcStationDao.findById(savedStation.getId());
+        Station findByIdStation = jdbcStationDao.findById(savedStation.getId()).orElseThrow(NotFoundStationException::new);
         assertThat(savedStation.getName()).isEqualTo(findByIdStation.getName());
     }
 

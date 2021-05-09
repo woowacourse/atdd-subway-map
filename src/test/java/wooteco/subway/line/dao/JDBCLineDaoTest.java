@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
+import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.domain.Line;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ class JDBCLineDaoTest {
         Line line = new Line("2호선", "bg-red-600");
 
         Line savedLine = jdbcLineDao.save(line);
-        Line findByIdLine = jdbcLineDao.findById(savedLine.getId());
+        Line findByIdLine = jdbcLineDao.findById(savedLine.getId()).orElseThrow(NotFoundLineException::new);
 
         assertThat(findByIdLine).isEqualTo(savedLine);
     }
@@ -81,7 +82,7 @@ class JDBCLineDaoTest {
         Line updateLine = new Line(targetId, "4호선", "bg-green-600", new ArrayList<>());
         jdbcLineDao.update(updateLine, targetId);
 
-        Line findByIdLine = jdbcLineDao.findById(targetId);
+        Line findByIdLine = jdbcLineDao.findById(targetId).orElseThrow(NotFoundLineException::new);
 
         assertThat(findByIdLine.getName()).isEqualTo(updateLine.getName());
         assertThat(findByIdLine.getColor()).isEqualTo(updateLine.getColor());
