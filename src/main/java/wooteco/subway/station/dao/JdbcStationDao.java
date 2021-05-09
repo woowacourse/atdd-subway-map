@@ -15,11 +15,9 @@ import java.util.Map;
 public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
 
-    public JdbcStationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class JdbcStationDao implements StationDao {
         Map<String, String> map = new HashMap<>();
         map.put("name", station.getName());
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("STATION").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(map).longValue();
 

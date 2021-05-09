@@ -16,11 +16,9 @@ import java.util.Optional;
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
 
-    public JdbcLineDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcLineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -37,7 +35,7 @@ public class JdbcLineDao implements LineDao {
         parameters.put("name", line.getName());
         parameters.put("color", line.getColor());
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("LINE").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
