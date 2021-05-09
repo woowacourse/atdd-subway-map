@@ -50,13 +50,6 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponseDto getLineById(Long id) {
-        return lineDao.findById(id)
-            .map(LineResponseDto::new)
-            .orElseThrow(() -> new HttpException(BAD_REQUEST, "Id에 해당하는 노선이 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
     public List<LineResponseDto> getAllLines() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
