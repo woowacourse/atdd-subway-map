@@ -56,11 +56,11 @@ class StationDaoTest {
         String station2 = "잠실역";
         String station3 = "신림역";
 
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
-        long stationId3 = stationDao.save(station3);
+        stationDao.save(station1);
+        stationDao.save(station2);
+        long stationId = stationDao.save(station3);
 
-        stationDao.delete(stationId3);
+        stationDao.delete(stationId);
 
         assertThat(stationDao.findAll().size()).isEqualTo(2);
     }
