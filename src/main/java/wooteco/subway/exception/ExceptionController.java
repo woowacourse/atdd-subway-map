@@ -11,7 +11,7 @@ import wooteco.subway.exception.station.StationNotFoundException;
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler({StationNotFoundException.class,LineNotFoundException.class})
+    @ExceptionHandler({StationNotFoundException.class, LineNotFoundException.class})
     public ResponseEntity<Void> lineNotFound() {
         return ResponseEntity.notFound().build();
     }
