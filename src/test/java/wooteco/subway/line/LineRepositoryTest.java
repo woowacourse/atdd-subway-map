@@ -38,8 +38,7 @@ class LineRepositoryTest {
     @DisplayName("중복된 이름을 갖는 노선을 생성하면, 예외가 발생한다.")
     @Test
     void duplicateSaveValidate() {
-        Line line = new Line("2호선", "bg-green-600");
-        lineRepository.save(line);
+        Line line = lineRepository.save(new Line("2호선", "bg-green-600"));
 
         assertThatThrownBy(() -> {
             lineRepository.save(line);

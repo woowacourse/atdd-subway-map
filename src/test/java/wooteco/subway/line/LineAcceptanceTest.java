@@ -22,18 +22,22 @@ import wooteco.subway.line.dto.LineResponse;
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void create() {
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> postLineRequest(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
+    }
+
+    @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void create() {
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+
+        ExtractableResponse<Response> response = postLineRequest(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -44,21 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
 
-        RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        postLineRequest(lineRequest);
+        ExtractableResponse<Response> response = postLineRequest(lineRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -68,24 +59,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         /// given
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse1 = postLineRequest(lineRequest);
 
         lineRequest = new LineRequest("3호선", "bg-orange-600");
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse2 = postLineRequest(lineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -112,22 +89,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void getLine() {
         /// given
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-
-        RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all();
+        postLineRequest(lineRequest);
 
         lineRequest = new LineRequest("3호선", "bg-orange-600");
-
-        RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all();
+        postLineRequest(lineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -149,14 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void putLine() {
         /// given
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-
-        RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all();
-
+        postLineRequest(lineRequest);
         lineRequest = new LineRequest("3호선", "bg-orange-600");
 
         // when
@@ -177,14 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void deleteLine() {
         // given
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
-
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse = postLineRequest(lineRequest);
 
         // when
         String uri = createResponse.header("Location");
