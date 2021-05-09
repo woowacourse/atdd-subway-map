@@ -23,8 +23,16 @@ public class LineService {
     }
 
     public void update(final Line line) {
-        validateExisting(line.getId());
-        validateName(line.getName());
+        final Long id = line.getId();
+
+        validateExisting(id);
+
+        final String newName = line.getName();
+        final String oldName = findById(id).getName();
+
+        if(!oldName.equals(newName)){
+            validateName(newName);
+        }
 
         lineDao.update(line.getId(), line.getName(), line.getColor());
     }

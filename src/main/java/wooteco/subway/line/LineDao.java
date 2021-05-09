@@ -31,7 +31,7 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKeyAs(Long.TYPE);
+        return keyHolder.getKeyAs(Long.class);
     }
 
     public void delete(final Long id) {
