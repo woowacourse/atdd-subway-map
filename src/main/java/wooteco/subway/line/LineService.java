@@ -7,6 +7,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationResponse;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class LineService {
         long lineId = lineDao.save(lineName, lineColor);
         sectionDao.save(lineId, upStationId, downStationId);
 
-        return Line.of(lineId, lineName, lineColor);
+        return new Line(lineId, lineName, lineColor, Collections.emptyList());
     }
 
     public List<Line> showLines() {
@@ -42,7 +43,8 @@ public class LineService {
                 .collect(Collectors.toList());
 
         Line line = lineDao.findById(id);
-        return line;
+
+        return new Line(id, line.getName(), line.getColor(), stations);
     }
 
     public void updateLine(long id, String lineName, String lineColor) {

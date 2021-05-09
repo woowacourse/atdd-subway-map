@@ -18,15 +18,11 @@ public class Line {
         this(null, name, color, stations);
     }
 
-    private Line(Long id, String name, String color, List<Station> stations) {
+    public Line(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-    }
-
-    public static Line of(long lineId, String lineName, String lineColor) {
-        return new Line(lineId, lineName, lineColor, null);
     }
 
     public Long getId() {
