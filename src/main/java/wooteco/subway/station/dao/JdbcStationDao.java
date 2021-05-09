@@ -39,9 +39,11 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean isExistByName(String name) {
-        String sql = "SELECT * FROM station WHERE name = ?";
-        return jdbcTemplate.query(sql, stationRowMapper(), name).stream().findAny().isPresent();
+    public boolean existByName(String name) {
+        String sql = "SELECT count(id) FROM station WHERE name = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, int.class, name);
+
+        return count >= 1;
     }
 
     @Override
@@ -54,6 +56,14 @@ public class JdbcStationDao implements StationDao {
     public void removeAll() {
         String sql = "DELETE FROM station";
         jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public boolean existById(Long id) {
+        String sql = "SELECT count(id) FROM station WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, int.class, id);
+
+        return count >= 1;
     }
 
     private RowMapper<Station> stationRowMapper() {

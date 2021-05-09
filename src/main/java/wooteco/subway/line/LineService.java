@@ -21,6 +21,7 @@ public class LineService {
     @Transactional
     public Line create(Line line) {
         validateDuplicatedByName(line);
+
         return lineDao.save(line);
     }
 
@@ -45,16 +46,16 @@ public class LineService {
         lineDao.update(id, previousLine);
     }
 
-    private void validateDuplicatedByName(Line line) {
-        if (lineDao.existsByName(line.getName())) {
-            throw new LineNameDuplicatedException();
-        }
-    }
-
     @Transactional
     public void removeById(Long id) {
         validateExistById(id);
         lineDao.removeById(id);
+    }
+
+    private void validateDuplicatedByName(Line line) {
+        if (lineDao.existsByName(line.getName())) {
+            throw new LineNameDuplicatedException();
+        }
     }
 
     private void validateExistById(Long id) {

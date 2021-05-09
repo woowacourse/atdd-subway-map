@@ -10,9 +10,11 @@ public interface StationDao {
 
     List<Station> findAll();
 
-    boolean isExistByName(String name);
+    boolean existByName(String name);
 
     void remove(Long id);
 
     void removeAll();
+
+    boolean existById(Long id);
 }
