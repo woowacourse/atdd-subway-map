@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.station.domain.Station;
+import wooteco.util.StationFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,40 +35,40 @@ class StationDaoTest {
 
     @Test
     void save() {
-        stationDao.save(new Station("잠실역"));
+        stationDao.save(StationFactory.create("잠실역"));
 
         Station station = stationDao.findById(1L);
 
-        assertThat(station).isEqualTo(new Station(1L, "잠실역"));
+        assertThat(station).isEqualTo(StationFactory.create(1L, "잠실역"));
     }
 
     @Test
     void findAll() {
-        stationDao.save(new Station("잠실역1"));
-        stationDao.save(new Station("잠실역2"));
-        stationDao.save(new Station("잠실역3"));
+        stationDao.save(StationFactory.create("잠실역1"));
+        stationDao.save(StationFactory.create("잠실역2"));
+        stationDao.save(StationFactory.create("잠실역3"));
 
         List<Station> stations = stationDao.findAll();
 
         assertThat(stations).isEqualTo(Arrays.asList(
-                new Station(1L, "잠실역1"),
-                new Station(2L, "잠실역2"),
-                new Station(3L, "잠실역3")
+                StationFactory.create(1L, "잠실역1"),
+                StationFactory.create(2L, "잠실역2"),
+                StationFactory.create(3L, "잠실역3")
         ));
     }
 
     @Test
     void findById() {
-        stationDao.save(new Station("잠실역"));
+        stationDao.save(StationFactory.create("잠실역"));
 
         Station station = stationDao.findById(1L);
 
-        assertThat(station).isEqualTo(new Station(1L, "잠실역"));
+        assertThat(station).isEqualTo(StationFactory.create(1L, "잠실역"));
     }
 
     @Test
     void delete() {
-        stationDao.save(new Station("dummy"));
+        stationDao.save(StationFactory.create("dummy"));
 
         stationDao.delete(1L);
 

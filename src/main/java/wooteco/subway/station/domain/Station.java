@@ -3,27 +3,27 @@ package wooteco.subway.station.domain;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
-    private String name;
+    private StationId id;
+    private StationName name;
 
     public Station() {
     }
 
-    public Station(Long id, String name) {
+    public Station(StationId id, StationName name) {
         this.id = id;
         this.name = name;
     }
 
-    public Station(String name) {
+    public Station(StationName name) {
         this.name = name;
     }
 
     public Long getId() {
-        return id;
+        return id.longValue();
     }
 
     public String getName() {
-        return name;
+        return name.asString();
     }
 
     @Override

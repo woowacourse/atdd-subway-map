@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationName;
 import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.ui.dto.StationRequest;
 import wooteco.subway.station.ui.dto.StationResponse;
@@ -26,7 +27,7 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
+        Station station = new Station(new StationName(stationRequest.getName()));
         Station newStation = stationService.createStation(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
 

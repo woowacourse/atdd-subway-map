@@ -5,6 +5,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationId;
+import wooteco.subway.station.domain.StationName;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -30,7 +32,10 @@ public class StationDao {
 
         Long id = keyHolder.getKeyAs(Long.class);
 
-        return new Station(id, station.getName());
+        return new Station(
+                new StationId(id),
+                new StationName(station.getName())
+        );
     }
 
     public List<Station> findAll() {
@@ -40,7 +45,10 @@ public class StationDao {
             Long id = rs.getLong("id");
             String name = rs.getString("name");
 
-            return new Station(id, name);
+            return new Station(
+                    new StationId(id),
+                    new StationName(name)
+            );
         });
     }
 
@@ -50,7 +58,10 @@ public class StationDao {
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             String name = rs.getString("name");
 
-            return new Station(id, name);
+            return new Station(
+                    new StationId(id),
+                    new StationName(name)
+            );
         }, id);
     }
 
