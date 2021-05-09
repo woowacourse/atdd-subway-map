@@ -43,11 +43,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_duplicatedName() {
         // given
-        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
-        노선_생성(params);
+        Map<String, String> lineInfo = 노선_정보("신분당선", "bg-red-600");
+        노선_생성(lineInfo);
 
         // when
-        ExtractableResponse<Response> response = 노선_생성(params);
+        ExtractableResponse<Response> response = 노선_생성(lineInfo);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,11 +58,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = 노선_정보("신분당선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse1 = 노선_생성(params1);
+        Map<String, String> lineInfo1 = 노선_정보("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse1 = 노선_생성(lineInfo1);
 
-        Map<String, String> params2 = 노선_정보("2호선", "bg-green-600");
-        final ExtractableResponse<Response> createResponse2 = 노선_생성(params2);
+        Map<String, String> lineInfo2 = 노선_정보("2호선", "bg-green-600");
+        final ExtractableResponse<Response> createResponse2 = 노선_생성(lineInfo2);
 
         // when
         ExtractableResponse<Response> response = 한_노선_조회("/lines");
@@ -82,8 +82,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
-        final ExtractableResponse<Response> createResponse = 노선_생성(params);
+        Map<String, String> lineInfo = 노선_정보("신분당선", "bg-red-600");
+        final ExtractableResponse<Response> createResponse = 노선_생성(lineInfo);
 
         // when
         String uri = createResponse.header("Location");
@@ -110,70 +110,70 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
-        final String uri = 노선_생성(params).header("Location");
-        Map<String, String> params1 = 노선_정보("구분당선", "bg-blue-600");
+        Map<String, String> lineInfo1 = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(lineInfo1).header("Location");
+        Map<String, String> lineInfo2 = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        ExtractableResponse<Response> result = 노선_수정(params1, uri);
+        ExtractableResponse<Response> response = 노선_수정(lineInfo2, uri);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
     @Test
     void updateLine_duplicatedName() {
         /// given
-        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
-        final String uri = 노선_생성(params).header("Location");
-        Map<String, String> params1 = 노선_정보("구분당선", "bg-red-600");
-        노선_생성(params1);
-        Map<String, String> params2 = 노선_정보("구분당선", "bg-blue-600");
+        Map<String, String> lineInfo1 = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(lineInfo1).header("Location");
+        Map<String, String> lineInfo2 = 노선_정보("구분당선", "bg-red-600");
+        노선_생성(lineInfo2);
+        Map<String, String> lineInfo3 = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        ExtractableResponse<Response> result = 노선_수정(params2, uri);
+        ExtractableResponse<Response> response = 노선_수정(lineInfo3, uri);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 이름입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("이미 등록되어 있는 노선 이름입니다.");
     }
 
     @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
     @Test
     void updateLine_notFound() {
         /// given
-        Map<String, String> params = 노선_정보("구분당선", "bg-blue-600");
+        Map<String, String> lineInfo = 노선_정보("구분당선", "bg-blue-600");
 
         // when
-        ExtractableResponse<Response> result = 노선_수정(params, "/lines/-1");
+        ExtractableResponse<Response> response = 노선_수정(lineInfo, "/lines/-1");
 
         // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
     @Test
     void remove_success() {
         // given
-        Map<String, String> params = 노선_정보("신분당선", "bg-red-600");
-        final String uri = 노선_생성(params).header("Location");
+        Map<String, String> lineInfo = 노선_정보("신분당선", "bg-red-600");
+        final String uri = 노선_생성(lineInfo).header("Location");
 
         // when
-        ExtractableResponse<Response> result = 노선_삭제(uri);
+        ExtractableResponse<Response> response = 노선_삭제(uri);
 
         // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("노선 삭제 - 실패(존재하지 않는 노선 삭제)")
     @Test
     void remove_fail() {
         // given & when
-        ExtractableResponse<Response> result = 노선_삭제("/lines/-1");
+        ExtractableResponse<Response> lineInfo = 노선_삭제("/lines/-1");
 
         // then
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(lineInfo.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 노선_삭제(String uri) {
