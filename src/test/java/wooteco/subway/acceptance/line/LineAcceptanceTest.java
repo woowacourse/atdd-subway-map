@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.acceptance.AcceptanceTest;
@@ -164,6 +166,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", "10");
         ExtractableResponse<Response> response = postLine(params);
 
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("자연수가 아닌 거리로 노선을 생성한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "14.2", "십"})
+    void createLineWithNoneNaturalNumberDistance(String distance) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "분당선");
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(1)));
+        params.put("distance", distance);
+
+        //when
+        ExtractableResponse<Response> response = postLine(params);
+
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

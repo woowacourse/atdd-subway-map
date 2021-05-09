@@ -38,7 +38,6 @@ public class LineService {
 
         Line line = subwayMapper
             .line(lineDao.save(new Line(lineRequest.getName(), lineRequest.getColor())));
-
         Section newSection = createSection(lineRequest, line);
 
         return new LineResponse(line, newSection);
@@ -65,12 +64,6 @@ public class LineService {
     private void validateNameAndColor(LineRequest lineRequest) {
         if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
-        }
-    }
-
-    private void validateDuplicateStationId(LineRequest lineRequest) {
-        if (lineRequest.getUpStationId().equals(lineRequest.getDownStationId())) {
-            throw new IllegalArgumentException("상행 종점역과 하행 종점역이 같습니다.");
         }
     }
 
@@ -108,7 +101,7 @@ public class LineService {
 
     private void validateNotToDuplicateNameAndColor(Long id, String name, String color) {
         if (lineDao.hasLineWithNameAndColorWithoutId(id, name, color)) {
-            throw new IllegalArgumentException("이미 존재하는 이름 입니다.");
+            throw new IllegalArgumentException("이미 존재하는 이름 또는 색깔입니다.");
         }
     }
 
