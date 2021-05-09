@@ -12,5 +12,5 @@ spring:
   h2:
     console:
       enabled: true     # h2 console 설정
-logging:
-  config: classpath:logback-local.xml
+#logging:
+#  config: classpath:logback-local.xml
