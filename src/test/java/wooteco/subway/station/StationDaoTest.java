@@ -1,5 +1,7 @@
 package wooteco.subway.station;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -32,7 +31,7 @@ class StationDaoTest {
         String stationName = "잠실역";
         stationDao.save(stationName);
         assertThatThrownBy(() -> stationDao.save(stationName))
-                .isInstanceOf(DataAccessException.class);
+            .isInstanceOf(DataAccessException.class);
     }
 
     @DisplayName("모든 역을 조회한다")

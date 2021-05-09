@@ -1,21 +1,21 @@
 package wooteco.subway.station;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-
 @Repository
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<StationResponse> stationRowMapper = (resultSet, rowNum) -> new StationResponse(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
+        resultSet.getLong("id"),
+        resultSet.getString("name")
     );
 
     public StationDao(JdbcTemplate jdbcTemplate) {
@@ -27,7 +27,7 @@ public class StationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(sql, new String[] {"id"});
             ps.setString(1, stationName);
             return ps;
         }, keyHolder);

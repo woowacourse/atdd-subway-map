@@ -1,30 +1,52 @@
 package wooteco.subway.line;
 
-import wooteco.subway.station.Station;
-
 import java.util.List;
+
+import wooteco.subway.exception.IllegalInputException;
+import wooteco.subway.station.Station;
 
 public class Line {
 
+    private final String name;
+    private final String color;
     private Long id;
-    private String name;
-    private String color;
     private List<Station> stations;
 
-    public Line() {
-    }
-
-    public Line(Long id, String name, String color, List<Station> stations) {
+    public Line(Long id, String name, String color) {
+        this(name, color);
         this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
     }
 
-    public Line(String name, String color, List<Station> stations) {
+    public Line(String name, String color) {
+        validateName(name);
+        validateColor(name);
         this.name = name;
         this.color = color;
-        this.stations = stations;
+    }
+
+    public Line(LineRequest lineRequest) {
+        this(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public Line(LineResponse lineResponse) {
+        this(lineResponse.getName(), lineResponse.getColor());
+    }
+
+    public Line(long id, Line line) {
+        this(line.getName(), line.getColor());
+        this.id = id;
+    }
+
+    private void validateColor(String color) {
+        if (color == null) {
+            throw new IllegalInputException();
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null) {
+            throw new IllegalInputException();
+        }
     }
 
     public Long getId() {

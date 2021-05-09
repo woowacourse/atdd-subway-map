@@ -1,23 +1,28 @@
 package wooteco.subway.line;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Transactional
+@Sql("classpath:schema.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
@@ -26,23 +31,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
         RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
 
         // given
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "성수역");
         RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        RestAssured.given().log().all()
+            .body(params2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/stations")
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -59,12 +72,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -84,30 +97,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("extraFare", "100");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         //when
         ExtractableResponse<Response> getLinesResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         //then
         assertThat(getLinesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Collections.singletonList(response).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+
+        List<Long> expectedLineIds = Stream.of(response)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .peek(i -> System.out.println("~~~~~!!!!!!!!!" + i))
+
+            .collect(Collectors.toList());
 
         List<Long> resultLineIds = getLinesResponse.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -124,20 +140,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("extraFare", "100");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         //when
         ExtractableResponse<Response> getLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines/1")
-                .then().log().all()
-                .extract();
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
 
         //then
         LineResponse lineResponse = getLineResponse.jsonPath().getObject(".", LineResponse.class);
@@ -160,12 +176,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("extraFare", "100");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         //when
         Map<String, Object> requestParam = new HashMap<>();
@@ -173,12 +189,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         requestParam.put("color", "blue");
 
         ExtractableResponse<Response> putLineResponse = RestAssured.given().log().all()
-                .body(requestParam)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/1")
-                .then().log().all()
-                .extract();
+            .body(requestParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/1")
+            .then().log().all()
+            .extract();
 
         //then
         assertThat(putLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -197,20 +213,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("extraFare", "100");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         //when
         ExtractableResponse<Response> deleteLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1")
-                .then().log().all()
-                .extract();
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/1")
+            .then().log().all()
+            .extract();
 
         //then
         assertThat(deleteLineResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

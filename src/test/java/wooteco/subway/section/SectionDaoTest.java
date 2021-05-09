@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.station.StationDao;
 
@@ -38,8 +39,12 @@ class SectionDaoTest {
 
         String name = "2호선";
         String color = "green";
-        long lineId = lineDao.save(name, color);
-        assertDoesNotThrow(() -> sectionDao.save(lineId, stationId1, stationId2));
-        assertDoesNotThrow(() -> sectionDao.save(lineId, stationId2, stationId3));
+        Line line = new Line(name, color);
+        long lineId = lineDao.save(line);
+
+        Section section = new Section(lineId, stationId1, stationId2);
+        Section section2 = new Section(lineId, stationId2, stationId3);
+        assertDoesNotThrow(() -> sectionDao.save(section));
+        assertDoesNotThrow(() -> sectionDao.save(section2));
     }
 }
