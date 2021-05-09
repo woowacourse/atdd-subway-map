@@ -47,6 +47,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void delete(Long id) {
         stationDao.delete(id);
         log.info("지하철 역 삭제 성공");

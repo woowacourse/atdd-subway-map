@@ -79,6 +79,7 @@ public class LineService {
                 });
     }
 
+    @Transactional
     public void delete(Long id) {
         lineDao.delete(id);
         log.info("노선 삭제 성공");
