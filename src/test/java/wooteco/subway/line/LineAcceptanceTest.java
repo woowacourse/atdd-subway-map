@@ -84,8 +84,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        System.out.println("@@@@@@@@@@@" + createResponse.body().toString());
-        System.out.println("@@@@@@@@@@@" + createResponse.response().toString());
         Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
         Long resultLineId = response.jsonPath().getObject(".", LineResponse.class).getId();
         assertThat(resultLineId).isEqualTo(expectedLineId);
