@@ -62,8 +62,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
-                .log()
-                .all()
                 .when()
                 .get("/lines")
                 .then()
@@ -90,8 +88,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         String uri = extract.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given()
-                .log()
-                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(uri)
@@ -105,6 +101,19 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("존재하지 않는 지하철 노선 1개를 조회한다.")
+    @Test
+    void findNotExistingLineByName() {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/1")
+                .then()
+                .extract();
+
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("노선을 찾을 수 없습니다.");
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void modifyLine() {
@@ -114,8 +123,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         params2.put("color", "남색");
         params2.put("name", "9호선");
         ExtractableResponse<Response> response = RestAssured.given()
-                .log()
-                .all()
                 .body(params2)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -133,8 +140,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = extract.header("Location");
         ExtractableResponse<Response> response = RestAssured.given()
-                .log()
-                .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete(uri)
@@ -146,8 +151,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
         LineRequest lineRequest = new LineRequest(name, color, null, null, 0);
         return RestAssured.given()
-                .log()
-                .all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
