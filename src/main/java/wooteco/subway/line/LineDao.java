@@ -29,7 +29,7 @@ public class LineDao {
         );
     }
 
-    public Line save(String name, String color) {
+    public Long save(String name, String color) {
         String sql = "insert into Line (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -38,8 +38,8 @@ public class LineDao {
             ps.setString(2, color);
             return ps;
         }, keyHolder);
-        return new Line(Objects.requireNonNull(keyHolder.getKey())
-                               .longValue(), name, color);
+        return Objects.requireNonNull(keyHolder.getKey())
+                      .longValue();
     }
 
     public Optional<Line> findById(Long id) throws IncorrectResultSizeDataAccessException {

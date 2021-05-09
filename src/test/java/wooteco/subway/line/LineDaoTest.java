@@ -68,23 +68,21 @@ class LineDaoTest {
     @Test
     @DisplayName("노선 정보 수정")
     void update() {
-        Line savedLine = lineDao.save(lineName2, color2);
-        lineDao.update(savedLine.getId(), "3호선", "주황색");
+        Long savedLineId = lineDao.save(lineName2, color2);
+        lineDao.update(savedLineId, "3호선", "주황색");
 
-        Line findLine = lineDao.findById(savedLine.getId())
-                               .get();
-        assertEquals(findLine.getName(), "3호선");
-        assertEquals(findLine.getColor(), "주황색");
+        assertThat(lineDao.findById(savedLineId).get()).isEqualTo(new Line(savedLineId, "3호선", "주황색"));
     }
 
     @Test
     @DisplayName("노선 정보 삭제")
     void delete() {
-        Line savedLine = lineDao.save(lineName2, color2);
-        assertTrue(lineDao.findByName(savedLine.getName())
+        Long savedLineId = lineDao.save(lineName2, color2);
+
+        assertTrue(lineDao.findById(savedLineId)
                           .isPresent());
-        lineDao.delete(savedLine.getId());
-        assertFalse(lineDao.findByName(savedLine.getName())
+        lineDao.delete(savedLineId);
+        assertFalse(lineDao.findById(savedLineId)
                            .isPresent());
     }
 }

@@ -19,28 +19,24 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line newLine = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
-        LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        LineResponse lineResponse = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
                              .body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<LineResponses> showLines() {
-        LineResponses lineResponses = LineResponses.of(lineService.findAll());
-        return ResponseEntity.ok(lineResponses);
+        return ResponseEntity.ok(lineService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line findLine = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(findLine.getId(), findLine.getName(), findLine.getColor());
-        return ResponseEntity.ok(lineResponse);
+        return ResponseEntity.ok(lineService.findById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.modifyLine(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.modifyLine(id, lineRequest);
         return ResponseEntity.ok()
                              .build();
     }
