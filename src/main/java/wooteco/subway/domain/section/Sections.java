@@ -83,7 +83,7 @@ public class Sections {
     public boolean isEndStationExtension(Section section) {
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(sections.size() - 1);
-        return section.getDownStation() == firstSection.getUpStation() || section.getUpStation() == lastSection.getDownStation();
+        return section.getDownStation().equals(firstSection.getUpStation()) || section.getUpStation().equals(lastSection.getDownStation());
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {

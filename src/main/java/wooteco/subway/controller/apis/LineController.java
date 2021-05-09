@@ -7,8 +7,10 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.SectionService;
 
 import java.net.URI;
 import java.util.List;
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -53,6 +57,20 @@ public class LineController {
         LineResponse lineResponse = LineResponse.of(line, stationResponses);
         return ResponseEntity.ok(lineResponse);
     }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> editSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
+        sectionService.editSection(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Line line = lineService.findById(id);
+        Sections sections = line.getSections();
+        List<StationResponse> stationResponses = sections.getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
+        LineResponse lineResponse = LineResponse.of(line, stationResponses);
+        return ResponseEntity.ok(lineResponse);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {

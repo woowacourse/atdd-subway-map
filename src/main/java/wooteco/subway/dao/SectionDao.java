@@ -49,4 +49,10 @@ public class SectionDao {
         };
         return jdbcTemplate.queryForObject(query, stationIdsRowMapper, id);
     }
+
+    public void update(Section section) {
+        System.out.println(section.getUpStation().getName() + " " + section.getDownStation().getName());
+        String query = "UPDATE SECTION SET UP_STATION_ID = ?, DOWN_STATION_ID = ?, DISTANCE = ? WHERE ID = ?";
+        jdbcTemplate.update(query, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance(), section.getId());
+    }
 }

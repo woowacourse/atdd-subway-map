@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.LineService;
@@ -221,6 +222,30 @@ class LineAcceptanceTest {
                 .when().put("/lines/" + id)
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSections() throws JsonProcessingException {
+        long upStationId = createStationApi("천호역");
+        long downStationId = createStationApi("강남역");
+        long newStationId = createStationApi("의정부역");
+        LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
+        postLineApi(lineRequest);
+        long lineId = testLineIds.get(0);
+        String requestBody = OBJECT_MAPPER.writeValueAsString(new SectionRequest(upStationId, newStationId, 3));
+        List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
+                new StationResponse(newStationId, "의정부역"),
+                new StationResponse(downStationId, "강남역"));
+        String lineResponse = OBJECT_MAPPER.writeValueAsString(new LineResponse(lineId, "6호선", "red", stationResponses));
+
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(requestBody)
+                .when().post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body(is(lineResponse));
     }
 
     @DisplayName("등록된 노선을 삭제한다.")

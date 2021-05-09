@@ -34,7 +34,7 @@ public class Section {
     public Section splitLongerSectionBy(Section shorterSection) {
         validateSplitCondition(shorterSection);
         int adjustedDistance = this.distance - shorterSection.distance;
-        if (this.upStation == shorterSection.upStation) {
+        if (this.upStation.equals(shorterSection.upStation)) {
             return new Section(this.id, shorterSection.downStation, this.downStation, adjustedDistance, this.lineId);
         }
         return new Section(this.id, this.upStation, shorterSection.upStation, adjustedDistance, this.lineId);
@@ -44,28 +44,28 @@ public class Section {
         if (this.distance <= shorterSection.distance) {
             throw new SubwayException(ExceptionStatus.INVALID_SECTION);
         }
-        if (this.upStation == shorterSection.upStation && this.downStation == shorterSection.downStation) {
+        if (this.upStation.equals(shorterSection.upStation) && this.downStation.equals(shorterSection.downStation)) {
             throw new SubwayException(ExceptionStatus.INVALID_SECTION);
         }
-        if (this.upStation != shorterSection.upStation && this.downStation != shorterSection.downStation) {
+        if (!this.upStation.equals(shorterSection.upStation) && !this.downStation.equals(shorterSection.downStation)) {
             throw new SubwayException(ExceptionStatus.INVALID_SECTION);
         }
     }
 
     public boolean isConnectedWith(Section nextSection) {
-        return this.downStation == nextSection.upStation;
+        return this.downStation.equals(nextSection.upStation);
     }
 
     public boolean hasOverlappedStation(Section section) {
-        return this.upStation == section.upStation || this.downStation == section.downStation;
+        return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
     }
 
     public boolean hasSameUpStation(Section section) {
-        return this.upStation == section.upStation;
+        return this.upStation.equals(section.upStation);
     }
 
     public boolean hasSameDownStation(Section section) {
-        return this.downStation == section.downStation;
+        return this.downStation.equals(section.downStation);
     }
 
     public Stream<Station> getStations() {
