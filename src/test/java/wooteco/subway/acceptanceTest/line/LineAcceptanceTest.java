@@ -5,15 +5,15 @@ import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.assertL
 import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.getAllLinesInIdOrder;
 import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestAndGetAllSavedLinesIds;
 import static wooteco.subway.acceptanceTest.line.LineAcceptanceTestUtils.requestUpdateLine;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.DEFAULT_SECTION_DISTANCE;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_COLOR;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_ID;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.LINE_NAME;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.NEW_STATION;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_1;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_2;
-import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.STATION_3;
 import static wooteco.subway.acceptanceTest.section.SectionAcceptanceTestUtils.createLineWithSectionsOf;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.DEFAULT_SECTION_DISTANCE;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_COLOR;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_ID;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.LINE_NAME;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.NEW_STATION;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_1;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_2;
+import static wooteco.subway.acceptanceTest.fixture.DomainFixtures.STATION_3;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
