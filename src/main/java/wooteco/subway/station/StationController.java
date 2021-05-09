@@ -3,7 +3,6 @@ package wooteco.subway.station;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.dao.StationDao;
 
 import java.net.URI;
 import java.util.List;
@@ -12,28 +11,24 @@ import java.util.stream.Collectors;
 @RestController
 public class StationController {
 
-    private final StationDao stationDao;
+    private final StationService stationService;
 
-    public StationController(StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> create(
             @RequestBody StationRequest stationRequest) {
         String name = stationRequest.getName();
-        if (stationDao.isExistByName(name)) {
-            return ResponseEntity.badRequest().build();
-        }
-        Station station = Station.of(name);
-        Station newStation = stationDao.save(station);
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId()))
-                .body(StationResponse.of(newStation));
+        Station createdStation = stationService.create(name);
+        return ResponseEntity.created(URI.create("/stations/" + createdStation.getId()))
+                .body(StationResponse.of(createdStation));
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showAll() {
-        List<Station> stations = stationDao.findAll();
+        List<Station> stations = stationService.showAll();
         List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
@@ -41,8 +36,8 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        stationDao.remove(id);
+    public ResponseEntity<Void> remove(@PathVariable Long id) {
+        stationService.remove(id);
         return ResponseEntity.noContent().build();
     }
 }

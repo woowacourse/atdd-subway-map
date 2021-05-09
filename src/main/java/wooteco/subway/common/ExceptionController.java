@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.LineNameDuplicatedException;
 import wooteco.subway.exception.LineNotFoundException;
+import wooteco.subway.exception.StationNameDuplicatedException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -14,7 +15,7 @@ public class ExceptionController {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(LineNameDuplicatedException.class)
+    @ExceptionHandler({LineNameDuplicatedException.class, StationNameDuplicatedException.class})
     public ResponseEntity<String> lineNameDuplicated(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
