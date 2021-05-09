@@ -35,7 +35,7 @@ public class StationService {
     }
 
     private void validateExistById(Long id) {
-        if(!stationDao.existById(id)){
+        if (!stationDao.existById(id)) {
             throw new StationNotFoundException();
         }
     }

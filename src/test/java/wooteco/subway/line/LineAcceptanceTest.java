@@ -1,23 +1,24 @@
 package wooteco.subway.line;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -32,12 +33,12 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -55,21 +56,21 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -84,38 +85,38 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         params.put("color", "bg-green-600");
         params.put("name", "2호선");
         final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-            .collect(Collectors.toList());
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -127,20 +128,20 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // when
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
-            .extract();
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -154,10 +155,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getStationById_notFound() {
         /// given
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines/-1")
-            .then().log().all()
-            .extract();
+                .when()
+                .get("/lines/-1")
+                .then().log().all()
+                .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -171,33 +172,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         params.put("color", "bg-blue-600");
         params.put("name", "구분당선");
 
         // when
         RestAssured.given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
-            .when()
-            .put(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+                .body(params)
+                .contentType(ContentType.JSON)
+                .when()
+                .put(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
         // then
         RestAssured.given().log().all()
-            .when()
-            .get(uri)
+                .when()
+                .get(uri)
 
-            .then().log().all()
-            .body("name", equalTo("구분당선"))
-            .body("color", equalTo("bg-blue-600"));
+                .then().log().all()
+                .body("name", equalTo("구분당선"))
+                .body("color", equalTo("bg-blue-600"));
     }
 
     @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
@@ -208,36 +209,36 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         params.put("color", "bg-red-600");
         params.put("name", "구분당선");
         RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines");
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines");
 
         params.put("color", "bg-blue-600");
         params.put("name", "구분당선");
 
         // when
         RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
+                .given().log().all()
+                .body(params)
+                .contentType(ContentType.JSON)
 
-            .when()
-            .put(uri)
+                .when()
+                .put(uri)
 
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(equalTo("이미 등록되어 있는 노선 이름입니다."));
     }
 
     @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
@@ -251,15 +252,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(ContentType.JSON)
+                .given().log().all()
+                .body(params)
+                .contentType(ContentType.JSON)
 
-            .when()
-            .put("/lines/-1")
+                .when()
+                .put("/lines/-1")
 
-            .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("노선 삭제 - 성공")
@@ -270,26 +271,26 @@ class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         final String uri = RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .extract().header("Location");
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract().header("Location");
 
         // when
         RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         // then
         RestAssured.given().log().all()
-            .when()
-            .get(uri)
+                .when()
+                .get(uri)
 
-            .then().log().all()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }
