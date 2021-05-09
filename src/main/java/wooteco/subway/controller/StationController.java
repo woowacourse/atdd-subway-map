@@ -3,8 +3,8 @@ package wooteco.subway.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dto.request.StationRequest;
-import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.dto.station.request.StationRequest;
+import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.service.StationService;
 
 import javax.validation.Valid;

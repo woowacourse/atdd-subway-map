@@ -2,7 +2,7 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.response.StationResponse;
+import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.repository.dao.StationDao;
 

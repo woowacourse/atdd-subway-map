@@ -1,4 +1,4 @@
-package wooteco.subway.dto.request;
+package wooteco.subway.dto.station.request;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;

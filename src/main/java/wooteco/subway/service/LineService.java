@@ -1,11 +1,14 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
+import wooteco.subway.dto.line.request.LineInsertRequest;
+import wooteco.subway.dto.line.response.LineResponse;
 import wooteco.subway.exception.line.LineDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
+import wooteco.subway.repository.SubwayRepository;
+import wooteco.subway.repository.dao.LineDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,14 +17,22 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SubwayRepository subwayRepository;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SubwayRepository subwayRepository) {
         this.lineDao = lineDao;
+        this.subwayRepository = subwayRepository;
     }
 
-    public LineResponse create(String color, String name) {
-        validateDuplicateColorAndName(color, name);
-        return new LineResponse(lineDao.insert(new Line(color, name)));
+    public LineResponse create(LineInsertRequest lineInsertRequest) {
+        Line line = lineInsertRequest.toLineEntity();
+        validateDuplicateColorAndName(line.getColor(), line.getName());
+        Line insertedLine = lineDao.insert(line);
+
+        Section section = lineInsertRequest.toSectionEntity(insertedLine.getId());
+        subwayRepository.insertSectionWithLineId(section);
+
+        return new LineResponse(insertedLine);
     }
 
     public List<LineResponse> showAll() {

@@ -1,27 +1,29 @@
-package wooteco.subway.dto.request;
+package wooteco.subway.dto.line.request;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class LineRequest {
+public class LineInsertRequest {
     @NotBlank
     @Pattern(regexp = "^[가-힣|A-Z|a-z| 0-9]*선$")
     private String name;
     @NotBlank
     private String color;
-    @NotBlank
+    @NotNull
     private Long upStationId;
-    @NotBlank
+    @NotNull
     private Long downStationId;
-    @NotBlank
+    @NotNull
     private int distance;
 
-    public LineRequest() {
+    public LineInsertRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineInsertRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -49,7 +51,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
-        return new Line(name, color);
+    public Line toLineEntity() {
+        return new Line(color, name);
     }
 }

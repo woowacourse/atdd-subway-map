@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.dto.response.LineResponse;
+import wooteco.subway.dto.line.response.LineResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "1호선");
+        Map<String, String> params = setLine("bg-red-600", "1호선", 1L, 2L);
 
         // when
         ExtractableResponse<Response> response = extractResponseWhenPost(params);
@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "1호선");
+        Map<String, String> params = setLine("bg-red-600", "1호선", 1L, 2L);
         extractResponseWhenPost(params);
 
         // when
@@ -52,7 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithWrongName() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "1호");
+        Map<String, String> params = setLine("bg-red-600", "1호", 1L, 2L);
         ExtractableResponse<Response> response = extractResponseWhenPost(params);
 
         // when - then
@@ -63,7 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithNullName() {
         // given
-        Map<String, String> params = setLine("bg-red-600", null);
+        Map<String, String> params = setLine("bg-red-600", null, 1L, 2L);
         extractResponseWhenPost(params);
 
         // when
@@ -77,11 +77,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
+        Map<String, String> params1 = setLine("bg-red-600", "1호선", 1L, 2L);
         extractResponseWhenPost(params1);
 
         // when
-        Map<String, String> params2 = setLine("bg-red-600", "2호선");
+        Map<String, String> params2 = setLine("bg-red-600", "2호선", 1L, 2L);
         ExtractableResponse<Response> response = extractResponseWhenPost(params2);
 
         // then
@@ -92,10 +92,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
+        Map<String, String> params1 = setLine("bg-red-600", "1호선", 1L, 2L);
         ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(params1);
 
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
+        Map<String, String> params2 = setLine("bg-yellow-600", "2호선", 1L, 2L);
         ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2);
 
         // when
@@ -116,10 +116,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
+        Map<String, String> params1 = setLine("bg-red-600", "1호선", 1L, 2L);
         extractResponseWhenPost(params1);
 
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
+        Map<String, String> params2 = setLine("bg-yellow-600", "2호선", 1L, 2L);
         ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2);
 
         // when
@@ -137,11 +137,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params1 = setLine("bg-red-600", "1호선");
+        Map<String, String> params1 = setLine("bg-red-600", "1호선", 1L, 2L);
         extractResponseWhenPost(params1);
 
         //when
-        Map<String, String> params2 = setLine("bg-yellow-600", "2호선");
+        Map<String, String> params2 = setLine("bg-yellow-600", "2호선", 1L, 2L);
         ExtractableResponse<Response> response = extractResponseWhenPut(params2);
 
         //then
@@ -153,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = setLine("bg-red-600", "3호선");
+        Map<String, String> params = setLine("bg-red-600", "3호선", 1L, 2L);
         ExtractableResponse<Response> createResponse = extractResponseWhenPost(params);
 
         // when
@@ -202,10 +202,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private Map<String, String> setLine(String color, String name) {
+    private Map<String, String> setLine(String color, String name, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
         params.put("name", name);
+        params.put("downStationId", upStationId.toString());
+        params.put("upStationId", downStationId.toString());
         return params;
     }
 }
