@@ -58,7 +58,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long lineId = createLineResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = LineRequest.createSectionRequest(LineRequest.section1(1L, 2L), lineId);
+        ExtractableResponse<Response> response = LineRequest.createSectionRequest(LineRequest.section1(2L, 150L), lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -106,12 +106,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Map<String, String> station1 = StationRequest.station1();
         Map<String, String> station2 = StationRequest.station2();
-        Map<String, String> line = LineRequest.line1(1L, 2L);
         ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
         ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
         Long stationId1 = createStationResponse1.jsonPath().getLong("id");
         Long stationId2 = createStationResponse2.jsonPath().getLong("id");
+
+        Map<String, String> line = LineRequest.line1(stationId1, stationId2);
+        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(line);
         Long lineId = createLineResponse.jsonPath().getLong("id");
 
         // when

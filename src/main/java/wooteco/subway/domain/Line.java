@@ -5,10 +5,7 @@ import wooteco.subway.exception.SubwayException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.groupingBy;
 
 public class Line {
     private static final int UP_STATION_ID_COUNT = 1;
@@ -65,11 +62,17 @@ public class Line {
     }
 
     private Section findFirstSection() {
-        Map<Long, List<Section>> mapWithUpStationIdAndSection = sections.stream()
-                .collect(groupingBy(section -> section.getUpStationId()));
+        List<Long> stationIds = new ArrayList<>();
+        for (Section section : sections) {
+            Long downStationId = section.getDownStationId();
+            Long upStationId = section.getUpStationId();
+            stationIds.add(downStationId);
+            stationIds.add(upStationId);
+        }
 
         for (Section section : sections) {
-            if (mapWithUpStationIdAndSection.get(section.getUpStationId()).size() == UP_STATION_ID_COUNT) {
+            int count = Collections.frequency(stationIds, section.getUpStationId());
+            if (count == UP_STATION_ID_COUNT) {
                 return section;
             }
         }

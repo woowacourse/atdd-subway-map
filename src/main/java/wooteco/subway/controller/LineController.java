@@ -53,15 +53,13 @@ public class LineController {
 
     @PostMapping(value = "/{lineId}/sections")
     public ResponseEntity<Void> createLine(@PathVariable Long lineId, @RequestBody SectionCreateRequestDto requestDto) {
-        Long sectionId = lineService.createSectionInLine(
+        lineService.createSectionInLine(
                 lineId,
                 requestDto.getUpStationId(),
                 requestDto.getDownStationId(),
                 requestDto.getDistance()
         );
-        return ResponseEntity.created(
-                URI.create("/lines/" + lineId + "/sections/" + sectionId)
-        ).build();
+        return ResponseEntity.created(null).build();
     }
 
 
