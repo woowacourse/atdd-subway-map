@@ -6,10 +6,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.Station;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class JdbcStationDao implements StationDao {
@@ -25,7 +25,7 @@ public class JdbcStationDao implements StationDao {
         Map<String, String> map = new HashMap<>();
         map.put("name", station.getName());
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("STATION").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(map).longValue();
 

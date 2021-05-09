@@ -11,7 +11,8 @@
 - [x] Request, Response 객체로 넣거나 반환하는 방식 추가
 - [x] Dao - DataSource 필요할까?
 - [ ] 객체지향적인 코드로 변경해보기 (읽기 좋은 코드로 작성하는 것 외에도 객체를 통해서 업데이트 하라는 의미)
-- [ ] update 로직 고민
+  update 로직이 객체와 연동되는 방향으로 생각하기.
+- [ ] update 로직 고민 
 ```text
 1. 중복된 name의 Line이 있는지 검사
 2. id로 Line 조회

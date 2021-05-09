@@ -6,11 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.Line;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class JdbcLineDao implements LineDao {
@@ -35,7 +31,7 @@ public class JdbcLineDao implements LineDao {
         parameters.put("name", line.getName());
         parameters.put("color", line.getColor());
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
                 .withTableName("LINE").usingGeneratedKeyColumns("id");
         final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
