@@ -12,16 +12,16 @@ public class Line {
     private Long id;
     private List<Station> stations;
 
-    public Line(Long id, String name, String color) {
-        this(name, color);
-        this.id = id;
-    }
-
     public Line(String name, String color) {
         validateName(name);
         validateColor(name);
         this.name = name;
         this.color = color;
+    }
+
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
     }
 
     public Line(long id, Line line) {
@@ -34,8 +34,8 @@ public class Line {
         this.stations = stations;
     }
 
-    public static Line from(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor());
+    public Line(LineRequest lineRequest) {
+        this(lineRequest.getName(), lineRequest.getColor());
     }
 
     private void validateColor(String color) {

@@ -67,4 +67,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 삭제
   
 - [x] 스프링 빈 적용
-- [ ] H2 적용
+- [x] H2 적용

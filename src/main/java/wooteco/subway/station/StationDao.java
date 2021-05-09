@@ -40,9 +40,9 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public void delete(long stationId) {
+    public int delete(long stationId) {
         String sql = "DELETE FROM STATION WHERE id=?";
-        jdbcTemplate.update(sql, stationId);
+        return jdbcTemplate.update(sql, stationId);
     }
 
     public Station findById(Long id) {

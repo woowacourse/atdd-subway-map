@@ -105,11 +105,25 @@ class LineDaoTest {
         String newName = "3호선";
         String newColor = "orange";
         Line updatedLine = new Line(newName, newColor);
-        lineDao.update(lineId, updatedLine);
+        assertEquals(1, lineDao.update(lineId, updatedLine));
 
         Line line = lineDao.findById(lineId);
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
+    }
+
+    @DisplayName("존재하지 않는 노선을 수정한다")
+    @Test
+    void updateException() {
+        String name = "2호선";
+        String color = "green";
+        Line newLine = new Line(name, color);
+
+        String newName = "3호선";
+        String newColor = "orange";
+        Line updatedLine = new Line(newName, newColor);
+
+        assertEquals(0, lineDao.update(10, updatedLine));
     }
 
     @DisplayName("id로 노선을 삭제한다")
@@ -125,7 +139,18 @@ class LineDaoTest {
         Line newLine2 = new Line(name2, color2);
         long lineId = lineDao.save(newLine2);
 
-        lineDao.delete(lineId);
+        assertEquals(1, lineDao.delete(lineId));
         assertThat(lineDao.findAll().size()).isEqualTo(1);
+    }
+
+    @DisplayName("존재하지 않는 id로 노선을 삭제한다")
+    @Test
+    void deleteException() {
+        String name = "2호선";
+        String color = "green";
+        Line newLine = new Line(name, color);
+        lineDao.save(newLine);
+
+        assertEquals(0, lineDao.delete(10));
     }
 }
