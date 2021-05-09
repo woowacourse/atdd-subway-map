@@ -3,11 +3,13 @@ package wooteco.subway.line.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.section.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.net.URI;
 import java.util.List;
@@ -17,16 +19,19 @@ import java.util.List;
 public class LineController {
     private final LineService lineService;
     private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineController(final LineService lineService, final SectionService sectionService) {
+    public LineController(final LineService lineService, final SectionService sectionService, final StationService stationService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getColor(), lineRequest.getName());
         Line newLine = lineService.save(line);
+
         Section section = new Section(
                 newLine.getId(),
                 lineRequest.getUpStationId(),
@@ -34,7 +39,11 @@ public class LineController {
                 lineRequest.getDistance()
         );
         sectionService.save(section);
-        LineResponse lineResponse = LineResponse.toDto(newLine, section); // TODO: upStationId, downStationId로 이름 찾아서 station response 생성
+
+        List<Station> upAndDownStations = stationService.getUpAndDownStations(section);
+        newLine.addStations(upAndDownStations);
+
+        LineResponse lineResponse = LineResponse.toDto(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
 

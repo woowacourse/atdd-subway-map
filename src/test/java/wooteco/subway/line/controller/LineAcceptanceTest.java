@@ -14,22 +14,38 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationRequest;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql("classpath:tableInit.sql")
 class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
-    private final LineRequest firstLineRequest = new LineRequest("신분당선", "bg-red-600");
+    private LineRequest firstLineRequest;
+    private StationRequest firstStationRequest;
+    private StationRequest secondStationRequest;
     private String url;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
+
+        firstLineRequest = new LineRequest(
+                "신분당선",
+                "bg-red-600",
+                1L,
+                2L,
+                10);
+
+        firstStationRequest = new StationRequest("잠실역");
+        secondStationRequest = new StationRequest("잠실새내역");
+
+        saveStation(firstStationRequest);
+        saveStation(secondStationRequest);
 
         response = RestAssured.given().log().all()
                 .body(firstLineRequest)
@@ -42,6 +58,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         url = response.header("Location");
     }
 
+    private void saveStation(final StationRequest station) {
+        RestAssured.given().log().all()
+                .body(station)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all();
+    }
+
     @DisplayName("line 추가하는데 성공하면 201 created와 생성된 line 정보를 반환한다")
     @Test
     void createLine() {
@@ -50,10 +75,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(url).isNotBlank();
 
         LineResponse responseBody = response.body().as(LineResponse.class);
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(1L, "bg-red-600","신분당선", Arrays.asList(
+                new Station(1L, firstStationRequest.getName()),
+                new Station(2L, secondStationRequest.getName()))
+                )
+        );
 
-        assertThat(responseBody).usingRecursiveComparison()
-                .ignoringFields("upStationId", "downStationId", "distance", "id", "stations")
-                .isEqualTo(firstLineRequest);
+        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
     @DisplayName("전체 line을 조회하면 저장된 모든 line들을 반환한다 ")

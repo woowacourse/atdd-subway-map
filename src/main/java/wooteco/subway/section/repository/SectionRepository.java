@@ -13,7 +13,7 @@ public class SectionRepository {
     }
 
     public boolean doesSectionExist(final Section section) {
-        String query = "SELECT EXISTS(SELECT * FROM Line WHERE line_id = ?, up_station_id = ?, down_station_id = ?)";
+        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, section.getLineId(), section.getUpStationId(), section.getDownStationId());
     }
 

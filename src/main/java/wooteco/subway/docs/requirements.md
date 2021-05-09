@@ -30,12 +30,12 @@
         - [x] id를 통해 특정 Line 삭제 기능 구현
 
 ### 3단계 구간 관리 기능
-- [ ] 노선 추가시 (상행 종점, 하행 종점, 두 종점간의 거리)를 추가로 입력받는다
-- [ ] section table schema 수정하기 (POST /lines)
-    - [ ] line_id (foreign key) -> line table의 id
-    - [ ] 상행선 station id (foreign key) -> station table의 id
-    - [ ] 하행선 station id (foreign key) -> station table의 id
-- [ ] 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
+- [x] 노선 추가시 (상행 종점, 하행 종점, 두 종점간의 거리)를 추가로 입력받는다
+- [x] section table schema 수정하기 (POST /lines)
+    - [x] line_id (foreign key) -> line table의 id
+    - [x] 상행선 station id (foreign key) -> station table의 id
+    - [x] 하행선 station id (foreign key) -> station table의 id
+- [x] 종점간의 연결 정보를 이용하여 노선 추가 시 구간(Section) 정보도 함께 등록
 
 - [ ] 노선 조회 시 노선에 포함된 역 목록도 반환해준다 (json List 형태)
 

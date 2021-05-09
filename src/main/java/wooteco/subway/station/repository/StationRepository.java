@@ -49,6 +49,11 @@ public class StationRepository {
         jdbcTemplate.update(query, id);
     }
 
+    public String findNameById(final Long id) {
+        String query = "SELECT name FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, String.class, id);
+    }
+
     public boolean doesNameExist(final Station station) {
         String query = "SELECT EXISTS(SELECT * FROM station WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
