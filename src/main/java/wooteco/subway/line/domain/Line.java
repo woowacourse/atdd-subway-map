@@ -12,6 +12,9 @@ public class Line {
     private String color;
     private List<Station> stations;
 
+    public Line() {
+    }
+
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
@@ -27,9 +30,6 @@ public class Line {
 
     public static Line from(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
-    }
-
-    public Line() {
     }
 
     public Long getId() {
