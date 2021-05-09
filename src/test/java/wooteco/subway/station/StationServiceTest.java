@@ -10,11 +10,23 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.station.dao.StationDaoMemory;
 import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 
+@ExtendWith(MockitoExtension.class)
 class StationServiceTest {
+
+    @Mock
+    private StationDaoMemory mockDao;
+
+    @InjectMocks
+    private StationService stationService;
+
 
     @DisplayName("서비스에서 저장 테스트")
     @Test
@@ -24,10 +36,8 @@ class StationServiceTest {
         Station savedStation = new Station(2L, "스타벅스 선정릉역");
         Station station = new Station("스타벅스 선정릉역");
 
-        StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.save(station)).thenReturn(savedStation);
 
-        StationService stationService = new StationService(mockDao);
 
         //when
         StationDto savedStationDto = stationService.save(requestStationDto);
@@ -47,9 +57,7 @@ class StationServiceTest {
             new Station(3L, "용산역")
         );
 
-        StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.showAll()).thenReturn(stations);
-        StationService stationService = new StationService(mockDao);
 
         List<StationDto> expectedDtos = Arrays.asList(
             new StationDto(1L, "성서공단역"),
