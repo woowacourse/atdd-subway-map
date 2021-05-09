@@ -1,14 +1,13 @@
 package wooteco.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.Rest;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,26 +22,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void setUpStations() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "강남역");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        Rest.post(params, "/stations");
+
 
         // given
-        Map<String, String> params2 = new HashMap<>();
+        Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "성수역");
-        RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        Rest.post(params2, "/stations");
+
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -58,13 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("extraFare", "100");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = Rest.post(params, "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -83,21 +66,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", "1000");
         params.put("extraFare", "100");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = Rest.post(params, "/lines");
 
         //when
-        ExtractableResponse<Response> getLinesResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> getLinesResponse = Rest.get("/lines");
 
         //then
         assertThat(getLinesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -123,21 +95,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", "1000");
         params.put("extraFare", "100");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = Rest.post(params, "/lines");
 
         //when
-        ExtractableResponse<Response> getLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> getLineResponse = Rest.get("/lines/1");
 
         //then
         LineResponse lineResponse = getLineResponse.jsonPath().getObject(".", LineResponse.class);
@@ -159,29 +120,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", "1000");
         params.put("extraFare", "100");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = Rest.post(params, "/lines");
 
         //when
         Map<String, Object> requestParam = new HashMap<>();
         requestParam.put("name", "수정한선");
         requestParam.put("color", "blue");
 
-        ExtractableResponse<Response> putLineResponse = RestAssured.given().log().all()
-                .body(requestParam)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> putLineResponse = Rest.put(requestParam, "/lines/1");
 
         //then
         assertThat(putLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+
     }
 
     @DisplayName("노선을 삭제한다.")
@@ -196,23 +147,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("distance", "1000");
         params.put("extraFare", "100");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = Rest.post(params, "/lines");
 
         //when
-        ExtractableResponse<Response> deleteLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete("/lines/1")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> deleteLineResponse = Rest.delete("/lines/1");
 
         //then
         assertThat(deleteLineResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
 }
