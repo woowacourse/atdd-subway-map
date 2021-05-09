@@ -17,6 +17,7 @@ import wooteco.subway.line.ui.dto.LineRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static wooteco.subway.line.service.LineService.ERROR_DUPLICATED_LINE_NAME;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineControllerTest {
@@ -55,6 +56,24 @@ class LineControllerTest {
                 .body("name", is("신분당선"))
                 .body("color", is("bg-red-600"));
     }
+
+    @DisplayName("노선 이름 중복 체크")
+    @Test
+    void createNewLine_checkDuplicatedLineName() {
+        lineRepository.save(new Line("신분당선", "bg-red-600"));
+
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(new LineRequest("신분당선", "bg-red-600"))
+                .post("/lines")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(is(ERROR_DUPLICATED_LINE_NAME));
+    }
+
 
     @DisplayName("모든 노선을 조회한다.")
     @Test
@@ -120,7 +139,7 @@ class LineControllerTest {
                 .body(new LineRequest("구분당선", "bg-red-600"))
                 .put("/lines/" + id)
                 .then()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         final Line line = lineRepository.findById(id);
         assertThat(line.getName()).isEqualTo("구분당선");

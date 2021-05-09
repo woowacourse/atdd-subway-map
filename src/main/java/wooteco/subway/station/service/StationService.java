@@ -15,7 +15,8 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public Station createStation(Station station) {
+    public Station create(Station station) {
+        checkCreateValidation(station);
         return stationRepository.save(station);
     }
 
@@ -25,5 +26,12 @@ public class StationService {
 
     public void deleteById(Long id) {
         stationRepository.delete(id);
+    }
+
+    private void checkCreateValidation(Station station) {
+        boolean duplicated = stationRepository.findAll().contains(station);
+        if (duplicated) {
+            throw new IllegalArgumentException("역 이름이 중복 되었습니다.");
+        }
     }
 }

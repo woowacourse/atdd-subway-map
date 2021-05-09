@@ -21,7 +21,7 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public List<Line> allLines() {
+    public List<Line> findAll() {
         return lineDao.allLines();
     }
 

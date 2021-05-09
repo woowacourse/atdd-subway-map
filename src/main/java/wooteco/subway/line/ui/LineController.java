@@ -27,7 +27,7 @@ public class LineController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        final Line savedLine = lineService.save(line);
+        final Line savedLine = lineService.create(line);
 
         return ResponseEntity
                 .created(
@@ -90,8 +90,9 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataAccessException.class)
+    @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
+        System.out.println("msg :" + e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

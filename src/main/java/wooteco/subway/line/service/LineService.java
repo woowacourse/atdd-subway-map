@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class LineService {
+    public static final String ERROR_DUPLICATED_LINE_NAME = "라인이 중복되었습니다.";
 
     private final LineRepository lineRepository;
 
@@ -17,14 +18,15 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public Line save(Line line) {
+    public Line create(Line line) {
+        checkCreateValidation(line);
         final long id = lineRepository.save(line);
 
         return new Line(id, line.getName(), line.getColor());
     }
 
     public List<Line> allLines() {
-        return lineRepository.allLines();
+        return lineRepository.findAll();
     }
 
     public Line findById(final Long id) {
@@ -37,5 +39,13 @@ public class LineService {
 
     public void deleteById(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private void checkCreateValidation(Line line) {
+        boolean duplicated = lineRepository.findAll().contains(line);
+        if (duplicated) {
+            throw new IllegalArgumentException(ERROR_DUPLICATED_LINE_NAME);
+        }
+
     }
 }
