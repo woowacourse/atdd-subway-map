@@ -1,0 +1,2 @@
+DELETE station;
+DELETE line;

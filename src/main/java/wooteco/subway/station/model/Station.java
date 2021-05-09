@@ -1,6 +1,7 @@
-package wooteco.subway.station;
+package wooteco.subway.station.model;
 
 public class Station {
+
     private Long id;
     private String name;
 
@@ -22,6 +23,10 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isSameName(Station newStation) {
+        return this.name.equals(newStation.name);
     }
 }
 
