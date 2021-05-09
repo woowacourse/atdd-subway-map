@@ -151,6 +151,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("같은 상행 종점역과 하행 종점역으로 사용한다.")
+    @Test
+    void createLineWithDuplicateStationId() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "분당선");
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(0)));
+        params.put("distance", "10");
+        ExtractableResponse<Response> response = postLine(params);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("노선을 조회한다.")
     @Test
     void getLines() {
@@ -200,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 
-    @DisplayName("존재하지 않는 id의 노선을 조회한다.")
+    @DisplayName("존재하지 않는 ID의 노선을 조회한다.")
     @Test
     void getLineOfIdDoesNotExist() {
         // when

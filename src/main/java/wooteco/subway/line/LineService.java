@@ -29,12 +29,25 @@ public class LineService {
 
     public LineResponse createLine(LineRequest lineRequest) {
         validateNameAndColor(lineRequest);
+        validateDuplicateStationId(lineRequest);
 
         LineEntity newLineEntity = lineDao
             .save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         createSection(lineRequest, newLineEntity);
 
         return new LineResponse(newLineEntity, stationResponses(lineRequest));
+    }
+
+    private void validateNameAndColor(LineRequest lineRequest) {
+        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
+        }
+    }
+
+    private void validateDuplicateStationId(LineRequest lineRequest) {
+        if (lineRequest.getUpStationId().equals(lineRequest.getDownStationId())) {
+            throw new IllegalArgumentException("상행 종점역과 하행 종점역이 같습니다.");
+        }
     }
 
     private void createSection(LineRequest lineRequest, LineEntity newLineEntity) {
@@ -48,12 +61,6 @@ public class LineService {
     private List<StationResponse> stationResponses(LineRequest lineRequest) {
         return Arrays.asList(stationService.showStation(lineRequest.getUpStationId()),
             stationService.showStation(lineRequest.getDownStationId()));
-    }
-
-    private void validateNameAndColor(LineRequest lineRequest) {
-        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
-        }
     }
 
     @Transactional(readOnly = true)
