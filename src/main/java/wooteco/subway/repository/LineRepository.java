@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public class LineRepository {
+    private static final int ONE_SECTION = 1;
     private final JdbcTemplate jdbcTemplate;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -72,21 +73,45 @@ public class LineRepository {
         return sectionDao.create(lineId, upStationId, downStationId, distance);
     }
 
-    public Long deleteSectionInLine(Long lineId, Long stationId) {
-        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
-        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
-        if (!upSectionOptional.isPresent() || !downSectionOptional.isPresent()) {
+    public void deleteSectionInLine(Long lineId, Long stationId) {
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        if (sections.size() == ONE_SECTION) {
             throw new SubwayException("구간이 하나인 노선에서는 역을 삭제할 수 없습니다.");
         }
+
+        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
+        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+
+        // 가장 끝에 있는 섹션을 삭제할 떄
+        if (isEndStation(lineId, stationId)) {
+            sectionDao.deleteById(upSectionOptional.get().getId());
+            return;
+        }
+        if (isStartStation(lineId, stationId)) {
+            sectionDao.deleteById(downSectionOptional.get().getId());
+            return;
+        }
+
+        // 중간에 있는 섹션을 삭제할 때
         Section upSection = upSectionOptional.get();
         Section downSection = downSectionOptional.get();
         sectionDao.deleteById(upSection.getId());
         sectionDao.deleteById(downSection.getId());
-        return sectionDao.create(
+        sectionDao.create(
                 lineId,
                 upSection.getUpStationId(),
                 downSection.getDownStationId(),
                 upSection.getDistance() + downSection.getDistance()
         );
+    }
+
+    private boolean isEndStation(Long lineId, Long stationId) {
+        Optional<Section> downSectionOptional = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+        return !downSectionOptional.isPresent();
+    }
+
+    private boolean isStartStation(Long lineId, Long stationId) {
+        Optional<Section> upSectionOptional = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
+        return !upSectionOptional.isPresent();
     }
 }

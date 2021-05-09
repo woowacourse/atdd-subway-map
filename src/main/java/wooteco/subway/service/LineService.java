@@ -100,7 +100,7 @@ public class LineService {
         return lineRepository.createSectionInLine(lineId, upStationId, downStationId, distance);
     }
 
-    public Long deleteSectionInLine(Long lineId, Long stationId) {
-        return lineRepository.deleteSectionInLine(lineId, stationId);
+    public void deleteSectionInLine(Long lineId, Long stationId) {
+        lineRepository.deleteSectionInLine(lineId, stationId);
     }
 }

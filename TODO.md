@@ -47,14 +47,14 @@
 
 
 ### 지하철 노선(Line) 관련 API 전체 수정
-- [ ] 노선 삭제
-- [ ] 노선 조회
-- [ ] 노선 목록 조회
-- [ ] 노선 수정
-- [ ] 노선(Line)에 구간을(Section) 추가하는 API 만들기 - POST /lines/1/sections
+- [x] 노선 삭제
+- [x] 노선 조회
+- [x] 노선 목록 조회
+- [x] 노선 수정
+- [x] 노선(Line)에 구간을(Section) 추가하는 API 만들기 - POST /lines/1/sections
 
 ### 기타
 - [ ] RestAssured에서 QueryParams, PathParams 활용해서 리팩토링하기
-- [ ] 예외 처리를 커스텀 예외 활용하도록 바꾸기
+- [x] 예외 처리를 커스텀 예외 활용하도록 바꾸기
 - [ ] Service Layer에 있는 비즈니스 로직을 Domain으로 옮기기
-- [ ] ATDD에서는 @Transactional이 적용이 안 되는 지 테스트하기 / h2 DB에서는 Truncate로는 AI가 초기화 아나 되는 건 아닌지
+- [ ] ATDD에서는 @Transactional이 적용이 안 되는 지 테스트하기 / h2 DB에서는 Truncate로는 AI가 초기화 안 되는 건 아닌지
