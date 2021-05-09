@@ -38,6 +38,7 @@ public class LineService {
     }
 
     public void update(Line line, long id) {
+        lineDao.findById(id).orElseThrow(NotFoundLineException::new);
         lineDao.update(line, id);
     }
 }
