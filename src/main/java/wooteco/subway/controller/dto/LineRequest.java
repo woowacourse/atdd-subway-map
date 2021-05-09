@@ -1,13 +1,25 @@
 package wooteco.subway.controller.dto;
 
 import wooteco.subway.domain.Line;
- import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Section;
+
+import javax.validation.constraints.NotNull;
 
 public class LineRequest {
+
+    @NotNull
     private final String name;
+
+    @NotNull
     private final String color;
+
+    @NotNull
     private final Long upStationId;
+
+    @NotNull
     private final Long downStationId;
+
+    @NotNull
     private final int distance;
 
     public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId,

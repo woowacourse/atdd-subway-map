@@ -68,6 +68,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         RestAssuredHelper.jsonPost(params, "/lines");
 
         // when
@@ -76,6 +79,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("이미 존재하는 노선 이름입니다.");
+    }
+
+    @DisplayName("노선 생성 실패 - RequestDto 의 속성이 null 값 일 경우 예외 발생")
+    @Test
+    void createLineWithNullField() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        RestAssuredHelper.jsonPost(params, "/lines");
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonPost(params, "/lines");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("널이어서는 안됩니다");
     }
 
     @DisplayName("모든 노선 조회 성공")
