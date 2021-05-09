@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class StationDaoJdbcTemplate implements StationDao {
+public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
-    public StationDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcStationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
     }

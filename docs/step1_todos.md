@@ -1,6 +1,6 @@
 # 1-2  피드백
 - [ ] Optional 리턴을 코드에서 제외 (오히려 boolean 리턴을 받고 유효한 값을 검사)
-- [ ] InMemory~Dao로 이름 변경
+- [x] InMemory~Dao로 이름 변경
 - [ ] 쿼리 결과가 list가 아닌 것으로 변경 (findLineByName)
 - [ ] jdbcTemplate이 가지고 있는 datasource로 변경
 - [ ] exceptionController ResponseEntity 리턴타입 명시

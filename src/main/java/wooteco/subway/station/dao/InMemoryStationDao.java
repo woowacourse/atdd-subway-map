@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StationDaoLocal implements StationDao {
+public class InMemoryStationDao implements StationDao {
 
     private final List<Station> stations = new ArrayList<>();
     private Long seq = 0L;

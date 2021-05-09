@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LineDaoLocal implements LineDao {
+public class InMemoryLineDao implements LineDao {
 
     private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;
