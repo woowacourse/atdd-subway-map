@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.dto.request.LineRequest;
 import wooteco.subway.dto.response.LineResponse;
@@ -17,12 +16,6 @@ import java.util.List;
 public class LineController {
 
     private final LineService lineService;
-
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        LineValidator lineValidator = new LineValidator();
-        webDataBinder.addValidators(lineValidator);
-    }
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
@@ -47,7 +40,7 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
         lineService.updateById(id, lineRequest.getColor(), lineRequest.getName());
         return ResponseEntity.ok().build();
     }

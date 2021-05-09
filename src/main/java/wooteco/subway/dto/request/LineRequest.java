@@ -1,10 +1,21 @@
 package wooteco.subway.dto.request;
 
+import wooteco.subway.domain.Line;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 public class LineRequest {
+    @NotBlank
+    @Pattern(regexp = "^[가-힣|A-Z|a-z| 0-9]*선$")
     private String name;
+    @NotBlank
     private String color;
+    @NotBlank
     private Long upStationId;
+    @NotBlank
     private Long downStationId;
+    @NotBlank
     private int distance;
 
     public LineRequest() {
@@ -38,4 +49,7 @@ public class LineRequest {
         return distance;
     }
 
+    public Line toEntity() {
+        return new Line(name, color);
+    }
 }
