@@ -25,7 +25,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public void delete(Long id) {
+    public void deleteStation(Long id) {
         if (!isExistingStation(id)) {
             throw new StationNotFoundException();
         }

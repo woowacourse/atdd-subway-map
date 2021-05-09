@@ -19,11 +19,10 @@ class LineServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineRequest lineRequest;
+    private LineRequest lineRequest = new LineRequest("2호선", "초록색", null, null, 0);
 
     @BeforeEach
     void setUp() {
-        lineRequest = new LineRequest("2호선", "초록색", null, null, 0);
         jdbcTemplate.execute("truncate table LINE");
     }
 
@@ -49,6 +48,23 @@ class LineServiceTest {
         jdbcTemplate.update(sql, "2호선", "초록색");
 
         assertThatThrownBy(() -> lineService.findById(2L))
+                .isInstanceOf(LineNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("노선 삭제 테스트")
+    public void deleteLine() {
+        Line savedLine = lineService.createLine(lineRequest);
+        assertThat(lineService.findAll().size()).isEqualTo(1);
+
+        lineService.deleteLine(savedLine.getId());
+        assertThat(lineService.findAll().size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 역 삭제 테스트")
+    public void deleteNotExistingStation() {
+        assertThatThrownBy(() -> lineService.deleteLine(1L))
                 .isInstanceOf(LineNotFoundException.class);
     }
 }

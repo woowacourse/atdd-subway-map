@@ -29,8 +29,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.execute("truncate table LINE");
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
+    @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
         ExtractableResponse<Response> response = createLineInsertResponse("초록색", "2호선");
@@ -40,8 +40,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("유효성 검사에 걸리는 이름과 색상의 지하철 노선을 생선한다.")
     @Test
+    @DisplayName("유효성 검사에 걸리는 이름과 색상의 지하철 노선을 생선한다.")
     void createInValidLine() {
         ExtractableResponse<Response> response = createLineInsertResponse(" ", " ");
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
@@ -51,20 +51,22 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(errorResponse.getMessage()).isEqualTo("VALIDATION_FAILED");
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철노선을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철노선을 생성한다.")
     void createLineWithDuplicateName() {
         // given & when
         createLineInsertResponse("초록색", "2호선");
         ExtractableResponse<Response> response = createLineInsertResponse("초록색", "2호선");
+        ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("존재하는 노선 이름입니다.");
+        assertThat(errorResponse.getDetail()).contains("존재하는 노선 이름입니다.");
+        assertThat(errorResponse.getMessage()).contains("LINE_EXCEPTION");
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
+    @DisplayName("지하철 노선을 조회한다.")
     void getLines() {
         /// given
         ExtractableResponse<Response> createResponse1 = createLineInsertResponse("초록색", "2호선");
@@ -92,8 +94,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선 1개를 조회한다.")
     @Test
+    @DisplayName("지하철 노선 1개를 조회한다.")
     void getLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
@@ -110,8 +112,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("존재하지 않는 지하철 노선 1개를 조회한다.")
     @Test
+    @DisplayName("존재하지 않는 지하철 노선 1개를 조회한다.")
     void findNotExistingLineByName() {
         ExtractableResponse<Response> response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -119,12 +121,15 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines/1")
                 .then()
                 .extract();
+        ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
 
-        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("노선을 찾을 수 없습니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo("LINE_EXCEPTION");
+        assertThat(errorResponse.getDetail()).isEqualTo("노선을 찾지 못했습니다.");
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
+    @DisplayName("지하철 노선을 수정한다.")
     void modifyLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
@@ -140,8 +145,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("유효하지 않은 값으로 지하철 노선을 수정한다.")
     @Test
+    @DisplayName("유효하지 않은 값으로 지하철 노선을 수정한다.")
     public void modifyWithInValidLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
@@ -161,8 +166,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(errorResponse.getMessage()).isEqualTo("VALIDATION_FAILED");
     }
 
-    @DisplayName("지하철 노선을 삭제한다")
     @Test
+    @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("2호선", "초록색");
 
@@ -175,6 +180,23 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 지하철 노선을 삭제한다.")
+    public void deleteNotExistingLine() {
+        //given & when
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1")
+                .then()
+                .extract();
+        ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo("LINE_EXCEPTION");
+        assertThat(errorResponse.getDetail()).isEqualTo("노선을 찾지 못했습니다.");
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {

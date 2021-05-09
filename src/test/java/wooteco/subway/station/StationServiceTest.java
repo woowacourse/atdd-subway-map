@@ -50,14 +50,14 @@ class StationServiceTest {
         Station savedStation = stationService.createStation(stationRequest);
         assertThat(stationService.findAll().size()).isEqualTo(1);
 
-        stationService.delete(savedStation.getId());
+        stationService.deleteStation(savedStation.getId());
         assertThat(stationService.findAll().size()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("존재하지 않은 역 삭제 테스트")
     public void deleteNotExistingStation() {
-        assertThatThrownBy(() -> stationService.delete(1L))
+        assertThatThrownBy(() -> stationService.deleteStation(1L))
                 .isInstanceOf(StationNotFoundException.class);
     }
 }

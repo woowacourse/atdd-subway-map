@@ -30,16 +30,22 @@ public class LineService {
                 .orElseThrow(LineNotFoundException::new);
     }
 
-    private boolean isExistingLine(String name) {
-        return lineDao.findByName(name)
-                .isPresent();
-    }
-
     public void modifyLine(Long id, LineRequest lineRequest) {
         lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
+        if (!isExistingLine(id)) {
+            throw new LineNotFoundException();
+        }
         lineDao.delete(id);
+    }
+
+    private boolean isExistingLine(String name) {
+        return lineDao.findByName(name).isPresent();
+    }
+
+    private boolean isExistingLine(Long id) {
+        return lineDao.findById(id).isPresent();
     }
 }

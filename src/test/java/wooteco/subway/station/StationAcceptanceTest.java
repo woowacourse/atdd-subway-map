@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.common.ErrorResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,9 +46,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // given & when
         createStationInsertResponse("강남역");
         ExtractableResponse<Response> response = createStationInsertResponse("강남역");
+        ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo("STATION_EXCEPTION");
+        assertThat(errorResponse.getDetail()).isEqualTo("존재하는 역 이름입니다.");
     }
 
     @DisplayName("지하철역을 조회한다.")
