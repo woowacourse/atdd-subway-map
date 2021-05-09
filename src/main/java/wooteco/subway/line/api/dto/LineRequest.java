@@ -1,6 +1,10 @@
 package wooteco.subway.line.api.dto;
 
+import org.springframework.lang.NonNull;
+
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class LineRequest {
@@ -10,9 +14,13 @@ public class LineRequest {
 
     @NotEmpty(message = "노선 색을 지정해야합니다.")
     private String color;
+    @NotNull(message = "상행역 정보를 입력해야합니다.")
     private Long upStationId;
+    @NotNull(message = "하행역 정보를 입력해야합니다.")
     private Long downStationId;
+    @Min(value = 1, message = "거리는 1 이상이어야 합니다.")
     private int distance;
+
 
     public LineRequest() {
     }

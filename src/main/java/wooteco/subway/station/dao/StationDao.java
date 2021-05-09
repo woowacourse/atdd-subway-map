@@ -72,7 +72,7 @@ public class StationDao {
         String sql = "SELECT id, name FROM station WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, mapperStation, id);
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 역 ID 입니다.");
         }
     }

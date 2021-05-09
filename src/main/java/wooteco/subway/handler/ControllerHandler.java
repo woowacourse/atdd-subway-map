@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.WrongDistanceException;
 
 @ControllerAdvice
 public class ControllerHandler {
@@ -34,5 +35,8 @@ public class ControllerHandler {
         });
         return ResponseEntity.badRequest().body(errors);
     }
-
+    @ExceptionHandler(WrongDistanceException.class)
+    public ResponseEntity<String> notFoundElement(WrongDistanceException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.List;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.api.dto.LineUpdateRequest;
 import wooteco.subway.line.service.LineService;
 
 @RestController
@@ -41,8 +42,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
-        lineService.update(id, lineRequest);
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody @Valid LineUpdateRequest lineUpdateRequest) {
+        lineService.update(id, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
