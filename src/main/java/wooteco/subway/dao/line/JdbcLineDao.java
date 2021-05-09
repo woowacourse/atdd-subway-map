@@ -54,10 +54,17 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public boolean isExistName(String name) {
+    public boolean doesNotExistName(String name) {
         String sql = "SELECT count(*) FROM line WHERE name = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return count == 1;
+        return count == 0;
+    }
+
+    @Override
+    public boolean doesNotExistId(Long id) {
+        String sql = "SELECT count(*) FROM line WHERE id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count == 0;
     }
 
     @Override

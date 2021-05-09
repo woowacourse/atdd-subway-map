@@ -18,6 +18,10 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
+        if (!lineDao.doesNotExistName(lineRequest.getName())) {
+            throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름입니다.");
+        }
+
         Line newLine = lineDao.save(lineRequest.toDomain());
         return LineResponse.of(newLine);
     }
@@ -37,6 +41,10 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
+        if (lineDao.doesNotExistId(id)) {
+            throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
+        }
+
         Line updateLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineDao.update(updateLine);
     }

@@ -40,8 +40,8 @@ public class CollectionStationDao implements StationDao {
     }
 
     @Override
-    public boolean isExistName(String name) {
-        return stations
+    public boolean doesNotExistName(String name) {
+        return !stations
             .stream()
             .anyMatch(station -> station.getName().equals(name));
     }

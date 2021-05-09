@@ -12,7 +12,9 @@ public interface LineDao {
 
     Optional<Line> findById(Long id);
 
-    boolean isExistName(String name);
+    boolean doesNotExistName(String name);
+
+    boolean doesNotExistId(Long id);
 
     void update(Line updatedLine);
 
