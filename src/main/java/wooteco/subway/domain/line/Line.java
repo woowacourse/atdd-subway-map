@@ -1,8 +1,7 @@
 package wooteco.subway.domain.line;
 
-import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 
-import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -10,7 +9,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Section> sections;
+    private Sections sections;
 
     public Line(Long id, String name, String color) {
         this.id = id;
@@ -20,6 +19,13 @@ public class Line {
 
     public Line(String name, String color) {
         this(null, name, color);
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public boolean hasSameName(String name) {
@@ -36,6 +42,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public void setSections(Sections sections) {
+        this.sections = sections;
     }
 
     @Override
