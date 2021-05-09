@@ -1,6 +1,6 @@
-package wooteco.subway.line.dto;
+package wooteco.subway.line.controller.dto;
 
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.controller.dto.StationResponse;
 
 import java.util.List;
 

@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.controller.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
