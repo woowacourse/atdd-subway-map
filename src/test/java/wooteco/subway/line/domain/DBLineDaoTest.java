@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.line.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.line.dao.DBLineDao;
-import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.domain.DBLineDao;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.LineDao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -118,7 +118,7 @@ class DBLineDaoTest {
     void update() {
         String updatedName = "흑기선";
         String updatedColor = "bg-red-700";
-        lineDao.update(new Line(id, updatedName, updatedColor));
+        lineDao.update(id, updatedName, updatedColor);
 
         Line line = lineDao.findById(id).get();
 

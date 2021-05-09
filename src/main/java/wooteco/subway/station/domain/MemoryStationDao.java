@@ -1,7 +1,6 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.domain;
 
 import org.springframework.util.ReflectionUtils;
-import wooteco.subway.station.domain.Station;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 public class MemoryStationDao implements StationDao {
     private static Long seq = 0L;
-    private static final List<Station> stations = new ArrayList<>();
+    private static List<Station> stations = new ArrayList<>();
 
     @Override
     public Station save(final Station station) {

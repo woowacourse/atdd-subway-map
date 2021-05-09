@@ -1,4 +1,4 @@
-package wooteco.subway.name;
+package wooteco.subway.name.domain;
 
 public interface Name {
     String name();

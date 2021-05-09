@@ -1,6 +1,4 @@
-package wooteco.subway.line.dao;
-
-import wooteco.subway.line.domain.Line;
+package wooteco.subway.line.domain;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +14,7 @@ public interface LineDao {
 
     void clear();
 
-    void update(Line line);
+    void update(Long id, String name, String color);
 
     void delete(Long id);
 }

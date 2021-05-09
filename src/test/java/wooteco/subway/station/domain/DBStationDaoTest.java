@@ -1,4 +1,4 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.station.dao.DBStationDao;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.DBStationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationDao;
 
 import java.util.List;
 
