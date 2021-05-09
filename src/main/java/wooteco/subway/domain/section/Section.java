@@ -13,6 +13,10 @@ public class Section {
     private int distance;
     private Long lineId;
 
+    public Section(Long id, int distance, Long lineId) {
+        this(id, null, null, distance, lineId);
+    }
+
     public Section(Station upStation, Station downStation, int distance, Long lineId) {
         this(null, upStation, downStation, distance, lineId);
     }
@@ -62,7 +66,7 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && upStation.equals(section.upStation) && downStation.equals(section.downStation) && lineId.equals(section.lineId);
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(lineId, section.lineId);
     }
 
     @Override

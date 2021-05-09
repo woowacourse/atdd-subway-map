@@ -48,7 +48,7 @@ class SectionDaoTest {
         long lastSectionId = sectionDao.save(lastSection);
         List<Section> sections = sectionDao.findAllByLineId(1L);
 
-        assertThat(sections).containsExactly(new Section(firstSectionId, upStation, downStation, 10, 1L),
-                new Section(lastSectionId, downStation, lastStation, 5, 1L));
+        assertThat(sections).containsExactly(new Section(firstSectionId, 10, 1L),
+                new Section(lastSectionId, 5, 1L));
     }
 }
