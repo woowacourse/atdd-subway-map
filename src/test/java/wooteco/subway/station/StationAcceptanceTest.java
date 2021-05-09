@@ -26,13 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("구로디지털단지역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = createStation(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,23 +38,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest givenStationRequest = new StationRequest("잠실역");
-        RestAssured.given().log().all()
-            .body(givenStationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        StationAcceptanceTest.this.createStation(givenStationRequest);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(givenStationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .extract();
+        ExtractableResponse<Response> response = StationAcceptanceTest.this
+            .createStation(givenStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -71,22 +53,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         StationRequest stationRequest1 = new StationRequest("상봉역");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-            .body(stationRequest1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse1 = StationAcceptanceTest.this
+            .createStation(stationRequest1);
 
         StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-            .body(stationRequest2)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse2 = StationAcceptanceTest.this
+            .createStation(stationRequest2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -111,13 +83,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest stationRequest = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> createResponse = StationAcceptanceTest.this
+            .createStation(stationRequest);
 
         // when
         long responseId = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -146,4 +113,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    private ExtractableResponse<Response> createStation(StationRequest stationRequest) {
+        return RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+    }
 }
+
+
