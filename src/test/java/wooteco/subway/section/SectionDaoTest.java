@@ -30,16 +30,11 @@ class SectionDaoTest {
     @DisplayName("새로운 구간을 생성한다")
     @Test
     void save() {
-        String station1 = "강남역";
-        String station2 = "잠실역";
-        String station3 = "신림역";
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
-        long stationId3 = stationDao.save(station3);
+        long stationId1 = stationDao.save("강남역");
+        long stationId2 = stationDao.save("잠실역");
+        long stationId3 = stationDao.save("신림역");
 
-        String name = "2호선";
-        String color = "green";
-        Line line = new Line(name, color);
+        Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
 
         Section section = new Section(lineId, stationId1, stationId2);

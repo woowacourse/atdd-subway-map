@@ -33,23 +33,17 @@ class LineDaoTest {
     @DisplayName("노선 이름, 색을 입력하면 노선을 저장하고 id를 반환한다")
     @Test
     void save() {
-        String name = "2호선";
-        String color = "red";
-        Line line = new Line(name, color);
+        Line line = addLine("2호선", "green");
         assertThat(lineDao.save(line)).isInstanceOf(Long.class);
     }
 
     @DisplayName("모든 노선을 조회한다")
     @Test
     void findAll() {
-        String name = "2호선";
-        String color = "green";
-        Line line = new Line(name, color);
+        Line line = addLine("2호선", "green");
         lineDao.save(line);
 
-        String name2 = "3호선";
-        String color2 = "orange";
-        Line line2 = new Line(name2, color2);
+        Line line2 = addLine("3호선", "orange");
         lineDao.save(line2);
 
         assertThat(lineDao.findAll().size()).isEqualTo(2);
@@ -58,16 +52,11 @@ class LineDaoTest {
     @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")
     @Test
     void findStationsIdByLineId() {
-        String station1 = "강남역";
-        String station2 = "잠실역";
-        String station3 = "신림역";
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
-        long stationId3 = stationDao.save(station3);
+        long stationId1 = stationDao.save("강남역");
+        long stationId2 = stationDao.save("잠실역");
+        long stationId3 = stationDao.save("신림역");
 
-        String name = "2호선";
-        String color = "green";
-        Line line = new Line(name, color);
+        Line line = addLine("2호선", "green");
         long lineId = lineDao.save(line);
 
         Section section = new Section(lineId, stationId1, stationId2);
@@ -76,8 +65,8 @@ class LineDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-        assertTrue(
-            lineDao.findStationsIdByLineId(lineId).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
+        assertTrue(lineDao.findStationsIdByLineId(lineId)
+            .containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
     }
 
     @DisplayName("id로 노선을 조회한다")
@@ -97,14 +86,12 @@ class LineDaoTest {
     @DisplayName("노선의 이름과 색상을 수정한다")
     @Test
     void update() {
-        String name = "2호선";
-        String color = "green";
-        Line newLine = new Line(name, color);
+        Line newLine = addLine("2호선", "green");
         long lineId = lineDao.save(newLine);
 
         String newName = "3호선";
         String newColor = "orange";
-        Line updatedLine = new Line(newName, newColor);
+        Line updatedLine = addLine(newName, newColor);
         assertEquals(1, lineDao.update(lineId, updatedLine));
 
         Line line = lineDao.findById(lineId);
@@ -115,13 +102,7 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 노선을 수정한다")
     @Test
     void updateException() {
-        String name = "2호선";
-        String color = "green";
-        Line newLine = new Line(name, color);
-
-        String newName = "3호선";
-        String newColor = "orange";
-        Line updatedLine = new Line(newName, newColor);
+        Line updatedLine = addLine("3호선", "orange");
 
         assertEquals(0, lineDao.update(10, updatedLine));
     }
@@ -129,14 +110,10 @@ class LineDaoTest {
     @DisplayName("id로 노선을 삭제한다")
     @Test
     void delete() {
-        String name = "2호선";
-        String color = "green";
-        Line newLine = new Line(name, color);
+        Line newLine = addLine("2호선", "green");
         lineDao.save(newLine);
 
-        String name2 = "3호선";
-        String color2 = "orange";
-        Line newLine2 = new Line(name2, color2);
+        Line newLine2 = addLine("3호선", "orange");
         long lineId = lineDao.save(newLine2);
 
         assertEquals(1, lineDao.delete(lineId));
@@ -146,11 +123,13 @@ class LineDaoTest {
     @DisplayName("존재하지 않는 id로 노선을 삭제한다")
     @Test
     void deleteException() {
-        String name = "2호선";
-        String color = "green";
-        Line newLine = new Line(name, color);
+        Line newLine = addLine("2호선", "green");
         lineDao.save(newLine);
 
         assertEquals(0, lineDao.delete(10));
+    }
+
+    private Line addLine(String lineName, String color) {
+        return new Line(lineName, color);
     }
 }
