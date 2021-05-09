@@ -21,17 +21,6 @@ import wooteco.subway.station.controller.dto.StationResponse;
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
-    private ExtractableResponse<Response> postStation(final StationRequest stationRequest) {
-        return RestAssured
-                .given().log().all()
-                    .body(stationRequest)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post("/stations")
-                .then().log().all()
-                    .extract();
-    }
-
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -63,7 +52,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void showStations() {
         /// given
         final StationRequest stationRequest1 = new StationRequest("수원역");
         final ExtractableResponse<Response> createResponse1 = postStation(stationRequest1);
@@ -72,12 +61,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> createResponse2 = postStation(stationRequest2);
 
         // when
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                    .get("/stations")
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> response = getStations();
 
         // then
         final List<Long> resultStationIds = resultStationsIds(response);
@@ -100,7 +84,6 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
     }
 
-
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
@@ -110,14 +93,40 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         final String uri = createResponse.header("Location");
-        final ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when()
-                    .delete(uri)
-                .then().log().all()
-                    .extract();
+        final ExtractableResponse<Response> response = deleteStation(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> postStation(final StationRequest stationRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getStations() {
+        final ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    private ExtractableResponse<Response> deleteStation(final String uri) {
+        final ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+        return response;
     }
 }
