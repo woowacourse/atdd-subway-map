@@ -57,28 +57,22 @@ public class LineDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsByNameOrColor(String name, String color) {
+        String sql = "SELECT COUNT(*) FROM line WHERE name = (?) OR color = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, name, color) > 0;
+    }
+
     public boolean hasLineWithId(Long id) {
         String sql = "SELECT COUNT(*) FROM line WHERE id = (?)";
 
         return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 
-    public boolean hasLineWithName(String name) {
-        String sql = "SELECT COUNT(*) FROM line WHERE name = (?)";
-
-        return jdbcTemplate.queryForObject(sql, Integer.class, name) > 0;
-    }
-
     public boolean hasLineWithNameAndWithoutId(Long id, String name) {
         String sql = "SELECT COUNT(*) FROM line WHERE name = (?) AND id <> (?)";
 
         return jdbcTemplate.queryForObject(sql, Integer.class, name, id) > 0;
-    }
-
-    public boolean hasLineWithColor(String color) {
-        String sql = "SELECT COUNT(*) FROM line WHERE color = (?)";
-
-        return jdbcTemplate.queryForObject(sql, Integer.class, color) > 0;
     }
 
     public boolean hasLineWithColorAndWithoutId(Long id, String color) {

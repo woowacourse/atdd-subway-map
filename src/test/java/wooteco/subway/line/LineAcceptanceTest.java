@@ -136,6 +136,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("존재 하지 않는 ID의 역을 상행 또는 하행 종점역으로 사용한다.")
+    @Test
+    void createLineWithInvalidStationId() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "분당선");
+        params.put("upStationId", "999");
+        params.put("downStationId", String.valueOf(stationIds.get(1)));
+        params.put("distance", "10");
+        ExtractableResponse<Response> response = postLine(params);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("노선을 조회한다.")
     @Test
     void getLines() {

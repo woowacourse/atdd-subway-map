@@ -48,11 +48,12 @@ public class LineService {
     }
 
     private void validateToCreateLine(LineRequest lineRequest) {
-        if (lineDao.hasLineWithName(lineRequest.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다.");
+        if (lineDao.existsByNameOrColor(lineRequest.getName(), lineRequest.getColor())) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
         }
-        if (lineDao.hasLineWithColor(lineRequest.getColor())) {
-            throw new IllegalArgumentException("이미 존재하는 노선 색깔입니다.");
+        if (!stationDao.hasStationWithId(lineRequest.getUpStationId()) ||
+            !stationDao.hasStationWithId(lineRequest.getDownStationId())) {
+            throw new IllegalArgumentException("존재하지 않는 역 ID 입니다.");
         }
     }
 
