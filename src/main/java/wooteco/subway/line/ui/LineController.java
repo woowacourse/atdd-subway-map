@@ -2,6 +2,7 @@ package wooteco.subway.line.ui;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,11 @@ public class LineController {
     @ExceptionHandler(DataAccessException.class)
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> exceptionHandle(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 }

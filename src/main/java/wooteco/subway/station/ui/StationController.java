@@ -2,6 +2,7 @@ package wooteco.subway.station.ui;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,11 @@ public class StationController {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> databaseExceptionHandle(Exception e) {
         return ResponseEntity.badRequest().body("데이터베이스 에러입니다.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> exceptionHandle(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 }
