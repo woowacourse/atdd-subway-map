@@ -22,7 +22,6 @@ class StationServiceTest {
         //given
         NonIdStationDto requestStationDto = new NonIdStationDto("스타벅스 선정릉역");
         Station savedStation = new Station((long) 2, "스타벅스 선정릉역");
-        Station station = new Station(requestStationDto.getName());
 
         StationDaoMemory mockDao = mock(StationDaoMemory.class);
         when(mockDao.save(any())).thenReturn(savedStation);
