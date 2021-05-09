@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import wooteco.subway.exception.IllegalInputException;
@@ -17,6 +18,7 @@ public class Line {
         validateColor(name);
         this.name = name;
         this.color = color;
+        this.stations = new ArrayList<>();
     }
 
     public Line(Long id, String name, String color) {

@@ -9,14 +9,14 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
-        this(name);
-        this.id = id;
-    }
-
     public Station(String name) {
         validateName(name);
         this.name = name;
+    }
+
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
     }
 
     private void validateName(String name) {

@@ -15,8 +15,8 @@ public class PageControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<String> sqlExceptionHandle() {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> runtimeExceptionHandle() {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
     }
 }
