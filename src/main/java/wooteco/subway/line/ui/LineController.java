@@ -74,8 +74,8 @@ public class LineController {
     @PutMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+
+    public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
         lineService.update(line);
 
@@ -83,8 +83,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         lineService.deleteById(id);
 
         return ResponseEntity.noContent().build();
