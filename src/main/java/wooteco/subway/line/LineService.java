@@ -37,6 +37,7 @@ public class LineService {
 
     @Transactional
     public void update(Long id, Line line) {
+        this.findById(id);
         final Optional<Line> lineByName = lineDao.findByName(line.getName());
         if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
             throw new LineNameDuplicatedException();

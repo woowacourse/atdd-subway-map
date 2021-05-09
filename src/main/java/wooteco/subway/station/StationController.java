@@ -20,9 +20,9 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> create(
-            @RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> create(@RequestBody StationRequest stationRequest) {
         Station createdStation = stationService.create(stationRequest.stationWithoutId());
+
         return ResponseEntity.created(URI.create("/stations/" + createdStation.getId()))
                 .body(StationResponse.of(createdStation));
     }
@@ -33,12 +33,14 @@ public class StationController {
         List<StationResponse> stationResponses = stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> remove(@PathVariable Long id) {
         stationService.remove(id);
+
         return ResponseEntity.noContent().build();
     }
 }
