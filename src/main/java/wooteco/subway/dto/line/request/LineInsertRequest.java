@@ -54,4 +54,8 @@ public class LineInsertRequest {
     public Line toLineEntity() {
         return new Line(color, name);
     }
+
+    public Section toSectionEntity(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
+    }
 }

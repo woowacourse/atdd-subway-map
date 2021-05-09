@@ -30,7 +30,6 @@ public class ExceptionAdvice {
                     errors.put(((FieldError) error).getField(), error.getDefaultMessage());
                     logger.error("%s : %s", ((FieldError) error).getField(), error.getDefaultMessage());
                 });
-
         return ResponseEntity.badRequest().body(errors);
     }
 }
