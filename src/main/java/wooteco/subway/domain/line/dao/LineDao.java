@@ -39,6 +39,7 @@ public class LineDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
+            // todo 저장실패 시 예외발생
             return Optional.empty();
         }
 

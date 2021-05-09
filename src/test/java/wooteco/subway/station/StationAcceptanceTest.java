@@ -103,7 +103,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private List<StationResponse> toStationDtos(ExtractableResponse<Response>... responses) {
         return Arrays.stream(responses)
-                .map(response -> response.jsonPath().getObject(".", StationResponse.class))
+                .map(response -> response.as(StationResponse.class))
                 .collect(Collectors.toList());
     }
 

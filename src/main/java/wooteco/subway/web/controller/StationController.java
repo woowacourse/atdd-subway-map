@@ -21,7 +21,6 @@ import wooteco.subway.web.dto.StationResponse;
 
 @RestController
 @RequestMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-@Validated
 public class StationController {
 
     private final StationService stationService;
@@ -32,7 +31,7 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> create(
-            @Valid @RequestBody StationRequest stationRequest) {
+            @RequestBody @Valid StationRequest stationRequest) {
         Station station = stationService.add(stationRequest.toEntity());
 
         return ResponseEntity

@@ -55,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse lineResponse = response.body().jsonPath().getObject(".", LineResponse.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
         assertLineResponse(lineResponse, DATA1);
     }
 
@@ -105,14 +105,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(listResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<LineResponse> expectedLines = toLineDtos(postResponse1, postResponse2);
-        List<LineResponse> results = listResponse.jsonPath().getList(".", LineResponse.class);
+        LineResponse[] results = listResponse.as(LineResponse[].class);
 
         assertThat(results).containsAll(expectedLines);
     }
 
     private List<LineResponse> toLineDtos(ExtractableResponse<Response>... responses) {
         return Arrays.stream(responses)
-                .map(response -> response.jsonPath().getObject(".", LineResponse.class))
+                .map(response -> response.as(LineResponse.class))
                 .collect(Collectors.toList());
     }
 
@@ -129,8 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        LineResponse lineResponse = getLine(uri).jsonPath()
-                .getObject(".", LineResponse.class);
+        LineResponse lineResponse = getLine(uri).as(LineResponse.class);
         assertLineResponse(lineResponse, DATA_FOR_UPDATE);
     }
 
@@ -186,8 +185,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        List<LineResponse> lineResponses = listLine().jsonPath()
-                .getList(".", LineResponse.class);
+        List<LineResponse> lineResponses = Arrays.asList(listLine().as(LineResponse[].class));
+
         assertThat(lineResponses.size()).isEqualTo(1);
         assertLineResponse(lineResponses.get(0), DATA2);
     }
