@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
-public class PageControllerAdvice {
+public class SubwayControllerAdvice {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> dataExceptionHandle() {
         return ResponseEntity.badRequest().build();
