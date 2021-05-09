@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,7 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> 강남역 = stationRequestBody("강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
 
         // when
         ExtractableResponse<Response> response = createRequest(강남역);
@@ -43,7 +43,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> 강남역 = stationRequestBody("강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
         createRequest(강남역);
 
         // when
@@ -57,8 +57,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> 강남역 = stationRequestBody("강남역");
-        Map<String, String> 역삼역 = stationRequestBody("역삼역");
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 역삼역 = new StationRequest("역삼역");
         ExtractableResponse<Response> 강남역생성 = createRequest(강남역);
         ExtractableResponse<Response> 역삼역생성 = createRequest(역삼역);
 
@@ -88,7 +88,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> 강남역 = stationRequestBody("강남역");
+        StationRequest 강남역 = new StationRequest("강남역");
         ExtractableResponse<Response> 강남역생성 = createRequest(강남역);
 
         int originalSize = stationDao.findAll().size();

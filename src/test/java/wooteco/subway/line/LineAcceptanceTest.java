@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.dto.request.LineCreateRequest;
+import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineResponse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,10 +30,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = createRequest(분당선_Red);
+        ExtractableResponse<Response> response = createRequest(분당선_RED);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -43,11 +44,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWhenDuplicateLineName() {
         // given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        createRequest(분당선_Red);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        createRequest(분당선_RED);
 
         // when
-        ExtractableResponse<Response> response = createRequest(분당선_Red);
+        ExtractableResponse<Response> response = createRequest(분당선_RED);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -57,10 +58,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
-        ExtractableResponse<Response> 신분당선생성 = createRequest(신분당선_Yellow);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
+        ExtractableResponse<Response> 신분당선생성 = createRequest(신분당선_YELLOW);
 
         // when
         ExtractableResponse<Response> response = findAllRequest();
@@ -88,8 +89,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
 
         // when
         ExtractableResponse<Response> response = findByIdRequest("1");
@@ -105,12 +106,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
-        createRequest(분당선_Red);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineUpdateRequest 신분당선_YELLOW = new LineUpdateRequest("신분당선", "bg-yellow-600");
+        createRequest(분당선_RED);
 
         // when
-        ExtractableResponse<Response> expectedResponse = updateRequest(신분당선_Yellow, "1");
+        ExtractableResponse<Response> expectedResponse = updateRequest("1", 신분당선_YELLOW);
         ExtractableResponse<Response> updatedResponse = findByIdRequest("1");
 
         // then
@@ -125,13 +126,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        Map<String, String> 신분당선_Yellow = LineRequestBody("신분당선", "bg-yellow-600");
-        createRequest(분당선_Red);
-        createRequest(신분당선_Yellow);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
+        createRequest(분당선_RED);
+        createRequest(신분당선_YELLOW);
 
         // when
-        ExtractableResponse<Response> response = updateRequest(신분당선_Yellow, "1");
+        ExtractableResponse<Response> response = updateRequest("1", new LineUpdateRequest("신분당선", "bg-yellow-600"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -141,8 +142,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> 분당선_Red = LineRequestBody("분당선", "bg-red-600");
-        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_Red);
+        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        ExtractableResponse<Response> 분당선생성 = createRequest(분당선_RED);
         int originalSize = lineDao.findAll().size();
 
         // when

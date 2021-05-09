@@ -4,23 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
+import wooteco.subway.line.dto.request.LineCreateRequest;
+import wooteco.subway.line.dto.request.LineUpdateRequest;
 
 public class LineRequestForm {
 
     private LineRequestForm() {
     }
 
-    public static Map<String, String> LineRequestBody(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
-    }
-
-    public static ExtractableResponse<Response> createRequest(Map<String, String> body) {
+    public static ExtractableResponse<Response> createRequest(LineCreateRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +38,7 @@ public class LineRequestForm {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateRequest(Map<String, String> body, String id) {
+    public static ExtractableResponse<Response> updateRequest(String id, LineUpdateRequest body) {
         return RestAssured.given().log().all()
                 .body(body)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
