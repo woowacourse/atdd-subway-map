@@ -3,11 +3,15 @@ package wooteco.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void clear() {
+        jdbcTemplate.update("TRUNCATE TABLE station;");
+    }
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
