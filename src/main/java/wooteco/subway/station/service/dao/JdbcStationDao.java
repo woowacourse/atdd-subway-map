@@ -1,4 +1,4 @@
-package wooteco.subway.station.dao;
+package wooteco.subway.station.service.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

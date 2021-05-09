@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class LineService {
 
-    private LineDao lineDao;
+    private final LineDao lineDao;
 
     public LineService(LineDao lineDao) {
         this.lineDao = lineDao;

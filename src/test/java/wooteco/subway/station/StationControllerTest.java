@@ -1,6 +1,7 @@
 package wooteco.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
@@ -10,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.ControllerTest;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.service.dao.StationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("지하철역 관련 기능")
 public class StationControllerTest extends ControllerTest {
@@ -133,5 +135,30 @@ public class StationControllerTest extends ControllerTest {
             .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("역 생성 - 실패(중복된 이름)")
+    @Test
+    void test() throws Exception {
+        //given
+        StationRequest stationRequest = new StationRequest("강남역");
+
+        RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+        //when and then
+        RestAssured
+                .given().log().all()
+                .body(stationRequest)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(equalTo("이미 등록되어 있는 역 이름입니다."));
     }
 }
