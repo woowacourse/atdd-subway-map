@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
