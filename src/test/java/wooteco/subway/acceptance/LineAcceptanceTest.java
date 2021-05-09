@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.acceptance.request.LineAndStationRequest;
-import wooteco.subway.acceptance.request.LineRequest;
-import wooteco.subway.acceptance.request.StationRequest;
+import wooteco.subway.acceptance.template.LineAndStationRequest;
+import wooteco.subway.acceptance.template.LineRequest;
+import wooteco.subway.acceptance.template.StationRequest;
+import wooteco.subway.controller.dto.request.LineCreateRequestDto;
+import wooteco.subway.controller.dto.request.StationRequestDto;
 
 import java.util.Map;
 
@@ -25,26 +27,36 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given, when
-        Map<String, String> line = LineRequest.line1(1L, 2L);
-        ExtractableResponse<Response> response = LineRequest.createLineRequest(line);
-        JsonPath jsonPath = response.body().jsonPath();
-        Long id = response.jsonPath().getLong("id");
+        ExtractableResponse<Response> response = LineRequest.createLineRequestAndReturnResponse(new LineCreateRequestDto(
+                "1호선",
+                "yellow",
+                1L,
+                2L,
+                10
+        ));
 
         // then
+        Long lineId = response.jsonPath().getLong("id");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isEqualTo("/lines/" + id);
+        assertThat(response.header("Location")).isEqualTo("/lines/" + lineId);
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(jsonPath.getLong("id")).isEqualTo(id);
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 지하철역을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
+        LineCreateRequestDto dto = new LineCreateRequestDto(
+                "1호선",
+                "yellow",
+                1L,
+                2L,
+                10
+        );
+        LineRequest.createLineRequestAndReturnId(dto);
 
         // when
-        ExtractableResponse<Response> response = LineRequest.createLineRequest(LineRequest.line1(1L, 2L));
+        ExtractableResponse<Response> response = LineRequest.createLineRequestAndReturnResponse(dto);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,18 +66,27 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> stationRequest1 = StationRequest.createStationRequest(StationRequest.station1());
-        ExtractableResponse<Response> stationRequest2 = StationRequest.createStationRequest(StationRequest.station2());
-        ExtractableResponse<Response> stationRequest3 = StationRequest.createStationRequest(StationRequest.station3());
-        ExtractableResponse<Response> stationRequest4 = StationRequest.createStationRequest(StationRequest.station4());
-        long stationId1 = stationRequest1.jsonPath().getLong("id");
-        long stationId2 = stationRequest2.jsonPath().getLong("id");
-        long stationId3 = stationRequest3.jsonPath().getLong("id");
-        long stationId4 = stationRequest4.jsonPath().getLong("id");
-        Map<String, String> line1 = LineRequest.line1(stationId1, stationId2);
-        Map<String, String> line2 = LineRequest.line2(stationId3, stationId4);
-        ExtractableResponse<Response> lineRequest1 = LineRequest.createLineRequest(line1);
-        ExtractableResponse<Response> lineRequest2 = LineRequest.createLineRequest(line2);
+        Long stationId1 = StationRequest.createStationRequestAndReturnId(new StationRequestDto("강남역"));
+        Long stationId2 = StationRequest.createStationRequestAndReturnId(new StationRequestDto("길동역"));
+        Long stationId3 = StationRequest.createStationRequestAndReturnId(new StationRequestDto("주안역"));
+        Long stationId4 = StationRequest.createStationRequestAndReturnId(new StationRequestDto("홍대역"));
+
+        LineCreateRequestDto dto1 = new LineCreateRequestDto(
+                "yellow",
+                "1호선",
+                stationId1,
+                stationId2,
+                10
+        );
+        LineCreateRequestDto dto2 = new LineCreateRequestDto(
+                "2호선",
+                "red",
+                stationId3,
+                stationId4,
+                10
+        );
+        Long lineId1 = LineRequest.createLineRequestAndReturnId(dto1);
+        Long lineId2 = LineRequest.createLineRequestAndReturnId(dto2);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -78,28 +99,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(jsonPath.getString("[0].id")).isEqualTo(lineRequest1.jsonPath().getString("id"));
-        assertThat(jsonPath.getString("[0].name")).isEqualTo(line1.get("name"));
-        assertThat(jsonPath.getString("[0].color")).isEqualTo(line1.get("color"));
-        assertThat(jsonPath.getString("[1].id")).isEqualTo(lineRequest2.jsonPath().getString("id"));
-        assertThat(jsonPath.getString("[1].name")).isEqualTo(line2.get("name"));
-        assertThat(jsonPath.getString("[1].color")).isEqualTo(line2.get("color"));
+        assertThat(jsonPath.getLong("[0].id")).isEqualTo(lineId1);
+        assertThat(jsonPath.getString("[0].name")).isEqualTo(dto1.getName());
+        assertThat(jsonPath.getString("[0].color")).isEqualTo(dto1.getColor());
+        assertThat(jsonPath.getLong("[1].id")).isEqualTo(lineId2);
+        assertThat(jsonPath.getString("[1].name")).isEqualTo(dto2.getName());
+        assertThat(jsonPath.getString("[1].color")).isEqualTo(dto2.getColor());
     }
 
     @DisplayName("노선에 등록되어있는 역을 조회한다.")
     @Test
     void getLineWithSections() {
         // given
-        Map<String, String> station1 = StationRequest.station1();
-        Map<String, String> station2 = StationRequest.station2();
-        ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(StationRequest.station1());
-        ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(StationRequest.station2());
-        Long stationId1 = createStationResponse1.jsonPath().getLong("id");
-        Long stationId2 = createStationResponse2.jsonPath().getLong("id");
 
-        Map<String, String> line = LineRequest.line1(stationId1, stationId2);
-        ExtractableResponse<Response> createLineResponse = LineRequest.createLineRequest(line);
-        Long lineId = createLineResponse.jsonPath().getLong("id");
+        String stationName1 = "강남역";
+        Long stationId1 = StationRequest.createStationRequestAndReturnId(new StationRequestDto(stationName1));
+        String stationName2 = "길동역";
+        Long stationId2 = StationRequest.createStationRequestAndReturnId(new StationRequestDto(stationName2));
+
+        String lineName = "1호선";
+        String lineColor = "yellow";
+        Long lineId = LineRequest.createLineRequestAndReturnId(new LineCreateRequestDto(
+                lineName,
+                lineColor,
+                stationId1,
+                stationId2,
+                10
+        ));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -114,12 +140,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(jsonPath.getLong("id")).isEqualTo(lineId);
-        assertThat(jsonPath.getString("name")).isEqualTo(line.get("name"));
-        assertThat(jsonPath.getString("color")).isEqualTo(line.get("color"));
+        assertThat(jsonPath.getString("name")).isEqualTo(lineName);
+        assertThat(jsonPath.getString("color")).isEqualTo(lineColor);
         assertThat(jsonPath.getLong("stations[0].id")).isEqualTo(stationId1);
-        assertThat(jsonPath.getString("stations[0].name")).isEqualTo(station1.get("name"));
+        assertThat(jsonPath.getString("stations[0].name")).isEqualTo(stationName1);
         assertThat(jsonPath.getLong("stations[1].id")).isEqualTo(stationId2);
-        assertThat(jsonPath.getString("stations[1].name")).isEqualTo(station2.get("name"));
+        assertThat(jsonPath.getString("stations[1].name")).isEqualTo(stationName2);
     }
 
     @DisplayName("노선에 있는 지하철 역을 제거한다.")

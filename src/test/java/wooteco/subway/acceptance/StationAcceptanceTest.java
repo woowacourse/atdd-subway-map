@@ -8,9 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.acceptance.request.StationRequest;
-
-import java.util.Map;
+import wooteco.subway.acceptance.template.StationRequest;
+import wooteco.subway.controller.dto.request.StationRequestDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,16 +21,16 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given, when
-        Map<String, String> station = StationRequest.station1();
-        ExtractableResponse<Response> response = StationRequest.createStationRequest(station);
+        String stationName = "강남역";
+        ExtractableResponse<Response> response
+                = StationRequest.createStationRequestAndReturnResponse(new StationRequestDto(stationName));
         JsonPath jsonPath = response.jsonPath();
         Long id = jsonPath.getLong("id");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isEqualTo("/stations/" + id);
-        assertThat(jsonPath.getLong("id")).isEqualTo(id);
-        assertThat(jsonPath.getString("name")).isEqualTo(station.get("name"));
+        assertThat(jsonPath.getString("name")).isEqualTo(stationName);
     }
 
 
@@ -39,11 +38,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> station = StationRequest.station1();
-        StationRequest.createStationRequest(station);
+        StationRequestDto dto = new StationRequestDto("강남역");
+        StationRequest.createStationRequestAndReturnId(dto);
 
         // when
-        ExtractableResponse<Response> response = StationRequest.createStationRequest(station);
+        ExtractableResponse<Response> response = StationRequest.createStationRequestAndReturnResponse(dto);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -53,12 +52,8 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> station1 = StationRequest.station1();
-        Map<String, String> station2 = StationRequest.station2();
-        ExtractableResponse<Response> createStationResponse1 = StationRequest.createStationRequest(station1);
-        ExtractableResponse<Response> createStationResponse2 = StationRequest.createStationRequest(station2);
-        JsonPath jsonPath1 = createStationResponse1.jsonPath();
-        JsonPath jsonPath2 = createStationResponse2.jsonPath();
+        StationRequest.createStationRequestAndReturnId(new StationRequestDto("강남역"));
+        StationRequest.createStationRequestAndReturnId(new StationRequestDto("길동역"));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -70,8 +65,6 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actualJsonPath.getMap("[0]")).isEqualTo(jsonPath1.getMap(""));
-        assertThat(actualJsonPath.getMap("[1]")).isEqualTo(jsonPath2.getMap(""));
         assertThat(actualJsonPath.getList("")).hasSize(2);
     }
 
@@ -79,9 +72,8 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> station = StationRequest.station1();
         ExtractableResponse<Response> createResponse
-                = StationRequest.createStationRequest(station);
+                = StationRequest.createStationRequestAndReturnResponse(new StationRequestDto("강남역"));
         String uri = createResponse.header("Location");
 
         // when

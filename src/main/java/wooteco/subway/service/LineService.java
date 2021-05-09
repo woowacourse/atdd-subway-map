@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.SectionDto;
 import wooteco.subway.controller.dto.StationDto;
 import wooteco.subway.controller.dto.request.LineEditRequestDto;
-import wooteco.subway.controller.dto.request.LineRequestDto;
+import wooteco.subway.controller.dto.request.LineCreateRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.controller.dto.response.LineFindResponseDto;
@@ -33,7 +33,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineCreateResponseDto createLine(LineRequestDto lineRequest) {
+    public LineCreateResponseDto createLine(LineCreateRequestDto lineRequest) {
         lineRepository.findLineByName(lineRequest.getName()).ifPresent(line -> {
             throw new SubwayException("이미 존재하는 노선 이름입니다.");
         });

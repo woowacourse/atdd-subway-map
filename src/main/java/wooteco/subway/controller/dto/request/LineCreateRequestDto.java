@@ -1,16 +1,16 @@
 package wooteco.subway.controller.dto.request;
 
-public class LineRequestDto {
+public class LineCreateRequestDto {
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public LineRequestDto() {
+    public LineCreateRequestDto() {
     }
 
-    public LineRequestDto(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineCreateRequestDto(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
