@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class JDBCStationDaoTest {
 
-    private JDBCStationDao jdbcStationDao;
+    private final JDBCStationDao jdbcStationDao;
 
     public JDBCStationDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcStationDao = new JDBCStationDao(jdbcTemplate);
