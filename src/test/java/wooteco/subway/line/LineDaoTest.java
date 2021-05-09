@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import java.util.Arrays;
@@ -28,12 +29,12 @@ class LineDaoTest {
     @Autowired
     private SectionDao sectionDao;
 
-    @DisplayName("노선 이름, 색을 입력하면 노선을 저장하고 id를 반환한다")
+    @DisplayName("노선 이름, 색을 입력하면 노선을 저장하고 Line 객체를 반환한다")
     @Test
     void save() {
         String name = "2호선";
         String color = "red";
-        assertThat(lineDao.save(name, color)).isInstanceOf(Long.class);
+        assertThat(lineDao.save(name, color)).isInstanceOf(Line.class);
     }
 
     @DisplayName("모든 노선을 조회한다")
@@ -53,20 +54,25 @@ class LineDaoTest {
     @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")
     @Test
     void findStationsIdByLineId() {
-        String station1 = "강남역";
-        String station2 = "잠실역";
-        String station3 = "신림역";
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
-        long stationId3 = stationDao.save(station3);
+        String stationName1 = "강남역";
+        String stationName2 = "잠실역";
+        String stationName3 = "신림역";
+
+        Station station1 = stationDao.save(stationName1);
+        Station station2 = stationDao.save(stationName2);
+        Station station3 = stationDao.save(stationName3);
+
+        final Long stationId1 = station1.getId();
+        final Long stationId2 = station2.getId();
+        final Long stationId3 = station3.getId();
 
         String name = "2호선";
         String color = "green";
-        long lineId = lineDao.save(name, color);
-        sectionDao.save(lineId, stationId1, stationId2);
-        sectionDao.save(lineId, stationId2, stationId3);
+        Line savedLine = lineDao.save(name, color);
+        sectionDao.save(savedLine.getId(), stationId1, stationId2);
+        sectionDao.save(savedLine.getId(), stationId2, stationId3);
 
-        assertTrue(lineDao.findStationsIdByLineId(lineId).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
+        assertTrue(lineDao.findStationsIdByLineId(savedLine.getId()).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
     }
 
     @DisplayName("id로 노선을 조회한다")
@@ -74,9 +80,9 @@ class LineDaoTest {
     void findById() {
         String name = "2호선";
         String color = "green";
-        long lineId = lineDao.save(name, color);
+        Line savedLine = lineDao.save(name, color);
 
-        final Line line = lineDao.findById(lineId);
+        final Line line = lineDao.findById(savedLine.getId());
 
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
@@ -87,13 +93,13 @@ class LineDaoTest {
     void update() {
         String name = "2호선";
         String color = "green";
-        long lineId = lineDao.save(name, color);
+        Line savedLine = lineDao.save(name, color);
 
         String newName = "3호선";
         String newColor = "orange";
-        lineDao.update(lineId, newName, newColor);
+        lineDao.update(savedLine.getId(), newName, newColor);
 
-        final Line line = lineDao.findById(lineId);
+        final Line line = lineDao.findById(savedLine.getId());
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
     }
@@ -107,9 +113,9 @@ class LineDaoTest {
 
         String name2 = "3호선";
         String color2 = "orange";
-        long lineId = lineDao.save(name2, color2);
+        Line savedLine = lineDao.save(name2, color2);
 
-        lineDao.delete(lineId);
+        lineDao.delete(savedLine.getId());
         assertThat(lineDao.findAll().size()).isEqualTo(1);
     }
 }

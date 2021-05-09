@@ -19,11 +19,11 @@ class StationDaoTest {
     @Autowired
     private StationDao stationDao;
 
-    @DisplayName("역 이름이 주어지면 저장하고 역 ID를 반환한다")
+    @DisplayName("역 이름이 주어지면 저장하고 역 객체를 반환한다")
     @Test
     void save() {
         String stationName = "잠실역";
-        assertThat(stationDao.save(stationName)).isInstanceOf(Long.class);
+        assertThat(stationDao.save(stationName)).isInstanceOf(Station.class);
     }
 
     @DisplayName("역 이름이 중복되면, 저장되지 않는다")
@@ -52,15 +52,15 @@ class StationDaoTest {
     @DisplayName("존재하는 역을 id로 삭제한다")
     @Test
     void delete() {
-        String station1 = "강남역";
-        String station2 = "잠실역";
-        String station3 = "신림역";
+        String stationName1 = "강남역";
+        String stationName2 = "잠실역";
+        String stationName3 = "신림역";
 
-        long stationId1 = stationDao.save(station1);
-        long stationId2 = stationDao.save(station2);
-        long stationId3 = stationDao.save(station3);
+        Station station1 = stationDao.save(stationName1);
+        Station station2 = stationDao.save(stationName2);
+        Station station3 = stationDao.save(stationName3);
 
-        stationDao.delete(stationId3);
+        stationDao.delete(station3.getId());
 
         assertThat(stationDao.findAll().size()).isEqualTo(2);
     }
@@ -68,12 +68,10 @@ class StationDaoTest {
     @DisplayName("id로 역을 조회한다")
     @Test
     void findById() {
-        String station = "강남역";
+        String stationName = "강남역";
+        Station station = stationDao.save(stationName);
 
-        long stationId = stationDao.save(station);
-
-        Station foundStation = stationDao.findById(stationId);
-
-        assertThat(foundStation.getName()).isEqualTo(station);
+        Station foundStation = stationDao.findById(station.getId());
+        assertThat(foundStation.getName()).isEqualTo(stationName);
     }
 }

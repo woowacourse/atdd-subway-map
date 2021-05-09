@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class StationDao {
@@ -22,7 +23,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(String stationName) {
+    public Station save(String stationName) {
         String sql = "INSERT INTO STATION (name) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -32,7 +33,8 @@ public class StationDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        final long stationId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Station(stationId, stationName);
     }
 
     public List<Station> findAll() {

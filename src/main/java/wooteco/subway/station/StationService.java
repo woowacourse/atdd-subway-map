@@ -15,14 +15,14 @@ public class StationService {
     }
 
     public StationResponse createStation(String stationName) {
-        long stationId = stationDao.save(stationName);
-        return new StationResponse(stationId, stationName);
+        Station station = stationDao.save(stationName);
+        return StationResponse.from(station);
     }
 
     public List<StationResponse> showStations() {
         final List<Station> stations = stationDao.findAll();
         return stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 

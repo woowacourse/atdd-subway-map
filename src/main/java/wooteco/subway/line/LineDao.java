@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class LineDao {
@@ -16,15 +17,14 @@ public class LineDao {
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),
             resultSet.getString("name"),
-            resultSet.getString("color"),
-            new ArrayList<>()
+            resultSet.getString("color")
     );
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(String lineName, String lineColor) {
+    public Line save(String lineName, String lineColor) {
         String sql = "INSERT INTO LINE (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -35,7 +35,8 @@ public class LineDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        final long lineId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Line(lineId, lineName, lineColor);
     }
 
     public List<Line> findAll() {
