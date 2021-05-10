@@ -29,10 +29,14 @@ public class LineRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     public boolean isExistName(final Line line) {
         String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
+    }
+
+    public boolean isExistId(final Long lineId) {
+        String query = "SELECT EXISTS(SELECT * FROM Line WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, lineId);
     }
 
     public Line save(final Line line) {

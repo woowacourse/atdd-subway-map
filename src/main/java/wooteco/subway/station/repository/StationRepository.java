@@ -32,6 +32,12 @@ public class StationRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
     }
 
+    public boolean isExistId(final Long id) {
+        String query = "SELECT EXISTS(SELECT * FROM STATION WHERE id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+
+
     public Station save(final Station station) {
         try {
             String query = "INSERT INTO STATION(name) VALUES (?)";

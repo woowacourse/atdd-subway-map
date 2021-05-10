@@ -83,4 +83,11 @@ public class StationRepositoryTest {
         assertThatThrownBy(() -> stationRepository.deleteById(100L))
                 .isInstanceOf(NotFoundException.class).hasMessageContaining("존재하지 않는 id 입니다.");
     }
+
+    @DisplayName("존재하지 id의 Station을 가져오려고하면, true가 리턴된다")
+    @Test
+    void isExistId() {
+        assertThat(stationRepository.isExistId(1L)).isTrue();
+        assertThat(stationRepository.isExistId(100L)).isFalse();
+    }
 }

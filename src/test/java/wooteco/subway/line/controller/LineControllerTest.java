@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.SectionRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ class LineControllerTest extends AcceptanceTest {
 
     @DisplayName("필드값이 없는 Requst를 보내면, 400 상태 코드를 받는다.")
     @Test
-    void emptyFieldFail(){
+    void emptyFieldFail() {
         Map<String, Object> wrongParams = new HashMap<>();
         wrongParams.put("color", "bg-red-600");
         wrongParams.put("name", "잘못된 분당선");
@@ -75,7 +76,7 @@ class LineControllerTest extends AcceptanceTest {
 
     @DisplayName("상행선과 하행선이 동일하게 노선을 생성하면, 400 상태 코드를 받는다.")
     @Test
-    void duplicateStationFail(){
+    void duplicateStationFail() {
         Map<String, Object> wrongParams = new HashMap<>();
         wrongParams.put("color", "bg-red-600");
         wrongParams.put("name", "잘못된 분당선");
@@ -92,6 +93,29 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("없는 station들을 가지고 노선을 생성하면, 404 상태코드를 받는다.")
+    @Test
+    void createLineNotExistStation() {
+
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "분당선");
+        wrongParams.put("upStationId", 100L);
+        wrongParams.put("downStationId", 200L);
+        wrongParams.put("distance", 77);
+
+        // then
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("중복된 이름을 가진 노선을 추가하는것을 시도하면, 409 conflict 상태코드를 받는다.")
@@ -235,5 +259,51 @@ class LineControllerTest extends AcceptanceTest {
                 .extract();
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+
+    @DisplayName("구간 추가시, 존재하는 LineId에 접근하면 200 상태 코드를 받는다.")
+    @Test
+    void validLineIdSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간 추가시, 존재하지 않는 LineId에 접근하면 404 상태 코드를 받는다.")
+    @Test
+    void invalidLineIdSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/100/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 같게 요청을 보내면 400 상태 코드를 받는다.")
+    @Test
+    void invalidStationsSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 1L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
