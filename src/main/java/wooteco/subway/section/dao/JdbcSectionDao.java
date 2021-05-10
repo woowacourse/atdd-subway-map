@@ -62,26 +62,13 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public Section saveAffectedSections(Section section, Optional<Section> affectedSection, Long lineId) {
-        String insert = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
         if (affectedSection.isPresent()) {
             Section updateSection = affectedSection.get();
             String update = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE line_id = ?";
             jdbcTemplate.update(update, updateSection.getUpStation().getId(), updateSection.getDownStation().getId(), updateSection.getDistance(), lineId);
         }
-
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(insert, new String[]{"id"});
-            ps.setLong(1, lineId);
-            ps.setLong(2, section.getUpStation().getId());
-            ps.setLong(3, section.getDownStation().getId());
-            ps.setInt(4, section.getDistance());
-            return ps;
-        }, keyHolder);
-
-        return Section.create(keyHolder.getKey().longValue(), section.getUpStation(), section.getDownStation(), section.getDistance());
-    }
+        return save(section, lineId);
+   }
 
     @Override
     public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
@@ -114,13 +101,14 @@ public class JdbcSectionDao implements SectionDao {
             String sql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
             jdbcTemplate.update(sql, lineId, upStationId, downStationId);
         }
-
     }
 
     @Override
     public void insertSection(Section affectedSection, Long lineId) {
         String sql = "INSERT INTO section (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, affectedSection.getUpStation().getId(), affectedSection.getDownStation().getId(), affectedSection.getDistance());
-
+        jdbcTemplate.update(sql, lineId,
+                affectedSection.getUpStation().getId(),
+                affectedSection.getDownStation().getId(),
+                affectedSection.getDistance());
     }
 }

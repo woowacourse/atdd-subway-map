@@ -18,7 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SectionService {
 
-    private final StationDao inMemoryStationDao;
+    private final StationDao stationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
@@ -32,7 +32,7 @@ public class SectionService {
 
     public void removeSection(Long lineId, Long stationId) {
         lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
-        inMemoryStationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
+        stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
         if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
             throw new NotEnoughSectionException();
         }

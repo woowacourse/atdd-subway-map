@@ -108,8 +108,7 @@ class SectionApiControllerTest {
 
         Line line = createLine(upStation, downStation);
 
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(),
-                4);
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(), 4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
@@ -186,8 +185,7 @@ class SectionApiControllerTest {
 
         //then
         result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("해당 역이 존재하지 않습니다."));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -219,8 +217,7 @@ class SectionApiControllerTest {
         final Station upStation = upStation();
         final Station downStation = downStation();
         final Line line = createLine(upStation, downStation);
-        final SectionRequest sectionRequest =
-                new SectionRequest(downStation.getId(), upStation.getId(), 3);
+        final SectionRequest sectionRequest = new SectionRequest(downStation.getId(), upStation.getId(), 3);
 
         //when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
@@ -240,11 +237,9 @@ class SectionApiControllerTest {
         final Station dummyStation = stationDao.save(Station.from("강남역"));
         final Line line = createLine(upStation, dummyStation);
 
-        final SectionRequest sectionRequest1 =
-                new SectionRequest(dummyStation.getId(), downStation.getId(), 3);
+        final SectionRequest sectionRequest1 = new SectionRequest(dummyStation.getId(), downStation.getId(), 3);
 
-        final SectionRequest sectionRequest2 =
-                new SectionRequest(upStation.getId(), downStation.getId(), 3);
+        final SectionRequest sectionRequest2 = new SectionRequest(upStation.getId(), downStation.getId(), 3);
 
         구간_추가(sectionRequest1, line.getId());
 
@@ -289,9 +284,7 @@ class SectionApiControllerTest {
     @Test
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
     public void deleteSection_fail_notExistLine() throws Exception {
-        //given
-
-        //when
+        //given & when
         final ResultActions result = mockMvc.perform(delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
         //then
 
@@ -312,7 +305,8 @@ class SectionApiControllerTest {
         );
 
         //then
-        result.andExpect(status().isBadRequest());
+        result.andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     @Test

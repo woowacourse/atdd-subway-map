@@ -1,6 +1,8 @@
 package wooteco.subway.exception.section;
 
-public class InvalidSectionException extends SectionException {
+import wooteco.subway.exception.SubwayException;
+
+public class InvalidSectionException extends SubwayException {
 
     private static final String MESSAGE = "잘못된 구간입니다.";
 

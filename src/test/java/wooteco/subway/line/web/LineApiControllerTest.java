@@ -133,10 +133,9 @@ class LineApiControllerTest {
         // when
         ResultActions result = 노선_생성(lineRequest);
 
-        // then선
+        // then
         result.andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("해당 역이 존재하지 않습니다."));
+                .andExpect(status().isNotFound());
     }
 
     @Test
