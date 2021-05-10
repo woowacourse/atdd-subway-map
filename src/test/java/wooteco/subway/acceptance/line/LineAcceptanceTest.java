@@ -512,4 +512,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("존재 하지않는 ID의 역으로 구간을 등록한다.")
+    @Test
+    void createSectionWithInvalidIdOfStation() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", "999");
+        params.put("distance", "5");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
