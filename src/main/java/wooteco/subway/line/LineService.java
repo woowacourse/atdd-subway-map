@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.SectionDao;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -57,8 +58,6 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    // TODO :: Optional 고민
-
     public Long upStationId(final Long id){
         return lineDao.findUpStationId(id);
     }
@@ -75,5 +74,19 @@ public class LineService {
 
     private void validateExisting(final Long id){
         findById(id);
+    }
+
+    public List<Long> allStationIdInLine(final Long lineId) {
+        final List<Long> stations = new LinkedList<>();
+
+        Long stationId = lineDao.findUpStationId(lineId);
+        do {
+            stations.add(stationId);
+            stationId = sectionDao.downStationIdOf(lineId, stationId);
+        } while (sectionDao.isExistingUpStation(lineId, stationId));
+
+        stations.add(stationId);
+
+        return stations;
     }
 }
