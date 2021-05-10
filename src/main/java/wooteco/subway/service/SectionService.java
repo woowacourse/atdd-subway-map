@@ -30,7 +30,8 @@ public class SectionService {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         Section section = new Section(upStation, downStation, distance, lineId);
-        Sections sections = sectionRepository.findSectionsByLineId(lineId);
+        List<Section> sectionList = sectionRepository.findAllByLineId(lineId);
+        Sections sections = new Sections(sectionList);
         if (sections.isEndStationExtension(section)) {
             sectionRepository.save(section);
             return;
@@ -41,8 +42,10 @@ public class SectionService {
     }
 
     public void delete(long lineId, long stationId) {
-        Sections sections = sectionRepository.findSectionsByLineId(lineId);
-        List<Section> sectionList = sectionRepository.findByStationId(stationId);
+        List<Section> sectionListT = sectionRepository.findAllByLineId(lineId);
+        Sections sections = new Sections(sectionListT);
+
+        List<Section> sectionList = sectionRepository.findAllByStationId(stationId);
         Sections appendableSections = new Sections(sectionList);
         if (sections.isEndStationReduction(appendableSections)) {
             sectionRepository.delete(sectionList.get(0));

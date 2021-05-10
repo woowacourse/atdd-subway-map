@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.section.Section;
-import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
@@ -26,10 +25,10 @@ public class SectionRepository {
         return sectionDao.save(section);
     }
 
-    public Sections findSectionsByLineId(long lineId) {
+    public List<Section> findAllByLineId(long lineId) {
         List<Section> sections = sectionDao.findAllByLineId(lineId);
         sections.forEach(this::addStations);
-        return new Sections(sections);
+        return sections;
     }
 
     private void addStations(Section section) {
@@ -48,17 +47,18 @@ public class SectionRepository {
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
     }
 
+    public List<Section> findAllByStationId(long stationId) {
+        List<Section> sections = sectionDao.finAllByStationId(stationId);
+        sections.forEach(this::addStations);
+        return sections;
+    }
+
     public void update(Section section) {
         sectionDao.update(section);
     }
 
     public void delete(Section section) {
-        sectionDao.deleteById(section.getId());
-    }
-
-    public List<Section> findByStationId(long stationId) {
-        List<Section> sections = sectionDao.finAllByStationId(stationId);
-        sections.forEach(this::addStations);
-        return sections;
+        long id = section.getId();
+        sectionDao.deleteById(id);
     }
 }
