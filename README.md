@@ -20,7 +20,7 @@
 ## 프레임워크 적용
 
 * [x] 스프링 JDBC 활용하여 H2 DB에 저장하기
-    * [x] Spring JDBK 의존성 추가 (build.gradle)
+    * [x] Spring JDBC 의존성 추가 (build.gradle)
     * [x] H2 데이터베이스 설정(build.gradle, application.properties)
     * [x] Dao 객체가 아닌 DB에서 데이터를 관리하기
     * [x] DB에 접근하기 위한 spring jdbc 라이브러리를 활용하기 (JdbcTemplate 등)
