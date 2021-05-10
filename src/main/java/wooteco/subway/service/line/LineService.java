@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.line.LineCreateRequestDto;
@@ -30,14 +31,27 @@ public class LineService {
 
     public LineCreateResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
         validateSection(lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId());
+        Line savedLine = getSavedLine(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
+        Section savedSection = getSavedSection(savedLine,
+            lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
+        return new LineCreateResponseDto(savedLine, savedSection);
+    }
+
+    private Line getSavedLine(String name, String color) {
         try {
-            Line newLine = new Line(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
-            Line savedLine = lineDao.save(newLine);
-            Section newSection = new Section(savedLine, lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
-            Section savedSection = sectionDao.save(newSection);
-            return new LineCreateResponseDto(savedLine, savedSection);
+            Line newLine = new Line(name, color);
+            return lineDao.save(newLine);
+        } catch (DuplicateKeyException e) {
+            throw new HttpException(BAD_REQUEST, "생성할 노선의 이름 또는 색깔이 이미 사용중입니다.");
+        }
+    }
+
+    private Section getSavedSection(Line savedLine, Long upStationId, Long downStationId, int distance) {
+        try {
+            Section newSection = new Section(savedLine, upStationId, downStationId, distance);
+            return sectionDao.save(newSection);
         } catch (DataIntegrityViolationException e) {
-            throw new HttpException(BAD_REQUEST, "생성할 노선의 이름 또는 색깔이 중복되었거나, 상행 종점역 또는 하행 종점역이 존재하지 않습니다.");
+            throw new HttpException(BAD_REQUEST, "생성할 노선의 상행 종점역 또는 하행 종점역이 존재하지 않습니다.");
         }
     }
 
