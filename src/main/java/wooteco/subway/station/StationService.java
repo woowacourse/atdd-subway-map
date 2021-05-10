@@ -22,7 +22,6 @@ public class StationService {
         return stationDao.save(station);
     }
 
-
     private boolean isDuplicatedName(Station station) {
         return stationDao.checkExistName(station.getName());
     }
