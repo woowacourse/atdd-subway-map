@@ -1,5 +1,6 @@
 package wooteco.subway.station.domain;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -50,11 +51,7 @@ public class DBStationDao implements StationDao {
                 stationsMapper,
                 id);
 
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     @Override
@@ -63,11 +60,7 @@ public class DBStationDao implements StationDao {
                 stationsMapper,
                 name);
 
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     @Override

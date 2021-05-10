@@ -1,6 +1,7 @@
 package wooteco.subway.line.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -82,11 +83,7 @@ public class DBSectionDao implements SectionDao {
                 " WHERE LINE.id = ? AND SECTION.up_station_id = ?";
         List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, id);
 
-        if (lineEntity.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(lineEntity.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
     }
 
     @Override
@@ -103,11 +100,8 @@ public class DBSectionDao implements SectionDao {
                 " WHERE LINE.id = ? AND SECTION.down_station_id = ?";
         List<SectionEntity> lineEntity = jdbcTemplate.query(sql, sectionEntityRowMapper, lineId, downStationId);
 
-        if (lineEntity.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(lineEntity.get(0));    }
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
+    }
 
     @Override
     public void deleteByLineIdWithDownStationId(Long lineId, Long downStationId) {

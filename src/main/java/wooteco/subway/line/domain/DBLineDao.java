@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.entity.LineEntity;
 
+import javax.swing.text.html.Option;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -51,11 +53,8 @@ public class DBLineDao implements LineDao {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
         List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, id);
-        if (lineEntity.isEmpty()) {
-            return Optional.empty();
-        }
 
-        return Optional.ofNullable(lineEntity.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
     }
 
     @Override
@@ -63,11 +62,8 @@ public class DBLineDao implements LineDao {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
         List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, name);
-        if (lineEntity.isEmpty()) {
-            return Optional.empty();
-        }
 
-        return Optional.ofNullable(lineEntity.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
     }
 
     @Override
