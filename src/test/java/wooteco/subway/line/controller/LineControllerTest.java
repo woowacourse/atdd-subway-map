@@ -282,22 +282,6 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-
-    @DisplayName("구간 추가시, 존재하는 LineId에 접근하면 200 상태 코드를 받는다.")
-    @Test
-    void validLineIdSectionAdd() {
-        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
-        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
-
-        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
     @DisplayName("구간 추가시, 존재하지 않는 LineId에 접근하면 404 상태 코드를 받는다.")
     @Test
     void invalidLineIdSectionAdd() {
@@ -327,4 +311,49 @@ class LineControllerTest extends AcceptanceTest {
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 둘다 노선에 이미 있으면, 409 상태 코드를 받는다.")
+    @Test
+    void duplicateSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("구간 추가시, 상행선과 하행선이 둘다 노선에 없으면, 404 상태 코드를 받는다.")
+    @Test
+    void notFoundSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 4L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+//    @DisplayName("구간 추가시, 존재하는 LineId에 접근하면 200 상태 코드를 받는다.")
+//    @Test
+//    void validLineIdSectionAdd() {
+//        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+//        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+//                .body(sectionRequest)
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                .when()
+//                .post("/lines/1/sections")
+//                .then().log().all()
+//                .extract();
+//
+//        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+//    }
 }

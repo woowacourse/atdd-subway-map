@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.DuplicateNameException;
+import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.station.domain.Station;
 
@@ -74,7 +74,7 @@ public class StationRepositoryTest {
     void saveDuplicateName() {
         Station station = new Station("잠실역");
         assertThatThrownBy(() -> stationRepository.save(station))
-                .isInstanceOf(DuplicateNameException.class).hasMessageContaining("중복되는 StationName 입니다.");
+                .isInstanceOf(DuplicateException.class).hasMessageContaining("중복되는 StationName 입니다.");
     }
 
     @DisplayName("없는 id의 Station을 삭제하려고 하면, 예외가 발생한다.")

@@ -1,11 +1,14 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.repository.LineRepository;
 import wooteco.subway.line.repository.SectionRepository;
 import wooteco.subway.station.repository.StationRepository;
+
+import java.util.List;
 
 @Service
 public class SectionService {
@@ -32,7 +35,7 @@ public class SectionService {
     private void validateAddRequest(final Long lineId, final SectionRequest sectionRequest) {
         validateLineId(lineId);
         validateStations(sectionRequest);
-        validateSectionRequest(sectionRequest);
+        validateSectionRequest(lineId, sectionRequest);
     }
 
     private void validateStations(final SectionRequest sectionRequest) {
@@ -44,9 +47,14 @@ public class SectionService {
         }
     }
 
-    //TODO : station 두개중 하나만 노선에 존재하는지 확인
-    private void validateSectionRequest(final SectionRequest sectionRequest) {
-
+    private void validateSectionRequest(final Long lineId, final SectionRequest sectionRequest) {
+        List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(lineId);
+        if (stationIdsByLineId.contains(sectionRequest.getUpStationId()) && stationIdsByLineId.contains(sectionRequest.getDownStationId())) {
+            throw new DuplicateException("이미 노선에 등록되어있는 구간입니다.");
+        }
+        if (!(stationIdsByLineId.contains(sectionRequest.getUpStationId()) || !stationIdsByLineId.contains(sectionRequest.getDownStationId()))) {
+            throw new NotFoundException("상행선, 하행선 둘다 현재 노선에 존재하지 않습니다.");
+        }
     }
 
     private void validateLineId(final Long lineId) {
