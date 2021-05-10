@@ -15,6 +15,14 @@ class SectionTest {
     private final Station longerUpStation = new Station("천호역");
     private final Station longerDownStation = new Station("강남역");
 
+    @DisplayName("상행과 하행이 같은 구간은 생성할 수 없다.")
+    @Test
+    void cannotMake() {
+        assertThatCode(() -> new Section(longerUpStation, longerUpStation, 10, 1L))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+    }
+
     @DisplayName("두 구간을 더한다.")
     @Test
     void append() {

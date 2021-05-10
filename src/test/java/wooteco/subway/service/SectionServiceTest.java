@@ -9,12 +9,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,6 +55,23 @@ class SectionServiceTest {
         verify(stationService, times(1)).findById(upStationId);
         verify(stationService, times(1)).findById(downStationId);
         verify(sectionRepository, times(1)).save(section);
+    }
+
+    @DisplayName("구간 정보 저장시 상행과 하행이 같을 수 없다.")
+    @Test
+    void cannotCreateSection() {
+        long upStationId = 1;
+        int distance = 14;
+        long lineId = 1;
+        Station upStation = new Station(upStationId, "천호역");
+        given(stationService.findById(upStationId)).willReturn(upStation);
+
+
+        assertThatCode(() -> sectionService.createSection(upStationId, upStationId, distance, lineId))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+
+        verify(stationService, times(2)).findById(upStationId);
     }
 
     @DisplayName("기존의 구간의 중간에 신규 구간을 삽입한다.")

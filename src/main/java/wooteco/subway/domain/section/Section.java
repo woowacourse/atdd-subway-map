@@ -24,11 +24,18 @@ public class Section {
     }
 
     public Section(Long id, Station upStation, Station downStation, int distance, Long lineId) {
+        validateStations(upStation, downStation);
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
         this.lineId = lineId;
+    }
+
+    private void validateStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
     }
 
     public Section splitLongerSectionBy(Section shorterSection) {
