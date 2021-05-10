@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -59,14 +58,14 @@ public class StationH2Dao implements StationDao {
         String sql = "SELECT * FROM STATION WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
-                id));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Station(
+                                rs.getLong("id"),
+                                rs.getString("name")
+                        );
+                    },
+                    id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

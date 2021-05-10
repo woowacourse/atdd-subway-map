@@ -3,10 +3,7 @@ package wooteco.subway.section;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.InvalidDeleteSectionException;
 import wooteco.subway.exception.NoLineException;
-import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
-import wooteco.subway.line.LineH2Dao;
-import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
@@ -83,7 +80,7 @@ public class SectionService {
         Sections sections = new Sections(sectionH2Dao.findByLineId(lineIds));
         List<Long> sortedStationIds = sections.sortedStationIds();
         return sortedStationIds.stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
+                .map(stationService::findById)
+                .collect(Collectors.toList());
     }
 }
