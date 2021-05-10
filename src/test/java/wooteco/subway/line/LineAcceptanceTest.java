@@ -36,16 +36,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선_생성값_검증(final ExtractableResponse<Response> response, final LineRequest lineRequest) {
-        assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(getCreatedId(response));
-        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo(lineRequest.getName());
-        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo(lineRequest.getColor());
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(lineResponse.getId()).isEqualTo(getCreatedId(response));
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
 
     private void 노선_생성값_검증(final ExtractableResponse<Response> response, final LineRequest lineRequest,
         final Long createdId) {
-        assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(createdId);
-        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo(lineRequest.getName());
-        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo(lineRequest.getColor());
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertThat(lineResponse.getId()).isEqualTo(createdId);
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
 
     private long getCreatedId(final ExtractableResponse<Response> response) {
