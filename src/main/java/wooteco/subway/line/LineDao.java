@@ -10,7 +10,7 @@ public interface LineDao {
 
     void update(Long id, String name, String color);
 
-    Line findById(Long id);
+    Optional<Line> findById(Long id);
 
     Optional<Line> findByName(String name);
 

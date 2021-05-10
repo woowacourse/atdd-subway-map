@@ -53,7 +53,7 @@ class LineH2DaoTest {
         String color = "주황색";
 
         lineDao.update(id, name, color);
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id).get();
 
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
@@ -63,7 +63,7 @@ class LineH2DaoTest {
     @Test
     void findById() {
         Long id = 1L;
-        Line line = lineDao.findById(id);
+        Line line = lineDao.findById(id).get();
 
         assertThat(line.getId()).isEqualTo(id);
     }
