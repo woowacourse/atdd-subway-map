@@ -38,15 +38,15 @@ public class LineH2Dao implements LineDao {
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                });
+            sql,
+            (rs, rowNum) -> {
+                Line line = new Line(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("color")
+                );
+                return line;
+            });
     }
 
     @Override
@@ -60,15 +60,15 @@ public class LineH2Dao implements LineDao {
         String sql = "SELECT * FROM LINE WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        return new Line(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("color")
-                        );
-                    },
-                    id));
+                sql,
+                (rs, rowNum) -> {
+                    return new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")
+                    );
+                },
+                id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

@@ -71,7 +71,7 @@ public class SectionService {
         Sections sections = new Sections(sectionDao.findByLineId(lineIds));
         List<Long> sortedStationIds = sections.sortedStationIds();
         return sortedStationIds.stream()
-                .map(stationService::findById)
-                .collect(Collectors.toList());
+            .map(stationService::findById)
+            .collect(Collectors.toList());
     }
 }

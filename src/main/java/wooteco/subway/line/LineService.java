@@ -69,6 +69,6 @@ public class LineService {
 
     public void validateId(Long lineId) {
         lineDao.findById(lineId)
-                .orElseThrow(NoLineException::new);
+            .orElseThrow(NoLineException::new);
     }
 }
