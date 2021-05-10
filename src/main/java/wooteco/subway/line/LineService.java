@@ -40,7 +40,7 @@ public class LineService {
         final Line line = lineDao.findById(id);
         final List<Station> stationsInLine = stationDao.findStationsIdInLineId(id)
                 .stream()
-                .map(stationDao::findById)
+                .map(stationId -> stationDao.findById(stationId).get())
                 .collect(Collectors.toList());
 
         line.setStations(stationsInLine);

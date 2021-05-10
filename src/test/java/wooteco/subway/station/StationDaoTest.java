@@ -12,6 +12,7 @@ import wooteco.subway.line.LineDao;
 import wooteco.subway.section.SectionDao;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -83,8 +84,8 @@ class StationDaoTest {
         String stationName = "강남역";
         Station station = stationDao.save(stationName);
 
-        Station foundStation = stationDao.findById(station.getId());
-        assertThat(foundStation.getName()).isEqualTo(stationName);
+        Optional<Station> foundStation = stationDao.findById(station.getId());
+        assertThat(foundStation.get().getName()).isEqualTo(stationName);
     }
 
     @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")

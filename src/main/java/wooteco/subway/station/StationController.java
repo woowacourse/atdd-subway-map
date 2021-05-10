@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) throws DuplicateName {
         String stationName = stationRequest.getName();
         StationResponse stationResponse = stationService.createStation(stationName);
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);

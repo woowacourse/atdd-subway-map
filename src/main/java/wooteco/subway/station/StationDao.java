@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationDao {
@@ -21,6 +22,12 @@ public class StationDao {
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Optional<Station> findStationByName(String stationName) {
+        String sql = "SELECT * FROM STATION WHERE name = ?";
+        final List<Station> result = jdbcTemplate.query(sql, stationRowMapper, stationName);
+        return result.stream().findAny();
     }
 
     public Station save(String stationName) {
@@ -42,14 +49,15 @@ public class StationDao {
         return jdbcTemplate.query(sql, stationRowMapper);
     }
 
+    public Optional<Station> findById(long stationId) {
+        String sql = "SELECT * FROM STATION WHERE id = ?";
+        final List<Station> result = jdbcTemplate.query(sql, stationRowMapper, stationId);
+        return result.stream().findAny();
+    }
+
     public void delete(long stationId) {
         String sql = "DELETE FROM STATION WHERE id=?";
         jdbcTemplate.update(sql, stationId);
-    }
-
-    public Station findById(Long id) {
-        String sql = "SELECT * FROM STATION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
 
     public List<Long> findStationsIdInLineId(long lineId) {
