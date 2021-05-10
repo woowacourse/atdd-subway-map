@@ -52,7 +52,7 @@ class LineRepositoryTest {
     @DisplayName("전체 line을 조회할 때, DB에 존재하는 line이 없다면 빈 리스트를 반환한다.")
     @Test
     void getLines_noLinesSaved_emptyList() {
-        jdbcTemplate.update("TRUNCATE TABLE line");
+        jdbcTemplate.update("DELETE FROM line");
 
         List<Line> lines = lineRepository.getLines();
         assertThat(lines).isEmpty();
@@ -71,10 +71,11 @@ class LineRepositoryTest {
         Line bunDangLine = new Line(1L, "bg-white-600", "분당선");
         lineRepository.update(bunDangLine);
 
-        String query = "SELECT color, name FROM line WHERE id = ?";
+        String query = "SELECT id, color, name FROM line WHERE id = ?";
         Line line = jdbcTemplate.queryForObject(
                 query,
                 (resultSet, rowNum) -> new Line(
+                        resultSet.getLong("id"),
                         resultSet.getString("color"),
                         resultSet.getString("name")
                 ), 1L);

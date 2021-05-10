@@ -3,21 +3,21 @@ package wooteco.subway.section.domain;
 import java.util.Objects;
 
 public class Section {
-    private Long id;
-    private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long id;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final Integer distance;
 
     public Section(final Long lineId, final Long upStationId, final Long downStationId) {
-        this(lineId, upStationId, downStationId, 0);
+        this(lineId, upStationId, downStationId, null);
     }
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
+    public Section(final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final Integer distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;

@@ -49,7 +49,7 @@ public class StationRepositoryTest {
     @DisplayName("전체 station을 조회할 때, DB에 존재하는 station이 없다면 빈 리스트를 반환한다.")
     @Test
     void findAll_noLinesSaved_emptyList() {
-        jdbcTemplate.update("TRUNCATE TABLE station");
+        jdbcTemplate.update("DELETE FROM station");
 
         List<Station> stations = stationRepository.getStations();
         assertThat(stations).isEmpty();

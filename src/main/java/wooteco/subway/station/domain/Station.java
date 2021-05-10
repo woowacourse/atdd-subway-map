@@ -3,11 +3,11 @@ package wooteco.subway.station.domain;
 import java.util.Objects;
 
 public class Station {
-    private Long id;
+    private final Long id;
     private final String name;
 
     public Station(final String name) {
-        this(0L, name);
+        this(null, name);
     }
 
     public Station(final Long id, final String name) {

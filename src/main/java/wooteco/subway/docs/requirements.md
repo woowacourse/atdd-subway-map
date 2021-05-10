@@ -30,6 +30,7 @@
         - [x] id를 통해 특정 Line 삭제 기능 구현
 
 ### 3단계 구간 관리 기능
+
 - [x] 노선 추가시 (상행 종점, 하행 종점, 두 종점간의 거리)를 추가로 입력받는다
 - [x] section table schema 수정하기 (POST /lines)
     - [x] line_id (foreign key) -> line table의 id

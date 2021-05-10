@@ -129,7 +129,7 @@ public class SectionServiceTest {
                 new Section(lineId, 2L, 4L, 4),
                 new Section(lineId, 4L, 3L, 7),
                 new Section(lineId, 3L, 5L, 14)
-                );
+        );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
     }

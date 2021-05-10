@@ -34,19 +34,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        firstLineRequest = new LineRequest(
-                "신분당선",
-                "bg-red-600",
-                1L,
-                2L,
-                10);
-
         firstStationRequest = new StationRequest("잠실역");
         secondStationRequest = new StationRequest("잠실새내역");
 
         saveStation(firstStationRequest);
         saveStation(secondStationRequest);
 
+        firstLineRequest = new LineRequest(
+                "신분당선",
+                "bg-red-600",
+                1L,
+                2L,
+                10);
         response = saveLine(firstLineRequest);
 
         url = response.header("Location");
@@ -60,7 +59,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(url).isNotBlank();
 
         LineResponse responseBody = response.body().as(LineResponse.class);
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(1L, "bg-red-600","신분당선", Arrays.asList(
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(1L, "bg-red-600", "신분당선", Arrays.asList(
                 new Station(1L, firstStationRequest.getName()),
                 new Station(2L, secondStationRequest.getName()))
                 )
@@ -105,7 +104,17 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        LineResponse expectedLineResponse = LineResponse.toDto(new Line(1L, "bg-red-600", "신분당선"));
+        LineResponse expectedLineResponse = LineResponse.toDto(
+                new Line(
+                        1L,
+                        "bg-red-600",
+                        "신분당선",
+                        Arrays.asList(
+                                new Station(1L, firstStationRequest.getName()),
+                                new Station(2L, secondStationRequest.getName())
+                        )
+                )
+        );
 
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);
@@ -137,81 +146,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    @DisplayName("구간이 1개만 존재하는 line에 대한 구간 삭제 요청이 들어왔을 때, bad request를 반환한다")
-    @Test
-    void deleteSection_onlyOneSectionExists_throwException() {
-        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
-                .param("stationId", 1L)
-                .when().log().all()
-                .delete(url + "/sections")
-                .then().log().all()
-                .extract();
-
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("종점역에 대한 구간 삭제 요청이 들어왔을 때, 종점이 변경된 상태로 구간들을 새롭게 조정한다")
-    @Test
-    void deleteSection_endStation_deleteSectionContainingTheEndStation() {
-        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
-        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
-
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
-        saveSection(sectionRequest);
-
-        deleteSection(1L); // 잠실역
-
-        // 잠실새내역 - 몽촌토성역
-        ExtractableResponse<Response> lineResponse = RestAssured.given()
-                .when()
-                .get(url)
-                .then()
-                .extract();
-
-        LineResponse responseBody = lineResponse.body().as(LineResponse.class);
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
-                1L,
-                firstLineRequest.getColor(),
-                firstLineRequest.getName(),
-                Arrays.asList(
-                        new Station(2L, secondStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName())
-                )));
-
-        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
-    }
-
-    @DisplayName("중간역에 대한 구간 삭제 요청이 들어왔을 때, 삭제된 구간 양옆 구간을 합치면서 구간들을 새롭게 조정한다")
-    @Test
-    void deleteSection_middleStation_deleteSectionsAndCombineRelevantTwoStations() {
-        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
-        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
-
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
-        saveSection(sectionRequest);
-
-        deleteSection(2L);
-
-        // 잠실역 - 몽촌토성역
-        ExtractableResponse<Response> lineResponse = RestAssured.given()
-                .when()
-                .get(url)
-                .then()
-                .extract();
-
-        LineResponse responseBody = lineResponse.body().as(LineResponse.class);
-        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
-                1L,
-                firstLineRequest.getColor(),
-                firstLineRequest.getName(),
-                Arrays.asList(
-                        new Station(1L, firstStationRequest.getName()),
-                        new Station(3L, thirdStationRequest.getName())
-                )));
-
-        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
     @DisplayName("이미 존재하는 이름의 line을 저장하려하면 bad request를 반환한다")
@@ -264,6 +198,69 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간이 1개만 존재하는 line에 대한 구간 삭제 요청이 들어왔을 때, bad request를 반환한다")
+    @Test
+    void deleteSection_onlyOneSectionExists_throwException() {
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .param("stationId", 1L)
+                .when().log().all()
+                .delete(url + "/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("종점역에 대한 구간 삭제 요청이 들어왔을 때, 종점이 변경된 상태로 구간들을 새롭게 조정한다")
+    @Test
+    void deleteSection_endStation_deleteSectionContainingTheEndStation() {
+        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
+        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        saveSection(sectionRequest);
+
+        deleteSection(1L); // 잠실역
+
+        // 잠실새내역 - 몽촌토성역
+        LineResponse responseBody = getLineResponse();
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(2L, secondStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName())
+                )));
+
+        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
+    @DisplayName("중간역에 대한 구간 삭제 요청이 들어왔을 때, 삭제된 구간 양옆 구간을 합치면서 구간들을 새롭게 조정한다")
+    @Test
+    void deleteSection_middleStation_deleteSectionsAndCombineRelevantTwoStations() {
+        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
+        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        saveSection(sectionRequest);
+
+        deleteSection(2L);
+
+        // 잠실역 - 몽촌토성역
+        LineResponse responseBody = getLineResponse();
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(1L, firstStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName())
+                )));
+
+        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
     private void saveStation(final StationRequest station) {
         RestAssured.given().log().all()
                 .body(station)
@@ -299,5 +296,15 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post(url + "/sections")
                 .then();
+    }
+
+    private LineResponse getLineResponse() {
+        ExtractableResponse<Response> lineResponse = RestAssured.given()
+                .when()
+                .get(url)
+                .then()
+                .extract();
+
+        return lineResponse.body().as(LineResponse.class);
     }
 }

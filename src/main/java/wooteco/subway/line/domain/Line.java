@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private final String color;
     private final String name;
     private List<Station> stations;
 
     public Line(final String color, final String name) {
-        this(0L, color, name, new ArrayList<>());
+        this(null, color, name, new ArrayList<>());
     }
 
     public Line(final Long id, final String color, final String name) {
