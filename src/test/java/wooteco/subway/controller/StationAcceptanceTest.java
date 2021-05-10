@@ -53,7 +53,7 @@ class StationAcceptanceTest {
         }
     }
 
-    private ValidatableResponse postStationApi(StationRequest stationRequest) throws JsonProcessingException {
+    private ValidatableResponse createStation(StationRequest stationRequest) throws JsonProcessingException {
         String requestBody = OBJECT_MAPPER.writeValueAsString(stationRequest);
         ValidatableResponse validatableResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +62,7 @@ class StationAcceptanceTest {
                 .when().post("/stations")
                 .then().log().all();
         int statusCode = validatableResponse.extract().statusCode();
-        if (statusCode != 400) {
+        if (statusCode != HttpStatus.BAD_REQUEST.value()) {
             addCreatedStationId(validatableResponse);
         }
         return validatableResponse;
@@ -80,7 +80,7 @@ class StationAcceptanceTest {
     @Test
     void createStation() throws JsonProcessingException {
         StationRequest stationRequest = new StationRequest("강남역");
-        ValidatableResponse validatableResponse = postStationApi(stationRequest);
+        ValidatableResponse validatableResponse = createStation(stationRequest);
         long id = testStationIds.get(0);
 
         StationResponse stationResponse = new StationResponse(id, "강남역");
@@ -94,9 +94,9 @@ class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() throws JsonProcessingException {
         StationRequest stationRequest = new StationRequest("강남역");
-        postStationApi(stationRequest);
+        createStation(stationRequest);
 
-        postStationApi(stationRequest)
+        createStation(stationRequest)
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -105,8 +105,8 @@ class StationAcceptanceTest {
     void getStations() throws JsonProcessingException {
         StationRequest stationRequest1 = new StationRequest("강남역");
         StationRequest stationRequest2 = new StationRequest("천호역");
-        postStationApi(stationRequest1);
-        postStationApi(stationRequest2);
+        createStation(stationRequest1);
+        createStation(stationRequest2);
 
         List<Long> resultStationIds = RestAssured.given().log().all()
                 .when().get("/stations")
@@ -126,7 +126,7 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() throws JsonProcessingException {
         StationRequest stationRequest = new StationRequest("강남역");
-        String uri = postStationApi(stationRequest).extract()
+        String uri = createStation(stationRequest).extract()
                 .header("Location");
 
         RestAssured.given().log().all()

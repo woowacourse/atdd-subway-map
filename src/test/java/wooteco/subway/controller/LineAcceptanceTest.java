@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -25,6 +26,7 @@ import wooteco.subway.service.StationService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,14 +50,21 @@ class LineAcceptanceTest {
     @Autowired
     private StationService stationService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private List<Long> testLineIds;
     private List<Long> testStationIds;
+    private long upStationId;
+    private long downStationId;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
         testLineIds = new ArrayList<>();
         testStationIds = new ArrayList<>();
+        upStationId = createStation("천호역");
+        downStationId = createStation("강남역");
     }
 
     @AfterEach
@@ -67,7 +76,7 @@ class LineAcceptanceTest {
         }
     }
 
-    private ValidatableResponse postLineApi(LineRequest lineRequest) throws JsonProcessingException {
+    private ValidatableResponse createLine(LineRequest lineRequest) throws JsonProcessingException {
         String requestBody = OBJECT_MAPPER.writeValueAsString(lineRequest);
         ValidatableResponse validatableResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +85,7 @@ class LineAcceptanceTest {
                 .when().post("/lines")
                 .then().log().all();
         int statusCode = validatableResponse.extract().statusCode();
-        if (statusCode != 400) {
+        if (statusCode != HttpStatus.BAD_REQUEST.value()) {
             addCreatedLineId(validatableResponse);
         }
         return validatableResponse;
@@ -90,50 +99,44 @@ class LineAcceptanceTest {
         testLineIds.add(id);
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() throws Exception {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
-        LineRequest lineRequest = new LineRequest("2호선", "red", upStationId, downStationId, 7);
-        ValidatableResponse validatableResponse = postLineApi(lineRequest);
-        long id = testLineIds.get(0);
-
-        LineResponse lineResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
-        String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
-
-        validatableResponse.statusCode(HttpStatus.CREATED.value())
-                .body(is(responseBody));
-    }
-
-    private long createStationApi(String name) {
+    private long createStation(String name) {
         long id = stationService.createStation(name)
                 .getId();
         testStationIds.add(id);
         return id;
     }
 
+    @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void createLine() throws Exception {
+        LineRequest lineRequest = new LineRequest("2호선", "red", upStationId, downStationId, 7);
+        ValidatableResponse validatableResponse = createLine(lineRequest);
+        long id = testLineIds.get(0);
+
+        LineResponse lineResponse = new LineResponse(id, "2호선", "red", Collections.emptyList());
+        String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
+
+        validatableResponse.statusCode(HttpStatus.CREATED.value())
+                .body(is(responseBody));
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 등록을 시도한다.")
     @Test
     void cannotCreateLine() throws Exception {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest lineRequest = new LineRequest("2호선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest);
+        createLine(lineRequest);
 
-        postLineApi(lineRequest)
+        createLine(lineRequest)
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("전체 노선을 조회한다.")
     @Test
     void showLines() throws Exception {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest lineRequest1 = new LineRequest("3호선", "red", upStationId, downStationId, 7);
         LineRequest lineRequest2 = new LineRequest("4호선", "blue", upStationId, downStationId, 4);
-        postLineApi(lineRequest1);
-        postLineApi(lineRequest2);
+        createLine(lineRequest1);
+        createLine(lineRequest2);
 
         List<Long> resultLineIds = RestAssured.given().log().all()
                 .when().get("/lines")
@@ -152,11 +155,8 @@ class LineAcceptanceTest {
     @DisplayName("아이디로 노선을 조회한다.")
     @Test
     void showLine() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest lineRequest = new LineRequest("5호선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest);
-
+        createLine(lineRequest);
         long id = testLineIds.get(0);
         List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
                 new StationResponse(downStationId, "강남역"));
@@ -175,10 +175,8 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void editLine() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest);
+        createLine(lineRequest);
         long id = testLineIds.get(0);
         LineRequest putRequest = new LineRequest("구분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
@@ -194,8 +192,6 @@ class LineAcceptanceTest {
     @DisplayName("없는 아이디의 지하철 노선은 수정할 수 없다.")
     @Test
     void cannotEditLineWhenNoId() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest putRequest = new LineRequest("구분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
 
@@ -210,12 +206,10 @@ class LineAcceptanceTest {
     @DisplayName("이미 생성된 노선의 이름으로 수정할 수 없다.")
     @Test
     void cannotEditLineWhenDuplicateName() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
         LineRequest lineRequest1 = new LineRequest("6호선", "red", upStationId, downStationId, 7);
         LineRequest lineRequest2 = new LineRequest("신분당선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest1);
-        postLineApi(lineRequest2);
+        createLine(lineRequest1);
+        createLine(lineRequest2);
         long id = testLineIds.get(0);
         LineRequest putRequest = new LineRequest("신분당선", "white", upStationId, downStationId, 7);
         String requestBody = OBJECT_MAPPER.writeValueAsString(putRequest);
@@ -228,15 +222,26 @@ class LineAcceptanceTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("노선에 구간을 추가한다.")
+    @DisplayName("등록된 노선을 삭제한다.")
+    @Test
+    void deleteLine() throws JsonProcessingException {
+        LineRequest lineRequest = new LineRequest("7호선", "green", upStationId, downStationId, 7);
+        String uri = createLine(lineRequest).extract().header("Location");
+
+        RestAssured.given().log().all()
+                .when().delete(uri)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선 구간의 중간에 신규 구간을 추가한다.")
     @Test
     void addSections() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
-        long newStationId = createStationApi("의정부역");
         LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest);
+        createLine(lineRequest);
         long lineId = testLineIds.get(0);
+
+        long newStationId = createStation("의정부역");
         String requestBody = OBJECT_MAPPER.writeValueAsString(new SectionRequest(upStationId, newStationId, 3));
         List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
                 new StationResponse(newStationId, "의정부역"),
@@ -255,13 +260,12 @@ class LineAcceptanceTest {
     @DisplayName("구간을 삭제한다.")
     @Test
     void deleteSection() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
-        long newStationId = createStationApi("의정부역");
         LineRequest lineRequest = new LineRequest("6호선", "red", upStationId, downStationId, 7);
-        postLineApi(lineRequest);
+        createLine(lineRequest);
         long lineId = testLineIds.get(0);
-        long sectionId = sectionService.createSection(upStationId, newStationId, 3, lineId);
+
+        long newStationId = createStation("의정부역");
+        sectionService.createSection(upStationId, newStationId, 3, lineId);
 
         List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
                 new StationResponse(downStationId, "강남역"));
@@ -272,19 +276,5 @@ class LineAcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body(is(lineResponse));
-    }
-
-    @DisplayName("등록된 노선을 삭제한다.")
-    @Test
-    void deleteLine() throws JsonProcessingException {
-        long upStationId = createStationApi("천호역");
-        long downStationId = createStationApi("강남역");
-        LineRequest lineRequest = new LineRequest("7호선", "green", upStationId, downStationId, 7);
-        String uri = postLineApi(lineRequest).extract().header("Location");
-
-        RestAssured.given().log().all()
-                .when().delete(uri)
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }
