@@ -76,10 +76,10 @@ public class LineService {
         List<Station> stations = new ArrayList<>();
         Station firstStation = stationRepository.findStationById(sections.get(0).getUpStationId()).get();
         stations.add(firstStation);
-        for (Section section : sections) {
-            Station station = stationRepository.findStationById(section.getDownStationId()).get();
-            stations.add(station);
-        }
+
+        List<Long> stationIds = sections.stream().map(section -> section.getDownStationId()).collect(Collectors.toList());
+        List<Station> foundStations = stationRepository.findStationsByIds(stationIds);
+        stations.addAll(foundStations);
 
         List<StationDto> stationDtos = stations.stream()
                 .map(station -> new StationDto(station.getId(), station.getName()))

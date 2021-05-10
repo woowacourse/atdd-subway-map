@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +17,9 @@ public class StationRepository {
 
     public Optional<Station> findStationById(Long stationId) {
         return stationDao.findById(stationId);
+    }
+
+    public List<Station> findStationsByIds(List<Long> stationIds) {
+        return stationDao.findByIds(stationIds);
     }
 }

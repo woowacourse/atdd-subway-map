@@ -3,6 +3,8 @@ package wooteco.subway.dao;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -14,10 +16,17 @@ import java.util.Optional;
 
 @Repository
 public class StationDao {
-    private JdbcTemplate jdbcTemplate;
+    private static final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
+            new Station(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"));
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public StationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public Long create(String name) {
@@ -55,11 +64,6 @@ public class StationDao {
         return jdbcTemplate.query(query, stationRowMapper);
     }
 
-    private RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
-            new Station(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"));
-
     public int edit(Long stationId, String name) {
         String query = "UPDATE station SET name = ? WHERE id = ?";
         return jdbcTemplate.update(query, name, stationId);
@@ -68,5 +72,12 @@ public class StationDao {
     public int deleteById(Long stationId) {
         String query = "DELETE FROM station WHERE id = ?";
         return jdbcTemplate.update(query, stationId);
+    }
+
+    public List<Station> findByIds(List<Long> stationIds) {
+        MapSqlParameterSource inQueryParams = new MapSqlParameterSource();
+        inQueryParams.addValue("ids", stationIds);
+        String query = "SELECT * FROM station WHERE id IN (:ids)";
+        return namedParameterJdbcTemplate.query(query, inQueryParams, stationRowMapper);
     }
 }

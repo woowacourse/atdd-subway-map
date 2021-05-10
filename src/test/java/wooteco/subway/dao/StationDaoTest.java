@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +41,18 @@ public class StationDaoTest {
         Long id = stationDao.create(name);
         Optional<Station> station = stationDao.findById(id);
         assertThat(station.get().getName()).isEqualTo(name);
+    }
+
+    @Test
+    @DisplayName("여러 Station을 정상적으로 조회하는 지 테스트")
+    public void findByIds() {
+        String name = "강남역";
+        String name2 = "주안역";
+        Long id = stationDao.create(name);
+        Long id2 = stationDao.create(name2);
+        List<Station> station = stationDao.findByIds(Arrays.asList(id, id2));
+        assertThat(station.get(0).getName()).isEqualTo(name);
+        assertThat(station.get(1).getName()).isEqualTo(name2);
     }
 
     @Test
