@@ -1,23 +1,18 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.assembler.Assembler;
-import wooteco.subway.exception.NotFoundLineException;
-import wooteco.subway.line.dao.LineDaoMemory;
+import wooteco.subway.line.dao.LineDaoH2;
 import wooteco.subway.line.dto.LineDto;
 import wooteco.subway.line.dto.LineIdDto;
 import wooteco.subway.line.dto.NonIdLineDto;
@@ -25,19 +20,12 @@ import wooteco.subway.line.dto.NonIdLineDto;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
 
-
     @Mock
-    private LineDaoMemory mockDao;
+    private LineDaoH2 mockDao;
 
     @InjectMocks
     private LineService lineService;
     
-    @BeforeEach
-    void setUp() {
-        Assembler assembler = new Assembler();
-        lineService = assembler.getLineService();
-    }
-
     @Test
     @DisplayName("노선 만들기")
     void createLine() {
@@ -45,7 +33,7 @@ public class LineServiceTest {
         String name = "부산1호선";
         String color = "주홍색";
         NonIdLineDto nonIdlineDto = new NonIdLineDto(name, color);
-
+        when(mockDao.save(any())).thenReturn(new Line(1L, name, color));
         // when
         LineDto createdLineDto = lineService.createLine(nonIdlineDto);
 
@@ -106,40 +94,4 @@ public class LineServiceTest {
         assertThat(requestedDto.getColor()).isEqualTo(line.getColor());
     }
 
-    @Test
-    @DisplayName("특정 노선 업데이트")
-    void update() {
-        //given
-        NonIdLineDto initiatedRequestDto = new NonIdLineDto("문화선", "무지개색");
-        LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
-        long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
-        LineIdDto requestLineIdDto = new LineIdDto(index);
-
-        //when
-        lineService.update(requestDto);
-        LineDto responseDto = lineService.findOne(requestLineIdDto);
-
-        //then
-        assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
-        assertThat(responseDto.getColor()).isEqualTo(requestDto.getColor());
-    }
-
-    @Test
-    @DisplayName("특정 노선 삭제")
-    void delete() {
-        //given
-        NonIdLineDto initiatedRequestDto = new NonIdLineDto("문화선", "무지개색");
-        LineDto initiatedResponseDto = lineService.createLine(initiatedRequestDto);
-        long index = initiatedResponseDto.getId();
-        LineDto requestDto = new LineDto(index, "7호선", "녹담색");
-        LineIdDto lineIdDto = new LineIdDto(index);
-
-        //when
-        lineService.delete(requestDto);
-
-        //then
-        assertThatThrownBy(() -> lineService.findOne(lineIdDto))
-            .isInstanceOf(NotFoundLineException.class);
-    }
 }

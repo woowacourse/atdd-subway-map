@@ -8,7 +8,6 @@ import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.Line;
-import wooteco.subway.station.Station;
 
 public class LineDaoMemory implements LineDao {
 
@@ -42,7 +41,7 @@ public class LineDaoMemory implements LineDao {
     @Override
     public Line show(Long id) {
         return lines.stream()
-            .filter(element -> element.getId() == id)
+            .filter(element -> element.getId().equals(id))
             .findAny()
             .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
     }
@@ -83,8 +82,7 @@ public class LineDaoMemory implements LineDao {
             .findAny()
             .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
 
-        int index = lines.indexOf(targetLine);
-        lines.remove(index);
+        lines.remove(targetLine);
         Line updatedLine = new Line(id, line.getName(), line.getColor());
         lines.add(updatedLine);
         return 1;
