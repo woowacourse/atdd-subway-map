@@ -23,12 +23,14 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public Line save(final Line line) {
-        String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+        String sql = "INSERT INTO LINE (name, color, top_station_id, bottom_station_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, line.getName());
             ps.setString(2, line.getColor());
+            ps.setLong(3, line.getTopStationId());
+            ps.setLong(4, line.getBottomStationId());
             return ps;
         }, keyHolder);
 
@@ -38,23 +40,27 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public List<Line> findAll() {
-        String sql = "SELECT l.id, l.name, l.color FROM LINE l";
+        String sql = "SELECT l.id, l.name, l.color, l.top_station_id, l.bottom_station_id FROM LINE l";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final long id = rs.getLong("id");
             final String name = rs.getString("name");
             final String color = rs.getString("color");
-            return new Line(id, name, color);
+            final Long topStationId = rs.getLong("top_station_id");
+            final Long bottomStationId = rs.getLong("bottom_station_id");
+            return new Line(id, name, color, topStationId, bottomStationId);
         });
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        String sql = "SELECT l.id, l.name, l.color FROM LINE l WHERE l.name = ?";
+        String sql = "SELECT l.id, l.name, l.color, l.top_station_id, l.bottom_station_id FROM LINE l WHERE l.name = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 final long id = rs.getLong("id");
                 final String color = rs.getString("color");
-                return Optional.of(new Line(id, name, color));
+                final Long topStationId = rs.getLong("top_station_id");
+                final Long bottomStationId = rs.getLong("bottom_station_id");
+                return Optional.of(new Line(id, name, color, topStationId, bottomStationId));
             }, name);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -63,12 +69,14 @@ public class LineJdbcDao implements LineDao {
 
     @Override
     public Optional<Line> findById(Long id) {
-        String sql = "SELECT l.name, l.color FROM LINE l WHERE l.id = ?";
+        String sql = "SELECT l.name, l.color, l.top_station_id, l.bottom_station_id FROM LINE l WHERE l.id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 final String name = rs.getString("name");
                 final String color = rs.getString("color");
-                return Optional.of(new Line(id, name, color));
+                final Long topStationId = rs.getLong("top_station_id");
+                final Long bottomStationId = rs.getLong("bottom_station_id");
+                return Optional.of(new Line(id, name, color, topStationId, bottomStationId));
             }, id);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

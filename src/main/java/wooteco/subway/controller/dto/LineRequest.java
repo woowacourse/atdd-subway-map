@@ -52,7 +52,7 @@ public class LineRequest {
     }
 
     public Line toLineEntity() {
-        return new Line(null, name, color);
+        return new Line(null, name, color, upStationId, downStationId);
     }
 
     public Section toSectionEntity() {
