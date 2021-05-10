@@ -1,4 +1,4 @@
-package wooteco.subway.fixture;
+package wooteco.subway.dao.fixture;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;

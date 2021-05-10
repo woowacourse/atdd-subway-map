@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.dao.station;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.fixture.Fixture.makeStation;
+import static wooteco.subway.dao.fixture.Fixture.makeStation;
 
 @JdbcTest
 public class StationDaoTest {

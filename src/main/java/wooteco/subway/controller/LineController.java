@@ -4,6 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineResponse;
 import wooteco.subway.controller.request.LineRequest;
 import wooteco.subway.exception.line.LineNotFoundException;
@@ -26,8 +27,8 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
-        LineResponse lineResponse = new LineResponse(lineService.create(lineRequest));
+    public ResponseEntity<LineCreateResponse> create(@RequestBody @Valid LineRequest lineRequest) {
+        LineCreateResponse lineResponse = new LineCreateResponse(lineService.create(lineRequest));
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 

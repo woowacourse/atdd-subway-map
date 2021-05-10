@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.dao.station;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

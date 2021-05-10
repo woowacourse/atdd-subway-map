@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.dao.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.fixture.LineAcceptanceTestFixture.*;
+import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
 
 @Sql("classpath:init.sql")
 public class LineAcceptanceTest extends AcceptanceTest {

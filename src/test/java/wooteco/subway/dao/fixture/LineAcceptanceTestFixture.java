@@ -1,4 +1,4 @@
-package wooteco.subway.fixture;
+package wooteco.subway.dao.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
