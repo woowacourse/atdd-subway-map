@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -39,8 +38,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAPI("2호선", "bg-green-600");
 
         ExtractableResponse<Response> response = createLineAPI("2호선", "bg-green-600");
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 중복된 이름입니다.");
     }
 
     @Test
@@ -69,19 +68,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAPI("2호선", "bg-green-600");
         createLineAPI("3호선", "bg-orange-600");
 
-        // when // then
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines/1")
             .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .body("id", is(1))
-            .body("name", is("2호선"))
-            .body("color", is("bg-green-600"))
             .extract();
 
+        LineResponse lineResponse = response.body().as(LineResponse.class);
+
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getId()).isEqualTo(1L);
+        assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
+        assertThat(lineResponse.getName()).isEqualTo("2호선");
+    }
+
+    @Test
+    @DisplayName("없는 id를 이용하여 지하철역을 조회하면 에러가 출력된다.")
+    public void getLineWithNotExistItem() {
+        /// given
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 해당 아이템이 존재하지 않습니다.");
     }
 
     @Test
@@ -151,7 +170,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .get("/lines")
             .then().log().all()
-            .statusCode(HttpStatus.OK.value())
             .extract();
     }
 
@@ -162,7 +180,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when()
             .put("/lines/1")
             .then().log().all()
-            .statusCode(HttpStatus.OK.value())
             .extract();
     }
 }
