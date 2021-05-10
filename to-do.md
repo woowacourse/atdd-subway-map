@@ -35,8 +35,27 @@
 ## Step3
 ### 1. Section 관련 서비스 기능 작성
 - [x] Section 객체 구현
+  - [x] distance가 양수 범위 안에 존재를 해야한다. 
+    - 엔티티에서 잡을 것. DTO가 양수인지 아닌지를 알면 안될거같음
+  - [ ] upStation과 downStation이 같아선 안된다. 
+    - 엔티티에서 잡을 것. DTO가 중복 검증을 알면 안될거같음
+  - [ ] upStation이 null은 허용되지 않는다. 
+    - request DTO 레벨에서 잡아주도록 추가
+  - [ ] downStation이 null은 허용되지 않는다. 
+    - request DTO 레벨에서 잡아주도록 추가
+  - [ ] line이 null은 허용되지 않는다. 
+    - request DTO 레벨에서 잡아주도록 추가
+  
 - [ ] Section 추가 서비스 구현
+  - [x] 기존의 Section이 존재를 하고, 이어주는 상황
+  - [ ] 기존의 Section들과 겹치는 역이 없을 경우의 예외
+  - [ ] upStation, downStation이 해당 line에 이미 Section으로 등록되어 있으면 안된다.
+  - [ ] 기존에 있는 Section 사이에 들어갈 경우에 두 개의 Section으로 재배치해주어야 한다.
+    - 재배치되는 Section의 구간 길이는 이전의 구간 길이보다 짧아야 한다.
+  
 - [ ] Section 제거 기능 구현
+  - [ ] 노선의 유일한 Section이면 제거하면 안된다.
+  - [ ] 중간 Section을 제거할 경우에는 자동으로 재배치해줘야 한다.
 
 ### 2. Section 관련 Dao 기능 작성
 - [ ] DB 테이블 수정 고려
