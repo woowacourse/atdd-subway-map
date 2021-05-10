@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.repository.infra.JDBCStationRepository;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ class JDBCStationRepositoryTest {
         String savedName = savedStation.getName();
 
         //when
-        Station resultStation = stationRepository.findById(savedId);
+        Station resultStation = stationRepository.findById(savedId).get();
         Long resultId = resultStation.getId();
         String resultName = resultStation.getName();
 

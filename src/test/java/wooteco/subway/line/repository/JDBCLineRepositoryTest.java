@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.repository.infra.JDBCLineRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ class JDBCLineRepositoryTest {
         Long expectedId = expectedLine.getId();
 
         //when
-        Line resultLine = lineRepository.findById(expectedId);
+        Line resultLine = lineRepository.findById(expectedId).get();
         Long resultId = resultLine.getId();
         String resultName = resultLine.getName();
         String resultColor = resultLine.getColor();
@@ -103,7 +104,7 @@ class JDBCLineRepositoryTest {
 
         //when
         lineRepository.update(updateLine);
-        Line resultLine = lineRepository.findById(expectedId);
+        Line resultLine = lineRepository.findById(expectedId).get();
         Long resultId = resultLine.getId();
         String resultName = resultLine.getName();
         String resultColor = resultLine.getColor();

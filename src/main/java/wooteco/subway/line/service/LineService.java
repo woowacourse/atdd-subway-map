@@ -2,7 +2,6 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
@@ -24,10 +23,6 @@ public class LineService {
 
     @Transactional
     public LineDto save(final LineDto linedto) {
-        Optional<Line> optionalLine = lineRepository.findByName(linedto.getName());
-        if (optionalLine.isPresent()) {
-            throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.");
-        }
         Line line = new Line(linedto.getName(), linedto.getColor());
         return LineDto.from(lineRepository.save(line));
     }

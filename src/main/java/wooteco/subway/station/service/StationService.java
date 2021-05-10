@@ -23,10 +23,6 @@ public class StationService {
 
     @Transactional
     public StationDto save(final StationDto stationDto) {
-        Optional<Station> optionalStation = stationRepository.findByName(stationDto.getName());
-        if (optionalStation.isPresent()) {
-            throw new DuplicatedNameException("이미 존재하는 지하철 역 이름입니다.");
-        }
         Station station = stationRepository.save(new Station(stationDto.getName()));
         return StationDto.from(station);
     }
