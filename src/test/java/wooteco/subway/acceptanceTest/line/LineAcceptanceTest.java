@@ -93,7 +93,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtils
-            .createLine(LINE_NAME + 1, LINE_COLOR + 1, STATION_1.getId(), NEW_STATION.getId(), DEFAULT_SECTION_DISTANCE);
+            .createLine(LINE_NAME + 1, LINE_COLOR + 1, NEW_STATION.getId(), STATION_1.getId(), DEFAULT_SECTION_DISTANCE);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -111,7 +111,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestUtils
-            .createLine(LINE_NAME + 1, LINE_COLOR + 1, NEW_STATION.getId(), STATION_1.getId(), DEFAULT_SECTION_DISTANCE);
+            .createLine(LINE_NAME + 1, LINE_COLOR + 1, STATION_1.getId(), NEW_STATION.getId(), DEFAULT_SECTION_DISTANCE);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

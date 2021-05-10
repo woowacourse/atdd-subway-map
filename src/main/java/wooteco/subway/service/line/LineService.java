@@ -28,6 +28,7 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public LineCreateResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
         validateSection(lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId());
         Line savedLine = getSavedLine(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
