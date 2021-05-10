@@ -1,5 +1,6 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -51,16 +52,22 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Optional<Line> findById(Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
-        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), id);
-        return results.stream().findAny();
+        try {
+            String query = "SELECT * FROM line WHERE id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, lineRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Line> findByName(String name) {
-        String query = "SELECT * FROM line WHERE name = ?";
-        List<Line> results = jdbcTemplate.query(query, lineRowMapper(), name);
-        return results.stream().findAny();
+        try {
+            String query = "SELECT * FROM line WHERE name = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, lineRowMapper(), name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -80,9 +87,12 @@ public class JdbcLineDao implements LineDao {
 
     @Override
     public Optional<String> findByNameAndNotInOriginalName(String name, String originalName) {
-        String query = "SELECT name FROM line WHERE name = ? AND name NOT IN (?)";
-        List<String> results = jdbcTemplate.query(query, NameRowMapper(), name, originalName);
-        return results.stream().findAny();
+        try {
+            String query = "SELECT name FROM line WHERE name = ? AND name NOT IN (?)";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, NameRowMapper(), name, originalName));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private RowMapper<String> NameRowMapper() {
