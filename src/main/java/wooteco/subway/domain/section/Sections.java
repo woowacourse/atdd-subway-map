@@ -70,7 +70,7 @@ public class Sections {
     }
 
     public boolean canDeleteEndSection(Sections target) {
-        if (sections.size() == 1 || target.sections.size() != 1) {
+        if (isNotDeletable() || target.sections.size() != 1) {
             return false;
         }
         int lastIndex = sections.size() - 1;
@@ -78,6 +78,10 @@ public class Sections {
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(lastIndex);
         return targetSection.equals(firstSection) || targetSection.equals(lastSection);
+    }
+
+    public boolean isNotDeletable() {
+        return sections.size() == 1;
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {

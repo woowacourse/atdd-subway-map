@@ -71,6 +71,7 @@ class LineAcceptanceTest {
     void tearDown() {
         try {
             testLineIds.forEach(testLineId -> lineService.deleteLine(testLineId));
+            jdbcTemplate.update("DELETE FROM SECTION");
             testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
         } catch (SubwayException ignored) {
         }

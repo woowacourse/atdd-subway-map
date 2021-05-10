@@ -33,6 +33,9 @@ public class Section {
     }
 
     private void validateStations(Station upStation, Station downStation) {
+        if (Objects.isNull(upStation) && Objects.isNull(downStation)) {
+            return;
+        }
         if (upStation.equals(downStation)) {
             throw new SubwayException(ExceptionStatus.INVALID_SECTION);
         }

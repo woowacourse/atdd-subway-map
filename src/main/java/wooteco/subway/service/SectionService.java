@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
 
 import java.util.List;
@@ -46,7 +48,14 @@ public class SectionService {
 
     public void deleteSection(long lineId, long stationId) {
         Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
+        if (currentSections.isNotDeletable()) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
         List<Section> sectionsAroundStation = sectionRepository.findAllByStationId(stationId);
+        deleteAndAppendSections(currentSections, sectionsAroundStation);
+    }
+
+    private void deleteAndAppendSections(Sections currentSections, List<Section> sectionsAroundStation) {
         Sections removableSections = new Sections(sectionsAroundStation);
         if (currentSections.canDeleteEndSection(removableSections)) {
             Section removableSection = sectionsAroundStation.get(0);
