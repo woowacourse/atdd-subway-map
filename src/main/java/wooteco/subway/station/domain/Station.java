@@ -1,0 +1,43 @@
+package wooteco.subway.station.domain;
+
+public class Station {
+    private Long id;
+    private String name;
+
+    public Station() {
+    }
+
+    public Station(Long id) {
+        this(id, "");
+    }
+
+    public Station(final String name) {
+        this(0L, name);
+    }
+
+    public Station(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean sameId(final Long id) {
+        return this.id.equals(id);
+    }
+
+    public boolean sameId(final Station station) {
+        return this.id.equals(station.id);
+    }
+
+    public boolean sameName(final String name) {
+        return this.name.equals(name);
+    }
+}
+
