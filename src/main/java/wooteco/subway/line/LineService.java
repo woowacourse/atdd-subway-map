@@ -51,11 +51,8 @@ public class LineService {
     }
 
     private Line findLineById(long lineId) {
-        final Optional<Line> lineFoundById = lineDao.findById(lineId);
-        if (!lineFoundById.isPresent()) {
-            throw new IllegalArgumentException("해당 id에 대응하는 노선이 없습니다.");
-        }
-        return lineFoundById.get();
+        return lineDao.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id에 대응하는 노선이 없습니다."));
     }
 
     private List<Station> findStationsInLine(long lineId) {

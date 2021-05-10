@@ -56,10 +56,11 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 
 ## 기능 구현 목록
 - [x] 지하철 역 관리
+    - [ ] 입력 값이 "~역"으로 끝나지 않으면 예외 처리
     - [x] 같은 지하철 역 생성 불가 기능
     - [x] 삭제 기능
-
 - [x] 지하철 노선 관리 
+    - [ ] 입력 값이 "~선"으로 끝나지 않으면 예외 처리
     - [x] 노선 생성
     - [x] 노선 목록 조회
     - [x] 노선 조회
@@ -67,6 +68,10 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 삭제
 - [x] 스프링 빈 적용
 - [x] H2 적용
+- [ ] 노선 추가 시 구간 추가
+    - [ ] upStationId와 downStationId가 같다면 예외 처리
+    - [ ] distance가 0 이하면 예외 처리
+- [ ] 구간 추가
 
 ## 리팩토링 중점 사안
 - [x] Dao에서 도메인을 반환하도록 반환
@@ -78,6 +83,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 정적 팩토리 메서드로 도메인 <-> DTO 변환
 - [x] 인수테스트 상태코드 말고도 내용 검증 할 것
     - [x] 노선 중복 테스트 진행
+- [x] Optional.orElseThrow를 통한 가독성 증대
 
 ## 질문 사항
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
