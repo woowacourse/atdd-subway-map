@@ -12,11 +12,10 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LineService {
@@ -48,17 +47,26 @@ public class LineService {
     public LineResponse findLine(final Long lineId) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-        Sections sections = new Sections(toSections(lineId, line));
+        Sections sections = new Sections(toSections(line));
 
         List<Section> sortedSections = sections.sortedSections();
         return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(sortedSections));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> findAll() {
+        List<LineEntity> lineEntities = lineDao.findAll();
+        return lineEntities.stream()
+                .map(lineEntity -> new Line(lineEntity.id(), lineEntity.name(), lineEntity.color()))
+                .map(line -> new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(new Sections(toSections(line)).sortedSections())))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-        Sections sections = new Sections(toSections(lineId, line));
+        Sections sections = new Sections(toSections(line));
         Sections originSections = new Sections(sections.sections());
 
         Station targetUpStation = findStationById(sectionAddRequest.getUpStationId());
@@ -105,8 +113,8 @@ public class LineService {
         }
     }
 
-    private List<Section> toSections(final Long lineId, final Line line) {
-        List<SectionEntity> sectionEntities = sectionDao.findByLineId(lineId);
+    private List<Section> toSections(final Line line) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(line.getId());
         return sectionEntities.stream()
                 .map(sectionEntity -> new Section(sectionEntity.getId(), line, findStationById(sectionEntity.getUpStationId()), findStationById(sectionEntity.getDownStationId()), sectionEntity.getDistance()))
                 .collect(Collectors.toList());
@@ -114,8 +122,9 @@ public class LineService {
 
     private List<StationResponse> toStationsResponses(final List<Section> sections) {
         return sections.stream()
-                .map(singleSection -> Arrays.asList(singleSection.upStation(), singleSection.downStation()))
-                .flatMap(Collection::stream)
+                .flatMap(section -> Stream.of(
+                        section.upStation(), section.downStation()
+                ))
                 .distinct()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());

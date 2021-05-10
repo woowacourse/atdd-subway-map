@@ -19,7 +19,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,106 +59,86 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "3");
+        String newLineName = "신분당선";
+        String newLineColor = "bg-black-500";
+        Long upStationId = 3L;
+        Long downStationId = 4L;
+        int distance = 5;
+        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLineToHTTP(lineRequest);
+        LineResponse lineResponse = response.body().as(LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(stationResponsesToStrings(lineResponse.getStations())).containsExactly(station3.getName(), station4.getName());
     }
 
-    @DisplayName("기존에 존재하는 노선역 이름으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        String newLineName = line.nameAsString();
+        String newLineColor = "bg-black-500";
+        Long upStationId = 3L;
+        Long downStationId = 4L;
+        int distance = 5;
+        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = createLineToHTTP(lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("기존에 존재하는 노선의 색깔로 노선을 생성하면 예외가 발생한다.")
     @Test
-    void getLines() {
-        /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "신분당선");
-        params1.put("color", "bg-red-600");
-        params1.put("upStationId", "1");
-        params1.put("downStationId", "2");
-        params1.put("distance", "3");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "백기선");
-        params2.put("color", "bg-red-600");
-        params2.put("upStationId", "2");
-        params2.put("downStationId", "3");
-        params2.put("distance", "4");
-
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+    void createStationWithDuplicateColor() {
+        // given
+        String newLineName = "신분당선";
+        String newLineColor = line.getColor();
+        Long upStationId = 3L;
+        Long downStationId = 4L;
+        int distance = 5;
+        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = createLineToHTTP(lineRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("모든 지하철 노선을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        String newLineName = "신분당선";
+        String newLineColor = "bg-black-500";
+        Long upStationId = 3L;
+        Long downStationId = 4L;
+        int distance = 5;
+        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
+
+        // when
+        ExtractableResponse<Response> createResponse = createLineToHTTP(lineRequest);
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
 
+        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
+        List<Long> resultLineIds = findResponse.jsonPath().getList(".", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(resultLineIds).containsExactly(line.getId(), lineResponse.getId());
     }
 
     @DisplayName("단일 노선을 조회한다.")
@@ -348,7 +327,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station1.getName(), station2.getName(), station3.getName());
     }
 
-    private List<String> stationResponsesToStrings(List<StationResponse> response) {
+    private ExtractableResponse<Response> createLineToHTTP(final LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    private List<String> stationResponsesToStrings(final List<StationResponse> response) {
         return response.stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());

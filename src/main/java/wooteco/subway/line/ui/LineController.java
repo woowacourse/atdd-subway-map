@@ -39,11 +39,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        List<LineEntity> lineEntities = lineDao.findAll();
-        // TODO : 구간에 포함된 지하철 역 조회 로직
-        List<LineResponse> lineResponses = lineEntities.stream()
-                .map(it -> new LineResponse(it.id(), it.name(), it.color(), Collections.emptyList()))
-                .collect(Collectors.toList());
+        List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok().body(lineResponses);
     }
 
