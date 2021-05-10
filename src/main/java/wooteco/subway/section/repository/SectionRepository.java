@@ -31,8 +31,8 @@ public class SectionRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId);
     }
 
-    public boolean isStationNotExist(final Long lineId, final Long stationId) {
-        String query = "SELECT NOT EXISTS(SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?))";
+    public boolean isStationExist(final Long lineId, final Long stationId) {
+        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?))";
         return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId, stationId);
     }
 

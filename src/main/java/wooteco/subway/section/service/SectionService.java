@@ -31,7 +31,7 @@ public class SectionService {
     }
 
     private void validateSection(final Section section) {
-        if (bothStationsAlreadyExist(section)) {
+        if (bothStationsExist(section)) {
             throw new DuplicateSectionException();
         }
         if (bothStationsDoNotExist(section)) {
@@ -75,14 +75,14 @@ public class SectionService {
         }
     }
 
-    private boolean bothStationsAlreadyExist(final Section section) {
-        return !sectionRepository.isStationNotExist(section.getLineId(), section.getUpStationId()) &&
-                !sectionRepository.isStationNotExist(section.getLineId(), section.getDownStationId());
+    private boolean bothStationsExist(final Section section) {
+        return sectionRepository.isStationExist(section.getLineId(), section.getUpStationId()) &&
+                sectionRepository.isStationExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean bothStationsDoNotExist(final Section section) {
-        return sectionRepository.isStationNotExist(section.getLineId(), section.getUpStationId()) &&
-                sectionRepository.isStationNotExist(section.getLineId(), section.getDownStationId());
+        return !sectionRepository.isStationExist(section.getLineId(), section.getUpStationId()) &&
+                !sectionRepository.isStationExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean isNotEndStationSave(final Section section) {
@@ -110,7 +110,7 @@ public class SectionService {
     }
 
     private void validateStationExistence(final Long lineId, final Long stationId) {
-        if (sectionRepository.isStationNotExist(lineId, stationId)) {
+        if (!sectionRepository.isStationExist(lineId, stationId)) {
             throw new NoSuchStationException();
         }
     }
