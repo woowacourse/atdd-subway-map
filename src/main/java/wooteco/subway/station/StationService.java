@@ -18,7 +18,7 @@ public class StationService {
     }
 
     public StationResponse createStation(String stationName) {
-        final Optional<Station> stationWithSameName = stationDao.findStationByName(stationName);
+        final Optional<Station> stationWithSameName = stationDao.findByName(stationName);
         if (stationWithSameName.isPresent()) {
             throw new IllegalArgumentException("역 이름이 중복됩니다");
         }

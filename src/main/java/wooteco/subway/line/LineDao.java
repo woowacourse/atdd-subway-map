@@ -24,7 +24,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Line> findLineByName(String lineName) {
+    public Optional<Line> findByName(String lineName) {
         String sql = "SELECT * FROM LINE WHERE name = ?";
         final List<Line> result = jdbcTemplate.query(sql, lineRowMapper, lineName);
         return result.stream().findAny();

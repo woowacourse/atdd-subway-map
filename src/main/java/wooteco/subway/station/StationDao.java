@@ -24,7 +24,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Station> findStationByName(String stationName) {
+    public Optional<Station> findByName(String stationName) {
         String sql = "SELECT * FROM STATION WHERE name = ?";
         final List<Station> result = jdbcTemplate.query(sql, stationRowMapper, stationName);
         return result.stream().findAny();
