@@ -18,6 +18,6 @@ create table if not exists SECTION
     line_id bigint not null,
     up_station_id bigint not null,
     down_station_id bigint not null,
-    distance int,
+    distance bigint,
     primary key(up_station_id, down_station_id)
     );

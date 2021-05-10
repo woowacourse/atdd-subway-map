@@ -12,8 +12,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+<<<<<<< HEAD
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.station.ui.dto.StationResponse;
+=======
+import wooteco.subway.ui.dto.station.StationResponse;
+>>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경
 
 import java.util.Arrays;
 import java.util.HashMap;

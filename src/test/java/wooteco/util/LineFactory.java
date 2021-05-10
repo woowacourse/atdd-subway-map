@@ -1,11 +1,11 @@
 package wooteco.util;
 
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.section.Section;
-import wooteco.subway.line.domain.section.Sections;
-import wooteco.subway.line.domain.value.LineColor;
-import wooteco.subway.line.domain.value.LineId;
-import wooteco.subway.line.domain.value.LineName;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.line.section.Section;
+import wooteco.subway.domain.line.section.Sections;
+import wooteco.subway.domain.line.value.LineColor;
+import wooteco.subway.domain.line.value.LineId;
+import wooteco.subway.domain.line.value.LineName;
 
 import java.util.List;
 
