@@ -27,11 +27,11 @@ public class SectionCreateService {
             Section savedSection = sectionDao.save(newSection);
             return new SectionCreateResponseDto(savedSection);
         }
-        Section savedNewSection = insertNewSectionToMiddleOfSectionAndGetNew(sectionCreate);
+        Section savedNewSection = insertNewSectionToMiddleOfSectionAndGet(sectionCreate);
         return new SectionCreateResponseDto(savedNewSection);
     }
 
-    private Section insertNewSectionToMiddleOfSectionAndGetNew(SectionCreate sectionCreate) {
+    private Section insertNewSectionToMiddleOfSectionAndGet(SectionCreate sectionCreate) {
         Section newSplitSection = sectionCreate.getNewSectionWhenInsertNewSectionToMiddleOfSection();
         Long oldSplitSectionId = sectionCreate.getOldSplitSectionId();
         Section newSection = sectionCreate.getNewSection();
