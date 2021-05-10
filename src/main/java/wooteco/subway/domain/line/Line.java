@@ -11,14 +11,12 @@ public class Line {
     private String color;
     private Sections sections;
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public Line(String name, String color) {
+        this(null, name, color, null);
     }
 
-    public Line(String name, String color) {
-        this(null, name, color);
+    public Line(Long id, String name, String color) {
+        this(id, name, color, null);
     }
 
     public Line(Long id, String name, String color, Sections sections) {
@@ -26,10 +24,6 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = sections;
-    }
-
-    public boolean hasSameName(String name) {
-        return this.name.equals(name);
     }
 
     public long getId() {
@@ -44,6 +38,14 @@ public class Line {
         return color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void setSections(Sections sections) {
+        this.sections = sections;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,13 +57,5 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color, sections);
-    }
-
-    public Sections getSections() {
-        return sections;
-    }
-
-    public void setSections(Sections sections) {
-        this.sections = sections;
     }
 }
