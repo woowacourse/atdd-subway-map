@@ -60,7 +60,7 @@ public class StationDao {
         jdbcTemplate.update(sql, stationId);
     }
 
-    public List<Long> findStationsIdInLineId(long lineId) {
+    public List<Long> findStationIdsInLineByLineId(long lineId) {
         String sql = "SELECT DISTINCT STATION.id AS station_id FROM STATION JOIN SECTION ON SECTION.line_id = ? " +
                 "WHERE SECTION.up_station_id = STATION.id OR SECTION.down_station_Id = STATION.id";
 

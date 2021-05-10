@@ -11,6 +11,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,7 +59,8 @@ class LineDaoTest {
         String color = "green";
         Line savedLine = lineDao.save(name, color);
 
-        final Line line = lineDao.findById(savedLine.getId());
+        final Optional<Line> lineFound = lineDao.findById(savedLine.getId());
+        Line line = lineFound.get();
 
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
@@ -75,7 +77,9 @@ class LineDaoTest {
         String newColor = "orange";
         lineDao.update(savedLine.getId(), newName, newColor);
 
-        final Line line = lineDao.findById(savedLine.getId());
+        final Optional<Line> lineFound = lineDao.findById(savedLine.getId());
+        Line line = lineFound.get();
+
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
     }

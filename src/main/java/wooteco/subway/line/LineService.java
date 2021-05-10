@@ -7,6 +7,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,22 +37,37 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showLine(long id) {
-        final Line line = lineDao.findById(id);
-        final List<Station> stationsInLine = stationDao.findStationsIdInLineId(id)
-                .stream()
-                .map(stationId -> stationDao.findById(stationId).get())
-                .collect(Collectors.toList());
-
+    public LineResponse showLine(long lineId) {
+        final Line line = findLineById(lineId);
+        final List<Station> stationsInLine = findStationsInLine(lineId);
         line.setStations(stationsInLine);
         return LineResponse.from(line);
     }
 
-    public void updateLine(long id, String lineName, String lineColor) {
-        lineDao.update(id, lineName, lineColor);
+    private Line findLineById(long lineId) {
+        final Optional<Line> lineFoundById = lineDao.findById(lineId);
+        if (!lineFoundById.isPresent()) {
+            throw new IllegalArgumentException("해당 id에 대응하는 노선이 없습니다.");
+        }
+        return lineFoundById.get();
     }
 
-    public void deleteLine(long id) {
-        lineDao.delete(id);
+    private List<Station> findStationsInLine(long lineId) {
+        return stationDao.findStationIdsInLineByLineId(lineId)
+                .stream()
+                .map(stationDao::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    public void updateLine(long lineId, String lineName, String lineColor) {
+        final Line line = findLineById(lineId);
+        lineDao.update(line.getId(), lineName, lineColor);
+    }
+
+    public void deleteLine(long lineId) {
+        final Line line = findLineById(lineId);
+        lineDao.delete(line.getId());
     }
 }

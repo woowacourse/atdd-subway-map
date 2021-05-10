@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class LineDao {
@@ -43,9 +44,10 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public Line findById(long id) {
+    public Optional<Line> findById(long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        final List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
+        return result.stream().findAny();
     }
 
     public void update(long id, String lineName, String lineColor) {

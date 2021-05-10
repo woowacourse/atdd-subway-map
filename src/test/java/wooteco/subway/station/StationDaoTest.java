@@ -109,6 +109,6 @@ class StationDaoTest {
         sectionDao.save(savedLine.getId(), stationId1, stationId2);
         sectionDao.save(savedLine.getId(), stationId2, stationId3);
 
-        assertTrue(stationDao.findStationsIdInLineId(savedLine.getId()).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
+        assertTrue(stationDao.findStationIdsInLineByLineId(savedLine.getId()).containsAll(Arrays.asList(stationId1, stationId2, stationId3)));
     }
 }
