@@ -30,8 +30,6 @@ public class Line {
     }
 
     public static Line from(LineRequest lineRequest) {
-        validatedNameLength(lineRequest.getName());
-        validatedColorLength(lineRequest.getColor());
         return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
