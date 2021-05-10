@@ -1,7 +1,5 @@
 package wooteco.subway.line;
 
-import java.sql.SQLNonTransientException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
