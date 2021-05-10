@@ -39,7 +39,7 @@ public class JDBCStationRepository implements StationRepository {
             }, keyHolder);
             return findById(keyHolder.getKey().longValue());
         } catch (DuplicateKeyException e) {
-            throw new DuplicatedNameException(e.getCause());
+            throw new DuplicatedNameException("이미 존재하는 지하철 역 이름입니다.", e.getCause());
         }
     }
 
