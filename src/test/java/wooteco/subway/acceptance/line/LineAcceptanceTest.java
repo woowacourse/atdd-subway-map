@@ -17,9 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionResponse;
@@ -450,5 +452,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행 종점역이나 하행 종점역에 구간 추가.")
+    @ParameterizedTest
+    @CsvSource(value = {"1, 2", "2, 0"})
+    void createSectionAtEndStation(int upStationIndex, int downStationIndex) {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(upStationIndex)));
+        params.put("downStationId",  String.valueOf(stationIds.get(downStationIndex)));
+        params.put("distance", "5");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
