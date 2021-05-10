@@ -1,7 +1,7 @@
 package wooteco.subway.section.domain;
 
 public class SectionDistance {
-    private static final int ZERO = 0;
+    private static final int MINIMUM_DISTANCE = 0;
     private final long distance;
 
     public SectionDistance(long distance) {
@@ -10,8 +10,8 @@ public class SectionDistance {
     }
 
     private void whenDistanceIsNegative(long distance) {
-        if (distance < ZERO) {
-            throw new IllegalArgumentException(String.format("구간 거리는 음수일 수 없습니다. 입력된 거리 : %d", distance));
+        if (distance <= MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException(String.format("구간 거리는 %d보다 커야합니다. 입력된 거리 : %d", MINIMUM_DISTANCE, distance));
         }
     }
 
@@ -21,5 +21,10 @@ public class SectionDistance {
 
     public SectionDistance sum(SectionDistance that) {
         return new SectionDistance(this.distance + that.getDistance());
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(distance);
     }
 }
