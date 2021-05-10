@@ -9,11 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
 
@@ -160,7 +160,100 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("이미 존재하는 이름의 line을 저장하려하면 DuplicateLineNameException을 반환한다")
+    @DisplayName("구간이 1개만 존재하는 line에 대한 구간 삭제 요청이 들어왔을 때, bad request를 반환한다")
+    @Test
+    void deleteSection_onlyOneSectionExists_throwException() {
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .param("stationId", 1L)
+                .when().log().all()
+                .delete(url + "/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("종점역에 대한 구간 삭제 요청이 들어왔을 때, 종점이 변경된 상태로 구간들을 새롭게 조정한다")
+    @Test
+    void deleteSection_endStation_deleteSectionContainingTheEndStation() {
+        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
+        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        addSection(sectionRequest);
+
+        deleteSection(1L); // 잠실역
+
+        // 잠실새내역 - 몽촌토성역
+        ExtractableResponse<Response> lineResponse = RestAssured.given()
+                .when()
+                .get(url)
+                .then()
+                .extract();
+
+        LineResponse responseBody = lineResponse.body().as(LineResponse.class);
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(2L, secondStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName())
+                )));
+
+        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
+    @DisplayName("중간역에 대한 구간 삭제 요청이 들어왔을 때, 삭제된 구간 양옆 구간을 합치면서 구간들을 새롭게 조정한다")
+    @Test
+    void deleteSection_middleStation_deleteSectionsAndCombineRelevantTwoStations() {
+        StationRequest thirdStationRequest = new StationRequest("몽촌토성역");
+        saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
+
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
+        addSection(sectionRequest);
+
+        deleteSection(2L);
+
+        // 잠실역 - 몽촌토성역
+        ExtractableResponse<Response> lineResponse = RestAssured.given()
+                .when()
+                .get(url)
+                .then()
+                .extract();
+
+        LineResponse responseBody = lineResponse.body().as(LineResponse.class);
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(1L, firstStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName())
+                )));
+
+        assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
+    private void deleteSection(final Long stationId) {
+        RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().log().all()
+                .delete(url + "/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void addSection(final SectionRequest sectionRequest) {
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(sectionRequest)
+                .when()
+                .post(url + "/sections")
+                .then();
+    }
+
+    @DisplayName("이미 존재하는 이름의 line을 저장하려하면 bad request를 반환한다")
     @Test
     void save_DuplicateLineNameException() {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-black-600");

@@ -47,6 +47,10 @@ public class Line {
         this.stations.addAll(stations);
     }
 
+    public void setStations(final List<Station> stations) {
+        this.stations = stations;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
