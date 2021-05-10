@@ -2,9 +2,11 @@ package wooteco.subway.section;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.exception.BothStationInLineException;
@@ -12,6 +14,7 @@ import wooteco.subway.exception.BothStationNotInLineException;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.ImpossibleDistanceException;
+import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.Station;
@@ -45,7 +48,7 @@ public class SectionService {
         List<Station> orderedStations = line.getStations();
 
         if (orderedStations.containsAll(Arrays.asList(upStation, downStation))) {
-            throw new BothStationInLineException(); //예외2
+            throw new BothStationInLineException();
         }
 
         if (orderedStations.get(0).equals(downStation) || orderedStations.get(orderedStations.size() - 1)
@@ -63,12 +66,13 @@ public class SectionService {
             return sectionDao.save(section);
         }
 
-        throw new BothStationNotInLineException(); //예외3
+        throw new BothStationNotInLineException();
 
     }
 
     private void updatePreviousStation(Section section, Station upStation, Station downStation) {
-        Section previousSection = sectionDao.findSectionBySameDownStation(section.getLineId(), downStation);
+        Section previousSection = sectionDao.findSectionBySameDownStation(section.getLineId(), downStation)
+            .orElseThrow(IllegalInputException::new);
         int originDistance = previousSection.getDistance();
         int newDistance = section.getDistance();
 
@@ -80,7 +84,8 @@ public class SectionService {
     }
 
     private void updateNextStation(Section section, Station upStation, Station downStation) {
-        Section nextSection = sectionDao.findSectionBySameUpStation(section.getLineId(), upStation);
+        Section nextSection = sectionDao.findSectionBySameUpStation(section.getLineId(), upStation)
+            .orElseThrow(IllegalInputException::new);
         int originDistance = nextSection.getDistance();
         int newDistance = section.getDistance();
 
@@ -97,10 +102,27 @@ public class SectionService {
         }
     }
 
-    private void checkExistStation(Line line, Station upStation, Station downStation) {
-        if (!line.getStations().contains(upStation) && !line.getStations().contains(downStation)) {
-            throw new BothStationNotInLineException();
+    public int deleteSection(long lineId, long stationId) {
+        Station station = stationService.showStation(stationId);
+
+        Optional<Section> previousSection = sectionDao.findSectionBySameDownStation(lineId, station);
+        Optional<Section> nextSection = sectionDao.findSectionBySameUpStation(lineId, station);
+
+        if(previousSection.isPresent() && nextSection.isPresent()) {
+            Station newDownStation = stationService.showStation(nextSection.get().getDownStationId());
+            sectionDao.updateDownStation(previousSection.get(), newDownStation);
+            return sectionDao.deleteSection(nextSection.get());
         }
+
+        if(previousSection.isPresent()) {
+            return sectionDao.deleteSection(previousSection.get());
+        }
+
+        if(nextSection.isPresent()) {
+            return sectionDao.deleteSection(nextSection.get());
+        }
+
+        throw new NoSuchStationInLineException();
     }
 
 }

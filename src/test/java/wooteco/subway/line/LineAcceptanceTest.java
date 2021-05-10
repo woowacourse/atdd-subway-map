@@ -22,7 +22,7 @@ import io.restassured.response.Response;
 import wooteco.subway.AcceptanceTest;
 
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach

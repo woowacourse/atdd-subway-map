@@ -41,7 +41,7 @@ public class StationService {
         try {
             return stationDao.findById(stationId);
         } catch (DataAccessException e) {
-            throw new IllegalInputException();
+            throw new NoSuchStationException();
         }
     }
 }

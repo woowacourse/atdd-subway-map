@@ -22,7 +22,7 @@ import wooteco.subway.AcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test

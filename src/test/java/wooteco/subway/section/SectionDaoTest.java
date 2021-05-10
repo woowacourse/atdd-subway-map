@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.station.Station;
@@ -79,41 +81,42 @@ class SectionDaoTest {
         assertEquals(expect, sectionsByLineId);
     }
 
-    // @DisplayName("UpStation이 같은 구간을 조회한다.")
-    // @Test
-    // void findSectionBySameUpStation() {
-    //     long stationId1 = stationDao.save("강남역");
-    //     long stationId2 = stationDao.save("잠실역");
-    //
-    //     Line line = new Line("2호선", "green");
-    //     long lineId = lineDao.save(line);
-    //
-    //     int distance = 100;
-    //     Section section = new Section(lineId, stationId1, stationId2, distance);
-    //     sectionDao.save(section);
-    //
-    //     assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, stationDao.findById(1L)));
-    // }
-    //
-    // @DisplayName("DownStation이 같은 구간을 조회한다.")
-    // @Test
-    // void findSectionBySameDownStation() {
-    //     long stationId1 = stationDao.save("강남역");
-    //     long stationId2 = stationDao.save("잠실역");
-    //     long stationId3 = stationDao.save("신림역");
-    //
-    //     Line line = new Line("2호선", "green");
-    //     long lineId = lineDao.save(line);
-    //
-    //     int distance = 100;
-    //     int distance2 = 200;
-    //     Section section = new Section(lineId, stationId1, stationId2, distance);
-    //     Section section2 = new Section(lineId, stationId2, stationId3, distance2);
-    //     sectionDao.save(section);
-    //     sectionDao.save(section2);
-    //
-    //    assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, stationDao.findById(3L)));
-    // }
+    @DisplayName("UpStation이 같은 구간을 조회한다.")
+    @Test
+    void findSectionBySameUpStation() {
+        long stationId1 = stationDao.save("강남역");
+        long stationId2 = stationDao.save("잠실역");
+
+        Line line = new Line("2호선", "green");
+        long lineId = lineDao.save(line);
+
+        int distance = 100;
+        Section section = new Section(lineId, stationId1, stationId2, distance);
+        sectionDao.save(section);
+
+        assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, stationDao.findById(1L)).orElseThrow(
+            IllegalInputException::new));
+    }
+
+    @DisplayName("DownStation이 같은 구간을 조회한다.")
+    @Test
+    void findSectionBySameDownStation() {
+        long stationId1 = stationDao.save("강남역");
+        long stationId2 = stationDao.save("잠실역");
+        long stationId3 = stationDao.save("신림역");
+
+        Line line = new Line("2호선", "green");
+        long lineId = lineDao.save(line);
+
+        int distance = 100;
+        int distance2 = 200;
+        Section section = new Section(lineId, stationId1, stationId2, distance);
+        Section section2 = new Section(lineId, stationId2, stationId3, distance2);
+        sectionDao.save(section);
+        sectionDao.save(section2);
+
+       assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, stationDao.findById(3L)).get());
+    }
 
     @DisplayName("upStation, downStation을 수정한다.")
     @Test
@@ -134,5 +137,26 @@ class SectionDaoTest {
 
         assertEquals(1, sectionDao.updateUpStation(section, stationDao.findById(3L)));
         assertEquals(1, sectionDao.updateDownStation(section, stationDao.findById(1L)));
+    }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        long stationId1 = stationDao.save("강남역");
+        long stationId2 = stationDao.save("잠실역");
+        long stationId3 = stationDao.save("신림역");
+
+        Line line = new Line("2호선", "green");
+        long lineId = lineDao.save(line);
+
+        int distance = 100;
+        int distance2 = 200;
+        Section section = new Section(lineId, stationId1, stationId2, distance);
+        Section section2 = new Section(lineId, stationId2, stationId3, distance2);
+        sectionDao.save(section);
+        sectionDao.save(section2);
+
+        assertEquals(1,sectionDao.deleteSection(section2));
+        assertEquals(1, sectionDao.findSectionsByLineId(lineId).size());
     }
 }

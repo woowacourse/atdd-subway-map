@@ -1,11 +1,11 @@
 package wooteco.subway.section;
 
 import java.sql.PreparedStatement;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -60,14 +60,16 @@ public class SectionDao {
         return sections;
     }
 
-    public Section findSectionBySameUpStation(long lineId, Station upStation) {
+    public Optional<Section> findSectionBySameUpStation(long lineId, Station upStation) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID = ?";
-        return jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStation.getId());
+        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, upStation.getId());
+        return result.stream().findAny();
     }
 
-    public Section findSectionBySameDownStation(long lineId, Station downStation) {
+    public Optional<Section> findSectionBySameDownStation(long lineId, Station downStation) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
-        return jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, downStation.getId());
+        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, downStation.getId());
+        return result.stream().findAny();
     }
 
     public int updateDownStation(Section section, Station upStation) {
@@ -86,4 +88,9 @@ public class SectionDao {
         resultSet.getLong("DOWN_STATION_ID"),
         resultSet.getInt("DISTANCE")
     );
+
+    public int deleteSection(Section section) {
+        String sql = "DELETE FROM SECTION where UP_STATION_ID = ?";
+        return jdbcTemplate.update(sql, section.getUpStationId());
+    }
 }

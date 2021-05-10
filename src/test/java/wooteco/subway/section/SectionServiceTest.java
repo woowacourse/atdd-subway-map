@@ -13,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.exception.BothStationNotInLineException;
 import wooteco.subway.exception.ImpossibleDistanceException;
+import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.Station;
@@ -77,5 +79,29 @@ class SectionServiceTest {
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.addSection(endSection));
         assertEquals(3L, sectionService.addSection(startSection));
+    }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        addEndSection();
+        assertEquals(1, sectionService.deleteSection(1L, 2L));
+    }
+
+    @DisplayName("종점 구간을 삭제한다.")
+    @Test
+    void deleteEndSection() {
+        addEndSection();
+        assertEquals(1, sectionService.deleteSection(1L, 4L));
+        assertEquals(1, sectionService.deleteSection(1L, 1L));
+    }
+
+    @DisplayName("존재하지 않는 역을 삭제한다.")
+    @Test
+    void deleteSectionException() {
+        addEndSection();
+        stationService.createStation("메롱역");
+
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L)).isInstanceOf(NoSuchStationInLineException.class);
     }
 }
