@@ -2,12 +2,15 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -21,7 +24,11 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new SubwayException("올바른 값이 아닙니다.");
+        }
+
         LineResponse newLine = lineService.save(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
     }

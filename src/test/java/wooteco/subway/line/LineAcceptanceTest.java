@@ -13,7 +13,9 @@ import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineResponse;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +32,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
 
         // when
         ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
@@ -40,11 +43,63 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("upStationId를 포함하지 않고 노선을 생성할 경우 BAD_REQUEST 반환")
+    @Test
+    void createLineNoUpStationId() {
+        // given
+        Map<String, Object> noUpStationId = new HashMap<>();
+        noUpStationId.put("name", "분당선");
+        noUpStationId.put("color", "bg-red-600");
+        noUpStationId.put("downStationId", 1L);
+        noUpStationId.put("distance", 3);
+
+        // when
+        ExtractableResponse<Response> noUpStationIdResponse = createRequest("/lines", noUpStationId);
+
+        // then
+        assertThat(noUpStationIdResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("downStationId를 포함하지 않고 노선을 생성할 경우 BAD_REQUEST 반환")
+    @Test
+    void createLineNoDownStationId() {
+        // given
+        Map<String, Object> noDownStationId = new HashMap<>();
+        noDownStationId.put("name", "분당선");
+        noDownStationId.put("color", "bg-red-600");
+        noDownStationId.put("upStationId", 1L);
+        noDownStationId.put("distance", 3);
+
+        // when
+        ExtractableResponse<Response> noDownStationIdResponse = createRequest("/lines", noDownStationId);
+
+        // then
+        assertThat(noDownStationIdResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("distance를 포함하지 않고 노선을 생성할 경우 BAD_REQUEST 반환")
+    @Test
+    void createLineNoDistance() {
+        // given
+        Map<String, Object> noDistance = new HashMap<>();
+        noDistance.put("name", "분당선");
+        noDistance.put("color", "bg-red-600");
+        noDistance.put("upStationId", 1L);
+        noDistance.put("downStationId", 2L);
+
+        // when
+        ExtractableResponse<Response> noDistanceResponse = createRequest("/lines", noDistance);
+
+        // then
+        assertThat(noDistanceResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("이미 존재하는 노선의 이름으로 생성 요청 시 BAD_REQUEST를 응답한다.")
     @Test
     void createLineWhenDuplicateLineName() {
         // given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
 
         // when
         createRequest("/lines", 분당선_RED);
@@ -58,8 +113,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
+        LineCreateRequest 신분당선_YELLOW =
+                new LineCreateRequest("신분당선", "bg-yellow-600", 1L, 2L, 3);
 
         // when
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
@@ -89,7 +146,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         /// given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
 
         // when
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
@@ -106,8 +164,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        LineUpdateRequest 신분당선_YELLOW = new LineUpdateRequest("신분당선", "bg-yellow-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
+        LineUpdateRequest 신분당선_YELLOW =
+                new LineUpdateRequest("신분당선", "bg-yellow-600");
 
         // when
         createRequest("/lines", 분당선_RED);
@@ -126,8 +186,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineWhenDuplicateName() {
         // given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
-        LineCreateRequest 신분당선_YELLOW = new LineCreateRequest("신분당선", "bg-yellow-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
+        LineCreateRequest 신분당선_YELLOW =
+                new LineCreateRequest("신분당선", "bg-yellow-600", 1L, 2L, 3);
 
         // when
         createRequest("/lines", 분당선_RED);
@@ -142,7 +204,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineCreateRequest 분당선_RED = new LineCreateRequest("분당선", "bg-red-600");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
         int originalSize;
 
         // when

@@ -17,9 +17,9 @@
 
 - [x] 노선 생성
     - [x] 같은 이름은 추가할 수 없다.
-    - [ ] 상행역, 하행역, 거리 입력 포함하기
-      - [ ] 하나라도 값이 없는 경우 예외처리
-    - [ ] req
+    - [x] 상행역, 하행역, 거리 입력 포함하기
+      - [x] 하나라도 값이 없는 경우 예외처리
+    - [x] req
         - POST, /lines, BODY : {color, name, upStationId, downStationId, distance}
     - res
         - 201 CREATED, Location = /lines/{id}, BODY : {id, name, color}

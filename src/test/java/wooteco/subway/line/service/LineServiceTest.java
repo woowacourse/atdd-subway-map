@@ -39,7 +39,8 @@ class LineServiceTest {
     @Test
     void save() {
         // given
-        LineCreateRequest 분당선 = new LineCreateRequest("분당선", "red");
+        LineCreateRequest 분당선 =
+                new LineCreateRequest("분당선", "red", 1L, 2L, 3);
         given(lineDao.save(any(Line.class)))
                 .willReturn(new Line(1L, "분당선", "red"));
 
@@ -56,7 +57,8 @@ class LineServiceTest {
     @Test
     void LineDuplicatedNameException() {
         // given
-        LineCreateRequest 분당선 = new LineCreateRequest("분당선", "red");
+        LineCreateRequest 분당선 =
+                new LineCreateRequest("분당선", "red", 1L, 2L, 3);
         given(lineDao.findByName(any(String.class)))
                 .willThrow(LineDuplicatedNameException.class);
 

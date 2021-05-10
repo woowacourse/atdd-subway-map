@@ -42,7 +42,7 @@ class LineControllerTest {
         // given
         String 분당선 = "분당선";
         String 빨간색 = "red";
-        String content = objectMapper.writeValueAsString(new LineCreateRequest(분당선, 빨간색));
+        String content = objectMapper.writeValueAsString(new LineCreateRequest(분당선, 빨간색, 1L, 2L, 3));
         given(lineService.save(any(LineCreateRequest.class)))
                 .willReturn(new LineResponse(1L, 분당선, 빨간색));
 
