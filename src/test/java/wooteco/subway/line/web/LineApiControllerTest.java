@@ -17,7 +17,7 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.section.SectionService;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dao.StationDao;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

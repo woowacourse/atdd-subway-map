@@ -17,7 +17,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineService;
 import wooteco.subway.section.SectionDao;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dao.StationDao;
 
 import java.util.List;
 
