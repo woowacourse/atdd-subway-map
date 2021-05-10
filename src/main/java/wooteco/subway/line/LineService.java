@@ -3,22 +3,28 @@ package wooteco.subway.line;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.exception.LineExistenceException;
 import wooteco.subway.line.exception.LineNotFoundException;
+import wooteco.subway.section.SectonDto;
+import wooteco.subway.section.SectionService;
 
 import java.util.List;
 
 @Service
 public class LineService {
     private final LineDao lineDao;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.sectionService = sectionService;
     }
 
     public Line createLine(LineRequest lineRequest) {
         if (isExistingLine(lineRequest.getName())) {
             throw new LineExistenceException();
         }
-        return lineDao.save(lineRequest.getName(), lineRequest.getColor());
+        Line savedLine = lineDao.save(lineRequest.getName(), lineRequest.getColor());
+        sectionService.save(SectonDto.of(savedLine.getId(), lineRequest));
+        return savedLine;
     }
 
     public List<Line> findAll() {
