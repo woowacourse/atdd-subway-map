@@ -23,6 +23,8 @@ import wooteco.subway.station.dto.StationResponse;
 @Sql("classpath:tableInit.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
+    private final String notInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
+
     @Test
     @DisplayName("지하철역을 생성한다.")
     void createStation() {
@@ -56,7 +58,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI(null);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(notInputMessage);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createStationAPI("    ");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(notInputMessage);
     }
 
     @Test
