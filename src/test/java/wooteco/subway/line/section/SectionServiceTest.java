@@ -79,4 +79,27 @@ class SectionServiceTest {
 //        verify(sectionDao, times(1)).findByLineId(lineId);
 //        verify(sectionDao, times(1)).save(sectionRequest.toEntity(lineId));
 //    }
+
+    /*
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void createSection_distance_over() {
+        final Long lineId = 1L;
+        final Long upStationId = 3L;
+        final Long downStationId = 2L;
+        final Section section = new Section(lineId, upStationId, downStationId, 10);
+        given(sectionDao.findByLineId(lineId)).willReturn(Collections.singletonList(section));
+
+        final Section expected = new Section(2L, 3L, 5L, 12);
+        final SectionRequest sectionRequest = new SectionRequest(3L, 5L, 12);
+        given(sectionDao.save(sectionRequest.toEntity(lineId))).willReturn(expected);
+
+        assertThatThrownBy(() -> sectionService.createSection(lineId, sectionRequest))
+            .hasMessage("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.")
+            .isInstanceOf(RuntimeException.class);
+
+        verify(sectionDao, times(1)).findByLineId(lineId);
+        verify(sectionDao, times(1)).save(sectionRequest.toEntity(lineId));
+    }
+    */
 }
