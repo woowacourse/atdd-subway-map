@@ -42,10 +42,7 @@ public class Station {
 
     @Override
     public String toString() {
-        return "Station{" +
-                "id=" + id +
-                ", name=" + name +
-                '}';
+        return "[id:" + id + ",name:" + name + "]";
     }
 }
 

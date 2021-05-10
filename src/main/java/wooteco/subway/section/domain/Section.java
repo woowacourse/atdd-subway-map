@@ -4,6 +4,8 @@ import wooteco.subway.section.exception.SectionHasSameStationsException;
 import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.station.domain.Station;
 
+import java.util.Objects;
+
 public class Section {
     private final Station upStation;
     private final Station downStation;
@@ -58,5 +60,23 @@ public class Section {
 
     public long getDistance() {
         return distance.getDistance();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        return Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpStation(), getDownStation());
+    }
+
+    @Override
+    public String toString() {
+        return "구간[" + upStation.toString() + "-" + downStation.toString() + ", 거리" + distance + "]";
     }
 }

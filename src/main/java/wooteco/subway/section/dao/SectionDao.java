@@ -1,5 +1,6 @@
 package wooteco.subway.section.dao;
 
+import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.domain.Section;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class SectionDao {
         return null;
     }
 
-    public List<Section> findByLineId(long LineId) {
+    public OrderedSections findByLineId(long LineId) {
         return null;
     }
 
