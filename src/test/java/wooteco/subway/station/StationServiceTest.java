@@ -33,7 +33,7 @@ class StationServiceTest {
 
         final StationResponse createdStation = stationService.createStation(stationRequest);
 
-        verify(stationRequest, times(1)).getName();
+        verify(stationRequest, times(1)).toEntity();
         verify(stationDao, times(1)).save(station);
         assertThat(createdStation.getId()).isEqualTo(1L);
     }
