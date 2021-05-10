@@ -28,6 +28,14 @@ public class Line {
         this.sections = new Sections(upStation, downStation, distance);
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(upStation, downStation, distance);
+    }
+
+    public void deleteStation(Station station) {
+        this.sections.delete(station);
+    }
+
     public Long getId() {
         return id;
     }

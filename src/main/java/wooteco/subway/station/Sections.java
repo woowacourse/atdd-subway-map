@@ -124,7 +124,6 @@ public class Sections {
             sections.remove(sections.size() - 1);
             return;
         }
-
     }
 
     private void removeStationFromMiddleOfSection(Station station) {
@@ -149,10 +148,6 @@ public class Sections {
 
     private Section mergeSection(Section left, Section right) {
         return new Section(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     @Override
