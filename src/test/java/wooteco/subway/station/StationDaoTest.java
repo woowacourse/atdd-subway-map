@@ -88,6 +88,16 @@ class StationDaoTest {
         assertThat(foundStation.get().getName()).isEqualTo(stationName);
     }
 
+    @DisplayName("name으로 역을 조회한다")
+    @Test
+    void findByName() {
+        String stationName = "강남역";
+        Station station = stationDao.save(stationName);
+
+        Optional<Station> foundStation = stationDao.findByName(station.getName());
+        assertThat(foundStation.get().getName()).isEqualTo(stationName);
+    }
+
     @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")
     @Test
     void findStationsIdByLineId() {
