@@ -9,6 +9,10 @@ public class SubwayHttpException extends RuntimeException implements HttpExcepti
     private final HttpStatus status;
     private final String body;
 
+    public SubwayHttpException() {
+        this(ERROR_MESSAGE);
+    }
+
     public SubwayHttpException(String body) {
         this(HttpStatus.BAD_REQUEST, body);
     }

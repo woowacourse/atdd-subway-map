@@ -1,6 +1,7 @@
 package wooteco.subway.domain.station;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
@@ -62,5 +63,15 @@ public class StationDao {
     public void delete(Long id) {
         final String sql = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Station> stationsFilteredById(List<Long> ids) {
+        final String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+        final String sql = String.format("SELECT id, name FROM station WHERE id IN (%s)", inSql);
+
+        return jdbcTemplate.query(
+                sql,
+                ids.toArray(),
+                stationRowMapper);
     }
 }

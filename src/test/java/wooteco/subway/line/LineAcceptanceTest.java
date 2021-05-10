@@ -101,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long down_station_id = (Long) DATA1.get(DOWN_STATION_ID);
 
         List<Long> ids = lineResponse.getStations().stream()
-                .map(stationResponse -> stationResponse.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(ids).containsExactly(up_station_id, down_station_id);

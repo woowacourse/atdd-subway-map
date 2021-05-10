@@ -4,7 +4,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.section.Section;
 
 public class LineRequest {
 
@@ -58,7 +57,7 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Section toStationEntity() {
-        return new Section(null, upStationId, downStationId);
+    public SectionRequest toStationRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 }

@@ -14,6 +14,10 @@ public class LineResponse {
     public LineResponse() {
     }
 
+    public LineResponse(Line line, List<StationResponse> stations) {
+        this(line.getId(), line.getName(), line.getColor(), stations);
+    }
+
     public LineResponse(Line line) {
         this(line.getId(), line.getName(), line.getColor());
     }
