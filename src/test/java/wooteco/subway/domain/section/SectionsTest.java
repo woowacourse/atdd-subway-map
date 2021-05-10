@@ -32,20 +32,9 @@ class SectionsTest {
         secondSection = new Section(secondStation, thirdStation, 10, 1L);
         thirdSection = new Section(thirdStation, fourthStation, 10, 1L);
         fourthSection = new Section(fourthStation, fifthStation, 10, 1L);
-
     }
 
-    @DisplayName("정렬되지 않은 Section의 상행 및 하행역을 조회하여 정렬된 역 리스트를 반환한다.")
-    @Test
-    void sort() {
-        List<Section> unsortedSections = Arrays.asList(thirdSection, firstSection, fourthSection, secondSection);
-
-        Sections sections = new Sections(unsortedSections);
-
-        assertThat(sections.toList()).containsExactly(firstSection, secondSection, thirdSection, fourthSection);
-    }
-
-    @DisplayName("Section들을 정렬하고 구간들에 포함된 중복이 없는 역을 순서대로 반환한다.")
+    @DisplayName("구간들을 정렬하고 구간들에 포함된 중복이 없는 역을 순서대로 반환한다.")
     @Test
     void convertIntoStations() {
         List<Section> unsortedSections = Arrays.asList(secondSection, fourthSection, firstSection, thirdSection);
@@ -58,51 +47,117 @@ class SectionsTest {
                 new Station(4L, "의정부역"), new Station(5L, "태릉역"));
     }
 
-    @DisplayName("추가하려는 구간이 상행 신규 종점 등록인지 확인한다.")
+    @DisplayName("내부 구간들들을 하나로 연결한다.")
     @Test
-    void isUpEndStationExtension() {
-        Station firstStation = new Station("천호역");
-        Station secondStation = new Station("강릉역");
-        List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L));
+    void append() {
+        List<Section> unsortedSections = Arrays.asList(secondSection, fourthSection, firstSection, thirdSection);
 
-        Sections sections = new Sections(sectionList);
-        Station newFirstStation = new Station("회기역");
-        Section targetSection = new Section(newFirstStation, firstStation, 151, 1L);
-        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+        Sections sections = new Sections(unsortedSections);
+        Section appendedSection = sections.append();
 
-        assertThat(isEndStationExtension).isTrue();
+        assertThat(appendedSection).isEqualTo(new Section(new Station(1L, "천호역"),
+                new Station(5L, "태릉역"), 40, 1L));
     }
 
-    @DisplayName("추가하려는 구간이 하행 신규 종점 등록인지 확인한다.")
-    @Test
-    void isDownEndStationExtension() {
-        Station firstStation = new Station("천호역");
-        Station secondStation = new Station("강릉역");
-        List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L));
+    @DisplayName("canExtendEndSection 메서드는")
+    @Nested
+    class Describe_canExtendEndSection {
 
-        Sections sections = new Sections(sectionList);
-        Station lastStation = new Station("회기역");
-        Section targetSection = new Section(secondStation, lastStation, 151, 1L);
-        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+        @DisplayName("추가하려는 구간이 상행 신규 종점 등록인지 확인한다.")
+        @Test
+        void isUpEndStationExtension() {
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L));
 
-        assertThat(isEndStationExtension).isTrue();
+            Sections sections = new Sections(sectionList);
+            Station newFirstStation = new Station("회기역");
+            Section targetSection = new Section(newFirstStation, firstStation, 151, 1L);
+            boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+
+            assertThat(isEndStationExtension).isTrue();
+        }
+
+        @DisplayName("추가하려는 구간이 하행 신규 종점 등록인지 확인한다.")
+        @Test
+        void isDownEndStationExtension() {
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L));
+
+            Sections sections = new Sections(sectionList);
+            Station lastStation = new Station("회기역");
+            Section targetSection = new Section(secondStation, lastStation, 151, 1L);
+            boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+
+            assertThat(isEndStationExtension).isTrue();
+        }
+
+        @DisplayName("추가하려는 구간이 신규 종점 등록이 아니면 false를 반환한다.")
+        @Test
+        void isNotEndStationExtension() {
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            Station lastStation = new Station("회기역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L),
+                    new Section(secondStation, lastStation, 5, 1L));
+
+            Sections sections = new Sections(sectionList);
+            Station targetStation = new Station("매화역");
+            Section targetSection = new Section(secondStation, targetStation, 151, 1L);
+            boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+
+            assertThat(isEndStationExtension).isFalse();
+        }
     }
 
-    @DisplayName("추가하려는 구간이 신규 종점 등록이 아니면 false를 반환한다.")
-    @Test
-    void isNotEndStationExtension() {
-        Station firstStation = new Station("천호역");
-        Station secondStation = new Station("강릉역");
-        Station lastStation = new Station("회기역");
-        List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L),
-                new Section(secondStation, lastStation, 5, 1L));
+    @DisplayName("canDeleteEndSection 메서드는")
+    @Nested
+    class Describe_canDeleteEndSection {
 
-        Sections sections = new Sections(sectionList);
-        Station targetStation = new Station("매화역");
-        Section targetSection = new Section(secondStation, targetStation, 151, 1L);
-        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
+        @DisplayName("현재 등록된 구간이 1이면 종점을 삭제할 수 없어 false를 반환한다.")
+        @Test
+        void cannotDeleteWhenSizeIsOne() {
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L));
 
-        assertThat(isEndStationExtension).isFalse();
+            Sections sections = new Sections(sectionList);
+            Sections targetSections = new Sections(sectionList);
+
+            assertThat(sections.canDeleteEndSection(targetSections)).isFalse();
+        }
+
+        @DisplayName("인자로 들어온 Sections 구간이 1개가 아니면 삭제할 수 없어 false를 반환한다.")
+        @Test
+        void cannotDeleteWhenParameterIsNotOne() {
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            Station lastStation = new Station("회기역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L),
+                    new Section(secondStation, lastStation, 5, 1L));
+
+            Sections sections = new Sections(sectionList);
+            Sections targetSections = new Sections(sectionList);
+
+            assertThat(sections.canDeleteEndSection(targetSections)).isFalse();
+        }
+
+        @DisplayName("인자로 들어온 Sections의 구간이 현재 등록된 구간들의 종점 구간과 일치해야 true를 반환한다.")
+        @Test
+        void canDelete() {
+
+            Station firstStation = new Station("천호역");
+            Station secondStation = new Station("강릉역");
+            Station lastStation = new Station("회기역");
+            List<Section> sectionList = Arrays.asList(new Section(firstStation, secondStation, 5, 1L),
+                    new Section(secondStation, lastStation, 5, 1L));
+
+            Sections sections = new Sections(sectionList);
+            Sections targetSections = new Sections(Arrays.asList(new Section(firstStation, secondStation, 5, 1L)));
+
+            assertThat(sections.canDeleteEndSection(targetSections)).isTrue();
+        }
     }
 
     @Nested

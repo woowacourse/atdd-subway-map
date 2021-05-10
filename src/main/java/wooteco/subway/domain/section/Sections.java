@@ -5,7 +5,6 @@ import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -15,7 +14,14 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
+        validateSections(sections);
         this.sections = sortSections(sections);
+    }
+
+    private void validateSections(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
     }
 
     private List<Section> sortSections(List<Section> sections) {
@@ -56,34 +62,22 @@ public class Sections {
         }
     }
 
-    public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(Section::getStations)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public List<Section> toList() {
-        return Collections.unmodifiableList(sections);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sections sections1 = (Sections) o;
-        return Objects.equals(sections, sections1.sections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sections);
-    }
-
     public boolean canExtendEndSection(Section section) {
+        int lastIndex = sections.size() - 1;
         Section firstSection = sections.get(0);
-        Section lastSection = sections.get(sections.size() - 1);
+        Section lastSection = sections.get(lastIndex);
         return section.isConnectedTowardDownWith(firstSection) || lastSection.isConnectedTowardDownWith(section);
+    }
+
+    public boolean canDeleteEndSection(Sections target) {
+        if (sections.size() == 1 || target.sections.size() != 1) {
+            return false;
+        }
+        int lastIndex = sections.size() - 1;
+        Section targetSection = target.sections.get(0);
+        Section firstSection = sections.get(0);
+        Section lastSection = sections.get(lastIndex);
+        return targetSection.equals(firstSection) || targetSection.equals(lastSection);
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {
@@ -104,21 +98,34 @@ public class Sections {
 
     private Section findTargetLongerSection(Section section) {
         return sections.stream()
-                .filter(targetSection -> targetSection.hasOverlappedStation(section))
+                .filter(currentSection -> currentSection.hasOverlappedStation(section))
                 .findAny()
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.INVALID_SECTION));
-    }
-
-    public boolean canDeleteEndSection(Sections target) {
-        if (sections.size() == 1) {
-            return false;
-        }
-        return target.sections.size() == 1;
     }
 
     public Section append() {
         return sections.stream()
                 .reduce(Section::append)
                 .orElseThrow(IllegalStateException::new);
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .flatMap(Section::getStations)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }
