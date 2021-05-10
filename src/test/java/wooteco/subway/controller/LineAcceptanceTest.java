@@ -99,7 +99,7 @@ class LineAcceptanceTest {
         ValidatableResponse validatableResponse = postLineApi(lineRequest);
         long id = testLineIds.get(0);
 
-        LineResponse lineResponse = new LineResponse(id, "2호선", "red");
+        LineResponse lineResponse = new LineResponse(id, "2호선", "red", new ArrayList<>());
         String responseBody = OBJECT_MAPPER.writeValueAsString(lineResponse);
 
         validatableResponse.statusCode(HttpStatus.CREATED.value())

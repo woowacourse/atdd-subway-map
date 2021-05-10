@@ -10,7 +10,6 @@ import wooteco.subway.service.StationService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stations")
@@ -33,10 +32,8 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationResponse> stationResponses = stationService.findAll()
-                .stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
+        List<Station> stations = stationService.findAll();
+        List<StationResponse> stationResponses = StationResponse.fromList(stations);
         return ResponseEntity.ok(stationResponses);
     }
 
