@@ -53,11 +53,11 @@ public class Sections {
     }
 
     private void swapEndSections(List<Section> sections) {
-        int sectionCounts = sections.size();
+        int lastIndex = sections.size() - 1;
         Section firstSection = sections.get(0);
-        Section lastSection = sections.get(sectionCounts - 1);
+        Section lastSection = sections.get(lastIndex);
         if (lastSection.isConnectedTowardDownWith(firstSection)) {
-            sections.remove(sectionCounts - 1);
+            sections.remove(lastSection);
             sections.add(0, lastSection);
         }
     }
@@ -69,12 +69,12 @@ public class Sections {
         return section.isConnectedTowardDownWith(firstSection) || lastSection.isConnectedTowardDownWith(section);
     }
 
-    public boolean canDeleteEndSection(Sections target) {
-        if (isNotDeletable() || target.sections.size() != 1) {
+    public boolean canDeleteEndSection(Sections removableTarget) {
+        if (isNotDeletable() || removableTarget.sections.size() != 1) {
             return false;
         }
         int lastIndex = sections.size() - 1;
-        Section targetSection = target.sections.get(0);
+        Section targetSection = removableTarget.sections.get(0);
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(lastIndex);
         return targetSection.equals(firstSection) || targetSection.equals(lastSection);
