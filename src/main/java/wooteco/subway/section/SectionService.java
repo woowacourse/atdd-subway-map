@@ -13,6 +13,7 @@ import java.util.List;
 @Service
 @Transactional
 public class SectionService {
+    private final int LIMIT_SIZE_TO_DELETE = 2;
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -96,7 +97,6 @@ public class SectionService {
         return existingUpStation == false && existingDownStation == true;
     }
 
-    // finalUpStationId를 구하는 방법은? -> 테이블 이용?
     public List<Station> findAllSectionInLine(final Long lineId) {
         final List<Station> stations = new LinkedList<>();
 
@@ -110,5 +110,32 @@ public class SectionService {
         stations.add(stationDao.findById(upStationId).get());
 
         return stations;
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        final List<Station> allSectionInLine = findAllSectionInLine(lineId);
+        if(allSectionInLine.size() <= LIMIT_SIZE_TO_DELETE){
+            throw new IllegalArgumentException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
+        }
+
+        final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, stationId);
+        final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, stationId);
+
+        if(existingDownStation && existingUpStation){
+            // 중간에 있는 역 삭제
+
+        }
+
+        if(existingUpStation == true && existingDownStation == false){
+            // 상행 종점 역 삭제
+
+        }
+
+        if(existingUpStation == false && existingDownStation == true){
+            // 하행 종점 역 삭제
+
+        }
+
+        throw new IllegalArgumentException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
     }
 }
