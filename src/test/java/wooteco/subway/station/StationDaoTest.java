@@ -38,7 +38,7 @@ class StationDaoTest {
         assertThat(createdStation.getName()).isEqualTo(createdStation.getName());
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외가 발생한다.")
     @Test
     void saveStationWithDuplicateName() {
         final Station station = new Station("잠실역");
@@ -59,7 +59,7 @@ class StationDaoTest {
             .doesNotThrowAnyException();
     }
 
-    @DisplayName("존재하지 않는 지하철역 이름으로 지하철역을 제거한다.")
+    @DisplayName("존재하지 않는 지하철역 이름으로 지하철역을 제거하면 예외가 발생한다.")
     @Test
     void deleteWithAbsentName() {
         assertThatThrownBy(() -> stationDao.deleteById(1L))
