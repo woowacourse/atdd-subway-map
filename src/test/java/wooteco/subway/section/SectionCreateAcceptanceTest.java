@@ -102,7 +102,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
         assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung, yeoksam);
 
-        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
+        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections/1")
                                                                     .body()
                                                                     .as(SectionResponse.class);
         assertThat(oldSectionResponse.getDistance()).isEqualTo(3);
@@ -136,7 +136,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
         RestAssuredHelper.jsonGet("/lines/1");
 
-        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
+        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections/1")
                                                                     .body()
                                                                     .as(SectionResponse.class);
         assertThat(oldSectionResponse.getDistance()).isEqualTo(3);

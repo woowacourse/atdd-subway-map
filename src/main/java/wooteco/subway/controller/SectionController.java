@@ -22,23 +22,23 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Section> createSection(@PathVariable Long id,
+    public ResponseEntity<Section> createSection(@PathVariable(name = "id") Long lineId,
                                                  @Valid @RequestBody SectionRequest sectionRequest,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException(bindingResult.getFieldError().getDefaultMessage());
         }
-        Section section = sectionRequest.toEntity(id);
+        Section section = sectionRequest.toEntity(lineId);
 
         final Section savedSection = sectionService.save(section);
 
-        final URI uri = URI.create(String.format("/lines/%d/sections?sectionId=%d", id, savedSection.getId()));
+        final URI uri = URI.create(String.format("/lines/%d/sections/%d", lineId, savedSection.getId()));
         return ResponseEntity.created(uri).body(savedSection);
     }
 
-    @GetMapping(value = "/sections")
+    @GetMapping(value = "/sections/{sectionId}")
     public ResponseEntity<SectionResponse> showSection(@PathVariable(name = "id") Long lineId,
-                                                       @RequestParam Long sectionId) {
+                                                       @PathVariable Long sectionId) {
         final Section section = sectionService.findByLineIdAndId(lineId, sectionId);
         final SectionResponse sectionResponse = new SectionResponse(section);
         return ResponseEntity.ok(sectionResponse);
