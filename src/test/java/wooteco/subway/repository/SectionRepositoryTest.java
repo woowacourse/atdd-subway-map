@@ -72,7 +72,7 @@ class SectionRepositoryTest {
         Station lastStation = stationDao.findById(lastStationId).get();
         Section firstSection = new Section(upStation, downStation, 10, 1L);
         Section secondSection = new Section(downStation, lastStation, 5, 1L);
-        
+
         long firstSectionId = sectionRepository.save(firstSection);
         long secondSectionId = sectionRepository.save(secondSection);
         List<Section> sections = sectionRepository.findAllByStationId(downStationId);

@@ -33,7 +33,8 @@ public class LineService {
     }
 
     public void editLine(long id, String name, String color) {
-        lineRepository.update(id, name, color);
+        Line line = new Line(id, name, color);
+        lineRepository.update(line);
     }
 
     public void deleteLine(long id) {

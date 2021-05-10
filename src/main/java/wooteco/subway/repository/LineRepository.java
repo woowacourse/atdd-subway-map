@@ -67,8 +67,7 @@ public class LineRepository {
         return line;
     }
 
-    public void update(long id, String name, String color) {
-        Line line = new Line(id, name, color);
+    public void update(Line line) {
         lineDao.update(line);
     }
 

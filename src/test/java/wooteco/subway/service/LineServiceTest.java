@@ -68,9 +68,10 @@ class LineServiceTest {
     void editLine() {
         String name = "changedName";
         String color = "black";
+        Line line = new Line(1L, name, color);
 
         lineService.editLine(1L, name, color);
 
-        verify(lineRepository, times(1)).update(1L, name, color);
+        verify(lineRepository, times(1)).update(line);
     }
 }
