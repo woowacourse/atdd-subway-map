@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String ERROR_MESSAGE_NOT_FOUND_LINE_ID = "Id에 해당하는 노선이 없습니다.";
     private static final int FIRST_INDEX = 0;
 
     private final LineRepository lineRepository;

@@ -1,6 +1,5 @@
 package wooteco.subway.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
@@ -16,12 +15,10 @@ import java.util.Optional;
 public class LineRepository {
     private static final int ONE_SECTION = 1;
 
-    private final JdbcTemplate jdbcTemplate;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public LineRepository(JdbcTemplate jdbcTemplate, LineDao lineDao, SectionDao sectionDao) {
-        this.jdbcTemplate = jdbcTemplate;
+    public LineRepository(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
     }
