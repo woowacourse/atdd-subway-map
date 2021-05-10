@@ -1,30 +1,20 @@
 package wooteco.subway.station;
 
 import java.util.Objects;
-import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.StringInput;
 
 public class Station {
 
     private Long id;
-    private String name;
-
-    public Station() {
-    }
+    private StringInput name;
 
     public Station(String name) {
         this(0L, name);
     }
 
     public Station(Long id, String name) {
-        validate(name);
         this.id = id;
-        this.name = name.trim();
-    }
-
-    private void validate(String name) {
-        if (Objects.isNull(name) || name.trim().length() == 0) {
-            throw new NotInputDataException();
-        }
+        this.name = new StringInput(name);
     }
 
     public Long getId() {
@@ -32,7 +22,7 @@ public class Station {
     }
 
     public String getName() {
-        return name;
+        return name.getItem();
     }
 
     @Override

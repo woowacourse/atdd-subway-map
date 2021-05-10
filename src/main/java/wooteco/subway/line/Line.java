@@ -1,17 +1,14 @@
 package wooteco.subway.line;
 
 import java.util.Objects;
-import wooteco.subway.exception.NotInputDataException;
+import wooteco.subway.StringInput;
 import wooteco.subway.line.dto.LineRequest;
 
 public class Line {
 
     private Long id;
-    private String name;
-    private String color;
-
-    public Line() {
-    }
+    private final StringInput name;
+    private final StringInput color;
 
     public Line(LineRequest lineRequest) {
         this(lineRequest.getName(), lineRequest.getColor());
@@ -26,17 +23,9 @@ public class Line {
     }
 
     public Line(Long id, String name, String color) {
-        validate(name, color);
         this.id = id;
-        this.name = name.trim();
-        this.color = color.trim();
-    }
-
-    private void validate(String name, String color) {
-        if (Objects.isNull(name) || Objects.isNull(color)
-            || name.trim().length() == 0 || color.trim().length() == 0) {
-            throw new NotInputDataException();
-        }
+        this.name = new StringInput(name);
+        this.color = new StringInput(color);
     }
 
     public Long getId() {
@@ -44,11 +33,11 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getItem();
     }
 
     public String getColor() {
-        return color;
+        return color.getItem();
     }
 
     @Override
