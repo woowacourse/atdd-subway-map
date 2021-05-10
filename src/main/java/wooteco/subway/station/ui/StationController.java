@@ -50,12 +50,6 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
-    }
-
     private void validateDuplicate(final Station station) {
         if (stationDao.findByName(station.getName()).isPresent()) {
             throw new IllegalStateException("이미 있는 역임!");

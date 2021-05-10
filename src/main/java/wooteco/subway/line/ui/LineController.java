@@ -69,10 +69,4 @@ public class LineController {
         lineService.addSection(id, sectionAddRequest);
         return ResponseEntity.ok().build();
     }
-
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<ResponseError> handleException(RuntimeException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
-    }
 }
