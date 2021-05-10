@@ -16,7 +16,7 @@ public class SectionDeleteService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void deleteSectionById(Long lineId, Long stationIdToDelete) {
         List<Section> allSectionsInLine = sectionDao.findAllByLineId(lineId);
         SectionDelete sectionDelete = new SectionDelete(allSectionsInLine, stationIdToDelete);

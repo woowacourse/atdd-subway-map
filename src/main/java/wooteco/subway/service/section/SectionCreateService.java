@@ -18,7 +18,7 @@ public class SectionCreateService {
         this.sectionDao = sectionDao;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public SectionCreateResponseDto createSection(Long lineId, SectionCreateRequestDto sectionCreateRequestDto) {
         List<Section> allSectionsOfLine = sectionDao.findAllByLineId(lineId);
         Section newSection = new Section(lineId, sectionCreateRequestDto.getUpStationId(), sectionCreateRequestDto.getDownStationId(), sectionCreateRequestDto.getDistance());
