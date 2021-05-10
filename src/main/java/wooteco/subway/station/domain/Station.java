@@ -34,10 +34,6 @@ public class Station {
         this.id = id;
     }
 
-    public boolean sameId(final Station station) {
-        return this.id.equals(station.id);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

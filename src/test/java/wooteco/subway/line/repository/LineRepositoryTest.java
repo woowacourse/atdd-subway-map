@@ -25,7 +25,15 @@ class LineRepositoryTest {
         assertThat(line.sections().get(0).upStation().id()).isNotNull();
         assertThat(line.sections().get(0).downStation().name()).isNotNull();
         assertThat(line.sections().get(0).upStation()).isEqualTo(EXIST_UP_STATION);
-
     }
 
+    @Test
+    @DisplayName("노선을 저장한다.")
+    void save() {
+        Line line = lineRepository.save("신분당선", "화이트", 1L, 2L, 10);
+
+        assertThat(line.id()).isEqualTo(2L);
+        assertThat(line.stations()).hasSize(2);
+        assertThat(line.stations().get(0).id()).isEqualTo(1L);
+    }
 }

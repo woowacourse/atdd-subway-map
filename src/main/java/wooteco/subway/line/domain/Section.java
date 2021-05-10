@@ -4,27 +4,34 @@ import wooteco.subway.station.domain.Station;
 
 public class Section {
     private Long id;
+    private Long lineId;
     private Station upStation;
     private Station downStation;
     private int distance;
+
 
     public Section() {
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        this(0L, new Station(upStationId), new Station(downStationId), distance);
-    }
-
-    public Section(Long id, Long upStationId, Long downStationId, int distance) {
-        this(id, new Station(upStationId), new Station(downStationId), distance);
+        this(0L, 0L, new Station(upStationId), new Station(downStationId), distance);
     }
 
     public Section(final Station upStation, final Station downStation, final int distance) {
-        this(0L, upStation, downStation, distance);
+        this(0L, 0L, upStation, downStation, distance);
     }
 
-    public Section(final Long id, final Station upStation, final Station downStation, final int distance) {
+    public Section(final Long lineId, final Station upStation, final Station downStation, final int distance) {
+        this(0L, lineId, upStation, downStation, distance);
+    }
+
+    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        this(0L, 0L, new Station(upStationId), new Station(downStationId), distance);
+    }
+
+    public Section(final Long id, final Long lineId, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
+        this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -58,7 +65,12 @@ public class Section {
         this.distance = distance;
     }
 
+    public Long lineId() {
+        return lineId;
+    }
+
+
     public boolean has(Station station) {
-        return upStation.sameId(station) || downStation.sameId(station);
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

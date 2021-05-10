@@ -24,8 +24,11 @@ public class SectionDaoImpl implements SectionDao {
     public SectionDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.sectionRowMapper = (rs, rowNum) ->
-                new Section(rs.getLong("id"), rs.getLong("up_station_id"),
-                        rs.getLong("down_station_id"), rs.getInt("distance"));
+                new Section(rs.getLong("id"),
+                        rs.getLong("line_id"),
+                        rs.getLong("up_station_id"),
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance"));
     }
 
     @Override
