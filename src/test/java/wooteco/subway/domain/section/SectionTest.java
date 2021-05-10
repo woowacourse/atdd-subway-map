@@ -15,6 +15,41 @@ class SectionTest {
     private final Station longerUpStation = new Station("천호역");
     private final Station longerDownStation = new Station("강남역");
 
+    @DisplayName("두 구간을 더한다.")
+    @Test
+    void append() {
+        Station newDownStation = new Station("의정부역");
+        Section firstSection = new Section(longerUpStation, longerDownStation, 10, 1L);
+        Section secondSection = new Section(longerDownStation, newDownStation, 5, 1L);
+
+        Section appendedSection = firstSection.append(secondSection);
+
+        assertThat(appendedSection).isEqualTo(new Section(longerUpStation, newDownStation, 15, 1L));
+    }
+
+    @DisplayName("연결되지 않은 노선은 더할 수 없다.")
+    @Test
+    void cannotAppend() {
+        Station newDownStation = new Station("의정부역");
+        Section firstSection = new Section(longerUpStation, longerDownStation, 10, 1L);
+        Section secondSection = new Section(longerUpStation, newDownStation, 5, 1L);
+
+        assertThatCode(() -> firstSection.append(secondSection))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
+    }
+
+    @DisplayName("두 구간이 연결되어 있다면 ture를 반환한다.")
+    @Test
+    void isConnectedTowardWith() {
+        Station newDownStation = new Station("의정부역");
+        Section firstSection = new Section(longerUpStation, longerDownStation, 10, 1L);
+        Section secondSection = new Section(longerDownStation, newDownStation, 5, 1L);
+
+        assertThat(firstSection.isConnectedTowardDownWith(secondSection)).isTrue();
+        assertThat(secondSection.isConnectedTowardDownWith(firstSection)).isFalse();
+    }
+
     @DisplayName("splitLongerSectionBy 메서드는")
     @Nested
     class Describe_splitLongerSectionBy {

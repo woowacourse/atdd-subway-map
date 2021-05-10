@@ -38,7 +38,7 @@ public class Sections {
     private void swap(List<Section> sections, int i, int j) {
         Section firstSection = sections.get(i);
         Section secondSection = sections.get(j);
-        if (secondSection.isConnectedWith(firstSection)) {
+        if (secondSection.isConnectedTowardDownWith(firstSection)) {
             Section tmp = sections.get(i + 1);
             sections.set(i, secondSection);
             sections.set(j, tmp);
@@ -50,7 +50,7 @@ public class Sections {
         int sectionCounts = sections.size();
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(sectionCounts - 1);
-        if (lastSection.isConnectedWith(firstSection)) {
+        if (lastSection.isConnectedTowardDownWith(firstSection)) {
             sections.remove(sectionCounts - 1);
             sections.add(0, lastSection);
         }
@@ -83,7 +83,7 @@ public class Sections {
     public boolean canExtendEndSection(Section section) {
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(sections.size() - 1);
-        return section.isConnectedWith(firstSection) || lastSection.isConnectedWith(section);
+        return section.isConnectedTowardDownWith(firstSection) || lastSection.isConnectedTowardDownWith(section);
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {

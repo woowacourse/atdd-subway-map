@@ -52,7 +52,15 @@ public class Section {
         }
     }
 
-    public boolean isConnectedWith(Section nextSection) {
+    public Section append(Section section) {
+        if (!isConnectedTowardDownWith(section)) {
+            throw new SubwayException(ExceptionStatus.INVALID_SECTION);
+        }
+        int adjustedDistance = this.distance + section.distance;
+        return new Section(this.upStation, section.downStation, adjustedDistance, this.lineId);
+    }
+
+    public boolean isConnectedTowardDownWith(Section nextSection) {
         return this.downStation.equals(nextSection.upStation);
     }
 
@@ -70,6 +78,10 @@ public class Section {
 
     public Stream<Station> getStations() {
         return Stream.of(upStation, downStation);
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -116,13 +128,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance, lineId);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Section append(Section section) {
-        return new Section(this.upStation, section.downStation, this.distance + section.distance, this.lineId);
     }
 }
