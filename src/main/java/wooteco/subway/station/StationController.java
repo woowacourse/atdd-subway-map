@@ -9,27 +9,37 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
 
-    @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        Station newStation = StationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    private final StationService stationService;
+
+    public StationController(final StationService stationService) {
+        this.stationService = stationService;
     }
 
-    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = StationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+    @PostMapping
+    public ResponseEntity<StationResponse> create(@RequestBody final StationRequest stationRequest) {
+        final Station station = stationService.save(new Station(stationRequest.getName()));
+
+        final StationResponse stationResponse = new StationResponse(station);
+        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(stationResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<StationResponse>> stations() {
+        final List<Station> stations = stationService.findAll();
+
+        final List<StationResponse> stationResponses = stations.stream()
+                .map(StationResponse::new)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
-    @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+        stationService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 }
