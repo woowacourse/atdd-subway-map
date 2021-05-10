@@ -1,7 +1,6 @@
 package wooteco.subway.line.dao;
 
 import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.dto.SectionEntity;
 
 import java.util.List;
 import java.util.Map;

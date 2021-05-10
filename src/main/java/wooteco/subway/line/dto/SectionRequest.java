@@ -25,8 +25,4 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
-
-    public SectionEntity toEntity(Long lineId) {
-        return new SectionEntity(lineId, upStationId, downStationId, distance);
-    }
 }
