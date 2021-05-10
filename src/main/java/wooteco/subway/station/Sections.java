@@ -13,69 +13,89 @@ public class Sections {
     }
 
     public void add(Station upStation, Station downStation, int distance) {
-        boolean hasUpStation = this.sections.stream()
-                .anyMatch(section -> section.hasAny(upStation));
-        boolean hasDownStation = this.sections.stream()
-                .anyMatch(section -> section.hasAny(downStation));
+        boolean hasUpStation = contains(upStation);
+        boolean hasDownStation = contains(downStation);
 
-        if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("이미 노선에 등록된 역들입니다.");
-        }
+        validateRegisteredStations(hasUpStation, hasDownStation);
 
         if (hasUpStation) {
-            addDownStation(upStation, downStation, distance);
+            if (isUp(upStation)) {
+                Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
+                addMiddle(sectionToUpdate, downStation, distance);
+                return;
+            }
+            addAt(new Section(upStation, downStation, distance), this.sections.size() - 1);
             return;
         }
+
         if (hasDownStation) {
-            addUpStation(upStation, downStation, distance);
-            return;
+            if (isDown(downStation)) {
+                Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
+                addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
+                return;
+            }
+            addAt(new Section(upStation, downStation, distance), 0);
         }
-
-        throw new IllegalArgumentException("노선에 등록되지 않은 역들입니다.");
     }
 
-    private void addUpStation(Station upStation, Station downStation, int distance) {
-        Section sectionToDelete = this.sections.stream()
-                .filter(section -> section.isDownStation(downStation))
-                .findAny()
-                .get();
-        int index = sections.indexOf(sectionToDelete);
-
-        validateDistance(distance, sectionToDelete);
-
-        Section section1 = new Section(sectionToDelete.getUpStation(), upStation, sectionToDelete.getDistance() - distance);
-        Section section2 = new Section(upStation, downStation, distance);
-
-        sections.remove(index);
-
-        sections.add(index, section2);
-        sections.add(index, section1);
+    private boolean contains(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.hasAny(station));
     }
 
-    private void addDownStation(Station upStation, Station downStation, int distance) {
-        Section sectionToDelete = this.sections.stream()
+    private Section getSectionWhereUpStationIs(Station upStation) {
+        return this.sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findAny()
                 .get();
-        int index = sections.indexOf(sectionToDelete);
+    }
 
-        validateDistance(distance, sectionToDelete);
+    private Section getSectionWhereDownStationIs(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findAny()
+                .get();
+    }
 
-        Section section1 = new Section(upStation, downStation, distance);
-        Section section2 = new Section(downStation,
-                sectionToDelete.getDownStation(),
-                sectionToDelete.getDistance() - distance);
+    private void addMiddle(Section sectionToUpdate, Station station, int distance) {
+        int index = sections.indexOf(sectionToUpdate);
+        validateDistance(distance, sectionToUpdate);
+        Section sectionUpside = new Section(sectionToUpdate.getUpStation(), station, distance);
+        Section sectionDownside = new Section(station, sectionToUpdate.getDownStation(), sectionToUpdate.getDistance() - distance);
 
         sections.remove(index);
 
-        sections.add(index, section2);
-        sections.add(index, section1);
+        sections.add(index, sectionDownside);
+        sections.add(index, sectionUpside);
+    }
+
+    private void addAt(Section section, int index) {
+        this.sections.add(index, section);
     }
 
     private void validateDistance(int distance, Section sectionToDelete) {
         if (distance > sectionToDelete.getDistance()) {
             throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
         }
+    }
+
+    private void validateRegisteredStations(boolean hasUpStation, boolean hasDownStation) {
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException("두 역이 모두 해당 노선에 등록되어 있습니다.");
+        }
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("두 역이 모두 노선에 등록되어 있지 않습니다.");
+        }
+    }
+
+    private boolean isUp(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+    }
+
+    private boolean isDown(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isDownStation(station));
     }
 
     public void delete(Station station) {

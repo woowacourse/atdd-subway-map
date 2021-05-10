@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 class SectionsTest {
 
     @Test
-    void addUpSectionTest() {
+    void addUpUpSectionTest() {
         Sections sections = new Sections(new Station("남성역"), new Station("내방역"), 10);
         sections.add(new Station("남성역"), new Station("이수역"), 3);
 
@@ -14,8 +14,26 @@ class SectionsTest {
     }
 
     @Test
-    void addDownSectionTest() {
+    void addDownDownSectionTest() {
         Sections sections = new Sections(new Station("남성역"), new Station("내방역"), 10);
+        sections.add(new Station("이수역"), new Station("내방역"), 7);
+
+        sections.stream()
+                .forEach(System.out::println);
+    }
+
+    @Test
+    void addDownUpSectionTest() {
+        Sections sections = new Sections(new Station("이수역"), new Station("내방역"), 7);
+        sections.add(new Station("남성역"), new Station("이수역"), 3);
+
+        sections.stream()
+                .forEach(System.out::println);
+    }
+
+    @Test
+    void addUpDownSectionTest() {
+        Sections sections = new Sections(new Station("남성역"), new Station("이수역"), 3);
         sections.add(new Station("이수역"), new Station("내방역"), 7);
 
         sections.stream()
