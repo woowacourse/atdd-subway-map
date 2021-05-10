@@ -41,7 +41,7 @@ public class Section {
         return lineId.getValue();
     }
 
-    public Long getUpStatinoId() {
+    public Long getUpStationId() {
         return upStationId.getValue();
     }
 

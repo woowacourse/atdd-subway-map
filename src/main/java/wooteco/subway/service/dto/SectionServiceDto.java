@@ -24,8 +24,13 @@ public class SectionServiceDto {
     }
 
     public static SectionServiceDto from(final Section section) {
-        return new SectionServiceDto(section.getId(), section.getLineId(), section.getUpStatinoId(),
-            section.getDownStationId(), section.getDistance());
+        return new SectionServiceDto(
+            section.getId(),
+            section.getLineId(),
+            section.getUpStationId(),
+            section.getDownStationId(),
+            section.getDistance()
+        );
     }
 
     public Long getId() {

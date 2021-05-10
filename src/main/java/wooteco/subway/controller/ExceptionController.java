@@ -1,6 +1,5 @@
 package wooteco.subway.controller;
 
-import java.sql.SQLNonTransientException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import wooteco.subway.exception.NullIdException;
 import wooteco.subway.exception.NullNameException;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.exception.line.NullColorException;
+import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.DuplicateStationException;
 import wooteco.subway.exception.station.NotFoundStationException;
 
@@ -61,6 +61,12 @@ public class ExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(final MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(InvalidSectionOnLineException.class)
+    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(final InvalidSectionOnLineException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }
 }

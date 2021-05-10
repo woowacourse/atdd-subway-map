@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
 
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -23,13 +24,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", (long) 1, (long) 2, 5);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -45,12 +44,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-blue-100");
-        params.put("name", "1호선");
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-blue-100", (long) 1, (long) 2, 5);
+        LineRequest lineRequest2 = new LineRequest("1호선", "bg-red-200", (long) 3, (long) 4, 5);
 
         RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -58,12 +56,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        Map<String, String> duplicateParams = new HashMap<>();
-        duplicateParams.put("color", "bg-red-101");
-        duplicateParams.put("name", "1호선");
-
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(duplicateParams)
+            .body(lineRequest2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -79,12 +73,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-404");
-        params.put("name", "3호선");
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-yellow-100", (long) 1, (long) 2, 5);
+        LineRequest lineRequest2 = new LineRequest("3호선", "bg-yellow-200", (long) 3, (long) 4, 5);
 
         RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -92,12 +85,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        Map<String, String> duplicateParams = new HashMap<>();
-        duplicateParams.put("color", "bg-red-404");
-        duplicateParams.put("name", "4호선");
-
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(duplicateParams)
+            .body(lineRequest2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -113,23 +102,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void checkAllLines() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-purple-404");
-        params.put("name", "호남선");
+        LineRequest lineRequest1 = new LineRequest("1호선", "bg-blue-100", (long) 1, (long) 2, 5);
+        LineRequest lineRequest2 = new LineRequest("3호선", "bg-yellow-200", (long) 3, (long) 4, 5);
 
         ExtractableResponse<Response> response1 = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
 
-        params.put("color", "bg-purple-505");
-        params.put("name", "백호선");
-
         ExtractableResponse<Response> response2 = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -274,21 +259,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void updateLineToExistedLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-white-400");
-        params.put("name", "구미선");
+        final String color = "bg-purple-400";
+        final String name = "구미선";
+        final long upStationId = 1L;
+        final long downStationId = 2L;
+        final int distance = 10;
+        LineRequest lineRequest = new LineRequest(color, name, upStationId, downStationId,distance);
         ExtractableResponse<Response> requestResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
+        final String targetColor = "bg-purple-401";
+        final String targetName = "황천선";
+        lineRequest = new LineRequest(targetColor, targetName, upStationId, downStationId,distance);
 
-        params.put("color", "bg-white-401");
-        params.put("name", "황천선");
         ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -297,8 +286,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
         // when
-        final String color = "bg-white-400";
-        final String name = "대구선";
+
         Map<String, String> updateParams = new HashMap<>();
         updateParams.put("color", color);
         updateParams.put("name", name);
@@ -330,11 +318,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         final String color = "bg-purple-511";
         final String name = "울산선";
-        Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
+        final long upStationId = 1L;
+        final long downStationId = 2L;
+        final int distance = 10;
+        LineRequest lineRequest = new LineRequest(color, name, upStationId, downStationId,distance);
         ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
