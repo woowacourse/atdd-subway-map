@@ -32,9 +32,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
-        DATA1.put(NAME, "잠실역");
-        DATA2.put(NAME, "강남역");
-        DATA_EMPTY_STRING.put(NAME, "");
+        DATA1.put(NAME, "A역");
+        DATA2.put(NAME, "B역");
+        DATA_EMPTY_STRING.put(NAME, " ");
         DATA_NULL.put(NAME, null);
     }
 

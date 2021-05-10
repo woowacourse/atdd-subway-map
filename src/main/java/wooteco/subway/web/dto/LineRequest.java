@@ -1,20 +1,25 @@
 package wooteco.subway.web.dto;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Section;
 
 public class LineRequest {
 
-    @NotEmpty
+    @NotBlank
     private String name;
-    @NotEmpty
+    @NotBlank
     private String color;
     @Min(1)
+    @NotNull
     private Long upStationId;
     @Min(1)
+    @NotNull
     private Long downStationId;
-    @Min(0)
+    @Min(1)
+    @NotNull
     private int distance;
 
     public LineRequest() {
@@ -51,5 +56,9 @@ public class LineRequest {
 
     public Line toEntity() {
         return new Line(name, color);
+    }
+
+    public Section toStationEntity() {
+        return new Section(null, upStationId, downStationId);
     }
 }
