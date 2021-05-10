@@ -39,6 +39,7 @@ public class LineController {
         Line line = lineService.findById(id);
         List<StationResponse> sortedStations = lineService.sortedStationsByLineId(id);
         LineResponse lineResponse = new LineResponse(line, sortedStations);
+//        LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.ok().body(lineResponse);
     }
 
