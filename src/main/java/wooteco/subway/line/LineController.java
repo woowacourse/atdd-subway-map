@@ -80,6 +80,46 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<String> delete(@PathVariable long lineId, @RequestParam long stationId) {
+        checkSectionCount(lineId);
+        List<Long> upStationIds = sectionService.findBeforeUpStationId(lineId, stationId);
+        List<Long> downStationIds = sectionService.findBeforeDownStationId(lineId, stationId);
+
+        return checkUpDownAndDelete(lineId, upStationIds, downStationIds, stationId);
+
+    }
+
+    private ResponseEntity<String> checkUpDownAndDelete(long lineId, List<Long> upStationIds, List<Long> downStationIds, long stationId) {
+        if(upStationIds.isEmpty()) {
+            sectionService.delete(lineId, stationId, downStationIds.get(0));
+            return ResponseEntity.ok().build();
+        }
+
+        if(downStationIds.isEmpty()) {
+            sectionService.delete(lineId, upStationIds.get(0), stationId);
+            return ResponseEntity.ok().build();
+        }
+        return deleteSection(lineId, upStationIds.get(0), downStationIds.get(0), stationId);
+
+    }
+
+    private void checkSectionCount(@PathVariable long lineId) {
+        if (sectionService.count(lineId) == 1) {
+            throw new IllegalArgumentException("구간이 하나뿐이라 더이상 지울 수 없습니다.");
+        }
+    }
+
+    private ResponseEntity<String> deleteSection(long lineId, Long upStationId, Long downStationId, long stationId) {
+        int firstDistance = sectionService.findBeforeDistance(lineId,upStationId, stationId);
+        int secondDistance = sectionService.findBeforeDistance(lineId, stationId, downStationId);
+
+        sectionService.delete(lineId, upStationId, stationId);
+        sectionService.delete(lineId, stationId, downStationId);
+        sectionService.save(lineId, upStationId, downStationId, firstDistance + secondDistance);
+        return ResponseEntity.ok().build();
+    }
+
     private ResponseEntity<String> addDownStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
         List<Long> beforeDownStations = sectionService.findBeforeDownStationId(lineId, upStationId);
         if(beforeDownStations.isEmpty()) {

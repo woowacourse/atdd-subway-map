@@ -62,4 +62,9 @@ public class SectionDao {
         String sql = "SELECT up_station_id FROM SECTION WHERE line_id = ? AND down_station_id = ?";
         return jdbcTemplate.queryForList(sql, Long.class, lineId, downStationId);
     }
+
+    public int count(long lineId) {
+        String sql = "SELECT count(*) FROM SECTION WHERE line_id = ?";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, lineId));
+    }
 }

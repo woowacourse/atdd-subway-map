@@ -60,4 +60,8 @@ public class SectionService {
         sectionDao.save(lineId, upStationId, downStationId, firstDistance);
         sectionDao.save(lineId, downStationId, beforeDownStationId, secondDistance);
     }
+
+    public int count(long lineId) {
+        return sectionDao.count(lineId);
+    }
 }
