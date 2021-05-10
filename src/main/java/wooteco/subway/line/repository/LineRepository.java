@@ -3,6 +3,7 @@ package wooteco.subway.line.repository;
 import wooteco.subway.line.domain.Line;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LineRepository {
 
@@ -10,7 +11,9 @@ public interface LineRepository {
 
     List<Line> findAll();
 
-    Line findById(Long id);
+    Optional<Line> findById(Long id);
+
+    Optional<Line> findByName(String name);
 
     void delete(Long id);
 

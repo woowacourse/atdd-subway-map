@@ -13,12 +13,13 @@ import wooteco.subway.line.repository.LineRepository;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JDBCLineRepository implements LineRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Line> actorRowMapper = (resultSet, rowNum) ->
+    private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) ->
             new Line(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
@@ -41,22 +42,28 @@ public class JDBCLineRepository implements LineRepository {
                 ps.setString(2, line.getColor());
                 return ps;
             }, keyHolder);
-            return findById(keyHolder.getKey().longValue());
+            return findById(keyHolder.getKey().longValue()).get();
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.", e.getCause());
         }
     }
 
     @Override
-    public List<Line> findAll() {
-        String query = "SELECT * FROM line";
-        return this.jdbcTemplate.query(query, actorRowMapper);
+    public Optional<Line> findById(final Long id) {
+        String query = "SELECT * FROM line WHERE id = ?";
+        return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, lineRowMapper, id));
     }
 
     @Override
-    public Line findById(final Long id) {
-        String query = "SELECT * FROM line WHERE id = ?";
-        return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
+    public List<Line> findAll() {
+        String query = "SELECT * FROM line";
+        return this.jdbcTemplate.query(query, lineRowMapper);
+    }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String query = "SELECT * FROM line WHERE name = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query, lineRowMapper, name));
     }
 
     @Override
@@ -67,8 +74,12 @@ public class JDBCLineRepository implements LineRepository {
 
     @Override
     public void update(final Line line) {
-        String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        this.jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
+        try {
+            String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
+            this.jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
+        } catch (DuplicateKeyException e) {
+            throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.", e.getCause());
+        }
     }
 
     @Override
