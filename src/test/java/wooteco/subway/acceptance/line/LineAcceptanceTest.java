@@ -532,4 +532,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("자연수가 아닌 구간의 길이 등록")
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-1", "오"})
+    void createSectionWithNotDistanceOfNaturalNumber(String invalidDistance) {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
+        params.put("distance", invalidDistance);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
