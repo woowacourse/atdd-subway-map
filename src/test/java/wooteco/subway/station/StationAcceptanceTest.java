@@ -40,7 +40,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
-    private ExtractableResponse<Response> 지하철역_등록(final StationRequest stationRequest) {
+    public static ExtractableResponse<Response> 지하철역_등록(final StationRequest stationRequest) {
         return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

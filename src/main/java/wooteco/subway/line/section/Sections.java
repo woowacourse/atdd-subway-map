@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -117,5 +118,22 @@ public class Sections {
 
     public List<Section> toList() {
         return sectionGroup;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Sections sections = (Sections) o;
+        return Objects.equals(sectionGroup, sections.sectionGroup);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sectionGroup);
     }
 }
