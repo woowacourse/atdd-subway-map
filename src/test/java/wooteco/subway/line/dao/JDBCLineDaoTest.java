@@ -45,8 +45,9 @@ class JDBCLineDaoTest {
 
         List<Line> lines = jdbcLineDao.findAll();
 
-        assertThat(lines).hasSize(2);
-        assertThat(lines).containsExactly(savedLine1, savedLine2);
+        assertThat(lines)
+                .hasSize(2)
+                .containsExactly(savedLine1, savedLine2);
     }
 
     @Test
@@ -72,8 +73,9 @@ class JDBCLineDaoTest {
 
         List<Line> lines = jdbcLineDao.findAll();
 
-        assertThat(lines).hasSize(1);
-        assertThat(lines).containsExactly(savedLine1);
+        assertThat(lines)
+                .hasSize(1)
+                .containsExactly(savedLine1);
     }
 
     @Test

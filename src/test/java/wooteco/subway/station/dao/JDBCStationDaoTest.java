@@ -42,8 +42,9 @@ class JDBCStationDaoTest {
 
         List<Station> stations = jdbcStationDao.findAll();
 
-        assertThat(stations).hasSize(2);
-        assertThat(stations).containsExactly(new Station(1L, "강남역"), new Station(2L, "역삼역"));
+        assertThat(stations)
+                .hasSize(2)
+                .containsExactly(new Station(1L, "강남역"), new Station(2L, "역삼역"));
     }
 
     @Test
