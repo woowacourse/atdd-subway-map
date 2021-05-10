@@ -103,13 +103,14 @@ public class SectionRepository {
     }
 
     public Section getExistingSectionByBaseStation(final Section section) {
-        final String query;
-        if (isExistInUpStation(section.getLineId(), section.getUpStationId())) {
+        String query;
+        Long lineId = section.getLineId();
+        if (isExistInUpStation(lineId, section.getUpStationId())) {
             query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND up_station_id = ?";
-            return sendQueryToGetSection(query, section.getLineId(), section.getUpStationId());
+            return sendQueryToGetSection(query, lineId, section.getUpStationId());
         }
         query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND down_station_id = ?";
-        return sendQueryToGetSection(query, section.getLineId(), section.getDownStationId());
+        return sendQueryToGetSection(query, lineId, section.getDownStationId());
     }
 
     private Section sendQueryToGetSection(final String query, final Long lineId, final Long stationId) {
