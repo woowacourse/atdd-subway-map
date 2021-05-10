@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -36,6 +37,11 @@ public class JdbcLineDao implements LineDao {
     public Optional<Line> findLineByInfo(String name, String color) {
         String sql = "SELECT * FROM line WHERE name = ? OR color = ?";
         return jdbcTemplate.query(sql, lineRowMapper(), name, color).stream().findAny();
+    }
+
+    public List<Line> showAll() {
+        String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, lineRowMapper());
     }
 
     private RowMapper<Line> lineRowMapper() {

@@ -39,6 +39,10 @@ public class InMemoryLineDao implements LineDao {
         return lines.stream()
                 .filter(line -> line.isSameId(lineId))
                 .findAny();
+    }
 
+    @Override
+    public List<Line> showAll() {
+        return new ArrayList<>(lines);
     }
 }

@@ -11,12 +11,23 @@ import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+
+    public List<Line> showAll(){
+        List<Line> lines = lineDao.showAll();
+        for(Line line: lines){
+            Sections sections = sectionDao.findSectionsByLineId(line.getId());
+            line.insertSections(sections);
+        }
+        return lines;
+    }
 
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
         if (lineDao.findLineByInfo(name, color).isPresent()) {
