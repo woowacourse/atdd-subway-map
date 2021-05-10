@@ -1,21 +1,28 @@
-package wooteco.subway.station;
+package wooteco.subway.line;
 
 import java.util.Objects;
 
-public class Station {
+public class Line {
 
     private Long id;
     private String name;
+    private String color;
 
-    public Station() {
+    public Line() {
     }
 
-    public Station(final String name) {
+    public Line(final String name, final String color) {
         this.name = name;
+        this.color = color;
     }
 
-    public Station(final Long id, final String name) {
+    public Line(final Long id, final String name, final String color) {
         this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
+    public Line(final String name) {
         this.name = name;
     }
 
@@ -27,6 +34,10 @@ public class Station {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -35,8 +46,8 @@ public class Station {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Station station = (Station) o;
-        return Objects.equals(id, station.id);
+        Line line = (Line) o;
+        return Objects.equals(id, line.id);
     }
 
     @Override
