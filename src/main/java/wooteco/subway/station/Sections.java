@@ -2,10 +2,14 @@ package wooteco.subway.station;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 public class Sections {
     List<Section> sections;
+
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
 
     public Sections(Station upStation, Station downStation, int distance) {
         this.sections = new ArrayList<>();
@@ -24,7 +28,7 @@ public class Sections {
                 addMiddle(sectionToUpdate, downStation, distance);
                 return;
             }
-            addAt(new Section(upStation, downStation, distance), this.sections.size() - 1);
+            addAt(new Section(upStation, downStation, distance), this.sections.size());
             return;
         }
 
@@ -99,35 +103,15 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        boolean hasUpStation = this.sections.stream()
-                .anyMatch(section -> section.isUpStation(station));
-        boolean hasDownStation = this.sections.stream()
-                .anyMatch(section -> section.isDownStation(station));
+        boolean hasUpStation = isUp(station);
+        boolean hasDownStation = isDown(station);
 
         if (!hasUpStation && !hasDownStation) {
             throw new IllegalArgumentException("등록되지 않은 역입니다.");
         }
 
         if (hasUpStation && hasDownStation) {
-            Section sectionToDelete1 = this.sections.stream()
-                    .filter(section -> section.isDownStation(station))
-                    .findAny()
-                    .get();
-
-            Section sectionToDelete2 = this.sections.stream()
-                    .filter(section -> section.isUpStation(station))
-                    .findAny()
-                    .get();
-
-            Section section = new Section(sectionToDelete1.getUpStation(),
-                    sectionToDelete2.getDownStation(),
-                    sectionToDelete1.getDistance() + sectionToDelete2.getDistance());
-
-            int index = sections.indexOf(sectionToDelete1);
-
-            sections.remove(index);
-            sections.remove(index);
-            sections.add(index, section);
+            removeStationFromMiddleOfSection(station);
             return;
         }
 
@@ -143,8 +127,44 @@ public class Sections {
 
     }
 
-    // todo : remove
-    public Stream<Section> stream() {
-        return this.sections.stream();
+    private void removeStationFromMiddleOfSection(Station station) {
+        Section sectionToUpdateLeftSide = this.sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny()
+                .get();
+
+        Section sectionToUpdateRightSide = this.sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findAny()
+                .get();
+
+        Section sectionMerged = mergeSection(sectionToUpdateLeftSide, sectionToUpdateRightSide);
+        int index = sections.indexOf(sectionToUpdateLeftSide);
+
+        sections.remove(sectionToUpdateLeftSide);
+        sections.remove(sectionToUpdateRightSide);
+
+        sections.add(index, sectionMerged);
+    }
+
+    private Section mergeSection(Section left, Section right) {
+        return new Section(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }
