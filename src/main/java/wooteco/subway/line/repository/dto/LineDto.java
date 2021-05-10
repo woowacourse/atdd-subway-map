@@ -17,8 +17,7 @@ public class LineDto {
     }
 
     public LineDto(final String name, final String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color, new ArrayList<>());
     }
 
     public LineDto(final Long id, final String name, final String color, final List<StationResponse> stations) {

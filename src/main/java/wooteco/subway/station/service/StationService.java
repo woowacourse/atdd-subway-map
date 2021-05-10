@@ -2,7 +2,6 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
