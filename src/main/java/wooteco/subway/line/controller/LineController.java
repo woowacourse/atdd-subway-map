@@ -2,11 +2,17 @@ package wooteco.subway.line.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.exception.SubWayException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.service.StationService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -14,15 +20,32 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService,
+                          SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse newLine = lineService.save(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineReq, Errors error) {
+        validateRequestValues(error);
+        stationService.validateStations(lineReq.getUpStationId(), lineReq.getDownStationId());
+
+        LineResponse newLine = lineService.save(lineReq);
+        SectionRequest sectionReq = new SectionRequest(lineReq);
+        sectionService.save(newLine.getId(), sectionReq);
+
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(newLine);
+    }
+
+    private void validateRequestValues(Errors error) {
+        if (error.hasErrors()) {
+            throw new SubWayException("비어 있는 값은 있을 수 없습니다.");
+        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

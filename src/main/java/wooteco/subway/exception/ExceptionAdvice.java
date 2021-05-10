@@ -27,4 +27,11 @@ public class ExceptionAdvice {
         ExceptionResponse exceptionResponse = new ExceptionResponse(causedClass.getName(), e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
+
+    @ExceptionHandler(SubWayException.class)
+    public ResponseEntity<ExceptionResponse> handleSectionException(SubWayException e) {
+        Class<? extends SubWayException> causedClass = e.getClass();
+        ExceptionResponse exceptionResponse = new ExceptionResponse(causedClass.getName(), e.getMessage());
+        return ResponseEntity.badRequest().body(exceptionResponse);
+    }
 }

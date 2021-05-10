@@ -12,15 +12,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class JdbcStationDao implements StationRepository {
-
+public class JdbcStationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     public JdbcStationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     public Station save(Station station) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String query = "INSERT INTO station (name) VALUES (?)";
@@ -34,28 +36,28 @@ public class JdbcStationDao implements StationRepository {
         return new Station(id, name);
     }
 
-    @Override
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
-        return jdbcTemplate.query(query, stationRowMapper());
+        return jdbcTemplate.query(query, stationRowMapper);
     }
 
-    @Override
     public boolean findByName(String name) {
         String query = "SELECT COUNT(*) FROM station WHERE name = (?)";
         return jdbcTemplate.queryForObject(query, Integer.class, name) > 0;
     }
 
-    private RowMapper<Station> stationRowMapper() {
-        return (rs, rowNum) -> new Station(
-                rs.getLong("id"),
-                rs.getString("name")
-        );
+    public List<Station> findTwoStations(Long upStationId, Long downStationId) {
+        String query = "SELECT * FROM station WHERE id in (?, ?)";
+        return jdbcTemplate.query(query, stationRowMapper, upStationId, downStationId);
     }
 
-    @Override
     public void deleteById(Long id) {
         String query = "DELETE FROM station WHERE id = (?)";
         jdbcTemplate.update(query, id);
+    }
+
+    public Station findBy(Long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, stationRowMapper, id);
     }
 }

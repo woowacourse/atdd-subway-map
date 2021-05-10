@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
-import wooteco.subway.station.repository.StationRepository;
+import wooteco.subway.station.repository.JdbcStationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +21,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@Transactional
+@Sql("classpath:test.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    private StationRepository stationRepository;
+    private JdbcStationDao stationRepository;
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -88,11 +88,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> createResponse = createPostResponse(강남역);
-
-        int originalSize = stationRepository.findAll().size();
 
         // when
+        ExtractableResponse<Response> createResponse = createPostResponse(강남역);
+        int originalSize = stationRepository.findAll().size();
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = createDeleteResponse(uri);
 

@@ -7,7 +7,7 @@ import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.repository.JdbcLineDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +17,9 @@ public class LineService {
 
     private static final Logger log = LoggerFactory.getLogger(LineService.class);
 
-    private final LineRepository lineRepository;
+    private final JdbcLineDao lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(JdbcLineDao lineRepository) {
         this.lineRepository = lineRepository;
     }
 
