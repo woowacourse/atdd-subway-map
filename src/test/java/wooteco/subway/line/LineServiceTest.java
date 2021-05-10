@@ -1,5 +1,6 @@
 package wooteco.subway.line;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.Station;
@@ -69,11 +71,26 @@ class LineServiceTest {
         assertEquals("성수역", lineService.showLine(1L).getStations().get(2).getName());
     }
 
+    @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
+        createLine();
+        lineService.updateLine(1L, new Line("바뀐호선", "black"));
+        assertEquals("바뀐호선", lineService.showLine(1L).getName());
+        assertEquals("black", lineService.showLine(1L).getColor());
     }
 
+    @DisplayName("존재하지 않는 노선을 수정한다.")
+    @Test
+    void updateLineException() {
+        createLine();
+        assertThatThrownBy(() -> lineService.updateLine(1L, new Line("바뀐호선", "black"))).isInstanceOf(NoSuchLineException.class);
+    }
+
+    @DisplayName("노선을 삭제한다.")
     @Test
     void deleteLine() {
+        createLine();
+        assertThatThrownBy(() -> lineService.deleteLine(1L)).isInstanceOf(NoSuchLineException.class);
     }
 }

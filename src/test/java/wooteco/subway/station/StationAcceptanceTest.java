@@ -93,7 +93,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addStation(String stationName) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();   //TODO: dto로 넘기기
         params.put("name", stationName);
         return RestAssured.given().log().all()
             .body(params)
