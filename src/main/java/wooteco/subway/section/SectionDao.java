@@ -69,8 +69,10 @@ public class SectionDao {
     }
 
     private boolean endPointCondition(String query, String query2, Long id) {
-        return jdbcTemplate.queryForObject(query, Integer.class, id) == 1 &&
-                jdbcTemplate.queryForObject(query2, Integer.class, id) == 0;
+        return (jdbcTemplate.queryForObject(query, Integer.class, id) == 1 &&
+                jdbcTemplate.queryForObject(query2, Integer.class, id) == 0)
+                || (jdbcTemplate.queryForObject(query, Integer.class, id) == 0 &&
+                jdbcTemplate.queryForObject(query2, Integer.class, id) == 1);
     }
 
     private RowMapper<Section> sectionRowMapper() {

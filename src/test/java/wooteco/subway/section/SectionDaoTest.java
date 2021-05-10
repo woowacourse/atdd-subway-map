@@ -73,6 +73,7 @@ class SectionDaoTest {
         assertThat(sectionDao.hasEndPointInSection(1L, 2L)).isTrue();
         assertThat(sectionDao.hasEndPointInSection(2L, 3L)).isFalse();
         assertThat(sectionDao.hasEndPointInSection(3L, 4L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(4L, 3L)).isFalse();
+        assertThat(sectionDao.hasEndPointInSection(4L, 5L)).isTrue();
+        assertThat(sectionDao.hasEndPointInSection(10L, 1L)).isTrue();
     }
 }

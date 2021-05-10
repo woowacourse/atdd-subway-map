@@ -1,6 +1,7 @@
 package wooteco.subway.section;
 
 import wooteco.subway.line.LineRequest;
+import wooteco.subway.line.SectionRequest;
 
 public class SectionDto {
     private Long lineId;
@@ -38,7 +39,7 @@ public class SectionDto {
                 lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
-    public static SectionDto of(Long lineId, wooteco.subway.line.SectionRequest sectionRequest) {
+    public static SectionDto of(Long lineId, SectionRequest sectionRequest) {
         return new SectionDto(lineId, sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
