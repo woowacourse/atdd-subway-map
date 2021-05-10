@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선역 관련 기능")
-public class LIneAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private StationDao stationDao;
