@@ -132,7 +132,8 @@ public class Construction {
         List<Station> affectedStationPath = affectedSections.pathByLine(line);
         Station upStationToCreate = affectedStationPath.get(0);
         Station downStationToCreate = affectedStationPath.get(affectedStationPath.size() - 1);
-        sectionsToCreate.add(new Section(line, upStationToCreate, downStationToCreate, newDistance));
+        sectionsToCreate
+            .add(new Section(line, upStationToCreate, downStationToCreate, newDistance));
     }
 
     private boolean isNotEndStationDeletion(Station station) {
@@ -142,7 +143,7 @@ public class Construction {
         return !(firstStation.equals(station) || lastStation.equals(station));
     }
 
-    private List<Section> sectionsWithStation (Station station) {
+    private List<Section> sectionsWithStation(Station station) {
         return sections.stream()
             .filter(section -> section.hasStation(station))
             .collect(Collectors.toList());
