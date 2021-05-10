@@ -38,7 +38,6 @@ public class LineServiceTest {
         assertThat(result.getColor()).isEqualTo(line.getColor());
     }
 
-
     @DisplayName("중복된 이름을 갖는 노선을 생성하면, 예외가 발생한다.")
     @Test
     void createDuplicateLineException() {

@@ -8,14 +8,18 @@ import wooteco.subway.exception.DuplicateLineNameException;
 import wooteco.subway.exception.NotExistLineException;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.section.repository.SectionRepository;
 
 @Service
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository,
+        SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional

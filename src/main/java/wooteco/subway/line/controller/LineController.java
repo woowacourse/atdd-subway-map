@@ -17,21 +17,29 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.service.SectionService;
 
 @RestController
 @RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService,
+        SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.createLine(line);
+        Section newSection = new Section(newLine.getId(), lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionService.createSection(newSection);
         LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
