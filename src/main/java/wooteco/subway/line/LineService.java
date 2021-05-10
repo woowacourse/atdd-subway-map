@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.SectionDao;
 
 import java.util.List;
 
@@ -10,15 +11,19 @@ import java.util.List;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(final LineDao lineDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     public Line create(final Line line) {
         validateName(line.getName());
 
         final Long id = lineDao.save(line.getName(), line.getColor());
+        sectionDao.save(id, line.getUpStationId(), line.getDownStationId(), 0);
+
         return findById(id);
     }
 
