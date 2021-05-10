@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.acceptance.template.LineRequest;
+import wooteco.subway.acceptance.template.SectionRequest;
 import wooteco.subway.acceptance.template.StationRequest;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
 import wooteco.subway.controller.dto.request.SectionRequestDto;
@@ -164,7 +165,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 stationId2,
                 15
         ));
-        LineRequest.createSectionRequestAndReturnResponse(new SectionRequestDto(
+        SectionRequest.createSectionRequestAndReturnResponse(new SectionRequestDto(
                 stationId2,
                 stationId3,
                 10

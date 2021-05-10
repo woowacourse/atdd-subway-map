@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.acceptance.template.LineRequest;
+import wooteco.subway.acceptance.template.SectionRequest;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
 import wooteco.subway.controller.dto.request.SectionRequestDto;
 
@@ -25,7 +26,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ));
 
         // when
-        ExtractableResponse<Response> response = LineRequest.createSectionRequestAndReturnResponse(
+        ExtractableResponse<Response> response = SectionRequest.createSectionRequestAndReturnResponse(
                 new SectionRequestDto(2L, 150L, 10),
                 lineId
         );
