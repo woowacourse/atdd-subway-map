@@ -60,7 +60,7 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> editSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.editSection(id, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        sectionService.addSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance(), id);
         Line line = lineService.findById(id);
         Sections sections = line.getSections();
         List<StationResponse> stationResponses = sections.getStations()
@@ -88,7 +88,7 @@ public class LineController {
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<LineResponse> deleteSection(@PathVariable long id, @RequestParam long stationId) {
-        sectionService.delete(id, stationId);
+        sectionService.deleteSection(id, stationId);
         Line line = lineService.findById(id);
         Sections sections = line.getSections();
         List<StationResponse> stationResponses = sections.getStations()

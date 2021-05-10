@@ -40,13 +40,13 @@ class LineServiceTest {
 
         given(lineRepository.save(line)).willReturn(lineId);
         given(sectionService.createSection(upStationId, downStationId, distance, lineId)).willReturn(1L);
-        given(lineRepository.findById(1L)).willReturn(retrievedLine);
+        given(lineRepository.findById(lineId)).willReturn(retrievedLine);
 
         Line savedLine = lineService.createLine(name, color, upStationId, downStationId, distance);
 
         assertThat(savedLine).isEqualTo(retrievedLine);
         verify(lineRepository, times(1)).save(line);
-        verify(lineRepository, times(1)).findById(1L);
+        verify(lineRepository, times(1)).findById(lineId);
         verify(sectionService, times(1)).createSection(upStationId, downStationId, distance, lineId);
     }
 

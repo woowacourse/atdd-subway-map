@@ -26,35 +26,35 @@ public class SectionService {
         return sectionRepository.save(section);
     }
 
-    public void editSection(long lineId, long upStationId, long downStationId, int distance) {
+    public void addSection(long upStationId, long downStationId, int distance, long lineId) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
-        Section section = new Section(upStation, downStation, distance, lineId);
-        List<Section> sectionList = sectionRepository.findAllByLineId(lineId);
-        Sections sections = new Sections(sectionList);
-        if (sections.isEndStationExtension(section)) {
-            sectionRepository.save(section);
-            return;
-        }
-        Section editableSection = sections.splitLongerSectionAfterAdding(section);
-        sectionRepository.update(editableSection);
-        sectionRepository.save(section);
+        Section requestSection = new Section(upStation, downStation, distance, lineId);
+        Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
+        splitAndUpdateSections(currentSections, requestSection);
     }
 
-    public void delete(long lineId, long stationId) {
-        List<Section> sectionListT = sectionRepository.findAllByLineId(lineId);
-        Sections sections = new Sections(sectionListT);
-
-        List<Section> sectionList = sectionRepository.findAllByStationId(stationId);
-        Sections appendableSections = new Sections(sectionList);
-        if (sections.isEndStationReduction(appendableSections)) {
-            sectionRepository.delete(sectionList.get(0));
+    private void splitAndUpdateSections(Sections currentSections, Section requestSection) {
+        if (currentSections.canExtendEndSection(requestSection)) {
+            sectionRepository.save(requestSection);
             return;
         }
-        Section left = appendableSections.toList().get(0);
-        Section right = appendableSections.toList().get(1);
-        Section append = left.append(right);
-        sectionRepository.save(append);
-        sectionList.forEach(sectionRepository::delete);
+        Section splitSection = currentSections.splitLongerSectionAfterAdding(requestSection);
+        sectionRepository.update(splitSection);
+        sectionRepository.save(requestSection);
+    }
+
+    public void deleteSection(long lineId, long stationId) {
+        Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
+        List<Section> sectionsAroundStation = sectionRepository.findAllByStationId(stationId);
+        Sections removableSections = new Sections(sectionsAroundStation);
+        if (currentSections.canDeleteEndSection(removableSections)) {
+            Section removableSection = sectionsAroundStation.get(0);
+            sectionRepository.delete(removableSection);
+            return;
+        }
+        Section appendedSection = removableSections.append();
+        sectionRepository.save(appendedSection);
+        sectionsAroundStation.forEach(sectionRepository::delete);
     }
 }

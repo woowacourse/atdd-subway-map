@@ -80,10 +80,10 @@ public class Sections {
         return Objects.hash(sections);
     }
 
-    public boolean isEndStationExtension(Section section) {
+    public boolean canExtendEndSection(Section section) {
         Section firstSection = sections.get(0);
         Section lastSection = sections.get(sections.size() - 1);
-        return section.getDownStation().equals(firstSection.getUpStation()) || section.getUpStation().equals(lastSection.getDownStation());
+        return section.isConnectedWith(firstSection) || lastSection.isConnectedWith(section);
     }
 
     public Section splitLongerSectionAfterAdding(Section section) {
@@ -109,10 +109,16 @@ public class Sections {
                 .orElseThrow(() -> new SubwayException(ExceptionStatus.INVALID_SECTION));
     }
 
-    public boolean isEndStationReduction(Sections target) {
+    public boolean canDeleteEndSection(Sections target) {
         if (sections.size() == 1) {
             return false;
         }
         return target.sections.size() == 1;
+    }
+
+    public Section append() {
+        return sections.stream()
+                .reduce(Section::append)
+                .orElseThrow(IllegalStateException::new);
     }
 }

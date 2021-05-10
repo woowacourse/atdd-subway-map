@@ -68,7 +68,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
         Station newFirstStation = new Station("회기역");
         Section targetSection = new Section(newFirstStation, firstStation, 151, 1L);
-        boolean isEndStationExtension = sections.isEndStationExtension(targetSection);
+        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
 
         assertThat(isEndStationExtension).isTrue();
     }
@@ -83,7 +83,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
         Station lastStation = new Station("회기역");
         Section targetSection = new Section(secondStation, lastStation, 151, 1L);
-        boolean isEndStationExtension = sections.isEndStationExtension(targetSection);
+        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
 
         assertThat(isEndStationExtension).isTrue();
     }
@@ -100,7 +100,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
         Station targetStation = new Station("매화역");
         Section targetSection = new Section(secondStation, targetStation, 151, 1L);
-        boolean isEndStationExtension = sections.isEndStationExtension(targetSection);
+        boolean isEndStationExtension = sections.canExtendEndSection(targetSection);
 
         assertThat(isEndStationExtension).isFalse();
     }
