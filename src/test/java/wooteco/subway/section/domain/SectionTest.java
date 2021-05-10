@@ -2,6 +2,8 @@ package wooteco.subway.section.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.section.exception.SectionHasSameStationsException;
+import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,7 +54,17 @@ class SectionTest {
         //when
         //then
         assertThatThrownBy(() -> upSection.mergeWithDownSection(downSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionNotSequentialException.class)
                 .hasMessageContaining("이어진 구간이 아닙니다.");
+    }
+
+    @DisplayName("노선에 상행역과 하행역이 같으면 예외")
+    @Test
+    void whenSameUpStationAndDownStation() {
+        //given
+        //when
+        //then
+        assertThatThrownBy(() -> new Section(GANGNAM_STATION, GANGNAM_STATION, TEN_DISTANCE))
+                .isInstanceOf(SectionHasSameStationsException.class);
     }
 }

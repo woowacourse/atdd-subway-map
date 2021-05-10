@@ -1,5 +1,7 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.section.exception.SectionHasSameStationsException;
+import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.station.domain.Station;
 
 public class Section {
@@ -12,9 +14,16 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, SectionDistance distance) {
+        checkSameStations(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void checkSameStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new SectionHasSameStationsException(String.format("한 개의 역으로 이루어진 노선은 생성할 수 없습니다. 역 이름 : %s", upStation));
+        }
     }
 
     public boolean isExist(Station station) {
@@ -23,7 +32,7 @@ public class Section {
 
     public Section mergeWithDownSection(Section next) {
         if (isNotSequential(next)) {
-            throw new IllegalArgumentException(
+            throw new SectionNotSequentialException(
                     String.format(
                             "이어진 구간이 아닙니다. 앞구간의 하행역 : %s, 뒷 구간의 상행역 : %s",
                             this.downStation,
