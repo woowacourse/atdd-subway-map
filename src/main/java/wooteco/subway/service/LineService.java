@@ -1,8 +1,6 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,12 +43,12 @@ public class LineService {
     }
 
     public Line findLine(Long id) {
-        return lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+        return lineDao.findCompleteLineById(id).orElseThrow(LineNotFoundException::new);
     }
 
     @Transactional
     public void update(Long id, String name, String color) {
-        lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+        lineDao.findCompleteLineById(id).orElseThrow(LineNotFoundException::new);
         if (lineDao.findLineByNameOrColor(name, color, id).isPresent()) {
             throw new LineInfoDuplicatedException();
         }

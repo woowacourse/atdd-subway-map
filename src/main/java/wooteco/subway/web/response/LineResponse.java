@@ -1,7 +1,7 @@
 package wooteco.subway.web.response;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +19,10 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public static LineResponse create(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>());
+        final List<StationResponse> stationResponses =
+            line.stations().stream()
+                .map(StationResponse::create).collect(Collectors.toList());
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 }

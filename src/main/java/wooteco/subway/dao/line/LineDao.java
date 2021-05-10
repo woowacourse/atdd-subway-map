@@ -12,7 +12,7 @@ public interface LineDao {
 
     List<Line> findAll();
 
-    Optional<Line> findLineById(Long id);
+    Optional<Line> findCompleteLineById(Long id);
 
     void removeLine(Long id);
 

@@ -15,6 +15,7 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.web.request.LineRequest;
+import wooteco.subway.web.request.SectionRequest;
 import wooteco.subway.web.response.LineResponse;
 
 @DisplayName("노선 관련 기능")
@@ -32,15 +33,8 @@ class LineApiControllerTest extends AcceptanceTest {
     @DisplayName("노선 생성 - 성공")
     @Test
     void createLine() {
-        // given
-        final Long upStationId = 상행역().getId();
-        final Long downStationId = 하행역().getId();
-
-        final LineRequest lineRequest = LineRequest
-            .create(LINE_NAME, LINE_COLOR, upStationId, downStationId, DISTANCE);
-
         // when
-        final ExtractableResponse<Response> result = 노선_생성(lineRequest);
+        final ExtractableResponse<Response> result = 기본_노선_생성();
 
         //then
         final LineResponse lineResponse = result.body().as(LineResponse.class);
@@ -48,6 +42,9 @@ class LineApiControllerTest extends AcceptanceTest {
         assertThat(result.header("Location")).isNotEmpty();
         assertThat(lineResponse.getName()).isEqualTo(LINE_NAME);
         assertThat(lineResponse.getColor()).isEqualTo(LINE_COLOR);
+        assertThat(lineResponse.getStations()).hasSize(2);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(UP_STATION_NAME, DOWN_STATION_NAME);
     }
 
     @DisplayName("노선 생성 - 실패(이름 중복)")
@@ -72,27 +69,26 @@ class LineApiControllerTest extends AcceptanceTest {
     @Test
     void createLine_wrongInfo() {
         // when
-        final ExtractableResponse<Response> result =
-            노선_생성(LineRequest.create("", LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
+        final ExtractableResponse<Response> result = 기본_노선_생성();
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.body().asString()).isEqualTo("잘못된 정보를 입력했습니다.");
     }
 
-//    @DisplayName("노선 목록 조회 - 성공")
-//    @Test
-//    void getLines() {
-//        / given
+    @DisplayName("노선 목록 조회 - 성공")
+    @Test
+    void getLines() {
+        // given
 //        final LineRequest lineRequest1 = LineRequest.create("신분당선", "bg-red-600");
 //        final LineRequest lineRequest2 = LineRequest.create("2호선", "bg-green-600");
 //        노선_생성(lineRequest1);
 //        노선_생성(lineRequest2);
 //
-//         when
+//        // when
 //        final ExtractableResponse<Response> result = 노선_조회();
 //
-//         then
+//        // then
 //        final List<LineResponse> response = Arrays.asList(result.body().as(LineResponse[].class));
 //
 //        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -101,27 +97,28 @@ class LineApiControllerTest extends AcceptanceTest {
 //            .containsExactlyInAnyOrder("신분당선", "2호선");
 //        assertThat(response).extracting(LineResponse::getColor)
 //            .containsExactlyInAnyOrder("bg-red-600", "bg-green-600");
-//    }
+    }
 
-//    @DisplayName("한 노선 조회 - 성공")
-//    @Test
-//    void getLineById() {
-//        // given
-//        final LineRequest lineRequest = LineRequest.create("신분당선", "bg-red-600");
-//        final ExtractableResponse<Response> createResponse =
-//            노선_생성(lineRequest);
-//        int lineId = createResponse.body().path("id");
-//
-//        // when
-//        ExtractableResponse<Response> response = 노선_조회((long) lineId);
-//
-//        // then
-//        final LineResponse lineResponse = response.body().as(LineResponse.class);
-//
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(lineResponse.getName()).isEqualTo("신분당선");
-//        assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
-//    }
+    @DisplayName("한 노선 조회 - 성공")
+    @Test
+    void getLineById() {
+        // given
+        final ExtractableResponse<Response> createResponse = 기본_노선_생성();
+        int lineId = createResponse.body().path("id");
+
+        // when
+        ExtractableResponse<Response> response = 노선_조회((long) lineId);
+
+        // then
+        final LineResponse lineResponse = response.body().as(LineResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo(LINE_NAME);
+        assertThat(lineResponse.getColor()).isEqualTo(LINE_COLOR);
+        assertThat(lineResponse.getStations()).hasSize(2);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(UP_STATION_NAME, DOWN_STATION_NAME);
+    }
 
 
     @DisplayName("노선 조회 - 실패(노선 정보 없음)")
@@ -134,77 +131,186 @@ class LineApiControllerTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-//    @DisplayName("노선 수정 - 성공")
-//    @Test
-//    void updateLine() {
-//        /// given
-//        String lineName = "신분당선";
-//        String lineColor = "bg-red-600";
-//        final String uri = 노선_생성(LineRequest.create(lineName, lineColor)).header("Location");
-//
-//        String newLineName = "1호선";
-//        final LineRequest lineRequest = LineRequest.create(newLineName, lineColor);
-//
-//        // when
-//        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
-//
-//        // then
-//        final LineResponse lineResponse = 노선_조회(uri).as(LineResponse.class);
-//
-//        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(lineResponse.getName()).isEqualTo(newLineName);
-//        assertThat(lineResponse.getName()).isNotEqualTo(lineName);
-//        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
-//    }
-//
-//    @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
-//    @Test
-//    void updateLine_duplicatedName() {
-//        /// given
-//        String originalName = "구분당선";
-//        String originalColor = "bg-blue-600";
-//        노선_생성(LineRequest.create(originalName, originalColor));
-//
-//        String targetName = "신분당선";
-//        String targetColor = "bg-red-600";
-//        final String uri = 노선_생성(LineRequest.create(targetName, targetColor)).header("Location");
-//
-//        // when
-//        final LineRequest lineRequest = LineRequest.create("1호선", originalColor);
-//        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
-//
-//        // then
-//        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//        assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 정보입니다.");
-//    }
-//
-//    @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
-//    @Test
-//    void updateLine_notFound() {
-//        /// given
-//        final LineRequest lineRequest = LineRequest.create("구분당선", "bg-blue-600");
-//
-//        // when
-//        final ExtractableResponse<Response> result = 노선_수정("/lines/" + Long.MAX_VALUE, lineRequest);
-//
-//        // then
-//        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-//    }
-//
-//    @DisplayName("노선 삭제 - 성공")
-//    @Test
-//    void removeLine() {
-//        /// given
-//        final LineRequest lineRequest = LineRequest.create("신분당선", "bg-red-600");
-//        final String uri = 노선_생성(lineRequest).header("Location");
-//
-//        // when
-//        final ExtractableResponse<Response> result = 노선_삭제(uri);
-//
-//        // then
-//        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//        assertThat(노선_조회(uri).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-//    }
+    @DisplayName("노선 수정 - 성공")
+    @Test
+    void updateLine() {
+        // given
+        final Long upStationId = 상행역().getId();
+        final Long downStationId = 하행역().getId();
+        final String uri = 노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStationId,
+            downStationId, DISTANCE)).header("Location");
+
+        String newLineName = "1호선";
+        final LineRequest lineRequest = LineRequest.create(newLineName, LINE_COLOR, upStationId, downStationId, DISTANCE);
+
+        // when
+        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo(newLineName);
+        assertThat(lineResponse.getName()).isNotEqualTo(LINE_NAME);
+        assertThat(lineResponse.getColor()).isEqualTo(LINE_COLOR);
+    }
+
+    @DisplayName("노선 수정 - 실패(변경하려는 노선 이름 중복)")
+    @Test
+    void updateLine_duplicatedName() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE));
+
+        String targetName = "구분당선";
+        String targetColor = "bg-red-6000";
+        final String uri = 노선_생성(LineRequest.create(targetName, targetColor, upStation.getId(), downStation.getId(), DISTANCE))
+            .header("Location");
+
+        // when
+        final LineRequest lineRequest = LineRequest.create(LINE_NAME, "blue", upStation.getId(), downStation.getId(), DISTANCE);
+        final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.body().asString()).isEqualTo("이미 등록되어 있는 노선 정보입니다.");
+    }
+
+    @DisplayName("노선 수정 - 실패(존재 하지 않는 노선 수정)")
+    @Test
+    void updateLine_notFound() {
+        /// given
+        final LineRequest lineRequest = LineRequest.create(UP_STATION_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE);
+
+        // when
+        final ExtractableResponse<Response> result = 노선_수정("/lines/" + Long.MAX_VALUE, lineRequest);
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("노선 삭제 - 성공")
+    @Test
+    void removeLine() {
+        // given
+        final String uri = 기본_노선_생성().header("Location");
+
+        // when
+        final ExtractableResponse<Response> result = 노선_삭제(uri);
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(노선_조회(uri).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("구간 등록 - 성공(상행 종점 등록)")
+    @Test
+    void insertSection_success_upStation() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri =
+            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+                .header("Location");
+
+        final Station newStation = 역_생성("대림역");
+        final int newDistance = 5;
+        final SectionRequest sectionRequest =
+            SectionRequest.create(newStation.getId(), upStation.getId(), newDistance);
+
+        // when
+        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder("대림역", UP_STATION_NAME, DOWN_STATION_NAME);
+    }
+
+    @Test
+    @DisplayName("구간 등록 - 성공(하행 종점 등록)")
+    void insertSection_success_downStation() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri =
+            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+                .header("Location");
+
+        final Station newStation = 역_생성("홍대역");
+        final int newDistance = 5;
+        final SectionRequest sectionRequest =
+            SectionRequest.create(newStation.getId(), upStation.getId(), newDistance);
+
+        // when
+        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(UP_STATION_NAME, DOWN_STATION_NAME, "홍대역");
+    }
+
+    @Test
+    @DisplayName("구간 등록 - 성공(상행 기준 중간에 구간 등록)")
+    void insertSection_success_middle_up() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri =
+            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+                .header("Location");
+
+        final Station newStation = 역_생성("홍대역");
+        final int newDistance = 5;
+        final SectionRequest sectionRequest =
+            SectionRequest.create(upStation.getId(), newStation.getId(), newDistance);
+
+        // when
+        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(UP_STATION_NAME, "홍대역", DOWN_STATION_NAME);
+    }
+
+    @Test
+    @DisplayName("구간 등록 - 성공(하행 기준 중간에 구간 등록)")
+    void insertSection_success_middle_down() {
+        // given
+        final Station upStation = 상행역();
+        final Station downStation = 하행역();
+        final String uri =
+            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
+                .header("Location");
+
+        final Station newStation = 역_생성("홍대역");
+        final int newDistance = 5;
+        final SectionRequest sectionRequest =
+            SectionRequest.create(newStation.getId(), downStation.getId(), newDistance);
+
+        // when
+        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
+
+        // then
+        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
+
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(lineResponse.getStations()).extracting("name")
+            .containsExactlyInAnyOrder(UP_STATION_NAME, "홍대역", DOWN_STATION_NAME);
+    }
 
     private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
         return RestAssured
@@ -215,6 +321,10 @@ class LineApiControllerTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract();
+    }
+
+    private ExtractableResponse<Response> 기본_노선_생성() {
+        return 노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
     }
 
     private ExtractableResponse<Response> 노선_조회() {
@@ -255,6 +365,16 @@ class LineApiControllerTest extends AcceptanceTest {
         return RestAssured.given().log().all()
             .when()
             .delete(uri)
+            .then()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 구간_등록(String uri, SectionRequest sectionRequest) {
+        return RestAssured.given()
+            .body(sectionRequest)
+            .contentType(ContentType.JSON)
+            .when()
+            .post(uri + "/sections")
             .then()
             .extract();
     }

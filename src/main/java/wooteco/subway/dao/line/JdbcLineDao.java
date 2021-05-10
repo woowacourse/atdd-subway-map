@@ -13,6 +13,7 @@ import wooteco.subway.common.PersistenceUtils;
 import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 
 @Repository
 @RequiredArgsConstructor
@@ -65,9 +66,11 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineById(Long id) {
+    public Optional<Line> findCompleteLineById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
+        final Optional<Line> foundLine = jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
+        foundLine.ifPresent(line -> line.addSections(Sections.create(sectionDao.findAllByLineId(id))));
+        return foundLine;
     }
 
     @Override

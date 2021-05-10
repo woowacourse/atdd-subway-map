@@ -15,9 +15,12 @@ public class Section {
     private Station downStation;
     private int distance;
 
-
     public static Section create(Station upStation, Station downStation, int distance) {
-        return new Section(null, upStation, downStation, distance);
+        return create(null, upStation, downStation, distance);
+    }
+
+    public static Section create(Long id, Station upStation, Station downStation, int distance) {
+        return new Section(id, upStation, downStation, distance);
     }
 
     public Long upStationId() {
@@ -27,5 +30,13 @@ public class Section {
     public Long downStationId() {
         return downStation.getId();
 
+    }
+
+    public boolean isDownStation(Station targetStation) {
+        return downStation.isSameId(targetStation.getId());
+    }
+
+    public boolean isUpStation(Station targetStation) {
+        return upStation.isSameId(targetStation.getId());
     }
 }

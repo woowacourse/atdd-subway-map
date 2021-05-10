@@ -1,9 +1,11 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import wooteco.subway.common.Id;
 import wooteco.subway.exception.badRequest.WrongInformationException;
+import wooteco.subway.web.response.StationResponse;
 
 @Getter
 public class Line {
@@ -63,5 +65,13 @@ public class Line {
 
     public Section firstSection() {
         return sections.firstSection();
+    }
+
+    public void addSections(Sections sections) {
+        this.sections = sections;
+    }
+
+    public List<Station> stations() {
+        return sections.asStations();
     }
 }

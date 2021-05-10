@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.badRequest.WrongInformationException;
-import wooteco.subway.web.request.LineRequest;
-import wooteco.subway.web.response.LineResponse;
 import wooteco.subway.service.LineService;
+import wooteco.subway.web.request.LineRequest;
+import wooteco.subway.web.request.SectionRequest;
+import wooteco.subway.web.response.LineResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/lines")
@@ -29,12 +30,15 @@ public class LineApiController {
     private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest,
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new WrongInformationException();
         }
         final Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
-        Line createdLine = lineService.createLine(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Line createdLine = lineService
+            .createLine(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
 
         return ResponseEntity.created(URI.create("/lines/" + createdLine.getId()))
             .body(LineResponse.create(createdLine));
@@ -71,5 +75,11 @@ public class LineApiController {
     public ResponseEntity removeLine(@PathVariable Long id) {
         lineService.removeLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public void insertSection(@PathVariable Long lineId,
+        @RequestBody @Valid SectionRequest sectionRequest, BindingResult bindingResult) {
+
     }
 }
