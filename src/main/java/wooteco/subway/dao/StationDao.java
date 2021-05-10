@@ -41,6 +41,18 @@ public class StationDao {
         }
     }
 
+    public Station select(long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        return jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> {
+                    Station station = new Station(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name")
+                    );
+                    return station;
+                }, id);
+    }
+
     public List<Station> selectAll() {
         String query = "SELECT * FROM station";
         List<Station> stations = jdbcTemplate.query(query, (resultSet, rowNum) -> {

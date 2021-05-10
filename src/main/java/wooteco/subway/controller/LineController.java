@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 import wooteco.subway.service.SubwayService;
 
 import java.net.URI;
@@ -39,7 +40,11 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLineDetail(@PathVariable long id) {
         Line line = subwayService.showLineDetail(id);
-        return ResponseEntity.ok().body(new LineResponse(line));
+        List<StationResponse> stationResponses = subwayService.getStationsInLine(id).stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(new LineResponse(line, stationResponses));
     }
 
     @PutMapping( "/{id}")

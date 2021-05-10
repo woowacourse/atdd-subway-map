@@ -9,6 +9,7 @@ import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SubwayService {
@@ -33,7 +34,15 @@ public class SubwayService {
     }
 
     public Line showLineDetail(long id) {
-        return lineDao.select(id);
+        Line line = lineDao.select(id);
+        return line;
+    }
+
+    public List<Station> getStationsInLine(long id) {
+        List<Section> sections = sectionDao.selectAll(id);
+        return sections.stream()
+                .map(section -> stationDao.select(section.getUpStationId()))
+                .collect(Collectors.toList());
     }
 
     public void modifyLine(long id, Line line) {

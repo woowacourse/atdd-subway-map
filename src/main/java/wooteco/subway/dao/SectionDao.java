@@ -4,9 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -33,5 +35,18 @@ public class SectionDao {
             ps.setInt(4, section.getDistance());
             return ps;
         }, keyHolder);
+    }
+
+    public List<Section> selectAll(long id) {
+        String query = "SELECT * FROM section WHERE line_id = ?";
+        List<Section> sections = jdbcTemplate.query(query, (resultSet, rowNum) -> {
+            Section section = new Section(
+                    resultSet.getLong("up_station_id"),
+                    resultSet.getLong("down_station_id"),
+                    resultSet.getInt("distance")
+            );
+            return section;
+        }, id);
+        return sections;
     }
 }
