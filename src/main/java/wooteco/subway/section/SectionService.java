@@ -24,10 +24,11 @@ public class SectionService {
 
     public Section createSection(Section section, Long lineId) {
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        Optional<Section> affectedSection = sections.affectedSection(section);
-        sections.add(section);
+        Section sectionWithLineId = Section.of(section, lineId);
+        Optional<Section> affectedSection = sections.affectedSection(sectionWithLineId);
+        sections.add(sectionWithLineId);
 
-        return saveAffectedSections(sections, section, affectedSection);
+        return saveAffectedSections(sections, sectionWithLineId, affectedSection);
     }
 
     private Section saveAffectedSections(Sections sections, Section section, Optional<Section> affectedSection) {

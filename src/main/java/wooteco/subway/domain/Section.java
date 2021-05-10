@@ -15,6 +15,10 @@ public class Section {
     private Station downStation;
     private int distance;
 
+    public static Section of(Section section, Long lineId) {
+        return of(section.getId(), lineId, section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
     public static Section of(Station upStation, Station downStation, int distance) {
         return of(null, upStation, downStation, distance);
     }

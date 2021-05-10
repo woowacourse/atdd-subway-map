@@ -37,6 +37,15 @@ public class InMemorySectionDao implements SectionDao {
     }
 
     @Override
+    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
+        return sections.get(lineId)
+            .stream()
+            .filter(section -> section.hasStation(stationId))
+            .collect(
+            Collectors.toList());
+    }
+
+    @Override
     public void deleteById(Long id) {
         Section target = sections.values()
                 .stream()
@@ -45,15 +54,6 @@ public class InMemorySectionDao implements SectionDao {
                 .findAny()
                 .orElseThrow(SectionNotFoundException::new);
         sections.get(target.getLineId()).removeIf(section -> section.isSameId(id));
-    }
-
-    @Override
-    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
-        return sections.get(lineId)
-                .stream()
-                .filter(section -> section.hasStation(stationId))
-                .collect(
-                        Collectors.toList());
     }
 
     @Override
