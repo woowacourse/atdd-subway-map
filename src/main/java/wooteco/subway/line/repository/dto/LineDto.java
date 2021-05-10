@@ -12,7 +12,6 @@ public class LineDto {
     private String name;
     private String color;
     private List<StationResponse> stations;
-    ;
 
     public LineDto() {
     }
