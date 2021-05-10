@@ -39,6 +39,10 @@ public class Line {
         this.stations = stations;
     }
 
+    public void addStations(final List<Station> stations) {
+        this.stations.addStations(stations);
+    }
+
     public Long getId() {
         return id;
     }
