@@ -48,22 +48,22 @@ public class StationDao {
 
         try {
             Long findStationId = Long.valueOf(jdbcTemplate.queryForObject(sql, String.class, name));
-            return Optional.of(new Station(findStationId, name));
+            return Optional.ofNullable(new Station(findStationId, name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "delete from STATION where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     public Optional<Station> findById(Long id) {
         String sql = "select name from STATION where id = ?";
 
         try {
-            return Optional.of(new Station(jdbcTemplate.queryForObject(sql, String.class, id)));
+            return Optional.ofNullable(new Station(jdbcTemplate.queryForObject(sql, String.class, id)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

@@ -55,10 +55,10 @@ class LineServiceTest {
     @DisplayName("노선 삭제 테스트")
     public void deleteLine() {
         Line savedLine = lineService.createLine(lineRequest);
-        assertThat(lineService.findAll().size()).isEqualTo(1);
+        assertThat(lineService.findAll()).hasSize(1);
 
         lineService.deleteLine(savedLine.getId());
-        assertThat(lineService.findAll().size()).isEqualTo(0);
+        assertThat(lineService.findAll()).hasSize(0);
     }
 
     @Test

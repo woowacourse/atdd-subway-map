@@ -43,7 +43,7 @@ public class LineDao {
     public Optional<Line> findById(Long id) {
         String sql = "select id, name, color from LINE where id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, lineRowMapper(), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -52,7 +52,7 @@ public class LineDao {
     public Optional<Line> findByName(String name) {
         String sql = "select id, name, color from LINE where name = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, lineRowMapper(), name));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -63,13 +63,13 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper());
     }
 
-    public void update(Long id, String name, String color) {
+    public int update(Long id, String name, String color) {
         String sql = "update LINE set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, name, color, id);
+        return jdbcTemplate.update(sql, name, color, id);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "delete from LINE where id = ?";
-        jdbcTemplate.update(sql, id);
+         return jdbcTemplate.update(sql, id);
     }
 }

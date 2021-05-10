@@ -26,17 +26,12 @@ public class StationService {
     }
 
     public void deleteStation(Long id) {
-        if (!isExistingStation(id)) {
+        if (stationDao.delete(id) == 0) {
             throw new StationNotFoundException();
         }
-        stationDao.delete(id);
     }
 
     private boolean isExistingStation(String name) {
         return stationDao.findByName(name).isPresent();
-    }
-
-    private boolean isExistingStation(Long id) {
-        return stationDao.findById(id).isPresent();
     }
 }

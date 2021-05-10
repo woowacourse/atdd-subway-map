@@ -31,21 +31,18 @@ public class LineService {
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
-        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+        if (lineDao.update(id, lineRequest.getName(), lineRequest.getColor()) == 0) {
+            throw new LineNotFoundException();
+        }
     }
 
     public void deleteLine(Long id) {
-        if (!isExistingLine(id)) {
+        if (lineDao.delete(id) == 0) {
             throw new LineNotFoundException();
         }
-        lineDao.delete(id);
     }
 
     private boolean isExistingLine(String name) {
         return lineDao.findByName(name).isPresent();
-    }
-
-    private boolean isExistingLine(Long id) {
-        return lineDao.findById(id).isPresent();
     }
 }

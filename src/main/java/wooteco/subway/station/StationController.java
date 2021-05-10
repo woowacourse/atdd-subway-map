@@ -18,7 +18,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@Valid @RequestBody StationRequest stationRequest) {
         Station newStation = stationService.createStation(stationRequest);
         StationResponse stationResponse = new StationResponse(newStation);

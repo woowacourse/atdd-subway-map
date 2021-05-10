@@ -67,10 +67,10 @@ class LineDaoTest {
     void update() {
         Line findLine = lineDao.findByName(lineName1).get();
         lineDao.update(findLine.getId(), lineName2, color2);
-        Line findLine2 = lineDao.findById(findLine.getId()).get();
+        Line updatedLine = lineDao.findById(findLine.getId()).get();
 
         assertThat(lineName1).isEqualTo(findLine.getName());
-        assertThat(lineName2).isEqualTo(findLine2.getName());
+        assertThat(lineName2).isEqualTo(updatedLine.getName());
     }
 
     @Test
