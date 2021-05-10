@@ -26,6 +26,10 @@ public class Line {
         this(id, name, color, new ArrayList<>());
     }
 
+    public void setStations(List<Station> stations) {
+        this.stations = stations;
+    }
+
     public Long getId() {
         return id;
     }

@@ -3,8 +3,8 @@ package wooteco.subway.line;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,14 +37,14 @@ public class LineService {
     }
 
     public LineResponse showLine(long id) {
-        List<Long> stationsId = lineDao.findStationsIdByLineId(id);
-        List<StationResponse> stations = stationsId.stream()
+        final Line line = lineDao.findById(id);
+        final List<Station> stationsInLine = stationDao.findStationsIdInLineId(id)
+                .stream()
                 .map(stationDao::findById)
-                .map(StationResponse::from)
                 .collect(Collectors.toList());
 
-        final Line line = lineDao.findById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        line.setStations(stationsInLine);
+        return LineResponse.from(line);
     }
 
     public void updateLine(long id, String lineName, String lineColor) {
