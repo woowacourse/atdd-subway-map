@@ -51,6 +51,12 @@ public class JDBCStationRepository implements StationRepository {
     }
 
     @Override
+    public Optional<Station> findByName(String name) {
+        String query = "SELECT * FROM station WHERE name = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query, stationRowMapper, name));
+    }
+
+    @Override
     public List<Station> findAll() {
         String query = "SELECT * FROM station";
         return this.jdbcTemplate.query(query, stationRowMapper);

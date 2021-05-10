@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
@@ -20,6 +21,10 @@ public class StationService {
     }
 
     public StationDto save(final StationDto stationDto) {
+        Optional<Station> optionalStation = stationRepository.findByName(stationDto.getName());
+        if (optionalStation.isPresent()) {
+            throw new DuplicatedNameException("이미 존재하는 지하철 역 이름입니다.");
+        }
         Station station = stationRepository.save(new Station(stationDto.getName()));
         return StationDto.from(station);
     }
