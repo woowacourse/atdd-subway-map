@@ -14,6 +14,8 @@ public interface LineDao {
 
     Optional<LineEntity> findByName(String name);
 
+    Optional<LineEntity> findByColor(String name);
+
     void clear();
 
     void update(Long id, String name, String color);

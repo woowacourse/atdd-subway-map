@@ -33,6 +33,7 @@ public class LineService {
 
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
+        validateDuplication(lineRequest);
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
@@ -118,6 +119,16 @@ public class LineService {
                 .distinct()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    private void validateDuplication(final LineRequest lineRequest) {
+        if (lineDao.findByName(lineRequest.getName()).isPresent()) {
+            throw new IllegalStateException("이미 있는 역임!");
+        }
+
+        if (lineDao.findByColor(lineRequest.getColor()).isPresent()) {
+            throw new IllegalStateException("이미 있는 색깔임!");
+        }
     }
 
     private LineEntity findLineEntityById(Long id) {

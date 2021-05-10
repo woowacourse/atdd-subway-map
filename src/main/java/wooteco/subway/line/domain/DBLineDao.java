@@ -27,7 +27,6 @@ public class DBLineDao implements LineDao {
 
     @Override
     public LineEntity save(final LineEntity lineEntity) {
-        validateDuplicate(lineEntity);
         String sql = "INSERT INTO LINE(name, color) VALUES(?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -52,18 +51,25 @@ public class DBLineDao implements LineDao {
     public Optional<LineEntity> findById(final Long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
 
-        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, id);
+        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, id);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
     }
 
     @Override
     public Optional<LineEntity> findByName(final String name) {
         String sql = "SELECT * FROM LINE WHERE name = ?";
 
-        List<LineEntity> lineEntity = jdbcTemplate.query(sql, lineRowMapper, name);
+        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, name);
 
-        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntity));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
+    }
+
+    @Override
+    public Optional<LineEntity> findByColor(final String color) {
+        String sql = "SELECT * from LINE where color = ?";
+        List<LineEntity> lineEntities = jdbcTemplate.query(sql, lineRowMapper, color);
+        return Optional.ofNullable(DataAccessUtils.singleResult(lineEntities));
     }
 
     @Override
@@ -85,12 +91,6 @@ public class DBLineDao implements LineDao {
 
         if (rowCount == 0) {
             throw new IllegalStateException("존재하지 않는 id임");
-        }
-    }
-
-    private void validateDuplicate(final LineEntity lineEntity) {
-        if (findByName(lineEntity.name()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
         }
     }
 }

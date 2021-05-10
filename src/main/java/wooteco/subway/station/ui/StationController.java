@@ -29,6 +29,7 @@ public class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(stationRequest.getName());
+        validateDuplicate(station);
         Station newStation = stationDao.save(station);
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
@@ -53,5 +54,11 @@ public class StationController {
     public ResponseEntity<ResponseError> handleException(RuntimeException e) {
         logger.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
+    }
+
+    private void validateDuplicate(final Station station) {
+        if (stationDao.findByName(station.getName()).isPresent()) {
+            throw new IllegalStateException("이미 있는 역임!");
+        }
     }
 }

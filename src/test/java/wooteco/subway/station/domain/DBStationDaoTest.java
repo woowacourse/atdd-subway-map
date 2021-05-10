@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.station.domain.DBStationDao;
@@ -56,7 +57,7 @@ class DBStationDaoTest {
 
         //then
         assertThatThrownBy(() -> stationDao.save(secondStation))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test

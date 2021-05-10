@@ -31,6 +31,10 @@ public class LineEntity {
         return this.name.equals(name);
     }
 
+    public boolean sameColor(String color) {
+        return this.color.equals(color);
+    }
+
     public boolean sameId(final Long id) {
         return this.id.equals(id);
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class DBLineEntityDaoTest {
+class DBLineDaoTest {
     private JdbcTemplate jdbcTemplate;
     private LineDao lineDao;
     private Long id;
@@ -27,7 +28,7 @@ class DBLineEntityDaoTest {
     private String color;
     private LineEntity lineEntity;
 
-    public DBLineEntityDaoTest(JdbcTemplate jdbcTemplate) {
+    public DBLineDaoTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         lineDao = new DBLineDao(jdbcTemplate);
     }
@@ -53,11 +54,31 @@ class DBLineEntityDaoTest {
     @DisplayName("노선을 저장한다.")
     void save() {
         String savedName = "흑기선";
-        String savedColor = "bg-red-600";
+        String savedColor = "bg-black-601";
         LineEntity saveLineEntity = lineDao.save(new LineEntity(savedName, savedColor));
 
         assertThat(saveLineEntity.name()).isEqualTo(savedName);
         assertThat(saveLineEntity.color()).isEqualTo(savedColor);
+    }
+
+    @Test
+    @DisplayName("중복되는 노선이름을 저장할 시 예외가 발생한다.")
+    void saveDuplicateNameException() {
+        String savedName = "백기선";
+        String savedColor = "bg-red-600";
+
+        assertThatThrownBy(() -> lineDao.save(new LineEntity(savedName, savedColor)))
+                .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    @DisplayName("중복되는 노선 색깔을 저장할 시 예외가 발생한다.")
+    void saveDuplicateColorException() {
+        String savedName = "흑기선";
+        String savedColor = "bg-red-600";
+
+        assertThatThrownBy(() -> lineDao.save(new LineEntity(savedName, savedColor)))
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test

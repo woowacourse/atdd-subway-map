@@ -27,7 +27,6 @@ public class DBStationDao implements StationDao {
 
     @Override
     public Station save(final Station station) {
-        validateDuplicate(station);
         String sql = "INSERT INTO station(name) values(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -73,12 +72,6 @@ public class DBStationDao implements StationDao {
         int rowCount = jdbcTemplate.update("delete from station where id = ?", id);
         if (rowCount == 0) {
             throw new IllegalStateException("없는 역입!");
-        }
-    }
-
-    private void validateDuplicate(final Station station) {
-        if (findByName(station.getName()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
         }
     }
 }
