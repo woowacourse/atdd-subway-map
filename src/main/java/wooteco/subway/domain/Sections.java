@@ -1,16 +1,12 @@
 package wooteco.subway.domain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.InvalidSectionException;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
@@ -134,5 +130,9 @@ public class Sections {
 
         // 가운데일 경우
         return Optional.of(Section.of(upStation, downStation, distance));
+    }
+
+    public boolean hasSize(int size) {
+        return sections.size() == size;
     }
 }
