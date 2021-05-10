@@ -1,5 +1,7 @@
 package wooteco.subway.station;
 
+import wooteco.subway.exception.IllegalInputException;
+
 public class Station {
     private Long id;
     private String name;
@@ -7,13 +9,20 @@ public class Station {
     public Station() {
     }
 
-    public Station(Long id, String name) {
-        this.id = id;
+    public Station(String name) {
+        validateName(name);
         this.name = name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
+    }
+
+    private void validateName(String name) {
+        if (name == null) {
+            throw new IllegalInputException();
+        }
     }
 
     public Long getId() {
