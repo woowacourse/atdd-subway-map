@@ -27,7 +27,7 @@ public class StationService {
     }
 
     public StationServiceDto save(final StationServiceDto stationServiceDto) {
-        Station station = new Station(stationServiceDto.getName());
+        Station station = stationServiceDto.toEntity();
         Station saveStation = stationDao.save(station);
 
         return StationServiceDto.from(saveStation);

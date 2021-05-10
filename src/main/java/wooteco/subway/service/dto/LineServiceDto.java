@@ -38,6 +38,10 @@ public class LineServiceDto {
         return new LineServiceDto(line.getId(), line.getName(), line.getColor());
     }
 
+    public Line toEntity() {
+        return new Line(name, color);
+    }
+
     public Long getId() {
         return id;
     }

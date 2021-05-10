@@ -16,8 +16,8 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public SectionServiceDto save(@Valid final SectionServiceDto dto) {
-        Section section = new Section(dto.getLineId(), dto.getUpStationId(), dto.getDownStationId(), dto.getDistance());
+    public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
+        Section section = sectionServiceDto.toEntity();
         Sections sections = new Sections(sectionDao.findSectionsByLineId(section.getLineId()));
         sections.validateSavable(section);
 

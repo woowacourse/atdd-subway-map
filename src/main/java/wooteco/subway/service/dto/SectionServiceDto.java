@@ -33,6 +33,10 @@ public class SectionServiceDto {
         );
     }
 
+    public Section toEntity() {
+        return new Section(lineId, upStationId, downStationId, distance);
+    }
+
     public Long getId() {
         return id;
     }

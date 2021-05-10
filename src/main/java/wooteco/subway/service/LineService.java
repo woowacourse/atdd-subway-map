@@ -21,7 +21,7 @@ public class LineService {
     }
 
     public LineServiceDto createLine(@Valid final LineServiceDto lineServiceDto) {
-        Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
+        Line line = lineServiceDto.toEntity();
         Line saveLine = lineDao.create(line);
         return LineServiceDto.from(saveLine);
     }
@@ -39,7 +39,7 @@ public class LineService {
     }
 
     public void update(@Valid final LineServiceDto lineServiceDto) {
-        Line line = new Line(lineServiceDto.getName(), lineServiceDto.getColor());
+        Line line = lineServiceDto.toEntity();
 
         if (lineDao.update(lineServiceDto.getId(), line) == NOT_FOUND) {
             throw new NotFoundLineException();

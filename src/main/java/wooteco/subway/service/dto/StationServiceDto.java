@@ -31,6 +31,10 @@ public class StationServiceDto {
         return new StationServiceDto(station.getId(), station.getName());
     }
 
+    public Station toEntity() {
+        return new Station(name);
+    }
+
     public Long getId() {
         return id;
     }
