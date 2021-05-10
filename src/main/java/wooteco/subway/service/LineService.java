@@ -1,10 +1,11 @@
 package wooteco.subway.service;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.SectionDto;
 import wooteco.subway.controller.dto.StationDto;
-import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
+import wooteco.subway.controller.dto.request.LineEditRequestDto;
 import wooteco.subway.controller.dto.response.LineCreateResponseDto;
 import wooteco.subway.controller.dto.response.LineFindAllResponseDto;
 import wooteco.subway.controller.dto.response.LineFindResponseDto;
@@ -33,16 +34,18 @@ public class LineService {
     }
 
     public LineCreateResponseDto createLine(LineCreateRequestDto lineRequest) {
-        lineRepository.findLineByName(lineRequest.getName()).ifPresent(line -> {
-            throw new SubwayException("이미 존재하는 노선 이름입니다.");
-        });
-        Line newLine = lineRepository.saveLineWithSection(
-                lineRequest.getName(),
-                lineRequest.getColor(),
-                lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(),
-                lineRequest.getDistance()
-        );
+        Line newLine;
+        try {
+             newLine = lineRepository.saveLineWithSection(
+                    lineRequest.getName(),
+                    lineRequest.getColor(),
+                    lineRequest.getUpStationId(),
+                    lineRequest.getDownStationId(),
+                    lineRequest.getDistance()
+            );
+        } catch (DuplicateKeyException e) {
+            throw new SubwayException("중복된 이름으로 Line을 등록할 수 없습니다.");
+        }
         Section section = newLine.getSections().get(FIRST_INDEX);
         List<SectionDto> sectionDtos = Arrays.asList(
                 new SectionDto(
