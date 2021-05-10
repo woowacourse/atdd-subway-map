@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.response.LineResponse;
-import wooteco.subway.dto.LineRequest;
+import wooteco.subway.controller.request.LineRequest;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineDto;

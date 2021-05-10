@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static wooteco.subway.Fixture.makeStation;
+import static wooteco.subway.fixture.Fixture.makeStation;
 
 @JdbcTest
 public class StationDaoTest {

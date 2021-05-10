@@ -34,6 +34,10 @@
 
 ## 3단계 기능목록
 
+#### 테스트 수정
+- [ ] LineAcceptanceTest를 요구사항에 맞게 수정한다.
+- [ ] SectionAcceptanceTest를 요구사항에 맞게 추가한다.
+
 #### 노선 추가
 - [ ] 노선을 생성한다.
   - [ ] 노선에 포함된 upStationId, downStationId를 바탕으로 구간을 생성한다.

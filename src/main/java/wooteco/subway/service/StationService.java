@@ -3,7 +3,7 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
-import wooteco.subway.dto.StationRequest;
+import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.service.dto.StationDto;
