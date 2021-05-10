@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,14 +25,24 @@ import static org.hamcrest.CoreMatchers.is;
 @Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
 
+
+    private final LineRequest lineRequest1;
+    private final LineRequest lineRequest2;
+    private final StationRequest stationRequest;
+
+    public LineAcceptanceTest() {
+        this.lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
+        this.lineRequest2 = new LineRequest("3호선", "bg-red-600", 0L, 0L, 0);
+        this.stationRequest = new StationRequest("역삼역");
+    }
+
     @DisplayName("지하철 노선 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
 
         //when
-        ExtractableResponse<Response> response = createLine(lineRequest);
+        ExtractableResponse<Response> response = createLine(lineRequest1);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,10 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 보여준다.")
     void showLines() {
         // given
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
         ExtractableResponse<Response> createResponse1 = createLine(lineRequest1);
-
-        StationRequest stationRequest = new StationRequest("역삼역");
         ExtractableResponse<Response> createResponse2 = createStation(stationRequest);
 
         // when
@@ -70,8 +78,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
-
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
         ExtractableResponse<Response> createResponse = createLine(lineRequest1);
 
         // when
@@ -94,10 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
 
         // given
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
         createLine(lineRequest1);
-
-        LineRequest lineRequest2 = new LineRequest("3호선", "bg-red-600", 0L, 0L, 0);
         ExtractableResponse<Response> createResponse = createLine(lineRequest2);
 
         // when
@@ -122,12 +125,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-red-600", 0L, 0L, 0);
         ExtractableResponse<Response> createResponse = createLine(lineRequest1);
 
         // when
-        LineRequest lineRequest2 = new LineRequest("3호선", "bg-red-600", 0L, 0L, 0);
-
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(lineRequest2)
