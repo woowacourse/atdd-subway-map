@@ -21,17 +21,17 @@ public class SectionRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, section.getLineId());
     }
 
-    public boolean doesExistInUpStation(final Long lineId, final Long stationId) {
+    public boolean isExistInUpStation(final Long lineId, final Long stationId) {
         String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND up_station_id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId);
     }
 
-    public boolean doesExistInDownStation(final Long lineId, final Long stationId) {
+    public boolean isExistInDownStation(final Long lineId, final Long stationId) {
         String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND down_station_id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId);
     }
 
-    public boolean doesStationNotExist(final Long lineId, final Long stationId) {
+    public boolean isStationNotExist(final Long lineId, final Long stationId) {
         String query = "SELECT NOT EXISTS(SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?))";
         return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId, stationId);
     }
@@ -109,7 +109,7 @@ public class SectionRepository {
 
     public Section getExistingSectionByBaseStation(final Section section) {
         final String query;
-        if (doesExistInUpStation(section.getLineId(), section.getUpStationId())) {
+        if (isExistInUpStation(section.getLineId(), section.getUpStationId())) {
             query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND up_station_id = ?";
             return sendQueryToGetSection(query, section.getLineId(), section.getUpStationId());
         }

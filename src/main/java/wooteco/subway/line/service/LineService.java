@@ -21,28 +21,28 @@ public class LineService {
     }
 
     public Line save(final Line line) {
-        if (lineRepository.doesNameExist(line)) {
+        if (lineRepository.isNameExist(line)) {
             throw new DuplicateLineNameException();
         }
         return lineRepository.save(line);
     }
 
     public Line getLine(final Long id) {
-        if (lineRepository.doesIdNotExist(id)) {
+        if (lineRepository.isIdNotExist(id)) {
             throw new NoSuchLineException();
         }
         return lineRepository.getLine(id);
     }
 
     public void updateLine(final Line line) {
-        if (lineRepository.doesIdNotExist(line)) {
+        if (lineRepository.isIdNotExist(line)) {
             throw new NoSuchLineException();
         }
         lineRepository.update(line);
     }
 
     public void deleteById(final Long id) {
-        if (lineRepository.doesIdNotExist(id)) {
+        if (lineRepository.isIdNotExist(id)) {
             throw new NoSuchLineException();
         }
         lineRepository.deleteById(id);

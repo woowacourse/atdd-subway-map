@@ -54,12 +54,12 @@ public class StationRepository {
         return jdbcTemplate.queryForObject(query, String.class, id);
     }
 
-    public boolean doesNameExist(final Station station) {
+    public boolean isNameExist(final Station station) {
         String query = "SELECT EXISTS(SELECT * FROM station WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, station.getName());
     }
 
-    public boolean doesIdNotExist(final Long id) {
+    public boolean isIdNotExist(final Long id) {
         String query = "SELECT NOT EXISTS(SELECT * FROM station WHERE id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }

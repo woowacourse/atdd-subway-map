@@ -62,17 +62,17 @@ public class LineRepository {
         jdbcTemplate.update(query, id);
     }
 
-    public boolean doesNameExist(final Line line) {
+    public boolean isNameExist(final Line line) {
         String query = "SELECT EXISTS(SELECT * FROM Line WHERE name = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getName());
     }
 
-    public boolean doesIdNotExist(final Line line) {
+    public boolean isIdNotExist(final Line line) {
         String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, line.getId());
     }
 
-    public boolean doesIdNotExist(final Long id) {
+    public boolean isIdNotExist(final Long id) {
         String query = "SELECT NOT EXISTS(SELECT * FROM Line WHERE id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }

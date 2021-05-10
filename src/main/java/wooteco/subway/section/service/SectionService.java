@@ -76,20 +76,20 @@ public class SectionService {
     }
 
     private boolean bothStationsAlreadyExist(final Section section) {
-        return !sectionRepository.doesStationNotExist(section.getLineId(), section.getUpStationId()) &&
-                !sectionRepository.doesStationNotExist(section.getLineId(), section.getDownStationId());
+        return !sectionRepository.isStationNotExist(section.getLineId(), section.getUpStationId()) &&
+                !sectionRepository.isStationNotExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean bothStationsDoNotExist(final Section section) {
-        return sectionRepository.doesStationNotExist(section.getLineId(), section.getUpStationId()) &&
-                sectionRepository.doesStationNotExist(section.getLineId(), section.getDownStationId());
+        return sectionRepository.isStationNotExist(section.getLineId(), section.getUpStationId()) &&
+                sectionRepository.isStationNotExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean isNotEndStationSave(final Section section) {
         return !((sectionRepository.isEndStation(section.getLineId(), section.getDownStationId()) &&
-                sectionRepository.doesExistInUpStation(section.getLineId(), section.getDownStationId())) ||
+                sectionRepository.isExistInUpStation(section.getLineId(), section.getDownStationId())) ||
                 (sectionRepository.isEndStation(section.getLineId(), section.getUpStationId()) &&
-                        sectionRepository.doesExistInDownStation(section.getLineId(), section.getUpStationId())));
+                        sectionRepository.isExistInDownStation(section.getLineId(), section.getUpStationId())));
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
@@ -110,7 +110,7 @@ public class SectionService {
     }
 
     private void validateStationExistence(final Long lineId, final Long stationId) {
-        if (sectionRepository.doesStationNotExist(lineId, stationId)) {
+        if (sectionRepository.isStationNotExist(lineId, stationId)) {
             throw new NoSuchStationException();
         }
     }
@@ -129,7 +129,7 @@ public class SectionService {
     }
 
     private List<Station> getOrderedStations(final Map<Station, Station> upAndDownStations, final Long lineId) {
-        Station firstStation = getFirstStation(upAndDownStations, lineId);
+        Station firstStation = getFirstStation(upAndDownStations);
         List<Station> stations = new ArrayList<>(Collections.singletonList(firstStation));
 
         for (int i = 0; i < upAndDownStations.size(); i++) {
@@ -140,7 +140,7 @@ public class SectionService {
         return stations;
     }
 
-    private Station getFirstStation(final Map<Station, Station> upAndDownStations, final Long lineId) {
+    private Station getFirstStation(final Map<Station, Station> upAndDownStations) {
         return upAndDownStations.keySet()
                 .stream()
                 .filter(station -> !upAndDownStations.containsValue(station))
