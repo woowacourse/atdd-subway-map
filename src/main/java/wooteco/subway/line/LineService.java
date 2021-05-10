@@ -37,7 +37,7 @@ public class LineService {
 
     public Line showLine(long id) {
         Map<Long, Long> sectionMap = sectionDao.sectionMap(id);
-        Set<Long> set1 = sectionMap.keySet();
+        Set<Long> set1 = new HashSet<>(sectionMap.keySet());
         Set<Long> set2 = new HashSet<>(sectionMap.values());
         set1.removeAll(set2);
 
@@ -45,7 +45,8 @@ public class LineService {
         List<Long> stationsId = new ArrayList<>();
         stationsId.add(upStation);
         long key = upStation;
-        while(sectionMap.get(key) != null){
+
+        while(sectionMap.containsKey(key)){
             key = sectionMap.get(key);
             stationsId.add(key);
         }

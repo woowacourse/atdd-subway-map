@@ -81,10 +81,10 @@ public class LineController {
         }
 
         if (existStationId == downStationId) {
-            long beforeStationId = sectionService.findBeforeUpStationId(lineId, downStationId);
-            int beforeDistance = sectionService.findBeforeDistance(lineId, beforeStationId, existStationId);
-            sectionService.delete(lineId, beforeStationId, downStationId);
-            sectionService.save(lineId, beforeStationId, upStationId, beforeDistance-distance);
+            long beforeUpStationId = sectionService.findBeforeUpStationId(lineId, downStationId);
+            int beforeDistance = sectionService.findBeforeDistance(lineId, beforeUpStationId, existStationId);
+            sectionService.delete(lineId, beforeUpStationId, downStationId);
+            sectionService.save(lineId, beforeUpStationId, upStationId, beforeDistance-distance);
             sectionService.save(lineId, upStationId, downStationId, distance);
 
         }

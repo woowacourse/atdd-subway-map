@@ -39,8 +39,8 @@ public class SectionService {
         return sectionDao.findDownStationIdByUpStationId(lineId, upStationId);
     }
 
-    public long findBeforeUpStationId(long lineId, long upStationId) {
-        return sectionDao.findUpStationIdByDownStationId(lineId, upStationId);
+    public long findBeforeUpStationId(long lineId, long downStationId) {
+        return sectionDao.findUpStationIdByDownStationId(lineId, downStationId);
     }
 
     public int findBeforeDistance(long lineId, long upStationId, long beforeStationId) {

@@ -72,5 +72,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 #### 3단계
 - [x] 지하철 노선 추가 수정
 - [x] 지하철 구간 추가 
-- [ ] 노선 조회시 구간에 포함된 역 목록 응답
+- [x] 노선 조회시 구간에 포함된 역 목록 응답
 - [ ] 지하철 구간 제거 
