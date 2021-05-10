@@ -97,6 +97,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("id를 통해 line을 조회하면, 해당 line 정보를 반환한다.")
     @Test
     void getLine() {
+        StationRequest stationRequest = new StationRequest("해운대역");
+        saveStation(stationRequest);
+
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        saveSection(sectionRequest);
+
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -111,6 +117,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                         "신분당선",
                         Arrays.asList(
                                 new Station(1L, firstStationRequest.getName()),
+                                new Station(3L, stationRequest.getName()),
                                 new Station(2L, secondStationRequest.getName())
                         )
                 )
