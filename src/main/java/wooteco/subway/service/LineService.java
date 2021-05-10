@@ -92,7 +92,7 @@ public class LineService {
         return lineRepository.edit(lineId, request.getName(), request.getColor());
     }
 
-    public long deleteLine(Long lineId) {
+    public int deleteLine(Long lineId) {
         return lineRepository.deleteLineWithSectionByLineId(lineId);
     }
 

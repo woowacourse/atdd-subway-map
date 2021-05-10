@@ -52,21 +52,12 @@ public class LineRepository {
         return lineDao.edit(lineId, name, color);
     }
 
-    public Long deleteLineWithSectionByLineId(Long lineId) {
-        String selectSectionQuery = "SELECT * FROM section WHERE line_id = ?";
-        List<Long> sectionIds = jdbcTemplate.query(
-                selectSectionQuery,
-                (resultSet, rowNum) -> resultSet.getLong("id"),
-                lineId
-        );
-
-        for (Long sectionId : sectionIds) {
-            String deleteSectionQuery = "DELETE FROM section WHERE id = ?";
-            jdbcTemplate.update(deleteSectionQuery, sectionId);
+    public int deleteLineWithSectionByLineId(Long lineId) {
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        for (Section section : sections) {
+            sectionDao.deleteById(section.getId());
         }
-
-        String deleteLineQuery = "DELETE FROM LINE WHERE id = ?";
-        return (long) jdbcTemplate.update(deleteLineQuery, lineId);
+        return lineDao.deleteById(lineId);
     }
 
     public void createSectionInLine(Long lineId, Long upStationId, Long downStationId, int distance) {

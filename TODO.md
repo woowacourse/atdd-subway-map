@@ -76,5 +76,4 @@
 ### 기타 
 - [x] RestAssured에서 QueryParams, PathParams 활용해서 리팩토링하기
 - [x] 예외 처리를 커스텀 예외 활용하도록 바꾸기
-- [ ] Service Layer에 있는 비즈니스 로직을 Domain으로 옮기기
-- [ ] ATDD에서는 @Transactional이 적용이 안 되는 지 테스트하기 / h2 DB에서는 Truncate로는 AI가 초기화 안 되는 건 아닌지
+- [x] ATDD에서는 @Transactional이 적용이 안 되는 지 테스트하기 / h2 DB에서는 Truncate로는 AI가 초기화 안 되는 건 아닌지
