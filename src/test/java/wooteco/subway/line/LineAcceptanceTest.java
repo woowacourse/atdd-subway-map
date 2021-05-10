@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.station.StationAcceptanceTest.지하철역_등록;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -8,11 +9,14 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.StationAcceptanceTest;
+import wooteco.subway.station.StationRequest;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -24,6 +28,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static final LineRequest LINE_3 = new LineRequest(
             "3호선", "grey darken-2", 5L, 6L, 12, 1500
     );
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        지하철역_등록(new StationRequest("강남역1"));
+        지하철역_등록(new StationRequest("강남역2"));
+        지하철역_등록(new StationRequest("강남역3"));
+        지하철역_등록(new StationRequest("강남역4"));
+        지하철역_등록(new StationRequest("강남역5"));
+        지하철역_등록(new StationRequest("강남역6"));
+    }
 
     @DisplayName("노선을 생성한다.")
     @Test
