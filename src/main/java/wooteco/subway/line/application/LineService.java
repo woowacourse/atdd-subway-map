@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.domain.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.dto.SectionAddRequest;
 import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.entity.SectionEntity;
@@ -60,6 +61,12 @@ public class LineService {
                 .map(lineEntity -> new Line(lineEntity.id(), lineEntity.name(), lineEntity.color()))
                 .map(line -> new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(new Sections(toSections(line)).sortedSections())))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void update(final Long id, final LineUpdateRequest lineUpdateRequest) {
+        LineEntity lineEntity = findLineEntityById(id);
+        lineDao.update(lineEntity.id(), lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional

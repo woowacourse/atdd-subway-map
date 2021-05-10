@@ -15,6 +15,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
@@ -125,11 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> createResponse = createLineToHTTP(lineRequest);
-        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> findResponse = findAllLineToHTTP();
 
         LineResponse lineResponse = createResponse.body().as(LineResponse.class);
         List<Long> resultLineIds = findResponse.jsonPath().getList(".", LineResponse.class).stream()
@@ -145,74 +142,46 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineByID() {
         // given
-        String name = "신분당선";
-        String color = "bg-red-600";
-        Long id = 1L;
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "3");
+        String newLineName = "신분당선";
+        String newLineColor = "bg-black-500";
+        Long upStationId = 3L;
+        Long downStationId = 4L;
+        int distance = 5;
+        LineRequest lineRequest = new LineRequest(newLineName, newLineColor, upStationId, downStationId, distance);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = createLineToHTTP(lineRequest);
+        LineResponse createdResponse = createResponse.body().as(LineResponse.class);
 
-        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines/{id}", id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(createdResponse.getId());
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         // then
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findLineResponse.jsonPath().getLong("id")).isEqualTo(id);
-        assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo(name);
-        assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
-        assertThat(stationResponsesToStrings(findLineResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly("백기역", "흑기역");
+        assertThat(findResponse.getId()).isEqualTo(createdResponse.getId());
+        assertThat(findResponse.getName()).isEqualTo(createdResponse.getName());
+        assertThat(findResponse.getColor()).isEqualTo(createdResponse.getColor());
+        assertThat(stationResponsesToStrings(findLineResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly("아마찌역", "검프역");
     }
 
     @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "백기선");
-        params1.put("color", "bg-red-600");
-
-        // given
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "흑기선");
-        params2.put("color", "bg-red-600");
+        String newLineName = "신분당선";
+        String newLineColor = "bg-black-500";
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(newLineName, newLineColor);
 
         // when
-        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
-                .body(params1)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> updateResponse = updateLineByIdToHTTP(lineUpdateRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
-        long newId = response1.body().jsonPath().getLong("id");
-
-        ExtractableResponse<Response> response2 = RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/{id}", newId)
-                .then().log().all()
-                .extract();
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         // then
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.getName()).isEqualTo(newLineName);
+        assertThat(findResponse.getColor()).isEqualTo(newLineColor);
     }
 
     @DisplayName("노선을 제거한다.")
@@ -336,6 +305,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .log().all()
                 .extract();
+    }
+
+    private ExtractableResponse<Response> findAllLineToHTTP() {
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all()
+                .extract();
+        return findResponse;
+    }
+
+    private ExtractableResponse<Response> findLineByIdToHTTP(Long lineId) {
+        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
+        return findLineResponse;
+    }
+
+    private ExtractableResponse<Response> updateLineByIdToHTTP(LineUpdateRequest lineUpdateRequest) {
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(lineUpdateRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/{id}", line.getId())
+                .then().log().all()
+                .extract();
+        return updateResponse;
     }
 
     private List<String> stationResponsesToStrings(final List<StationResponse> response) {
