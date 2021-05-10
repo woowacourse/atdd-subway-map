@@ -3,28 +3,34 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.OrderedStationIds;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.DuplicateNameException;
 import wooteco.subway.exception.EntityNotFoundException;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(final LineDao lineDao, final SectionDao sectionDao) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public Line save(final Line line, final Section section) {
         checkDuplicateLineName(line);
+        checkStationIsExist(section);
         final Line newLine = lineDao.save(line);
         final Section sectionWithNewLineId = Section.ofLineId(newLine.getId(), section);
         sectionDao.save(sectionWithNewLineId);
@@ -38,12 +44,20 @@ public class LineService {
         }
     }
 
+    private void checkStationIsExist(final Section section) {
+        final boolean existsUpStation = stationDao.findById(section.getUpStationId()).isPresent();
+        final boolean existsDownStation = stationDao.findById(section.getDownStationId()).isPresent();
+        if (!(existsUpStation && existsDownStation)) {
+            throw new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다.");
+        }
+    }
+
     public List<Line> findAll() {
         return lineDao.findAll();
     }
 
     public Line findById(final Long id) {
-        return lineDao.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
+        return lineDao.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 노선이 존재하지 않습니다."));
     }
 
     public void update(final Long id, final Line line) {
@@ -59,15 +73,21 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    public Set<Long> findStationIdsByLineId(final Long id) {
-        final List<Section> sections = sectionDao.findAllById(id);
+    public List<Station> findStationsByLineId(final Long id) {
+        final Line line = findById(id);
+        final List<Section> sections = sectionDao.findAllByLineId(id);
+        final Deque<Long> orderedStationIds = OrderedStationIds.of(line, sections).getOrderedStationIds();
 
-        Set<Long> stationsIds = new HashSet<>();
-        for (Section section : sections) {
-            stationsIds.add(section.getUpStationId());
-            stationsIds.add(section.getDownStationId());
+        List<Station> orderedStations = new ArrayList<>();
+        while (!orderedStationIds.isEmpty()) {
+            orderedStations.add(findStationByStationId(orderedStationIds.pollFirst()));
         }
 
-        return stationsIds;
+        return orderedStations;
+    }
+
+    private Station findStationByStationId(final Long stationId) {
+        return stationDao.findById(stationId)
+                         .orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
     }
 }
