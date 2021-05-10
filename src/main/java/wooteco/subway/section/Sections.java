@@ -82,18 +82,17 @@ public class Sections {
         }
 
         Section now = sections.get(0);
-        sortedStationIds.addFirst(now.getUpStationId());
-        sortedStationIds.addLast(now.getDownStationId());
+        sortedStationIds.add(now.getUpStationId());
     }
 
     private void sortByIds(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
         while (upStationIds.containsKey(sortedStationIds.peekFirst())) {
             Long currentId = sortedStationIds.peekFirst();
-            sortedStationIds.addFirst(upStationIds.get(currentId));
+            sortedStationIds.addFirst(downStationIds.get(currentId));
         }
         while (downStationIds.containsKey(sortedStationIds.peekLast())) {
             Long currentId = sortedStationIds.peekLast();
-            sortedStationIds.addLast(downStationIds.get(currentId));
+            sortedStationIds.addLast(upStationIds.get(currentId));
         }
     }
 
