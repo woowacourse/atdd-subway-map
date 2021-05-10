@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
