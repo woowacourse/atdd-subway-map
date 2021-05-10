@@ -10,7 +10,7 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.service.dto.LineWithStationsDto;
-import wooteco.subway.service.dto.SimpleStation;
+import wooteco.subway.service.dto.SimpleStationDto;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,14 +19,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class IntegratedSubwayService {
+public class SubwayService {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public IntegratedSubwayService(LineDao lineDao, SectionDao sectionDao,
-                                   StationDao stationDao) {
+    public SubwayService(LineDao lineDao, SectionDao sectionDao,
+                         StationDao stationDao) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
@@ -38,7 +38,7 @@ public class IntegratedSubwayService {
         }
         final Line line = lineDao.findById(id);
         final Sections sections = new Sections(sectionDao.findAllByLineId(id));
-        final Set<SimpleStation> stations = sections.toSet();
+        final Set<SimpleStationDto> stations = sections.toSet();
         final List<StationResponse> stationResponses = makeStationResponse(stations);
         return new LineWithStationsDto(line, sortByStationId(stationResponses));
     }
@@ -49,9 +49,9 @@ public class IntegratedSubwayService {
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> makeStationResponse(Set<SimpleStation> stations) {
+    private List<StationResponse> makeStationResponse(Set<SimpleStationDto> stations) {
         final List<StationResponse> stationResponses = new ArrayList<>();
-        for (SimpleStation station : stations) {
+        for (SimpleStationDto station : stations) {
             if (!stationDao.isExistById(station.getId())) {
                 throw new StationNotFoundException();
             }

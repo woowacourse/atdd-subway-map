@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.response.LineRetrieveResponse;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.service.IntegratedSubwayService;
+import wooteco.subway.service.SubwayService;
 
 @RestController
-public class IntegratedSubwayController {
+public class SubwayController {
 
-    private final IntegratedSubwayService subwayService;
+    private final SubwayService subwayService;
 
-    public IntegratedSubwayController(IntegratedSubwayService subwayService) {
+    public SubwayController(SubwayService subwayService) {
         this.subwayService = subwayService;
     }
 

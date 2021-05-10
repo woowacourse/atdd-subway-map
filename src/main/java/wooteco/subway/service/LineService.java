@@ -8,6 +8,7 @@ import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.section.BothEndStationsSameException;
 import wooteco.subway.service.dto.LineDto;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class LineService {
     }
 
     public LineDto create(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        validate(lineAndSectionCreateRequest); // 중복 검사
+        validate(lineAndSectionCreateRequest);
         final Long id = lineDao.insert(lineAndSectionCreateRequest.toLine());
         final Line line = lineDao.findById(id);
         sectionDao.insert(id, lineAndSectionCreateRequest.toSimpleSection());
@@ -56,8 +57,16 @@ public class LineService {
     }
 
     private void validate(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        validateSameEndStations(lineAndSectionCreateRequest.getUpStationId(),
+                lineAndSectionCreateRequest.getDownStationId());
         validateDuplicateName(lineAndSectionCreateRequest.getName());
         validateDuplicateColor(lineAndSectionCreateRequest.getColor());
+    }
+
+    private void validateSameEndStations(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new BothEndStationsSameException();
+        }
     }
 
     private void validateDuplicateName(String name) {

@@ -1,5 +1,7 @@
 package wooteco.subway.service.dto;
 
+import wooteco.subway.exception.section.BothEndStationsSameException;
+
 import javax.validation.constraints.NotNull;
 
 public class SimpleSectionDto {

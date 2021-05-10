@@ -1,11 +1,9 @@
 package wooteco.subway.service.dto;
 
-import java.util.Comparator;
-
-public class SimpleStation {
+public class SimpleStationDto {
     private Long id;
 
-    public SimpleStation(Long id) {
+    public SimpleStationDto(Long id) {
         this.id = id;
     }
 

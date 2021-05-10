@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.dao.fixture.DomainFixture.STATIONS;
 import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
 
-public class IntegratedSubwayAcceptanceTest extends AcceptanceTest {
+public class SubwayAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선을 ID로 조회하여 포함된 모든 구간을 나타낸다.")
     @Test
