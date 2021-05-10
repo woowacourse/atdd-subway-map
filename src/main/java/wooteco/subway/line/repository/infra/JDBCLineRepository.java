@@ -61,7 +61,7 @@ public class JDBCLineRepository implements LineRepository {
     }
 
     @Override
-    public Optional<Line> findByName(String name) {
+    public Optional<Line> findByName(final String name) {
         String query = "SELECT * FROM line WHERE name = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(query, lineRowMapper, name));
     }

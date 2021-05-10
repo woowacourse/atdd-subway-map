@@ -2,11 +2,11 @@ package wooteco.subway.exception;
 
 public class DuplicatedNameException extends SubwayException {
 
-    public DuplicatedNameException(String message) {
+    public DuplicatedNameException(final String message) {
         super(message);
     }
 
-    public DuplicatedNameException(String message, Throwable cause) {
+    public DuplicatedNameException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

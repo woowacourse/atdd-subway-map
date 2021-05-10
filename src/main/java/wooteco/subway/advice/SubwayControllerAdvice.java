@@ -11,7 +11,7 @@ import wooteco.subway.exception.SubwayException;
 public class SubwayControllerAdvice {
 
     @ExceptionHandler(SubwayException.class)
-    public ResponseEntity<ExceptionMessageDto> duplicatedException(SubwayException subwayException) {
+    public ResponseEntity<ExceptionMessageDto> duplicatedException(final SubwayException subwayException) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionMessageDto(subwayException.getMessage()));

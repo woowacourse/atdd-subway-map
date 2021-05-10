@@ -23,7 +23,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
         LineDto line = new LineDto(lineRequest.getName(), lineRequest.getColor());
         LineDto newLine = lineService.save(line);
         LineResponse lineResponse = new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
@@ -39,20 +39,20 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         LineDto lineDto = lineService.findById(id);
         LineResponse lineResponse = new LineResponse(lineDto.getId(), lineDto.getName(), lineDto.getColor(), new ArrayList<>());
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
+    public ResponseEntity<Void> updateLine(@RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
         LineDto lineDto = new LineDto(id, lineRequest.getName(), lineRequest.getColor(), new ArrayList<>());
         lineService.update(lineDto);
         return ResponseEntity.ok().build();

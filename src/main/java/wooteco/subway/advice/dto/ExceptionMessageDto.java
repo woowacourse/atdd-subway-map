@@ -2,9 +2,9 @@ package wooteco.subway.advice.dto;
 
 public class ExceptionMessageDto {
 
-    private String message;
+    private final String message;
 
-    public ExceptionMessageDto(String message) {
+    public ExceptionMessageDto(final String message) {
         this.message = message;
     }
 

@@ -10,6 +10,10 @@ public class StationDto {
     public StationDto() {
     }
 
+    public StationDto(final String name) {
+        this(null, name);
+    }
+
     public StationDto(final Long id, final String name) {
         this.id = id;
         this.name = name;
@@ -17,10 +21,6 @@ public class StationDto {
 
     public static StationDto from(final Station station) {
         return new StationDto(station.getId(), station.getName());
-    }
-
-    public StationDto(String name) {
-        this.name = name;
     }
 
     public Long getId() {

@@ -23,7 +23,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
         StationDto newStation = stationService.save(new StationDto(stationRequest.getName()));
         StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
         return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
@@ -39,7 +39,7 @@ public class StationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
         stationService.delete(id);
         return ResponseEntity.noContent().build();
     }

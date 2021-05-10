@@ -2,11 +2,11 @@ package wooteco.subway.exception;
 
 public class LineNotFoundException extends SubwayException {
 
-    public LineNotFoundException(String message) {
+    public LineNotFoundException(final String message) {
         super(message);
     }
 
-    public LineNotFoundException(String message, Throwable cause) {
+    public LineNotFoundException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
