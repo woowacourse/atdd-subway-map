@@ -52,7 +52,11 @@ public class SectionService {
     }
 
     private boolean isSectionTop(final Line line, final Section section) {
-        return line.getTopStationId().equals(section.getDownStationId());
+        return isStationTop(line, section.getDownStationId());
+    }
+
+    private boolean isStationTop(final Line line, final Long stationId) {
+        return line.getTopStationId().equals(stationId);
     }
 
     private Section saveSectionAtTop(final Section section) {
@@ -61,7 +65,11 @@ public class SectionService {
     }
 
     private boolean isSectionBottom(final Line line, final Section section) {
-        return line.getBottomStationId().equals(section.getUpStationId());
+        return isStationBottom(line, section.getDownStationId());
+    }
+
+    private boolean isStationBottom(final Line line, final Long stationId) {
+        return line.getBottomStationId().equals(stationId);
     }
 
     private Section saveSectionAtBottom(final Section section) {
@@ -70,16 +78,18 @@ public class SectionService {
     }
 
     private Section saveSectionAtMiddle(final Section section) {
-        new SectionValidator(sectionDao.findAllByLineId(section.getLineId()), section).validate();
+        final Long lineId = section.getLineId();
+        new SectionValidator(sectionDao.findAllByLineId(lineId), section).validate();
 
-        final Optional<Section> sectionByUpStation = sectionDao.findSectionByUpStation(section);
+        final Optional<Section> sectionByUpStation = sectionDao.findByLineIdAndUpStationId(lineId,
+                section.getUpStationId());
         if (sectionByUpStation.isPresent()) {
             final Section updateSection = section.subtractDistance(sectionByUpStation.get());
             sectionDao.updateUpStationAndDistance(updateSection);
             return sectionDao.save(section);
         }
 
-        final Section sectionByDownStation = sectionDao.findSectionByDownStation(section)
+        final Section sectionByDownStation = sectionDao.findByLineIdAndDownStationId(lineId, section.getDownStationId())
                                                        .orElseThrow(() -> new IllegalStateException("하행역과 상행역이 모두 " + "존재하지 않습니다."));
 
         final Section updateSection = section.subtractDistance(sectionByDownStation);
@@ -90,5 +100,34 @@ public class SectionService {
     public Section findByLineIdAndId(final Long lineId, final Long sectionId) {
         return sectionDao.findByLineIdAndId(lineId, sectionId)
                          .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."));
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        final Line line = findLineByLineIdId(lineId);
+        if (isStationTop(line, stationId)) {
+            deleteTopStation(lineId, stationId);
+        }
+
+        if (isStationBottom(line, stationId)) {
+            deleteBottomStation(lineId, stationId);
+        }
+    }
+
+    private void deleteTopStation(final Long lineId, final Long stationId) {
+        final Section section = sectionDao.findByLineIdAndUpStationId(lineId, stationId)
+                                          .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
+                                                  "않습니다."));
+
+        lineDao.updateTopStationId(lineId, section.getDownStationId());
+        sectionDao.deleteByLineIdAndUpStationId(lineId, stationId);
+    }
+
+    private void deleteBottomStation(final Long lineId, final Long stationId) {
+        final Section section = sectionDao.findByLineIdAndDownStationId(lineId, stationId)
+                                          .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 " +
+                                                  "않습니다."));
+
+        lineDao.updateBottomStationId(lineId, section.getUpStationId());
+        sectionDao.deleteByLineIdAndDownStationId(lineId, stationId);
     }
 }

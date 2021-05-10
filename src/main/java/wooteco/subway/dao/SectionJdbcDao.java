@@ -63,36 +63,32 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public Optional<Section> findSectionByUpStation(final Section section) {
+    public Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId) {
         String sql = "SELECT s.id, s.line_id, s.down_station_id, s.distance FROM SECTION s " + "WHERE s.up_station_id"
                 + " = ? AND s.line_id = ?";
         try {
-            final Long upStationId = section.getUpStationId();
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 final long id = rs.getLong("id");
-                final long lineId = rs.getLong("line_id");
                 final long downStationId = rs.getLong("down_station_id");
                 final int distance = rs.getInt("distance");
                 return Optional.of(new Section(id, lineId, upStationId, downStationId, distance));
-            }, upStationId, section.getLineId());
+            }, upStationId, lineId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<Section> findSectionByDownStation(final Section section) {
+    public Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId) {
         String sql = "SELECT s.id, s.line_id, s.up_station_id, s.distance FROM SECTION s WHERE s.down_station_id" +
                 " = ? AND s.line_id = ?";
         try {
-            final Long downStationId = section.getDownStationId();
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 final long id = rs.getLong("id");
-                final long lineId = rs.getLong("line_id");
                 final long upStationId = rs.getLong("up_station_id");
                 final int distance = rs.getInt("distance");
                 return Optional.of(new Section(id, lineId, upStationId, downStationId, distance));
-            }, downStationId, section.getLineId());
+            }, downStationId, lineId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -112,5 +108,17 @@ public class SectionJdbcDao implements SectionDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void deleteByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
+        String sql = "DELETE FROM SECTION s WHERE s.line_id = ? AND s.up_station_id = ?";
+        jdbcTemplate.update(sql, lineId, upStationId);
+    }
+
+    @Override
+    public void deleteByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+        String sql = "DELETE FROM SECTION s WHERE s.line_id = ? AND s.down_station_id = ?";
+        jdbcTemplate.update(sql, lineId, downStationId);
     }
 }

@@ -11,13 +11,17 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long lineId);
 
-    Optional<Section> findSectionByUpStation(Section section);
+    Optional<Section> findByLineIdAndUpStationId(Long lineId, Long upStationId);
 
-    Optional<Section> findSectionByDownStation(Section section);
+    Optional<Section> findByLineIdAndDownStationId(Long lineId, Long downStationId);
 
     Section save(Section section);
 
     void updateDownStationAndDistance(Section section);
 
     void updateUpStationAndDistance(Section section);
+
+    void deleteByLineIdAndUpStationId(Long lineId, Long upStationId);
+
+    void deleteByLineIdAndDownStationId(Long lineId, Long downStationId);
 }
