@@ -131,7 +131,7 @@ public class SectionService {
     public void deleteSection(final Long lineId, final Long stationId) {
         final List<Station> allSectionInLine = findAllSectionInLine(lineId);
         if(allSectionInLine.size() <= LIMIT_NUMBER_OF_STATION_IN_LINE){
-            throw new IllegalArgumentException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
+            throw new LineException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
         }
 
         final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, stationId);
@@ -167,6 +167,11 @@ public class SectionService {
             return;
         }
 
-        throw new IllegalArgumentException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
+        throw new LineException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
+    }
+
+    // TODO :: Optional
+    public int distance(final Long lineId, final Long upStationId, final Long downStationId) {
+        return sectionDao.findDistance(lineId, upStationId, downStationId);
     }
 }

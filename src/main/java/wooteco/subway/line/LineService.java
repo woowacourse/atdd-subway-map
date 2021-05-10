@@ -57,6 +57,16 @@ public class LineService {
         return lineDao.findAll();
     }
 
+    // TODO :: Optional 고민
+
+    public Long upStationId(final Long id){
+        return lineDao.findUpStationId(id);
+    }
+
+    public Long downStationId(final Long id){
+        return lineDao.findDownStationId(id);
+    }
+
     private void validateName(final String name){
         if (lineDao.isExistingName(name)) {
             throw new LineException("이미 존재하는 노선 이름입니다.");

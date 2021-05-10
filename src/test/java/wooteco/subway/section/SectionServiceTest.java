@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.Line;
-import wooteco.subway.line.LineDao;
+import wooteco.subway.line.LineException;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
@@ -27,19 +27,17 @@ class SectionServiceTest {
     private LineService lineService;
 
     @Autowired
-    private LineDao lineDao;
-
-    @Autowired
-    private SectionDao sectionDao;
-
-    @Autowired
     private StationService stationService;
 
     @Autowired
     private SectionService sectionService;
 
-    private Station savedUpStation;
-    private Station savedDownStation;
+    private Station aStation;
+    private Station bStation;
+    private Station cStation;
+    private Station dStation;
+    private Station eStation;
+
     private Line savedLine;
 
     private int initialDistance = 10;
@@ -47,155 +45,131 @@ class SectionServiceTest {
 
     @BeforeEach
     private void initLine() {
-        final Station upStation = new Station("B역");
-        final Station downStation = new Station("D역");
+        aStation = stationService.save(new Station("A역"));
+        bStation = stationService.save(new Station("B역"));
+        cStation = stationService.save(new Station("C역"));
+        dStation = stationService.save(new Station("D역"));
+        eStation = stationService.save(new Station("E역"));
 
-        savedUpStation = stationService.save(upStation);
-        savedDownStation = stationService.save(downStation);
-
-        final Line line = new Line("코기선", "black", savedUpStation.getId(), savedDownStation.getId(), initialDistance);
+        final Line line = new Line("코기선", "black", bStation.getId(), dStation.getId(), initialDistance);
         savedLine = lineService.create(line);
     }
 
     @DisplayName("노선 추가 시 상행, 하행 종점 추가")
     @Test
     public void saveTest() {
-        validateStationOrder(savedUpStation, savedDownStation);
-        validateFinalStation(savedUpStation, savedDownStation);
+        validateStationOrder(bStation, dStation);
+        validateFinalStation(bStation, dStation);
 
-        validateStationDistance(savedUpStation, savedDownStation, initialDistance);
+        validateStationDistance(bStation, dStation, initialDistance);
     }
 
     @DisplayName("상행 종점역 -> 중간역 구간 등록")
     @Test
     public void addMiddleSectionFromFront() {
-        final Station middleStation = new Station("C역");
-        final Station savedMiddleStation = stationService.save(middleStation);
+        sectionService.addSection(savedLine.getId(), bStation.getId(), cStation.getId(), insertDistance);
 
-        sectionService.addSection(savedLine.getId(), savedUpStation.getId(), savedMiddleStation.getId(), insertDistance);
+        validateStationOrder(bStation, cStation, dStation);
+        validateFinalStation(bStation, dStation);
 
-        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
-        validateFinalStation(savedUpStation, savedDownStation);
-
-        validateStationDistance(savedUpStation, savedMiddleStation, insertDistance);
-        validateStationDistance(savedMiddleStation, savedDownStation, initialDistance - insertDistance);
+        validateStationDistance(bStation, cStation, insertDistance);
+        validateStationDistance(cStation, dStation, initialDistance - insertDistance);
     }
 
     @DisplayName("중간역 -> 하행 종착역 구간 등록")
     @Test
     public void addMiddleSectionFromBack() {
-        final Station middleStation = new Station("C역");
-        final Station savedMiddleStation = stationService.save(middleStation);
+        sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), insertDistance);
 
-        sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), insertDistance);
+        validateStationOrder(bStation, cStation, dStation);
+        validateFinalStation(bStation, dStation);
 
-        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
-        validateFinalStation(savedUpStation, savedDownStation);
-
-        validateStationDistance(savedUpStation, savedMiddleStation, initialDistance - insertDistance);
-        validateStationDistance(savedMiddleStation, savedDownStation, insertDistance);
+        validateStationDistance(bStation, cStation, initialDistance - insertDistance);
+        validateStationDistance(cStation, dStation, insertDistance);
     }
 
     @DisplayName("새로운 상행 종점역 구간 등록")
     @Test
     public void addFinalSectionFromFront() {
-        final Station newFrontStation = new Station("A역");
-        final Station savedNewFrontStation = stationService.save(newFrontStation);
+        sectionService.addSection(savedLine.getId(), aStation.getId(), bStation.getId(), insertDistance);
 
-        sectionService.addSection(savedLine.getId(), savedNewFrontStation.getId(), savedUpStation.getId(), insertDistance);
+        validateStationOrder(aStation, bStation, dStation);
+        validateFinalStation(aStation, dStation);
 
-        validateStationOrder(savedNewFrontStation, savedUpStation, savedDownStation);
-        validateFinalStation(savedNewFrontStation, savedDownStation);
-
-        validateStationDistance(savedNewFrontStation, savedUpStation, insertDistance);
-        validateStationDistance(savedUpStation, savedDownStation, initialDistance);
+        validateStationDistance(aStation, bStation, insertDistance);
+        validateStationDistance(bStation, dStation, initialDistance);
     }
 
     @DisplayName("새로운 하행 종점역 구간 등록")
     @Test
     public void addFinalSectionFromDown() {
-        final Station newBackStation = new Station("E역");
-        final Station savedNewBackStation = stationService.save(newBackStation);
+        sectionService.addSection(savedLine.getId(), dStation.getId(), eStation.getId(), insertDistance);
 
-        sectionService.addSection(savedLine.getId(), savedDownStation.getId(), savedNewBackStation.getId(), insertDistance);
+        validateStationOrder(bStation, dStation, eStation);
+        validateFinalStation(bStation, eStation);
 
-        validateStationOrder(savedUpStation, savedDownStation, savedNewBackStation);
-        validateFinalStation(savedUpStation, savedNewBackStation);
-
-        validateStationDistance(savedUpStation, savedDownStation, initialDistance);
-        validateStationDistance(savedDownStation, savedNewBackStation, insertDistance);
+        validateStationDistance(bStation, dStation, initialDistance);
+        validateStationDistance(dStation, eStation, insertDistance);
     }
 
     @DisplayName("노선의 중간 역을 삭제한다.")
     @Test
     public void deleteStationInLine(){
-        final Station middleStation = new Station("C역");
-        final Station savedMiddleStation = stationService.save(middleStation);
+        sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), insertDistance);
+        sectionService.deleteSection(savedLine.getId(), cStation.getId());
 
-        sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), insertDistance);
-        sectionService.deleteSection(savedLine.getId(), savedMiddleStation.getId());
+        validateStationOrder(bStation, dStation);
+        validateFinalStation(bStation, dStation);
 
-        validateStationOrder(savedUpStation, savedDownStation);
-        validateFinalStation(savedUpStation, savedDownStation);
-        validateStationDistance(savedUpStation, savedDownStation, initialDistance);
+        validateStationDistance(bStation, dStation, initialDistance);
     }
 
     @DisplayName("노선의 상행 종점 역을 삭제한다.")
     @Test
     public void deleteFrontStationInLine(){
-        final Station middleStation = new Station("C역");
-        final Station savedMiddleStation = stationService.save(middleStation);
+        sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), insertDistance);
+        sectionService.deleteSection(savedLine.getId(), bStation.getId());
 
-        sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), insertDistance);
-        sectionService.deleteSection(savedLine.getId(), savedUpStation.getId());
+        validateStationOrder(cStation, dStation);
+        validateFinalStation(cStation, dStation);
 
-        validateStationOrder(savedMiddleStation, savedDownStation);
-        validateFinalStation(savedMiddleStation, savedDownStation);
-        validateStationDistance(savedMiddleStation, savedDownStation, insertDistance);
+        validateStationDistance(cStation, dStation, insertDistance);
     }
 
     @DisplayName("노선의 하행 종점 역을 삭제한다.")
     @Test
     public void deleteBackStationInLine(){
-        final Station middleStation = new Station("C역");
-        final Station savedMiddleStation = stationService.save(middleStation);
+        sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), insertDistance);
+        sectionService.deleteSection(savedLine.getId(), dStation.getId());
 
-        sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), insertDistance);
-        sectionService.deleteSection(savedLine.getId(), savedDownStation.getId());
+        validateStationOrder(bStation, cStation);
+        validateFinalStation(bStation, cStation);
 
-        validateStationOrder(savedUpStation, savedMiddleStation);
-        validateFinalStation(savedUpStation, savedMiddleStation);
-        validateStationDistance(savedUpStation, savedMiddleStation, initialDistance-insertDistance);
+        validateStationDistance(bStation, cStation, initialDistance-insertDistance);
     }
 
     @DisplayName("노선이 종점 뿐 일 경우 역을 삭제할 수 없다.")
     @Test()
     public void deleteFinalStation() {
         assertThatThrownBy(()->{
-            sectionService.deleteSection(savedLine.getId(), savedDownStation.getId());
-        }).isInstanceOf(IllegalArgumentException.class);
+            sectionService.deleteSection(savedLine.getId(), dStation.getId());
+        }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
     @Test()
     public void addFrontSectionWithInvalidDistance() {
         assertThatThrownBy(()->{
-            final Station middleStation = new Station("C역");
-            final Station savedMiddleStation = stationService.save(middleStation);
-
-            sectionService.addSection(savedLine.getId(), savedUpStation.getId(), savedMiddleStation.getId(), initialDistance+1);
-        }).isInstanceOf(IllegalArgumentException.class);
+            sectionService.addSection(savedLine.getId(), bStation.getId(), cStation.getId(), initialDistance+1);
+        }).isInstanceOf(LineException.class);
     }
 
     @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
     @Test()
     public void addBackSectionWithInvalidDistance() {
         assertThatThrownBy(()->{
-            final Station middleStation = new Station("C역");
-            final Station savedMiddleStation = stationService.save(middleStation);
-
-            sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), initialDistance+1);
-        }).isInstanceOf(IllegalArgumentException.class);
+            sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), initialDistance+1);
+        }).isInstanceOf(LineException.class);
     }
 
     private void validateStationOrder(final Station... expectOrders) {
@@ -208,12 +182,12 @@ class SectionServiceTest {
     }
 
     private void validateStationDistance(final Station upStation, final Station downStation, final int expectedDistance){
-        final int actualDistance = sectionDao.findDistance(savedLine.getId(), upStation.getId(), downStation.getId());
+        final int actualDistance = sectionService.distance(savedLine.getId(), upStation.getId(), downStation.getId());
         assertThat(expectedDistance).isEqualTo(actualDistance);
     }
 
     private void validateFinalStation(final Station expectedUpStation, final Station expectedDownStation){
-        assertThat(lineDao.findUpStationId(savedLine.getId())).isEqualTo(expectedUpStation.getId());
-        assertThat(lineDao.findDownStationId(savedLine.getId())).isEqualTo(expectedDownStation.getId());
+        assertThat(lineService.upStationId(savedLine.getId())).isEqualTo(expectedUpStation.getId());
+        assertThat(lineService.downStationId(savedLine.getId())).isEqualTo(expectedDownStation.getId());
     }
 }
