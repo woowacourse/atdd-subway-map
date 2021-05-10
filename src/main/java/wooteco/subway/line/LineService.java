@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationResponse;
 
-import java.util.Collections;
-import java.util.List;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +36,20 @@ public class LineService {
     }
 
     public Line showLine(long id) {
-        List<Long> stationsId = lineDao.findStationsIdByLineId(id);
+        Map<Long, Long> sectionMap = sectionDao.sectionMap(id);
+        Set<Long> set1 = sectionMap.keySet();
+        Set<Long> set2 = new HashSet<>(sectionMap.values());
+        set1.removeAll(set2);
+
+        long upStation = set1.iterator().next();
+        List<Long> stationsId = new ArrayList<>();
+        stationsId.add(upStation);
+        long key = upStation;
+        while(sectionMap.get(key) != null){
+            key = sectionMap.get(key);
+            stationsId.add(key);
+        }
+
         List<Station> stations = stationsId.stream()
                 .map(stationDao::findById)
                 .collect(Collectors.toList());
@@ -54,4 +66,8 @@ public class LineService {
     public void deleteLine(long id) {
         lineDao.delete(id);
     }
+
+
+
+
 }

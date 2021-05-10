@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionService;
 
 import java.net.URI;
@@ -68,8 +69,27 @@ public class LineController {
         long downStationId = lineRequest.getDownStationId();
         int distance = lineRequest.getDistance();
 
-        sectionService.save(lineId, upStationId, downStationId, distance);
+        long existStationId = sectionService.findExistStation(lineId, upStationId, downStationId);
+        if(existStationId == upStationId) {
+
+            long beforeStationId = sectionService.findBeforeDownStationId(lineId, upStationId);
+            int beforeDistance = sectionService.findBeforeDistance(lineId, existStationId, beforeStationId);
+            sectionService.delete(lineId, existStationId, beforeStationId);
+            sectionService.save(lineId, upStationId, downStationId, distance);
+            sectionService.save(lineId,downStationId, beforeStationId, beforeDistance-distance);
+
+        }
+
+        if (existStationId == downStationId) {
+            long beforeStationId = sectionService.findBeforeUpStationId(lineId, downStationId);
+            int beforeDistance = sectionService.findBeforeDistance(lineId, beforeStationId, existStationId);
+            sectionService.delete(lineId, beforeStationId, downStationId);
+            sectionService.save(lineId, beforeStationId, upStationId, beforeDistance-distance);
+            sectionService.save(lineId, upStationId, downStationId, distance);
+
+        }
 
         return ResponseEntity.ok().build();
     }
+
 }
