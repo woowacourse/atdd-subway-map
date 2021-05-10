@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,14 +18,16 @@ import wooteco.subway.domain.station.Station;
 @Repository
 public class StationDao {
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
         new Station(
             resultSet.getLong("id"),
             resultSet.getString("name"));
 
 
-    public StationDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public Long save(Station station) {
@@ -36,12 +41,13 @@ public class StationDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Optional<Station> findById(Long id) {
-        String query = "SELECT * FROM STATION WHERE id = ?";
-        Station result = DataAccessUtils.singleResult(
-            jdbcTemplate.query(query, stationRowMapper, id)
-        );
-        return Optional.ofNullable(result);
+    public List<Station> findByIds(List<Long> ids) {
+        String query = "SELECT * FROM STATION WHERE id IN (:ids)";
+        SqlParameterSource parameters = new MapSqlParameterSource("ids", ids);
+        return namedParameterJdbcTemplate.query(query, parameters,
+            (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")));
     }
 
     public List<Station> findAll() {

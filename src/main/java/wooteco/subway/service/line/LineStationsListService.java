@@ -35,7 +35,8 @@ public class LineStationsListService {
         List<Section> sectionsOfLine = sectionDao.findAllByLineId(lineId);
         LineStationsInOrder lineStationsInOrder = new LineStationsInOrder(sectionsOfLine);
         List<Long> stationIdsInOrder = lineStationsInOrder.getStationIdsInOrder();
-        List<Station> stationsInOrder = getStationsInOrder(stationIdsInOrder);
+        List<Station> stationsInAnyOrder = stationDao.findByIds(stationIdsInOrder);
+        List<Station> stationsInOrder = lineStationsInOrder.getOrderedStationsByOrderedIds(stationsInAnyOrder, stationIdsInOrder);
         List<StationResponseDto> stationResponseDtosInOrder = getStationResponseDtosFromStationsInOrder(stationsInOrder);
         Line line = getLine(lineId);
         return new LineStationsListResponseDto(line.getId(), line.getName(), line.getColor(), stationResponseDtosInOrder);
@@ -44,16 +45,6 @@ public class LineStationsListService {
     private Line getLine(Long lineId) {
         return lineDao.findById(lineId)
             .orElseThrow(() -> new HttpException(HttpStatus.BAD_REQUEST, "존재하지 않는 노선 id 입니다."));
-    }
-
-    private List<Station> getStationsInOrder(List<Long> stationIdsInOrder) {
-        List<Station> stationsInOrder = new ArrayList<>();
-        for (Long stationId : stationIdsInOrder) {
-            Station station = stationDao.findById(stationId)
-                .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "노선 역 목록 조회 에러"));
-            stationsInOrder.add(station);
-        }
-        return stationsInOrder;
     }
 
     private List<StationResponseDto> getStationResponseDtosFromStationsInOrder(List<Station> stationsInOrder) {

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.exception.HttpException;
 
 public class LineStationsInOrder {
     private final List<Section> sectionsOfLine;
@@ -50,5 +53,21 @@ public class LineStationsInOrder {
             lastId = section.getDownStationId();
         }
         return lastId;
+    }
+
+    public List<Station> getOrderedStationsByOrderedIds(List<Station> stationsInAnyOrder, List<Long> stationIdsInOrder) {
+        List<Station> stationsInOrder = new ArrayList<>();
+        for (Long stationId : stationIdsInOrder) {
+            Station station = getStationById(stationsInAnyOrder, stationId);
+            stationsInOrder.add(station);
+        }
+        return stationsInOrder;
+    }
+
+    private Station getStationById(List<Station> stationsInAnyOrder, Long stationId) {
+        return stationsInAnyOrder.stream()
+            .filter(station -> station.getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(() -> new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "정렬된 id로 Station 정렬 에러"));
     }
 }
