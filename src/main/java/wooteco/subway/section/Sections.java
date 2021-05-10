@@ -2,7 +2,7 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.InvalidAddSectionException;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import static java.util.stream.Collectors.toList;
@@ -62,6 +62,39 @@ public class Sections {
     private boolean isIntermediate(Section newSection, Section section) {
         return section.isUpStation(newSection.getUpStationId()) ||
             section.isDownStation(newSection.getDownStationId());
+    }
+
+    public List<Long> sortedStationIds() {
+        Deque<Long> sortedStationIds = new ArrayDeque<>();
+        Map<Long, Long> upStationIds = new LinkedHashMap<>();
+        Map<Long, Long> downStationIds = new LinkedHashMap<>();
+
+        initializeByIds(sortedStationIds, upStationIds, downStationIds);
+        sortByIds(sortedStationIds, upStationIds, downStationIds);
+
+        return new ArrayList<>(sortedStationIds);
+    }
+
+    private void initializeByIds(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+        for (Section section : sections) {
+            upStationIds.put(section.getUpStationId(), section.getDownStationId());
+            downStationIds.put(section.getDownStationId(), section.getUpStationId());
+        }
+
+        Section now = sections.get(0);
+        sortedStationIds.addFirst(now.getUpStationId());
+        sortedStationIds.addLast(now.getDownStationId());
+    }
+
+    private void sortByIds(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+        while (upStationIds.containsKey(sortedStationIds.peekFirst())) {
+            Long currentId = sortedStationIds.peekFirst();
+            sortedStationIds.addFirst(upStationIds.get(currentId));
+        }
+        while (downStationIds.containsKey(sortedStationIds.peekLast())) {
+            Long currentId = sortedStationIds.peekLast();
+            sortedStationIds.addLast(downStationIds.get(currentId));
+        }
     }
 
     public boolean isBiggerThanOne() {

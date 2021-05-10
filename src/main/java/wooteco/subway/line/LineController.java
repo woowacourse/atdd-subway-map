@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.station.StationResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -35,8 +36,9 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line line = lineService.line(id).get();
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor());
+        Line line = lineService.findById(id);
+        List<StationResponse> sortedStations = lineService.sortedStationsByLineId(id);
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), sortedStations);
         return ResponseEntity.ok().body(lineResponse);
     }
 

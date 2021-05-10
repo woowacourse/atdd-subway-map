@@ -1,13 +1,16 @@
 package wooteco.subway.station;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class StationH2Dao implements StationDao {
@@ -49,5 +52,23 @@ public class StationH2Dao implements StationDao {
     public void delete(Long id) {
         String sql = "DELETE FROM STATION WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> {
+                    return new Station(
+                        rs.getLong("id"),
+                        rs.getString("name")
+                    );
+                },
+                id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
