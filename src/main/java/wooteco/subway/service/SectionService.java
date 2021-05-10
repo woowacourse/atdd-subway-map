@@ -1,5 +1,6 @@
 package wooteco.subway.service;
 
+import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
@@ -14,7 +15,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public SectionServiceDto save(final SectionServiceDto dto) {
+    public SectionServiceDto save(@Valid final SectionServiceDto dto) {
         Section section = new Section(dto.getLineId(), dto.getUpStationId(), dto.getDownStationId(), dto.getDistance());
         Section saveSection = sectionDao.save(section);
 

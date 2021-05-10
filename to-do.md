@@ -39,11 +39,11 @@
     - 엔티티에서 잡을 것. DTO가 양수인지 아닌지를 알면 안될거같음
   - [x] upStation과 downStation이 같아선 안된다. 
     - 엔티티에서 잡을 것. DTO가 중복 검증을 알면 안될거같음
-  - [ ] upStation이 null은 허용되지 않는다. 
+  - [x] upStation이 null은 허용되지 않는다. 
     - request DTO 레벨에서 잡아주도록 추가
-  - [ ] downStation이 null은 허용되지 않는다. 
+  - [x] downStation이 null은 허용되지 않는다. 
     - request DTO 레벨에서 잡아주도록 추가
-  - [ ] line이 null은 허용되지 않는다. 
+  - [x] line이 null은 허용되지 않는다. 
     - request DTO 레벨에서 잡아주도록 추가
   
 - [ ] Section 추가 서비스 구현

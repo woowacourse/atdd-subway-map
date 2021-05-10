@@ -5,6 +5,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import wooteco.subway.exception.InvalidDistanceException;
@@ -41,19 +42,25 @@ public class ExceptionController {
 
     @ExceptionHandler(InvalidDistanceException.class)
     public ResponseEntity<Void> invalidDistanceExceptionResponse(final InvalidDistanceException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler({NullIdException.class, NullNameException.class, NullColorException.class})
     public ResponseEntity<Void> nullExceptionResponse(final NullException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(DuplicateStationException.class)
     public ResponseEntity<Void> duplicatedStationExceptionResponse(final DuplicateStationException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(final MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest()
             .build();
     }
 }
