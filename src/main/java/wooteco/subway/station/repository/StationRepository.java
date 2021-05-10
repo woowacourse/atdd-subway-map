@@ -13,4 +13,6 @@ public interface StationRepository {
     Station findById(Long id);
 
     void delete(Long id);
+
+    void deleteAll();
 }

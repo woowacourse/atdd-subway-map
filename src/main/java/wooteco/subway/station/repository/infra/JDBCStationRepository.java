@@ -1,4 +1,4 @@
-package wooteco.subway.station.repository;
+package wooteco.subway.station.repository.infra;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.repository.StationRepository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -58,5 +59,11 @@ public class JDBCStationRepository implements StationRepository {
     public void delete(final Long id) {
         String query = "DELETE FROM station WHERE id = ?";
         this.jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public void deleteAll() {
+        String query = "DELETE FROM station";
+        this.jdbcTemplate.update(query);
     }
 }

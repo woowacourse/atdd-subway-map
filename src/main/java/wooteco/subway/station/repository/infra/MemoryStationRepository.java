@@ -1,8 +1,9 @@
-package wooteco.subway.station.repository;
+package wooteco.subway.station.repository.infra;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.repository.StationRepository;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -47,6 +48,11 @@ public class MemoryStationRepository implements StationRepository {
     public void delete(final Long id) {
         Station findByIdStation = findById(id);
         stations.remove(findByIdStation);
+    }
+
+    @Override
+    public void deleteAll() {
+        stations.clear();
     }
 
     private boolean validateDuplicateName(final String name) {
