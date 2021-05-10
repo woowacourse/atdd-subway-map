@@ -33,8 +33,8 @@ public class StationService {
     }
 
     public void deleteStation(long stationId) {
-        final Optional<Station> stationOfId = stationDao.findById(stationId);
-        if (!stationOfId.isPresent()) {
+        final Optional<Station> stationFoundById = stationDao.findById(stationId);
+        if (!stationFoundById.isPresent()) {
             throw new IllegalArgumentException("해당 id에 대응하는 역이 없습니다.");
         }
         stationDao.delete(stationId);
