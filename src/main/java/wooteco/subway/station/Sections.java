@@ -13,72 +13,117 @@ public class Sections {
     }
 
     public void add(Station upStation, Station downStation, int distance) {
-        // 1. XOR 검증, 동시에 상행 추가인지 하행 추가인지 확인도 가능하다.
         boolean hasUpStation = this.sections.stream()
                 .anyMatch(section -> section.hasAny(upStation));
         boolean hasDownStation = this.sections.stream()
                 .anyMatch(section -> section.hasAny(downStation));
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("이미 등록된 역들입니다.");
+            throw new IllegalArgumentException("이미 노선에 등록된 역들입니다.");
         }
 
         if (hasUpStation) {
-            // 2. upStation이 등록되어 있는 경우라면, 하행 역을 등록한다.
-            Section sectionToDelete = this.sections.stream()
-                    .filter(section -> section.isUpStation(upStation))
-                    .findAny()
-                    .get();
-            int index = sections.indexOf(sectionToDelete);
-
-            // 2-1. 거리 검증
-            if (distance > sectionToDelete.getDistance()) {
-                throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
-            }
-            // 2-2 섹션을 2개 만든다.
-            Section section1 = new Section(upStation, downStation, distance);
-            Section section2 = new Section(downStation,
-                    sectionToDelete.getDownStation(),
-                    sectionToDelete.getDistance() - distance);
-
-            // 2-3 원래 섹션을 삭제
-            sections.remove(index);
-
-            // 2-4 추가
-            sections.add(index, section2);
-            sections.add(index, section1);
+            addDownStation(upStation, downStation, distance);
+            return;
         }
-
         if (hasDownStation) {
-            // 2. DownStation이 등록되어 있는 경우라면, 하행 역을 등록한다.
-            Section sectionToDelete = this.sections.stream()
-                    .filter(section -> section.isDownStation(downStation))
-                    .findAny()
-                    .get();
-            int index = sections.indexOf(sectionToDelete);
-
-            // 2-1. 거리 검증
-            if (distance > sectionToDelete.getDistance()) {
-                throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
-            }
-            // 2-2 섹션을 2개 만든다.
-            Section section1 = new Section(sectionToDelete.getUpStation(), upStation, sectionToDelete.getDistance() - distance);
-            Section section2 = new Section(upStation, downStation, distance);
-
-            // 2-3 원래 섹션을 삭제
-            sections.remove(index);
-
-            // 2-4 추가
-            sections.add(index, section2);
-            sections.add(index, section1);
+            addUpStation(upStation, downStation, distance);
+            return;
         }
 
+        throw new IllegalArgumentException("노선에 등록되지 않은 역들입니다.");
+    }
+
+    private void addUpStation(Station upStation, Station downStation, int distance) {
+        Section sectionToDelete = this.sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findAny()
+                .get();
+        int index = sections.indexOf(sectionToDelete);
+
+        validateDistance(distance, sectionToDelete);
+
+        Section section1 = new Section(sectionToDelete.getUpStation(), upStation, sectionToDelete.getDistance() - distance);
+        Section section2 = new Section(upStation, downStation, distance);
+
+        sections.remove(index);
+
+        sections.add(index, section2);
+        sections.add(index, section1);
+    }
+
+    private void addDownStation(Station upStation, Station downStation, int distance) {
+        Section sectionToDelete = this.sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findAny()
+                .get();
+        int index = sections.indexOf(sectionToDelete);
+
+        validateDistance(distance, sectionToDelete);
+
+        Section section1 = new Section(upStation, downStation, distance);
+        Section section2 = new Section(downStation,
+                sectionToDelete.getDownStation(),
+                sectionToDelete.getDistance() - distance);
+
+        sections.remove(index);
+
+        sections.add(index, section2);
+        sections.add(index, section1);
+    }
+
+    private void validateDistance(int distance, Section sectionToDelete) {
+        if (distance > sectionToDelete.getDistance()) {
+            throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
+        }
     }
 
     public void delete(Station station) {
+        boolean hasUpStation = this.sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+        boolean hasDownStation = this.sections.stream()
+                .anyMatch(section -> section.isDownStation(station));
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("등록되지 않은 역입니다.");
+        }
+
+        if (hasUpStation && hasDownStation) {
+            Section sectionToDelete1 = this.sections.stream()
+                    .filter(section -> section.isDownStation(station))
+                    .findAny()
+                    .get();
+
+            Section sectionToDelete2 = this.sections.stream()
+                    .filter(section -> section.isUpStation(station))
+                    .findAny()
+                    .get();
+
+            Section section = new Section(sectionToDelete1.getUpStation(),
+                    sectionToDelete2.getDownStation(),
+                    sectionToDelete1.getDistance() + sectionToDelete2.getDistance());
+
+            int index = sections.indexOf(sectionToDelete1);
+
+            sections.remove(index);
+            sections.remove(index);
+            sections.add(index, section);
+            return;
+        }
+
+        if (hasUpStation) {
+            sections.remove(0);
+            return;
+        }
+
+        if (hasDownStation) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
 
     }
 
+    // todo : remove
     public Stream<Section> stream() {
         return this.sections.stream();
     }

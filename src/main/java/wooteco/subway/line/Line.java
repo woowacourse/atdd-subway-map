@@ -61,8 +61,4 @@ public class Line {
                 ", color='" + color + '\'' +
                 '}';
     }
-
-    public Sections getSections() {
-        return this.sections;
-    }
 }
