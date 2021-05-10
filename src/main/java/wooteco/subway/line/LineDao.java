@@ -21,13 +21,15 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(final String name, final String color) {
-        final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
+    public Long save(final String name, final String color, final Long upStationId, final Long downStationId) {
+        final String sql = "INSERT INTO LINE (name, color, up_station_id, down_station_id) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(con -> {
             final PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, name);
             ps.setString(2, color);
+            ps.setLong(3, upStationId);
+            ps.setLong(4, downStationId);
             return ps;
         }, keyHolder);
 
@@ -42,6 +44,27 @@ public class LineDao {
     public void update(final Long id, final String name, final String color) {
         final String sql = "UPDATE LINE SET NAME = ?, COLOR =? WHERE id = ?";
         jdbcTemplate.update(sql, name, color, id);
+    }
+
+    // update랑 합치는게 좋을지
+    public void updateUpStation(final Long id, final Long upStationId) {
+        final String sql = "UPDATE LINE SET up_station_id = ?, WHERE id = ?";
+        jdbcTemplate.update(sql, upStationId, id);
+    }
+
+    public void updateDownStation(final Long id, final Long downStationId) {
+        final String sql = "UPDATE LINE SET down_station_id = ?, WHERE id = ?";
+        jdbcTemplate.update(sql, downStationId, id);
+    }
+
+    public Long findUpStationId(final Long id){
+        final String sql = "SELECT up_station_id FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    }
+
+    public Long findDownStationId(final Long id) {
+        final String sql = "SELECT down_station_id FROM LINE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 
     public Optional<Line> findById(final Long id) {
@@ -71,4 +94,6 @@ public class LineDao {
                 rs.getString("color")
         );
     }
+
+
 }

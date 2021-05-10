@@ -2,6 +2,7 @@ package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.LineDao;
 import wooteco.subway.line.LineException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -15,10 +16,12 @@ public class SectionService {
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
+    private final LineDao lineDao;
 
-    public SectionService(final SectionDao sectionDao, final StationDao stationDao) {
+    public SectionService(final SectionDao sectionDao, final StationDao stationDao, final LineDao lineDao) {
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
+        this.lineDao = lineDao;
     }
 
     public void addSection(final Long lineId, final Long upStationId, final Long downStationId) {
@@ -29,13 +32,13 @@ public class SectionService {
 
         if(isFrontSection(lineId, downStationId) ){
             sectionDao.save(lineId, upStationId, downStationId, 0);
-            // 상행 종점역 db 업데이트 -> upStationId
+            lineDao.updateUpStation(lineId, upStationId);
             return;
         }
 
-        if( isBackSection(lineId, upStationId)){
+        if(isBackSection(lineId, upStationId)){
             sectionDao.save(lineId, upStationId, downStationId, 0);
-            // 하행 종점역 db 업데이트 -> downStationId
+            lineDao.updateDownStation(lineId, downStationId);
             return;
         }
 

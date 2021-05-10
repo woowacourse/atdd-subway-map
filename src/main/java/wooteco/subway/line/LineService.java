@@ -21,7 +21,7 @@ public class LineService {
     public Line create(final Line line) {
         validateName(line.getName());
 
-        final Long id = lineDao.save(line.getName(), line.getColor());
+        final Long id = lineDao.save(line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId());
         sectionDao.save(id, line.getUpStationId(), line.getDownStationId(), 0);
 
         return findById(id);

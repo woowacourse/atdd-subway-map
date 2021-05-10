@@ -40,9 +40,7 @@ class SectionServiceTest {
         savedUpStation = stationService.save(upStation);
         savedDownStation = stationService.save(downStation);
 
-        final Line line = new Line("코기선", "black",
-                savedUpStation.getId(), savedDownStation.getId());
-
+        final Line line = new Line("코기선", "black", savedUpStation.getId(), savedDownStation.getId());
         savedLine = lineService.create(line);
     }
 
