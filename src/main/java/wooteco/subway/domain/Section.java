@@ -10,11 +10,23 @@ public class Section {
     private final Id downStationId;
     private final Distance distance;
 
-    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this(null, new Id(lineId), new Id(upStationId), new Id(downStationId), new Distance(distance));
+    public Section(final long key, final Section section) {
+        this(new Id(key), section.lineId, section.upStationId, section.downStationId,
+            section.distance);
     }
-    public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        this(new Id(id), new Id(lineId), new Id(upStationId), new Id(downStationId), new Distance(distance));
+
+    public Section(final Long lineId, final Long upStationId, final Long downStationId,
+        final int distance) {
+
+        this(null, new Id(lineId), new Id(upStationId), new Id(downStationId),
+            new Distance(distance));
+    }
+
+    public Section(final Long id, final Long lineId, final Long upStationId,
+        final Long downStationId, final int distance) {
+
+        this(new Id(id), new Id(lineId), new Id(upStationId), new Id(downStationId),
+            new Distance(distance));
     }
 
     public Section(final Id id, final Id lineId, final Id upStatinoId, final Id downStationId,
@@ -52,4 +64,10 @@ public class Section {
     public int getDistance() {
         return distance.getValue();
     }
+
+    public Section distanceUpdateSection(final Section section) {
+        Distance updateDistance = section.distance.subtract(this.distance);
+        return new Section(section.id, lineId, upStationId, downStationId, updateDistance);
+    }
+
 }

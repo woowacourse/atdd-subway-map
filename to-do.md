@@ -46,11 +46,11 @@
   - [x] line이 null은 허용되지 않는다. 
     - request DTO 레벨에서 잡아주도록 추가
   
-- [ ] Section 추가 서비스 구현
+- [x] Section 추가 서비스 구현
   - [x] 기존의 Section이 존재를 하고, 이어주는 상황
   - [x] 기존의 Section들과 겹치는 역이 없을 경우의 예외
   - [x] upStation, downStation이 해당 line에 이미 Section으로 등록되어 있으면 안된다.
-  - [ ] 기존에 있는 Section 사이에 들어갈 경우에 두 개의 Section으로 재배치해주어야 한다.
+  - [x] 기존에 있는 Section 사이에 들어갈 경우에 두 개의 Section으로 재배치해주어야 한다.
     - 재배치되는 Section의 구간 길이는 이전의 구간 길이보다 짧아야 한다.
   
 - [ ] Section 제거 기능 구현

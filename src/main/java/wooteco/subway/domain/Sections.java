@@ -1,31 +1,59 @@
 package wooteco.subway.domain;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
-import wooteco.subway.exception.section.InvalidSectionOnLineException;
+import java.util.Map;
+import java.util.Objects;
 
 public class Sections {
 
     private final List<Section> sections;
 
-    public Sections(List<Section> sections) {
+    public Sections(final List<Section> sections) {
         this.sections = sections;
     }
 
-    public void validateSavable(final Section section) {
-        if (existedUpStation(section) == existedDownStation(section)) {
-            throw new InvalidSectionOnLineException();
+    public boolean isBothEnd(final Section section) {
+        Deque<Long> ids = sortedStationIds();
+
+        return Objects.equals(ids.peekFirst(), section.getDownStationId())
+            || Objects.equals(ids.peekLast(), section.getUpStationId());
+    }
+
+    public ArrayDeque<Long> sortedStationIds() {
+        Deque<Long> stationIds = new ArrayDeque<>();
+        Map<Long, Long> upStationIds = new LinkedHashMap<>();
+        Map<Long, Long> downStationIds = new LinkedHashMap<>();
+
+        initStationIds(stationIds, upStationIds, downStationIds);
+        sortStationsById(stationIds, upStationIds, downStationIds);
+
+        return new ArrayDeque<>(stationIds);
+    }
+
+    private void initStationIds(Deque<Long> stationIds, Map<Long, Long> upStationIds,
+        Map<Long, Long> downStationIds) {
+        for (Section section : sections) {
+            upStationIds.put(section.getUpStationId(), section.getDownStationId());
+            downStationIds.put(section.getDownStationId(), section.getUpStationId());
         }
+
+        Section section = sections.get(0);
+        stationIds.addFirst(section.getUpStationId());
+        stationIds.addFirst(section.getDownStationId());
     }
 
-    private boolean existedUpStation(final Section section) {
-        return sections.stream()
-            .map(Section::getUpStationId)
-            .anyMatch(id -> id.equals(section.getUpStationId()) ^ id.equals(section.getDownStationId()));
-    }
+    private void sortStationsById(Deque<Long> stationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+        while (upStationIds.containsKey(stationIds.peekLast())) {
+            Long id = stationIds.peekLast();
+            stationIds.addLast(upStationIds.get(id));
+        }
 
-    private boolean existedDownStation(final Section section) {
-        return sections.stream()
-            .map(Section::getDownStationId)
-            .anyMatch(id -> id.equals(section.getUpStationId()) ^ id.equals(section.getDownStationId()));
+        while (downStationIds.containsKey(stationIds.peekFirst())) {
+            Long id = stationIds.peekFirst();
+            stationIds.addFirst(downStationIds.get(id));
+        }
     }
 }

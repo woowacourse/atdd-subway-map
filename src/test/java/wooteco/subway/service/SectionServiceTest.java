@@ -37,7 +37,7 @@ public class SectionServiceTest {
         SectionServiceDto requestDto = new SectionServiceDto(lineId, upStationId, downStationId, distance);
         when(mockSectionDao.save(any(Section.class)))
             .thenReturn(new Section(sectionId, lineId, upStationId, downStationId, distance));
-        when(mockSectionDao.findSectionsByLineId(any(long.class))).thenReturn(
+        when(mockSectionDao.findAllByLineId(any(long.class))).thenReturn(
             Arrays.asList(
                 new Section(1L, 1L, 2L, 10),
                 new Section(1L, 2L, 3L, 10)
@@ -64,7 +64,7 @@ public class SectionServiceTest {
         long upStationId = 5L;
         int distance = 10;
         SectionServiceDto requestDto = new SectionServiceDto(lineId, upStationId, downStationId, distance);
-        when(mockSectionDao.findSectionsByLineId(any(long.class))).thenReturn(
+        when(mockSectionDao.findAllByLineId(any(long.class))).thenReturn(
             Arrays.asList(
                 new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 10)
@@ -87,7 +87,7 @@ public class SectionServiceTest {
         long upStationId = 2L;
         int distance = 10;
         SectionServiceDto requestDto = new SectionServiceDto(lineId, upStationId, downStationId, distance);
-        when(mockSectionDao.findSectionsByLineId(any(long.class))).thenReturn(
+        when(mockSectionDao.findAllByLineId(any(long.class))).thenReturn(
             Arrays.asList(
                 new Section(1L, 1L, 1L, 2L, 10),
                 new Section(2L, 1L, 2L, 3L, 10)

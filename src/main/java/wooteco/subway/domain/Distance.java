@@ -22,4 +22,8 @@ public class Distance {
     public int getValue() {
         return value;
     }
+
+    public Distance subtract(final Distance distance) {
+        return new Distance(value - distance.getValue());
+    }
 }
