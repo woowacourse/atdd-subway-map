@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestConstructor;
@@ -40,6 +41,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createLineAPI("2호선", "bg-green-600");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo("[ERROR] 중복된 이름입니다.");
+    }
+
+    @Test
+    @DisplayName("null을 입력하여 노선을 생성하면 에러가 출력된다.")
+    void createLineWithDataNull() {
+        //when
+        ExtractableResponse<Response> response = createLineAPI(null, null);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("공백을 입력하여 노선을 생성하면 에러가 출력된다.")
+    void createLineWithDataSpace() {
+        ExtractableResponse<Response> response = createLineAPI(" ", "    ");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
     }
 
     @Test
@@ -78,11 +98,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineResponse lineResponse = response.body().as(LineResponse.class);
 
+        System.out.println(lineResponse);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
         assertThat(lineResponse.getName()).isEqualTo("2호선");
+        assertThat(lineResponse.getColor()).isEqualTo("bg-green-600");
     }
 
     @Test

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
+import wooteco.subway.exception.NotInputDataException;
 
 @ControllerAdvice
 public class SubwayAdvice {
@@ -16,6 +17,11 @@ public class SubwayAdvice {
 
     @ExceptionHandler(NotExistItemException.class)
     public ResponseEntity<String> handleNotExistItemException(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotInputDataException.class)
+    public ResponseEntity<String> handleNotInputDataException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

@@ -50,6 +50,25 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("null을 입력하여 역을 생성하면 에러가 출력된다.")
+    void createLineWithDataNull() {
+        //when
+        ExtractableResponse<Response> response = createStationAPI(null);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("공백을 입력하여 역을 생성하면 에러가 출력된다.")
+    void createLineWithDataSpace() {
+        ExtractableResponse<Response> response = createStationAPI("    ");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+    }
+
+    @Test
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
