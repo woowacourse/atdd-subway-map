@@ -140,7 +140,7 @@ public class SectionService {
     private Station getFirstStation(final Map<Station, Station> upAndDownStations, final Long lineId) {
         return upAndDownStations.keySet()
                 .stream()
-                .filter(station -> sectionRepository.isEndStation(lineId, station.getId()))
+                .filter(station -> !upAndDownStations.containsValue(station))
                 .findFirst()
                 .orElseThrow(NoSuchStationException::new);
     }

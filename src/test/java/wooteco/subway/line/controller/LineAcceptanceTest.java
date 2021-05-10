@@ -47,24 +47,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         saveStation(firstStationRequest);
         saveStation(secondStationRequest);
 
-        response = RestAssured.given().log().all()
-                .body(firstLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        response = saveLine(firstLineRequest);
 
         url = response.header("Location");
-    }
-
-    private void saveStation(final StationRequest station) {
-        RestAssured.given().log().all()
-                .body(station)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all();
     }
 
     @DisplayName("line 추가하는데 성공하면 201 created와 생성된 line 정보를 반환한다")
@@ -88,13 +73,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         LineRequest secondLineRequest = new LineRequest("2호선", "bg-green-600");
-        RestAssured.given().log().all()
-                .body(secondLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        saveLine(secondLineRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -180,7 +159,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
 
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
-        addSection(sectionRequest);
+        saveSection(sectionRequest);
 
         deleteSection(1L); // 잠실역
 
@@ -211,7 +190,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         saveStation(thirdStationRequest); // 잠실역 - 잠실새내역 - 몽촌토성역
 
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 5);
-        addSection(sectionRequest);
+        saveSection(sectionRequest);
 
         deleteSection(2L);
 
@@ -235,36 +214,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
-    private void deleteSection(final Long stationId) {
-        RestAssured.given().log().all()
-                .param("stationId", stationId)
-                .when().log().all()
-                .delete(url + "/sections")
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void addSection(final SectionRequest sectionRequest) {
-        RestAssured.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(sectionRequest)
-                .when()
-                .post(url + "/sections")
-                .then();
-    }
-
     @DisplayName("이미 존재하는 이름의 line을 저장하려하면 bad request를 반환한다")
     @Test
     void save_DuplicateLineNameException() {
         LineRequest lineRequest = new LineRequest("신분당선", "bg-black-600");
 
-        ExtractableResponse<Response> shinBunDangResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> shinBunDangResponse = saveLine(lineRequest);
 
         assertThat(shinBunDangResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -302,10 +257,47 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(lineRequest)
                 .when()
-                .get("/lines/3")
+                .put("/lines/3")
                 .then().log().all()
                 .extract();
 
         assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void saveStation(final StationRequest station) {
+        RestAssured.given().log().all()
+                .body(station)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all();
+    }
+
+    private ExtractableResponse<Response> saveLine(final LineRequest lineRequest) {
+        return RestAssured.given()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then()
+                .extract();
+    }
+
+    private void deleteSection(final Long stationId) {
+        RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().log().all()
+                .delete(url + "/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void saveSection(final SectionRequest sectionRequest) {
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(sectionRequest)
+                .when()
+                .post(url + "/sections")
+                .then();
     }
 }
