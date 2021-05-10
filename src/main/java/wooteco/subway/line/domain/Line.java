@@ -13,7 +13,7 @@ public class Line {
     private final List<Section> sections = new ArrayList<>();
 
     public Line(String name, String color) {
-        this(0L, new LineName(name), color);
+        this(null, new LineName(name), color);
     }
 
     public Line(Long id, String name, String color) {

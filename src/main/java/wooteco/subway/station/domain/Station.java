@@ -17,7 +17,7 @@ public class Station {
     }
 
     public Station(final String name) {
-        this(0L, new StationName(name));
+        this(null, new StationName(name));
     }
 
     public Station(final Long id, final Name name) {

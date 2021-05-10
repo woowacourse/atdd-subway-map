@@ -15,7 +15,7 @@ public class Section {
     }
 
     public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(0L, line, upStation, downStation, distance);
+        this(null, line, upStation, downStation, distance);
     }
 
     public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
