@@ -25,9 +25,9 @@ public class SectionService {
         this.sectionH2Dao = sectionH2Dao;
     }
 
-    public Section add(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section add(Long lineId, SectionRequest sectionRequest) {
         validateLineId(lineId);
-        Section section = new Section(upStationId, downStationId, distance);
+        Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         Section newSection = sectionH2Dao.save(lineId, section);
         Optional<Section> overlappedSection = sectionH2Dao.findBySameUpOrDownId(lineId, newSection);
         overlappedSection.ifPresent(updateIntermediate(newSection));
