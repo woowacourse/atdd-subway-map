@@ -1,6 +1,7 @@
 package wooteco.subway.controller;
 
 import java.net.URI;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class SectionController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionCreateResponseDto> createSection(
         @PathVariable Long lineId,
-        @RequestBody SectionCreateRequestDto sectionCreateRequestDto) {
+        @Valid @RequestBody SectionCreateRequestDto sectionCreateRequestDto) {
 
         SectionCreateResponseDto sectionCreateResponseDto = sectionCreateService.createSection(lineId, sectionCreateRequestDto);
         return ResponseEntity
