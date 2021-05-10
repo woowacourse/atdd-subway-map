@@ -13,7 +13,6 @@ import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.HttpException;
 
-@Transactional
 @Service
 public class StationService {
     private final StationDao stationDao;

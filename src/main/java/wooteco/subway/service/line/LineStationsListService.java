@@ -1,7 +1,6 @@
 package wooteco.subway.service.line;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.HttpException;
 
-@Transactional(readOnly = true)
 @Service
 public class LineStationsListService {
     private final StationDao stationDao;
@@ -31,6 +29,7 @@ public class LineStationsListService {
         this.lineDao = lineDao;
     }
 
+    @Transactional(readOnly = true)
     public LineStationsListResponseDto getAllStationsInOrderListByLineId(Long lineId) {
         List<Section> sectionsOfLine = sectionDao.findAllByLineId(lineId);
         LineStationsInOrder lineStationsInOrder = new LineStationsInOrder(sectionsOfLine);

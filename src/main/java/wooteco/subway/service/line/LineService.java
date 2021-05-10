@@ -18,7 +18,6 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.exception.HttpException;
 
-@Transactional
 @Service
 public class LineService {
     private final LineDao lineDao;
@@ -37,6 +36,12 @@ public class LineService {
         return new LineCreateResponseDto(savedLine, savedSection);
     }
 
+    private void validateSection(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new HttpException(BAD_REQUEST, "상행 종점역과 하행 종점역은 같을 수 없습니다.");
+        }
+    }
+
     private Line getSavedLine(String name, String color) {
         try {
             Line newLine = new Line(name, color);
@@ -52,12 +57,6 @@ public class LineService {
             return sectionDao.save(newSection);
         } catch (DataIntegrityViolationException e) {
             throw new HttpException(BAD_REQUEST, "생성할 노선의 상행 종점역 또는 하행 종점역이 존재하지 않습니다.");
-        }
-    }
-
-    private void validateSection(Long upStationId, Long downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new HttpException(BAD_REQUEST, "상행 종점역과 하행 종점역은 같을 수 없습니다.");
         }
     }
 

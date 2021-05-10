@@ -2,12 +2,12 @@ package wooteco.subway.service.section;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionDelete;
 
-@Transactional
 @Service
 public class SectionDeleteService {
     private final SectionDao sectionDao;
@@ -16,6 +16,7 @@ public class SectionDeleteService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteSectionById(Long lineId, Long stationIdToDelete) {
         List<Section> allSectionsInLine = sectionDao.findAllByLineId(lineId);
         SectionDelete sectionDelete = new SectionDelete(allSectionsInLine, stationIdToDelete);

@@ -2,6 +2,7 @@ package wooteco.subway.service.section;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.request.section.SectionCreateRequestDto;
 import wooteco.subway.controller.dto.response.section.SectionCreateResponseDto;
@@ -9,7 +10,6 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.SectionCreate;
 
-@Transactional
 @Service
 public class SectionCreateService {
     private final SectionDao sectionDao;
@@ -18,6 +18,7 @@ public class SectionCreateService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public SectionCreateResponseDto createSection(Long lineId, SectionCreateRequestDto sectionCreateRequestDto) {
         List<Section> allSectionsOfLine = sectionDao.findAllByLineId(lineId);
         Section newSection = new Section(lineId, sectionCreateRequestDto.getUpStationId(), sectionCreateRequestDto.getDownStationId(), sectionCreateRequestDto.getDistance());
