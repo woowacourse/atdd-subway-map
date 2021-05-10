@@ -51,9 +51,14 @@ public class StationDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(result));
     }
 
+    public Optional<Station> findById(Long id) {
+        String sql = "select id, name from STATION where id = ?";
+        List<Station> result = jdbcTemplate.query(sql, stationRowMapper(), id);
+        return Optional.ofNullable(DataAccessUtils.singleResult(result));
+    }
+
     public void delete(Long id) {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
     }
-
 }

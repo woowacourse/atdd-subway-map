@@ -26,10 +26,10 @@ public class SectionDao {
 
     public void save(Long lineId, Long upStationId, Long downStationId, int distance) {
         String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, lineId,upStationId,downStationId,distance);
+        jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
-    public List<Section> findByLineId(Long lineId){
+    public List<Section> findByLineId(Long lineId) {
         String sql = "select ID, LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE from SECTION where LINE_ID = ?";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }

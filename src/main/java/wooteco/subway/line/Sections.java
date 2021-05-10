@@ -20,15 +20,19 @@ public class Sections {
             downStationMap.put(section.getDownStationId(), section);
         }
 
-        sortedStationId.addFirst(sections.get(0).getUpStationId());
-        sortedStationId.addLast(sections.get(0).getDownStationId());
+        sortedStationId.addFirst(sections.get(0)
+                                         .getUpStationId());
+        sortedStationId.addLast(sections.get(0)
+                                        .getDownStationId());
 
         while (upStationMap.containsKey(sortedStationId.getLast())) {
-            sortedStationId.addLast(upStationMap.get(sortedStationId.getLast()).getDownStationId());
+            sortedStationId.addLast(upStationMap.get(sortedStationId.getLast())
+                                                .getDownStationId());
         }
 
         while (downStationMap.containsKey(sortedStationId.getFirst())) {
-            sortedStationId.addFirst(downStationMap.get(sortedStationId.getFirst()).getUpStationId());
+            sortedStationId.addFirst(downStationMap.get(sortedStationId.getFirst())
+                                                   .getUpStationId());
         }
 
         return new ArrayList<>(sortedStationId);

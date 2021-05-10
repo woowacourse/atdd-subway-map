@@ -1,33 +1,26 @@
 package wooteco.subway.station;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.exception.ErrorCode;
 import wooteco.subway.station.exception.StationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Transactional
+@Sql("/init-station.sql")
 @SpringBootTest
 class StationServiceTest {
     private static final StationRequest stationRequest = new StationRequest("잠실역");
 
     @Autowired
     private StationService stationService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute("delete from STATION");
-        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
-    }
 
     @Test
     @DisplayName("역 정상 생성 테스트")
@@ -41,6 +34,7 @@ class StationServiceTest {
     void createDuplicatedStation() {
         stationService.createStation(stationRequest);
         assertThatThrownBy(() -> stationService.createStation(stationRequest))
-                .isInstanceOf(StationException.class);
+                .isInstanceOf(StationException.class)
+                .hasMessage(ErrorCode.ALREADY_EXIST_STATION_NAME.getMessage());
     }
 }

@@ -6,12 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Transactional
+@Sql("/init-line.sql")
 @SpringBootTest
 class LineDaoTest {
     private static final String lineName1 = "2호선";
@@ -26,8 +31,6 @@ class LineDaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
         jdbcTemplate.update("insert into LINE(name, color) values (?, ?)", lineName1, color1);
     }
 
@@ -71,7 +74,8 @@ class LineDaoTest {
         Long savedLineId = lineDao.save(lineName2, color2);
         lineDao.update(savedLineId, "3호선", "주황색");
 
-        assertThat(lineDao.findById(savedLineId).get()).isEqualTo(new Line(savedLineId, "3호선", "주황색"));
+        assertThat(lineDao.findById(savedLineId)
+                          .get()).isEqualTo(new Line(savedLineId, "3호선", "주황색"));
     }
 
     @Test

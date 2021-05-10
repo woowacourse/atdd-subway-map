@@ -19,6 +19,6 @@ class SectionsTest {
         Sections sections = new Sections(Arrays.asList(section1, section2));
 
         List<Long> actual = sections.stationRoute();
-        assertThat(actual).containsExactly(2L,3L,4L);
+        assertThat(actual).containsExactly(2L, 3L, 4L);
     }
 }

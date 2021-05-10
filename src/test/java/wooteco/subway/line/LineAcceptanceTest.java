@@ -6,39 +6,51 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
+@Transactional
+@Sql("/init-line.sql")
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
     private static final String color1 = "초록색";
     private static final String name1 = "2호선";
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private static final Station JAMSIL_STATION = new Station(1L, "잠실역");
+    private static final Station GANGNAM_STATION = new Station(2L, "강남역");
+    private static final LineRequest LINE_2_REQUEST = new LineRequest("2호선", "초록색", 1L, 2L, 3);
+    private static final LineRequest LINE_1_REQUEST = new LineRequest("1호선", "파란색", 1L, 2L, 0);
+
+    @MockBean
+    private StationDao stationDao;
 
     @BeforeEach
     void beforeEach() {
-        jdbcTemplate.execute("delete from LINE");
-        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        given(stationDao.findById(1L)).willReturn(Optional.of(JAMSIL_STATION));
+        given(stationDao.findById(2L)).willReturn(Optional.of(GANGNAM_STATION));
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> response = createLineInsertResponse(name1, color1);
+        ExtractableResponse<Response> response = createLineResponseBy(LINE_2_REQUEST);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -49,8 +61,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given & when
-        createLineInsertResponse(name1, color1);
-        ExtractableResponse<Response> response = createLineInsertResponse(name1, color1);
+        createLineResponseBy(LINE_2_REQUEST);
+        ExtractableResponse<Response> response = createLineResponseBy(LINE_2_REQUEST);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -60,8 +72,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createLineInsertResponse(name1, color1);
-        ExtractableResponse<Response> createResponse2 = createLineInsertResponse("파란색", "1호선");
+        ExtractableResponse<Response> createResponse1 = createLineResponseBy(LINE_2_REQUEST);
+        ExtractableResponse<Response> createResponse2 = createLineResponseBy(LINE_1_REQUEST);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given()
@@ -87,7 +99,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 1개를 조회한다.")
     @Test
     void getLine() {
-        ExtractableResponse<Response> extract = createLineInsertResponse(name1, color1);
+        ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
         String uri = extract.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given()
@@ -107,13 +119,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void modifyLine() {
-        ExtractableResponse<Response> extract = createLineInsertResponse(name1, color1);
+        ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
         String uri = extract.header("Location");
 
-        LineRequest lineRequest = new LineRequest("9호선", "남색", 0L, 0L, 0);
-
         ExtractableResponse<Response> response = RestAssured.given()
-                                                            .body(lineRequest)
+                                                            .body(LINE_1_REQUEST)
                                                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                                                             .when()
                                                             .put(uri)
@@ -127,7 +137,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다")
     @Test
     void deleteLine() {
-        ExtractableResponse<Response> extract = createLineInsertResponse(name1, color1);
+        ExtractableResponse<Response> extract = createLineResponseBy(LINE_2_REQUEST);
 
         String uri = extract.header("Location");
         ExtractableResponse<Response> response = RestAssured.given()
@@ -139,8 +149,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createLineInsertResponse(String name, String color) {
-        LineRequest lineRequest = new LineRequest(name, color, 0L, 0L, 0);
+    private ExtractableResponse<Response> createLineResponseBy(LineRequest lineRequest) {
         return RestAssured.given()
                           .body(lineRequest)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
