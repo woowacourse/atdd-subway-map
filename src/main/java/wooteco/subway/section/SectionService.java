@@ -25,20 +25,20 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
-    public void addSection(final Long lineId, final Long upStationId, final Long downStationId) {
+    public void addSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         if (isMiddleSection(lineId, upStationId, downStationId)){
-            addMiddleSection(lineId, upStationId, downStationId);
+            addMiddleSection(lineId, upStationId, downStationId, distance);
             return;
         }
 
         if(isFrontSection(lineId, downStationId) ){
-            sectionDao.save(lineId, upStationId, downStationId, 0);
+            sectionDao.save(lineId, upStationId, downStationId, distance);
             lineDao.updateUpStation(lineId, upStationId);
             return;
         }
 
         if(isBackSection(lineId, upStationId)){
-            sectionDao.save(lineId, upStationId, downStationId, 0);
+            sectionDao.save(lineId, upStationId, downStationId, distance);
             lineDao.updateDownStation(lineId, downStationId);
             return;
         }
@@ -46,30 +46,32 @@ public class SectionService {
         throw new LineException("잘못된 구간 입력입니다.");
     }
 
-    private void addMiddleSection(final Long lineId, final Long upStationId, final Long downStationId){
+    private void addMiddleSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance){
         if(sectionDao.isExistingUpStation(lineId, upStationId)){
-            updateUpStation(lineId, upStationId, downStationId);
+            updateSectionFromUpStation(lineId, upStationId, downStationId, distance);
             return;
         }
 
         if(sectionDao.isExistingDownStation(lineId, downStationId)){
-            updateDownStation(lineId, upStationId, downStationId);
+            updateSectionFromDownStation(lineId, upStationId, downStationId, distance);
             return;
         }
     }
 
-    private void updateUpStation(final Long lineId, final Long upStationId, final Long downStationId) {
+    private void updateSectionFromUpStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         final Long beforeDownStation = sectionDao.downStationId(lineId, upStationId);
+        final int beforeDistance = sectionDao.findDistance(lineId, upStationId, beforeDownStation);
 
-        sectionDao.updateDownStation(lineId, beforeDownStation, downStationId);
-        sectionDao.save(lineId, downStationId, beforeDownStation, 0);
+        sectionDao.updateDownStation(lineId, beforeDownStation, downStationId, distance);
+        sectionDao.save(lineId, downStationId, beforeDownStation, beforeDistance - distance);
     }
 
-    private void updateDownStation(final Long lineId, final Long upStationId, final Long downStationId) {
+    private void updateSectionFromDownStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
         final Long beforeUpStation = sectionDao.upStationId(lineId, downStationId);
+        final int beforeDistance = sectionDao.findDistance(lineId, beforeUpStation, downStationId);
 
-        sectionDao.updateUpStation(lineId, beforeUpStation, upStationId);
-        sectionDao.save(lineId, beforeUpStation, upStationId, 0);
+        sectionDao.updateUpStation(lineId, beforeUpStation, upStationId,  distance);
+        sectionDao.save(lineId, beforeUpStation, upStationId, beforeDistance - distance);
     }
 
     private boolean isMiddleSection(final Long lineId, final Long upStation, final Long downStation) {
@@ -123,8 +125,14 @@ public class SectionService {
 
         if(existingUpStation == true && existingDownStation == true ){
             // 중간에 있는 역 삭제
+            final Long upStationId = sectionDao.upStationId(lineId, stationId);
             final Long downStationId = sectionDao.downStationId(lineId, stationId);
-            sectionDao.updateDownStation(lineId, stationId, downStationId);
+
+            final int distanceFromUpStation = sectionDao.findDistance(lineId, upStationId, stationId);
+            final int distanceFromDownStation = sectionDao.findDistance(lineId, stationId, downStationId);
+            final int distance = distanceFromUpStation+distanceFromDownStation;
+
+            sectionDao.updateDownStation(lineId, stationId, downStationId, distance);
             sectionDao.deleteSection(lineId, stationId, downStationId);
             return;
         }

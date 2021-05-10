@@ -22,7 +22,7 @@ public class LineService {
         validateName(line.getName());
 
         final Long id = lineDao.save(line.getName(), line.getColor(), line.getUpStationId(), line.getDownStationId());
-        sectionDao.save(id, line.getUpStationId(), line.getDownStationId(), 0);
+        sectionDao.save(id, line.getUpStationId(), line.getDownStationId(), line.getDistance());
 
         return findById(id);
     }

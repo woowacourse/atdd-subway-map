@@ -47,14 +47,20 @@ public class SectionDao {
         return keyHolder.getKeyAs(Long.class);
     }
 
-    public void updateUpStation(final Long lineId, final Long before, final Long after) {
-        final String sql = "UPDATE SECTION SET up_station_id = ? WHERE up_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(sql, after, before, lineId);
+    public int findDistance(final Long lineId, final Long upStationId, final Long downStationId){
+        System.out.println(upStationId + " "+ downStationId);
+        final String sql = "SELECT distance FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId, downStationId);
     }
 
-    public void updateDownStation(final Long lineId, final Long before, final Long after) {
-        final String sql = "UPDATE SECTION SET down_station_id = ? WHERE down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(sql, after, before, lineId);
+    public void updateUpStation(final Long lineId, final Long before, final Long after, final int distance) {
+        final String sql = "UPDATE SECTION SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND line_id = ?";
+        jdbcTemplate.update(sql, after, distance, before, lineId);
+    }
+
+    public void updateDownStation(final Long lineId, final Long before, final Long after, final int distance) {
+        final String sql = "UPDATE SECTION SET down_station_id = ?, distance = ?  WHERE down_station_id = ? AND line_id = ?";
+        jdbcTemplate.update(sql, after, distance, before, lineId);
     }
 
     public Long upStationId(final Long lineId, final Long downStationId) {

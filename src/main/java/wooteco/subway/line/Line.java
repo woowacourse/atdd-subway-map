@@ -6,6 +6,12 @@ public class Line {
     private String color;
     private Long upStationId;
     private Long downStationId;
+    private int distance;
+
+    public Line(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+        this(null, name, color, upStationId, downStationId);
+        this.distance = distance;
+    }
 
     public Line(final String name, final String color, final Long upStationId, final Long downStationId) {
         this(null, name, color, upStationId, downStationId);
@@ -48,5 +54,9 @@ public class Line {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
