@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -62,19 +63,13 @@ public class LineDao {
     public Optional<Line> findById(final Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
         final List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, id);
-        if (lines.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(lines.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     public Optional<Line> findByName(final String name) {
         final String sql = "SELECT * FROM line WHERE name = ?";
         final List<Line> lines = jdbcTemplate.query(sql, lineRowMapper, name);
-        if (lines.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(lines.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(lines));
     }
 
     public void update(final Line updatedLine) {

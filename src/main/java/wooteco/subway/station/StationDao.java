@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -60,18 +61,12 @@ public class StationDao {
     public Optional<Station> findById(final Long id) {
         final String sql = "SELECT * FROM station WHERE id = ?";
         final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, id);
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     public Optional<Station> findByName(final String name) {
         final String sql = "SELECT * FROM station WHERE name = ?";
         final List<Station> stations = jdbcTemplate.query(sql, stationRowMapper, name);
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(stations.get(0));
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 }
