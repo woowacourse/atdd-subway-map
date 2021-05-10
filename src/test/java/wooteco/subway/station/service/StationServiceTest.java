@@ -1,6 +1,6 @@
 package wooteco.subway.station.service;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ class StationServiceTest {
     @Autowired
     private StationService stationService;
 
-    @AfterEach
+    @BeforeEach
     void deleteLog() {
         stationService.removeAll();
     }
