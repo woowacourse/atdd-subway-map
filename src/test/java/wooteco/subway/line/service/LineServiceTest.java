@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineRequest;
-import wooteco.subway.station.Station;
 
 import java.util.Arrays;
 import java.util.Collections;
