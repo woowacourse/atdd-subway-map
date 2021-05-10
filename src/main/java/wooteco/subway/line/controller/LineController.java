@@ -35,7 +35,6 @@ public class LineController {
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
         List<Line> line = lineService.findAll();
-        // TODO : 구간에 포함된 지하철 역 조회 로직
         List<LineResponse> lineResponses = line.stream()
                 .map(it -> new LineResponse(it.id(), it.name(), it.color(), Collections.emptyList()))
                 .collect(Collectors.toList());
@@ -45,7 +44,8 @@ public class LineController {
     @GetMapping("/{id:[\\d]+}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         Line findLine = lineService.findById(id);
-        LineResponse response = new LineResponse(findLine.id(), findLine.name(), findLine.color(), Collections.emptyList());
+
+        LineResponse response = new LineResponse(findLine.id(), findLine.name(), findLine.color(), findLine.stations());
         return ResponseEntity.ok().body(response);
     }
 

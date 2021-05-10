@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dto.Station;
+import wooteco.subway.station.dto.StationDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() throws JsonProcessingException {
         // given
-        Station station = new Station("강남역");
+        StationDto station = new StationDto("강남역");
         String content = objectMapper.writeValueAsString(station);
 
         // when
@@ -54,7 +54,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() throws JsonProcessingException {
         // given
-        Station station = new Station("강남역");
+        StationDto station = new StationDto("강남역");
         String content = objectMapper.writeValueAsString(station);
 
         addStation(content);
@@ -70,12 +70,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() throws JsonProcessingException {
         // given
-        Station station = new Station("강남역");
+        StationDto station = new StationDto("강남역");
         String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse1 = addStation(content);
 
-        Station station2 = new Station("역삼역");
+        StationDto station2 = new StationDto("역삼역");
         String content2 = objectMapper.writeValueAsString(station2);
         ExtractableResponse<Response> createResponse2 = addStation(content2);
 
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", Station.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", StationDto.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -101,7 +101,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() throws JsonProcessingException {
         // given
-        Station station = new Station("강남역");
+        StationDto station = new StationDto("강남역");
         String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse = addStation(content);

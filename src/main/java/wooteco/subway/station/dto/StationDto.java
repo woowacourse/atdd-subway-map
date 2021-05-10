@@ -3,24 +3,24 @@ package wooteco.subway.station.dto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-public class Station {
+public class StationDto {
     private Long id;
     @NotBlank
     @Pattern(regexp = "^[가-힣|0-9]*역$")
     private String name;
 
-    public Station() {
+    public StationDto() {
     }
 
-    public Station(wooteco.subway.station.domain.Station station) {
-        this(station.getId(), station.getName());
+    public StationDto(wooteco.subway.station.domain.Station station) {
+        this(station.id(), station.name());
     }
 
-    public Station(String name) {
+    public StationDto(String name) {
         this.name = name;
     }
 
-    public Station(Long id, String name) {
+    public StationDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }

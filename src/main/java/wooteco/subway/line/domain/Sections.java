@@ -2,9 +2,7 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.station.domain.Station;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Sections {
     private final List<Section> sections;
@@ -53,5 +51,39 @@ public class Sections {
 
     public List<Section> sections() {
         return sections;
+    }
+
+    public List<Station> sortedStations() {
+        Map<Station, Station> sectionMap = new HashMap<>();
+        generateSectionMap(sectionMap);
+        Station keyStation = findUpStation(sectionMap);
+        return sortStation(sectionMap, keyStation);
+    }
+
+    private List<Station> sortStation(Map<Station, Station> sectionMap, Station keyStation) {
+        List<Station> sortedStations = new ArrayList<>();
+        sortedStations.add(keyStation);
+        while (sectionMap.containsKey(keyStation)) {
+            Station nextKeyStation = sectionMap.get(keyStation);
+            sortedStations.add(nextKeyStation);
+            keyStation = nextKeyStation;
+        }
+        return sortedStations;
+    }
+
+    private void generateSectionMap(Map<Station, Station> sectionMap) {
+        for (Section section : sections) {
+            sectionMap.put(section.upStation(), section.downStation());
+        }
+    }
+
+    private Station findUpStation(Map<Station, Station> sectionMap) {
+        Set<Station> upStations = new HashSet<>(sectionMap.keySet());
+        Set<Station> downStations = new HashSet<>(sectionMap.values());
+        upStations.removeAll(downStations);
+        if (upStations.size() != 1) {
+            throw new IllegalArgumentException("[ERROR] 구간들의 역 관계가 올바르지 않습니다.");
+        }
+        return upStations.iterator().next();
     }
 }

@@ -2,16 +2,16 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.dto.SectionEntity;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
-import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionRequest;
+import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private final LineRepository lineRepository;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+    public LineService(LineRepository lineRepository, LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
+        this.lineRepository = lineRepository;
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
         this.stationDao = stationDao;
@@ -45,9 +47,7 @@ public class LineService {
     }
 
     public Line findById(final Long id) {
-        return lineDao.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("[ERROR] 존재하지 않는 노선입니다."));
+        return lineRepository.findById(id);
     }
 
     public Line findByName(final String name) {
@@ -70,7 +70,7 @@ public class LineService {
         List<Station> stations = Arrays.asList(
                 findStationById(lineRequest.getUpStationId()),
                 findStationById(lineRequest.getDownStationId()));
-        sectionDao.save(new SectionEntity(savedLine.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
+        sectionDao.save(new Section(savedLine.id(), lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance()));
         return new LineResponse(savedLine.id(), savedLine.name(), savedLine.color(), stations);
     }
 
@@ -107,15 +107,15 @@ public class LineService {
 
         // TODO : section save
 
-        sectionDao.save(sectionRequest.toEntity(lineId));
+//        sectionDao.save(sectionRequest.toEntity(lineId));
     }
 
     private List<Section> findSectionsByLineId(Long lineId) {
         return sectionDao.findAllByLineId(lineId)
                 .stream()
                 .map(section ->
-                        new Section(section.getId(), findStationById(section.getUpStationId()),
-                                findStationById(section.getDownStationId()), section.getDistance()))
+                        new Section(section.id(), findStationById(section.upStation().id()),
+                                findStationById(section.downStation().id()), section.distance()))
                 .collect(Collectors.toList());
     }
 

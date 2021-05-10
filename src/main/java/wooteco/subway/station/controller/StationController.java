@@ -3,7 +3,7 @@ package wooteco.subway.station.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.station.dto.Station;
+import wooteco.subway.station.dto.StationDto;
 import wooteco.subway.station.service.StationService;
 
 import javax.validation.Valid;
@@ -21,20 +21,20 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<Station> createStation(@Valid @RequestBody Station stationRequest) {
+    public ResponseEntity<StationDto> createStation(@Valid @RequestBody StationDto stationRequest) {
         wooteco.subway.station.domain.Station station = new wooteco.subway.station.domain.Station(stationRequest.getName());
         wooteco.subway.station.domain.Station newStation = stationService.save(station);
-        Station stationResponse = new Station(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+        StationDto stationDto = new StationDto(newStation.id(), newStation.name());
+        return ResponseEntity.created(URI.create("/stations/" + newStation.id())).body(stationDto);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Station>> showStations() {
+    public ResponseEntity<List<StationDto>> showStations() {
         List<wooteco.subway.station.domain.Station> stations = stationService.findAll();
-        List<Station> stationResponses = stations.stream()
-                .map(it -> new Station(it.getId(), it.getName()))
+        List<StationDto> stationRespons = stations.stream()
+                .map(it -> new StationDto(it.id(), it.name()))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationResponses);
+        return ResponseEntity.ok().body(stationRespons);
     }
 
     @DeleteMapping("/{id:[\\d]+}")
