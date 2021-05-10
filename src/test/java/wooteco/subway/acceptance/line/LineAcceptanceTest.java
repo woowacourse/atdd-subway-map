@@ -661,4 +661,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(expected);
     }
 
+    @DisplayName("존재하지 않는 ID를 가진 노선의 구간을 삭제한다.")
+    @Test
+    void deleteSectionWithInvalidLineId() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("lines/999/sections?stationId=" + stationIds.get(0))
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
