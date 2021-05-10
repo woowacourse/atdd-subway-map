@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LineApiControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -163,12 +164,14 @@ class LineApiControllerTest {
         Station station1 = stationDao.save(Station.from("강남역"));
         Station station2 = stationDao.save(Station.from("잠실역"));
         Station station3 = stationDao.save(Station.from("석촌역"));
+        Station station4 = stationDao.save(Station.from("몽촌토성역"));
         LineRequest lineRequest =
                 new LineRequest("4호선", "bg-blue-600", station1.getId(), station2.getId(), 10);
         ResultActions createdLineResult = 노선_생성(lineRequest);
         LineResponse lineResponse =
                 objectMapper.readValue(createdLineResult.andReturn().getResponse().getContentAsString(), LineResponse.class);
         sectionService.createSection(Section.of(station1, station3, 5), lineResponse.getId());
+        sectionService.createSection(Section.of(station2, station4, 2), lineResponse.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));
@@ -176,7 +179,7 @@ class LineApiControllerTest {
         //then
         result.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("stations[*].name", Matchers.containsInRelativeOrder("강남역", "석촌역", "잠실역")));
+                .andExpect(jsonPath("stations[*].name", Matchers.containsInRelativeOrder("강남역", "석촌역", "잠실역", "몽촌토성역")));
     }
 
     @Test

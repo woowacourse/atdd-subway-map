@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class SectionApiControllerTest {
 
     private static final String UP_STATION_NAME = "잠실역";
@@ -287,7 +288,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
-    public void deleteSection_fail_notExistLine() throws Exception{
+    public void deleteSection_fail_notExistLine() throws Exception {
         //given
 
         //when
@@ -299,7 +300,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(역이 해당 노선에 등록되어 있지 않을 시)")
-    public void deleteSection_fail_noStationInLine() throws Exception{
+    public void deleteSection_fail_noStationInLine() throws Exception {
         //given
         final Station upStation = upStation();
         final Station downStation = downStation();
@@ -307,7 +308,7 @@ class SectionApiControllerTest {
 
         //when
         final ResultActions result = mockMvc.perform(
-            delete("/lines/" + line.getId() + "/sections?stationId=" + Long.MAX_VALUE)
+                delete("/lines/" + line.getId() + "/sections?stationId=" + Long.MAX_VALUE)
         );
 
         //then
@@ -316,7 +317,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선에 구간이 하나밖에 존재하지 않을 시)")
-    public void deleteSection_fail_onlyOneSectionExist() throws Exception{
+    public void deleteSection_fail_onlyOneSectionExist() throws Exception {
         //given
         final Station upStation = upStation();
         final Station downStation = downStation();
@@ -324,7 +325,7 @@ class SectionApiControllerTest {
 
         //when
         final ResultActions result = mockMvc.perform(
-            delete("/lines/" + line.getId() + "/sections?stationId=" + downStation.getId())
+                delete("/lines/" + line.getId() + "/sections?stationId=" + downStation.getId())
         );
 
         //then

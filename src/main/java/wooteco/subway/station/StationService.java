@@ -16,7 +16,7 @@ public class StationService {
     private final StationDao stationDao;
 
     public Station save(Station station) {
-        if(stationDao.findStationByName(station.getName()).isPresent()) {
+        if (stationDao.findStationByName(station.getName()).isPresent()) {
             throw new DuplicatedStationException();
         }
         return stationDao.save(station);

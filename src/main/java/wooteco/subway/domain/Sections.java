@@ -2,12 +2,14 @@ package wooteco.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import wooteco.subway.exception.section.DuplicatedSectionException;
 import wooteco.subway.exception.section.InvalidSectionException;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
 
@@ -35,32 +37,32 @@ public class Sections {
         final Station upStation = section.getUpStation();
         sortedSections.addFirst(upStation);
         findSectionByDownStation(upStation)
-            .ifPresent(sec -> sortPreviousSections(sortedSections, sec));
+                .ifPresent(sec -> sortPreviousSections(sortedSections, sec));
     }
 
     private Optional<Section> findSectionByDownStation(Station targetStation) {
         return sections.stream()
-            .filter(section -> section.isDownStation(targetStation))
-            .findAny();
+                .filter(section -> section.isDownStation(targetStation))
+                .findAny();
     }
 
     private void sortFollowingSections(LinkedList<Station> sortedSections, Section section) {
         final Station downStation = section.getDownStation();
         sortedSections.addLast(downStation);
         findSectionByUpStation(downStation)
-            .ifPresent(sec -> sortFollowingSections(sortedSections, sec));
+                .ifPresent(sec -> sortFollowingSections(sortedSections, sec));
     }
 
     private Optional<Section> findSectionByUpStation(Station targetStation) {
         return sections.stream()
-            .filter(section -> section.isUpStation(targetStation))
-            .findAny();
+                .filter(section -> section.isUpStation(targetStation))
+                .findAny();
     }
 
     public Optional<Section> affectedSection(Section newSection) {
         List<Section> collect = sections.stream()
-            .filter(originalSection -> isAdjacentSection(newSection, originalSection))
-            .collect(Collectors.toList());
+                .filter(originalSection -> isAdjacentSection(newSection, originalSection))
+                .collect(Collectors.toList());
 
         if (collect.size() != SECTION_LIMIT) {
             throw new InvalidSectionException();
@@ -76,9 +78,9 @@ public class Sections {
         }
 
         return originalSection.isUpStation(newSection.getUpStation()) ||
-            originalSection.isDownStation(newSection.getDownStation()) ||
-            originalSection.isUpStation(newSection.getDownStation()) ||
-            originalSection.isDownStation(newSection.getUpStation());
+                originalSection.isDownStation(newSection.getDownStation()) ||
+                originalSection.isUpStation(newSection.getDownStation()) ||
+                originalSection.isDownStation(newSection.getUpStation());
     }
 
     private Optional<Section> updateSection(Section originalSection, Section newSection) {

@@ -57,7 +57,7 @@ public class Section {
 
     public boolean isSameSection(Section newSection) {
         return (isUpStation(newSection.upStation) && isDownStation(newSection.downStation)) ||
-            (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
+                (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
     }
 
     public boolean hasStation(Long stationId) {
@@ -66,5 +66,9 @@ public class Section {
 
     public boolean isUpStationId(Long stationId) {
         return upStation.isSameId(stationId);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 }

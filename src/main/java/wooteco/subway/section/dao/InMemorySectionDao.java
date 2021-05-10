@@ -3,6 +3,7 @@ package wooteco.subway.section.dao;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.exception.section.SectionNotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -36,34 +37,23 @@ public class InMemorySectionDao implements SectionDao {
     }
 
     @Override
-    public void change(Sections sections, Optional<Section> affectedSection) {
-
-    }
-
-    @Override
-    public Section saveAffectedSections(Section section, Optional<Section> affectedSection,
-                                        Long lineId) {
-        affectedSection.ifPresent(received -> {
-            sections.get(lineId)
-                    .stream()
-                    .filter(exist -> exist.getId().equals(received.getId()))
-                    .findAny()
-                    .ifPresent(exist -> {
-                        sections.get(lineId).remove(exist);
-                        sections.get(lineId).add(received);
-                    });
-        });
-
-        return save(section, lineId);
+    public void deleteById(Long id) {
+        Section target = sections.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(section -> section.isSameId(id))
+                .findAny()
+                .orElseThrow(SectionNotFoundException::new);
+        sections.get(target.getLineId()).removeIf(section -> section.isSameId(id));
     }
 
     @Override
     public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
         return sections.get(lineId)
-            .stream()
-            .filter(section -> section.hasStation(stationId))
-            .collect(
-            Collectors.toList());
+                .stream()
+                .filter(section -> section.hasStation(stationId))
+                .collect(
+                        Collectors.toList());
     }
 
     @Override

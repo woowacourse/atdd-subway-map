@@ -27,8 +27,20 @@ public class SectionService {
         Optional<Section> affectedSection = sections.affectedSection(section);
         sections.add(section);
 
-        sectionDao.change(sections, affectedSection);
-        return sectionDao.saveAffectedSections(section, affectedSection, lineId);
+        return saveAffectedSections(sections, section, affectedSection);
+    }
+
+    private Section saveAffectedSections(Sections sections, Section section, Optional<Section> affectedSection) {
+        affectedSection.ifPresent(received -> {
+            sections.getSections().stream()
+                    .filter(exist -> exist.getId().equals(received.getId()))
+                    .findAny()
+                    .ifPresent(exist -> {
+                        sectionDao.deleteById(exist.getId());
+                        sectionDao.save(received, section.getLineId());
+                    });
+        });
+        return sectionDao.save(section, section.getLineId());
     }
 
     public void removeSection(Long lineId, Long stationId) {

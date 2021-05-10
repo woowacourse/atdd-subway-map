@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -62,13 +61,9 @@ public class JdbcSectionDao implements SectionDao {
     }
 
     @Override
-    public void change(Sections sections, Optional<Section> affectedSection) {
-        affectedSection.ifPresent(sections::change);
-    }
-
-    @Override
-    public Section saveAffectedSections(Section section, Optional<Section> affectedSection, Long lineId) {
-        return save(section, lineId);
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

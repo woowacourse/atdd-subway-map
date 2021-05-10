@@ -42,7 +42,7 @@ public class LineApiController {
     }
 
     @GetMapping("/{lineId}")
-    public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId){
+    public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
         Line line = lineService.findLine(lineId);
         return ResponseEntity.ok(LineResponse.create(line));
 
