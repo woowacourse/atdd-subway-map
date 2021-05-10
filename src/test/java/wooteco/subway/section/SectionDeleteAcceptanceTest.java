@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.RestAssuredHelper;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;
 
 import java.util.HashMap;
@@ -60,5 +61,24 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
         assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung);
+    }
+
+    @DisplayName("구간 제거 성공 - 중간 상행역 제거")
+    @Test
+    void deleteUpStation() {
+
+        // when
+        ExtractableResponse<Response> response = RestAssuredHelper.jsonDelete("/lines/1/sections?stationId=3");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
+        assertThat(lineResponse.getStations()).containsExactly(gangnam, yeoksam);
+
+        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
+                                                                    .body()
+                                                                    .as(SectionResponse.class);
+        assertThat(oldSectionResponse.getDistance()).isEqualTo(10);
     }
 }
