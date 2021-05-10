@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/lines")
+@RequestMapping("/lines")
 public class LineController {
     private LineDao lineDao;
 
@@ -37,13 +37,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
         Line line = lineDao.find(id);
         return ResponseEntity.ok().body(new LineResponse(line));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping( "/{id}")
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
                                                          @RequestBody LineRequest lineRequest) {
         lineDao.modify(id, lineRequest.createLine());
