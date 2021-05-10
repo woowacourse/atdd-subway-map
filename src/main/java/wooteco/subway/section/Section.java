@@ -7,7 +7,6 @@ public class Section {
     private Long downStationId;
     private int distance;
 
-
     public Section() {
     }
 

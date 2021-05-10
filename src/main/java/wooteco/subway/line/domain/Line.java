@@ -15,9 +15,6 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private String upStationId;
-    private String downStationId;
-    private List<Section> sections = new ArrayList<>(); // TODO List<Section> -> Sections 변경
 
     public Line() {
     }
@@ -56,14 +53,6 @@ public class Line {
 
     private boolean isNotEndsWithLine(String name) {
         return !name.endsWith(SUFFIX);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean isSameName(Line line) {
-        return this.name.equals(line.name);
     }
 
     public boolean isSameColor(Line line) {
