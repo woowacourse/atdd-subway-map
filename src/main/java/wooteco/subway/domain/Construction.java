@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class Construction {
 
+    private static final int MIN_SECTION_COUNT = 1;
     private final Line line;
     private final Set<Section> sections;
     private final List<Section> sectionsToCreate;
@@ -104,10 +105,17 @@ public class Construction {
 
     public void deleteSectionsByStation(Station station) {
         validateToConstruct();
+        validateNumberOfSections();
         validateToHasStation(station);
         sectionsToRemove.addAll(sectionsWithStation(station));
         if (isNotEndStationDeletion(station)) {
             addSectionsToCreateAfterRemoveSection();
+        }
+    }
+
+    private void validateNumberOfSections() {
+        if (sections.size() <= MIN_SECTION_COUNT) {
+            throw new IllegalStateException("구간이 하나 남은 경우 삭제할 수 없습니다.");
         }
     }
 
