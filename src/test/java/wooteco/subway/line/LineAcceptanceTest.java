@@ -12,39 +12,77 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.web.dto.LineResponse;
+import wooteco.subway.web.dto.StationResponse;
 
 @DisplayName("노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final Map<String, String> DATA1 = new HashMap<>();
-    private static final Map<String, String> DATA2 = new HashMap<>();
-    private static final Map<String, String> DATA_FOR_UPDATE = new HashMap<>();
-    private static final Map<String, String> DATA_EMPTY_STRING = new HashMap<>();
-    private static final Map<String, String> DATA_NULL = new HashMap<>();
+    private static final Map<String, Object> DATA1 = new HashMap<>();
+    private static final Map<String, Object> DATA2 = new HashMap<>();
+    private static final Map<String, Object> DATA_FOR_UPDATE = new HashMap<>();
+    private static final Map<String, Object> DATA_EMPTY_STRING = new HashMap<>();
+    private static final Map<String, Object> DATA_NULL = new HashMap<>();
 
     private static final String LINES_PATH = "/lines/";
+    private static final String STATIONS_PATH = "/stations/";
     private static final String LOCATION = "Location";
+
     private static final String NAME = "name";
     private static final String COLOR = "color";
+    private static final String UP_STATION_ID = "upStationId";
+    private static final String DOWN_STATION_ID = "downStationId";
+    private static final String DISTANCE = "distance";
+
+    private static final String EMPTY_STRING = " ";
+    private static final long ZERO = 0L;
     private static final long INVALID_ID = Long.MAX_VALUE;
 
     static {
-        put(DATA1, "신분당선", "bg-red-600");
-        put(DATA2, "2호선", "bg-green-600");
-        put(DATA_FOR_UPDATE, "수정된 이름", "수정된 색");
-        put(DATA_EMPTY_STRING, "", "");
-        put(DATA_NULL, null, null);
+        put(DATA_EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, ZERO, ZERO, ZERO);
+        put(DATA_NULL, null, null, null, null, null);
+        DATA_FOR_UPDATE.put(NAME, "수정이름");
+        DATA_FOR_UPDATE.put(COLOR, "수정 색");
     }
 
-    private static void put(Map<String, String> data, String name, String color) {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        Long stationA = postStation(stationData("A역"));
+        Long stationB = postStation(stationData("B역"));
+        Long stationC = postStation(stationData("C역"));
+
+        put(DATA1, "1호선", "bg-red-600", stationA, stationB, 3L);
+        put(DATA2, "2호선", "bg-green-600", stationB, stationC, 5L);
+    }
+
+    private Map<String, Object> stationData(String name) {
+        return new HashMap<String, Object>() {{
+            put(NAME, name);
+        }};
+    }
+
+    private Long postStation(Map<String, Object> data) {
+        return getRequestSpecification()
+                .body(data)
+                .post(STATIONS_PATH)
+                .as(StationResponse.class)
+                .getId();
+    }
+
+    private static void put(Map<String, Object> data, String name, String color,
+            Long upStationId, Long downStationId, Long distance) {
         data.put(NAME, name);
         data.put(COLOR, color);
+        data.put(UP_STATION_ID, upStationId);
+        data.put(DOWN_STATION_ID, downStationId);
+        data.put(DISTANCE, distance);
     }
 
     @Test
@@ -55,8 +93,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // todo nested하게 들어있는 stations까지 한번에 변환하려고 InnerClass로 만드뮤ㅠㅠ (LineResponse.StationResponse)
         LineResponse lineResponse = response.as(LineResponse.class);
         assertLineResponse(lineResponse, DATA1);
+
+        Long up_station_id = (Long) DATA1.get(UP_STATION_ID);
+        Long down_station_id = (Long) DATA1.get(DOWN_STATION_ID);
+
+        List<Long> ids = lineResponse.getStations().stream()
+                .map(stationResponse -> stationResponse.getId())
+                .collect(Collectors.toList());
+
+        assertThat(ids).containsExactly(up_station_id, down_station_id);
     }
 
     @Test
@@ -107,7 +155,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> expectedLines = toLineDtos(postResponse1, postResponse2);
         LineResponse[] results = listResponse.as(LineResponse[].class);
 
-        assertThat(results).containsAll(expectedLines);
+        for (int i = 0; i < expectedLines.size(); i++) {
+            LineResponse result = results[i];
+            LineResponse expected = expectedLines.get(i);
+
+            assertThat(result.getId()).isEqualTo(expected.getId());
+            assertThat(result.getName()).isEqualTo(expected.getName());
+            assertThat(result.getColor()).isEqualTo(expected.getColor());
+        }
     }
 
     private List<LineResponse> toLineDtos(ExtractableResponse<Response>... responses) {
@@ -201,7 +256,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> postLine(Map<String, String> data) {
+    private ExtractableResponse<Response> postLine(Map<String, Object> data) {
         return getRequestSpecification()
                 .body(data)
                 .post(LINES_PATH)
@@ -223,7 +278,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> putLine(Map<String, String> data, String path) {
+    private ExtractableResponse<Response> putLine(Map<String, Object> data, String path) {
         return getRequestSpecification()
                 .body(data)
                 .put(path)
@@ -243,7 +298,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private void assertLineResponse(LineResponse result, Map<String, String> expected) {
+    private void assertLineResponse(LineResponse result, Map<String, Object> expected) {
         assertThat(result.getName()).isEqualTo(expected.get(NAME));
         assertThat(result.getColor()).isEqualTo(expected.get(COLOR));
     }
