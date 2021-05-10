@@ -1,5 +1,7 @@
 package wooteco.subway.domain.section;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import wooteco.subway.domain.line.Line;
@@ -15,7 +17,7 @@ public class Section {
     private final int distance;
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        validate(distance);
+        validate(upStationId, downStationId, distance);
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -47,9 +49,12 @@ public class Section {
         this(null, lineId, upStation.getId(), downStation.getId(), distance);
     }
 
-    private void validate(int distance) {
+    private void validate(Long upStationId, Long downStationId, int distance) {
         if (distance <= 0) {
             throw new HttpException(HttpStatus.BAD_REQUEST, "구간의 길이는 1보다 크거나 같아야 합니다.");
+        }
+        if (upStationId.equals(downStationId)) {
+            throw new HttpException(BAD_REQUEST, "상행 종점역과 하행 종점역은 같을 수 없습니다.");
         }
     }
 

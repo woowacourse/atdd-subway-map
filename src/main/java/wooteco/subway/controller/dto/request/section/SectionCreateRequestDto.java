@@ -1,6 +1,5 @@
 package wooteco.subway.controller.dto.request.section;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class SectionCreateRequestDto {

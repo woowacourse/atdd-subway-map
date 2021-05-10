@@ -30,17 +30,10 @@ public class LineService {
 
     @Transactional
     public LineCreateResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
-        validateSection(lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId());
         Line savedLine = getSavedLine(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
         Section savedSection = getSavedSection(savedLine,
             lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
         return new LineCreateResponseDto(savedLine, savedSection);
-    }
-
-    private void validateSection(Long upStationId, Long downStationId) {
-        if (upStationId.equals(downStationId)) {
-            throw new HttpException(BAD_REQUEST, "상행 종점역과 하행 종점역은 같을 수 없습니다.");
-        }
     }
 
     private Line getSavedLine(String name, String color) {

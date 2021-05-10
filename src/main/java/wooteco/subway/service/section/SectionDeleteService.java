@@ -2,7 +2,6 @@ package wooteco.subway.service.section;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.section.Section;
