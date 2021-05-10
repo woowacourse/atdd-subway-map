@@ -1,5 +1,7 @@
 package wooteco.subway.line.dao;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -56,25 +58,22 @@ public class LineH2Dao implements LineDao {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM LINE WHERE id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id=?";
-        return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                );
-                return line;
-            }, id)
-            .stream()
-            .findAny();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Line(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("color")
+                        );
+                    },
+                    id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

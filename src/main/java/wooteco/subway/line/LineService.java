@@ -6,6 +6,7 @@ import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionH2Dao;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LineService {
@@ -43,7 +44,7 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line line(Long id) {
+    public Optional<Line> line(Long id) {
         return lineDao.findById(id);
     }
 
