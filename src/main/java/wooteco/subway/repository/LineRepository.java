@@ -68,7 +68,8 @@ public class LineRepository {
     }
 
     public void update(long id, String name, String color) {
-        lineDao.update(id, name, color);
+        Line line = new Line(id, name, color);
+        lineDao.update(line);
     }
 
     public void deleteById(long id) {

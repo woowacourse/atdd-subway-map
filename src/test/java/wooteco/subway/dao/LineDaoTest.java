@@ -115,7 +115,8 @@ class LineDaoTest {
             @DisplayName("노선 수정에 성공한다.")
             @Test
             void update() {
-                lineDao.update(testLineId, "changedName", "grey");
+                Line requestLine = new Line(testLineId, "changedName", "grey");
+                lineDao.update(requestLine);
 
                 Line line = lineDao.findById(testLineId)
                         .get();
@@ -129,8 +130,9 @@ class LineDaoTest {
             void duplicatedKey() {
                 String duplicatedName = "dup";
                 lineDao.save(new Line(duplicatedName, "grey"));
+                Line requestLine = new Line(testLineId, duplicatedName, "white");
 
-                assertThatCode(() -> lineDao.update(testLineId, duplicatedName, "white"))
+                assertThatCode(() -> lineDao.update(requestLine))
                         .isInstanceOf(SubwayException.class)
                         .hasMessage(ExceptionStatus.DUPLICATED_NAME.getMessage());
             }
@@ -143,7 +145,9 @@ class LineDaoTest {
             @DisplayName("노선 수정에 실패한다.")
             @Test
             void cannotUpdate() {
-                assertThatCode(() -> lineDao.update(6874, "rrr", "yellow"))
+                Line requestLine = new Line(6985L, "1호선", "black");
+
+                assertThatCode(() -> lineDao.update(requestLine))
                         .isInstanceOf(SubwayException.class)
                         .hasMessage(ExceptionStatus.ID_NOT_FOUND.getMessage());
             }

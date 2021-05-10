@@ -3,75 +3,67 @@ package wooteco.subway.dao;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class LineDao {
-    private static final RowMapper<Line> ROW_MAPPER = (resultSet, rowNumber) -> {
-        long id = resultSet.getLong("id");
-        String name = resultSet.getString("name");
-        String color = resultSet.getString("color");
+    private static final RowMapper<Line> BASIC_LINE_ROW_MAPPER = (resultSet, rowNumber) -> {
+        long id = resultSet.getLong("ID");
+        String name = resultSet.getString("NAME");
+        String color = resultSet.getString("COLOR");
         return new Line(id, name, color);
     };
     private static final int ROW_COUNTS_FOR_ID_NOT_FOUND = 0;
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public LineDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("LINE")
+                .usingGeneratedKeyColumns("ID");
     }
 
     public long save(Line line) {
-        String query = "INSERT INTO LINE (name, color) VALUES (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        PreparedStatementCreator preparedStatementCreator = getPreparedStatementCreator(line, query);
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(line);
         try {
-            jdbcTemplate.update(preparedStatementCreator, keyHolder);
-            return keyHolder.getKey().longValue();
+            return simpleJdbcInsert.executeAndReturnKey(sqlParameterSource)
+                    .longValue();
         } catch (DuplicateKeyException duplicateKeyException) {
             throw new SubwayException(ExceptionStatus.DUPLICATED_NAME);
         }
     }
 
-    private PreparedStatementCreator getPreparedStatementCreator(Line line, String query) {
-        return (connection) -> {
-            PreparedStatement prepareStatement = connection.prepareStatement(query, new String[]{"id"});
-            prepareStatement.setString(1, line.getName());
-            prepareStatement.setString(2, line.getColor());
-            return prepareStatement;
-        };
-    }
-
     public List<Line> findAll() {
         String query = "SELECT ID, NAME, COLOR FROM LINE";
-        return jdbcTemplate.query(query, ROW_MAPPER);
+        return jdbcTemplate.query(query, BASIC_LINE_ROW_MAPPER);
     }
 
     public Optional<Line> findById(long id) {
         String query = "SELECT ID, NAME, COLOR FROM LINE WHERE ID = ?";
         try {
-            Line line = jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
+            Line line = jdbcTemplate.queryForObject(query, BASIC_LINE_ROW_MAPPER, id);
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
     }
 
-    public void update(long id, String name, String color) {
+    public void update(Line line) {
         String query = "UPDATE LINE SET name = ?, color = ? WHERE ID = ?";
         try {
-            int affectedRowCounts = jdbcTemplate.update(query, name, color, id);
+            int affectedRowCounts = jdbcTemplate.update(query, line.getName(), line.getColor(), line.getId());
             validateId(affectedRowCounts);
         } catch (DuplicateKeyException duplicateKeyException) {
             throw new SubwayException(ExceptionStatus.DUPLICATED_NAME);
