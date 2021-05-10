@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.line.domain.Line;
@@ -21,6 +22,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineDto save(final LineDto linedto) {
         Optional<Line> optionalLine = lineRepository.findByName(linedto.getName());
         if (optionalLine.isPresent()) {
@@ -30,12 +32,14 @@ public class LineService {
         return LineDto.from(lineRepository.save(line));
     }
 
+    @Transactional(readOnly = true)
     public List<LineDto> findAll() {
         return lineRepository.findAll().stream()
                 .map(LineDto::from)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineDto findById(final Long id) {
         Optional<Line> optionalLine = lineRepository.findById(id);
         if (optionalLine.isPresent()) {
@@ -44,6 +48,7 @@ public class LineService {
         throw new LineNotFoundException("해당 Id의 지하철 노선은 존재하지 않습니다.");
     }
 
+    @Transactional
     public void delete(final Long id) {
         Optional<Line> optionalLine = lineRepository.findById(id);
         if (optionalLine.isPresent()) {
@@ -53,6 +58,7 @@ public class LineService {
         throw new LineNotFoundException("해당 Id의 지하철 노선은 존재하지 않습니다.");
     }
 
+    @Transactional
     public void update(final LineDto lineDto) {
         try {
             Line line = lineRepository.findById(lineDto.getId()).get();

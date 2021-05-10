@@ -67,12 +67,6 @@ public class JDBCLineRepository implements LineRepository {
     }
 
     @Override
-    public void delete(final Long id) {
-        String query = "DELETE FROM line WHERE id = ?";
-        this.jdbcTemplate.update(query, id);
-    }
-
-    @Override
     public void update(final Line line) {
         try {
             String query = "UPDATE line SET name = ?, color = ? WHERE id = ?";
@@ -80,6 +74,12 @@ public class JDBCLineRepository implements LineRepository {
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 노선 이름입니다.", e.getCause());
         }
+    }
+
+    @Override
+    public void delete(final Long id) {
+        String query = "DELETE FROM line WHERE id = ?";
+        this.jdbcTemplate.update(query, id);
     }
 
     @Override
