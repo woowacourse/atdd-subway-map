@@ -43,7 +43,6 @@ public class LineController {
         List<StationResponse> stationResponses = subwayService.getStationsInLine(id).stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok().body(new LineResponse(line, stationResponses));
     }
 

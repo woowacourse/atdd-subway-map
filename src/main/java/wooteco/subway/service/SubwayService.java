@@ -8,6 +8,7 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,9 +41,12 @@ public class SubwayService {
 
     public List<Station> getStationsInLine(long id) {
         List<Section> sections = sectionDao.selectAll(id);
-        return sections.stream()
-                .map(section -> stationDao.select(section.getUpStationId()))
-                .collect(Collectors.toList());
+        List<Station> stations = new ArrayList<>();
+        for (Section section : sections) {
+            stations.add(stationDao.select(section.getUpStationId()));
+            stations.add(stationDao.select(section.getDownStationId()));
+        }
+        return stations.stream().distinct().collect(Collectors.toList());
     }
 
     public void modifyLine(long id, Line line) {
