@@ -1,12 +1,10 @@
 package wooteco.subway;
 
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.xml.transform.Result;
 import java.sql.SQLException;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -23,8 +21,8 @@ public class PageControllerAdvice {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
     }
 
-    @ExceptionHandler(DuplicateName.class)
-    public ResponseEntity<String> duplicateNameHandle() {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentExceptionHandle() {
         return ResponseEntity.badRequest().build();
     }
 }

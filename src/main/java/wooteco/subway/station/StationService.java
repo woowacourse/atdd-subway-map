@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +15,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(String stationName) throws DuplicateName {
+    public StationResponse createStation(String stationName) {
         final Optional<Station> stationWithSameName = stationDao.findStationByName(stationName);
         if (stationWithSameName.isPresent()) {
-            throw new DuplicateName("역 이름이 중복됩니다");
+            throw new IllegalArgumentException("역 이름이 중복됩니다");
         }
         Station station = stationDao.save(stationName);
         return StationResponse.from(station);
@@ -37,6 +36,7 @@ public class StationService {
         if (!stationFoundById.isPresent()) {
             throw new IllegalArgumentException("해당 id에 대응하는 역이 없습니다.");
         }
-        stationDao.delete(stationId);
+        Station station = stationFoundById.get();
+        stationDao.delete(station.getId());
     }
 }
