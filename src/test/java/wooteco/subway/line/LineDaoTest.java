@@ -35,9 +35,8 @@ class LineDaoTest {
 
         final Line createdLine = lineDao.save(line);
 
-        assertThat(createdLine.getId()).isEqualTo(createdLine.getId());
-        assertThat(createdLine.getName()).isEqualTo(createdLine.getName());
-        assertThat(createdLine.getColor()).isEqualTo(createdLine.getColor());
+        assertThat(createdLine.getName()).isEqualTo(line.getName());
+        assertThat(createdLine.getColor()).isEqualTo(line.getColor());
     }
 
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 예외가 발생한다.")
