@@ -32,7 +32,7 @@ public class SectionDao {
     public Long save(final Long lineId,
                      final Long upStationId,
                      final Long downStationId,
-                     final int distance){
+                     final int distance) {
         final String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(con -> {
@@ -57,23 +57,28 @@ public class SectionDao {
         jdbcTemplate.update(sql, after, before, lineId);
     }
 
-    public Long getUpStationId(final Long lineId, final Long downStationId){
+    public Long upStationId(final Long lineId, final Long downStationId) {
         final String sql = "SELECT up_station_id from SECTION WHERE line_id = ? AND down_station_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, lineId, downStationId);
     }
 
-    public Long getDownStationId(final Long lineId, final Long upStationId){
+    public Long downStationId(final Long lineId, final Long upStationId) {
         final String sql = "SELECT down_station_id from SECTION WHERE line_id = ? AND up_station_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, lineId, upStationId);
     }
 
-    public boolean isExistingUpStation(final Long lineId, final Long stationId){
+    public boolean isExistingUpStation(final Long lineId, final Long stationId) {
         final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND up_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
     }
 
-    public boolean isExistingDownStation(final Long lineId, final Long stationId){
+    public boolean isExistingDownStation(final Long lineId, final Long stationId) {
         final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND down_station_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId);
+    }
+
+    public void deleteSection(final Long lineId, final Long upStationId, final Long downStationId) {
+        final String sql = "DELETE FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
+        jdbcTemplate.update(sql, lineId, upStationId, downStationId);
     }
 }

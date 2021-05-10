@@ -108,9 +108,8 @@ class SectionServiceTest {
         final Station savedMiddleStation = stationService.save(middleStation);
 
         sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId());
-        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
-
         sectionService.deleteSection(savedLine.getId(), savedMiddleStation.getId());
+
         validateStationOrder(savedUpStation, savedDownStation);
     }
 
@@ -121,13 +120,12 @@ class SectionServiceTest {
         final Station savedMiddleStation = stationService.save(middleStation);
 
         sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId());
-        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
-
         sectionService.deleteSection(savedLine.getId(), savedUpStation.getId());
+
         validateStationOrder(savedMiddleStation, savedDownStation);
 
         final Long upStationId = lineDao.findUpStationId(savedLine.getId());
-        assertThat(upStationId).isEqualTo(savedMiddleStation);
+        assertThat(upStationId).isEqualTo(savedMiddleStation.getId());
     }
 
     @DisplayName("노선의 하행 종점 역을 삭제한다.")
@@ -137,13 +135,12 @@ class SectionServiceTest {
         final Station savedMiddleStation = stationService.save(middleStation);
 
         sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId());
-        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
-
         sectionService.deleteSection(savedLine.getId(), savedDownStation.getId());
+
         validateStationOrder(savedUpStation, savedMiddleStation);
 
         final Long downStationId = lineDao.findDownStationId(savedLine.getId());
-        assertThat(downStationId).isEqualTo(savedMiddleStation);
+        assertThat(downStationId).isEqualTo(savedMiddleStation.getId());
     }
 
     @DisplayName("노선이 종점 뿐 일 경우 역을 삭제할 수 없다.")

@@ -59,14 +59,14 @@ public class SectionService {
     }
 
     private void updateUpStation(final Long lineId, final Long upStationId, final Long downStationId) {
-        final Long beforeDownStation = sectionDao.getDownStationId(lineId, upStationId);
+        final Long beforeDownStation = sectionDao.downStationId(lineId, upStationId);
 
         sectionDao.updateDownStation(lineId, beforeDownStation, downStationId);
         sectionDao.save(lineId, downStationId, beforeDownStation, 0);
     }
 
     private void updateDownStation(final Long lineId, final Long upStationId, final Long downStationId) {
-        final Long beforeUpStation = sectionDao.getUpStationId(lineId, downStationId);
+        final Long beforeUpStation = sectionDao.upStationId(lineId, downStationId);
 
         sectionDao.updateUpStation(lineId, beforeUpStation, upStationId);
         sectionDao.save(lineId, beforeUpStation, upStationId, 0);
@@ -104,7 +104,7 @@ public class SectionService {
         do {
             final Station station = stationDao.findById(upStationId).get();
             stations.add(station);
-            upStationId = sectionDao.getDownStationId(lineId, upStationId);
+            upStationId = sectionDao.downStationId(lineId, upStationId);
         } while (sectionDao.isExistingUpStation(lineId, upStationId));
 
         stations.add(stationDao.findById(upStationId).get());
@@ -121,19 +121,28 @@ public class SectionService {
         final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, stationId);
         final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, stationId);
 
-        if(existingDownStation && existingUpStation){
+        if(existingUpStation == true && existingDownStation == true ){
             // 중간에 있는 역 삭제
-
+            final Long downStationId = sectionDao.downStationId(lineId, stationId);
+            sectionDao.updateDownStation(lineId, stationId, downStationId);
+            sectionDao.deleteSection(lineId, stationId, downStationId);
+            return;
         }
 
         if(existingUpStation == true && existingDownStation == false){
             // 상행 종점 역 삭제
-
+            final Long downStationId = sectionDao.downStationId(lineId, stationId);
+            lineDao.updateUpStation(lineId, downStationId);
+            sectionDao.deleteSection(lineId, stationId, downStationId);
+            return;
         }
 
         if(existingUpStation == false && existingDownStation == true){
             // 하행 종점 역 삭제
-
+            final Long upStationId = sectionDao.upStationId(lineId, stationId);
+            lineDao.updateDownStation(lineId, upStationId);
+            sectionDao.deleteSection(lineId, upStationId, stationId);
+            return;
         }
 
         throw new IllegalArgumentException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
