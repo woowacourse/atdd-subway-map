@@ -108,12 +108,12 @@ public class LineService {
             .toDomain();
         Section section = new Section(line, upStation, downStation,
             new Distance(sectionRequest.getDistance()));
-        Construction construction = sections.construction(line);
-        construction.insertSection(section);
-        updateSections(construction);
+        updateSections(line, sections, section);
     }
 
-    private void updateSections(Construction construction) {
+    private void updateSections(Line line, Sections sections, Section section) {
+        Construction construction = sections.construction(line);
+        construction.insertSection(section);
         for (Section sectionToCreate : construction.sectionsToCreate()) {
             sectionService.createSection(sectionToCreate);
         }

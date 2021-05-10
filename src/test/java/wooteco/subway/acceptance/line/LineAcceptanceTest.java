@@ -411,4 +411,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("노선에 없는 역들로 구간을 추가한다.")
+    @Test
+    void createSectionWithStationsNotInLine() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(2)));
+        params.put("downStationId",  String.valueOf(stationIds.get(3)));
+        params.put("distance", "5");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("같은 상행역과 하행역으로 구간을 추가한다.")
+    @Test
+    void createSectionWithSameStations() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId",  String.valueOf(stationIds.get(1)));
+        params.put("distance", "5");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

@@ -22,7 +22,6 @@ public class Construction {
         Section sectionToConstruct = sectionToConstruct(section);
         Station sameStation = sectionToConstruct.sameStation(section);
         sectionsToRemove.add(sectionToConstruct);
-
         if (section.getUpStation().equals(sameStation)) {
             registerSectionsToUpdateWhenSameUpStation(section, sectionToConstruct);
         }
