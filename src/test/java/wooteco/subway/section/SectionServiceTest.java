@@ -68,7 +68,7 @@ class SectionServiceTest {
     }
 
     @Test
-    @DisplayName("행 종점 구간 등록")
+    @DisplayName("하행 종점 구간 등록")
     public void saveSectionWithDownEndPointCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
