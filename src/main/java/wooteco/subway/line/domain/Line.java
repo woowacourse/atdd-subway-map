@@ -5,8 +5,6 @@ import wooteco.subway.exception.NullInputException;
 import wooteco.subway.exception.line.LineSuffixException;
 import wooteco.subway.section.Section;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Line {
