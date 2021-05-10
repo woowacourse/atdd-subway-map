@@ -2,6 +2,7 @@ package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.LineException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
@@ -21,8 +22,27 @@ public class SectionService {
     }
 
     public void addSection(final Long lineId, final Long upStationId, final Long downStationId) {
-        validateDuplicated(lineId, upStationId, downStationId);
+        if (isMiddleSection(lineId, upStationId, downStationId)){
+            addMiddleSection(lineId, upStationId, downStationId);
+            return;
+        }
 
+        if(isFrontSection(lineId, downStationId) ){
+            sectionDao.save(lineId, upStationId, downStationId, 0);
+            // 상행 종점역 db 업데이트 -> upStationId
+            return;
+        }
+
+        if( isBackSection(lineId, upStationId)){
+            sectionDao.save(lineId, upStationId, downStationId, 0);
+            // 하행 종점역 db 업데이트 -> downStationId
+            return;
+        }
+
+        throw new LineException("잘못된 구간 입력입니다.");
+    }
+
+    private void addMiddleSection(final Long lineId, final Long upStationId, final Long downStationId){
         if(sectionDao.isExistingUpStation(lineId, upStationId)){
             updateUpStation(lineId, upStationId, downStationId);
             return;
@@ -48,20 +68,29 @@ public class SectionService {
         sectionDao.save(lineId, beforeUpStation, upStationId, 0);
     }
 
-    private void validateDuplicated(final Long lineId, final Long upStation, final Long downStation) {
-        final boolean existingUpStation1 = sectionDao.isExistingUpStation(lineId, upStation);
-        final boolean existingDownStation1 = sectionDao.isExistingDownStation(lineId, downStation);
+    private boolean isMiddleSection(final Long lineId, final Long upStation, final Long downStation) {
+        final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, upStation);
+        final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, downStation);
 
-        if (existingUpStation1 == existingDownStation1) {
-            throw new IllegalArgumentException("1 두 역이 모두 이미 포함되거나, 두 역이 모두 포함되지 않은 구간");
-        }
+        return existingUpStation != existingDownStation;
+    }
 
-//        final boolean existingUpStation2 = sectionDao.isExistingUpStation(lineId, downStation);
-//        final boolean existingDownStation2 = sectionDao.isExistingDownStation(lineId, upStation);
-//
-//        if (existingUpStation2 == existingDownStation2) {
-//            throw new IllegalArgumentException("2 두 역이 모두 이미 포함되거나, 두 역이 모두 포함되지 않은 구간");
-//        }
+    private boolean isFrontSection(final Long lineId, final Long downStation) {
+        // downStation이 DB의 up에만 있어야하고, down에 있어선 안된다.
+
+        final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, downStation);
+        final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, downStation);
+
+        return existingUpStation == true && existingDownStation == false;
+    }
+
+    private boolean isBackSection(final Long lineId, final Long upStation) {
+        // upStation이 DB의 down에만 있어야하고, up에 있어선 안된다.
+
+        final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, upStation);
+        final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, upStation);
+
+        return existingUpStation == false && existingDownStation == true;
     }
 
     // finalUpStationId를 구하는 방법은? -> 테이블 이용?
