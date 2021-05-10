@@ -53,8 +53,8 @@ public class LineService {
                 .orElseThrow(NoLineException::new);
     }
 
-    public void update(Long id, String name, String color) {
-        lineDao.update(id, name, color);
+    public void update(Long id, LineRequest lineRequest) {
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void delete(Long id) {
