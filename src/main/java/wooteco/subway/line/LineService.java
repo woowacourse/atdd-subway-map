@@ -6,7 +6,6 @@ import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,29 +34,14 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line showLine(long id) {
-        Map<Long, Long> sectionMap = sectionDao.sectionMap(id);
-        Set<Long> set1 = new HashSet<>(sectionMap.keySet());
-        Set<Long> set2 = new HashSet<>(sectionMap.values());
-        set1.removeAll(set2);
+    public Line showLineInfo(long lineId) {
+        Map<Long, Long> sectionMap = sectionDao.sectionMap(lineId);
+        long upStation = findUpStation(sectionMap);
+        List<Station> stations = getStations(sectionMap, upStation);
 
-        long upStation = set1.iterator().next();
-        List<Long> stationsId = new ArrayList<>();
-        stationsId.add(upStation);
-        long key = upStation;
+        Line line = lineDao.findById(lineId);
 
-        while(sectionMap.containsKey(key)){
-            key = sectionMap.get(key);
-            stationsId.add(key);
-        }
-
-        List<Station> stations = stationsId.stream()
-                .map(stationDao::findById)
-                .collect(Collectors.toList());
-
-        Line line = lineDao.findById(id);
-
-        return new Line(id, line.getName(), line.getColor(), stations);
+        return new Line(lineId, line.getName(), line.getColor(), stations);
     }
 
     public void updateLine(long id, String lineName, String lineColor) {
@@ -68,7 +52,27 @@ public class LineService {
         lineDao.delete(id);
     }
 
+    private long findUpStation(Map<Long, Long> sectionMap) {
+        Set<Long> upStationSet = new HashSet<>(sectionMap.keySet());
+        Set<Long> downStationSet = new HashSet<>(sectionMap.values());
+        upStationSet.removeAll(downStationSet);
+        return upStationSet.iterator().next();
+    }
 
+    private List<Station> getStations(Map<Long, Long> sectionMap, long upStation) {
+        List<Long> stationsId = new ArrayList<>();
+        stationsId.add(upStation);
+        long key = upStation;
+
+        while (sectionMap.containsKey(key)) {
+            key = sectionMap.get(key);
+            stationsId.add(key);
+        }
+
+        return stationsId.stream()
+                .map(stationDao::findById)
+                .collect(Collectors.toList());
+    }
 
 
 }

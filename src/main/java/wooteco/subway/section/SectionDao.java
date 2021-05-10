@@ -4,7 +4,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class SectionDao {
@@ -23,19 +26,6 @@ public class SectionDao {
         String sql = "SELECT up_station_id, down_station_id FROM SECTION WHERE line_id = ?";
 
         return jdbcTemplate.query(sql, sectionRowMapper(), id);
-    }
-
-    private ResultSetExtractor<Map<Long, Long>> sectionRowMapper() {
-        Map<Long, Long> stationMap = new HashMap<>();
-        return (rs) -> {
-            while(rs.next()) {
-                stationMap.put(
-                        rs.getLong("up_station_id"),
-                        rs.getLong("down_station_id")
-                );
-            }
-            return stationMap;
-        };
     }
 
     public void delete(long lineId, long stationId, long downStationId) {
@@ -66,5 +56,18 @@ public class SectionDao {
     public int count(long lineId) {
         String sql = "SELECT count(*) FROM SECTION WHERE line_id = ?";
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, lineId));
+    }
+
+    private ResultSetExtractor<Map<Long, Long>> sectionRowMapper() {
+        Map<Long, Long> stationMap = new HashMap<>();
+        return (rs) -> {
+            while (rs.next()) {
+                stationMap.put(
+                        rs.getLong("up_station_id"),
+                        rs.getLong("down_station_id")
+                );
+            }
+            return stationMap;
+        };
     }
 }

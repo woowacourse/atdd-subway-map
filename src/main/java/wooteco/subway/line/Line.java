@@ -17,10 +17,6 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color, List<Station> stations) {
-        this(null, name, color, stations);
-    }
-
     public Line(Long id, String name, String color, List<Station> stations) {
         this(id, name, color, stations, Collections.emptyList());
     }

@@ -11,13 +11,14 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {
-//    @ExceptionHandler(DataAccessException.class)
-//    public ResponseEntity<String> dataExceptionHandle() {
-//        return ResponseEntity.badRequest().build();
-//    }
-//
-//    @ExceptionHandler(SQLException.class)
-//    public ResponseEntity<String> sqlExceptionHandle() {
-//        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
-//    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<String> dataExceptionHandle() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<String> sqlExceptionHandle() {
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+    }
 }

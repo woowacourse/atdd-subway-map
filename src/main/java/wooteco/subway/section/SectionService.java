@@ -3,7 +3,6 @@ package wooteco.subway.section;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SectionService {
@@ -25,11 +24,11 @@ public class SectionService {
     public long findExistStation(long lineId, long upStationId, long downStationId) {
 
         long existStation = -1;
-        if(sectionDao.isExistStation(lineId, upStationId)) {
+        if (sectionDao.isExistStation(lineId, upStationId)) {
             existStation = upStationId;
         }
 
-        if(sectionDao.isExistStation(lineId, downStationId)) {
+        if (sectionDao.isExistStation(lineId, downStationId)) {
             checkDuplicateSection(existStation);
             existStation = downStationId;
         }
@@ -50,12 +49,13 @@ public class SectionService {
     }
 
     private void checkDuplicateSection(long existStation) {
-        if(existStation != -1) {
+        if (existStation != -1) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
-    public void addSection(long lineId, long upStationId, long downStationId, long beforeDownStationId, int firstDistance, int secondDistance) {
+    public void addSection(long lineId, long upStationId, long downStationId, long beforeDownStationId,
+                           int firstDistance, int secondDistance) {
         sectionDao.delete(lineId, upStationId, beforeDownStationId);
         sectionDao.save(lineId, upStationId, downStationId, firstDistance);
         sectionDao.save(lineId, downStationId, beforeDownStationId, secondDistance);
