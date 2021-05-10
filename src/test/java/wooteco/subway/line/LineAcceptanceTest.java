@@ -24,9 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class LineAcceptanceTest extends AcceptanceTest {
-    @Autowired
-    private LineDao lineDao;
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {

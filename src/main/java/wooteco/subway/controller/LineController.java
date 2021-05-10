@@ -2,10 +2,10 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.service.SubwayService;
 
 import java.net.URI;
 import java.util.List;
@@ -14,23 +14,22 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private LineDao lineDao;
+    private final SubwayService subwayService;
 
-    public LineController(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineController(final SubwayService subwayService) {
+        this.subwayService = subwayService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineRequest.createLine();
-        long id = lineDao.save(line);
-        LineResponse lineResponse = new LineResponse(id, line);
-        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
+        long id = subwayService.createLine(line);
+        return ResponseEntity.created(URI.create("/lines/" + id)).body(new LineResponse(id, line));
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLine() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = subwayService.showLines();
         List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
@@ -38,21 +37,21 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLineDetail(@PathVariable Long id) {
-        Line line = lineDao.find(id);
+    public ResponseEntity<LineResponse> showLineDetail(@PathVariable long id) {
+        Line line = subwayService.showLineDetail(id);
         return ResponseEntity.ok().body(new LineResponse(line));
     }
 
     @PutMapping( "/{id}")
-    public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
+    public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable long id,
                                                          @RequestBody LineRequest lineRequest) {
-        lineDao.modify(id, lineRequest.createLine());
+        subwayService.modifyLine(id, lineRequest.createLine());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+    public ResponseEntity deleteLine(@PathVariable long id) {
+        subwayService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }
