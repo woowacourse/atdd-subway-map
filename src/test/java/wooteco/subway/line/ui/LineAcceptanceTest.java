@@ -16,6 +16,7 @@ import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
+import wooteco.subway.line.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
@@ -32,9 +33,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private StationDao stationDao;
-
-    @Autowired
-    private LineDao lineDao;
 
     @Autowired
     private LineService lineService;
@@ -173,7 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(newLineName, newLineColor);
 
         // when
-        ExtractableResponse<Response> updateResponse = updateLineByIdToHTTP(lineUpdateRequest);
+        ExtractableResponse<Response> updateResponse = updateLineByIdToHTTP(line.getId(), lineUpdateRequest);
         ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
         LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
@@ -214,66 +212,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점역을 저장한다")
     void upwardEndPointRegistration() {
         //given
-        String uri = "/lines/{id}/sections";
-        String findUri = "/lines/{id}";
-
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", String.valueOf(station3.getId()));
-        params.put("downStationId", String.valueOf(station1.getId()));
-        params.put("distance", "5");
+        int distance = 5;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(station3.getId(), station1.getId(), distance);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(uri, line.getId())
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .when()
-                .get(findUri, line.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findResponse.jsonPath().getLong("id")).isEqualTo(line.getId());
-        assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station3.getName(), station1.getName(), station2.getName());
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.getId()).isEqualTo(line.getId());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station3.getName(), station1.getName(), station2.getName());
     }
 
     @Test
-    @DisplayName("허향 종점역을 저장한다")
+    @DisplayName("허행 종점역을 저장한다")
     void downwardEndPointRegistration() {
         //given
-        String uri = "/lines/{id}/sections";
-        String findUri = "/lines/{id}";
-
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", String.valueOf(station2.getId()));
-        params.put("downStationId", String.valueOf(station3.getId()));
-        params.put("distance", "5");
+        int distance = 5;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(uri, line.getId())
-                .then().log().all()
-                .extract();
-
-        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
-                .when()
-                .get(findUri, line.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findResponse.jsonPath().getLong("id")).isEqualTo(line.getId());
-        assertThat(stationResponsesToStrings(findResponse.jsonPath().getList("stations", StationResponse.class))).containsExactly(station1.getName(), station2.getName(), station3.getName());
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.getId()).isEqualTo(line.getId());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName(), station3.getName());
     }
 
     private ExtractableResponse<Response> createLineToHTTP(final LineRequest lineRequest) {
@@ -288,39 +256,46 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> findAllLineToHTTP() {
-        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
                 .then().log().all()
                 .extract();
-        return findResponse;
     }
 
     private ExtractableResponse<Response> findLineByIdToHTTP(Long lineId) {
-        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
-        return findLineResponse;
     }
 
-    private ExtractableResponse<Response> updateLineByIdToHTTP(LineUpdateRequest lineUpdateRequest) {
-        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+    private ExtractableResponse<Response> updateLineByIdToHTTP(Long lineId, LineUpdateRequest lineUpdateRequest) {
+        return RestAssured.given().log().all()
                 .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/{id}", line.getId())
+                .put("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
-        return updateResponse;
     }
 
     private ExtractableResponse<Response> deleteLineByIdToHTTP(Long lineId) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> addSectionToHTTP(Long lineId, SectionAddRequest sectionAddRequest) {
+        return RestAssured.given().log().all()
+                .body(sectionAddRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
