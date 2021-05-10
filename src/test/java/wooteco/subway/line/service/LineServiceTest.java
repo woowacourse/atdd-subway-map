@@ -13,6 +13,7 @@ import wooteco.subway.line.dao.JdbcLineDao;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
 
 import java.util.Arrays;
@@ -45,11 +46,11 @@ class LineServiceTest {
                 .willReturn(new Line(1L, "분당선", "red"));
 
         // when
-        LineResponse lineResponse = lineService.save(분당선);
+        LineCreateResponse lineCreateResponse = lineService.save(분당선);
 
         // then
-        assertThat(lineResponse).usingRecursiveComparison()
-                .isEqualTo(new LineResponse(1L, "분당선", "red"));
+        assertThat(lineCreateResponse).usingRecursiveComparison()
+                .isEqualTo(new LineCreateResponse(1L, "분당선", "red"));
         verify(lineDao).save(any(Line.class));
     }
 
@@ -80,7 +81,7 @@ class LineServiceTest {
 
         // then
         assertThat(result).usingRecursiveComparison()
-                .isEqualTo(new LineResponse(1L, "분당선", "red"));
+                .isEqualTo(new LineCreateResponse(1L, "분당선", "red"));
         verify(lineDao).findById(1L);
     }
 

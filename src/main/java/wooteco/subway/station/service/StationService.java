@@ -6,13 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
+import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,5 +74,19 @@ public class StationService {
         if (Optional.empty().equals(stationDao.findById(id))) {
             throw new SubwayException("존재하지 않는 역입니다.");
         }
+    }
+
+    public List<StationResponse> findStations(List<SectionResponse> sections) {
+        Set<Long> upStationIds = sections.stream()
+                .map(SectionResponse::getUpStationId).collect(Collectors.toSet());
+        Set<Long> downStationIds = sections.stream()
+                .map(SectionResponse::getDownStationId).collect(Collectors.toSet());
+        Set<Long> allStationIds = new HashSet<>(upStationIds);
+        allStationIds.addAll(downStationIds);
+        return allStationIds.stream()
+                .map(stationDao::findById)
+                .map(Optional::get)
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 }

@@ -1,12 +1,14 @@
 package wooteco.subway.section.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.section.Section;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -33,5 +35,21 @@ public class JdbcSectionDao implements SectionDao {
         }, keyHolder);
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Section(id, section);
+    }
+
+    @Override
+    public List<Section> findAllByLineId(Long id) {
+        String query = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(query, sectionRowMapper(), id);
+    }
+
+    private RowMapper<Section> sectionRowMapper() {
+        return (rs, rowNum) -> new Section(
+                rs.getLong("id"),
+                rs.getLong("line_id"),
+                rs.getLong("up_station_id"),
+                rs.getLong("down_station_id"),
+                rs.getInt("distance")
+        );
     }
 }

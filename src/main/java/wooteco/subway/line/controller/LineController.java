@@ -9,10 +9,14 @@ import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
+import wooteco.subway.line.dto.response.LineSectionResponse;
+import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
+import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import javax.validation.Valid;
@@ -33,19 +37,19 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineCreateResponse> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest, Errors errors) {
+    public ResponseEntity<LineSectionResponse> createLine(@RequestBody @Valid LineCreateRequest lineCreateRequest, Errors errors) {
         if (errors.hasErrors()) {
             throw new SubwayException("올바른 값이 아닙니다.");
         }
 
         SectionCreateRequest sectionCreateRequest = new SectionCreateRequest(lineCreateRequest);
         stationService.checkRightStation(sectionCreateRequest.getUpStationId(), sectionCreateRequest.getDownStationId());
-        LineResponse newLine = lineService.save(lineCreateRequest);
+        LineCreateResponse newLine = lineService.save(lineCreateRequest);
         SectionCreateResponse initialSection =
                 sectionService.save(newLine, sectionCreateRequest);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
-                .body(new LineCreateResponse(newLine, initialSection));
+                .body(new LineSectionResponse(newLine, initialSection));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -55,9 +59,11 @@ public class LineController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineStationsResponse> showLine(@PathVariable Long id) {
         LineResponse line = lineService.findBy(id);
-        return ResponseEntity.ok().body(line);
+        List<SectionResponse> sections = sectionService.findAllByLineId(line.getId());
+        List<StationResponse> stations = stationService.findStations(sections);
+        return ResponseEntity.ok().body(new LineStationsResponse(line, stations));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -11,10 +11,12 @@ import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
-import wooteco.subway.line.dto.response.LineResponse;
+import wooteco.subway.line.dto.response.LineSectionResponse;
+import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,9 +54,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.as(LineCreateResponse.class))
+        assertThat(response.as(LineSectionResponse.class))
                 .usingRecursiveComparison()
-                .isEqualTo(new LineCreateResponse(1L, "분당선", "bg-red-600", 1L, 2L, 3));
+                .isEqualTo(new LineSectionResponse(1L, "분당선", "bg-red-600", 1L, 2L, 3));
     }
 
     @DisplayName("upStationId를 포함하지 않고 노선을 생성할 경우 BAD_REQUEST 반환")
@@ -188,8 +190,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private List<Long> resultLineIdsList(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
+        return response.jsonPath().getList(".", LineCreateResponse.class).stream()
+                .map(LineCreateResponse::getId)
                 .collect(Collectors.toList());
     }
 
@@ -208,11 +210,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         ExtractableResponse<Response> response = findByIdRequest("1");
         Long expectedLineId = Long.parseLong(분당선생성.header("Location").split("/")[2]);
-        Long resultLineId = response.as(LineResponse.class).getId();
+        LineStationsResponse result = response.as(LineStationsResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(resultLineId).isEqualTo(expectedLineId);
+        assertThat(result.getId()).isEqualTo(expectedLineId);
+        assertThat(result.getName()).isEqualTo("분당선");
+        assertThat(result.getColor()).isEqualTo("bg-red-600");
+        assertThat(result.getStations()).usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(Arrays.asList(new StationResponse(1L, "잠실역"), new StationResponse(2L, "왕십리역")));
     }
 
     @DisplayName("노선을 수정한다.")

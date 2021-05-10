@@ -33,7 +33,7 @@
 - [x] 노선 조회
     - req
         - GET, /lines/{id}
-    - [ ] res
+    - [x] res
         - 200 OK, BODY : {id, name, color, stations}
 - [x] 노선 수정
   - [x] 이미 존재하는 이름으로 수정할 수 없다.

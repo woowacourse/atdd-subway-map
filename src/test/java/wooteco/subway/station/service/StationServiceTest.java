@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
+import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.JdbcStationDao;
 import wooteco.subway.station.dao.StationDao;
@@ -129,5 +130,33 @@ class StationServiceTest {
         // when & then
         assertThatThrownBy(() -> stationService.checkRightStation(1L, 2L))
                 .isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("구간 리스트를 통해 포함된 모든 역 조회")
+    @Test
+    void findStations() {
+        // given
+        List<SectionResponse> sections = Arrays.asList(
+                new SectionResponse(1L, 2L),
+                new SectionResponse(2L, 3L)
+        );
+        given(stationDao.findById(1L))
+                .willReturn(Optional.of(new Station(1L, "강남역")));
+        given(stationDao.findById(2L))
+                .willReturn(Optional.of(new Station(2L, "잠실역")));
+        given(stationDao.findById(3L))
+                .willReturn(Optional.of(new Station(3L, "왕십리역")));
+
+        // when
+        List<StationResponse> stations = stationService.findStations(sections);
+
+        // then
+        assertThat(stations).hasSize(3);
+        assertThat(stations).usingRecursiveFieldByFieldElementComparator()
+                .containsAll(Arrays.asList(
+                        new StationResponse(1L, "강남역"),
+                        new StationResponse(2L, "잠실역"),
+                        new StationResponse(3L, "왕십리역")
+                ));
     }
 }

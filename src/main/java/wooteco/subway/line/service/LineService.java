@@ -10,6 +10,7 @@ import wooteco.subway.line.Line;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
 
 import java.util.List;
@@ -26,12 +27,12 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse save(LineCreateRequest lineCreateRequest) {
+    public LineCreateResponse save(LineCreateRequest lineCreateRequest) {
         validatesNameDuplication(lineCreateRequest);
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor());
         Line newLine = lineDao.save(line);
         log.info("{} 노선 생성 성공", newLine.getName());
-        return new LineResponse(newLine.getId(), newLine.getName(), newLine.getColor());
+        return new LineCreateResponse(newLine.getId(), newLine.getName(), newLine.getColor());
     }
 
     private void validatesNameDuplication(LineCreateRequest lineCreateRequest) {
