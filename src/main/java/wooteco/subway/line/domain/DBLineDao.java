@@ -1,5 +1,6 @@
 package wooteco.subway.line.domain;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.entity.LineEntity;
 
-import javax.swing.text.html.Option;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +16,19 @@ import java.util.Optional;
 @Repository
 public class DBLineDao implements LineDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<LineEntity> lineRowMapper = (rs, rowNum) ->
-            new LineEntity(rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color"));
+    private final RowMapper<LineEntity> lineRowMapper;
 
+    @Autowired
     public DBLineDao(final JdbcTemplate jdbcTemplate) {
+        this(jdbcTemplate, (rs, rowNum) ->
+                new LineEntity(rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")));
+    }
+
+    public DBLineDao(final JdbcTemplate jdbcTemplate, final RowMapper<LineEntity> lineRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.lineRowMapper = lineRowMapper;
     }
 
     @Override

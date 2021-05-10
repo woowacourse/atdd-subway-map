@@ -1,5 +1,6 @@
 package wooteco.subway.station.domain;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,17 +14,20 @@ import java.util.Optional;
 
 @Repository
 public class DBStationDao implements StationDao {
-
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationsMapper;
 
+    @Autowired
     public DBStationDao(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this(jdbcTemplate, (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name")));
     }
 
-    static RowMapper<Station> stationsMapper = (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-    );
+    public DBStationDao(final JdbcTemplate jdbcTemplate, final RowMapper<Station> stationsMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.stationsMapper = stationsMapper;
+    }
 
     @Override
     public Station save(final Station station) {
