@@ -31,8 +31,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철역_생성값_검증(final ExtractableResponse<Response> response, final StationRequest stationRequest) {
-        assertThat(response.body().as(StationResponse.class).getId()).isEqualTo(getCreatedId(response));
-        assertThat(response.body().as(StationResponse.class).getName()).isEqualTo(stationRequest.getName());
+        final StationResponse stationResponse = response.body().as(StationResponse.class);
+        assertThat(stationResponse.getId()).isEqualTo(getCreatedId(response));
+        assertThat(stationResponse.getName()).isEqualTo(stationRequest.getName());
     }
 
     private long getCreatedId(final ExtractableResponse<Response> response) {
