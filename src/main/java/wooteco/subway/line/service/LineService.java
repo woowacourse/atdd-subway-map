@@ -33,8 +33,15 @@ public class LineService {
         if (lineRepository.isExistName(newLine)) {
             throw new DuplicateNameException("이미 존재하는 Line 입니다.");
         }
+        validateStationIds(lineRequest);
         Line savedLine = lineRepository.save(newLine);
         return new LineResponse(savedLine.getId(), savedLine.getName(), savedLine.getColor());
+    }
+
+    private void validateStationIds(final LineRequest lineRequest) {
+        if (lineRequest.getDownStationId().equals(lineRequest.getUpStationId())) {
+            throw new IllegalArgumentException("새 노선 등록시, 상행선과 하행선이 같을 수 없습니다.");
+        }
     }
 
     public LineResponse getLineById(final Long id) {

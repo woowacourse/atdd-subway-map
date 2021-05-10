@@ -61,7 +61,27 @@ class LineControllerTest extends AcceptanceTest {
         Map<String, Object> wrongParams = new HashMap<>();
         wrongParams.put("color", "bg-red-600");
         wrongParams.put("name", "잘못된 분당선");
+
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행선과 하행선이 동일하게 노선을 생성하면, 400 상태 코드를 받는다.")
+    @Test
+    void duplicateStationFail(){
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "잘못된 분당선");
         wrongParams.put("upStationId", 1L);
+        wrongParams.put("downStationId", 1L);
+        wrongParams.put("distance", 77);
 
         response = RestAssured.given().log().all()
                 .body(wrongParams)
