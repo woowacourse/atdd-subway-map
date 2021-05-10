@@ -23,12 +23,12 @@ import static org.hamcrest.CoreMatchers.is;
 @Transactional
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private final StationRequest stationRequest1;
-    private final StationRequest stationRequest2;
+    private final StationRequest gangnamStationRequest;
+    private final StationRequest yeoksamStationRequest;
 
     public StationAcceptanceTest() {
-        this.stationRequest1 = new StationRequest("강남역");
-        this.stationRequest2 = new StationRequest("역삼역");
+        this.gangnamStationRequest = new StationRequest("강남역");
+        this.yeoksamStationRequest = new StationRequest("역삼역");
     }
 
     @Test
@@ -36,7 +36,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStation() {
 
         // when
-        ExtractableResponse<Response> response = createStation(stationRequest1);
+        ExtractableResponse<Response> response = createStation(gangnamStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -48,7 +48,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
 
         // when
-        ExtractableResponse<Response> response = createStation(stationRequest1);
+        ExtractableResponse<Response> response = createStation(gangnamStationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,8 +58,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStation(stationRequest1);
-        ExtractableResponse<Response> createResponse2 = createStation(stationRequest2);
+        ExtractableResponse<Response> createResponse1 = createStation(gangnamStationRequest);
+        ExtractableResponse<Response> createResponse2 = createStation(yeoksamStationRequest);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -83,8 +83,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse1 = createStation(stationRequest1);
-        ExtractableResponse<Response> createResponse2 = createStation(stationRequest2);
+        ExtractableResponse<Response> createResponse1 = createStation(gangnamStationRequest);
+        ExtractableResponse<Response> createResponse2 = createStation(yeoksamStationRequest);
 
         // when
         String uri = createResponse2.header("Location");
