@@ -581,7 +581,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 구간을 제거한다.")
+    @DisplayName("지하철 구간을 제거한다.(가운데 있는 역 삭제)")
     @Test
     void deleteSection() {
         // given
@@ -617,7 +617,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new StationResponse(stationIds.get(1), "잠실역")
         );
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(expected).usingRecursiveFieldByFieldElementComparator()
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
             .isEqualTo(expected);
     }
+
+    @DisplayName("지하철 구간을 제거한다.(종점역 삭제)")
+    @Test
+    void deleteSectionWithEndStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
+        params.put("distance", "5");
+        RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(createdResponse.header("Location") + "/sections?stationId=" + stationIds.get(0))
+            .then()
+            .extract();
+
+        LineResponse lineResponse = RestAssured.given().log().all()
+            .when()
+            .get(createdResponse.header("Location"))
+            .then()
+            .extract()
+            .as(LineResponse.class);
+
+        // then
+        List<StationResponse> expected = Arrays.asList(
+            new StationResponse(stationIds.get(2), "양재역"),
+            new StationResponse(stationIds.get(1), "잠실역")
+        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
+            .isEqualTo(expected);
+    }
+
 }
