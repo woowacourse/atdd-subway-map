@@ -6,18 +6,24 @@ import wooteco.subway.exception.NoLineException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.LineH2Dao;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationResponse;
+import wooteco.subway.station.StationService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 public class SectionService {
 
+    private final StationService stationService;
     private final LineDao lineDao;
     private final SectionH2Dao sectionH2Dao; //TODO 인터페이스 추출
 
-    private SectionService(LineDao lineDao, SectionH2Dao sectionH2Dao) {
+    private SectionService(StationService stationService, LineDao lineDao, SectionH2Dao sectionH2Dao) {
+        this.stationService = stationService;
         this.lineDao = lineDao;
         this.sectionH2Dao = sectionH2Dao;
     }
@@ -70,5 +76,14 @@ public class SectionService {
             Section mergedSection = sections.merge(stationId);
             sectionH2Dao.save(lineId, mergedSection);
         }
+    }
+
+    public List<StationResponse> sortedStationIds(Long lineIds) {
+        validateLineId(lineIds);
+        Sections sections = new Sections(sectionH2Dao.findByLineId(lineIds));
+        List<Long> sortedStationIds = sections.sortedStationIds();
+        return sortedStationIds.stream()
+            .map(stationService::findById)
+            .collect(Collectors.toList());
     }
 }

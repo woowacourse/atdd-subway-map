@@ -1,10 +1,15 @@
 package wooteco.subway.station.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+<<<<<<< HEAD:src/main/java/wooteco/subway/station/dao/StationH2Dao.java
 import wooteco.subway.station.domain.Station;
+=======
+import wooteco.subway.line.Line;
+>>>>>>> 31560b2 (feat: 노선 조회 추가 기능 구현):src/main/java/wooteco/subway/station/StationH2Dao.java
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -54,6 +59,7 @@ public class StationH2Dao implements StationDao {
     }
 
     @Override
+<<<<<<< HEAD:src/main/java/wooteco/subway/station/dao/StationH2Dao.java
     public Optional<Station> findByName(String name) {
         String sql = "SELECT * FROM STATION WHERE name=?";
         return jdbcTemplate.query(sql,
@@ -66,5 +72,22 @@ public class StationH2Dao implements StationDao {
             }, name)
             .stream()
             .findAny();
+=======
+    public Optional<Station> findById(Long id) {
+        String sql = "SELECT * FROM STATION WHERE id=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> {
+                    return new Station(
+                        rs.getLong("id"),
+                        rs.getString("name")
+                    );
+                },
+                id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+>>>>>>> 31560b2 (feat: 노선 조회 추가 기능 구현):src/main/java/wooteco/subway/station/StationH2Dao.java
     }
 }
