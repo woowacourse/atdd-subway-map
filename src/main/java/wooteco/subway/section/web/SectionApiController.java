@@ -35,4 +35,9 @@ public class SectionApiController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(SectionResponse.create(section));
     }
 
+    @DeleteMapping
+    public ResponseEntity removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.removeSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 }

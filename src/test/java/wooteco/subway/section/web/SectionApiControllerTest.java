@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineService;
 import wooteco.subway.section.SectionDao;
@@ -32,8 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class SectionApiControllerTest {
 
-    private static final String DOWN_STATION_NAME = "잠실새내역";
     private static final String UP_STATION_NAME = "잠실역";
+    private static final String DOWN_STATION_NAME = "잠실새내역";
     private static final int ORIGINAL_DISTANCE = 10;
 
     @Autowired
@@ -260,6 +261,7 @@ class SectionApiControllerTest {
     @DisplayName("구간 제거 - 성공")
     void deleteSection_success() throws Exception {
         // given
+        // 강남역 -> 잠실역 -> 잠실새네역
         final Station upStation = upStation();
         final Station downStation = downStation();
         Line line = createLine(upStation, downStation);
@@ -270,14 +272,64 @@ class SectionApiControllerTest {
                 new SectionRequest(newStation.getId(), upStation.getId(), 4);
 
         구간_추가(sectionRequest, line.getId());
-
         // when
         ResultActions result = mockMvc.perform(delete("/lines/" + line.getId() + "/sections?stationId=" + upStation.getId()));
 
         // then
         result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(upStation.getId().toString()));
+                .andExpect(status().isNoContent());
+
+        final Sections sections = sectionDao.findSectionsByLineId(line.getId());
+        assertThat(sections.sections().size()).isEqualTo(1);
+        assertThat(sections.sections().get(0).getUpStation().getName()).isEqualTo("강남역");
+        assertThat(sections.sections().get(0).getDownStation().getName()).isEqualTo("잠실새내역");
+        assertThat(sections.sections().get(0).getDistance()).isEqualTo(14);
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
+    public void deleteSection_fail_notExistLine() throws Exception{
+        //given
+
+        //when
+        final ResultActions result = mockMvc.perform(delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
+        //then
+
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 실패(역이 해당 노선에 등록되어 있지 않을 시)")
+    public void deleteSection_fail_noStationInLine() throws Exception{
+        //given
+        final Station upStation = upStation();
+        final Station downStation = downStation();
+        Line line = createLine(upStation, downStation);
+
+        //when
+        final ResultActions result = mockMvc.perform(
+            delete("/lines/" + line.getId() + "/sections?stationId=" + Long.MAX_VALUE)
+        );
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 실패(노선에 구간이 하나밖에 존재하지 않을 시)")
+    public void deleteSection_fail_onlyOneSectionExist() throws Exception{
+        //given
+        final Station upStation = upStation();
+        final Station downStation = downStation();
+        Line line = createLine(upStation, downStation);
+
+        //when
+        final ResultActions result = mockMvc.perform(
+            delete("/lines/" + line.getId() + "/sections?stationId=" + downStation.getId())
+        );
+
+        //then
+        result.andExpect(status().isBadRequest());
     }
 
     private ResultActions 구간_추가(SectionRequest sectionRequest, Long lineId) throws Exception {
