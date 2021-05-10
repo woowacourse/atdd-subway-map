@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.RestAssuredHelper;
 import wooteco.subway.controller.dto.LineResponse;
+import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.controller.dto.StationResponse;
 import wooteco.subway.domain.Section;
 import wooteco.subway.exception.response.ErrorResponse;
@@ -129,7 +130,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        final String location = response.header("Location");
+        assertThat(location).isNotBlank();
 
         final Section section = response.body().as(Section.class);
         assertThat(section.getLineId()).isEqualTo(1L);
@@ -139,6 +141,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
         assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung, yeoksam);
+
+        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
+                                                                    .body()
+                                                                    .as(SectionResponse.class);
+        assertThat(oldSectionResponse.getDistance()).isEqualTo(3);
+
+        final SectionResponse newSectionResponse = RestAssuredHelper.jsonGet(location).body().as(SectionResponse.class);
+        assertThat(newSectionResponse.getDistance()).isEqualTo(7);
     }
 
     @DisplayName("구간 생성 성공 - 종점이 아닌 중간 하행에 구간 추가")
@@ -155,7 +165,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        final String location = response.header("Location");
+        assertThat(location).isNotBlank();
 
         final Section section = response.body().as(Section.class);
         assertThat(section.getLineId()).isEqualTo(1L);
@@ -163,8 +174,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(section.getUpStationId()).isEqualTo(3L);
         assertThat(section.getDistance()).isEqualTo(7);
 
-        final LineResponse lineResponse = RestAssuredHelper.jsonGet("/lines/1").body().as(LineResponse.class);
-        assertThat(lineResponse.getStations()).containsExactly(gangnam, seolleung, yeoksam);
+        final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
+                                                                    .body()
+                                                                    .as(SectionResponse.class);
+        assertThat(oldSectionResponse.getDistance()).isEqualTo(3);
+
+        final SectionResponse newSectionResponse = RestAssuredHelper.jsonGet(location).body().as(SectionResponse.class);
+        assertThat(newSectionResponse.getDistance()).isEqualTo(7);
     }
 
     @DisplayName("구간 생성 실패 - 거리가 음수이면 예외 발생")

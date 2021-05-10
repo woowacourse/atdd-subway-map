@@ -189,7 +189,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 ID에 해당하는 노선이 존재하지 않습니다.");
+        assertThat(response.body().as(ErrorResponse.class).getReason()).isEqualTo("해당 ID와 일치하는 노선이 존재하지 않습니다.");
     }
 
     @DisplayName("노선 수정 성공")

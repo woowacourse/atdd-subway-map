@@ -7,16 +7,17 @@ import java.util.Optional;
 
 public interface SectionDao {
 
-    Optional<Section> findById(Long id);
+    Optional<Section> findByLineIdAndId(Long lineId, Long sectionId);
 
     List<Section> findAllByLineId(Long lineId);
 
     Optional<Section> findSectionByUpStation(Section section);
 
+    Optional<Section> findSectionByDownStation(Section section);
+
     Section save(Section section);
 
-    void updateUpStationToDownStation(Long upStationId, Long downStationId);
+    void updateDownStationAndDistance(Section section);
 
-    void updateDownStationToUpStation(Long downStationId, Long upStationId);
-
+    void updateUpStationAndDistance(Section section);
 }

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.dto.SectionRequest;
+import wooteco.subway.controller.dto.SectionResponse;
 import wooteco.subway.domain.Section;
 import wooteco.subway.service.SectionService;
 
@@ -31,7 +32,15 @@ public class SectionController {
 
         final Section savedSection = sectionService.save(section);
 
-        final URI uri = URI.create(String.format("/lines/%d/%d", id, savedSection.getId()));
+        final URI uri = URI.create(String.format("/lines/%d/sections?sectionId=%d", id, savedSection.getId()));
         return ResponseEntity.created(uri).body(savedSection);
+    }
+
+    @GetMapping(value = "/sections")
+    public ResponseEntity<SectionResponse> showSection(@PathVariable(name = "id") Long lineId,
+                                                       @RequestParam Long sectionId) {
+        final Section section = sectionService.findByLineIdAndId(lineId, sectionId);
+        final SectionResponse sectionResponse = new SectionResponse(section);
+        return ResponseEntity.ok(sectionResponse);
     }
 }

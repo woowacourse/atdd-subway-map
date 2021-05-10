@@ -9,6 +9,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.SectionValidator;
 import wooteco.subway.exception.EntityNotFoundException;
 
+import java.util.Optional;
+
 @Service
 public class SectionService {
 
@@ -69,15 +71,24 @@ public class SectionService {
 
     private Section saveSectionAtMiddle(final Section section) {
         new SectionValidator(sectionDao.findAllByLineId(section.getLineId()), section).validate();
-        final boolean canSaveSectionAtUpStationOnLine = sectionDao.findSectionByUpStation(section)
-                                                                  .isPresent();
 
-        if (canSaveSectionAtUpStationOnLine) {
-            sectionDao.updateUpStationToDownStation(section.getUpStationId(), section.getDownStationId());
+        final Optional<Section> sectionByUpStation = sectionDao.findSectionByUpStation(section);
+        if (sectionByUpStation.isPresent()) {
+            final Section updateSection = section.subtractDistance(sectionByUpStation.get());
+            sectionDao.updateUpStationAndDistance(updateSection);
             return sectionDao.save(section);
         }
 
-        sectionDao.updateDownStationToUpStation(section.getDownStationId(), section.getUpStationId());
+        final Section sectionByDownStation = sectionDao.findSectionByDownStation(section)
+                                                       .orElseThrow(() -> new IllegalStateException("하행역과 상행역이 모두 " + "존재하지 않습니다."));
+
+        final Section updateSection = section.subtractDistance(sectionByDownStation);
+        sectionDao.updateDownStationAndDistance(updateSection);
         return sectionDao.save(section);
+    }
+
+    public Section findByLineIdAndId(final Long lineId, final Long sectionId) {
+        return sectionDao.findByLineIdAndId(lineId, sectionId)
+                         .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."));
     }
 }

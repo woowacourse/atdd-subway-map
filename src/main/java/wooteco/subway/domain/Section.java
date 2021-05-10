@@ -43,4 +43,8 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public Section subtractDistance(final Section section) {
+        return new Section(id, lineId, upStationId, downStationId, section.distance - distance);
+    }
 }

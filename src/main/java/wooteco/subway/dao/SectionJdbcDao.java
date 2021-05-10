@@ -38,9 +38,21 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
+    public void updateDownStationAndDistance(final Section section) {
+        String sql = "UPDATE SECTION s SET s.down_station_id = ?, s.distance = ? WHERE s.down_station_id = ?";
+        jdbcTemplate.update(sql, section.getUpStationId(), section.getDistance(), section.getDownStationId());
+    }
+
+    @Override
+    public void updateUpStationAndDistance(final Section section) {
+        String sql = "UPDATE SECTION s SET s.up_station_id = ?, s.distance = ? WHERE s.up_station_id = ?";
+        jdbcTemplate.update(sql, section.getDownStationId(), section.getDistance(), section.getUpStationId());
+    }
+
+    @Override
     public List<Section> findAllByLineId(final Long lineId) {
-        String sql = "SELECT s.id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " +
-                "WHERE s.line_id = ?";
+        String sql = "SELECT s.id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " + "WHERE s" +
+                ".line_id" + " = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final long id = rs.getLong("id");
             final long upStationId = rs.getLong("up_station_id");
@@ -52,8 +64,8 @@ public class SectionJdbcDao implements SectionDao {
 
     @Override
     public Optional<Section> findSectionByUpStation(final Section section) {
-        String sql = "SELECT s.id, s.line_id, s.down_station_id, s.distance FROM SECTION s " +
-                "WHERE s.up_station_id = ? AND s.line_id = ?";
+        String sql = "SELECT s.id, s.line_id, s.down_station_id, s.distance FROM SECTION s " + "WHERE s.up_station_id"
+                + " = ? AND s.line_id = ?";
         try {
             final Long upStationId = section.getUpStationId();
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
@@ -69,31 +81,36 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public Optional<Section> findById(final Long id) {
-        String sql = "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " +
-                "WHERE s.id = ?";
+    public Optional<Section> findSectionByDownStation(final Section section) {
+        String sql = "SELECT s.id, s.line_id, s.up_station_id, s.distance FROM SECTION s WHERE s.down_station_id" +
+                " = ? AND s.line_id = ?";
         try {
+            final Long downStationId = section.getDownStationId();
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                final long id = rs.getLong("id");
                 final long lineId = rs.getLong("line_id");
                 final long upStationId = rs.getLong("up_station_id");
-                final long downStationId = rs.getLong("down_station_id");
                 final int distance = rs.getInt("distance");
                 return Optional.of(new Section(id, lineId, upStationId, downStationId, distance));
-            }, id);
+            }, downStationId, section.getLineId());
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public void updateUpStationToDownStation(final Long upStationId, final Long downStationId) {
-        String sql = "UPDATE SECTION s SET s.up_station_id = ? WHERE s.up_station_id = ?";
-        jdbcTemplate.update(sql, downStationId, upStationId);
-    }
-
-    @Override
-    public void updateDownStationToUpStation(final Long downStationId, final Long upStationId) {
-        String sql = "UPDATE SECTION s SET s.down_station_id = ? WHERE s.down_station_id = ?";
-        jdbcTemplate.update(sql, upStationId, downStationId);
+    public Optional<Section> findByLineIdAndId(Long lineId, Long sectionId) {
+        String sql = "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " +
+                "WHERE s.id = ? AND s.line_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                final long upStationId = rs.getLong("up_station_id");
+                final long downStationId = rs.getLong("down_station_id");
+                final int distance = rs.getInt("distance");
+                return Optional.of(new Section(sectionId, lineId, upStationId, downStationId, distance));
+            }, sectionId, lineId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
