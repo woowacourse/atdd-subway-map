@@ -46,15 +46,9 @@ public class LineService {
         long startStationId = sectionDao.findStartStationIdByLineId(id);
         long endStationId = sectionDao.findEndStationIdByLineId(id);
         Map<Long, Long> sections = sectionDao.findSectionsByLineId(id);
-        List<Station> stations;
 
         try {
-            stations = orderStations(startStationId, endStationId, sections);
-        } catch (DataAccessException e) {
-            throw new NoSuchStationException();
-        }
-
-        try {
+            List<Station> stations = orderStations(startStationId, endStationId, sections);
             Line line = lineDao.findById(id);
             return new Line(line, stations);
         } catch (DataAccessException e) {

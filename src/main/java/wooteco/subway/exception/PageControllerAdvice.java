@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class PageControllerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> illegalArgumentExceptionHandle(Exception e) {
-        System.out.println("~~~~~~~~~~~"+ e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

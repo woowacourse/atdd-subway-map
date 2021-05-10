@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 
 import wooteco.subway.exception.BothStationInLineException;
 import wooteco.subway.exception.BothStationNotInLineException;
+import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.IllegalInputException;
-import wooteco.subway.exception.SameSectionException;
+import wooteco.subway.exception.ImpossibleDistanceException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.Station;
@@ -37,36 +38,29 @@ public class SectionService {
         }
     }
 
-    public void addSection(Section section) {
+    public long addSection(Section section) {
         Station upStation = stationService.showStation(section.getUpStationId());
         Station downStation = stationService.showStation(section.getDownStationId());
         Line line = lineService.showLine(section.getLineId());
         List<Station> orderedStations = line.getStations();
 
-        if(orderedStations.containsAll(Arrays.asList(upStation, downStation))) {
+        if (orderedStations.containsAll(Arrays.asList(upStation, downStation))) {
             throw new BothStationInLineException(); //예외2
         }
 
-        if(orderedStations.get(0).equals(downStation)) {
-            sectionDao.save(section);
-            return;
+        if (orderedStations.get(0).equals(downStation) || orderedStations.get(orderedStations.size() - 1)
+            .equals(upStation)) {
+            return sectionDao.save(section);
         }
 
-        if(orderedStations.get(orderedStations.size()-1).equals(upStation)) {
-            sectionDao.save(section);
-            return;
-        }
-
-        if(orderedStations.contains(upStation)) {
+        if (orderedStations.contains(upStation)) {
             updateNextStation(section, upStation, downStation);
-            sectionDao.save(section);
-            return;
+            return sectionDao.save(section);
         }
 
-        if(orderedStations.contains(downStation)) {
+        if (orderedStations.contains(downStation)) {
             updatePreviousStation(section, upStation, downStation);
-            sectionDao.save(section);
-            return;
+            return sectionDao.save(section);
         }
 
         throw new BothStationNotInLineException(); //예외3
@@ -74,21 +68,37 @@ public class SectionService {
     }
 
     private void updatePreviousStation(Section section, Station upStation, Station downStation) {
-        // Section previousSection = sectionDao.findSectionBySameDownStation(section.getLineId(), downStation);
-        if(sectionDao.updateDownStation(section, upStation) != 1) {
-            throw new SameSectionException();
+        Section previousSection = sectionDao.findSectionBySameDownStation(section.getLineId(), downStation);
+        int originDistance = previousSection.getDistance();
+        int newDistance = section.getDistance();
+
+        validateDistance(originDistance, newDistance);
+
+        if (sectionDao.updateDownStation(section, upStation) != 1) {
+            throw new DuplicateSectionException();
         }
     }
 
     private void updateNextStation(Section section, Station upStation, Station downStation) {
-        // Section nextSection = sectionDao.findSectionBySameUpStation(section.getLineId(), upStation);
-        if(sectionDao.updateUpStation(section, downStation) != 1) {
-            throw new SameSectionException();
+        Section nextSection = sectionDao.findSectionBySameUpStation(section.getLineId(), upStation);
+        int originDistance = nextSection.getDistance();
+        int newDistance = section.getDistance();
+
+        validateDistance(originDistance, newDistance);
+
+        if (sectionDao.updateUpStation(section, downStation) != 1) {
+            throw new DuplicateSectionException();
+        }
+    }
+
+    private void validateDistance(int originDistance, int newDistance) {
+        if (originDistance - newDistance < 0) {
+            throw new ImpossibleDistanceException();
         }
     }
 
     private void checkExistStation(Line line, Station upStation, Station downStation) {
-        if(!line.getStations().contains(upStation) && !line.getStations().contains(downStation)){
+        if (!line.getStations().contains(upStation) && !line.getStations().contains(downStation)) {
             throw new BothStationNotInLineException();
         }
     }
