@@ -7,13 +7,15 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.exception.ExceptionStatus;
+import wooteco.subway.exception.SubwayException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class SectionDao {
+    private static final int ROW_COUNTS_FOR_ID_NOT_FOUND = 0;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -32,13 +34,24 @@ public class SectionDao {
     }
 
     public List<Section> findAllByLineId(long lineId) {
-        String query = "SELECT ID, DISTANCE FROM SECTION WHERE LINE_ID = ?";
+        String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE LINE_ID = ?";
         RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
             long id = resultSet.getLong("ID");
             int distance = resultSet.getInt("DISTANCE");
             return new Section(id, distance, lineId);
         };
         return jdbcTemplate.query(query, sectionRowMapper, lineId);
+    }
+
+    public List<Section> finAllByStationId(long stationId) {
+        String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE UP_STATION_ID = ? OR DOWN_STATION_ID = ?";
+        RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
+            long id = resultSet.getLong("ID");
+            int distance = resultSet.getInt("DISTANCE");
+            long lineId = resultSet.getLong("LINE_ID");
+            return new Section(id, distance, lineId);
+        };
+        return jdbcTemplate.query(query, sectionRowMapper, stationId, stationId);
     }
 
     public List<Long> findStationIdsById(long id) {
@@ -53,32 +66,23 @@ public class SectionDao {
 
     public void update(Section section) {
         String query = "UPDATE SECTION SET UP_STATION_ID = ?, DOWN_STATION_ID = ?, DISTANCE = ? WHERE ID = ?";
-        jdbcTemplate.update(query, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance(), section.getId());
+        long upStationId = section.getUpStationId();
+        long downStationId = section.getDownStationId();
+        long distance = section.getDistance();
+        long id = section.getId();
+        int affectedRowCounts = jdbcTemplate.update(query, upStationId, downStationId, distance, id);
+        validateId(affectedRowCounts);
     }
 
-    public Optional<Section> findById(long id) {
-        String query = "SELECT DISTANCE, LINE_ID FROM SECTION WHERE ID = ?";
-        RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
-            int distance = resultSet.getInt("DISTANCE");
-            long lineId = resultSet.getLong("LINE_ID");
-            return new Section(id, distance, lineId);
-        };
-        return jdbcTemplate.query(query, sectionRowMapper, id).stream().findAny();
+    private void validateId(int affectedRowCounts) {
+        if (affectedRowCounts == ROW_COUNTS_FOR_ID_NOT_FOUND) {
+            throw new SubwayException(ExceptionStatus.ID_NOT_FOUND);
+        }
     }
 
-    public void delete(Section section) {
+    public void deleteById(long id) {
         String query = "DELETE FROM SECTION WHERE ID = ?";
-        jdbcTemplate.update(query, section.getId());
-    }
-
-    public List<Section> findByStationId(long stationId) {
-        String query = "SELECT ID, DISTANCE, LINE_ID FROM SECTION WHERE UP_STATION_ID = ? OR DOWN_STATION_ID = ?";
-        RowMapper<Section> sectionRowMapper = (resultSet, rowNumber) -> {
-            long id = resultSet.getLong("ID");
-            int distance = resultSet.getInt("DISTANCE");
-            long lineId = resultSet.getLong("LINE_ID");
-            return new Section(id, distance, lineId);
-        };
-        return jdbcTemplate.query(query, sectionRowMapper, stationId, stationId);
+        int affectedRowCounts = jdbcTemplate.update(query, id);
+        validateId(affectedRowCounts);
     }
 }

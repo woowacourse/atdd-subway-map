@@ -52,19 +52,12 @@ public class SectionRepository {
         sectionDao.update(section);
     }
 
-    public Section findById(long id) {
-        Section section = sectionDao.findById(id)
-                .orElseThrow(() -> new SubwayException(ExceptionStatus.ID_NOT_FOUND));
-        addStations(section);
-        return section;
-    }
-
     public void delete(Section section) {
-        sectionDao.delete(section);
+        sectionDao.deleteById(section.getId());
     }
 
     public List<Section> findByStationId(long stationId) {
-        List<Section> sections = sectionDao.findByStationId(stationId);
+        List<Section> sections = sectionDao.finAllByStationId(stationId);
         sections.forEach(this::addStations);
         return sections;
     }
