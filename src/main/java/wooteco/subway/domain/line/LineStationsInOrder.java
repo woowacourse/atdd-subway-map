@@ -14,8 +14,8 @@ public class LineStationsInOrder {
     }
 
     public List<Long> getStationIdsInOrder() {
-        Section firstSection = sectionsOfLine.get(0);
-        List<Long> stationIdsInOrder = new LinkedList<>(Arrays.asList(firstSection.getUpStationId(), firstSection.getDownStationId()));
+        Section randomSection = sectionsOfLine.get(0);
+        List<Long> stationIdsInOrder = new LinkedList<>(Arrays.asList(randomSection.getUpStationId(), randomSection.getDownStationId()));
         setStationIdsInOrder(sectionsOfLine, stationIdsInOrder);
         return stationIdsInOrder;
     }
