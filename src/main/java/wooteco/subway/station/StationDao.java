@@ -36,4 +36,14 @@ public class StationDao {
                 .filter(station -> station.isSameId(id))
                 .findAny();
     }
+
+    public Optional<Station> findStationByName(String name) {
+        return stations.stream()
+                .filter(station -> station.isSameName(name))
+                .findAny();
+    }
+
+    public void delete(Long id) {
+        stations.removeIf(station -> station.isSameId(id));
+    }
 }
