@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.acceptance.template.LineAndStationRequest;
 import wooteco.subway.acceptance.template.LineRequest;
 import wooteco.subway.acceptance.template.StationRequest;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
+import wooteco.subway.controller.dto.request.SectionRequestDto;
 import wooteco.subway.controller.dto.request.StationRequestDto;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -152,13 +150,31 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, Long> ids = LineAndStationRequest.createLineWithStationsAndSectionsRequest();
+        StationRequestDto station1 = new StationRequestDto("주안역");
+        StationRequestDto station2 = new StationRequestDto("강남역");
+        StationRequestDto station3 = new StationRequestDto("길동역");
+
+        Long stationId1 = StationRequest.createStationRequestAndReturnId(station1);
+        Long stationId2 = StationRequest.createStationRequestAndReturnId(station2);
+        Long stationId3 = StationRequest.createStationRequestAndReturnId(station3);
+        Long lineId = LineRequest.createLineRequestAndReturnId(new LineCreateRequestDto(
+                "1호선",
+                "yellow",
+                stationId1,
+                stationId2,
+                15
+        ));
+        LineRequest.createSectionRequestAndReturnResponse(new SectionRequestDto(
+                stationId2,
+                stationId3,
+                10
+        ), lineId);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/{lineId}/sections?stationId={stationId}", ids.get("line"), ids.get("station2"))
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId2)
                 .then().log().all()
                 .extract();
 
