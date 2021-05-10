@@ -64,20 +64,22 @@ public class Line {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects
-            .equals(color, line.color) && Objects.equals(stations, line.stations);
+        final Line line = (Line) o;
+        return Objects.equals(getId(), line.getId()) && Objects
+            .equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor())
+            && Objects.equals(getSections(), line.getSections()) && Objects
+            .equals(getStations(), line.getStations());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stations);
+        return Objects.hash(getId(), getName(), getColor(), getSections(), getStations());
     }
 }
