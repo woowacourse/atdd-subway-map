@@ -52,10 +52,9 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public boolean doesNotExistName(String name) {
-        String sql = "SELECT count(*) FROM station WHERE name = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-        return count == 0;
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT * FROM station WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        if (!lineDao.doesNotExistName(lineRequest.getName())) {
+        if (lineDao.existsByName(lineRequest.getName())) {
             throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름입니다.");
         }
 
@@ -41,7 +41,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        if (lineDao.doesNotExistId(id)) {
+        if (!lineDao.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
 

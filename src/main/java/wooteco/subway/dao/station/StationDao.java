@@ -12,7 +12,7 @@ public interface StationDao {
 
     Optional<Station> findById(Long id);
 
-    boolean doesNotExistName(String name);
+    boolean existsByName(String name);
 
     void deleteById(Long id);
 }

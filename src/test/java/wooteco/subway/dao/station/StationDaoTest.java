@@ -1,9 +1,6 @@
 package wooteco.subway.dao.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.linesOf;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -11,11 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.station.Station;
 
 @JdbcTest
@@ -82,6 +75,22 @@ class StationDaoTest {
         assertAll(
             () -> assertThat(selectedStaion.getId()).isEqualTo(persistedStation.getId()),
             () -> assertThat(selectedStaion.getName()).isEqualTo(persistedStation.getName())
+        );
+    }
+
+    @Test
+    void existsByName() {
+        // given
+        String name = "잠실역";
+        Station station = new Station(name);
+
+        // when
+        stationDao.save(station);
+
+        // then
+        assertAll(
+            () -> assertThat(stationDao.existsByName(name)).isTrue(),
+            () -> assertThat(stationDao.existsByName("00역")).isFalse()
         );
     }
 

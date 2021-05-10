@@ -1,22 +1,15 @@
 package wooteco.subway.dao.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import javax.sql.DataSource;
-
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 
 @JdbcTest
@@ -85,6 +78,37 @@ class LineDaoTest {
             () -> assertThat(selectedLine.getId()).isEqualTo(persistedLine.getId()),
             () -> assertThat(selectedLine.getName()).isEqualTo(persistedLine.getName()),
             () -> assertThat(selectedLine.getColor()).isEqualTo(persistedLine.getColor())
+        );
+    }
+
+    @Test
+    void existsByName() {
+        // given
+        String name = "3호선";
+        Line line = new Line(name, "bg-blue-600");
+
+        // when
+        lineDao.save(line);
+
+        // then
+        assertAll(
+            () -> assertThat(lineDao.existsByName(name)).isTrue(),
+            () -> assertThat(lineDao.existsByName("0호선")).isFalse()
+        );
+    }
+
+    @Test
+    void existsById() {
+        // given
+        Line line = new Line("3호선", "bg-blue-600");
+
+        // when
+        Line persistedLine = lineDao.save(line);
+
+        // then
+        assertAll(
+            () -> assertThat(lineDao.existsById(persistedLine.getId())).isTrue(),
+            () -> assertThat(lineDao.existsById(-1L)).isFalse()
         );
     }
 
