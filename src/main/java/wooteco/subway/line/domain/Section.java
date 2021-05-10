@@ -15,6 +15,10 @@ public class Section {
         this(0L, new Station(upStationId), new Station(downStationId), distance);
     }
 
+    public Section(Long id, Long upStationId, Long downStationId, int distance) {
+        this(id, new Station(upStationId), new Station(downStationId), distance);
+    }
+
     public Section(final Station upStation, final Station downStation, final int distance) {
         this(0L, upStation, downStation, distance);
     }

@@ -10,10 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.line.dto.LineRequest;
-import wooteco.subway.line.service.LineService;
-import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.LineResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,19 +129,8 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         String name = "9호선";
         String color = "bg-red-600";
         Long id = 1L;
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
         ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -155,6 +143,7 @@ public class LIneAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.jsonPath().getLong("id")).isEqualTo(id);
         assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo(name);
         assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo(color);
+        assertThat(findLineResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     @DisplayName("노선을 수정한다.")

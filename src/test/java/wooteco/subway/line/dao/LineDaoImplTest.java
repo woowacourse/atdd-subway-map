@@ -9,8 +9,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.TestConstructor;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.dao.DBLineDao;
-import wooteco.subway.line.dao.LineDao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -21,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class DBLineDaoTest {
+class LineDaoImplTest {
     private JdbcTemplate jdbcTemplate;
     private LineDao lineDao;
     private Long id;
@@ -29,9 +27,9 @@ class DBLineDaoTest {
     private String color;
     private Line lineEntity;
 
-    public DBLineDaoTest(JdbcTemplate jdbcTemplate) {
+    public LineDaoImplTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        lineDao = new DBLineDao(jdbcTemplate);
+        lineDao = new LineDaoImpl(jdbcTemplate);
     }
 
     @BeforeEach

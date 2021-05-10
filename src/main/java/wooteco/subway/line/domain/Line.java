@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.station.domain.Station;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,5 +71,11 @@ public class Line {
         sections.add(section);
     }
 
+    public List<Section> sections() {
+        return sections.sections();
+    }
 
+    public List<Station> stations() {
+        return sections.sortedStations();
+    }
 }

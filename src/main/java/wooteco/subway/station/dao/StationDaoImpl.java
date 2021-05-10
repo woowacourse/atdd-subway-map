@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DBStationDao implements StationDao {
+public class StationDaoImpl implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public DBStationDao(final JdbcTemplate jdbcTemplate) {
+    public StationDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -33,10 +33,10 @@ public class DBStationDao implements StationDao {
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, station.getName());
+            ps.setString(1, station.name());
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), station.getName());
+        return new Station(keyHolder.getKey().longValue(), station.name());
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DBStationDao implements StationDao {
     }
 
     private void validateDuplicate(final Station station) {
-        if (findByName(station.getName()).isPresent()) {
+        if (findByName(station.name()).isPresent()) {
             throw new IllegalStateException("이미 있는 역임!");
         }
     }

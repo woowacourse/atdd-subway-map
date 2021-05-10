@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DBLineDao implements LineDao {
+public class LineDaoImpl implements LineDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (rs, rowNum) ->
             new Line(rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("color"));
 
-    public DBLineDao(final JdbcTemplate jdbcTemplate) {
+    public LineDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
