@@ -76,7 +76,8 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] Response에서 null값을 포함하지 않도록 할 것
     - [x] null대신 빈 리스트 "[]"를 반환할 것
 - [x] 정적 팩토리 메서드로 도메인 <-> DTO 변환
-- [ ] 인수테스트 상태코드 말고도 내용 검증 할 것
+- [x] 인수테스트 상태코드 말고도 내용 검증 할 것
+    - [x] 노선 중복 테스트 진행
 
 ## 질문 사항
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
