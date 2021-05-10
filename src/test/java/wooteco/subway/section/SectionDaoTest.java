@@ -29,7 +29,7 @@ public class SectionDaoTest {
     @Test
     void saveSection() {
         assertDoesNotThrow(() ->
-                sectionDao.save(1, new Section(1, 2, 5))
+                sectionDao.insert(1, new Section(1, 2, 5))
         );
     }
 }

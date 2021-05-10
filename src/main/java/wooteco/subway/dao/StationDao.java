@@ -21,7 +21,7 @@ public class StationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(Station station) {
+    public long insert(Station station) {
         String query = "INSERT INTO station(name) VALUES(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,7 +41,7 @@ public class StationDao {
         }
     }
 
-    public List<Station> findAll() {
+    public List<Station> selectAll() {
         String query = "SELECT * FROM station";
         List<Station> stations = jdbcTemplate.query(query, (resultSet, rowNum) -> {
             Station station = new Station(
@@ -53,7 +53,7 @@ public class StationDao {
         return stations;
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         String query = "DELETE FROM station WHERE id = ?";
         int affectedRowNumber = jdbcTemplate.update(query, id);
 

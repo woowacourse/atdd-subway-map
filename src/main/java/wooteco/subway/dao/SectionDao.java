@@ -17,7 +17,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(long lineId, Section section) {
+    public long insert(long lineId, Section section) {
         String query = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         executeSaveQuery(lineId, section, query, keyHolder);

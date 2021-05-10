@@ -22,7 +22,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(Line line) {
+    public long insert(Line line) {
         String query = "INSERT INTO line(name, color) VALUES(?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -43,7 +43,7 @@ public class LineDao {
         }
     }
 
-    public List<Line> findAll() {
+    public List<Line> selectAll() {
         String query = "SELECT * FROM line";
         List<Line> lines = jdbcTemplate.query(query, (resultSet, rowNum) -> {
             Line line = new Line(
@@ -56,7 +56,7 @@ public class LineDao {
         return lines;
     }
 
-    public Line find(Long id) {
+    public Line select(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         try {
             return selectLine(id, query);
@@ -77,7 +77,7 @@ public class LineDao {
                 }, id);
     }
 
-    public void modify(Long id, Line line) {
+    public void update(Long id, Line line) {
         String query = "UPDATE line SET name=(?), color=(?) WHERE id = (?)";
         int affectedRowNumber = 0;
 
