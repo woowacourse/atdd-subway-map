@@ -22,12 +22,13 @@ public class LineService {
 
     public Line add(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+
         validateDuplicatedName(line.getName());
         validateDuplicatedColor(line.getColor());
-
         Line savedLine = lineDao.save(line);
+
         Section section = new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionService.add(savedLine.getId(), section);
+        sectionService.addInitial(savedLine.getId(), section);
         return savedLine;
     }
 
@@ -64,5 +65,10 @@ public class LineService {
 
     public List<StationResponse> sortedStationsByLineId(Long id) {
         return sectionService.sortedStationIds(id);
+    }
+
+    public void validateId(Long lineId) {
+        lineDao.findById(lineId)
+                .orElseThrow(NoLineException::new);
     }
 }
