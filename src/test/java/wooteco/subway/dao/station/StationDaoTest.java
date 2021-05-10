@@ -34,7 +34,7 @@ public class StationDaoTest {
     void insert() {
         //when
         Long id = stationDao.insert(makeStation("잠실역"));
-        Station station = stationDao.findById(id).orElseThrow(StationNotFoundException::new);
+        Station station = stationDao.findById(id);
 
         //then
         assertThat(station.getName()).isEqualTo("잠실역");
@@ -57,9 +57,7 @@ public class StationDaoTest {
         final Long id = stationDao.insert(makeStation("잠실역"));
 
         //when - then
-        assertThat(stationDao.findById(id)
-                .orElseThrow(StationNotFoundException::new)
-                .getId())
+        assertThat(stationDao.findById(id).getId())
                 .isEqualTo(id);
     }
 

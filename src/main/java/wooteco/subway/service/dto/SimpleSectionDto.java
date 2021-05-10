@@ -2,14 +2,14 @@ package wooteco.subway.service.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class SimpleSection {
+public class SimpleSectionDto {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SimpleSection() { }
+    public SimpleSectionDto() { }
 
-    public SimpleSection(Long upStationId, Long downStationId, int distance) {
+    public SimpleSectionDto(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

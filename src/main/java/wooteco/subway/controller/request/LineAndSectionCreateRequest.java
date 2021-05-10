@@ -1,7 +1,7 @@
 package wooteco.subway.controller.request;
 
 import wooteco.subway.domain.Line;
-import wooteco.subway.service.dto.SimpleSection;
+import wooteco.subway.service.dto.SimpleSectionDto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -53,7 +53,7 @@ public class LineAndSectionCreateRequest {
         return new Line(color, name);
     }
 
-    public SimpleSection toSimpleSection() {
-        return new SimpleSection(upStationId, downStationId, distance);
+    public SimpleSectionDto toSimpleSection() {
+        return new SimpleSectionDto(upStationId, downStationId, distance);
     }
 }

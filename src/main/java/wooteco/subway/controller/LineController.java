@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.response.LineCreateResponse;
-import wooteco.subway.controller.response.LineResponse;
+import wooteco.subway.controller.response.LineRetrieveResponse;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.LineService;
@@ -32,22 +32,16 @@ public class LineController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineRetrieveResponse>> showLines() {
         final List<LineDto> lines = lineService.findAll();
-        final List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::new)
+        final List<LineRetrieveResponse> lineRetrieveRespons = lines.stream()
+                .map(LineRetrieveResponse::new)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(lineResponses);
-    }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) throws LineNotFoundException {
-        LineResponse lineResponse = new LineResponse(lineService.findById(id));
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok().body(lineRetrieveRespons);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+    public ResponseEntity<LineRetrieveResponse> update(@PathVariable Long id, @RequestBody LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         lineService.updateById(id, lineAndSectionCreateRequest);
         return ResponseEntity.ok().build();
     }

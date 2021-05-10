@@ -23,7 +23,10 @@ public class StationService {
     public StationDto create(StationRequest stationRequest) {
         validate(stationRequest);
         final Long id = stationDao.insert(stationRequest.toEntity());
-        final Station station = stationDao.findById(id).orElseThrow(StationNotFoundException::new);
+        if (!stationDao.isExistById(id)) {
+            throw new StationNotFoundException();
+        }
+        final Station station = stationDao.findById(id);
         return new StationDto(station);
     }
 

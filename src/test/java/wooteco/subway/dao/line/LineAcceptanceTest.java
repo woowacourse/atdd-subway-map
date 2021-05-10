@@ -2,13 +2,11 @@ package wooteco.subway.dao.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.controller.response.LineResponse;
+import wooteco.subway.controller.response.LineRetrieveResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -111,31 +109,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineRetrieveResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
-    @DisplayName("노선을 ID로 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        extractResponseWhenPost(PARAMS1);
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(PARAMS2);
-
-        // when
-        String uri = createResponse2.header("Location");
-        ExtractableResponse<Response> response = extractResponseWhenGet(uri);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선");
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo("bg-green-600");
-        assertThat(response.body().jsonPath().getLong("upStationId")).isEqualTo(1L);
-        assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(2L);
-        assertThat(response.body().jsonPath().getInt("distance")).isEqualTo(7);
     }
 
     @DisplayName("노선을 수정한다.")
