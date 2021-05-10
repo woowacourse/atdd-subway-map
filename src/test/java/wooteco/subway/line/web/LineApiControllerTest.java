@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.web.request.LineRequest;
+import wooteco.subway.web.response.LineResponse;
 
 @DisplayName("노선 관련 기능")
 class LineApiControllerTest extends AcceptanceTest {

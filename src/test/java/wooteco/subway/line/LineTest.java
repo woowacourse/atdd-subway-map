@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import wooteco.subway.domain.Line;
 
 public class LineTest {
 

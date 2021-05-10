@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.web.request.StationRequest;
+import wooteco.subway.web.response.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 class StationApiControllerTest extends AcceptanceTest {
