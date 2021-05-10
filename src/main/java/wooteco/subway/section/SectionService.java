@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import org.springframework.stereotype.Service;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
+import wooteco.subway.section.exception.SectionNotFoundException;
 
 @Service
 public class SectionService {
@@ -14,7 +15,7 @@ public class SectionService {
 
     public Section save(SectionDto sectionDto) {
         validateSectionInclusion(sectionDto);
-        if (isStationEndPoint(sectionDto)) {
+        if (hasEndPointInSection(sectionDto)) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                     sectionDto.getDownStationId(), sectionDto.getDistance());
         }
@@ -38,8 +39,8 @@ public class SectionService {
                 !sectionDao.isExistingStation(downStationId);
     }
 
-    private boolean isStationEndPoint(SectionDto sectionDto) {
-        return sectionDao.isStationEndPoint(sectionDto.getUpStationId(), sectionDto.getDownStationId());
+    private boolean hasEndPointInSection(SectionDto sectionDto) {
+        return sectionDao.hasEndPointInSection(sectionDto.getUpStationId(), sectionDto.getDownStationId());
     }
 
     private Section saveWithForkCase(SectionDto sectionDto) {
@@ -57,9 +58,11 @@ public class SectionService {
     private Section findSectionWithExistingStation(SectionDto sectionDto) {
         SectionStandard sectionStandard = calculateSectionStandard(sectionDto);
         if (sectionStandard == SectionStandard.FROM_UP_STATION) {
-             return sectionDao.findSectionByUpStationId(sectionDto.getUpStationId());
+             return sectionDao.findSectionByUpStationId(sectionDto.getUpStationId())
+                     .orElseThrow(SectionNotFoundException::new);
         }
-        return sectionDao.findSectionByDownStationId(sectionDto.getDownStationId());
+        return sectionDao.findSectionByDownStationId(sectionDto.getDownStationId())
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     private void validateSectionDistance(SectionDto sectionDto, Section findSection) {
