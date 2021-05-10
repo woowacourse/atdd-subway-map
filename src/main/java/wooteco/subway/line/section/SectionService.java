@@ -30,10 +30,15 @@ public class SectionService {
             return SectionResponse.from(sectionDao.save(sectionRequest.toEntity(lineId)));
         }
 
+
+
         // 존재하는 역이 입력된 값에서 상행이다.
         if (existentStationId == upStationId) {
-            // 존재하는 역이 상행인 구간을 찾는다.
             final Section existentSection = sections.findExistentUpStation(existentStationId);
+            if (existentSection.getDistance() <= sectionRequest.getDistance()) {
+                throw new RuntimeException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
+            }
+            // 존재하는 역이 상행인 구간을 찾는다.
             final Section updatedSection = new Section(existentSection.getId(), existentSection.getLineId(),
                 existentSection.getUpStationId(), downStationId, sectionRequest.getDistance());
 
@@ -48,8 +53,11 @@ public class SectionService {
 
         // 존재하는 역이 입력된 값에서 하행이다.
         if (existentStationId == downStationId) {
-            // 존재하는 역이 하행인 구간을 찾는다.
             final Section existentSection = sections.findExistentDownStation(existentStationId);
+            if (existentSection.getDistance() <= sectionRequest.getDistance()) {
+                throw new RuntimeException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
+            }
+            // 존재하는 역이 하행인 구간을 찾는다.
             final Section updatedSection = new Section(existentSection.getId(), existentSection.getLineId(),
                 upStationId, existentSection.getDownStationId(), sectionRequest.getDistance());
 
