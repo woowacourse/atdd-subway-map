@@ -367,7 +367,7 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("상행선을 기준으로 갱신하며, 중간 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @DisplayName("출발지 기준으로 갱신하며, 중간 구간 추가에 성공하면, 200 상태 코드를 받는다.")
     @Test
     void sectionAddBaseOnUpStationIdBetweenStations() {
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
@@ -382,10 +382,55 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("상행선을 기준으로 갱신하며, 기존의 구간 보다 길거나 같은 구간을 삽입하여 실패한 경우, 400 상태 코드를 받는다.")
+    @DisplayName("출발지 기준으로 갱신하며, 기존의 구간 보다 길거나 같은 구간을 삽입하여 실패한 경우, 400 상태 코드를 받는다.")
     @Test
     void sectionAddBaseOnUpStationIdBetweenStationsFail() {
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 77);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행선을 갱신하며 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationId() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 1L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("목적지를 기준으로 갱신하며, 중간 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationIdBetweenStations() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("목적지 기준으로 갱신하며, 기존의 구간 보다 길거나 같은 구간을 삽입하여 실패한 경우, 400 상태 코드를 받는다.")
+    @Test
+    void sectionAddBaseOnDownStationIdBetweenStationsFail() {
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 77);
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

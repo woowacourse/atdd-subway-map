@@ -35,8 +35,14 @@ public class SectionService {
         // upStation만 Line에 존재하는 경우,
         if (stationIdsByLineId.contains(sectionRequest.getUpStationId())) {
             addBaseOnUpStation(lineId, sectionRequest);
+            return;
         }
         // downStation만 Line에 존재하는 경우.
+        addBaseOnDownStation(lineId, sectionRequest);
+    }
+
+    private void addBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
+        sectionRepository.saveBaseOnDownStation(lineId, sectionRequest);
     }
 
     private void addBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
@@ -63,7 +69,7 @@ public class SectionService {
         if (stationIdsByLineId.contains(sectionRequest.getUpStationId()) && stationIdsByLineId.contains(sectionRequest.getDownStationId())) {
             throw new DuplicateException("이미 노선에 등록되어있는 구간입니다.");
         }
-        if (!(stationIdsByLineId.contains(sectionRequest.getUpStationId()) || !stationIdsByLineId.contains(sectionRequest.getDownStationId()))) {
+        if (!(stationIdsByLineId.contains(sectionRequest.getUpStationId()) || stationIdsByLineId.contains(sectionRequest.getDownStationId()))) {
             throw new NotFoundException("상행선, 하행선 둘다 현재 노선에 존재하지 않습니다.");
         }
     }

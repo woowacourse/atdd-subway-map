@@ -47,15 +47,15 @@ public class SectionRepository {
 
     public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
-            String query = "SELECT up_station_id FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
+            String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
             Long closestStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId()));
-            saveSectionBetweenStations(lineId, sectionRequest, closestStationId);
+            saveSectionBetweenStationsBaseOnUpStation(lineId, sectionRequest, closestStationId);
         } catch (EmptyResultDataAccessException e) {
             save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         }
     }
 
-    private void saveSectionBetweenStations(final Long lineId, final SectionRequest sectionRequest, final Long closestStationId) {
+    private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long closestStationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
         int currentShortestDistance = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId()));
         if (currentShortestDistance <= sectionRequest.getDistance()) {
@@ -63,5 +63,25 @@ public class SectionRepository {
         }
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         save(lineId, sectionRequest.getDownStationId(), closestStationId, currentShortestDistance - sectionRequest.getDistance());
+    }
+
+    public void saveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
+        try {
+            String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ? ORDER BY distance DESC LIMIT 1";
+            Long closestStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getDownStationId()));
+            saveSectionBetweenStationsBaseOnDownStation(lineId, sectionRequest, closestStationId);
+        } catch (EmptyResultDataAccessException e) {
+            save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        }
+    }
+
+    private void saveSectionBetweenStationsBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest, final Long closestStationId) {
+        String query = "SELECT distance FROM section WHERE line_id = ? AND down_station_id = ? ORDER BY distance DESC LIMIT 1";
+        int currentShortestDistance = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getDownStationId()));
+        if (currentShortestDistance <= sectionRequest.getDistance()) {
+            throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
+        }
+        save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        save(lineId, closestStationId, sectionRequest.getUpStationId(), currentShortestDistance - sectionRequest.getDistance());
     }
 }
