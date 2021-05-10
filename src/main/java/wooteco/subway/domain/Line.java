@@ -15,7 +15,15 @@ public class Line {
     private Sections sections;
 
     public static Line of(String name, String color) {
-        return new Line(null, name, color, Sections.from());
+        return of(null, name, color, Sections.from());
+    }
+
+    public static Line of(Long id, String name, String color) {
+        return of(id, name, color, Sections.from());
+    }
+
+    public static Line of(Long id, String name, String color, Sections sections) {
+        return new Line(id, name, color, sections);
     }
 
     public void addSection(Section section) {

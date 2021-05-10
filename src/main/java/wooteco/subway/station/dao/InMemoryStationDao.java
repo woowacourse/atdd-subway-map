@@ -1,6 +1,5 @@
 package wooteco.subway.station.dao;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Station;
 

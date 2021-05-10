@@ -1,6 +1,5 @@
-package wooteco.subway.line;
+package wooteco.subway.line.dao;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
 
@@ -9,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class LineDao {
+public class InMemoryLineDao implements LineDao {
 
     private Long seq = 0L;
     private List<Line> lines = new ArrayList<>();
@@ -22,19 +20,22 @@ public class LineDao {
         return line;
     }
 
+    @Override
     public Line save(Line line) {
         Line createdLine = createNewObject(line);
         lines.add(createdLine);
         return createdLine;
     }
 
-    public Optional<Line> findLineByInfo(String name, String color) {
+    @Override
+    public Optional<Line> findByNameAndColor(String name, String color) {
         return lines.stream()
                 .filter(line -> line.isSameName(name) || line.isSameColor(color))
                 .findAny();
     }
 
-    public Optional<Line> findLineById(Long lineId) {
+    @Override
+    public Optional<Line> findById(Long lineId) {
         return lines.stream()
                 .filter(line -> line.isSameId(lineId))
                 .findAny();

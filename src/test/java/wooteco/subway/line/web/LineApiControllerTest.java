@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.LineDao;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.dao.StationDao;
 
