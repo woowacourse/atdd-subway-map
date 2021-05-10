@@ -64,7 +64,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 400 에러가 발생한다.")
     @Test
     void createLineWithDuplicateName() {
         노선_등록(LINE_2);
@@ -128,7 +128,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("없는 노선을 조회한다.")
+    @DisplayName("없는 노선을 조회하면 404 에러가 발생한다.")
     @Test
     void showNotExistLine() {
         final ExtractableResponse<Response> response = 노선_조회(2000000L);
@@ -158,7 +158,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("없는 노선을 수정한다.")
+    @DisplayName("없는 노선을 수정하면 404 에러가 발생한다.")
     @Test
     void updateNotExistLine() {
         final LineRequest updatedRequest = new LineRequest("3호선", "grey darken-2");
@@ -186,7 +186,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("없는 노선을 제거한다.")
+    @DisplayName("없는 노선을 제거하면 404 에러가 발생한다.")
     @Test
     void deleteNotExistLine() {
         final ExtractableResponse<Response> response = 노선_제거("/lines/2000000");
