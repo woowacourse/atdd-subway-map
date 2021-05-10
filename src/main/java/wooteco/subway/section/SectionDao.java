@@ -1,12 +1,19 @@
 package wooteco.subway.section;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import wooteco.subway.station.Station;
 
 @Repository
 public class SectionDao {
@@ -31,4 +38,52 @@ public class SectionDao {
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
+    public long findStartStationIdByLineId(long id) {
+        String sql = "SELECT UP_STATION_ID FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID NOT IN (SELECT DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, id, id));
+    }
+
+    public long findEndStationIdByLineId(long id) {
+        String sql = "SELECT DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ? AND DOWN_STATION_ID NOT IN (SELECT UP_STATION_ID FROM SECTION WHERE LINE_ID = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, id, id));
+    }
+
+    public Map<Long, Long> findSectionsByLineId(long id) {
+        String sql = "SELECT UP_STATION_ID, DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ?";
+        List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, id);
+        Map<Long, Long> sections = new HashMap<>();
+
+        for(Map<String, Object> result : resultList) {
+            sections.put((Long)result.get("UP_STATION_ID"), (Long)result.get("DOWN_STATION_ID"));
+        }
+        return sections;
+    }
+
+    public Section findSectionBySameUpStation(long lineId, Station upStation) {
+        String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID = ?";
+        return jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, upStation.getId());
+    }
+
+    public Section findSectionBySameDownStation(long lineId, Station downStation) {
+        String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
+        return jdbcTemplate.queryForObject(sql, sectionRowMapper, lineId, downStation.getId());
+    }
+
+    public int updateDownStation(Section section, Station upStation) {
+        String sql = "UPDATE SECTION set DOWN_STATION_ID = ? WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
+        return jdbcTemplate.update(sql, upStation.getId(), section.getLineId(), section.getDownStationId());
+    }
+
+    public int updateUpStation(Section section, Station downStation) {
+        String sql = "UPDATE SECTION set UP_STATION_ID = ? WHERE LINE_ID = ? AND UP_STATION_ID = ?";
+        return jdbcTemplate.update(sql, downStation.getId(), section.getLineId(), section.getUpStationId());
+    }
+
+    private final RowMapper<Section> sectionRowMapper = (resultSet, rowNum) -> new Section(
+        resultSet.getLong("LINE_ID"),
+        resultSet.getLong("UP_STATION_ID"),
+        resultSet.getLong("DOWN_STATION_ID"),
+        resultSet.getInt("DISTANCE")
+    );
 }

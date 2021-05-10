@@ -44,10 +44,11 @@ public class LineController {
         Line createdLine = lineService.createLine(new Line(lineRequest));
         stationService.showStation(lineRequest.getUpStationId());
         stationService.showStation(lineRequest.getDownStationId());
-        Section createdSection = sectionService.createSection(createdLine.getId(), lineRequest);
+        Section createdSection = new Section(createdLine.getId(), lineRequest);
+        sectionService.createSection(createdSection);
 
         LineResponse lineResponse = LineResponse.from(createdLine);
-        return ResponseEntity.created(URI.create("/lines/" + createdSection.getLineId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + createdLine.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

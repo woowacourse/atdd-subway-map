@@ -28,14 +28,21 @@ public class LineResponse {
         this.stations = stations;
     }
 
+    public LineResponse(Line line) {
+        this(line.getId(), line.getName(), line.getColor(), convertStationResponses(line));
+    }
+
     public static LineResponse from(Line line) {
         if (Objects.isNull(line.getStations())) {
             return new LineResponse(line.getId(), line.getName(), line.getColor());
         }
-        List<StationResponse> stations = line.getStations().stream()
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line));
+    }
+
+    private static List<StationResponse> convertStationResponses(Line line) {
+        return line.getStations().stream()
             .map(station -> new StationResponse(station.getId(), station.getName()))
             .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
     public Long getId() {

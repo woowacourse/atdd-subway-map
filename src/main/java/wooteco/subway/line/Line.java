@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.station.Station;
@@ -66,5 +67,21 @@ public class Line {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Line line = (Line)o;
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects
+            .equals(id, line.id) && Objects.equals(stations, line.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, color, id, stations);
     }
 }

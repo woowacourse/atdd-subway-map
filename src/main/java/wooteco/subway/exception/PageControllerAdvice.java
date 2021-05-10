@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class PageControllerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandle() {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> illegalArgumentExceptionHandle(Exception e) {
+        System.out.println("~~~~~~~~~~~"+ e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
