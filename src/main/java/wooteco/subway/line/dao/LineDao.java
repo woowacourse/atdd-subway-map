@@ -19,16 +19,16 @@ public class LineDao {
 
     private final JdbcTemplate jdbcTemplate;
 
+    public LineDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     private final RowMapper<Line> mapperLine = (rs, rowNum) -> {
         Long id = rs.getLong("id");
         String name = rs.getString("name");
         String color = rs.getString("color");
         return new Line(id, name, color);
     };
-
-    public LineDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     public Long save(Line line) {
         validateDuplicateNameAndColor(line);

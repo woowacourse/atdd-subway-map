@@ -40,9 +40,7 @@ public class LineService {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         long createdId = lineDao.save(line);
         Line newLine = lineDao.findLineById(createdId);
-        Section section = new Section(newLine, stationDao.findStationById(lineRequest.getUpStationId())
-                , stationDao.findStationById(lineRequest.getDownStationId()), lineRequest.getDistance());
-        sectionDao.save(section);
+        sectionDao.save(createdId, lineRequest);
         return new LineResponse(newLine);
     }
 

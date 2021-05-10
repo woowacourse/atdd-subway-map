@@ -2,30 +2,34 @@ package wooteco.subway.section.model;
 
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.WrongDistanceException;
-import wooteco.subway.line.model.Line;
 import wooteco.subway.station.model.Station;
-
-import java.util.List;
 
 public class Section {
 
-    private Long id;
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private int distance;
+    private final Long id;
+    private final Long lineId;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation, distance);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.line = line;
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validateSection(upStationId, downStationId, distance);
+        this.id = id;
+        this.lineId = lineId;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    private void validateSection(Station upStation, Station downStation, int distance) throws WrongDistanceException {
-        validateSameStations(upStation, downStation);
+    private void validateSection(Long upStationId, Long downStationId, int distance) throws WrongDistanceException {
+        validateSameStations(upStationId, downStationId);
         validateDistance(distance);
+    }
+
+    private void validateSameStations(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new DuplicationException("상행역과 하행역은 동일할 수 없습니다.");
+        }
     }
 
     private void validateDistance(int distance) throws WrongDistanceException {
@@ -34,37 +38,23 @@ public class Section {
         }
     }
 
-    private void validateSameStations(Station upStation, Station downStation) {
-        if (upStation.equals(downStation)) {
-            throw new DuplicationException("상행역과 하행역은 동일할 수 없습니다.");
-        }
+    public Long getId() {
+        return id;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Long getLineId() {
+        return lineId;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Long getUpStationId() {
+        return upStationId;
     }
 
-    public Line getLine() {
-        return line;
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public int getDistance() {
         return distance;
-    }
-
-    public Long getLineId() {
-        return line.getId();
-    }
-
-    public Long getUpStationId() {
-        return upStation.getId();
-    }
-
-    public Long getDownStationId() {
-        return downStation.getId();
     }
 }
