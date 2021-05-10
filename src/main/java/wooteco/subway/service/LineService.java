@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 public class LineService {
 
