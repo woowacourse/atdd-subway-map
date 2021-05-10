@@ -2,13 +2,11 @@ package wooteco.subway.station.ui;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.common.ResponseError;
+import wooteco.subway.station.application.StationService;
 import wooteco.subway.station.domain.Station;
-import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
@@ -19,40 +17,28 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-    private final StationDao stationDao;
+    private final StationService stationService;
     private final Logger logger = LoggerFactory.getLogger(StationController.class);
 
-    public StationController(final StationDao stationDao) {
-        this.stationDao = stationDao;
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = new Station(stationRequest.getName());
-        validateDuplicate(station);
-        Station newStation = stationDao.save(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
-        return ResponseEntity.created(URI.create("/stations/" + newStation.getId())).body(stationResponse);
+    public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
+        StationResponse stationResponse = stationService.save(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
-        List<Station> stations = stationDao.findAll();
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<StationResponse>> allStations() {
+        List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok().body(stationResponses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
-        stationDao.delete(id);
+    public ResponseEntity deleteStation(@PathVariable final Long id) {
+        stationService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void validateDuplicate(final Station station) {
-        if (stationDao.findByName(station.getName()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
-        }
     }
 }

@@ -45,7 +45,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void init() {
-        //given
         this.station1 = stationDao.save(new Station("백기역"));
         this.station2 = stationDao.save(new Station("흑기역"));
         this.station3 = stationDao.save(new Station("아마찌역"));
