@@ -102,11 +102,6 @@ public class SectionRepository {
         return sections;
     }
 
-    public void deleteSection(final Section section) {
-        String query = "DELETE FROM section WHERE id = ?";
-        jdbcTemplate.update(query, section.getId());
-    }
-
     public Section getExistingSectionByBaseStation(final Section section) {
         final String query;
         if (isExistInUpStation(section.getLineId(), section.getUpStationId())) {
