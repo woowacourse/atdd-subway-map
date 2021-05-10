@@ -9,7 +9,6 @@ import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LineService {
@@ -51,7 +50,7 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-            .orElseThrow(NoLineException::new);
+                .orElseThrow(NoLineException::new);
     }
 
     public void update(Long id, String name, String color) {

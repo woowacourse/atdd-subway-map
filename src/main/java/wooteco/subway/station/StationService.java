@@ -28,8 +28,8 @@ public class StationService {
 
     public StationResponse findById(Long id) {
         return new StationResponse(
-            stationDao.findById(id)
-                .orElseThrow(NoStationException::new)
+                stationDao.findById(id)
+                        .orElseThrow(NoStationException::new)
         );
     }
 }
