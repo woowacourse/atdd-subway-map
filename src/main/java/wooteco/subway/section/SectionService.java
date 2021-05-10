@@ -23,7 +23,7 @@ public class SectionService {
     }
 
     private void validateSectionInclusion(SectionDto sectionDto) {
-        if (hasBothStations(sectionDto.getUpStationId(), sectionDto.getDownStationId()) &&
+        if (hasBothStations(sectionDto.getUpStationId(), sectionDto.getDownStationId()) ||
                 hasNeitherStations(sectionDto.getUpStationId(), sectionDto.getDownStationId())) {
             throw new SectionInclusionException();
         }
