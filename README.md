@@ -72,6 +72,13 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [ ] upStationId와 downStationId가 같다면 예외 처리
     - [ ] distance가 0 이하면 예외 처리
 - [ ] 구간 추가
+    - [ ] 요청한 노선에 upStationId와 downStationId 중 하나라도 연결이 안 되어 있다면 예외처리
+    - [ ] 요청한 노선에 이미 upstationId와 downStationId가 둘 다 등록되어 있다면 예외처리
+    - [ ] 요청한 구간의 distance >= 기존 구간의 distance 라면 예외처리
+- [ ] 역 목록 응답
+    - [ ] 상행 종점 ~ 하행 종점의 역 목록을 응답할 것
+- [ ] 구간 제거
+    - [ ] 구간이 하나인 노선에서는 구간 제거를 할 수 없음 
 
 ## 리팩토링 중점 사안
 - [x] Dao에서 도메인을 반환하도록 반환
@@ -95,3 +102,4 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
         - setter는 지양하는 것으로 알고있다
     - Repository 계층의 필요성에 대해 생각해 보게 되었다!
     - 현재 Dao가 충분히 필요한 정보를 모으지 못한 채 도메인 객체를 반환해서 생기는 문제 같다!
+- 역이 제거되면...? Section 테이블의 정보들은...?
