@@ -120,6 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 존재하는 노선 이름 또는 색깔입니다.");
     }
 
     @DisplayName("기존에 존재하는 노선 색으로 노선을 생성한다.")
@@ -138,6 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 존재하는 노선 이름 또는 색깔입니다.");
     }
 
     @DisplayName("존재 하지 않는 ID의 역을 상행 또는 하행 종점역으로 사용한다.")
@@ -153,6 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postLine(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 역ID입니다.");
     }
 
     @DisplayName("같은 상행 종점역과 하행 종점역으로 사용한다.")
@@ -168,6 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postLine(params);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("상행역과 하행역이 같을 수 없습니다.");
     }
 
     @DisplayName("자연수가 아닌 거리로 노선을 생성한다.")
@@ -254,6 +258,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 노선 ID입니다.");
     }
 
     @DisplayName("노선 정보를 수정한다.")
@@ -296,6 +301,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 노선 ID입니다.");
     }
 
     @DisplayName("이미 존재하는 이름으로 노선을 수정한다.")
@@ -325,6 +331,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 존재하는 노선 이름 또는 색깔입니다.");
     }
 
     @DisplayName("이미 존재하는 색으로 노선을 수정한다.")
@@ -360,6 +367,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 존재하는 노선 이름 또는 색깔입니다.");
     }
 
     @DisplayName("노선을 삭제한다.")
@@ -390,6 +398,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 노선 ID입니다.");
     }
 
     @DisplayName("구간을 추가한다.")
@@ -444,9 +453,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("추가할 수 없는 구간입니다.");
     }
 
-    @DisplayName("같은 상행역과 하행역으로 구간을 추가한다.")
+    @DisplayName("이미 존재하는 상행역과 하행역을 가진 구간을 추가한다.")
     @Test
     void createSectionWithSameStations() {
         // when
@@ -464,6 +474,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("추가할 수 없는 구간입니다.");
     }
 
     @DisplayName("상행 종점역이나 하행 종점역에 구간 추가한다.")
@@ -518,6 +529,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("거리 값은 자연수 입니다.");
     }
 
     @DisplayName("존재 하지않는 ID의 노선에 구간을 등록한다.")
@@ -538,6 +550,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 노선 ID입니다.");
     }
 
     @DisplayName("존재 하지않는 ID의 역으로 구간을 등록한다.")
@@ -558,6 +571,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 역ID입니다.");
     }
 
     @DisplayName("자연수가 아닌 구간의 길이를 등록한다.")
@@ -673,5 +687,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 노선 ID입니다.");
+    }
+
+    @DisplayName("노선에 존재하지 않는 역의 ID로 구간을 삭제한다.")
+    @Test
+    void deleteSectionWithInvalidStationId() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(createdResponse.header("Location") + "/sections?stationId=" + stationIds.get(4))
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("존재하지 않는 역입니다.");
     }
 }

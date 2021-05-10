@@ -104,10 +104,18 @@ public class Construction {
 
     public void deleteSectionsByStation(Station station) {
         validateToConstruct();
+        validateToHasStation(station);
         sectionsToRemove.addAll(sectionsWithStation(station));
         if (isNotEndStationDeletion(station)) {
             addSectionsToCreateAfterRemoveSection();
         }
+    }
+
+    private void validateToHasStation(Station station) {
+        sections.stream()
+            .filter(section -> section.hasStation(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
     }
 
     private void addSectionsToCreateAfterRemoveSection() {

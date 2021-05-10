@@ -56,7 +56,7 @@ public class StationService {
 
     private void validateToExistId(Long id) {
         if (!stationDao.hasStationWithId(id)) {
-            throw new IllegalArgumentException("존재하지 않는 ID입니다.");
+            throw new IllegalArgumentException("존재하지 않는 역ID입니다.");
         }
     }
 }
