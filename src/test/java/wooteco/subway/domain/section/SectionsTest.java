@@ -8,6 +8,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +33,14 @@ class SectionsTest {
         secondSection = new Section(secondStation, thirdStation, 10, 1L);
         thirdSection = new Section(thirdStation, fourthStation, 10, 1L);
         fourthSection = new Section(fourthStation, fifthStation, 10, 1L);
+    }
+
+    @DisplayName("비어있는 Sections는 생성할 수 없다.")
+    @Test
+    void cannotMakeEmpty() {
+        assertThatCode(() -> new Sections(new ArrayList<>()))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
     }
 
     @DisplayName("구간들을 정렬하고 구간들에 포함된 중복이 없는 역을 순서대로 반환한다.")
