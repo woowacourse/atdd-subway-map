@@ -82,6 +82,39 @@ public class Sections {
         return candidates;
     }
 
+    public long matchedStationId(final Long upStationId, final Long downStationId) {
+        if (containsStation(upStationId)) {
+            return upStationId;
+        }
+        return downStationId;
+    }
+
+    public boolean containsStation(final Long stationId) {
+        return distinctStationIds().contains(stationId);
+    }
+
+    public boolean isUpEndStation(final long existentStationId) {
+        return sectionGroup.get(0).getUpStationId() == existentStationId;
+    }
+
+    public boolean isDownEndStation(final long existentStationId) {
+        return sectionGroup.get(sectionGroup.size() - 1).getDownStationId() == existentStationId;
+    }
+
+    public Section findExistentUpStation(long existentStationId) {
+        return sectionGroup.stream()
+            .filter(section -> section.getUpStationId() == existentStationId)
+            .findAny()
+            .get();
+    }
+
+    public Section findExistentDownStation(long existentStationId) {
+        return sectionGroup.stream()
+            .filter(section -> section.getDownStationId() == existentStationId)
+            .findAny()
+            .get();
+    }
+
     public List<Section> toList() {
         return sectionGroup;
     }

@@ -26,10 +26,7 @@ public class LineService {
 
     @Transactional
     public LineResponse createLine(final LineRequest lineRequest) {
-        final String name = lineRequest.getName();
-        final String color = lineRequest.getColor();
-
-        final Line line = lineDao.save(new Line(name, color));
+        final Line line = lineDao.save(lineRequest.toEntity());
 
         final Long upStationId = lineRequest.getUpStationId();
         final Long downStationId = lineRequest.getDownStationId();
