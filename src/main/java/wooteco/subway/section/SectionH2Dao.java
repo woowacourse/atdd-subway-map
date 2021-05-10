@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class SectionH2Dao {
+public class SectionH2Dao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,6 +19,7 @@ public class SectionH2Dao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Section save(Long lineId, Section section) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
@@ -34,6 +35,7 @@ public class SectionH2Dao {
         return new Section(id, section.getUpStationId(), section.getDownStationId(), section.getDistance());
     }
 
+    @Override
     public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         List<Section> sections = jdbcTemplate.query(
@@ -50,16 +52,19 @@ public class SectionH2Dao {
         return sections.stream().findAny();
     }
 
+    @Override
     public void updateUpStation(Long id, Long upStationId, int distance) {
         String sql = "UPDATE SECTION SET up_station_id=?, distance=? WHERE id=?";
         jdbcTemplate.update(sql, upStationId, distance, id);
     }
 
+    @Override
     public void updateDownStation(Long id, Long downStationId, int distance) {
         String sql = "UPDATE SECTION SET down_station_id=?, distance=? WHERE id=?";
         jdbcTemplate.update(sql, downStationId, distance, id);
     }
 
+    @Override
     public List<Section> findByStation(Long lineId, Long stationId) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
@@ -74,11 +79,13 @@ public class SectionH2Dao {
                 }, lineId, stationId, lineId, stationId);
     }
 
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM SECTION WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id=?";
         return jdbcTemplate.query(sql,
