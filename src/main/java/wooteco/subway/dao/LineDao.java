@@ -1,6 +1,7 @@
 package wooteco.subway.dao;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface LineDao {
 
     void delete(Long id);
 
-    void updateTopStationId(Long lineId, Long topStationId);
+    void updateTopStationId(Section section);
 
-    void updateBottomStationId(Long lineId, Long bottomStationId);
+    void updateBottomStationId(Section section);
 }

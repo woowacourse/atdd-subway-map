@@ -2,6 +2,7 @@ package wooteco.subway.dao;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.exception.DuplicateNameException;
 
 import java.lang.reflect.Field;
@@ -56,17 +57,19 @@ public class LineFakeDao implements LineDao {
     }
 
     @Override
-    public void updateTopStationId(final Long lineId, final Long topStationId) {
-        final Line line = findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 역이 존재하지 않습니다."));
-        final Line updatedLine = line.updateTopStationId(topStationId);
-        update(lineId, updatedLine);
+    public void updateTopStationId(final Section section) {
+        final Line line = findById(section.getLineId()).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 " +
+                "역이 존재하지 않습니다."));
+        final Line updatedLine = line.updateTopStationId(section.getUpStationId());
+        update(section.getLineId(), updatedLine);
     }
 
     @Override
-    public void updateBottomStationId(final Long lineId, final Long bottomStationId) {
-        final Line line = findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 역이 존재하지 않습니다."));
-        final Line updatedLine = line.updateBottomStationId(bottomStationId);
-        update(lineId, updatedLine);
+    public void updateBottomStationId(final Section section) {
+        final Line line = findById(section.getLineId()).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 " +
+                "역이 존재하지 않습니다."));
+        final Line updatedLine = line.updateBottomStationId(section.getDownStationId());
+        update(section.getLineId(), updatedLine);
     }
 
     private Line createNewObject(Line line) {

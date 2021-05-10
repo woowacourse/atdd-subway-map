@@ -2,7 +2,6 @@ package wooteco.subway.section;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -134,6 +133,8 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         assertThat(section.getDownStationId()).isEqualTo(2L);
         assertThat(section.getUpStationId()).isEqualTo(3L);
         assertThat(section.getDistance()).isEqualTo(7);
+
+        RestAssuredHelper.jsonGet("/lines/1");
 
         final SectionResponse oldSectionResponse = RestAssuredHelper.jsonGet("/lines/1/sections?sectionId=1")
                                                                     .body()

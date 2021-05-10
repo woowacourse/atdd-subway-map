@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -90,15 +91,15 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
-    public void updateTopStationId(final Long lineId, final Long topStationId) {
+    public void updateTopStationId(final Section section) {
         String sql = "UPDATE LINE l SET l.top_station_id = ? WHERE l.id = ?";
-        jdbcTemplate.update(sql, topStationId, lineId);
+        jdbcTemplate.update(sql, section.getUpStationId(), section.getLineId());
     }
 
     @Override
-    public void updateBottomStationId(final Long lineId, final Long bottomStationId) {
+    public void updateBottomStationId(final Section section) {
         String sql = "UPDATE LINE l SET l.bottom_station_id = ? WHERE l.id = ?";
-        jdbcTemplate.update(sql, bottomStationId, lineId);
+        jdbcTemplate.update(sql, section.getDownStationId(), section.getLineId());
     }
 
     @Override
