@@ -1,4 +1,4 @@
-package wooteco.subway.domain.line.dao;
+package wooteco.subway.domain.station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -10,32 +10,29 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.line.Line;
 
 @Repository
-public class LineDao {
+public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Line> lineRowMapper = (rs, rowNum) -> new Line(
+    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
             rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("color")
+            rs.getString("name")
     );
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Long> save(Line line) {
+    public Optional<Long> save(Station station) {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        final String sql = "INSERT INTO line (name, color) VALUES (?, ?)";
+        final String sql = "INSERT INTO station (name) VALUES (?)";
 
         try {
             jdbcTemplate.update(con -> {
                 PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, line.getName());
-                ps.setString(2, line.getColor());
+                ps.setString(1, station.getName());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
@@ -46,28 +43,24 @@ public class LineDao {
         return Optional.of(keyHolder.getKey().longValue());
     }
 
-    public List<Line> findAll() {
-        final String sql = "SELECT id, name, color FROM line";
-        return jdbcTemplate.query(sql, lineRowMapper);
+    public List<Station> findAll() {
+        final String sql = "SELECT id, name FROM station";
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
-    public Optional<Line> findById(Long id) {
-        final String sql = "SELECT id, name, color FROM line WHERE id = ?";
+    public Optional<Station> findById(Long id) {
+        final String sql = "SELECT id, name FROM station WHERE id = ?";
+
         try {
-            Line line = jdbcTemplate.queryForObject(sql, lineRowMapper, id);
-            return Optional.of(line);
+            final Station station = jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+            return Optional.of(station);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public void update(Long id, Line line) {
-        final String sql = "UPDATE line SET name = ?, color = ? WHERE id = ?";
-        jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
-    }
-
     public void delete(Long id) {
-        final String sql = "DELETE FROM line WHERE id = ?";
+        final String sql = "DELETE FROM station WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

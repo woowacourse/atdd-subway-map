@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.dao.StationDao;
+import wooteco.subway.domain.station.StationDao;
 import wooteco.subway.web.exception.NotFoundException;
 import wooteco.subway.web.exception.SubwayHttpException;
 
