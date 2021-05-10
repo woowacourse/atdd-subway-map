@@ -48,7 +48,7 @@ public class LineService {
     }
 
     public LineDto findOne(final LineIdDto lineIdDto) {
-        Line line = lineDao.show(lineIdDto.getId());
+        Line line = lineDao.show(lineIdDto.getId()).get();
         return new LineDto(line.getId(), line.getName(), line.getColor());
     }
 
@@ -56,20 +56,19 @@ public class LineService {
         String name = lineDto.getName();
         String color = lineDto.getColor();
 
-        if (lineDao.show(lineDto.getId()) == null) {
-            throw new EmptyResultDataAccessException(0);
-        }
+        final Line line = lineDao.show(lineDto.getId())
+            .orElseThrow(() -> new EmptyResultDataAccessException(0));
 
-        Line line = new Line(name, color);
+        Line changedLine = new Line(name, color);
         checkUpdatedNameAndColor(lineDto);
-        lineDao.update(lineDto.getId(), line);
+        lineDao.update(lineDto.getId(), changedLine);
     }
 
     private void checkUpdatedNameAndColor(final LineDto lineDto) {
         String color = lineDto.getColor();
         String name = lineDto.getName();
         long id = lineDto.getId();
-        Line line = lineDao.show(id);
+        Line line = lineDao.show(id).get();
 
         checkUpdatedColor(line, color);
         checkUpdatedName(line, name);

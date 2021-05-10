@@ -3,6 +3,7 @@ package wooteco.subway.line.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicateLineException;
@@ -39,11 +40,11 @@ public class LineDaoMemory implements LineDao {
     }
 
     @Override
-    public Line show(Long id) {
-        return lines.stream()
+    public Optional<Line> show(Long id) {
+        return Optional.of(lines.stream()
             .filter(element -> element.getId().equals(id))
             .findAny()
-            .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundLineException("[Error] 해당 노선이 존재하지 않습니다.")));
     }
 
     @Override

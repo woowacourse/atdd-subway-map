@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,7 +83,7 @@ public class LineServiceTest {
         //given
         Line line = new Line(1L, "창원선", "청록색");
 
-        when(mockDao.show(any())).thenReturn(line);
+        when(mockDao.show(any())).thenReturn(Optional.of(line));
         LineService lineServiceWithMock = new LineService(mockDao);
 
         //when
