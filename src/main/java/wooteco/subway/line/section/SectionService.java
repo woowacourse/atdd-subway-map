@@ -15,5 +15,9 @@ public class SectionService {
         final Section section = sectionDao.save(sectionRequest.toEntity(lineId));
         return SectionResponse.from(section);
     }
+
+    public Sections findSectionsByLineId(final Long lineId) {
+        return new Sections(sectionDao.findByLineId(lineId));
+    }
 }
 
