@@ -4,8 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class SectionDao {
@@ -46,21 +45,21 @@ public class SectionDao {
 
     public int distance(long lineId, long upStationId, long downStationId) {
         String sql = "SELECT distance FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId, downStationId);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId, downStationId));
     }
 
     public boolean isExistStation(long lineId, long stationId) {
         String sql = "SELECT EXISTS (SELECT * FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)) AS SUCCESS";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId));
     }
 
-    public long findDownStationIdByUpStationId(long lineId, long upStationId) {
+    public List<Long> findDownStationIdByUpStationId(long lineId, long upStationId) {
         String sql = "SELECT down_station_id FROM SECTION WHERE line_id = ? AND up_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, lineId, upStationId);
+        return jdbcTemplate.queryForList(sql, Long.class, lineId, upStationId);
     }
 
-    public long findUpStationIdByDownStationId(long lineId, long downStationId) {
+    public List<Long> findUpStationIdByDownStationId(long lineId, long downStationId) {
         String sql = "SELECT up_station_id FROM SECTION WHERE line_id = ? AND down_station_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, lineId, downStationId);
+        return jdbcTemplate.queryForList(sql, Long.class, lineId, downStationId);
     }
 }

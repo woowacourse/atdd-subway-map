@@ -3,7 +3,6 @@ package wooteco.subway.line;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionService;
 
 import java.net.URI;
@@ -71,25 +70,49 @@ public class LineController {
 
         long existStationId = sectionService.findExistStation(lineId, upStationId, downStationId);
         if(existStationId == upStationId) {
-
-            long beforeStationId = sectionService.findBeforeDownStationId(lineId, upStationId);
-            int beforeDistance = sectionService.findBeforeDistance(lineId, existStationId, beforeStationId);
-            sectionService.delete(lineId, existStationId, beforeStationId);
-            sectionService.save(lineId, upStationId, downStationId, distance);
-            sectionService.save(lineId,downStationId, beforeStationId, beforeDistance-distance);
-
+            return addUpStation(lineId, upStationId, downStationId, distance, existStationId);
         }
 
         if (existStationId == downStationId) {
-            long beforeUpStationId = sectionService.findBeforeUpStationId(lineId, downStationId);
-            int beforeDistance = sectionService.findBeforeDistance(lineId, beforeUpStationId, existStationId);
-            sectionService.delete(lineId, beforeUpStationId, downStationId);
-            sectionService.save(lineId, beforeUpStationId, upStationId, beforeDistance-distance);
-            sectionService.save(lineId, upStationId, downStationId, distance);
-
+            return addDownStation(lineId, upStationId, downStationId, distance, existStationId);
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    private ResponseEntity<String> addDownStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
+        List<Long> beforeUpStations = sectionService.findBeforeUpStationId(lineId, downStationId);
+        if(beforeUpStations.isEmpty()) {
+            sectionService.save(lineId, upStationId, downStationId, distance);
+            return ResponseEntity.ok().build();
+        }
+        long beforeUpStationId = beforeUpStations.get(0);
+        int beforeDistance = isAppropriateDistance(distance, sectionService.findBeforeDistance(lineId, beforeUpStationId, existStationId));
+        sectionService.delete(lineId, beforeUpStationId, downStationId);
+        sectionService.save(lineId, beforeUpStationId, upStationId, beforeDistance-distance);
+        sectionService.save(lineId, upStationId, downStationId, distance);
+        return ResponseEntity.ok().build();
+    }
+
+    private ResponseEntity<String> addUpStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
+        List<Long> beforeStations = sectionService.findBeforeDownStationId(lineId, upStationId);
+        if(beforeStations.isEmpty()) {
+            sectionService.save(lineId, upStationId, downStationId, distance);
+            return ResponseEntity.ok().build();
+        }
+        long beforeStationId = beforeStations.get(0);
+        int beforeDistance = isAppropriateDistance(distance, sectionService.findBeforeDistance(lineId, existStationId, beforeStationId));
+        sectionService.delete(lineId, existStationId, beforeStationId);
+        sectionService.save(lineId, upStationId, downStationId, distance);
+        sectionService.save(lineId, downStationId, beforeStationId, beforeDistance- distance);
+        return ResponseEntity.ok().build();
+    }
+
+    private int isAppropriateDistance(int distance, int beforeDistance) {
+        if (distance - beforeDistance < 1) {
+            throw new IllegalArgumentException("거리를 확인해주세요. 기존 거리보다 길거나 같을 수 없습니다.");
+        }
+        return beforeDistance;
     }
 
 }

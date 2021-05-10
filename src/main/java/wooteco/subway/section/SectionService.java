@@ -2,6 +2,9 @@ package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SectionService {
 
@@ -34,12 +37,11 @@ public class SectionService {
 
     }
 
-
-    public long findBeforeDownStationId(long lineId, long upStationId) {
+    public List<Long> findBeforeDownStationId(long lineId, long upStationId) {
         return sectionDao.findDownStationIdByUpStationId(lineId, upStationId);
     }
 
-    public long findBeforeUpStationId(long lineId, long downStationId) {
+    public List<Long> findBeforeUpStationId(long lineId, long downStationId) {
         return sectionDao.findUpStationIdByDownStationId(lineId, downStationId);
     }
 
