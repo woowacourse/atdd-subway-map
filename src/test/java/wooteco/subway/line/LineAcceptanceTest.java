@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestConstructor;
@@ -23,6 +22,10 @@ import wooteco.subway.line.dto.LineResponse;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private final String notExistItemMessage = "[ERROR] 해당 아이템이 존재하지 않습니다.";
+    private final String noInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
+    private final String duplicateMessage = "[ERROR] 중복된 이름입니다.";
 
     @Test
     @DisplayName("지하철 노선 한개가 저장된다.")
@@ -40,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createLineAPI("2호선", "bg-green-600");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 중복된 이름입니다.");
+        assertThat(response.body().asString()).isEqualTo(duplicateMessage);
     }
 
     @Test
@@ -50,7 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createLineAPI(null, null);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(noInputMessage);
     }
 
     @Test
@@ -59,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createLineAPI(" ", "    ");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 입력값이 존재하지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(noInputMessage);
     }
 
     @Test
@@ -121,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).isEqualTo("[ERROR] 해당 아이템이 존재하지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(notExistItemMessage);
     }
 
     @Test
@@ -136,6 +139,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("없는 노선을 수정하려 하면 에러가 발생한다.")
+    public void putLineWithNotExistItem() {
+        /// given
+        LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600");
+
+        // when
+        ExtractableResponse<Response> response = updateLineAPI(lineRequest);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo(notExistItemMessage);
+    }
+
+    @Test
+    @DisplayName("기존에 있는 이름으로 노선을 수정시 에러가 발생한다.")
+    public void putLinWhitDuplicateName() {
+        /// given
+        createLineAPI("2호선", "bg-green-600");
+        createLineAPI("3호선", "bg-orange-600");
+        LineRequest lineRequest = new LineRequest("3호선", "bg-orange-600");
+
+        // when
+        ExtractableResponse<Response> response = updateLineAPI(lineRequest);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo(duplicateMessage);
     }
 
     @Test
