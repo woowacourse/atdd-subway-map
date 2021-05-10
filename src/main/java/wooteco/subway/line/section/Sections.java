@@ -1,9 +1,7 @@
 package wooteco.subway.line.section;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class Sections {
+
     private final List<Section> sectionGroup;
 
     public Sections(final List<Section> sectionGroup) {
@@ -83,6 +82,22 @@ public class Sections {
         return candidates;
     }
 
+    public void validateBothExistentStation(final Long upStationId, final Long downStationId) {
+        if (containsStation(upStationId) && containsStation(downStationId)) {
+            throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
+    }
+
+    public void validateNoneExistentStation(final Long upStationId, final Long downStationId) {
+        if (!containsStation(upStationId) && !containsStation(downStationId)) {
+            throw new RuntimeException("상행역과 하행역 둘 다 포함되어있지 않습니다.");
+        }
+    }
+
+    private boolean containsStation(final Long stationId) {
+        return distinctStationIds().contains(stationId);
+    }
+
     public long matchedStationId(final Long upStationId, final Long downStationId) {
         if (containsStation(upStationId)) {
             return upStationId;
@@ -90,15 +105,16 @@ public class Sections {
         return downStationId;
     }
 
-    public boolean containsStation(final Long stationId) {
-        return distinctStationIds().contains(stationId);
+    public boolean isAddableEndStation(final long existentStationId, final long upStationId, final long downStationId) {
+        return (isUpEndStation(existentStationId) && existentStationId == downStationId) ||
+            (isDownEndStation(existentStationId) && existentStationId == upStationId);
     }
 
-    public boolean isUpEndStation(final long existentStationId) {
+    private boolean isUpEndStation(final long existentStationId) {
         return sectionGroup.get(0).getUpStationId() == existentStationId;
     }
 
-    public boolean isDownEndStation(final long existentStationId) {
+    private boolean isDownEndStation(final long existentStationId) {
         return sectionGroup.get(sectionGroup.size() - 1).getDownStationId() == existentStationId;
     }
 
