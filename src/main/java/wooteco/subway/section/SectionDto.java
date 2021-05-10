@@ -1,7 +1,6 @@
 package wooteco.subway.section;
 
 import wooteco.subway.line.LineRequest;
-import wooteco.subway.line.SectionRequest;
 
 public class SectionDto {
     private Long lineId;
