@@ -15,8 +15,8 @@ import wooteco.subway.entity.StationEntity;
 @Repository
 public class StationDao {
 
-    public static final RowMapper<StationEntity> STATION_ROW_MAPPER = (resultSet, rowNum) -> new StationEntity(
-        resultSet.getLong("id"), resultSet.getString("name"));
+    public static final RowMapper<StationEntity> STATION_ROW_MAPPER = (rs, rowNum) -> new StationEntity(
+        rs.getLong("id"), rs.getString("name"));
 
     private final JdbcTemplate jdbcTemplate;
 

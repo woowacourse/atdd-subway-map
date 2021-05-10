@@ -2,8 +2,10 @@ package wooteco.subway.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,10 @@ import wooteco.subway.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
+    private static final RowMapper<SectionEntity> SECTION_ROW_MAPPER = (rs, rowNum) ->
+        new SectionEntity(rs.getLong("id"), rs.getLong("line_id"),
+            rs.getLong("up_station_id"), rs.getLong("down_station_id"),
+            rs.getInt("distance"));
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -34,5 +40,11 @@ public class SectionDao {
         }, keyHolder);
 
         return new SectionEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), section);
+    }
+
+    public List<SectionEntity> filterByLineId(Long lineId) {
+       String sql = "SELECT * FROM section WHERE line_id = (?)";
+
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
     }
 }

@@ -15,8 +15,8 @@ import wooteco.subway.entity.LineEntity;
 @Repository
 public class LineDao {
 
-    public static final RowMapper<LineEntity> LINE_ROW_MAPPER = (resultSet, rowNum) -> new LineEntity(
-        resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("color"));
+    public static final RowMapper<LineEntity> LINE_ROW_MAPPER = (rs, rowNum) -> new LineEntity(
+        rs.getLong("id"), rs.getString("name"), rs.getString("color"));
     private final JdbcTemplate jdbcTemplate;
 
     public LineDao(JdbcTemplate jdbcTemplate) {

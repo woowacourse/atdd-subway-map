@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domainmapper.SubwayMapper;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.entity.LineEntity;
+import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.repository.LineDao;
 import wooteco.subway.repository.SectionDao;
 import wooteco.subway.repository.StationDao;
@@ -79,8 +81,19 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse showLine(Long id) {
         validateToExistId(id);
-        LineEntity lineEntity = lineDao.findById(id);
-        return new LineResponse(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor());
+        Line line = subwayMapper.line(lineDao.findById(id));
+        List<SectionEntity> sectionEntities = sectionDao.filterByLineId(id);
+        Sections sections = sectionsFromEntities(line, sectionEntities);
+
+        return new LineResponse(line, sections.pathByLine(line));
+    }
+
+    private Sections sectionsFromEntities(Line line, List<SectionEntity> sectionEntities) {
+        return sectionEntities.stream()
+            .map(sectionEntity -> subwayMapper.section(sectionEntity, line,
+                subwayMapper.station(stationDao.findById(sectionEntity.getUpStationId())),
+                subwayMapper.station(stationDao.findById(sectionEntity.getDownStationId()))))
+            .collect(Collectors.collectingAndThen(Collectors.toSet(), Sections::new));
     }
 
     private void validateToExistId(Long id) {

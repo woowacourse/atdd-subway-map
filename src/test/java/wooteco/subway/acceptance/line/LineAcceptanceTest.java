@@ -230,11 +230,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
+        List<StationResponse> expect = Arrays.asList(new StationResponse(stationIds.get(0), "강남역"),
+            new StationResponse(stationIds.get(1), "잠실역"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getId())
             .isEqualTo(Long.parseLong(createdResponse.header("Location").split("/")[2]));
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator().isEqualTo(expect);
     }
 
     @DisplayName("존재하지 않는 ID의 노선을 조회한다.")
