@@ -20,7 +20,7 @@ public class LineService {
     }
 
     public Line createLine(String name, String color) {
-        if (lineDao.findLineByName(name).isPresent()) {
+        if (lineDao.findByName(name).isPresent()) {
             throw new LineNameDuplicatedException();
         }
 
@@ -33,11 +33,11 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        return lineDao.findLineById(id).orElseThrow(LineNotFoundException::new);
+        return lineDao.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
     public Optional<Line> findLineByName(String name) {
-        return lineDao.findLineByName(name);
+        return lineDao.findByName(name);
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -45,6 +45,6 @@ public class LineService {
     }
 
     public void removeLine(Long id) {
-        lineDao.removeLine(id);
+        lineDao.remove(id);
     }
 }

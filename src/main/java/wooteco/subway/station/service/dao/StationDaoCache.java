@@ -33,14 +33,14 @@ public class StationDaoCache implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationById(Long id) {
+    public Optional<Station> findById(Long id) {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
                 .findAny();
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
+    public Optional<Station> finByName(String name) {
         return stations.stream()
                 .filter(station -> station.isSameName(name))
                 .findAny();

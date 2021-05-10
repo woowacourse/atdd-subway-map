@@ -38,7 +38,7 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineByName(String name) {
+    public Optional<Line> findByName(String name) {
         final String sql = "SELECT * FROM line WHERE name = ?";
         return jdbcTemplate.query(sql, lineRowMapper, name)
                 .stream()
@@ -60,13 +60,13 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineById(Long id) {
+    public Optional<Line> findById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
         return jdbcTemplate.query(sql, lineRowMapper, id).stream().findAny();
     }
 
     @Override
-    public void removeLine(Long id) {
+    public void remove(Long id) {
         String sql = "DELETE FROM line WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

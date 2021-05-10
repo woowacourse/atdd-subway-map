@@ -11,9 +11,9 @@ public interface StationDao {
 
     List<Station> findAll();
 
-    Optional<Station> findStationById(Long id);
+    Optional<Station> findById(Long id);
 
-    Optional<Station> findStationByName(String name);
+    Optional<Station> finByName(String name);
 
     void remove(Long id);
 

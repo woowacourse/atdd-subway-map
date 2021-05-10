@@ -2,10 +2,8 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.LineNotFoundException;
 import wooteco.subway.exception.StationNameDuplicatedException;
 import wooteco.subway.exception.StationNotFoundException;
-import wooteco.subway.line.Line;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.service.dao.StationDao;
 
@@ -26,16 +24,16 @@ public class StationService {
     }
 
     public Station findStationById(Long id) {
-        return stationDao.findStationById(id).orElseThrow(StationNotFoundException::new);
+        return stationDao.findById(id).orElseThrow(StationNotFoundException::new);
     }
 
     public Optional<Station> findStationByName(String name) {
-        return stationDao.findStationByName(name);
+        return stationDao.finByName(name);
     }
 
     @Transactional
     public Station save(Station station) {
-        if (stationDao.findStationByName(station.getName()).isPresent()) {
+        if (stationDao.finByName(station.getName()).isPresent()) {
             throw new StationNameDuplicatedException();
         }
         return stationDao.save(station);
