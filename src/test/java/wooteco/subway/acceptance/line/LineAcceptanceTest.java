@@ -1,5 +1,6 @@
 package wooteco.subway.acceptance.line;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철노선 관련 기능")
@@ -388,5 +390,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간을 추가한다.")
+    @Test
+    void createSection() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId",  String.valueOf(stationIds.get(2)));
+        params.put("distance", "5");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

@@ -48,4 +48,16 @@ public class SectionDao {
 
         return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
     }
+
+    public void remove(Long id) {
+        String sql = "DELETE FROM section WHERE id = (?)";
+
+        jdbcTemplate.update(sql, id);
+    }
+
+    public boolean hasSectionWithId(Long id) {
+        String sql = "SELECT COUNT(*) FROM section WHERE id = (?)";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
 }

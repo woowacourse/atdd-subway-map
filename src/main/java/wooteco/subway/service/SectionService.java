@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.domain.Distance;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.domainmapper.SubwayMapper;
-import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.entity.SectionEntity;
 import wooteco.subway.repository.SectionDao;
 
@@ -27,14 +25,10 @@ public class SectionService {
         this.subwayMapper = subwayMapper;
     }
 
-    public Section createSection(Line line, SectionRequest sectionRequest) {
-        Station upStation = stationService.showStation(sectionRequest.getUpStationId()).toDomain();
-        Station downStation = stationService.showStation(sectionRequest.getDownStationId())
-            .toDomain();
-        Section section = new Section(line, upStation, downStation,
-            new Distance(sectionRequest.getDistance()));
+    public Section createSection(Section section) {
         SectionEntity newSectionEntity = sectionDao.save(section);
-        return subwayMapper.section(newSectionEntity, line, upStation, downStation);
+        return subwayMapper.section(newSectionEntity, section.getLine(),
+            section.getUpStation(), section.getDownStation());
     }
 
     public Set<Section> findSectionsByLine(Line line) {
@@ -51,5 +45,16 @@ public class SectionService {
             .toDomain();
 
         return subwayMapper.section(sectionEntity, line, upStation, downStation);
+    }
+
+    public void remove(Long id) {
+        validateToExistId(id);
+        sectionDao.remove(id);
+    }
+
+    private void validateToExistId(Long id) {
+        if (!sectionDao.hasSectionWithId(id)) {
+            throw new IllegalArgumentException("존재하지 않는 ID입니다.");
+        }
     }
 }

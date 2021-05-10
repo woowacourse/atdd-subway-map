@@ -40,6 +40,23 @@ public class Section {
         }
     }
 
+    public Station sameStation(Section section) {
+        if (upStation.equals(section.getUpStation())) {
+            return upStation;
+        }
+        if (downStation.equals(section.getDownStation())) {
+            return downStation;
+        }
+        throw new IllegalArgumentException("같은 역이 존재하지 않습니다.");
+    }
+
+    public boolean hasOnlyOneSameName(Section section) {
+        boolean isSameUpStation = upStation.equals(section.getUpStation());
+        boolean isSameDownStation = downStation.equals(section.getDownStation());
+
+        return (isSameUpStation && !isSameDownStation) || (!isSameUpStation && isSameDownStation);
+    }
+
     public Long getId() {
         return id;
     }
