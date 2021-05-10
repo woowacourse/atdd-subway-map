@@ -49,17 +49,19 @@ class StationDaoTest {
         Station station2 = stationDao.save(new Station("잠실새내역"));
 
         List<Station> stationsAll = stationDao.findAll();
-        assertThat(stationsAll).hasSize(2);
-
-        assertThat(stationsAll).containsExactly(station1, station2);
+        assertThat(stationsAll).hasSize(2).containsExactly(station1, station2);
     }
 
     @Test
     @DisplayName("id를 이용해 한개 삭제한다.")
     void delete() {
+        //given
         stationDao.save(new Station("잠실역"));
 
-        assertThatCode(() -> stationDao.delete(1L)).doesNotThrowAnyException();
+        //when
+        stationDao.delete(1L);
+
+        //then
         assertThat(stationDao.findAll()).hasSize(0);
     }
 }

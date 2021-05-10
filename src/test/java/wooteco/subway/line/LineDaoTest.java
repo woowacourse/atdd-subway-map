@@ -54,21 +54,17 @@ class LineDaoTest {
 
         List<Line> lines = lineDao.findAll();
 
-        assertThat(lines).hasSize(3);
-
-        assertThat(lines).containsExactly(line2, line3, line4);
+        assertThat(lines).hasSize(3).containsExactly(line2, line3, line4);
     }
 
     @Test
     @DisplayName("id를 이용하여 노선을 조회한다.")
     void findById() {
-        lineDao.save(new Line("2호선", "bg-green-600"));
+        Line line = lineDao.save(new Line("2호선", "bg-green-600"));
         lineDao.save(new Line("3호선", "bg-orange-600"));
 
-        Line line = lineDao.findById(1L);
-        assertThat(line.getId()).isEqualTo(1L);
-        assertThat(line.getName()).isEqualTo("2호선");
-        assertThat(line.getColor()).isEqualTo("bg-green-600");
+        Line newLine = lineDao.findById(1L);
+        assertThat(newLine).isEqualTo(line);
     }
 
     @Test
@@ -81,10 +77,10 @@ class LineDaoTest {
     @Test
     @DisplayName("노선의 이름 또는 색상을 수정한다.")
     void update() {
-        Line line2 = new Line("2호선", "bg-green-600");
+        Line line = new Line("2호선", "bg-green-600");
         Line newLine = new Line(1L, "3호선", "bg-orange-600");
 
-        lineDao.save(line2);
+        lineDao.save(line);
         assertThat(lineDao.update(newLine)).isSameAs(newLine);
     }
 
@@ -92,10 +88,14 @@ class LineDaoTest {
     @Test
     @DisplayName("id를 이용하여 노선을 삭제한다.")
     void delete() {
-        Line line2 = new Line("2호선", "bg-green-600");
-        lineDao.save(line2);
+        //given
+        Line line = new Line("2호선", "bg-green-600");
+        lineDao.save(line);
 
-        assertThatCode(() -> lineDao.delete(1L)).doesNotThrowAnyException();
+        //when
+        lineDao.delete(1L);
+
+        //then
         assertThat(lineDao.findAll()).hasSize(0);
     }
 }
