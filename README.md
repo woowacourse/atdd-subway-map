@@ -81,3 +81,9 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
     - Service단에서 Id를 캐싱해두는 것도 방법이 되지 않을까?
     - 2번 정도는 컴퓨팅 능력으로 커버 가능?
+- Line 도메인의 List<Station>을 지정해주려면 LineDao 에서만으로 처리가 불가능하다
+    - 그래서 Service에서 StationDao에 접근해 해당 LineId에 소속된 station들을 가져오도록 했다
+    - 이후 setter를 통해 line에 주입해줬다
+        - setter는 지양하는 것으로 알고있다
+    - Repository 계층의 필요성에 대해 생각해 보게 되었다!
+    - 현재 Dao가 충분히 필요한 정보를 모으지 못한 채 도메인 객체를 반환해서 생기는 문제 같다!

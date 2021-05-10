@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,13 +41,6 @@ public class LineDao {
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(sql, lineRowMapper);
-    }
-
-    public List<Long> findStationsIdByLineId(long id) {
-        String sql = "SELECT DISTINCT STATION.id AS station_id FROM STATION JOIN SECTION ON SECTION.line_id = ? " +
-                "WHERE SECTION.up_station_id = STATION.id OR SECTION.down_station_Id = STATION.id";
-
-        return jdbcTemplate.queryForList(sql, Long.class, id);
     }
 
     public Line findById(long id) {

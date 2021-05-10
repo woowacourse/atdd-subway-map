@@ -51,4 +51,11 @@ public class StationDao {
         String sql = "SELECT * FROM STATION WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
     }
+
+    public List<Long> findStationsIdInLineId(long lineId) {
+        String sql = "SELECT DISTINCT STATION.id AS station_id FROM STATION JOIN SECTION ON SECTION.line_id = ? " +
+                "WHERE SECTION.up_station_id = STATION.id OR SECTION.down_station_Id = STATION.id";
+
+        return jdbcTemplate.queryForList(sql, Long.class, lineId);
+    }
 }
