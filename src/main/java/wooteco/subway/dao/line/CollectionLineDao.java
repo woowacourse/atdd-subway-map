@@ -47,14 +47,14 @@ public class CollectionLineDao implements LineDao {
 
     @Override
     public boolean existsByName(String name) {
-        return !lines
+        return lines
             .stream()
             .anyMatch(line -> line.getName().equals(name));
     }
 
     @Override
     public boolean existsById(Long id) {
-        return !lines
+        return lines
             .stream()
             .anyMatch(line -> line.getId().equals(id));
     }
