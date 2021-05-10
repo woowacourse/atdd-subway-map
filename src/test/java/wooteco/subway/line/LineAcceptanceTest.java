@@ -15,13 +15,13 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
 @DisplayName("노선 관련 기능")
-class LineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final LineRequest LINE_2 = new LineRequest(
+    public static final LineRequest LINE_2 = new LineRequest(
         "2호선", "grey darken-1", 1L, 2L, 2, 500
     );
 
-    private static final LineRequest LINE_3 = new LineRequest(
+    public static final LineRequest LINE_3 = new LineRequest(
             "3호선", "grey darken-2", 5L, 6L, 12, 1500
     );
 
@@ -54,7 +54,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(response.header("Location").split("/")[2]);
     }
 
-    private ExtractableResponse<Response> 노선_등록(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 노선_등록(final LineRequest lineRequest) {
         return RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
