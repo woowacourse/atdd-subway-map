@@ -29,11 +29,6 @@ public class Section {
         this(null, line, upStation, downStation, distance);
     }
 
-    public Section(Long id, Section section) {
-        this(id, section.getLine(), section.getUpStation(), section.getDownStation(),
-            section.getDistance());
-    }
-
     private static void validateUpStationAndDownStation(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역이 같을 수 없습니다.");
