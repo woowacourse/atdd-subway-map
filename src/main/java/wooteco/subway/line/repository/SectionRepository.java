@@ -31,7 +31,17 @@ public class SectionRepository {
     }
 
     private Station findStationByStationId(Long id) {
-        return stationDao.findById(id)
+        return findStationById(id);
+    }
+
+    public Section save(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
+        return sectionDao.save(new Section(lineId, upStation, downStation, distance));
+    }
+
+    private Station findStationById(Long upStationId) {
+        return stationDao.findById(upStationId)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 역입니다."));
     }
 }

@@ -24,7 +24,7 @@ class SectionDaoImplTest {
     @Test
     @DisplayName("구간을 추가한다.")
     void save() {
-        Section savedSection = sectionDao.save(new Section(1L, 1L, 2L, 10));
+        Section savedSection = sectionDao.save(new Section(1L, 1L,1L, 2L, 10));
 
         assertThat(savedSection.upStation().id()).isEqualTo(1L);
         assertThat(savedSection.downStation().id()).isEqualTo(2L);

@@ -27,8 +27,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@Validated(LineInfo.save.class) @RequestBody LineRequest lineRequest) {
-        LineResponse response = lineService.save(lineRequest);
+    public ResponseEntity<LineResponse> save(@Validated(LineInfo.save.class) @RequestBody LineRequest lineRequest) {
+        Line line = lineService.save(lineRequest);
+        LineResponse response = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
@@ -52,15 +53,15 @@ public class LineController {
     @PutMapping("/{id:[\\d]+}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
                                            @Valid @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest.getName(), lineRequest.getColor());
+        lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id:[\\d]+}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id:[\\d]+}")
+//    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+//        lineService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PostMapping("/{id:[\\d]+}/sections")
     public ResponseEntity addSection(@Valid @RequestBody SectionRequest sectionRequest) {
