@@ -15,10 +15,7 @@ public class LineService {
     }
 
     public LineResponse createLine(final LineRequest lineRequest) {
-        final String name = lineRequest.getName();
-        final String color = lineRequest.getColor();
-
-        final Line line = lineDao.save(new Line(name, color));
+        final Line line = lineDao.save(lineRequest.toEntity());
         return LineResponse.from(line);
     }
 

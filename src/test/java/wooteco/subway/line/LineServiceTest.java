@@ -33,7 +33,7 @@ class LineServiceTest {
 
         final LineResponse createdLine = lineService.createLine(lineRequest);
 
-        verify(lineRequest, times(1)).getName();
+        verify(lineRequest, times(1)).toEntity();
         verify(lineDao, times(1)).save(line);
         assertThat(createdLine.getId()).isEqualTo(1L);
     }

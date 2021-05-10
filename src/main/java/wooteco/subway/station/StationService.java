@@ -14,8 +14,7 @@ public class StationService {
     }
 
     public StationResponse createStation(final StationRequest stationRequest) {
-        final String name = stationRequest.getName();
-        final Station station = stationDao.save(new Station(name));
+        final Station station = stationDao.save(stationRequest.toEntity());
         return new StationResponse(station.getId(), station.getName());
     }
 

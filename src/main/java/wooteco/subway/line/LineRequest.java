@@ -25,6 +25,10 @@ public class LineRequest {
         this.extraFare = extraFare;
     }
 
+    public Line toEntity() {
+        return new Line(name, color);
+    }
+
     public String getName() {
         return name;
     }
