@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public class Line {
     private static final int UP_STATION_ID_COUNT = 1;
+
     private final Long id;
     private final String name;
     private final String color;

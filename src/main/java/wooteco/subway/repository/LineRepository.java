@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public class LineRepository {
     private static final int ONE_SECTION = 1;
+
     private final JdbcTemplate jdbcTemplate;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
@@ -43,10 +44,10 @@ public class LineRepository {
         Optional<Line> line = lineDao.findById(lineId);
         return new Line(line.get(), sections);
     }
+
     public Optional<Line> findLineByName(String name) {
         return lineDao.findByName(name);
     }
-
 
     public int edit(Long lineId, String name, String color) {
         return lineDao.edit(lineId, name, color);
