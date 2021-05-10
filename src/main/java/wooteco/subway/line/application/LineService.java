@@ -70,6 +70,12 @@ public class LineService {
     }
 
     @Transactional
+    public void delete(final Long id) {
+        LineEntity lineEntity = findLineEntityById(id);
+        lineDao.delete(lineEntity.id());
+    }
+
+    @Transactional
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());

@@ -140,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("단일 노선을 조회한다.")
     @Test
-    void findLineByID() {
+    void findLineByIdToHTTP() {
         // given
         String newLineName = "신분당선";
         String newLineColor = "bg-black-500";
@@ -188,43 +188,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "백기선");
-        params.put("color", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-
-        long deleteId = createResponse.body().jsonPath().getLong("id");
-        String uri = createResponse.header("Location");
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = deleteLineByIdToHTTP(line.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(lineDao.findById(deleteId)).isEmpty();
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선 제거시 없는 노선이면 예외가 발생한다.")
     @Test
     void deleteStation() {
-        String uri = "/lines/{id}";
+        //given
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri, 0L)
-                .then().log().all()
-                .extract();
+        //when
+        ExtractableResponse<Response> response = deleteLineByIdToHTTP(-1L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -335,6 +315,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         return updateResponse;
+    }
+
+    private ExtractableResponse<Response> deleteLineByIdToHTTP(Long lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/{id}", lineId)
+                .then().log().all()
+                .extract();
     }
 
     private List<String> stationResponsesToStrings(final List<StationResponse> response) {

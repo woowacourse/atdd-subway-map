@@ -22,17 +22,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineDao lineDao;
     private final LineService lineService;
     private final Logger logger = LoggerFactory.getLogger(LineController.class);
 
-    public LineController(LineDao lineDao, LineService lineService) {
-        this.lineDao = lineDao;
+    public LineController(final LineService lineService) {
         this.lineService = lineService;
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> create(@RequestBody LineRequest requestDto) {
+    public ResponseEntity<LineResponse> create(@RequestBody final LineRequest requestDto) {
         LineResponse response = lineService.save(requestDto);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
@@ -44,24 +42,24 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable final Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable final Long id, @RequestBody final LineUpdateRequest lineUpdateRequest) {
         lineService.update(id, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineDao.delete(id);
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
+        lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionAddRequest sectionAddRequest) {
+    public ResponseEntity<Void> addSection(@PathVariable final Long id, @RequestBody final SectionAddRequest sectionAddRequest) {
         lineService.addSection(id, sectionAddRequest);
         return ResponseEntity.ok().build();
     }
