@@ -48,6 +48,16 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "판교역");
+        final ExtractableResponse<Response> createResponse3 = RestAssured.given().log().all()
+                .body(params3)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
         params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
@@ -342,18 +352,18 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-//    @DisplayName("구간 추가시, 존재하는 LineId에 접근하면 200 상태 코드를 받는다.")
-//    @Test
-//    void validLineIdSectionAdd() {
-//        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
-//        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-//                .body(sectionRequest)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("/lines/1/sections")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-//    }
+    @DisplayName("하행선을 갱신하며 구간 추가에 성공하면, 200 상태 코드를 받는다.")
+    @Test
+    void validLineIdSectionAdd() {
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10);
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

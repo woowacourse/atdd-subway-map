@@ -5,12 +5,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.dto.SectionRequest;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class SectionRepository {
@@ -45,5 +43,16 @@ public class SectionRepository {
         query = "SELECT down_station_id FROM section WHERE line_id = ?";
         stationIds.addAll(jdbcTemplate.query(query, stationIdRowMapperByDownStationId, id));
         return new ArrayList<>(stationIds);
+    }
+
+    public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
+        // 시작점 뒤에 아무것도 없는경우
+        // line_id에 있는 데이터중, 시작점을 up_station으로 가진 놈이 테이블에 있는지 확인한다.
+        try {
+            String query = "SELECT up_station_id FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
+            Long ClosestStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId()));
+        } catch (Exception e) {
+            save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        }
     }
 }

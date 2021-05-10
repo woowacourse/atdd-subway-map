@@ -30,6 +30,17 @@ public class SectionService {
 
     public void add(final Long lineId, final SectionRequest sectionRequest) {
         validateAddRequest(lineId, sectionRequest);
+        List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(lineId);
+
+        // upStation만 Line에 존재하는 경우,
+        if (stationIdsByLineId.contains(sectionRequest.getUpStationId())) {
+            addBaseOnUpStation(lineId, sectionRequest);
+        }
+        // downStation만 Line에 존재하는 경우.
+    }
+
+    private void addBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
+        sectionRepository.saveBaseOnUpStation(lineId, sectionRequest);
     }
 
     private void validateAddRequest(final Long lineId, final SectionRequest sectionRequest) {
