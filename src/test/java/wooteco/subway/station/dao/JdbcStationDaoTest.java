@@ -51,9 +51,9 @@ class JdbcStationDaoTest {
     void findByName() {
         // given
         String 강남역 = "강남역";
-        jdbcStationDao.save(new Station(강남역));
 
         // when
+        jdbcStationDao.save(new Station(강남역));
         Optional<Station> station = jdbcStationDao.findByName(강남역);
 
         // then
@@ -65,11 +65,14 @@ class JdbcStationDaoTest {
     @Test
     void findAll() {
         // given
-        jdbcStationDao.save(new Station("강남역"));
-        jdbcStationDao.save(new Station("왕십리역"));
-        jdbcStationDao.save(new Station("잠실역"));
+        Station 강남역 = new Station("강남역");
+        Station 왕십리역 = new Station("왕십리역");
+        Station 잠실역 = new Station("잠실역");
 
         // when
+        jdbcStationDao.save(강남역);
+        jdbcStationDao.save(왕십리역);
+        jdbcStationDao.save(잠실역);
         List<Station> stations = jdbcStationDao.findAll();
 
         // then
@@ -86,10 +89,12 @@ class JdbcStationDaoTest {
     @Test
     void delete() {
         // given
-        jdbcStationDao.save(new Station("강남역"));
-        int originalSize = jdbcStationDao.findAll().size();
+        Station 강남역 = new Station("강남역");
+        int originalSize;
 
         // when
+        jdbcStationDao.save(강남역);
+        originalSize = jdbcStationDao.findAll().size();
         jdbcStationDao.delete(1L);
 
         // then

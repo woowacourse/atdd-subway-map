@@ -44,9 +44,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        createRequest("/stations", 강남역);
 
         // when
+        createRequest("/stations", 강남역);
         ExtractableResponse<Response> response = createRequest("/stations", 강남역);
 
         // then
@@ -59,10 +59,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         StationRequest 강남역 = new StationRequest("강남역");
         StationRequest 역삼역 = new StationRequest("역삼역");
-        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
-        ExtractableResponse<Response> 역삼역생성 = createRequest("/stations", 역삼역);
 
         // when
+        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
+        ExtractableResponse<Response> 역삼역생성 = createRequest("/stations", 역삼역);
         ExtractableResponse<Response> response = findAllRequest("/stations");
         List<Long> expectedStationIds = expectedStationIdsList(Arrays.asList(강남역생성, 역삼역생성));
         List<Long> resultStationIds = resultStationIdsList(response);
@@ -89,12 +89,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest 강남역 = new StationRequest("강남역");
-        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
-
-        int originalSize = stationDao.findAll().size();
+        int originalSize;
 
         // when
+        ExtractableResponse<Response> 강남역생성 = createRequest("/stations", 강남역);
         String uri = 강남역생성.header("Location");
+        originalSize = stationDao.findAll().size();
         ExtractableResponse<Response> response = deleteRequest(uri);
 
         // then

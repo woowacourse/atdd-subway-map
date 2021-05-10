@@ -50,11 +50,14 @@ class JdbcLineDaoTest {
     @Test
     void findAll() {
         // given
-        jdbcLineDao.save(new Line("분당선", "red"));
-        jdbcLineDao.save(new Line("신분당선", "yellow"));
-        jdbcLineDao.save(new Line("2호선", "green"));
+        Line 분당선 = new Line("분당선", "red");
+        Line 신분당선 = new Line("신분당선", "yellow");
+        Line 이호선 = new Line("2호선", "green");
 
         // when
+        jdbcLineDao.save(분당선);
+        jdbcLineDao.save(신분당선);
+        jdbcLineDao.save(이호선);
         List<Line> lines = jdbcLineDao.findAll();
 
         // then
@@ -72,9 +75,10 @@ class JdbcLineDaoTest {
     void findById() {
         // given
         Long id = 1L;
-        jdbcLineDao.save(new Line("분당선", "red"));
+        Line 분당선 = new Line("분당선", "red");
 
         // when
+        jdbcLineDao.save(분당선);
         Optional<Line> line = jdbcLineDao.findById(id);
 
         // then
@@ -86,24 +90,25 @@ class JdbcLineDaoTest {
     @Test
     void findByName() {
         // given
-        String 분당선 = "분당선";
-        jdbcLineDao.save(new Line(분당선, "red"));
+        Line 분당선 = new Line("분당선", "red");
 
         // when
-        Optional<Line> line = jdbcLineDao.findByName(분당선);
+        jdbcLineDao.save(분당선);
+        Optional<Line> line = jdbcLineDao.findByName(분당선.getName());
 
         // then
         assertThat(line.get()).usingRecursiveComparison()
-                .isEqualTo(new Line(1L, 분당선, "red"));
+                .isEqualTo(new Line(1L, "분당선", "red"));
     }
 
     @DisplayName("지하철 노선 정보 수정")
     @Test
     void update() {
         // given
-        jdbcLineDao.save(new Line("분당선", "red"));
+        Line 분당선 = new Line("분당선", "red");
 
         // when
+        jdbcLineDao.save(분당선);
         jdbcLineDao.update(new Line(1L, "2호선", "green"));
 
         // then
@@ -115,10 +120,12 @@ class JdbcLineDaoTest {
     @Test
     void delete() {
         // given
-        jdbcLineDao.save(new Line("분당선", "red"));
-        int originalSize = jdbcLineDao.findAll().size();
+        Line 분당선 = new Line("분당선", "red");
+        int originalSize;
 
         // when
+        jdbcLineDao.save(분당선);
+        originalSize = jdbcLineDao.findAll().size();
         jdbcLineDao.delete(1L);
 
         // then
@@ -130,9 +137,9 @@ class JdbcLineDaoTest {
     void findByNameAndNotInOriginalName() {
         // given
         String 분당선 = "분당선";
-        jdbcLineDao.save(new Line(분당선, "red"));
 
         // when
+        jdbcLineDao.save(new Line(분당선, "red"));
         Optional<String> searchOtherName = jdbcLineDao.findByNameAndNotInOriginalName(분당선, "2호선");
         Optional<String> searchOriginalName = jdbcLineDao.findByNameAndNotInOriginalName(분당선, 분당선);
 
