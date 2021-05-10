@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class SectionCreateAcceptanceTest extends AcceptanceTest {
 
     private final StationResponse gangnam = new StationResponse(1L, "강남역");
     private final StationResponse yeoksam = new StationResponse(2L, "역삼역");
