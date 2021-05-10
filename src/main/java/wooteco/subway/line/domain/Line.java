@@ -58,13 +58,13 @@ public class Line {
     }
 
     private static void validatedNameLength(String name) {
-        if(name == null || name.length() == 0) {
+        if (name == null || name.length() == 0) {
             throw new IllegalLineArgumentException("유효한 이름이 아닙니다.");
         }
     }
 
     private static void validatedColorLength(String color) {
-        if(color == null || color.length() == 0) {
+        if (color == null || color.length() == 0) {
             throw new IllegalLineArgumentException("유효한 색깔이 아닙니다.");
         }
     }

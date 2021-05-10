@@ -18,7 +18,7 @@ public class LineService {
     }
 
     public Line save(Line line) {
-        if(lineDao.findByName(line.getName()).isPresent()) {
+        if (lineDao.findByName(line.getName()).isPresent()) {
             throw new DuplicatedNameException();
         }
         return lineDao.save(line);
