@@ -10,12 +10,21 @@ import wooteco.subway.exception.section.InvalidDistanceException;
 public class Section {
 
     private Long id;
+    private Long lineId;
     private Station upStation;
     private Station downStation;
     private int distance;
 
     public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(null, upStation, downStation, distance);
+        return of(null, upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, int distance) {
+        return of(id, null, upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Long lineId, Station upStation, Station downStation, int distance) {
+        return new Section(id, lineId, upStation, downStation, distance);
     }
 
     public boolean isUpStation(Station targetStation) {

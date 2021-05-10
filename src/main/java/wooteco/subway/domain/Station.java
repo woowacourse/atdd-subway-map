@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 public class Station {
     private Long id;
     private String name;
+//
+//    public static Station from(Long id) {
+//        return of(id, null);
+//    }
 
     public static Station from(String name) {
         return of(null, name);

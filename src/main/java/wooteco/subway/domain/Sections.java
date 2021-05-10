@@ -135,4 +135,20 @@ public class Sections {
     public boolean hasSize(int size) {
         return sections.size() == size;
     }
+
+    public List<Section> containsStationByStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.hasStation(stationId))
+                .collect(Collectors.toList());
+    }
+
+    public void change(Section newSection) {
+        sections.stream()
+                .filter(section -> section.getId().equals(newSection.getId()))
+                .map(sections::remove);
+        sections.add(newSection);
+        /*if (sections.removeIf(section -> section.getId().equals(newSection.getId()))) {
+            sections.add(newSection);
+        }*/
+    }
 }

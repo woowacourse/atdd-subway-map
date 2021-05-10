@@ -24,8 +24,7 @@ public class LineService {
         }
         Line line = lineDao.save(Line.of(name, color));
         Section section = Section.of(upStation, downStation, distance);
-        sectionDao.save(section, line.getId());
-        line.addSection(section);
+        line.addSection(sectionDao.save(section, line.getId()));
         return line;
     }
 
