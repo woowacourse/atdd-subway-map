@@ -5,6 +5,7 @@ import wooteco.subway.section.exception.SectionsSizeTooSmallException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class Sections {
 
     public Sections(List<Section> sections) {
         checkMinimumSize(sections);
-        this.sections = sort(sections);
+        this.sections = validateAndSort(sections);
     }
 
     private void checkMinimumSize(List<Section> sections) {
@@ -35,7 +36,7 @@ public class Sections {
         }
     }
 
-    private LinkedList<Section> sort(List<Section> sections) {
+    private LinkedList<Section> validateAndSort(List<Section> sections) {
         Section firstSection = validateAndFindFirstSection(sections);
         return sortUpToDown(sections, firstSection);
     }
@@ -97,7 +98,13 @@ public class Sections {
         return sorted;
     }
 
-    public LinkedList<Section> getSections() {
-        return sections;
+    public List<Section> getReverseSections() {
+        List<Section> copy = new LinkedList<>(this.sections);
+        Collections.reverse(copy);
+        return Collections.unmodifiableList(copy);
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }

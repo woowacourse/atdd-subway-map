@@ -52,4 +52,14 @@ class SectionsTest {
         //then
         assertThat(sections.getSections()).containsExactly(FIRST_SECTION, SECOND_SECTION, THIRD_SECTION, FOURTH_SECTION);
     }
+
+    @DisplayName("역정렬 조회 기능 테스트")
+    @Test
+    void getReverseTest() {
+        //given
+        //when
+        Sections sections = new Sections(SECOND_SECTION, FIRST_SECTION, FOURTH_SECTION, THIRD_SECTION);
+        //then
+        assertThat(sections.getReverseSections()).containsExactly(FOURTH_SECTION, THIRD_SECTION, SECOND_SECTION, FIRST_SECTION);
+    }
 }
