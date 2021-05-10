@@ -182,4 +182,33 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("노선에 있는 지하철 역이 2개일 때에는 지하철 역을 제거할 수 없다.")
+    @Test
+    void deleteLine_throwsException() {
+        // given
+        StationRequestDto station1 = new StationRequestDto("주안역");
+        StationRequestDto station2 = new StationRequestDto("강남역");
+
+        Long stationId1 = StationRequest.createStationRequestAndReturnId(station1);
+        Long stationId2 = StationRequest.createStationRequestAndReturnId(station2);
+        Long lineId = LineRequest.createLineRequestAndReturnId(new LineCreateRequestDto(
+                "1호선",
+                "yellow",
+                stationId1,
+                stationId2,
+                15
+        ));
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId2)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
