@@ -86,7 +86,6 @@ public class LineController {
                 sectionRequest.getDistance());
         sectionService.save(section);
 
-        //TODO: 예외 추가하기
         return ResponseEntity.ok().build();
     }
 

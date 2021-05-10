@@ -16,9 +16,19 @@ public class SectionRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean doesSectionExist(final Section section) {
-        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, section.getLineId(), section.getUpStationId(), section.getDownStationId());
+    public boolean isInitialSave(final Section section) {
+        String query = "SELECT NOT EXISTS(SELECT * FROM section WHERE line_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, section.getLineId());
+    }
+
+    public boolean doesExistInUpStation(final Long lineId, final Long stationId) {
+        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND up_station_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId);
+    }
+
+    public boolean doesExistInDownStation(final Long lineId, final Long stationId) {
+        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND down_station_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId);
     }
 
     public boolean doesStationNotExist(final Long lineId, final Long stationId) {
@@ -45,7 +55,7 @@ public class SectionRepository {
         return count != 2;
     }
 
-    public void deleteSection(final Long lineId, final Long stationId) {
+    public void deleteRelevantSections(final Long lineId, final Long stationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         jdbcTemplate.update(query, lineId, stationId, stationId);
     }
@@ -90,5 +100,39 @@ public class SectionRepository {
                 lineId,
                 lineId);
         return sections;
+    }
+
+    public void deleteSection(final Section section) {
+        String query = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(query, section.getId());
+    }
+
+    public Section getExistingSectionByBaseStation(final Section section) {
+        final String query;
+        if (doesExistInUpStation(section.getLineId(), section.getUpStationId())) {
+            query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND up_station_id = ?";
+            return sendQueryToGetSection(query, section.getLineId(), section.getUpStationId());
+        }
+        query = "SELECT id, line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ? AND down_station_id = ?";
+        return sendQueryToGetSection(query, section.getLineId(), section.getDownStationId());
+    }
+
+    private Section sendQueryToGetSection(final String query, final Long lineId, final Long stationId) {
+        return jdbcTemplate.queryForObject(
+                query,
+                (resultSet, rowNum) -> new Section(
+                        resultSet.getLong("id"),
+                        resultSet.getLong("line_id"),
+                        resultSet.getLong("up_station_id"),
+                        resultSet.getLong("down_station_id"),
+                        resultSet.getInt("distance")),
+                lineId,
+                stationId
+        );
+    }
+
+    public void updateSection(final Section section) {
+        String query = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        jdbcTemplate.update(query, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getId());
     }
 }

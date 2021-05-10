@@ -43,7 +43,7 @@ public class SectionRepositoryTest {
     @DisplayName("종점인 역을 제거할 때 종점인 역과 연결되어있던 역을 종점으로 해서 구간을 변경한다")
     @Test
     void deleteSection_endStation() {
-        sectionRepository.deleteSection(1L, 3L);
+        sectionRepository.deleteRelevantSections(1L, 3L);
 
         String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
         List<Section> sections = jdbcTemplate.query(
@@ -67,7 +67,7 @@ public class SectionRepositoryTest {
     @DisplayName("종점이 아닌 역을 제거할 때 해당 역과 관련된 두 역을 다 지운다")
     @Test
     void deleteSection_nonEndStation() {
-        sectionRepository.deleteSection(1L, 4L);
+        sectionRepository.deleteRelevantSections(1L, 4L);
 
         String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
         List<Section> sections = jdbcTemplate.query(

@@ -19,27 +19,97 @@ public class SectionService {
     }
 
     public void save(final Section section) {
-        if (sectionRepository.doesSectionExist(section)) {
+        if (sectionRepository.isInitialSave(section)) {
+            sectionRepository.save(section);
+            return;
+        }
+        validateSection(section);
+        addSection(section);
+    }
+
+    private void validateSection(final Section section) {
+        if (bothStationsAlreadyExist(section)) {
             throw new DuplicateSectionException();
+        }
+        if (bothStationsDoNotExist(section)) {
+            throw new NoSuchStationException();
+        }
+    }
+
+    private void addSection(final Section section) {
+        if (isNotEndStationSave(section)) {
+            Section originalSection = sectionRepository.getExistingSectionByBaseStation(section);
+            Section modifiedSection = getModifiedSection(section, originalSection);
+
+            sectionRepository.updateSection(modifiedSection);
         }
         sectionRepository.save(section);
     }
 
-    public void deleteSection(final Long lineId, final Long stationId) {
-        if (sectionRepository.doesStationNotExist(lineId, stationId)) {
-            throw new NoSuchStationException();
+    private Section getModifiedSection(final Section section, final Section originalSection) {
+        validateSectionDistance(section, originalSection);
+        int newSectionDistance = originalSection.getDistanceGap(section);
+
+        if (section.hasSameUpStation(originalSection)) {
+            return new Section(
+                    originalSection.getId(),
+                    section.getLineId(),
+                    section.getDownStationId(),
+                    originalSection.getDownStationId(),
+                    newSectionDistance);
         }
+        return new Section(
+                originalSection.getId(),
+                section.getLineId(),
+                originalSection.getUpStationId(),
+                section.getUpStationId(),
+                newSectionDistance);
+    }
+
+    private void validateSectionDistance(final Section section, final Section originalSection) {
+        if (originalSection.isShorterOrEqualTo(section)) {
+            throw new IllegalSectionDistanceException();
+        }
+    }
+
+    private boolean bothStationsAlreadyExist(final Section section) {
+        return !sectionRepository.doesStationNotExist(section.getLineId(), section.getUpStationId()) &&
+                !sectionRepository.doesStationNotExist(section.getLineId(), section.getDownStationId());
+    }
+
+    private boolean bothStationsDoNotExist(final Section section) {
+        return sectionRepository.doesStationNotExist(section.getLineId(), section.getUpStationId()) &&
+                sectionRepository.doesStationNotExist(section.getLineId(), section.getDownStationId());
+    }
+
+    private boolean isNotEndStationSave(final Section section) {
+        return !((sectionRepository.isEndStation(section.getLineId(), section.getDownStationId()) &&
+                sectionRepository.doesExistInUpStation(section.getLineId(), section.getDownStationId())) ||
+                (sectionRepository.isEndStation(section.getLineId(), section.getUpStationId()) &&
+                        sectionRepository.doesExistInDownStation(section.getLineId(), section.getUpStationId())));
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        validateStationExistence(lineId, stationId);
+        validateSectionCount(lineId);
+
+        if (!sectionRepository.isEndStation(lineId, stationId)) {
+            Section newSection = createNewSection(lineId, stationId);
+            sectionRepository.save(newSection);
+        }
+        sectionRepository.deleteRelevantSections(lineId, stationId);
+    }
+
+    private void validateSectionCount(final Long lineId) {
         if (sectionRepository.isUnableToDelete(lineId)) {
             throw new UnavailableSectionDeleteException();
         }
+    }
 
-        if (sectionRepository.isEndStation(lineId, stationId)) {
-            sectionRepository.deleteSection(lineId, stationId);
-            return;
+    private void validateStationExistence(final Long lineId, final Long stationId) {
+        if (sectionRepository.doesStationNotExist(lineId, stationId)) {
+            throw new NoSuchStationException();
         }
-        Section newSection = createNewSection(lineId, stationId);
-        sectionRepository.save(newSection);
-        sectionRepository.deleteSection(lineId, stationId);
     }
 
     private Section createNewSection(final Long lineId, final Long stationId) {

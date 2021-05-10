@@ -23,6 +23,7 @@ public class SectionServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private SectionService sectionService;
+    private final Long lineId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -40,47 +41,37 @@ public class SectionServiceTest {
 
         // 잠실역 (1) - 5 - 잠실새내역 (2) - 4 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
         String sectionQuery = "INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
-        jdbcTemplate.update(sectionQuery, 1L, 2L, 4L, 4);
-        jdbcTemplate.update(sectionQuery, 1L, 1L, 2L, 5);
-        jdbcTemplate.update(sectionQuery, 1L, 4L, 3L, 7);
+        jdbcTemplate.update(sectionQuery, lineId, 2L, 4L, 4);
+        jdbcTemplate.update(sectionQuery, lineId, 1L, 2L, 5);
+        jdbcTemplate.update(sectionQuery, lineId, 4L, 3L, 7);
     }
 
     @DisplayName("구간이 하나만 존재할 때 UnavailableSectionDeleteException 반환한다")
     @Test
     void deleteSection_onlyOneSection_throwException() {
         String query = "DELETE FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
-        jdbcTemplate.update(query, 1L, 4L, 4L);
+        jdbcTemplate.update(query, lineId, 4L, 4L);
 
-        assertThatThrownBy(() -> sectionService.deleteSection(1L, 1L))
+        assertThatThrownBy(() -> sectionService.deleteSection(lineId, 1L))
                 .isInstanceOf(UnavailableSectionDeleteException.class);
     }
 
     @DisplayName("stationId가 구간들 내에 존재하지 않을 때, NoSuchStationException 반환한다")
     @Test
     void deleteSection_stationDoesNotExistInSections_throwException() {
-        assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L))
+        assertThatThrownBy(() -> sectionService.deleteSection(lineId, 5L))
                 .isInstanceOf(NoSuchStationException.class);
     }
 
     @DisplayName("종점역 삭제할때, 삭제되는 역과 연결되어있던 역이 종점이 된다")
     @Test
     void deleteSection_endStation_newEndStation() {
-        sectionService.deleteSection(1L, 3L);
+        sectionService.deleteSection(lineId, 3L);
 
-        String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
-        List<Section> sections = jdbcTemplate.query(
-                query,
-                (resultSet, rowNum) -> new Section(
-                        resultSet.getLong("line_id"),
-                        resultSet.getLong("up_station_id"),
-                        resultSet.getLong("down_station_id"),
-                        resultSet.getInt("distance")
-                ),
-                1
-        );
+        List<Section> sections = getSections();
         List<Section> expectedSections = Arrays.asList(
-                new Section(1L, 2L, 4L, 4),
-                new Section(1L, 1L, 2L, 5)
+                new Section(lineId, 2L, 4L, 4),
+                new Section(lineId, 1L, 2L, 5)
         );
 
         assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
@@ -89,10 +80,113 @@ public class SectionServiceTest {
     @DisplayName("종점역이 아닌 역을 삭제할때, 삭제되는 역과 연결되어 있던 두 역을 통합하여 새로운 구간을 형성한다")
     @Test
     void deleteSection_nonEndStation_combineTwoStations() {
-        sectionService.deleteSection(1L, 4L);
+        sectionService.deleteSection(lineId, 4L);
 
+        List<Section> sections = getSections();
+        List<Section> expectedSections = Arrays.asList(
+                new Section(lineId, 1L, 2L, 5),
+                new Section(lineId, 2L, 3L, 11)
+        );
+
+        assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
+    }
+
+    @DisplayName("구간을 저장할 때 이미 존재하는 구간이면 DuplicateSectionException을 반환한다")
+    @Test
+    void save_existingSection_throwException() {
+        Section oneStepSection = new Section(lineId, 2L, 4L);
+        assertThatThrownBy(() -> sectionService.save(oneStepSection)).isInstanceOf(DuplicateSectionException.class);
+
+        Section twoStepSection = new Section(lineId, 2L, 4L);
+        assertThatThrownBy(() -> sectionService.save(twoStepSection)).isInstanceOf(DuplicateSectionException.class);
+
+        Section oneStepReverseSection = new Section(lineId, 4L, 2L);
+        assertThatThrownBy(() -> sectionService.save(oneStepReverseSection)).isInstanceOf(DuplicateSectionException.class);
+
+        Section twoStepReverseSection = new Section(lineId, 4L, 1L);
+        assertThatThrownBy(() -> sectionService.save(twoStepReverseSection)).isInstanceOf(DuplicateSectionException.class);
+    }
+
+    @DisplayName("구간을 저장할 때 상행선 하행선 둘다 존재하지 않으면 NoSuchStationException을 반환한다")
+    @Test
+    void save_nonExistingSection_throwException() {
+        Section nonExistingSection = new Section(lineId, 5L, 6L);
+        assertThatThrownBy(() -> sectionService.save(nonExistingSection)).isInstanceOf(NoSuchStationException.class);
+    }
+
+    @DisplayName("구간을 저장할 때 새로운 종점역을 만드는 구간 삽입이면 해당 구간을 단순 추가해준다")
+    @Test
+    void save_newEndStation_addSection() {
+        String stationQuery = "INSERT INTO station(name) VALUES(?)";
+        jdbcTemplate.update(stationQuery, "강남역");
+
+        Section newSection = new Section(lineId, 3L, 5L, 14);
+        sectionService.save(newSection);
+
+        List<Section> sections = getSections();
+        List<Section> expectedSections = Arrays.asList(
+                new Section(lineId, 1L, 2L, 5),
+                new Section(lineId, 2L, 4L, 4),
+                new Section(lineId, 4L, 3L, 7),
+                new Section(lineId, 3L, 5L, 14)
+                );
+
+        assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
+    }
+
+    @DisplayName("구간을 저장할 때 중간에 낀 구간에 대한 수정 상황이면 기존 구간을 업데이트 한다")
+    @Test
+    void save_nonNewEndStation_updateExistingSection() {
+        String stationQuery = "INSERT INTO station(name) VALUES(?)";
+        jdbcTemplate.update(stationQuery, "강남역");
+
+        Section newSection = new Section(lineId, 2L, 5L, 1);
+        sectionService.save(newSection);
+        // 잠실역 (1) - 5 - 잠실새내역 (2) - 1 - 강남역 (5) - 3 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
+
+        List<Section> sections = getSections();
+        List<Section> expectedSections = Arrays.asList(
+                new Section(lineId, 1L, 2L, 5),
+                new Section(lineId, 2L, 5L, 1),
+                new Section(lineId, 5L, 4L, 3),
+                new Section(lineId, 4L, 3L, 7)
+        );
+
+        assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
+
+        // 잠실역 (1) - 5 - 잠실새내역 (2) - 1 - 강남역 (5) - 3 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
+        jdbcTemplate.update(stationQuery, "해운대역");
+
+        newSection = new Section(lineId, 6L, 4L, 1);
+        sectionService.save(newSection);
+
+        // 잠실역 (1) - 5 - 잠실새내역 (2) - 1 - 강남역 (5) - 2 - 해운대역 (6) - 1 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
+        sections = getSections();
+        expectedSections = Arrays.asList(
+                new Section(lineId, 1L, 2L, 5),
+                new Section(lineId, 2L, 5L, 1),
+                new Section(lineId, 5L, 6L, 2),
+                new Section(lineId, 6L, 4L, 1),
+                new Section(lineId, 4L, 3L, 7)
+        );
+
+        assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
+    }
+
+    // 잠실역 (1) - 5 - 잠실새내역 (2) - 4 - 한성백제역 (4) - 7 - 몽촌토성역 (3)
+    @DisplayName("구간을 저장할 때 요청된 구간의 길이가 영향을 받는 구간의 길이 보다 길거나 같으면 IllegalSectionDistanceException을 반환한다")
+    @Test
+    void save_requestedSectionLongerOrEqualToExistingSection() {
+        String stationQuery = "INSERT INTO station(name) VALUES(?)";
+        jdbcTemplate.update(stationQuery, "강남역");
+
+        Section newSection = new Section(lineId, 2L, 5L, 5);
+        assertThatThrownBy(() -> sectionService.save(newSection)).isInstanceOf(IllegalSectionDistanceException.class);
+    }
+
+    private List<Section> getSections() {
         String query = "SELECT line_id, up_station_id, down_station_id, distance FROM section WHERE line_id = ?";
-        List<Section> sections = jdbcTemplate.query(
+        return jdbcTemplate.query(
                 query,
                 (resultSet, rowNum) -> new Section(
                         resultSet.getLong("line_id"),
@@ -102,11 +196,5 @@ public class SectionServiceTest {
                 ),
                 1
         );
-        List<Section> expectedSections = Arrays.asList(
-                new Section(1L, 1L, 2L, 5),
-                new Section(1L, 2L, 3L, 11)
-        );
-
-        assertThat(sections).hasSameSizeAs(expectedSections).containsAll(expectedSections);
     }
 }
