@@ -9,11 +9,11 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(Long id, SectionRequest sectionRequest) {
-        this.id = id;
-        this.upStationId = sectionRequest.getUpStationId();
-        this.downStationId = sectionRequest.getDownStationId();
-        this.distance = sectionRequest.getDistance();
+    public SectionResponse(Section section) {
+        this.id = section.getId();
+        this.upStationId = section.getUpStationId();
+        this.downStationId = section.getDownStationId();
+        this.distance = section.getDistance();
     }
 
     public Long getId() {
