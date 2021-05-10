@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
     private static final Logger log = LoggerFactory.getLogger(ExceptionAdvice.class);
 
-    @ExceptionHandler(DuplicatedNameException.class)
-    public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(DuplicatedNameException e) {
+    @ExceptionHandler({DuplicatedNameException.class, SubWayException.class})
+    public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(Throwable e) {
         log.error(e.getMessage());
-        Class<? extends DuplicatedNameException> causedClass = e.getClass();
+        Class<? extends Throwable> causedClass = e.getClass();
         ExceptionResponse exceptionResponse = new ExceptionResponse(causedClass.getName(), e.getMessage());
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
@@ -26,12 +26,5 @@ public class ExceptionAdvice {
         Class<? extends DataAccessException> causedClass = e.getClass();
         ExceptionResponse exceptionResponse = new ExceptionResponse(causedClass.getName(), e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(SubWayException.class)
-    public ResponseEntity<ExceptionResponse> handleSectionException(SubWayException e) {
-        Class<? extends SubWayException> causedClass = e.getClass();
-        ExceptionResponse exceptionResponse = new ExceptionResponse(causedClass.getName(), e.getMessage());
-        return ResponseEntity.badRequest().body(exceptionResponse);
     }
 }
