@@ -25,7 +25,7 @@ public class LineResponse {
         final Long id = line.getId();
         final String name = line.getName();
         final String color = line.getColor();
-        final List<StationResponse> stations = line.getStations().stream()
+        final List<StationResponse> stations = line.getStations().toStream()
             .map(StationResponse::from)
             .collect(Collectors.toList());
         return new LineResponse(id, name, color, stations);
