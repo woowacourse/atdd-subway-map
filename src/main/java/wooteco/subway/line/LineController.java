@@ -27,7 +27,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> lines = lineService.lines();
+        List<Line> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());

@@ -15,4 +15,8 @@ public interface LineDao {
     Optional<Line> findByName(String name);
 
     void delete(Long id);
+
+    Optional<Line> findByName(String name);
+
+    Optional<Line> findByColor(String color);
 }
