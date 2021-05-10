@@ -55,6 +55,20 @@ public class LineFakeDao implements LineDao {
         LINES.removeIf(line -> line.getId().equals(id));
     }
 
+    @Override
+    public void updateTopStationId(final Long lineId, final Long topStationId) {
+        final Line line = findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 역이 존재하지 않습니다."));
+        final Line updatedLine = line.updateTopStationId(topStationId);
+        update(lineId, updatedLine);
+    }
+
+    @Override
+    public void updateBottomStationId(final Long lineId, final Long bottomStationId) {
+        final Line line = findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 ID와 일치하는 역이 존재하지 않습니다."));
+        final Line updatedLine = line.updateBottomStationId(bottomStationId);
+        update(lineId, updatedLine);
+    }
+
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);

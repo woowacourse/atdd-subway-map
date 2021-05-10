@@ -39,4 +39,12 @@ public class Line {
     public Long getBottomStationId() {
         return bottomStationId;
     }
+
+    public Line updateTopStationId(final Long topStationId) {
+        return new Line(id, name, color, topStationId, bottomStationId);
+    }
+
+    public Line updateBottomStationId(final Long bottomStationId) {
+        return new Line(id, name, color, topStationId, bottomStationId);
+    }
 }

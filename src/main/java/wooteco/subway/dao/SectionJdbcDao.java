@@ -38,17 +38,37 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public List<Section> findAllById(final Long id) {
+    public void updateUpStationToDownStation(final Long upStationId, final Long downStationId) {
+
+    }
+
+    @Override
+    public void updateDownStationToUpStation(final Long downStationId, final Long upStationId) {
+
+    }
+
+    @Override
+    public List<Section> findAllByLineId(final Long lineId) {
         String sql =
                 "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s WHERE s" +
                         ".line_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            final long lineId = rs.getLong("line_id");
+            final long id = rs.getLong("id");
             final long upStationId = rs.getLong("up_station_id");
             final long downStationId = rs.getLong("down_station_id");
             final int distance = rs.getInt("distance");
             return new Section(id, lineId, upStationId, downStationId, distance);
-        }, id);
+        }, lineId);
+    }
+
+    @Override
+    public Optional<Section> findSectionByDownStationId(final Long downStationId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Section> findSectionByUpStationId(final Long upStationId) {
+        return Optional.empty();
     }
 
     @Override

@@ -18,4 +18,8 @@ public interface LineDao {
     void update(Long id, Line line);
 
     void delete(Long id);
+
+    void updateTopStationId(Long lineId, Long topStationId);
+
+    void updateBottomStationId(Long lineId, Long bottomStationId);
 }

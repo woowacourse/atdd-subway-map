@@ -90,6 +90,18 @@ public class LineJdbcDao implements LineDao {
     }
 
     @Override
+    public void updateTopStationId(final Long lineId, final Long topStationId) {
+        String sql = "UPDATE LINE l SET l.top_station_id = ? WHERE l.id = ?";
+        jdbcTemplate.update(sql, topStationId, lineId);
+    }
+
+    @Override
+    public void updateBottomStationId(final Long lineId, final Long bottomStationId) {
+        String sql = "UPDATE LINE l SET l.bottom_station_id = ? WHERE l.id = ?";
+        jdbcTemplate.update(sql, bottomStationId, lineId);
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM LINE l WHERE l.id = ?";
         jdbcTemplate.update(sql, id);
