@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.ControllerTest;
 import wooteco.subway.station.service.dao.StationDao;
 
@@ -20,6 +22,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 @DisplayName("지하철역 관련 기능")
 public class StationControllerTest extends ControllerTest {
@@ -35,7 +38,9 @@ public class StationControllerTest extends ControllerTest {
     @DisplayName("지하철역 -  생성")
     @Test
     void createStation() {
-        역_생성("강남역").statusCode(HttpStatus.CREATED.value());
+        역_생성("강남역").statusCode(HttpStatus.CREATED.value())
+                .body("id", notNullValue())
+                .body("name", equalTo("강남역"));
     }
 
     private ValidatableResponse 역_생성(String name) {
@@ -58,14 +63,7 @@ public class StationControllerTest extends ControllerTest {
         ExtractableResponse<Response> stationRequest = 역_생성("강남역").extract();
 
         // when
-        RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+        역_생성("강남역").statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -80,9 +78,9 @@ public class StationControllerTest extends ControllerTest {
                 .when()
                 .get("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
@@ -92,14 +90,22 @@ public class StationControllerTest extends ControllerTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @Transactional
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 역_생성("강남역").extract();
+        StationRequest stationRequest = new StationRequest("강남역");
 
+        String uri = RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract()
+                .header("Location");
         // when and then
-        String uri = createResponse.header("Location");
         RestAssured.given().log().all()
                 .when()
                 .delete(uri)
@@ -110,7 +116,15 @@ public class StationControllerTest extends ControllerTest {
     @DisplayName("역 제거 - 실패(존재하지 않는 역)")
     @Test
     void deleteStation_notExistStation() {
-        역_생성("강남역").statusCode(HttpStatus.BAD_REQUEST.value())
+        StationRequest stationRequest = new StationRequest(1L, "강남역");
+
+        RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/stations/" + stationRequest.getId())
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .body(equalTo("역을 찾을 수 없습니다."));
     }
 
@@ -121,14 +135,7 @@ public class StationControllerTest extends ControllerTest {
         ValidatableResponse stationRequest = 역_생성("강남역").statusCode(HttpStatus.CREATED.value());
 
         //when and then
-        RestAssured
-                .given().log().all()
-                .body(stationRequest)
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+        역_생성("강남역").statusCode(HttpStatus.BAD_REQUEST.value())
                 .body(equalTo("이미 등록되어 있는 역 이름입니다."));
     }
 }

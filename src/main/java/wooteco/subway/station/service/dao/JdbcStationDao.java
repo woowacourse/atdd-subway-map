@@ -52,7 +52,7 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public Optional<Station> findStationById(Long id) {
-        final String sql = "SELECT * FROM line WHERE id = ?";
+        final String sql = "SELECT * FROM station WHERE id = ?";
         return jdbcTemplate.query(sql, stationRowMapper, id).stream().findAny();
     }
 
