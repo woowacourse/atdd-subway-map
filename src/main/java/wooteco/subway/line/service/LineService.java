@@ -36,11 +36,11 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Line findLineById(Long id) {
+    public Line findById(Long id) {
         return lineDao.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
-    public Optional<Line> findLineByName(String name) {
+    public Optional<Line> findByName(String name) {
         return lineDao.findByName(name);
     }
 

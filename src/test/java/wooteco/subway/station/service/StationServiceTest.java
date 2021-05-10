@@ -48,7 +48,7 @@ class StationServiceTest {
         역_생성("강남역");
 
         //then
-        assertThat(stationService.findStationById(save.getId())).usingRecursiveComparison().isEqualTo(new Station(save.getId(), "잠실역"));
+        assertThat(stationService.findById(save.getId())).usingRecursiveComparison().isEqualTo(new Station(save.getId(), "잠실역"));
     }
 
     @DisplayName("역 조회 - 이름")
@@ -58,7 +58,7 @@ class StationServiceTest {
         역_생성("강남역");
 
         //then
-        assertThat(stationService.findStationByName("잠실역").get()).usingRecursiveComparison().isEqualTo(new Station(save.getId(), "잠실역"));
+        assertThat(stationService.findByName("잠실역").get()).usingRecursiveComparison().isEqualTo(new Station(save.getId(), "잠실역"));
     }
 
     @DisplayName("역 전체 조회")

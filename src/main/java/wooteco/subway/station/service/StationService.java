@@ -23,11 +23,11 @@ public class StationService {
         return stationDao.findAll();
     }
 
-    public Station findStationById(Long id) {
+    public Station findById(Long id) {
         return stationDao.findById(id).orElseThrow(StationNotFoundException::new);
     }
 
-    public Optional<Station> findStationByName(String name) {
+    public Optional<Station> findByName(String name) {
         return stationDao.finByName(name);
     }
 
@@ -41,7 +41,7 @@ public class StationService {
 
     @Transactional
     public void remove(Long id) {
-        findStationById(id);
+        findById(id);
         stationDao.remove(id);
     }
 

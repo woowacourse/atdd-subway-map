@@ -45,15 +45,15 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> findLineById(@PathVariable Long id) {
-        Line line = lineService.findLineById(id);
+        Line line = lineService.findById(id);
         return ResponseEntity.ok(new LineResponse(line));
     }
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.findLineById(id);
+        lineService.findById(id);
 
-        final Optional<Line> lineByName = lineService.findLineByName(lineRequest.getName());
+        final Optional<Line> lineByName = lineService.findByName(lineRequest.getName());
 
         if (lineByName.isPresent() && lineByName.get().isNotSameId(id)) {
             throw new LineNameDuplicatedException();

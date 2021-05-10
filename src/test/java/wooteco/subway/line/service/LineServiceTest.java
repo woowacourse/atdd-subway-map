@@ -50,7 +50,7 @@ class LineServiceTest {
         라인_생성("3호선", "bg-blue-600");
 
         //then
-        assertThat(lineService.findLineById(save.getId())).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "2호선", "bg-red-600"));
+        assertThat(lineService.findById(save.getId())).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "2호선", "bg-red-600"));
     }
 
     @DisplayName("노선 조회 - 이름")
@@ -60,7 +60,7 @@ class LineServiceTest {
         라인_생성("3호선", "bg-blue-600");
 
         //then
-        assertThat(lineService.findLineByName("2호선").get()).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "2호선", "bg-red-600"));
+        assertThat(lineService.findByName("2호선").get()).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "2호선", "bg-red-600"));
     }
 
     @DisplayName("노선 전체 조회")
@@ -107,6 +107,6 @@ class LineServiceTest {
         lineService.update(save.getId(), new LineRequest("3호선", "bg-blue-600"));
 
         //then
-        assertThat(lineService.findLineById(save.getId())).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "3호선", "bg-blue-600"));
+        assertThat(lineService.findById(save.getId())).usingRecursiveComparison().isEqualTo(new Line(save.getId(), "3호선", "bg-blue-600"));
     }
 }
