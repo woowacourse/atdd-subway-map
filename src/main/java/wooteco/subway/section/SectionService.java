@@ -13,6 +13,11 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    public Section initialize(SectionDto sectionDto) {
+        return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
+                sectionDto.getDownStationId(), sectionDto.getDistance());
+    }
+
     public Section save(SectionDto sectionDto) {
         validateSectionInclusion(sectionDto);
         if (hasEndPointInSection(sectionDto)) {

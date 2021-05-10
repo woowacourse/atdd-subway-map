@@ -19,11 +19,12 @@ class LineServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private LineRequest lineRequest = new LineRequest("2호선", "초록색", null, null, 0);
+    private LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
 
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("truncate table LINE");
+        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
     }
 
     @Test

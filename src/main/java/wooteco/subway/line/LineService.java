@@ -23,7 +23,7 @@ public class LineService {
             throw new LineExistenceException();
         }
         Line savedLine = lineDao.save(lineRequest.getName(), lineRequest.getColor());
-        sectionService.save(SectionDto.of(savedLine.getId(), lineRequest));
+        sectionService.initialize(SectionDto.of(savedLine.getId(), lineRequest));
         return savedLine;
     }
 

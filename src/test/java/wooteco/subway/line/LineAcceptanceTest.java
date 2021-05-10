@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
+import wooteco.subway.section.SectionDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private SectionDao sectionDao;
 
     @BeforeEach
     void beforeEach() {
         jdbcTemplate.execute("truncate table LINE");
+        jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
     }
 
     @Test
@@ -38,6 +42,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+
+        assertThat(sectionDao.findSectionByUpStationId(1L).isPresent()).isTrue();
     }
 
     @Test
@@ -136,7 +142,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void modifyLine() {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
-        LineRequest lineRequest = new LineRequest("9호선", "남색", 0L, 0L, 0);
+        LineRequest lineRequest = new LineRequest("9호선", "남색", 2L, 3L, 10);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -154,7 +160,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> extract = createLineInsertResponse("초록색", "2호선");
         String uri = extract.header("Location");
 
-        LineRequest lineRequest = new LineRequest(" ", " ", 0L, 0L, 0);
+        LineRequest lineRequest = new LineRequest(" ", " ", 2L, 3L, 10);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -172,7 +178,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("존재하지 않는 노선을 수정한다.")
     public void modifyWithNotExistingLine() {
-        LineRequest lineRequest = new LineRequest("존재안함", "아무색", 0L, 0L, 0);
+        LineRequest lineRequest = new LineRequest("존재안함", "아무색", 2L, 3L, 10);
         ExtractableResponse<Response> response = RestAssured.given()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -223,7 +229,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLineInsertResponse(String color, String name) {
-        LineRequest lineRequest = new LineRequest(name, color, null, null, 0);
+        LineRequest lineRequest = new LineRequest(name, color, 1L, 2L, 10);
 
         return RestAssured.given()
                 .body(lineRequest)
