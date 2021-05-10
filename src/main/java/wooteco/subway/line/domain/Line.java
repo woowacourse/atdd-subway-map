@@ -31,7 +31,7 @@ public class Line {
     }
 
     public Line update(final String name, final String color) {
-        return new Line(this.id, name, color, new ArrayList<>());
+        return new Line(this.id, name, color, this.stations);
     }
 
     public Long getId() {
