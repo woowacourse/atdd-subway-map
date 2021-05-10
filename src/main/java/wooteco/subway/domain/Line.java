@@ -14,8 +14,12 @@ public class Line {
     private String color;
     private Sections sections;
 
-    public static Line of(String name, String color) {
-        return new Line(null, name, color, Sections.from());
+    public static Line create(String name, String color) {
+        return create(null, name, color);
+    }
+
+    public static Line create(Long id, String name, String color) {
+        return new Line(id, name, color, Sections.from());
     }
 
     public void addSection(Section section) {

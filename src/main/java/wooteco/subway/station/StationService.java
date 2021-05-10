@@ -1,17 +1,13 @@
 package wooteco.subway.station;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.DuplicatedStationException;
 import wooteco.subway.exception.station.StationNotFoundException;
+import wooteco.subway.station.dao.StationDao;
 
-import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -20,7 +16,7 @@ public class StationService {
     private final StationDao stationDao;
 
     public Station save(Station station) {
-        if(stationDao.findStationByName(station.getName()).isPresent()) {
+        if (stationDao.findStationByName(station.getName()).isPresent()) {
             throw new DuplicatedStationException();
         }
         return stationDao.save(station);

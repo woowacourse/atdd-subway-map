@@ -7,8 +7,9 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.section.NotEnoughSectionException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.line.LineDao;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.dao.StationDao;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SectionService {
 
-    private final StationDao stationDao;
+    private final StationDao inMemoryStationDao;
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
@@ -31,7 +32,7 @@ public class SectionService {
 
     public void removeSection(Long lineId, Long stationId) {
         lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
-        stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
+        inMemoryStationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
         if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
             throw new NotEnoughSectionException();
         }

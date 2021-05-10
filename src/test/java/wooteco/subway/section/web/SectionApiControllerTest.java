@@ -16,8 +16,8 @@ import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.line.LineService;
-import wooteco.subway.section.SectionDao;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.dao.StationDao;
 
 import java.util.List;
 
@@ -288,7 +288,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
-    public void deleteSection_fail_notExistLine() throws Exception{
+    public void deleteSection_fail_notExistLine() throws Exception {
         //given
 
         //when
@@ -300,7 +300,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(역이 해당 노선에 등록되어 있지 않을 시)")
-    public void deleteSection_fail_noStationInLine() throws Exception{
+    public void deleteSection_fail_noStationInLine() throws Exception {
         //given
         final Station upStation = upStation();
         final Station downStation = downStation();
@@ -308,7 +308,7 @@ class SectionApiControllerTest {
 
         //when
         final ResultActions result = mockMvc.perform(
-            delete("/lines/" + line.getId() + "/sections?stationId=" + Long.MAX_VALUE)
+                delete("/lines/" + line.getId() + "/sections?stationId=" + Long.MAX_VALUE)
         );
 
         //then
@@ -317,7 +317,7 @@ class SectionApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선에 구간이 하나밖에 존재하지 않을 시)")
-    public void deleteSection_fail_onlyOneSectionExist() throws Exception{
+    public void deleteSection_fail_onlyOneSectionExist() throws Exception {
         //given
         final Station upStation = upStation();
         final Station downStation = downStation();
@@ -325,7 +325,7 @@ class SectionApiControllerTest {
 
         //when
         final ResultActions result = mockMvc.perform(
-            delete("/lines/" + line.getId() + "/sections?stationId=" + downStation.getId())
+                delete("/lines/" + line.getId() + "/sections?stationId=" + downStation.getId())
         );
 
         //then

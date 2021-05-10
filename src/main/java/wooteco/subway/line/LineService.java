@@ -8,7 +8,8 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.DuplicatedLineInformationException;
 import wooteco.subway.exception.line.LineNotFoundException;
-import wooteco.subway.section.SectionDao;
+import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.section.dao.SectionDao;
 
 @RequiredArgsConstructor
 @Service
@@ -21,8 +22,8 @@ public class LineService {
         if (lineDao.findLineByInfo(name, color).isPresent()) {
             throw new DuplicatedLineInformationException();
         }
-        Line line = lineDao.save(Line.of(name, color));
-        Section section = Section.of(upStation, downStation, distance);
+        Line line = lineDao.save(Line.create(name, color));
+        Section section = Section.create(upStation, downStation, distance);
         sectionDao.save(section, line.getId());
         line.addSection(section);
         return line;

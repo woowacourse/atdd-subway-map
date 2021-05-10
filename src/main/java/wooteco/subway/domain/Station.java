@@ -13,7 +13,11 @@ public class Station {
     private String name;
 
     public static Station from(String name) {
-        return new Station(null, name);
+        return from(null, name);
+    }
+
+    public static Station from(Long id, String name) {
+        return new Station(id, name);
     }
 
     public boolean isSameId(Long id) {

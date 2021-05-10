@@ -15,9 +15,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
-import wooteco.subway.line.LineDao;
+import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.SectionService;
-import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dao.StationDao;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -69,7 +69,7 @@ class LineApiControllerTest {
     @DisplayName("노선 생성 - 실패(노선 중복 이름)")
     void createLine_duplicatedName() throws Exception {
         // given
-        lineDao.save(Line.of("1호선", "bg-red-600"));
+        lineDao.save(Line.create("1호선", "bg-red-600"));
 
         Long upStationId = stationDao.save(Station.from("잠실역")).getId();
         Long downStationId = stationDao.save(Station.from("석촌역")).getId();
@@ -90,7 +90,7 @@ class LineApiControllerTest {
     @DisplayName("노선 생성 - 실패(노선 중복 컬러)")
     void createLine_duplicatedColor() throws Exception {
         // given
-        lineDao.save(Line.of("1호선", "bg-green-600"));
+        lineDao.save(Line.create("1호선", "bg-green-600"));
 
         Long upStationId = stationDao.save(Station.from("잠실역")).getId();
         Long downStationId = stationDao.save(Station.from("석촌역")).getId();
@@ -169,7 +169,7 @@ class LineApiControllerTest {
         ResultActions createdLineResult = 노선_생성(lineRequest);
         LineResponse lineResponse =
                 objectMapper.readValue(createdLineResult.andReturn().getResponse().getContentAsString(), LineResponse.class);
-        sectionService.createSection(Section.of(station1, station3, 5), lineResponse.getId());
+        sectionService.createSection(Section.create(station1, station3, 5), lineResponse.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));

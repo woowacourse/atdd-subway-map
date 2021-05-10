@@ -1,6 +1,5 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dao;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -9,8 +8,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Repository
-public class SectionDao {
+public class InMemorySectionDao implements SectionDao {
 
     private Long seq = 0L;
     private Map<Long, List<Section>> sections = new HashMap<>();
@@ -22,6 +20,7 @@ public class SectionDao {
         return section;
     }
 
+    @Override
     public Section save(Section section, Long lineId) {
         List<Section> sectionsByLineId = sections.getOrDefault(lineId, new ArrayList<>());
         Section createdSection = createNewObject(section);
@@ -30,11 +29,13 @@ public class SectionDao {
         return createdSection;
     }
 
+    @Override
     public Sections findSectionsByLineId(Long lineId) {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.from(sections);
     }
 
+    @Override
     public Section saveAffectedSections(Section section, Optional<Section> affectedSection,
                                         Long lineId) {
         affectedSection.ifPresent(받아온것 -> {
@@ -51,20 +52,23 @@ public class SectionDao {
         return save(section, lineId);
     }
 
+    @Override
     public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
         return sections.get(lineId)
-            .stream()
-            .filter(section -> section.hasStation(stationId))
-            .collect(
-            Collectors.toList());
+                .stream()
+                .filter(section -> section.hasStation(stationId))
+                .collect(
+                        Collectors.toList());
     }
 
+    @Override
     public void removeSections(Long lineId, List<Section> sections) {
         for (Section section : sections) {
             this.sections.get(lineId).removeIf(sec -> sec.isSameSection(section));
         }
     }
 
+    @Override
     public void insertSection(Section affectedSection, Long lineId) {
         sections.get(lineId).add(affectedSection);
     }
