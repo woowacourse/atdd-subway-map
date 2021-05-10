@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class Section {
     private final Long id;
     private final Long lineId;
@@ -7,6 +9,11 @@ public class Section {
     private final Long downStationId;
     private final int distance;
 
+    public Section(final Long lineId, final Long stationId) {
+        this(null, lineId, stationId, stationId, 0);
+    }
+
+    @JsonCreator
     public Section(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
                    final int distance) {
         this.id = id;
@@ -46,5 +53,17 @@ public class Section {
 
     public Section subtractDistance(final Section section) {
         return new Section(id, lineId, upStationId, downStationId, section.distance - distance);
+    }
+
+    public Section updateDownStationId(final Long downStationId) {
+        return new Section(id, lineId, upStationId, downStationId, distance);
+    }
+
+    public Section updateUpStationId(final Long upStationId) {
+        return new Section(id, lineId, upStationId, downStationId, distance);
+    }
+
+    public Section updateDistance(final int distance) {
+        return new Section(id, lineId, upStationId, downStationId, distance);
     }
 }
