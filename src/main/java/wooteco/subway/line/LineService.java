@@ -61,7 +61,7 @@ public class LineService {
         }
 
         Line line = new Line(name, color);
-        checkExistedNameAndColor(name, color);
+        checkUpdatedNameAndColor(lineDto);
         lineDao.update(lineDto.getId(), line);
     }
 
@@ -75,14 +75,14 @@ public class LineService {
         checkUpdatedName(line, name);
     }
 
-    private void checkUpdatedName(Line existedLine, String color) {
+    private void checkUpdatedColor(Line existedLine, String color) {
         String existedColor = existedLine.getColor();
         if ((lineDao.countByColor(color) != 0) && (!existedColor.equals(color))) {
             throw new DuplicateLineException("[ERROR] 해당하는 노선의 색이 존재합니다.");
         }
     }
 
-    private void checkUpdatedColor(Line existedLine, String name) {
+    private void checkUpdatedName(Line existedLine, String name) {
         String existedName = existedLine.getName();
         if ((lineDao.countByName(name) != 0) && (!existedName.equals(name))) {
             throw new DuplicateLineException("[ERROR] 해당하는 노선의 이름이 존재합니다.");
