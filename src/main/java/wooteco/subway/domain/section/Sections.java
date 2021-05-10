@@ -2,8 +2,8 @@ package wooteco.subway.domain.section;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import wooteco.subway.domain.station.Station;
 
 public class Sections {
@@ -53,6 +53,40 @@ public class Sections {
             }
         }
         throw new IllegalArgumentException("상행 종점 구간을 찾을 수 없습니다.");
+    }
+
+    public boolean canAddToEndSection(Section section) {
+        Section firstSection = values.get(0);
+        Section lastSection = values.get(values.size() - 1);
+        return section.getDownStation().equals(firstSection.getUpStation())
+            || section.getUpStation().equals(lastSection.getDownStation());
+    }
+
+    public Section addToBetweenExistedSection(Section section) {
+        validateBothStationExists(section.getUpStation(), section.getDownStation());
+        Section existedSection = findBetweenExistedSection(section);
+        return existedSection.splitedAndUpdate(section);
+    }
+
+    public void validateBothStationExists(Station upStation, Station downStation) {
+        if (doesStationExists(upStation) && doesStationExists(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 이미 해당 노선에 등록되어 있습니다.");
+        }
+        if (!doesStationExists(upStation) && !doesStationExists(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 노선에 등록되어있지 않습니다.");
+        }
+    }
+
+    private boolean doesStationExists(Station station) {
+        return values.stream()
+            .anyMatch(section -> section.exists(station));
+    }
+
+    private Section findBetweenExistedSection(Section section) {
+        return values.stream()
+            .filter(targetSection -> targetSection.getUpStation().equals(section.getUpStation()) || targetSection.getDownStation().equals(section.getDownStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구간입니다."));
     }
 
     public List<Section> getValues() {

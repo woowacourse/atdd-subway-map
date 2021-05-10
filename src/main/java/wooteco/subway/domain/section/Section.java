@@ -37,6 +37,25 @@ public class Section {
         }
     }
 
+    public boolean exists(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public Section splitedAndUpdate(Section requestSection) {
+        validateSplitAndUpdate(requestSection);
+        int updatedDistance = this.distance - requestSection.getDistance();
+        if (this.upStation.equals(requestSection.upStation)) {
+            return new Section(id, lineId, requestSection.getDownStation(), this.downStation, updatedDistance);
+        }
+        return new Section(id, lineId, this.upStation, requestSection.getUpStation(), updatedDistance);
+    }
+
+    private void validateSplitAndUpdate(Section requestSection) {
+        if (this.distance <= requestSection.distance) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
