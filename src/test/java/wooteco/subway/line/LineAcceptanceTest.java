@@ -10,7 +10,10 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
+import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.dto.StationRequest;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,19 +31,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private LineDao lineDao;
 
+    @Autowired
+    private SectionDao sectionDao;
+
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
         // given
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
         LineCreateRequest 분당선_RED =
                 new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
 
         // when
+        createRequest("/stations", 강남역);
+        createRequest("/stations", 잠실역);
         ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.as(LineCreateResponse.class))
+                .usingRecursiveComparison()
+                .isEqualTo(new LineCreateResponse(1L, "분당선", "bg-red-600", 1L, 2L, 3));
     }
 
     @DisplayName("upStationId를 포함하지 않고 노선을 생성할 경우 BAD_REQUEST 반환")

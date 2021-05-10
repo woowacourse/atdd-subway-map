@@ -13,6 +13,9 @@ import wooteco.subway.line.dto.request.LineCreateRequest;
 import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.request.SectionCreateRequest;
+import wooteco.subway.section.dto.response.SectionCreateResponse;
+import wooteco.subway.section.service.SectionService;
 
 import java.util.Arrays;
 
@@ -33,6 +36,9 @@ class LineControllerTest {
     @MockBean
     private LineService lineService;
 
+    @MockBean
+    private SectionService sectionService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -45,6 +51,8 @@ class LineControllerTest {
         String content = objectMapper.writeValueAsString(new LineCreateRequest(분당선, 빨간색, 1L, 2L, 3));
         given(lineService.save(any(LineCreateRequest.class)))
                 .willReturn(new LineResponse(1L, 분당선, 빨간색));
+        given(sectionService.save(any(LineResponse.class), any(SectionCreateRequest.class)))
+                .willReturn(new SectionCreateResponse(1L, 1L, 1L, 2L, 3));
 
         // when
         ResultActions response = mockMvc.perform(post("/lines")

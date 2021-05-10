@@ -19,6 +19,7 @@
     - [x] 같은 이름은 추가할 수 없다.
     - [x] 상행역, 하행역, 거리 입력 포함하기
       - [x] 하나라도 값이 없는 경우 예외처리
+    - [x] 초기 구간을 생성한다.
     - [x] req
         - POST, /lines, BODY : {color, name, upStationId, downStationId, distance}
     - res
@@ -49,6 +50,9 @@
 ## 구간 관리
 - [ ] 구간 생성
   - [ ] 노선 추가시 구간의 정보도 함께 등록
+        - [ ] upStationId가 존재하지 않는 지하철 역이면 예외 발생
+        - [ ] downStationId가 존재하지 않는 지하철 역이면 예외 발생
+        - [ ] upStationId와 downStationId가 같은 경우 예외 발생
   - [ ] req
         - POST, /lines/{lineId}/sections, BODY : {lineId, upStationId, downStationId, distance}
   - [ ] res
