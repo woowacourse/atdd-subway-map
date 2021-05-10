@@ -34,6 +34,11 @@ public class SectionService {
         return newSection;
     }
 
+    public Section add(Long lineId, Section section) {
+        validateLineId(lineId);
+        return sectionDao.save(lineId, section);
+    }
+
     private Consumer<Section> updateIntermediate(Section newSection) {
         return originalSection -> {
             int newDistance = originalSection.getDistance() - newSection.getDistance();

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.exception.LineDuplicationException;
 import wooteco.subway.exception.NoLineException;
 import wooteco.subway.section.Section;
-import wooteco.subway.section.SectionH2Dao;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationResponse;
 
@@ -15,42 +14,44 @@ public class LineService {
 
     private final SectionService sectionService;
     private final LineDao lineDao;
-    private final SectionH2Dao sectionH2Dao;
 
-    private LineService(SectionService sectionService, LineDao lineDao, SectionH2Dao sectionH2Dao) {
+    private LineService(SectionService sectionService, LineDao lineDao) {
         this.sectionService = sectionService;
         this.lineDao = lineDao;
-        this.sectionH2Dao = sectionH2Dao;
     }
 
     public Line add(LineRequest lineRequest) {
-        List<Line> lines = lineDao.findAll();
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        validateDuplicatedLine(lines, line);
+        validateDuplicatedName(line.getName());
+        validateDuplicatedColor(line.getColor());
+
         Line savedLine = lineDao.save(line);
         Section section = new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionH2Dao.save(savedLine.getId(), section);
+        sectionService.add(savedLine.getId(), section);
         return savedLine;
     }
 
-    private void validateDuplicatedLine(List<Line> lines, Line newLine) {
-        if (isDuplicatedColor(lines, newLine)) {
-            throw new LineDuplicationException();
-        }
+    private void validateDuplicatedName(String name) {
+        lineDao.findByName(name)
+            .ifPresent(this::throwDuplicationException);
     }
 
-    private boolean isDuplicatedColor(List<Line> lines, Line newLine) {
-        return lines.stream()
-                .anyMatch(line -> line.isSameColor(newLine));
+    private void validateDuplicatedColor(String color) {
+        lineDao.findByColor(color)
+            .ifPresent(this::throwDuplicationException);
     }
 
-    public List<Line> lines() {
+    private void throwDuplicationException(Line line) {
+        throw new LineDuplicationException();
+    }
+
+    public List<Line> findAll() {
         return lineDao.findAll();
     }
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-                .orElseThrow(NoLineException::new);
+            .orElseThrow(NoLineException::new);
     }
 
     public void update(Long id, LineRequest lineRequest) {

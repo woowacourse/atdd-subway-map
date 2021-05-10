@@ -106,4 +106,42 @@ public class LineH2Dao implements LineDao {
             .stream()
             .findAny();
     }
+
+    @Override
+    public Optional<Line> findByName(String name) {
+        String sql = "SELECT * FROM LINE WHERE name=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> {
+                    return new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")
+                    );
+                },
+                name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Line> findByColor(String color) {
+        String sql = "SELECT * FROM LINE WHERE color=?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (rs, rowNum) -> {
+                    return new Line(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("color")
+                    );
+                },
+                color));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
