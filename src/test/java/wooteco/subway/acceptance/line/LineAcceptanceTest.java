@@ -1,6 +1,5 @@
 package wooteco.subway.acceptance.line;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -21,10 +20,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
 import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dto.LineResponse;
-import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철노선 관련 기능")
@@ -241,7 +238,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(Long.parseLong(createdResponse.header("Location").split("/")[2]));
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
-        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator().isEqualTo(expect);
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
+            .isEqualTo(expect);
     }
 
     @DisplayName("존재하지 않는 ID의 노선을 조회한다.")
@@ -400,7 +398,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(stationIds.get(0)));
-        params.put("downStationId",  String.valueOf(stationIds.get(2)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
         params.put("distance", "5");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -420,7 +418,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(stationIds.get(2)));
-        params.put("downStationId",  String.valueOf(stationIds.get(3)));
+        params.put("downStationId", String.valueOf(stationIds.get(3)));
         params.put("distance", "5");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -440,7 +438,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(stationIds.get(0)));
-        params.put("downStationId",  String.valueOf(stationIds.get(1)));
+        params.put("downStationId", String.valueOf(stationIds.get(1)));
         params.put("distance", "5");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -461,7 +459,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(stationIds.get(upStationIndex)));
-        params.put("downStationId",  String.valueOf(stationIds.get(downStationIndex)));
+        params.put("downStationId", String.valueOf(stationIds.get(downStationIndex)));
         params.put("distance", "5");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -481,13 +479,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", String.valueOf(stationIds.get(0)));
-        params.put("downStationId",  String.valueOf(stationIds.get(2)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
         params.put("distance", "10");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("존재 하지않는 ID의 노선에 구간을 등록한다.")
+    @Test
+    void createSectionOnLineWithInvalidId() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
+        params.put("distance", "10");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post("/lines/999/sections")
             .then()
             .extract();
 
