@@ -68,6 +68,10 @@ public class Sections {
         return sections.size() > 1;
     }
 
+    public boolean isOne() {
+        return sections.size() == 1;
+    }
+
     public Section merge(Long stationId) {
         int newDistance = sections.stream()
             .mapToInt(Section::getDistance)

@@ -78,4 +78,18 @@ public class SectionH2Dao {
         String sql = "DELETE FROM SECTION WHERE id=?";
         jdbcTemplate.update(sql, id);
     }
+
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id=?";
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> {
+                    Section section = new Section(
+                            rs.getLong("id"),
+                            rs.getLong("up_station_id"),
+                            rs.getLong("down_station_id"),
+                            rs.getInt("distance")
+                    );
+                    return section;
+        }, lineId);
+    }
 }
