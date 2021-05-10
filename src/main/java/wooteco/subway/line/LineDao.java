@@ -24,6 +24,12 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Optional<Line> findLineByName(String lineName) {
+        String sql = "SELECT * FROM LINE WHERE name = ?";
+        final List<Line> result = jdbcTemplate.query(sql, lineRowMapper, lineName);
+        return result.stream().findAny();
+    }
+
     public Line save(String lineName, String lineColor) {
         String sql = "INSERT INTO LINE (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -44,19 +50,19 @@ public class LineDao {
         return jdbcTemplate.query(sql, lineRowMapper);
     }
 
-    public Optional<Line> findById(long id) {
+    public Optional<Line> findById(long lineId) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
-        final List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
+        final List<Line> result = jdbcTemplate.query(sql, lineRowMapper, lineId);
         return result.stream().findAny();
     }
 
-    public void update(long id, String lineName, String lineColor) {
+    public void update(long lineId, String lineName, String lineColor) {
         String sql = "UPDATE LINE set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, lineName, lineColor, id);
+        jdbcTemplate.update(sql, lineName, lineColor, lineId);
     }
 
-    public void delete(long id) {
+    public void delete(long lineId) {
         String sql = "DELETE FROM LINE WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, lineId);
     }
 }

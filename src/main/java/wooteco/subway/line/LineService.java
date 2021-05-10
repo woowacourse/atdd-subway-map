@@ -25,6 +25,10 @@ public class LineService {
     }
 
     public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor) {
+        final Optional<Line> lineWithSameName = lineDao.findLineByName(lineName);
+        if (lineWithSameName.isPresent()) {
+            throw new IllegalArgumentException("노선 이름이 중복됩니다.");
+        }
         Line line = lineDao.save(lineName, lineColor);
         sectionDao.save(line.getId(), upStationId, downStationId);
         return LineResponse.from(line);

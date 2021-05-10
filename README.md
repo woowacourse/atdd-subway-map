@@ -72,7 +72,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] Dao에서 도메인을 반환하도록 반환
 - [x] DB Unique를 통해 중복 검사 하지 않을 것
     - [x] findBy~ 로 Optional 처리
-    - [ ] 노선 이름 같은게 있다면 예외처리
+    - [x] 노선 이름 같은게 있다면 예외처리
 - [x] Response에서 null값을 포함하지 않도록 할 것
     - [x] null대신 빈 리스트 "[]"를 반환할 것
 - [x] 정적 팩토리 메서드로 도메인 <-> DTO 변환
