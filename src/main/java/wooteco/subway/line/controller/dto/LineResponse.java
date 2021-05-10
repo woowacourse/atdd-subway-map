@@ -4,7 +4,6 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +34,9 @@ public class LineResponse {
     private List<StationResponse> convertSectionsToStations(Sections sections) {
         List<Section> sectionList = sections.sections();
         List<StationResponse> stationResponses = new ArrayList<>();
-        stationResponses.add(new StationResponse(sectionList.get(0).getStations().get(0)));
+        stationResponses.add(new StationResponse(sectionList.get(0).getUpStation()));
         for (Section section : sectionList) {
-            List<Station> stations = section.getStations();
-            stationResponses.add(new StationResponse(stations.get(1)));
+            stationResponses.add(new StationResponse(section.getDownStation()));
         }
         return stationResponses;
     }

@@ -18,4 +18,11 @@ public class Distance {
         return distance;
     }
 
+    public boolean isLessDistance(Distance newDistance) {
+        return this.distance > newDistance.distance;
+    }
+
+    public Distance calculate(Distance newDistance) {
+        return new Distance(distance - newDistance.distance);
+    }
 }

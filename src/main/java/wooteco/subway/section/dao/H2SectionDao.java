@@ -12,11 +12,14 @@ import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Repository
 public class H2SectionDao implements SectionDao {
 
     private final JdbcTemplate jdbcTemplate;
+
     private static final RowMapper<Section> SECTION_ROW_MAPPER = (rs, rowNum) -> {
         long id = rs.getLong("id");
         long lineId = rs.getLong("line_id");
@@ -26,7 +29,7 @@ public class H2SectionDao implements SectionDao {
         String upStationName = rs.getString(7);
         String downStationName = rs.getString(9);
         return new Section(id, lineId,
-                Arrays.asList(new Station(upStationId, upStationName), new Station(downStationId, downStationName)),
+                new Station(upStationId, upStationName), new Station(downStationId, downStationName),
                 new Distance(distance));
     };
 
@@ -42,13 +45,31 @@ public class H2SectionDao implements SectionDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, section.getLineId());
-            ps.setLong(2, section.getStations().get(0).getId());
-            ps.setLong(3, section.getStations().get(1).getId());
+            ps.setLong(2, section.getUpStation().getId());
+            ps.setLong(3, section.getDownStation().getId());
             ps.setInt(4, section.getDistance().distance());
             return ps;
         }, keyHolder);
         long sectionId = keyHolder.getKey().longValue();
-        return new Section(sectionId, section.getLineId(), section.getStations(), section.getDistance());
+        return new Section(sectionId, section.getLineId(), section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
+    @Override
+    public Section findById(Long id) {
+        String sql = "SELECT * " +
+                "FROM SECTION AS s " +
+                "JOIN STATION AS t ON s.up_station_id = t.id " +
+                "JOIN STATION AS a ON s.down_station_id = a.id " +
+                "WHERE s.id = ?";
+
+        List<Section> sections = jdbcTemplate.query(sql,
+                SECTION_ROW_MAPPER, id);
+
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 구간이 없습니다. ID : %d", id));
+        }
+
+        return sections.get(0);
     }
 
     @Override
@@ -59,5 +80,25 @@ public class H2SectionDao implements SectionDao {
                 "JOIN STATION AS a ON s.down_station_id = a.id " +
                 "WHERE line_id = ?";
         return new Sections(jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId));
+    }
+
+    @Override
+    public void update(Section section) {
+        String sql = "UPDATE SECTION " +
+                "SET up_station_id = ?, down_station_id = ?, distance = ? " +
+                "WHERE id = ?";
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        jdbcTemplate.update(sql, upStation.getId(), downStation.getId(),
+                section.getDistance().distance(), section.getId());
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE " +
+                "FROM SECTION";
+
+        jdbcTemplate.update(sql);
     }
 }

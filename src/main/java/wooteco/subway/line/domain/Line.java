@@ -31,9 +31,11 @@ public class Line {
     public Long getId() {
         return id;
     }
+
     public LineName getName() {
         return name;
     }
+
     public LineColor getColor() {
         return color;
     }
@@ -49,6 +51,7 @@ public class Line {
         Line line = (Line) o;
         return Objects.equals(id, line.id);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
