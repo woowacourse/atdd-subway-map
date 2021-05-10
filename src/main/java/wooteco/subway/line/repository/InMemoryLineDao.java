@@ -7,10 +7,11 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class InMemoryLineDao implements LineRepository {
-    private static Long seq = 0L;
+    private static AtomicLong seq = new AtomicLong();
     private static Map<Long, Line> lines = new ConcurrentHashMap<>();
 
     @Override
@@ -23,7 +24,7 @@ public class InMemoryLineDao implements LineRepository {
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");
         field.setAccessible(true);
-        ReflectionUtils.setField(field, line, ++seq);
+        ReflectionUtils.setField(field, line, seq.incrementAndGet());
         return line;
     }
 
