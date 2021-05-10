@@ -69,7 +69,7 @@ class SectionApiControllerTest {
                 .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(2);
     }
 
     @Test
@@ -95,7 +95,7 @@ class SectionApiControllerTest {
                 .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(2);
     }
 
     @Test
@@ -120,7 +120,7 @@ class SectionApiControllerTest {
                 .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(2);
     }
 
     @Test
@@ -146,7 +146,7 @@ class SectionApiControllerTest {
                 .andExpect(header().exists("Location"));
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
-        assertThat(sections).hasSize(3);
+        assertThat(sections).hasSize(2);
     }
 
     @Test
@@ -295,7 +295,7 @@ class SectionApiControllerTest {
         final ResultActions result = mockMvc.perform(delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
         //then
 
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isNotFound());
     }
 
     @Test

@@ -1,16 +1,24 @@
 package wooteco.subway.section;
 
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.section.NotEnoughSectionException;
+import wooteco.subway.exception.station.StationNotFoundException;
+import wooteco.subway.line.LineDao;
+import wooteco.subway.station.StationDao;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SectionService {
 
+    private final StationDao stationDao;
+    private final LineDao lineDao;
     private final SectionDao sectionDao;
 
     public Section createSection(Section section, Long lineId) {
@@ -22,6 +30,12 @@ public class SectionService {
     }
 
     public void removeSection(Long lineId, Long stationId) {
+        lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
+        stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
+        if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
+            throw new NotEnoughSectionException();
+        }
+
         List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
 
