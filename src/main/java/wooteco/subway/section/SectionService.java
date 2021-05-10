@@ -97,10 +97,10 @@ public class SectionService {
     }
 
     // finalUpStationId를 구하는 방법은? -> 테이블 이용?
-    public List<Station> findAllSectionInLine(final Long lineId, final Long finalUpStationId) {
+    public List<Station> findAllSectionInLine(final Long lineId) {
         final List<Station> stations = new LinkedList<>();
 
-        Long upStationId = finalUpStationId;
+        Long upStationId = lineDao.findUpStationId(lineId);
         do {
             final Station station = stationDao.findById(upStationId).get();
             stations.add(station);

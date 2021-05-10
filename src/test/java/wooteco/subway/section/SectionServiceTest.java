@@ -47,10 +47,7 @@ class SectionServiceTest {
     @DisplayName("노선 추가 시 상행, 하행 종점 추가")
     @Test
     public void saveTest(){
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId(), savedUpStation.getId());
-
-        assertThat(stations.get(0).getName()).isEqualTo(savedUpStation.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(savedDownStation.getName());
+        validateStationOrder(savedUpStation, savedDownStation);
     }
 
     @DisplayName("상행 종점역 -> 중간역 구간 등록")
@@ -61,11 +58,7 @@ class SectionServiceTest {
 
         sectionService.addSection(savedLine.getId(), savedUpStation.getId(), savedMiddleStation.getId());
 
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId(), savedUpStation.getId());
-
-        assertThat(stations.get(0).getName()).isEqualTo(savedUpStation.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(savedMiddleStation.getName());
-        assertThat(stations.get(2).getName()).isEqualTo(savedDownStation.getName());
+        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
     }
 
     @DisplayName("중간역 -> 하행 종착역 구간 등록")
@@ -76,11 +69,7 @@ class SectionServiceTest {
 
         sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId());
 
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId(), savedUpStation.getId());
-
-        assertThat(stations.get(0).getName()).isEqualTo(savedUpStation.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(savedMiddleStation.getName());
-        assertThat(stations.get(2).getName()).isEqualTo(savedDownStation.getName());
+        validateStationOrder(savedUpStation, savedMiddleStation, savedDownStation);
     }
 
     @DisplayName("새로운 상행 종점역 구간 등록")
@@ -91,11 +80,7 @@ class SectionServiceTest {
 
         sectionService.addSection(savedLine.getId(), savedNewFrontStation.getId(), savedUpStation.getId());
 
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId(), savedNewFrontStation.getId());
-
-        assertThat(stations.get(0).getName()).isEqualTo(savedNewFrontStation.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(savedUpStation.getName());
-        assertThat(stations.get(2).getName()).isEqualTo(savedDownStation.getName());
+        validateStationOrder(savedNewFrontStation, savedUpStation, savedDownStation);
     }
 
     @DisplayName("새로운 하행 종점역 구간 등록")
@@ -106,10 +91,15 @@ class SectionServiceTest {
 
         sectionService.addSection(savedLine.getId(), savedDownStation.getId(), savedNewBackStation.getId());
 
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId(), savedUpStation.getId());
+        validateStationOrder(savedUpStation, savedDownStation, savedNewBackStation);
+    }
 
-        assertThat(stations.get(0).getName()).isEqualTo(savedUpStation.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(savedDownStation.getName());
-        assertThat(stations.get(2).getName()).isEqualTo(savedNewBackStation.getName());
+    private void validateStationOrder(final Station... expectOrders){
+        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId());
+
+        int index = 0;
+        for(final Station station : expectOrders){
+            assertThat(stations.get(index++).getName()).isEqualTo(station.getName());
+        }
     }
 }

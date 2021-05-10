@@ -48,12 +48,12 @@ public class LineDao {
 
     // update랑 합치는게 좋을지
     public void updateUpStation(final Long id, final Long upStationId) {
-        final String sql = "UPDATE LINE SET up_station_id = ?, WHERE id = ?";
+        final String sql = "UPDATE LINE SET up_station_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, upStationId, id);
     }
 
     public void updateDownStation(final Long id, final Long downStationId) {
-        final String sql = "UPDATE LINE SET down_station_id = ?, WHERE id = ?";
+        final String sql = "UPDATE LINE SET down_station_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, downStationId, id);
     }
 
@@ -94,6 +94,4 @@ public class LineDao {
                 rs.getString("color")
         );
     }
-
-
 }
