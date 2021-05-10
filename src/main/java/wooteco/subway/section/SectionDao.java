@@ -7,18 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 
-/*
-create table if not exists SECTION
-(
-    id bigint auto_increment not null,
-    line_id bigint not null,
-    up_station_id bigint not null,
-    down_station_id bigint not null,
-    distance int,
-    primary key(id)
-    );
- */
-
 @Repository
 public class SectionDao {
 
@@ -48,7 +36,6 @@ public class SectionDao {
     }
 
     public int findDistance(final Long lineId, final Long upStationId, final Long downStationId){
-        System.out.println(upStationId + " "+ downStationId);
         final String sql = "SELECT distance FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, lineId, upStationId, downStationId);
     }
@@ -63,14 +50,24 @@ public class SectionDao {
         jdbcTemplate.update(sql, after, distance, before, lineId);
     }
 
-    public Long upStationId(final Long lineId, final Long downStationId) {
+    public Long upStationIdOf(final Long lineId, final Long downStationId) {
         final String sql = "SELECT up_station_id from SECTION WHERE line_id = ? AND down_station_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, lineId, downStationId);
     }
 
-    public Long downStationId(final Long lineId, final Long upStationId) {
+    public Long downStationIdOf(final Long lineId, final Long upStationId) {
         final String sql = "SELECT down_station_id from SECTION WHERE line_id = ? AND up_station_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, lineId, upStationId);
+    }
+
+    public boolean isExistingSection(final Long lineId, final Long upStationId, final Long downStation) {
+        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, upStationId, downStation);
+    }
+
+    public boolean isExistingStation(final Long lineId, final Long stationId) {
+        final String sql = "SELECT EXISTS(SELECT from SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?))";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, lineId, stationId, stationId);
     }
 
     public boolean isExistingUpStation(final Long lineId, final Long stationId) {
@@ -86,5 +83,10 @@ public class SectionDao {
     public void deleteSection(final Long lineId, final Long upStationId, final Long downStationId) {
         final String sql = "DELETE FROM SECTION WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
         jdbcTemplate.update(sql, lineId, upStationId, downStationId);
+    }
+
+    public Long stationCountInLine(final Long lineId){
+        final String sql = "SELECT COUNT(*) from SECTION WHERE line_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, lineId) + 1;
     }
 }

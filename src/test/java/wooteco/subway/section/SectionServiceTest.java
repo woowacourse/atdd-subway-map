@@ -21,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 class SectionServiceTest {
 
-    // TODO :: 테스트 의존 풀기
-
     @Autowired
     private LineService lineService;
 
@@ -149,23 +147,49 @@ class SectionServiceTest {
     }
 
     @DisplayName("노선이 종점 뿐 일 경우 역을 삭제할 수 없다.")
-    @Test()
+    @Test
     public void deleteFinalStation() {
         assertThatThrownBy(()->{
             sectionService.deleteSection(savedLine.getId(), dStation.getId());
         }).isInstanceOf(LineException.class);
     }
 
-    @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
-    @Test()
+    @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다.")
+    @Test
+    public void deleteNonExistentStation() {
+        assertThatThrownBy(()->{
+            sectionService.deleteSection(savedLine.getId(), aStation.getId());
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("노선에 둘 다 존재하지 않는 역으로 구간을 추가할 수 없다.")
+    @Test
+    public void addSectionWithNonExistentStations() {
+        assertThatThrownBy(()->{
+            sectionService.addSection(savedLine.getId(), aStation.getId(), eStation.getId(), initialDistance);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("이미 존재하는 구간으로 구간을 추가할 수 없다.")
+    @Test
+    public void addSectionWithExistentSection() {
+        assertThatThrownBy(()->{
+            sectionService.addSection(savedLine.getId(), aStation.getId(), bStation.getId(), initialDistance);
+            validateStationOrder(aStation, bStation, dStation);
+            sectionService.addSection(savedLine.getId(), aStation.getId(), bStation.getId(), initialDistance);
+        }).isInstanceOf(LineException.class);
+    }
+
+    @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
+    @Test
     public void addFrontSectionWithInvalidDistance() {
         assertThatThrownBy(()->{
             sectionService.addSection(savedLine.getId(), bStation.getId(), cStation.getId(), initialDistance+1);
         }).isInstanceOf(LineException.class);
     }
 
-    @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
-    @Test()
+    @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 같거나 큰 거리로 추가할 수 없다.")
+    @Test
     public void addBackSectionWithInvalidDistance() {
         assertThatThrownBy(()->{
             sectionService.addSection(savedLine.getId(), cStation.getId(), dStation.getId(), initialDistance+1);
@@ -173,11 +197,11 @@ class SectionServiceTest {
     }
 
     private void validateStationOrder(final Station... expectOrders) {
-        final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId());
+        final List<Long> stations = sectionService.allStationIdInLine(savedLine.getId());
 
         int index = 0;
         for (final Station station : expectOrders) {
-            assertThat(stations.get(index++).getName()).isEqualTo(station.getName());
+            assertThat(stations.get(index++)).isEqualTo(station.getId());
         }
     }
 

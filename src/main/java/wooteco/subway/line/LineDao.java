@@ -46,7 +46,6 @@ public class LineDao {
         jdbcTemplate.update(sql, name, color, id);
     }
 
-    // update랑 합치는게 좋을지
     public void updateUpStation(final Long id, final Long upStationId) {
         final String sql = "UPDATE LINE SET up_station_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, upStationId, id);
