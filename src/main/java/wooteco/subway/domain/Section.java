@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.station.DuplicateStationException;
+
 public class Section {
 
     private final Id id;
@@ -22,6 +24,13 @@ public class Section {
         this.upStationId = upStatinoId;
         this.downStationId = downStationId;
         this.distance = distance;
+        validateDuplicateStations(this.upStationId, this.downStationId);
+    }
+
+    private void validateDuplicateStations(final Id upStationId, final Id downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new DuplicateStationException();
+        }
     }
 
     public Long getId() {

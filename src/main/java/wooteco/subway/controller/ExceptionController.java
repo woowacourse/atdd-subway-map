@@ -14,6 +14,7 @@ import wooteco.subway.exception.NullIdException;
 import wooteco.subway.exception.NullNameException;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.exception.line.NullColorException;
+import wooteco.subway.exception.station.DuplicateStationException;
 import wooteco.subway.exception.station.NotFoundStationException;
 
 @RestControllerAdvice
@@ -46,6 +47,12 @@ public class ExceptionController {
 
     @ExceptionHandler({NullIdException.class, NullNameException.class, NullColorException.class})
     public ResponseEntity<Void> nullExceptionResponse(final NullException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .build();
+    }
+
+    @ExceptionHandler(DuplicateStationException.class)
+    public ResponseEntity<Void> duplicatedStationExceptionResponse(final DuplicateStationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .build();
     }

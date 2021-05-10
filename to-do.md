@@ -37,7 +37,7 @@
 - [x] Section 객체 구현
   - [x] distance가 양수 범위 안에 존재를 해야한다. 
     - 엔티티에서 잡을 것. DTO가 양수인지 아닌지를 알면 안될거같음
-  - [ ] upStation과 downStation이 같아선 안된다. 
+  - [x] upStation과 downStation이 같아선 안된다. 
     - 엔티티에서 잡을 것. DTO가 중복 검증을 알면 안될거같음
   - [ ] upStation이 null은 허용되지 않는다. 
     - request DTO 레벨에서 잡아주도록 추가
