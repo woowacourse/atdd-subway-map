@@ -23,6 +23,10 @@ public class Distance {
         return value;
     }
 
+    public Distance add(final Distance distance) {
+        return new Distance(value + distance.getValue());
+    }
+
     public Distance subtract(final Distance distance) {
         return new Distance(value - distance.getValue());
     }

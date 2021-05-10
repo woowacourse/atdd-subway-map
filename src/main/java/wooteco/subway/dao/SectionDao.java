@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
+import wooteco.subway.service.dto.DeleteStationDto;
 
 @Repository
 public class SectionDao {
@@ -65,5 +66,20 @@ public class SectionDao {
     public int updateStationAndDistance(final Section section) {
         String sql = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         return jdbcTemplate.update(sql, section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getId());
+    }
+
+    public int deleteByLineIdAndUpStationId(final Long lineId, final Long upStationId) {
+        String sql = "DELETE FROM section WHERE line_id = ? AND up_station_id = ?";
+        return jdbcTemplate.update(sql, lineId, upStationId);
+    }
+
+    public int deleteByLineIdAndDownStationId(final Long lineId, final Long downStationId) {
+        String sql = "DELETE FROM section WHERE line_id = ? AND down_station_id = ?";
+        return jdbcTemplate.update(sql, lineId, downStationId);
+    }
+
+    public int delete(final Section section) {
+        String sql = "DELETE FROM section WHERE id = ?";
+        return jdbcTemplate.update(sql, section.getId());
     }
 }

@@ -6,20 +6,27 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import wooteco.subway.exception.station.NotFoundStationException;
 
 public class Sections {
 
+    private static final int DELETABLE_COUNT = 2;
     private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
         this.sections = sections;
     }
 
-    public boolean isBothEnd(final Section section) {
+    public boolean isBothEndSection(final Section section) {
         Deque<Long> ids = sortedStationIds();
 
         return Objects.equals(ids.peekFirst(), section.getDownStationId())
             || Objects.equals(ids.peekLast(), section.getUpStationId());
+    }
+
+    public boolean isBothEndStation(final Long stationId) {
+        return stationId.equals(sortedStationIds().peekFirst())
+            || stationId.equals(sortedStationIds().peekLast());
     }
 
     public ArrayDeque<Long> sortedStationIds() {
@@ -55,5 +62,19 @@ public class Sections {
             Long id = stationIds.peekFirst();
             stationIds.addFirst(downStationIds.get(id));
         }
+    }
+
+    public void validateDeletableCount() {
+        if (sections.size() < DELETABLE_COUNT) {
+            throw new IllegalStateException("구간을 제거할 수 없습니다.");
+        }
+    }
+
+    public void validateExistStation(final Long stationId) {
+        sections.stream()
+            .filter(section -> section.getUpStationId().equals(stationId) ||
+                section.getDownStationId().equals(stationId))
+            .findAny()
+            .orElseThrow(NotFoundStationException::new);
     }
 }
