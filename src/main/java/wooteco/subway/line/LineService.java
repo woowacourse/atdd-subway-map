@@ -18,13 +18,11 @@ public class LineService {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final SectionDao sectionDao;
 
     @Autowired
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
         this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
     }
 
     public Line createLine(Line line) {

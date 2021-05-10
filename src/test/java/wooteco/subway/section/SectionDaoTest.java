@@ -37,9 +37,12 @@ class SectionDaoTest {
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
 
-        Section section = new Section(lineId, stationId1, stationId2);
-        Section section2 = new Section(lineId, stationId2, stationId3);
-        assertDoesNotThrow(() -> sectionDao.save(section));
-        assertDoesNotThrow(() -> sectionDao.save(section2));
+        int distance = 100;
+        int distance2 = 200;
+        Section section = new Section(lineId, stationId1, stationId2, distance);
+        Section section2 = new Section(lineId, stationId2, stationId3, distance2);
+
+        long sectionId = sectionDao.save(section);
+        assertEquals(sectionId + 1, sectionDao.save(section2));
     }
 }

@@ -42,18 +42,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> response = addLine();
+        ExtractableResponse<Response> response = addLine("테스트선", "red", 1, 2, 1000, 100);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("잘못된 역 id로 지하철 노선을 생성한다.")
+    @Test
+    void createLineException() {
+        // given
+        ExtractableResponse<Response> response = addLine("테스트선", "red", 1, 3, 1000, 100);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다")
     @Test
     void showLines() {
         // given
-        ExtractableResponse<Response> response = addLine();
+        ExtractableResponse<Response> response = addLine("테스트선", "red", 1, 2, 1000, 100);
 
         //when
         ExtractableResponse<Response> getLinesResponse = RestAssured.given().log().all()
@@ -80,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         //given
-        addLine();
+        addLine("테스트선", "red", 1, 2, 1000, 100);
 
         //when
         ExtractableResponse<Response> getLineResponse = RestAssured.given().log().all()
@@ -102,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         //given
-        addLine();
+        addLine("테스트선", "red", 1, 2, 1000, 100);
 
         //when
         Map<String, Object> requestParam = new HashMap<>();
@@ -125,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        addLine();
+        addLine("테스트선", "red", 1, 2, 1000, 100);
 
         //when
         ExtractableResponse<Response> deleteLineResponse = RestAssured.given().log().all()
@@ -151,14 +161,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> addLine() {
+    private ExtractableResponse<Response> addLine(String name, String color, long upStationId, long downStationId, int distance, int extraFare) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "테스트선");
-        params.put("color", "red");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", "1000");
-        params.put("extraFare", "100");
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        params.put("extraFare", extraFare);
 
         return RestAssured.given().log().all()
             .body(params)

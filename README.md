@@ -69,7 +69,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 스프링 빈 적용
 - [x] H2 적용
 
-- [ ] 지하철 노선 추가 APi 수정
+- [x] 지하철 노선 추가 APi 수정
 - [ ] 지하철 구간 관리
   - [ ] 구간 추가
     - [ ] 예외: 새로운 구간이 기존 구간보다 길 경우 등록 불가

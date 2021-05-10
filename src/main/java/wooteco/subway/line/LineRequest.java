@@ -20,10 +20,6 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public static Section from(LineRequest lineRequest) {
-        return new Section(lineRequest.getUpStationId(), lineRequest.getDownStationId());
-    }
-
     public String getName() {
         return name;
     }

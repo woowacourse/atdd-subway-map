@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.exception.DuplicateStationException;
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.NoSuchStationException;
 
 @Service
@@ -33,6 +34,14 @@ public class StationService {
     public void deleteStation(long id) {
         if (stationDao.delete(id) != 1) {
             throw new NoSuchStationException();
+        }
+    }
+
+    public Station showStation(Long stationId) {
+        try {
+            return stationDao.findById(stationId);
+        } catch (DataAccessException e) {
+            throw new IllegalInputException();
         }
     }
 }

@@ -59,8 +59,8 @@ class LineDaoTest {
         Line line = addLine("2호선", "green");
         long lineId = lineDao.save(line);
 
-        Section section = new Section(lineId, stationId1, stationId2);
-        Section section2 = new Section(lineId, stationId2, stationId3);
+        Section section = new Section(lineId, stationId1, stationId2, 1);
+        Section section2 = new Section(lineId, stationId2, stationId3, 2);
 
         sectionDao.save(section);
         sectionDao.save(section2);

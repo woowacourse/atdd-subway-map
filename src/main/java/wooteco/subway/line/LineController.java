@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionService;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationService;
 
 @RestController
 @RequestMapping("/lines")
@@ -26,20 +29,22 @@ public class LineController {
 
     private final LineService lineService;
     private final SectionService sectionService;
+    private final StationService stationService;
 
     @Autowired
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService, SectionService sectionService,
+        StationService stationService) {
         this.lineService = lineService;
         this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = new Line(lineRequest);
-        Section section = LineRequest.from(lineRequest);
-
-        Line createdLine = lineService.createLine(line);
-        Section createdSection = sectionService.createSection(createdLine.getId(), section);
+        Line createdLine = lineService.createLine(new Line(lineRequest));
+        stationService.showStation(lineRequest.getUpStationId());
+        stationService.showStation(lineRequest.getDownStationId());
+        Section createdSection = sectionService.createSection(createdLine.getId(), lineRequest);
 
         LineResponse lineResponse = LineResponse.from(createdLine);
         return ResponseEntity.created(URI.create("/lines/" + createdSection.getLineId())).body(lineResponse);
