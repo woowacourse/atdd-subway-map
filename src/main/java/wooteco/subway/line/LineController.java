@@ -70,17 +70,29 @@ public class LineController {
 
         long existStationId = sectionService.findExistStation(lineId, upStationId, downStationId);
         if(existStationId == upStationId) {
-            return addUpStation(lineId, upStationId, downStationId, distance, existStationId);
-        }
-
-        if (existStationId == downStationId) {
             return addDownStation(lineId, upStationId, downStationId, distance, existStationId);
         }
 
-        return ResponseEntity.ok().build();
+        if (existStationId == downStationId) {
+            return addUpStation(lineId, upStationId, downStationId, distance, existStationId);
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     private ResponseEntity<String> addDownStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
+        List<Long> beforeDownStations = sectionService.findBeforeDownStationId(lineId, upStationId);
+        if(beforeDownStations.isEmpty()) {
+            sectionService.save(lineId, upStationId, downStationId, distance);
+            return ResponseEntity.ok().build();
+        }
+        long beforeDownStationId = beforeDownStations.get(0);
+        int beforeDistance = isAppropriateDistance(distance, sectionService.findBeforeDistance(lineId, existStationId, beforeDownStationId));
+        sectionService.addSection(lineId, upStationId, downStationId, beforeDownStationId, distance, beforeDistance-distance);
+        return ResponseEntity.ok().build();
+    }
+
+    private ResponseEntity<String> addUpStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
         List<Long> beforeUpStations = sectionService.findBeforeUpStationId(lineId, downStationId);
         if(beforeUpStations.isEmpty()) {
             sectionService.save(lineId, upStationId, downStationId, distance);
@@ -88,28 +100,12 @@ public class LineController {
         }
         long beforeUpStationId = beforeUpStations.get(0);
         int beforeDistance = isAppropriateDistance(distance, sectionService.findBeforeDistance(lineId, beforeUpStationId, existStationId));
-        sectionService.delete(lineId, beforeUpStationId, downStationId);
-        sectionService.save(lineId, beforeUpStationId, upStationId, beforeDistance-distance);
-        sectionService.save(lineId, upStationId, downStationId, distance);
-        return ResponseEntity.ok().build();
-    }
-
-    private ResponseEntity<String> addUpStation(long lineId, long upStationId, long downStationId, int distance, long existStationId) {
-        List<Long> beforeStations = sectionService.findBeforeDownStationId(lineId, upStationId);
-        if(beforeStations.isEmpty()) {
-            sectionService.save(lineId, upStationId, downStationId, distance);
-            return ResponseEntity.ok().build();
-        }
-        long beforeStationId = beforeStations.get(0);
-        int beforeDistance = isAppropriateDistance(distance, sectionService.findBeforeDistance(lineId, existStationId, beforeStationId));
-        sectionService.delete(lineId, existStationId, beforeStationId);
-        sectionService.save(lineId, upStationId, downStationId, distance);
-        sectionService.save(lineId, downStationId, beforeStationId, beforeDistance- distance);
+        sectionService.addSection(lineId, beforeUpStationId, upStationId, downStationId, beforeDistance-distance, distance);
         return ResponseEntity.ok().build();
     }
 
     private int isAppropriateDistance(int distance, int beforeDistance) {
-        if (distance - beforeDistance < 1) {
+        if (beforeDistance - distance < 1) {
             throw new IllegalArgumentException("거리를 확인해주세요. 기존 거리보다 길거나 같을 수 없습니다.");
         }
         return beforeDistance;

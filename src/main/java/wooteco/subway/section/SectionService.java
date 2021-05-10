@@ -54,4 +54,10 @@ public class SectionService {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
+
+    public void addSection(long lineId, long upStationId, long downStationId, long beforeDownStationId, int firstDistance, int secondDistance) {
+        sectionDao.delete(lineId, upStationId, beforeDownStationId);
+        sectionDao.save(lineId, upStationId, downStationId, firstDistance);
+        sectionDao.save(lineId, downStationId, beforeDownStationId, secondDistance);
+    }
 }
