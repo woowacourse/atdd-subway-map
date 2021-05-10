@@ -14,7 +14,6 @@ import wooteco.subway.domainmapper.SubwayMapper;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.entity.LineEntity;
 import wooteco.subway.repository.LineDao;
 
@@ -102,23 +101,41 @@ public class LineService {
     public void createSection(Long id, SectionRequest sectionRequest) {
         validateToExistId(id);
         Line line = subwayMapper.line(lineDao.findById(id));
-        Sections sections = new Sections(sectionService.findSectionsByLine(line));
         Station upStation = stationService.showStation(sectionRequest.getUpStationId()).toDomain();
         Station downStation = stationService.showStation(sectionRequest.getDownStationId())
             .toDomain();
         Section section = new Section(line, upStation, downStation,
             new Distance(sectionRequest.getDistance()));
-        updateSections(line, sections, section);
+        insertSection(line, section);
     }
 
-    private void updateSections(Line line, Sections sections, Section section) {
+    private void insertSection(Line line, Section section) {
+        Sections sections = new Sections(sectionService.findSectionsByLine(line));
         Construction construction = sections.construction(line);
         construction.insertSection(section);
+        updateSections(construction);
+    }
+
+    private void updateSections(Construction construction) {
         for (Section sectionToCreate : construction.sectionsToCreate()) {
             sectionService.createSection(sectionToCreate);
         }
         for (Section sectionToRemove : construction.getSectionsToRemove()) {
             sectionService.remove(sectionToRemove.getId());
         }
+    }
+
+    public void deleteSections(Long lineId, Long stationId) {
+        validateToExistId(lineId);
+        Line line = subwayMapper.line(lineDao.findById(lineId));
+        Sections sections = new Sections(sectionService.findSectionsByLine(line));
+        Station station = stationService.showStation(stationId).toDomain();
+        removeStationInLine(line, sections, station);
+    }
+
+    private void removeStationInLine(Line line, Sections sections, Station station) {
+        Construction construction = sections.construction(line);
+        construction.deleteSectionsByStation(station);
+        updateSections(construction);
     }
 }

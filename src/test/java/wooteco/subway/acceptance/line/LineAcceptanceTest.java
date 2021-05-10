@@ -408,8 +408,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then()
             .extract();
 
+        LineResponse lineResponse = RestAssured.given().log().all()
+            .when()
+            .get(createdResponse.header("Location"))
+            .then()
+            .extract()
+            .as(LineResponse.class);
+
         // then
+        List<StationResponse> expected = Arrays.asList(
+            new StationResponse(stationIds.get(0), "강남역"),
+            new StationResponse(stationIds.get(2), "양재역"),
+            new StationResponse(stationIds.get(1), "잠실역")
+        );
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
+            .isEqualTo(expected);
     }
 
     @DisplayName("노선에 없는 역들로 구간을 추가한다.")
@@ -453,13 +467,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("상행 종점역이나 하행 종점역에 구간 추가한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"1, 2", "2, 0"})
-    void createSectionAtEndStation(int upStationIndex, int downStationIndex) {
+    @Test
+    void createSectionAtEndStation() {
         // when
         Map<String, String> params = new HashMap<>();
-        params.put("upStationId", String.valueOf(stationIds.get(upStationIndex)));
-        params.put("downStationId", String.valueOf(stationIds.get(downStationIndex)));
+        params.put("upStationId", String.valueOf(stationIds.get(1)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
         params.put("distance", "5");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -469,8 +482,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then()
             .extract();
 
+        LineResponse lineResponse = RestAssured.given().log().all()
+            .when()
+            .get(createdResponse.header("Location"))
+            .then()
+            .extract()
+            .as(LineResponse.class);
+
         // then
+        List<StationResponse> expected = Arrays.asList(
+            new StationResponse(stationIds.get(0), "강남역"),
+            new StationResponse(stationIds.get(1), "잠실역"),
+            new StationResponse(stationIds.get(2), "양재역")
+        );
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getStations()).usingRecursiveFieldByFieldElementComparator()
+            .isEqualTo(expected);
     }
 
     @DisplayName("기존 구간보다 길거나 같은 구간을 사이에 추가한다.")
@@ -533,7 +560,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("자연수가 아닌 구간의 길이 등록")
+    @DisplayName("자연수가 아닌 구간의 길이를 등록한다.")
     @ParameterizedTest
     @ValueSource(strings = {"0", "-1", "오"})
     void createSectionWithNotDistanceOfNaturalNumber(String invalidDistance) {
@@ -552,5 +579,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId", String.valueOf(stationIds.get(2)));
+        params.put("distance", "5");
+        RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete(createdResponse.header("Location") + "/sections?stationId=" + stationIds.get(2))
+            .then()
+            .extract();
+
+        LineResponse lineResponse = RestAssured.given().log().all()
+            .when()
+            .get(createdResponse.header("Location"))
+            .then()
+            .extract()
+            .as(LineResponse.class);
+
+        // then
+        List<StationResponse> expected = Arrays.asList(
+            new StationResponse(stationIds.get(0), "강남역"),
+            new StationResponse(stationIds.get(1), "잠실역")
+        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(expected).usingRecursiveFieldByFieldElementComparator()
+            .isEqualTo(expected);
     }
 }

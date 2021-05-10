@@ -4,21 +4,24 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Construction {
 
+    private final Line line;
     private final Set<Section> sections;
     private final List<Section> sectionsToCreate;
     private final List<Section> sectionsToRemove;
 
-    public Construction(Set<Section> sections) {
+    public Construction(Set<Section> sections, Line line) {
+        this.line = line;
         this.sections = new HashSet<>(sections);
         this.sectionsToCreate = new ArrayList<>();
         this.sectionsToRemove = new ArrayList<>();
     }
 
     public void insertSection(Section section) {
-        validateToInsertSection();
+        validateToConstruct();
         if (isEndSectionInsertion(section)) {
             sectionsToCreate.add(section);
             return;
@@ -26,8 +29,8 @@ public class Construction {
         insertSectionWhenNotEndSectionInsertion(section);
     }
 
-    private void validateToInsertSection() {
-        if (!sectionsToCreate.isEmpty()) {
+    private void validateToConstruct() {
+        if (!sectionsToCreate.isEmpty() || !sectionsToRemove.isEmpty()) {
             throw new IllegalStateException("이미 구간을 수정하였습니다.");
         }
     }
@@ -66,7 +69,7 @@ public class Construction {
     private void registerSectionsToUpdateWhenSameUpStation(Section section,
         Section sectionToConstruct) {
         sectionsToCreate.add(section);
-        sectionsToCreate.add(new Section(section.getLine(),
+        sectionsToCreate.add(new Section(line,
             section.getDownStation(),
             sectionToConstruct.getDownStation(),
             new Distance(
@@ -75,7 +78,7 @@ public class Construction {
 
     private void registerSectionsToUpdateWhenSameDownStation(Section section,
         Section sectionToConstruct) {
-        sectionsToCreate.add(new Section(sectionToConstruct.getLine(),
+        sectionsToCreate.add(new Section(line,
             sectionToConstruct.getUpStation(),
             section.getUpStation(),
             new Distance(
@@ -97,6 +100,36 @@ public class Construction {
                 .noneMatch(section1 -> section.getDownStation().equals(section1.getUpStation())))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("마지막 구간이 존재하지 않습니다."));
+    }
+
+    public void deleteSectionsByStation(Station station) {
+        validateToConstruct();
+        sectionsToRemove.addAll(sectionsWithStation(station));
+        if (isNotEndStationDeletion(station)) {
+            addSectionsToCreateAfterRemoveSection();
+        }
+    }
+
+    private void addSectionsToCreateAfterRemoveSection() {
+        Sections affectedSections = new Sections(new HashSet<>(sectionsToRemove));
+        Distance newDistance = affectedSections.totalDistance();
+        List<Station> affectedStationPath = affectedSections.pathByLine(line);
+        Station upStationToCreate = affectedStationPath.get(0);
+        Station downStationToCreate = affectedStationPath.get(affectedStationPath.size() - 1);
+        sectionsToCreate.add(new Section(line, upStationToCreate, downStationToCreate, newDistance));
+    }
+
+    private boolean isNotEndStationDeletion(Station station) {
+        Station firstStation = firstSection().getUpStation();
+        Station lastStation = lastSection().getDownStation();
+
+        return !(firstStation.equals(station) || lastStation.equals(station));
+    }
+
+    private List<Section> sectionsWithStation (Station station) {
+        return sections.stream()
+            .filter(section -> section.hasStation(station))
+            .collect(Collectors.toList());
     }
 
     public List<Section> sectionsToCreate() {

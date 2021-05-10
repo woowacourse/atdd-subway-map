@@ -50,6 +50,10 @@ public class Section {
         throw new IllegalArgumentException("같은 역이 존재하지 않습니다.");
     }
 
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public boolean hasOnlyOneSameStation(Section section) {
         boolean isSameUpStation = upStation.equals(section.getUpStation());
         boolean isSameDownStation = downStation.equals(section.getDownStation());

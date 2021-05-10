@@ -21,7 +21,7 @@ public class Sections {
         Section lastSection = lastSectionByLine(sectionsInLine);
         List<Station> result = new ArrayList<>(Collections.singletonList(now.getUpStation()));
         while (!now.equals(lastSection)) {
-            result.add(now.getUpStation());
+            result.add(now.getDownStation());
             now = nextSectionByLine(sectionsInLine, now);
         }
         result.add(now.getDownStation());
@@ -58,6 +58,12 @@ public class Sections {
     }
 
     public Construction construction(Line line) {
-        return new Construction(sectionsByLine(line));
+        return new Construction(sectionsByLine(line), line);
+    }
+
+    public Distance totalDistance() {
+        return new Distance(sections.stream()
+            .mapToInt(section -> section.getDistance().value())
+            .sum());
     }
 }
