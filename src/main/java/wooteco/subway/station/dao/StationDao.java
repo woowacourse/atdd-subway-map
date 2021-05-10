@@ -13,4 +13,6 @@ public interface StationDao {
     List<Station> findAll();
 
     void delete(Long id);
+
+    Optional<Station> findById(Long id);
 }

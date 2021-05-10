@@ -49,10 +49,10 @@
     
 ## 구간 관리
 - [ ] 구간 생성
-  - [ ] 노선 추가시 구간의 정보도 함께 등록
-        - [ ] upStationId가 존재하지 않는 지하철 역이면 예외 발생
-        - [ ] downStationId가 존재하지 않는 지하철 역이면 예외 발생
-        - [ ] upStationId와 downStationId가 같은 경우 예외 발생
+  - [x] 노선 추가시 구간의 정보도 함께 등록
+        - [x] upStationId가 존재하지 않는 지하철 역이면 예외 발생
+        - [x] downStationId가 존재하지 않는 지하철 역이면 예외 발생
+        - [x] upStationId와 downStationId가 같은 경우 예외 발생
   - [ ] req
         - POST, /lines/{lineId}/sections, BODY : {lineId, upStationId, downStationId, distance}
   - [ ] res

@@ -61,6 +61,21 @@ class JdbcStationDaoTest {
                 .isEqualTo(new Station(1L, 강남역));
     }
 
+    @DisplayName("지하철 역 Id로 DB에서 지하철 역 조회")
+    @Test
+    void findById() {
+        // given
+        Long id = 1L;
+
+        // when
+        jdbcStationDao.save(new Station("강남역"));
+        Optional<Station> station = jdbcStationDao.findById(id);
+
+        // then
+        assertThat(station.get()).usingRecursiveComparison()
+                .isEqualTo(new Station(1L, "강남역"));
+    }
+
     @DisplayName("모든 지하철 역 조회")
     @Test
     void findAll() {

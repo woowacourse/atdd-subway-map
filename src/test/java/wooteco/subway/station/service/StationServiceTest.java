@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.JdbcStationDao;
@@ -15,6 +16,7 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,5 +104,30 @@ class StationServiceTest {
 
         // then
         verify(stationDao).delete(any(Long.class));
+    }
+
+    @DisplayName("같은 역을 구간으로 등록하려는 경우")
+    @Test
+    void validatesSameStation() {
+        // given
+        Station 잠실역 = new Station(1L, "잠실역");
+        given(stationDao.findById(잠실역.getId()))
+                .willReturn(Optional.of(잠실역));
+
+        // when & then
+        assertThatThrownBy(() -> stationService.checkRightStation(잠실역.getId(), 잠실역.getId()))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("존재하지 않는 id로 역을 찾는 경우")
+    @Test
+    void validatesExistStation() {
+        // given
+        given(stationDao.findById(any(Long.class)))
+                .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> stationService.checkRightStation(1L, 2L))
+                .isInstanceOf(SubwayException.class);
     }
 }

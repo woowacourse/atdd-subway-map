@@ -13,6 +13,7 @@ import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 
 import java.util.Arrays;
@@ -122,16 +123,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("초기 구간의 자하철 역 id가 같은 경우 BAD_REQUEST를 응답한다.")
+    @Test
+    void createLineWithDuplicateStation() {
+        // given
+        Station 잠실역 = new Station("잠실역");
+        Station 왕십리역 = new Station("왕십리역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 1L, 3);
+
+        // when
+        createRequest("/stations", 잠실역);
+        ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("초기 구간의 자하철 역 id가 존재하지 않는 역인 경우 BAD_REQUEST를 응답한다.")
+    @Test
+    void createLineWhenNoExistStation() {
+        // given
+        Station 잠실역 = new Station("잠실역");
+        LineCreateRequest 분당선_RED =
+                new LineCreateRequest("분당선", "bg-red-600", 1L, 3L, 3);
+
+        // when
+        createRequest("/stations", 잠실역);
+        ExtractableResponse<Response> response = createRequest("/lines", 분당선_RED);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("모든 노선을 조회한다.")
     @Test
     void getLines() {
-        /// given
+        // given
+        Station 잠실역 = new Station("잠실역");
+        Station 왕십리역 = new Station("왕십리역");
         LineCreateRequest 분당선_RED =
                 new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
         LineCreateRequest 신분당선_YELLOW =
                 new LineCreateRequest("신분당선", "bg-yellow-600", 1L, 2L, 3);
 
         // when
+        createRequest("/stations", 잠실역);
+        createRequest("/stations", 왕십리역);
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         ExtractableResponse<Response> 신분당선생성 = createRequest("/lines", 신분당선_YELLOW);
         ExtractableResponse<Response> response = findAllRequest("/lines");
@@ -158,11 +196,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 하나를 조회한다.")
     @Test
     void getLine() {
-        /// given
+        // given
+        Station 잠실역 = new Station("잠실역");
+        Station 왕십리역 = new Station("왕십리역");
         LineCreateRequest 분당선_RED =
                 new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
 
         // when
+        createRequest("/stations", 잠실역);
+        createRequest("/stations", 왕십리역);
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         ExtractableResponse<Response> response = findByIdRequest("1");
         Long expectedLineId = Long.parseLong(분당선생성.header("Location").split("/")[2]);
@@ -177,12 +219,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
+        Station 잠실역 = new Station("잠실역");
+        Station 왕십리역 = new Station("왕십리역");
         LineCreateRequest 분당선_RED =
                 new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
         LineUpdateRequest 신분당선_YELLOW =
                 new LineUpdateRequest("신분당선", "bg-yellow-600");
 
         // when
+        createRequest("/stations", 잠실역);
+        createRequest("/stations", 왕십리역);
         createRequest("/lines", 분당선_RED);
         ExtractableResponse<Response> expectedResponse = updateRequest("1", 신분당선_YELLOW);
         ExtractableResponse<Response> updatedResponse = findByIdRequest("1");
@@ -217,11 +263,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        Station 잠실역 = new Station("잠실역");
+        Station 왕십리역 = new Station("왕십리역");
         LineCreateRequest 분당선_RED =
                 new LineCreateRequest("분당선", "bg-red-600", 1L, 2L, 3);
         int originalSize;
 
         // when
+        createRequest("/stations", 잠실역);
+        createRequest("/stations", 왕십리역);
         ExtractableResponse<Response> 분당선생성 = createRequest("/lines", 분당선_RED);
         String uri = 분당선생성.header("Location");
         originalSize = lineDao.findAll().size();

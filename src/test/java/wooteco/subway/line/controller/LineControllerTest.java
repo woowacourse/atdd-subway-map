@@ -16,6 +16,7 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
 import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.service.StationService;
 
 import java.util.Arrays;
 
@@ -35,6 +36,9 @@ class LineControllerTest {
 
     @MockBean
     private LineService lineService;
+
+    @MockBean
+    private StationService stationService;
 
     @MockBean
     private SectionService sectionService;

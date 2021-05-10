@@ -20,6 +20,13 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
+    public Optional<Station> findById(Long id) {
+        return stations.stream()
+                .filter(station -> station.isSameId(id))
+                .findAny();
+    }
+
+    @Override
     public Optional<Station> findByName(String name) {
         return stations.stream()
                 .filter(station -> station.isSameName(name))

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.StationDao;
@@ -11,6 +12,7 @@ import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,5 +53,23 @@ public class StationService {
     public void delete(Long id) {
         stationDao.delete(id);
         log.info("지하철 역 삭제 성공");
+    }
+
+    public void checkRightStation(Long upStationId, Long downStationId) {
+        validatesSameStation(upStationId, downStationId);
+        validatesExistStation(upStationId);
+        validatesExistStation(downStationId);
+    }
+
+    private void validatesSameStation(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new SubwayException("같은 역을 등록할 수 없습니다.");
+        }
+    }
+
+    private void validatesExistStation(Long id) {
+        if (Optional.empty().equals(stationDao.findById(id))) {
+            throw new SubwayException("존재하지 않는 역입니다.");
+        }
     }
 }
