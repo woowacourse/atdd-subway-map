@@ -2,11 +2,19 @@ package wooteco.subway.controller.request;
 
 import wooteco.subway.domain.Line;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 public class LineRequest {
+    @Pattern(regexp = "^[가-힣|0-9]*선$")
     private String name;
+    @NotNull
     private String color;
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @NotNull
     private int distance;
 
     public LineRequest() {

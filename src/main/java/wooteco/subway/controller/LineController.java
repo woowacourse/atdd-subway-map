@@ -25,12 +25,6 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        LineValidator lineValidator = new LineValidator();
-        webDataBinder.addValidators(lineValidator);
-    }
-
     @PostMapping()
     public ResponseEntity<LineResponse> create(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse lineResponse = new LineResponse(lineService.create(lineRequest));
