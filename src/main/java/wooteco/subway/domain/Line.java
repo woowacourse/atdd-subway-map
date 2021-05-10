@@ -1,23 +1,39 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import wooteco.subway.common.Id;
+import wooteco.subway.exception.badRequest.WrongInformationException;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Line {
 
+    @Id
     private Long id;
     private String name;
     private String color;
+    private Sections sections;
+
+    private Line(Long id, String name, String color, Sections sections) {
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(color)) {
+            throw new WrongInformationException();
+        }
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
 
     public static Line create(String name, String color) {
-        return create(null, name, color);
+        return create(null, name, color, Sections.create());
     }
 
     public static Line create(Long id, String name, String color) {
-        return new Line(id, name, color);
+        return create(id, name, color, Sections.create());
+    }
+
+    public static Line create(Long id, String name, String color, Sections sections) {
+        return new Line(id, name, color, sections);
     }
 
     public boolean isSameName(String name) {
@@ -39,5 +55,13 @@ public class Line {
 
     public boolean isSameColor(String color) {
         return this.color.equals(color);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public Section firstSection() {
+        return sections.firstSection();
     }
 }

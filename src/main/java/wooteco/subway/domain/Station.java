@@ -1,15 +1,24 @@
 package wooteco.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import wooteco.subway.common.Id;
+import wooteco.subway.exception.badRequest.WrongInformationException;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Station {
 
+    @Id
     private Long id;
     private String name;
+
+    private Station(Long id, String name) {
+        if (StringUtils.isEmpty(name)) {
+            throw new WrongInformationException();
+        }
+        this.id = id;
+        this.name = name;
+    }
 
     public static Station create(String name) {
         return create(null, name);

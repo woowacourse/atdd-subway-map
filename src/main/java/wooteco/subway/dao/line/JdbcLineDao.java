@@ -1,28 +1,25 @@
 package wooteco.subway.dao.line;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.common.PersistenceUtils;
+import wooteco.subway.dao.section.SectionDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 
 @Repository
-public class LineDaoJdbcTemplate implements LineDao {
+@RequiredArgsConstructor
+public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-
-    public LineDaoJdbcTemplate(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("LINE")
-            .usingGeneratedKeyColumns("id");
-    }
+    private final SectionDao sectionDao;
 
     private RowMapper<Line> lineRowMapper() {
         return (rs, rowNum) -> {
@@ -43,13 +40,22 @@ public class LineDaoJdbcTemplate implements LineDao {
 
     @Override
     public Line save(Line line) {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("name", line.getName());
-        parameters.put("color", line.getColor());
+        final String sql = "INSERT INTO line(name, color) VALUES(?, ?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        jdbcTemplate.update(con -> {
+            final PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, line.getName());
+            preparedStatement.setString(2, line.getColor());
+            return preparedStatement;
+        }, keyHolder);
+        final long lineId = keyHolder.getKey().longValue();
+        PersistenceUtils.insertId(line, lineId);
 
-        return Line.create(id, line.getName(), line.getColor());
+        final Section section = line.firstSection();
+        sectionDao.save(section, lineId);
+
+        return line;
     }
 
     @Override

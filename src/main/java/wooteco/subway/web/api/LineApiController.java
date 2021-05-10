@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.exception.badRequest.WrongInformationException;
 import wooteco.subway.web.request.LineRequest;
 import wooteco.subway.web.response.LineResponse;
 import wooteco.subway.service.LineService;
@@ -28,10 +29,12 @@ public class LineApiController {
     private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new WrongInformationException();
+        }
         final Line line = Line.create(lineRequest.getName(), lineRequest.getColor());
-        Line createdLine = lineService.createLine(line);
+        Line createdLine = lineService.createLine(line, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
 
         return ResponseEntity.created(URI.create("/lines/" + createdLine.getId()))
             .body(LineResponse.create(createdLine));

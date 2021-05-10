@@ -1,13 +1,19 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.badRequest.LineInfoDuplicatedException;
 import wooteco.subway.exception.notFound.LineNotFoundException;
 import wooteco.subway.domain.Line;
 import wooteco.subway.dao.line.LineDao;
+import wooteco.subway.exception.notFound.StationNotFoundException;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -15,12 +21,22 @@ import wooteco.subway.dao.line.LineDao;
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationDao stationDao;
 
     @Transactional
-    public Line createLine(Line line) {
+    public Line createLine(Line line, Long upStationId, Long downStationId, int distance) {
         if (lineDao.findLineByName(line.getName()).isPresent()) {
             throw new LineInfoDuplicatedException();
         }
+
+        final Station upStation =
+            stationDao.findStationById(upStationId).orElseThrow(StationNotFoundException::new);
+        final Station downStation =
+            stationDao.findStationById(downStationId).orElseThrow(StationNotFoundException::new);
+
+        final Section section = Section.create(upStation, downStation, distance);
+        line.addSection(section);
+
         return lineDao.save(line);
     }
 

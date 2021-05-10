@@ -47,4 +47,9 @@ public class StationDaoCache implements StationDao {
     public void removeAll() {
         stations.clear();
     }
+
+    @Override
+    public Optional<Station> findStationById(Long id) {
+        return stations.stream().filter(station -> station.isSameId(id)).findAny();
+    }
 }
