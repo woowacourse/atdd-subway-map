@@ -28,7 +28,7 @@ public class LineController {
         if (bindingResult.hasErrors()) {
             throw new LineElementNullPointException();
         }
-        Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineService.save(lineRequest.getName(), lineRequest.getColor());
         LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
                 .body(lineResponse);

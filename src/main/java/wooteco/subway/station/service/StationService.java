@@ -44,4 +44,9 @@ public class StationService {
         findStationById(id);
         stationDao.remove(id);
     }
+
+    @Transactional
+    public void removeAll() {
+        stationDao.removeAll();
+    }
 }

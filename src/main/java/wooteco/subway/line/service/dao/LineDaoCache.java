@@ -52,6 +52,11 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
+    public void removeAll() {
+        lines.clear();
+    }
+
+    @Override
     public void update(Long id, String name, String color) {
         findById(id).get().changeInfo(name, color);
     }

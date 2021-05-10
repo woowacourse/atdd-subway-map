@@ -17,5 +17,7 @@ public interface LineDao {
 
     void remove(Long id);
 
+    void removeAll();
+
     void update(Long id, String name, String color);
 }

@@ -19,7 +19,11 @@ public class LineService {
         this.lineDao = lineDao;
     }
 
-    public Line createLine(String name, String color) {
+    public Line save(Line line) {
+        return save(line.getName(), line.getColor());
+    }
+
+    public Line save(String name, String color) {
         if (lineDao.findByName(name).isPresent()) {
             throw new LineNameDuplicatedException();
         }
@@ -46,5 +50,9 @@ public class LineService {
 
     public void removeLine(Long id) {
         lineDao.remove(id);
+    }
+
+    public void removeAll() {
+        lineDao.removeAll();
     }
 }
