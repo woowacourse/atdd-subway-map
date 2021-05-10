@@ -53,6 +53,30 @@ public class Section {
         }
     }
 
+    public Section getNewSplitSectionBy(Section newSection, Long newStationId, Direction directionOfInsertCriteriaStationInNewSection) {
+        Direction reversedDirectionOfInsertCriteriaStation = directionOfInsertCriteriaStationInNewSection.getReversed();
+        int splitDistance = this.getSplitDistanceBy(newSection);
+        if (reversedDirectionOfInsertCriteriaStation == Direction.UP) {
+            return new Section(lineId, this.getUpStationId(), newStationId, splitDistance);
+        }
+        return new Section(lineId, newStationId, this.getDownStationId(), splitDistance);
+    }
+
+    public Direction getDirectionOf(Long stationId) {
+        if (stationId.equals(upStationId)) {
+            return Direction.UP;
+        }
+        return Direction.DOWN;
+    }
+
+    public boolean canBeSplitBy(Section newSection) {
+        return newSection.getDistance() < this.getDistance();
+    }
+
+    public int getSplitDistanceBy(Section newSection) {
+        return this.getDistance() - newSection.getDistance();
+    }
+
     public Long getId() {
         return id;
     }
@@ -88,29 +112,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
-    }
-
-    public Direction getDirectionOf(Long stationId) {
-        if (stationId.equals(upStationId)) {
-            return Direction.UP;
-        }
-        return Direction.DOWN;
-    }
-
-    public boolean canBeSplitBy(Section newSection) {
-        return newSection.getDistance() < this.getDistance();
-    }
-
-    public int getSplitDistanceBy(Section newSection) {
-        return this.getDistance() - newSection.getDistance();
-    }
-
-    public Section getNewSplitSectionBy(Section newSection, Long newStationId, Direction directionOfInsertCriteriaStationInNewSection) {
-        Direction reversedDirectionOfInsertCriteriaStation = directionOfInsertCriteriaStationInNewSection.getReversed();
-        int splitDistance = this.getSplitDistanceBy(newSection);
-        if (reversedDirectionOfInsertCriteriaStation == Direction.UP) {
-            return new Section(lineId, this.getUpStationId(), newStationId, splitDistance);
-        }
-        return new Section(lineId, newStationId, this.getDownStationId(), splitDistance);
     }
 }
