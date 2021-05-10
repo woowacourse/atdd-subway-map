@@ -17,19 +17,19 @@ public class SectionService {
 
     private final StationService stationService;
     private final LineDao lineDao;
-    private final SectionH2Dao sectionH2Dao; //TODO 인터페이스 추출
+    private final SectionDao sectionDao;
 
-    private SectionService(StationService stationService, LineDao lineDao, SectionH2Dao sectionH2Dao) {
+    private SectionService(StationService stationService, LineDao lineDao, SectionDao sectionDao) {
         this.stationService = stationService;
         this.lineDao = lineDao;
-        this.sectionH2Dao = sectionH2Dao;
+        this.sectionDao = sectionDao;
     }
 
     public Section add(Long lineId, SectionRequest sectionRequest) {
         validateLineId(lineId);
         Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        Section newSection = sectionH2Dao.save(lineId, section);
-        Optional<Section> overlappedSection = sectionH2Dao.findBySameUpOrDownId(lineId, newSection);
+        Section newSection = sectionDao.save(lineId, section);
+        Optional<Section> overlappedSection = sectionDao.findBySameUpOrDownId(lineId, newSection);
         overlappedSection.ifPresent(updateIntermediate(newSection));
         return newSection;
     }
@@ -38,20 +38,20 @@ public class SectionService {
         return originalSection -> {
             int newDistance = originalSection.getDistance() - newSection.getDistance();
             if (originalSection.isUpStation(newSection.getUpStationId())) {
-                sectionH2Dao.updateUpStation(originalSection.getId(), newSection.getDownStationId(), newDistance);
+                sectionDao.updateUpStation(originalSection.getId(), newSection.getDownStationId(), newDistance);
                 return;
             }
-            sectionH2Dao.updateDownStation(originalSection.getId(), newSection.getUpStationId(), newDistance);
+            sectionDao.updateDownStation(originalSection.getId(), newSection.getUpStationId(), newDistance);
         };
     }
 
     public void delete(Long lineId, Long stationId) {
         validateLineId(lineId);
         validateRemovableSize(lineId);
-        Sections sections = new Sections(sectionH2Dao.findByStation(lineId, stationId));
+        Sections sections = new Sections(sectionDao.findByStation(lineId, stationId));
         merge(lineId, stationId, sections);
         for (Long sectionId : sections.sectionIds()) {
-            sectionH2Dao.delete(sectionId);
+            sectionDao.delete(sectionId);
         }
     }
 
@@ -62,7 +62,7 @@ public class SectionService {
 
     private void validateRemovableSize(Long lineId) {
         validateLineId(lineId);
-        Sections sections = new Sections(sectionH2Dao.findByLineId(lineId));
+        Sections sections = new Sections(sectionDao.findByLineId(lineId));
         if (sections.isOne()) {
             throw new InvalidDeleteSectionException();
         }
@@ -71,13 +71,13 @@ public class SectionService {
     private void merge(Long lineId, Long stationId, Sections sections) {
         if (sections.isBiggerThanOne()) {
             Section mergedSection = sections.merge(stationId);
-            sectionH2Dao.save(lineId, mergedSection);
+            sectionDao.save(lineId, mergedSection);
         }
     }
 
     public List<StationResponse> sortedStationIds(Long lineIds) {
         validateLineId(lineIds);
-        Sections sections = new Sections(sectionH2Dao.findByLineId(lineIds));
+        Sections sections = new Sections(sectionDao.findByLineId(lineIds));
         List<Long> sortedStationIds = sections.sortedStationIds();
         return sortedStationIds.stream()
                 .map(stationService::findById)
