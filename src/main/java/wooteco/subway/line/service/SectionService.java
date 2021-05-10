@@ -21,17 +21,9 @@ public class SectionService {
     }
 
     public List<StationResponse> findSectionById(Long id) {
-        List<Station> result = new ArrayList<>();
-        Map<Station, Station> sectionMap = sectionDao.findSectionById(id);
+        List<Station> stationsOfLine = findStationsOfLine(id);
 
-        Station key = findupStation(sectionMap);
-        result.add(key);
-        while (sectionMap.get(key) != null) {
-            key = sectionMap.get(key);
-            result.add(key);
-        }
-
-        return result.stream()
+        return stationsOfLine.stream()
                 .map(res ->
                         new StationResponse(
                                 res.getId(),
@@ -40,7 +32,20 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    private Station findupStation(Map<Station, Station> sectionMap) {
+    private List<Station> findStationsOfLine(Long lineId) {
+        List<Station> stationsOfLine = new ArrayList<>();
+        Map<Station, Station> sectionMap = sectionDao.findSectionById(lineId);
+
+        Station key = findFirstUpStation(sectionMap);
+        stationsOfLine.add(key);
+        while (sectionMap.get(key) != null) {
+            key = sectionMap.get(key);
+            stationsOfLine.add(key);
+        }
+        return stationsOfLine;
+    }
+
+    private Station findFirstUpStation(Map<Station, Station> sectionMap) {
         Set<Station> upStations = new HashSet<>(sectionMap.keySet());
         Set<Station> downStations = new HashSet<>(sectionMap.values());
         upStations.removeAll(downStations);
