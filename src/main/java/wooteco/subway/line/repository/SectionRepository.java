@@ -1,5 +1,6 @@
 package wooteco.subway.line.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,7 +17,6 @@ public class SectionRepository {
 
     private final RowMapper<Long> stationIdRowMapperByUpStationId = (resultSet, rowNum) -> resultSet.getLong("up_station_id");
     private final RowMapper<Long> stationIdRowMapperByDownStationId = (resultSet, rowNum) -> resultSet.getLong("down_station_id");
-
 
     public SectionRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -46,13 +46,22 @@ public class SectionRepository {
     }
 
     public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
-        // 시작점 뒤에 아무것도 없는경우
-        // line_id에 있는 데이터중, 시작점을 up_station으로 가진 놈이 테이블에 있는지 확인한다.
         try {
             String query = "SELECT up_station_id FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
-            Long ClosestStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId()));
-        } catch (Exception e) {
+            Long closestStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId()));
+            saveSectionBetweenStations(lineId, sectionRequest, closestStationId);
+        } catch (EmptyResultDataAccessException e) {
             save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         }
+    }
+
+    private void saveSectionBetweenStations(final Long lineId, final SectionRequest sectionRequest, final Long closestStationId) {
+        String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ? ORDER BY distance DESC LIMIT 1";
+        int currentShortestDistance = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId()));
+        if (currentShortestDistance <= sectionRequest.getDistance()) {
+            throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
+        }
+        save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        save(lineId, sectionRequest.getDownStationId(), closestStationId, currentShortestDistance - sectionRequest.getDistance());
     }
 }
