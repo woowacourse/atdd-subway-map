@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import wooteco.subway.line.api.dto.LineRequest;
 import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
 
@@ -56,11 +57,11 @@ class LineServiceTest {
         when(lineDao.findLineById(1L))
                 .thenReturn(new Line(1L, "2호선", "green"));
         //when
-        LineResponse lineResponse = lineService.createLine(new LineRequest("2호선", "green"));
+        LineDetailsResponse lineDetailsResponse = lineService.createLine(new LineRequest("2호선", "green"));
         //then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
-        assertThat(lineResponse.getColor()).isEqualTo("green");
+        assertThat(lineDetailsResponse.getId()).isEqualTo(1L);
+        assertThat(lineDetailsResponse.getName()).isEqualTo("2호선");
+        assertThat(lineDetailsResponse.getColor()).isEqualTo("green");
     }
 
     @DisplayName("단일 노선 조회")
@@ -70,10 +71,10 @@ class LineServiceTest {
         when(lineDao.findLineById(1L))
                 .thenReturn(new Line(1L, "2호선", "green"));
         //when
-        LineResponse lineResponse = lineService.showLineById(1L);
+        LineDetailsResponse lineDetailsResponse = lineService.showLineById(1L);
         //then
-        assertThat(lineResponse.getId()).isEqualTo(1L);
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
-        assertThat(lineResponse.getColor()).isEqualTo("green");
+        assertThat(lineDetailsResponse.getId()).isEqualTo(1L);
+        assertThat(lineDetailsResponse.getName()).isEqualTo("2호선");
+        assertThat(lineDetailsResponse.getColor()).isEqualTo("green");
     }
 }

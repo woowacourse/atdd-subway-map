@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.api.dto.LineResponse;
+import wooteco.subway.line.api.dto.LineDetailsResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,8 +111,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         List<String> expectedLineNames = Arrays.asList(LINE_NAME, lineName2);
-        List<String> resultLineNames = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getName)
+        List<String> resultLineNames = response.jsonPath().getList(".", LineDetailsResponse.class).stream()
+                .map(LineDetailsResponse::getName)
                 .collect(Collectors.toList());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -123,15 +123,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         //when
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
         ExtractableResponse<Response> findResponse = 노선_조회_후_응답("/lines/" + id);
 
         //then
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        LineResponse lineResponse = findResponse.jsonPath().getObject(".", LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo(LINE_NAME);
-        assertThat(lineResponse.getColor()).isEqualTo(LINE_COLOR);
+        LineDetailsResponse lineDetailsResponse = findResponse.jsonPath().getObject(".", LineDetailsResponse.class);
+        assertThat(lineDetailsResponse.getName()).isEqualTo(LINE_NAME);
+        assertThat(lineDetailsResponse.getColor()).isEqualTo(LINE_COLOR);
     }
 
     @DisplayName("노선을 수정하는 기능")
@@ -143,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = 노선_수정을_위한_요청_정보(newLineName, newLineColor);
 
         //when
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -160,7 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineIfNotFoundId() {
         //when
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
         ExtractableResponse<Response> response = 노선_조회_후_응답("/lines/" + (id + 1L));
 
         //then
@@ -172,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void delete() {
         //when
-        Long id = createResponse.body().jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class).getId();
         ExtractableResponse<Response> response = 노선_삭제_후_응답(id);
 
         //then
@@ -183,7 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteIfNotExistLineId() {
         //when
-        Long id = createResponse.body().jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class).getId();
         ExtractableResponse<Response> response = 노선_삭제_후_응답(id + 1);
 
         //then
