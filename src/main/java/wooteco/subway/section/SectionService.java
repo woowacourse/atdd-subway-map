@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @Transactional
 public class SectionService {
-    private final int LIMIT_SIZE_TO_DELETE = 2;
+    private final int LIMIT_NUMBER_OF_STATION_IN_LINE = 2;
 
     private final SectionDao sectionDao;
     private final StationDao stationDao;
@@ -48,11 +48,25 @@ public class SectionService {
 
     private void addMiddleSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance){
         if(sectionDao.isExistingUpStation(lineId, upStationId)){
+            final Long beforeDownStation = sectionDao.downStationId(lineId, upStationId);
+            final int beforeDistance = sectionDao.findDistance(lineId, upStationId, beforeDownStation);
+
+            if(distance >= beforeDistance){
+                throw new LineException("기존의 구간 길이보다 같거나 큰 길이의 삽입이 불가능합니다.");
+            }
+
             updateSectionFromUpStation(lineId, upStationId, downStationId, distance);
             return;
         }
 
         if(sectionDao.isExistingDownStation(lineId, downStationId)){
+            final Long beforeUpStation = sectionDao.upStationId(lineId, downStationId);
+            final int beforeDistance = sectionDao.findDistance(lineId, beforeUpStation, downStationId);
+
+            if(distance >= beforeDistance){
+                throw new LineException("기존의 구간 길이보다 같거나 큰 길이의 삽입이 불가능합니다.");
+            }
+
             updateSectionFromDownStation(lineId, upStationId, downStationId, distance);
             return;
         }
@@ -116,7 +130,7 @@ public class SectionService {
 
     public void deleteSection(final Long lineId, final Long stationId) {
         final List<Station> allSectionInLine = findAllSectionInLine(lineId);
-        if(allSectionInLine.size() <= LIMIT_SIZE_TO_DELETE){
+        if(allSectionInLine.size() <= LIMIT_NUMBER_OF_STATION_IN_LINE){
             throw new IllegalArgumentException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
         }
 

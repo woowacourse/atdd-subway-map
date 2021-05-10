@@ -176,6 +176,28 @@ class SectionServiceTest {
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("상행 -> 중간역 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
+    @Test()
+    public void addFrontSectionWithInvalidDistance() {
+        assertThatThrownBy(()->{
+            final Station middleStation = new Station("C역");
+            final Station savedMiddleStation = stationService.save(middleStation);
+
+            sectionService.addSection(savedLine.getId(), savedUpStation.getId(), savedMiddleStation.getId(), initialDistance+1);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("중간역 -> 하행 삽입 시 상행 - 하행의 거리보다 큰 거리로 추가할 수 없다.")
+    @Test()
+    public void addBackSectionWithInvalidDistance() {
+        assertThatThrownBy(()->{
+            final Station middleStation = new Station("C역");
+            final Station savedMiddleStation = stationService.save(middleStation);
+
+            sectionService.addSection(savedLine.getId(), savedMiddleStation.getId(), savedDownStation.getId(), initialDistance+1);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
     private void validateStationOrder(final Station... expectOrders) {
         final List<Station> stations = sectionService.findAllSectionInLine(savedLine.getId());
 
