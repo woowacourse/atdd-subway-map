@@ -69,8 +69,9 @@ public class SectionService {
 
     private Section saveSectionAtMiddle(final Section section) {
         new SectionValidator(sectionDao.findAllByLineId(section.getLineId()), section).validate();
-        final boolean canSaveSectionAtUpStationOnLine = sectionDao.findSectionByUpStationId(section.getUpStationId())
+        final boolean canSaveSectionAtUpStationOnLine = sectionDao.findSectionByUpStation(section)
                                                                   .isPresent();
+
         if (canSaveSectionAtUpStationOnLine) {
             sectionDao.updateUpStationToDownStation(section.getUpStationId(), section.getDownStationId());
             return sectionDao.save(section);

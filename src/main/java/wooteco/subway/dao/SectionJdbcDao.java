@@ -38,20 +38,9 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public void updateUpStationToDownStation(final Long upStationId, final Long downStationId) {
-
-    }
-
-    @Override
-    public void updateDownStationToUpStation(final Long downStationId, final Long upStationId) {
-
-    }
-
-    @Override
     public List<Section> findAllByLineId(final Long lineId) {
-        String sql =
-                "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s WHERE s" +
-                        ".line_id = ?";
+        String sql = "SELECT s.id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " +
+                "WHERE s.line_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final long id = rs.getLong("id");
             final long upStationId = rs.getLong("up_station_id");
@@ -62,20 +51,27 @@ public class SectionJdbcDao implements SectionDao {
     }
 
     @Override
-    public Optional<Section> findSectionByDownStationId(final Long downStationId) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Section> findSectionByUpStationId(final Long upStationId) {
-        return Optional.empty();
+    public Optional<Section> findSectionByUpStation(final Section section) {
+        String sql = "SELECT s.id, s.line_id, s.down_station_id, s.distance FROM SECTION s " +
+                "WHERE s.up_station_id = ? AND s.line_id = ?";
+        try {
+            final Long upStationId = section.getUpStationId();
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                final long id = rs.getLong("id");
+                final long lineId = rs.getLong("line_id");
+                final long downStationId = rs.getLong("down_station_id");
+                final int distance = rs.getInt("distance");
+                return Optional.of(new Section(id, lineId, upStationId, downStationId, distance));
+            }, upStationId, section.getLineId());
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Section> findById(final Long id) {
-        String sql =
-                "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s WHERE s" +
-                        ".id = ?";
+        String sql = "SELECT s.id, s.line_id, s.up_station_id, s.down_station_id, s.distance FROM SECTION s " +
+                "WHERE s.id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 final long lineId = rs.getLong("line_id");
@@ -87,5 +83,17 @@ public class SectionJdbcDao implements SectionDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void updateUpStationToDownStation(final Long upStationId, final Long downStationId) {
+        String sql = "UPDATE SECTION s SET s.up_station_id = ? WHERE s.up_station_id = ?";
+        jdbcTemplate.update(sql, downStationId, upStationId);
+    }
+
+    @Override
+    public void updateDownStationToUpStation(final Long downStationId, final Long upStationId) {
+        String sql = "UPDATE SECTION s SET s.down_station_id = ? WHERE s.down_station_id = ?";
+        jdbcTemplate.update(sql, upStationId, downStationId);
     }
 }

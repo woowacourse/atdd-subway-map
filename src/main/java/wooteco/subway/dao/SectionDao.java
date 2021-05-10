@@ -11,14 +11,12 @@ public interface SectionDao {
 
     List<Section> findAllByLineId(Long lineId);
 
-    Optional<Section> findSectionByDownStationId(Long downStationId);
-
-    Optional<Section> findSectionByUpStationId(Long upStationId);
+    Optional<Section> findSectionByUpStation(Section section);
 
     Section save(Section section);
 
     void updateUpStationToDownStation(Long upStationId, Long downStationId);
 
-    void updateDownStationToUpStation(Long upStationId, Long downStationId);
+    void updateDownStationToUpStation(Long downStationId, Long upStationId);
 
 }
