@@ -6,22 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Line {
-    private Long id;
+    private final Long id;
     private final String name;
     private final String color;
-    private List<Station> stations;
+    private final List<Station> stations;
+
+    public Line(final String name, final String color) {
+        this(null, name, color, new ArrayList<>());
+    }
 
     public Line(final Long id, final String name, final String color, final List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-    }
-
-    public Line(final String name, final String color) {
-        this.name = name;
-        this.color = color;
-        this.stations = new ArrayList<>();
     }
 
     public boolean isSameName(final String name) {
