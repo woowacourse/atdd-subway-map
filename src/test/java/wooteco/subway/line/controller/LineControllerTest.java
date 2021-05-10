@@ -12,10 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.SectionRequest;
+import wooteco.subway.station.dto.StationResponse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +27,26 @@ class LineControllerTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
+
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        final ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        final ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
 
         params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -56,7 +75,7 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
     }
 
-    @DisplayName("필드값이 없는 Requst를 보내면, 400 상태 코드를 받는다.")
+    @DisplayName("필드값이 없는 Request를 보내면, 400 상태 코드를 받는다.")
     @Test
     void emptyFieldFail() {
         Map<String, Object> wrongParams = new HashMap<>();
@@ -167,9 +186,9 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(line2.get("name")).isEqualTo("2호선");
     }
 
-    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보를 반환한다.")
+    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보와 담고 있는 stations List를 반환한다.")
     @Test
-    void getLine() {
+    void getLineWithStationResponses() {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -177,10 +196,12 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        List<StationResponse> expectedStationResponses = Arrays.asList(new StationResponse(1L,"강남역"), new StationResponse(2L, "역삼역"));
         LineResponse expectedLineResponse = new LineResponse(
                 1L,
                 "신분당선",
-                "bg-red-600"
+                "bg-red-600",
+                expectedStationResponses
         );
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);

@@ -8,6 +8,9 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.line.repository.SectionRepository;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,10 +18,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
+    private final StationService stationService;
     private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(final LineRepository lineRepository) {
+    public LineService(final StationService stationService, final LineRepository lineRepository, final SectionRepository sectionRepository) {
+        this.stationService = stationService;
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public List<LinesResponse> getAllLines() {
@@ -44,9 +51,16 @@ public class LineService {
         }
     }
 
-    public LineResponse getLineById(final Long id) {
+    public LineResponse getLineResponseById(final Long id) {
         Line line = lineRepository.getLineById(id);
-        return new LineResponse(line.getId(), line.getName(), line.getColor());
+        List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(id);
+        List<StationResponse> stationResponses = stationService.getAllStations();
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                stationResponses.stream()
+                        .filter(stationResponse -> stationIdsByLineId.contains(stationResponse.getId()))
+                        .collect(Collectors.toList())
+        );
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {
