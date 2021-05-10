@@ -14,11 +14,11 @@ public class Line {
     }
 
     public Line(LineRequest lineRequest) {
-        this(lineRequest.getName(), lineRequest.getName());
+        this(lineRequest.getName(), lineRequest.getColor());
     }
 
     public Line(Long id, LineRequest lineRequest) {
-        this(id, lineRequest.getName(), lineRequest.getName());
+        this(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public Line(String name, String color) {
