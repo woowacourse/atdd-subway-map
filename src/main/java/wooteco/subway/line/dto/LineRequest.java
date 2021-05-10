@@ -40,7 +40,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
+    public Line toLine() {
         return new Line(this.name, this.color);
     }
 }

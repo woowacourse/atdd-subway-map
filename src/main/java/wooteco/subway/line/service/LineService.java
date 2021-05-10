@@ -25,7 +25,7 @@ public class LineService {
 
     public LineResponse save(LineRequest lineRequest) {
         validateLineName(lineRequest);
-        Line line = lineRequest.toEntity();
+        Line line = lineRequest.toLine();
         Line newLine = lineRepository.save(line);
         log.info("{} 노선 생성 성공", newLine.getName());
         return new LineResponse(newLine);
