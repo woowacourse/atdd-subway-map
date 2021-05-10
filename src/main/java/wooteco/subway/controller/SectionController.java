@@ -16,7 +16,7 @@ import wooteco.subway.controller.dto.response.section.SectionCreateResponseDto;
 import wooteco.subway.service.section.SectionCreateService;
 import wooteco.subway.service.section.SectionDeleteService;
 
-@RequestMapping("/lines")
+@RequestMapping("/lines/{lineId}/sections")
 @RestController
 public class SectionController {
     private final SectionCreateService sectionCreateService;
@@ -27,7 +27,7 @@ public class SectionController {
         this.sectionDeleteService = sectionDeleteService;
     }
 
-    @PostMapping(value = "/{lineId}/sections",
+    @PostMapping(
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionCreateResponseDto> createSection(
@@ -40,7 +40,7 @@ public class SectionController {
             .body(sectionCreateResponseDto);
     }
 
-    @DeleteMapping("/{lineId}/sections")
+    @DeleteMapping
     public ResponseEntity<Void> deleteSectionById(@PathVariable Long lineId, @RequestParam Long stationId) {
         sectionDeleteService.deleteSectionById(lineId, stationId);
         return ResponseEntity.noContent().build();
