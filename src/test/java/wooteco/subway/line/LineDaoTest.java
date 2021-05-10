@@ -1,7 +1,6 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
@@ -13,8 +12,8 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotExistItemException;
 
+@SpringBootTest()
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("classpath:tableInit.sql")
 @DisplayName("노선 DAO 관련 기능")
 class LineDaoTest {
@@ -77,11 +76,30 @@ class LineDaoTest {
     @Test
     @DisplayName("노선의 이름 또는 색상을 수정한다.")
     void update() {
+        //given
         Line line = new Line("2호선", "bg-green-600");
         Line newLine = new Line(1L, "3호선", "bg-orange-600");
-
         lineDao.save(line);
-        assertThat(lineDao.update(newLine)).isSameAs(newLine);
+
+        //when
+        lineDao.update(newLine);
+
+        //then
+        assertThat(lineDao.findById(1L)).isEqualTo(newLine);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 노선의 이름으로 저장하면 에러가 발생한다.")
+    void updateWithDuplicatedName() {
+        //given
+        Line line2 = new Line("2호선", "bg-green-600");
+        Line line3 = new Line("3호선", "bg-orange-600");
+        lineDao.save(line2);
+        lineDao.save(line3);
+        Line newLine = new Line(1L, "3호선", "bg-orange-600");
+
+        //when, then
+        assertThatThrownBy(() -> lineDao.update(newLine)).isInstanceOf(DuplicateException.class);
     }
 
 

@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,12 +44,12 @@ public class LineDao {
             throw new DuplicateException();
         }
 
-        return createNewObject(line, keyHolder.getKey().longValue());
+        return createNewObject(line, Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     private Line createNewObject(Line line, Long id) {
         Field field = ReflectionUtils.findField(Line.class, "id");
-        field.setAccessible(true);
+        Objects.requireNonNull(field).setAccessible(true);
         ReflectionUtils.setField(field, line, id);
         return line;
     }
@@ -69,10 +70,13 @@ public class LineDao {
         }
     }
 
-    public Line update(Line newLine) {
+    public void update(Line newLine) {
         String sql = "update LINE set name = ?, color = ? where id = ?";
-        jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
-        return newLine;
+        try {
+            jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
+        } catch (DuplicateKeyException e) {
+            throw new  DuplicateException();
+        }
     }
 
     public void delete(Long id) {
