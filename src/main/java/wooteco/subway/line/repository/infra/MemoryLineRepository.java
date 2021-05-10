@@ -1,8 +1,9 @@
-package wooteco.subway.line.repository;
+package wooteco.subway.line.repository.infra;
 
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.repository.LineRepository;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
