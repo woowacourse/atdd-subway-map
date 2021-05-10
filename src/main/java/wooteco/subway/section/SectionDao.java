@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.domain.Section;
@@ -30,7 +31,7 @@ public class SectionDao {
     }
 
     public Sections findSectionsByLineId(Long lineId) {
-        final List<Section> sections = this.sections.get(lineId);
+        final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.from(sections);
     }
 
@@ -48,5 +49,23 @@ public class SectionDao {
         });
 
         return save(section, lineId);
+    }
+
+    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
+        return sections.get(lineId)
+            .stream()
+            .filter(section -> section.hasStation(stationId))
+            .collect(
+            Collectors.toList());
+    }
+
+    public void removeSections(Long lineId, List<Section> sections) {
+        for (Section section : sections) {
+            this.sections.get(lineId).removeIf(sec -> sec.isSameSection(section));
+        }
+    }
+
+    public void insertSection(Section affectedSection, Long lineId) {
+        sections.get(lineId).add(affectedSection);
     }
 }

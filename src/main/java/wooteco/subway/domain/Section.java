@@ -8,6 +8,7 @@ import wooteco.subway.exception.section.InvalidDistanceException;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Section {
+
     private Long id;
     private Station upStation;
     private Station downStation;
@@ -47,6 +48,14 @@ public class Section {
 
     public boolean isSameSection(Section newSection) {
         return (isUpStation(newSection.upStation) && isDownStation(newSection.downStation)) ||
-                (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
+            (isUpStation(newSection.downStation) && isDownStation(newSection.upStation));
+    }
+
+    public boolean hasStation(Long stationId) {
+        return upStation.isSameId(stationId) || downStation.isSameId(stationId);
+    }
+
+    public boolean isUpStationId(Long stationId) {
+        return upStation.isSameId(stationId);
     }
 }
