@@ -12,4 +12,7 @@ public class DomainFixture {
     public static final Station STATION4 = new Station(4L, "주례역");
     public static final Station STATION5 = new Station(5L, "하단역");
     public static final List<Station> STATIONS = Arrays.asList(STATION1, STATION2);
+    public static final String LINE_NAME = "1호선";
+    public static final String LINE_COLOR = "bg-red-100";
+    public static final int DEFAULT_DISTANCE = 7;
 }

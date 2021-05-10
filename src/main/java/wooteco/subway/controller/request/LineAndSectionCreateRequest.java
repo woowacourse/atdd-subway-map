@@ -1,11 +1,12 @@
 package wooteco.subway.controller.request;
 
 import wooteco.subway.domain.Line;
+import wooteco.subway.service.dto.SimpleSection;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class LineRequest {
+public class LineAndSectionCreateRequest {
     @Pattern(regexp = "^[가-힣|0-9]*선$")
     private String name;
     @NotNull
@@ -17,10 +18,10 @@ public class LineRequest {
     @NotNull
     private int distance;
 
-    public LineRequest() {
+    public LineAndSectionCreateRequest() {
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineAndSectionCreateRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -48,7 +49,11 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity() {
+    public Line toLine() {
         return new Line(color, name);
+    }
+
+    public SimpleSection toSimpleSection() {
+        return new SimpleSection(upStationId, downStationId, distance);
     }
 }

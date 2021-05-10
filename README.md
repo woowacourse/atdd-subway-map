@@ -39,8 +39,8 @@
 - [ ] SectionAcceptanceTest를 요구사항에 맞게 추가한다.
 
 #### 노선 추가
-- [ ] 노선을 생성한다.
-  - [ ] 노선에 포함된 upStationId, downStationId를 바탕으로 구간을 생성한다.
+- [x] 노선을 생성한다.
+  - [x] 노선에 포함된 upStationId, downStationId를 바탕으로 구간을 생성한다.
 - [ ] 구간은 노선의 id를 외래키로 참조한다.
 - [ ] 노선을 디비에 저장한다.
 - [ ] 구간을 디비에 저장한다.

@@ -2,6 +2,7 @@ package wooteco.subway.dao.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.dao.fixture.DomainFixture.*;
 import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
 
-@Sql("classpath:init.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final Map<String, String> PARAMS1 =
             createLineRequest("bg-red-600", "1호선", 1L, 2L, 7);
@@ -32,11 +33,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS1);
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS));
+        String uri = response.header("Location");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.body().jsonPath().get("id").toString()).isEqualTo(uri.split("/")[2]);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_NAME);
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(LINE_COLOR);
     }
 
     @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성한다.")

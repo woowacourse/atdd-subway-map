@@ -2,8 +2,9 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.controller.request.LineRequest;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
 import wooteco.subway.exception.line.LineNotFoundException;
@@ -16,15 +17,18 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
-    public LineDto create(LineRequest lineRequest) {
-        validate(lineRequest);
-        final Long id = lineDao.insert(lineRequest.toEntity());
+    public LineDto create(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        validate(lineAndSectionCreateRequest); // 중복 검사
+        final Long id = lineDao.insert(lineAndSectionCreateRequest.toLine());
         final Line line = lineDao.findById(id);
+        sectionDao.insert(id, lineAndSectionCreateRequest.toSimpleSection());
         return new LineDto(line);
     }
 
@@ -43,17 +47,17 @@ public class LineService {
         return new LineDto(line);
     }
 
-    public void updateById(Long id, LineRequest lineRequest) {
-        lineDao.update(id, lineRequest.toEntity());
+    public void updateById(Long id, LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        lineDao.update(id, lineAndSectionCreateRequest.toLine());
     }
 
     public void deleteById(Long id) {
         lineDao.delete(id);
     }
 
-    private void validate(LineRequest lineRequest) {
-        validateDuplicateName(lineRequest.getName());
-        validateDuplicateColor(lineRequest.getColor());
+    private void validate(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        validateDuplicateName(lineAndSectionCreateRequest.getName());
+        validateDuplicateColor(lineAndSectionCreateRequest.getColor());
     }
 
     private void validateDuplicateName(String name) {
