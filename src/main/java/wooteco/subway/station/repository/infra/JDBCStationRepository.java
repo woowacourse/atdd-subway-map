@@ -12,12 +12,13 @@ import wooteco.subway.station.repository.StationRepository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JDBCStationRepository implements StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Station> actorRowMapper = (resultSet, rowNum) ->
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNum) ->
             new Station(
                     resultSet.getLong("id"),
                     resultSet.getString("name")
@@ -37,22 +38,22 @@ public class JDBCStationRepository implements StationRepository {
                 ps.setString(1, station.getName());
                 return ps;
             }, keyHolder);
-            return findById(keyHolder.getKey().longValue());
+            return findById(keyHolder.getKey().longValue()).get();
         } catch (DuplicateKeyException e) {
             throw new DuplicatedNameException("이미 존재하는 지하철 역 이름입니다.", e.getCause());
         }
     }
 
     @Override
-    public List<Station> findAll() {
-        String query = "SELECT * FROM station";
-        return this.jdbcTemplate.query(query, actorRowMapper);
+    public Optional<Station> findById(final Long id) {
+        String query = "SELECT * FROM station WHERE id = ?";
+        return Optional.ofNullable(this.jdbcTemplate.queryForObject(query, stationRowMapper, id));
     }
 
     @Override
-    public Station findById(final Long id) {
-        String query = "SELECT * FROM station WHERE id = ?";
-        return this.jdbcTemplate.queryForObject(query, actorRowMapper, id);
+    public List<Station> findAll() {
+        String query = "SELECT * FROM station";
+        return this.jdbcTemplate.query(query, stationRowMapper);
     }
 
     @Override

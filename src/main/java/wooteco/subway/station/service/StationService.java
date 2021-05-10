@@ -1,11 +1,13 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.repository.StationRepository;
 import wooteco.subway.station.repository.dto.StationDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +32,11 @@ public class StationService {
     }
 
     public void delete(final Long id) {
-        stationRepository.delete(id);
+        Optional<Station> optionalStation = stationRepository.findById(id);
+        if (optionalStation.isPresent()) {
+            stationRepository.delete(id);
+            return;
+        }
+        throw new StationNotFoundException("해당 역이 존재하지 않습니다.");
     }
 }
