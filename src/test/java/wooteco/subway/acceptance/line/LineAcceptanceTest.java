@@ -454,7 +454,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("상행 종점역이나 하행 종점역에 구간 추가.")
+    @DisplayName("상행 종점역이나 하행 종점역에 구간 추가한다.")
     @ParameterizedTest
     @CsvSource(value = {"1, 2", "2, 0"})
     void createSectionAtEndStation(int upStationIndex, int downStationIndex) {
@@ -473,5 +473,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("기존 구간보다 길거나 같은 구간을 사이에 추가한다.")
+    @Test
+    void createSectionWithLongerDistance() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", String.valueOf(stationIds.get(0)));
+        params.put("downStationId",  String.valueOf(stationIds.get(2)));
+        params.put("distance", "10");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .post(createdResponse.header("Location") + "/sections")
+            .then()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

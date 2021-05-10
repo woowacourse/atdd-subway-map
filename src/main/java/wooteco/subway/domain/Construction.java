@@ -19,32 +19,47 @@ public class Construction {
 
     public void insertSection(Section section) {
         validateToInsertSection();
-        Section sectionToConstruct = sectionToConstruct(section);
-        Station sameStation = sectionToConstruct.sameStation(section);
-        sectionsToRemove.add(sectionToConstruct);
-        registerSections(section, sectionToConstruct, sameStation);
-    }
-
-    private void registerSections(Section section, Section sectionToConstruct, Station sameStation) {
-        if (isFirstSection(sectionToConstruct) || isLastSection(sectionToConstruct)) {
-            sectionsToCreate().add(section);
+        if (isEndSectionInsertion(section)) {
+            sectionsToCreate.add(section);
             return;
         }
-        registerSectionsWhenNotEndSection(section, sectionToConstruct, sameStation);
-    }
-
-    private void registerSectionsWhenNotEndSection(Section section, Section sectionToConstruct, Station sameStation) {
-        if (section.getUpStation().equals(sameStation)) {
-            registerSectionsToUpdateWhenSameUpStation(section, sectionToConstruct);
-        }
-        if (section.getDownStation().equals(sameStation)) {
-            registerSectionsToUpdateWhenSameDownStation(section, sectionToConstruct);
-        }
+        insertSectionWhenNotEndSectionInsertion(section);
     }
 
     private void validateToInsertSection() {
         if (!sectionsToCreate.isEmpty()) {
             throw new IllegalStateException("이미 구간을 수정하였습니다.");
+        }
+    }
+
+    private boolean isEndSectionInsertion(Section section) {
+        Section firstSection = firstSection();
+        Section lastSection = lastSection();
+
+        return firstSection.getUpStation().equals(section.getDownStation())
+            || lastSection.getDownStation().equals(section.getUpStation());
+    }
+
+    private void insertSectionWhenNotEndSectionInsertion(Section section) {
+        Section sectionToConstruct = sectionToConstruct(section);
+        sectionsToRemove.add(sectionToConstruct);
+        registerSections(section, sectionToConstruct);
+    }
+
+    private Section sectionToConstruct(Section sectionToInsert) {
+        return sections.stream()
+            .filter(section -> section.hasOnlyOneSameStation(sectionToInsert))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("추가할 수 없는 구간입니다."));
+    }
+
+    private void registerSections(Section section, Section sectionToConstruct) {
+        Station sameStation = sectionToConstruct.sameStation(section);
+        if (section.getUpStation().equals(sameStation)) {
+            registerSectionsToUpdateWhenSameUpStation(section, sectionToConstruct);
+        }
+        if (section.getDownStation().equals(sameStation)) {
+            registerSectionsToUpdateWhenSameDownStation(section, sectionToConstruct);
         }
     }
 
@@ -68,33 +83,20 @@ public class Construction {
         sectionsToCreate.add(section);
     }
 
-    private Section sectionToConstruct(Section sectionToInsert) {
+    private Section firstSection() {
         return sections.stream()
-            .filter(section -> isSectionToConstruct(section, sectionToInsert))
+            .filter(section -> sections.stream()
+                .noneMatch(section1 -> section.getUpStation().equals(section1.getDownStation())))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("추가할 수 없는 구간입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("첫 번째 구간이 존재하지 않습니다."));
     }
 
-    private boolean isSectionToConstruct(Section section, Section sectionToInsert) {
-        if (section.getUpStation().equals(sectionToInsert.getDownStation())) {
-            return isFirstSection(section);
-        }
-        if (section.getDownStation().equals(sectionToInsert.getUpStation())) {
-            return isLastSection(section);
-        }
-        return section.hasOnlyOneSameStation(sectionToInsert);
-    }
-
-    private boolean isFirstSection(Section section) {
+    private Section lastSection() {
         return sections.stream()
-            .noneMatch(sectionsForSearch -> sectionsForSearch.getDownStation()
-                .equals(section.getUpStation()));
-    }
-
-    private boolean isLastSection(Section section) {
-        return sections.stream()
-            .noneMatch(sectionForSearch -> sectionForSearch.getUpStation()
-                .equals(section.getDownStation()));
+            .filter(section -> sections.stream()
+                .noneMatch(section1 -> section.getDownStation().equals(section1.getUpStation())))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("마지막 구간이 존재하지 않습니다."));
     }
 
     public List<Section> sectionsToCreate() {
