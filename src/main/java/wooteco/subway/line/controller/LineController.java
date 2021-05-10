@@ -7,6 +7,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LinesResponse;
 import wooteco.subway.line.service.LineService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.save(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }

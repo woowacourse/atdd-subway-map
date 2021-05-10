@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql("classpath:tableInit.sql")
 class LineControllerTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
-    private Map<String, String> params;
+    private Map<String, Object> params;
 
     @Override
     @BeforeEach
@@ -31,6 +31,9 @@ class LineControllerTest extends AcceptanceTest {
         params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("upStationId", 1L);
+        params.put("downStationId", 2L);
+        params.put("distance", 77);
         response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -52,6 +55,25 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.as(LineResponse.class).getName()).isEqualTo("신분당선");
     }
 
+    @DisplayName("필드값이 없는 Requst를 보내면, 400 상태 코드를 받는다.")
+    @Test
+    void emptyFieldFail(){
+        Map<String, Object> wrongParams = new HashMap<>();
+        wrongParams.put("color", "bg-red-600");
+        wrongParams.put("name", "잘못된 분당선");
+        wrongParams.put("upStationId", 1L);
+
+        response = RestAssured.given().log().all()
+                .body(wrongParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("중복된 이름을 가진 노선을 추가하는것을 시도하면, 409 conflict 상태코드를 받는다.")
     @Test
     void createLineFail() {
@@ -70,9 +92,13 @@ class LineControllerTest extends AcceptanceTest {
     @DisplayName("전체 노선을 조회하면 저장된 모든 노선들을 반환한다 ")
     @Test
     void getLines() {
-        Map<String, String> params1 = new HashMap<>();
+        Map<String, Object> params1 = new HashMap<>();
         params1.put("color", "bg-green-600");
         params1.put("name", "2호선");
+        params1.put("upStationId", 1L);
+        params1.put("downStationId", 2L);
+        params1.put("distance", 77);
+
         RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

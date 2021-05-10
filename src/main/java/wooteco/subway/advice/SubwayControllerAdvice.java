@@ -2,6 +2,7 @@ package wooteco.subway.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicateNameException;
@@ -26,7 +27,14 @@ public class SubwayControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> emptyValueExceptionHandler(final MethodArgumentNotValidException e) {
+        Map<String, String> body = new HashMap<>();
+        body.put("Error message", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> anOtherExceptionHandler(final Exception e) {
         Map<String, String> body = new HashMap<>();
         body.put("Error message", e.getMessage());
