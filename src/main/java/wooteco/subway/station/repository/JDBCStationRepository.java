@@ -16,16 +16,15 @@ import java.util.List;
 public class JDBCStationRepository implements StationRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JDBCStationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Station> actorRowMapper = (resultSet, rowNum) ->
             new Station(
                     resultSet.getLong("id"),
                     resultSet.getString("name")
             );
+
+    public JDBCStationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Station save(final Station station) {

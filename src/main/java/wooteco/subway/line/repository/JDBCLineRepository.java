@@ -17,11 +17,6 @@ import java.util.List;
 public class JDBCLineRepository implements LineRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JDBCLineRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Line> actorRowMapper = (resultSet, rowNum) ->
             new Line(
                     resultSet.getLong("id"),
@@ -29,6 +24,10 @@ public class JDBCLineRepository implements LineRepository {
                     resultSet.getString("color"),
                     new ArrayList<>()
             );
+
+    public JDBCLineRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Line save(final Line line) {
