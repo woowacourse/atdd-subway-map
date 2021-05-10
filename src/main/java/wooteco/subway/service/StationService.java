@@ -34,6 +34,13 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public StationResponse showStation(Long id) {
+        validateToExistId(id);
+        StationEntity stationEntity = stationDao.findById(id);
+        return new StationResponse(stationEntity.getId(), stationEntity.getName());
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> showStations() {
         List<StationEntity> stationEntities = stationDao.findAll();
         return stationEntities.stream()

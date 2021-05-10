@@ -14,6 +14,7 @@ import wooteco.subway.entity.SectionEntity;
 
 @Repository
 public class SectionDao {
+
     private static final RowMapper<SectionEntity> SECTION_ROW_MAPPER = (rs, rowNum) ->
         new SectionEntity(rs.getLong("id"), rs.getLong("line_id"),
             rs.getLong("up_station_id"), rs.getLong("down_station_id"),
@@ -43,7 +44,7 @@ public class SectionDao {
     }
 
     public List<SectionEntity> filterByLineId(Long lineId) {
-       String sql = "SELECT * FROM section WHERE line_id = (?)";
+        String sql = "SELECT * FROM section WHERE line_id = (?)";
 
         return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId);
     }

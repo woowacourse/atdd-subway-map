@@ -19,6 +19,10 @@ public class StationResponse {
         this(station.getId(), station.getName());
     }
 
+    public Station toDomain() {
+        return new Station(id, name);
+    }
+
     public Long getId() {
         return id;
     }
