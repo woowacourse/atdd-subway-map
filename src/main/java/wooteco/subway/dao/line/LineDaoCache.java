@@ -51,7 +51,8 @@ public class LineDaoCache implements LineDao {
     @Override
     public Optional<Line> findLineByNameOrColor(String name, String color, Long lineId) {
         return lines.stream()
-            .filter(line -> (line.isSameName(name) || line.isSameColor(color)) && line.isNotSameId(lineId))
+            .filter(line -> (line.isSameName(name) || line.isSameColor(color)) && line
+                .isNotSameId(lineId))
             .findAny();
     }
 

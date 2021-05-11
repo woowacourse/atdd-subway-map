@@ -113,7 +113,7 @@ public class Sections {
             .filter(section -> section.containsStation(stationId))
             .collect(Collectors.toList());
 
-        if(stationNotExist(sections)) {
+        if (stationNotExist(sections)) {
             throw new StationNotFoundException();
         }
 

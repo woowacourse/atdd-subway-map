@@ -45,7 +45,8 @@ public class JdbcLineDao implements LineDao {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            final PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+            final PreparedStatement preparedStatement = con
+                .prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, line.getName());
             preparedStatement.setString(2, line.getColor());
             return preparedStatement;
@@ -68,8 +69,10 @@ public class JdbcLineDao implements LineDao {
     @Override
     public Optional<Line> findCompleteLineById(Long id) {
         final String sql = "SELECT * FROM line WHERE id = ?";
-        final Optional<Line> foundLine = jdbcTemplate.query(sql, lineRowMapper(), id).stream().findAny();
-        foundLine.ifPresent(line -> line.addSections(Sections.create(sectionDao.findAllByLineId(id))));
+        final Optional<Line> foundLine = jdbcTemplate.query(sql, lineRowMapper(), id).stream()
+            .findAny();
+        foundLine
+            .ifPresent(line -> line.addSections(Sections.create(sectionDao.findAllByLineId(id))));
         return foundLine;
     }
 

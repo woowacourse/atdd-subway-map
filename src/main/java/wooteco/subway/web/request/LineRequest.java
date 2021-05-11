@@ -24,7 +24,8 @@ public class LineRequest {
     @Positive
     private int distance;
 
-    public static LineRequest create(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static LineRequest create(String name, String color, Long upStationId,
+        Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 }

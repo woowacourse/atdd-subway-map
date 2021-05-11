@@ -50,7 +50,8 @@ public class Section {
     }
 
     public boolean isSameSection(Section targetSection) {
-        return this.isUpStation(targetSection.upStation) && this.isDownStation(targetSection.downStation);
+        return this.isUpStation(targetSection.upStation) && this
+            .isDownStation(targetSection.downStation);
     }
 
     public boolean hasSameId(Long id) {
@@ -86,7 +87,7 @@ public class Section {
     }
 
     public void combineSection(Section section) {
-        if(isDownStation(section.getUpStation())) {
+        if (isDownStation(section.getUpStation())) {
             downStation = section.getDownStation();
         } else {
             upStation = section.getUpStation();

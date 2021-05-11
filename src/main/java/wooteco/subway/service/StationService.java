@@ -4,9 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.badRequest.StationNameDuplicatedException;
-import wooteco.subway.domain.Station;
 import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.domain.Station;
+import wooteco.subway.exception.badRequest.StationNameDuplicatedException;
 
 @Service
 @RequiredArgsConstructor

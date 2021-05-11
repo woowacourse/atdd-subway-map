@@ -1,17 +1,16 @@
 package wooteco.subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.dao.station.StationDao;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.badRequest.LineInfoDuplicatedException;
 import wooteco.subway.exception.notFound.LineNotFoundException;
-import wooteco.subway.domain.Line;
-import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.exception.notFound.StationNotFoundException;
 
 @RequiredArgsConstructor

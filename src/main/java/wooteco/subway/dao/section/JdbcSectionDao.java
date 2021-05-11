@@ -23,7 +23,8 @@ public class JdbcSectionDao implements SectionDao {
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            final PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+            final PreparedStatement preparedStatement = con
+                .prepareStatement(sql, new String[]{"id"});
             preparedStatement.setLong(1, lineId);
             preparedStatement.setLong(2, section.upStationId());
             preparedStatement.setLong(3, section.downStationId());
@@ -37,9 +38,10 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public List<Section> findAllByLineId(Long lineId) {
-        String sql = "SELECT id, (SELECT name FROM station WHERE station.id = section.up_station_id) AS upStationName, up_station_id AS upStationId, "
-            + "(SELECT name FROM station WHERE station.id = section.down_station_id) AS downStationName, down_station_id AS downStationId, "
-            + "distance FROM SECTION WHERE line_id = ?";
+        String sql =
+            "SELECT id, (SELECT name FROM station WHERE station.id = section.up_station_id) AS upStationName, up_station_id AS upStationId, "
+                + "(SELECT name FROM station WHERE station.id = section.down_station_id) AS downStationName, down_station_id AS downStationId, "
+                + "distance FROM SECTION WHERE line_id = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final long id = rs.getLong("id");

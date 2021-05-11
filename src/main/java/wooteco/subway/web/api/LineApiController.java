@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Section;
 import wooteco.subway.exception.badRequest.WrongInformationException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.web.request.LineRequest;
-import wooteco.subway.web.request.SectionRequest;
 import wooteco.subway.web.response.LineResponse;
 
 @RequiredArgsConstructor

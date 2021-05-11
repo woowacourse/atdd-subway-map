@@ -106,7 +106,8 @@ class LineApiControllerTest extends AcceptanceTest {
             downStationId, DISTANCE)).header("Location");
 
         String newLineName = "1호선";
-        final LineRequest lineRequest = LineRequest.create(newLineName, LINE_COLOR, upStationId, downStationId, DISTANCE);
+        final LineRequest lineRequest = LineRequest
+            .create(newLineName, LINE_COLOR, upStationId, downStationId, DISTANCE);
 
         // when
         final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
@@ -126,15 +127,18 @@ class LineApiControllerTest extends AcceptanceTest {
         // given
         final Station upStation = 상행역();
         final Station downStation = 하행역();
-        노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE));
+        노선_생성(LineRequest
+            .create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE));
 
         String targetName = "구분당선";
         String targetColor = "bg-red-6000";
-        final String uri = 노선_생성(LineRequest.create(targetName, targetColor, upStation.getId(), downStation.getId(), DISTANCE))
+        final String uri = 노선_생성(LineRequest
+            .create(targetName, targetColor, upStation.getId(), downStation.getId(), DISTANCE))
             .header("Location");
 
         // when
-        final LineRequest lineRequest = LineRequest.create(LINE_NAME, "blue", upStation.getId(), downStation.getId(), DISTANCE);
+        final LineRequest lineRequest = LineRequest
+            .create(LINE_NAME, "blue", upStation.getId(), downStation.getId(), DISTANCE);
         final ExtractableResponse<Response> result = 노선_수정(uri, lineRequest);
 
         // then
@@ -146,7 +150,8 @@ class LineApiControllerTest extends AcceptanceTest {
     @Test
     void updateLine_notFound() {
         /// given
-        final LineRequest lineRequest = LineRequest.create(UP_STATION_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE);
+        final LineRequest lineRequest = LineRequest
+            .create(UP_STATION_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE);
 
         // when
         final ExtractableResponse<Response> result = 노선_수정("/lines/" + Long.MAX_VALUE, lineRequest);
@@ -181,7 +186,8 @@ class LineApiControllerTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 기본_노선_생성() {
-        return 노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
+        return 노선_생성(
+            LineRequest.create(LINE_NAME, LINE_COLOR, 상행역().getId(), 하행역().getId(), DISTANCE));
     }
 
     private ExtractableResponse<Response> 노선_조회() {

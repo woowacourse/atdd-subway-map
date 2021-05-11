@@ -285,7 +285,7 @@ class SectionApiControllerTest extends AcceptanceTest {
         return RestAssured.given()
             .contentType(ContentType.JSON)
             .when()
-            .delete(uri + "/sections?stationId="+stationId)
+            .delete(uri + "/sections?stationId=" + stationId)
             .then()
             .extract();
     }
