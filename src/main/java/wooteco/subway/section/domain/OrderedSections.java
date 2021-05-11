@@ -25,6 +25,10 @@ public class OrderedSections {
     private static final int SECTIONS_MINIMUM_SIZE = 1;
     private static final int END_TERMINAL_SIZE = 1;
     private static final int CAN_DUPLICATE_MINIMUM_SIZE = 0;
+    private static final int BETWEEN_SECTION = 2;
+    private static final int FIRST_ADJACENT_SECTION_INDEX = 0;
+    private static final int SECOND_ADJACENT_SECTION_INDEX = 1;
+
     private final List<Section> sections;
 
     public OrderedSections(Section... sections) {
@@ -38,7 +42,7 @@ public class OrderedSections {
     }
 
     private void checkMinimumSize(List<Section> sections) {
-        if (sections.size() <= SECTIONS_MINIMUM_SIZE) {
+        if (sections.size() < SECTIONS_MINIMUM_SIZE) {
             throw new SectionsSizeTooSmallException(String.format("최소 %d 이상이어야 합니다. 현재 사이즈 : %d, ", SECTIONS_MINIMUM_SIZE, sections.size()));
         }
     }
@@ -177,16 +181,26 @@ public class OrderedSections {
                 .collect(toList());
     }
 
-    public OrderedSections removeSection(Section section) {
-        checkSectionIsPresent(section);
-        return this;
+    public OrderedSections removeSection(Station station) {
+        List<Section> sequences = findSequentialSectionsAndCheckPresent(station);
+        this.sections.removeAll(sequences);
+
+        if (sequences.size() == BETWEEN_SECTION) {
+            Section mergedSection = sequences.get(FIRST_ADJACENT_SECTION_INDEX)
+                    .mergeWithSequentialSection(sequences.get(SECOND_ADJACENT_SECTION_INDEX));
+            this.sections.add(mergedSection);
+        }
+
+        return new OrderedSections(this.sections);
     }
 
-    private void checkSectionIsPresent(Section section) {
-        if (!sections.contains(section)) {
+    private List<Section> findSequentialSectionsAndCheckPresent(Station station) {
+        List<Section> sequentialSections = findSequentialSections(station);
+        if (sequentialSections.isEmpty()) {
             throw new SectionsHasNotSectionException(
-                    String.format("해당 구간에 삭제하려는 구간이 없습니다. 구간 : %s", section.toString()));
+                    String.format("해당 구간에 삭제하려는 역이 없습니다. 역이름 : %s", station.toString()));
         }
+        return sequentialSections;
     }
 
     public List<Section> getSections() {

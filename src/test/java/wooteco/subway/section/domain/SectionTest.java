@@ -33,7 +33,8 @@ class SectionTest {
         Section downSection = new Section(YEOKSAM_STATION, JAMSIL_STATION, FIVE_DISTANCE);
 
         //when
-        Section mergedSection = upSection.mergeWithDownSection(downSection);
+        Section mergedSection = downSection.mergeWithSequentialSection(upSection);
+
         //then
         assertThat(mergedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
         assertThat(mergedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
@@ -78,7 +79,7 @@ class SectionTest {
 
         //when
         //then
-        assertThatThrownBy(() -> upSection.mergeWithDownSection(downSection))
+        assertThatThrownBy(() -> upSection.mergeWithSequentialSection(downSection))
                 .isInstanceOf(SectionNotSequentialException.class)
                 .hasMessageContaining("이어진 구간이 아닙니다.");
     }

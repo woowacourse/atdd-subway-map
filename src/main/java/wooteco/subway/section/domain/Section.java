@@ -7,16 +7,26 @@ import wooteco.subway.station.domain.Station;
 import java.util.Objects;
 
 public class Section {
+    private final Long id;
     private final Station upStation;
     private final Station downStation;
     private final SectionDistance distance;
 
     public Section(Station upStation, Station downStation, long distance) {
-        this(upStation, downStation, new SectionDistance(distance));
+        this(null, upStation, downStation, new SectionDistance(distance));
     }
 
     public Section(Station upStation, Station downStation, SectionDistance distance) {
+        this(null, upStation, downStation, distance);
+    }
+
+    public Section(Long id, Station upStation, Station downStation, long distance) {
+        this(id, upStation, downStation, new SectionDistance(distance));
+    }
+
+    public Section(Long id, Station upStation, Station downStation, SectionDistance distance) {
         checkSameStations(upStation, downStation);
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -33,33 +43,45 @@ public class Section {
     }
 
     public Section updateUpStation(Station upStation, long distance) {
-        return new Section(upStation, downStation, this.distance.minus(new SectionDistance(distance)));
+        return new Section(id, upStation, downStation, this.distance.minus(new SectionDistance(distance)));
     }
 
     public Section updateDownStation(Station downStation, long distance) {
-        return new Section(upStation, downStation, this.distance.minus(new SectionDistance(distance)));
+        return new Section(id, upStation, downStation, this.distance.minus(new SectionDistance(distance)));
     }
 
-    public Section mergeWithDownSection(Section next) {
-        if (isNotSequential(next)) {
+    public Section mergeWithSequentialSection(Section that) {
+        if (isNotSequential(that)) {
             throw new SectionNotSequentialException(
                     String.format(
-                            "이어진 구간이 아닙니다. 앞구간의 하행역 : %s, 뒷 구간의 상행역 : %s",
-                            this.downStation,
-                            next.upStation
+                            "이어진 구간이 아닙니다. 구간1 : %s, 구간2 : %s",
+                            this.toString(),
+                            that.toString()
                     )
             );
         }
 
-        return new Section(this.upStation, next.downStation, this.distance.sum(next.distance));
+        return createSectionWithCommonStation(that);
     }
 
-    private boolean isNotSequential(Section next) {
-        return !this.downStation.equals(next.upStation);
+    private boolean isNotSequential(Section that) {
+        return !this.downStation.equals(that.upStation)
+                && !this.upStation.equals(that.downStation);
+    }
+
+    private Section createSectionWithCommonStation(Section that) {
+        if (this.upStation.equals(that.getDownStation())) {
+            return new Section(that.getId(), that.upStation, this.downStation, this.distance.sum(that.distance));
+        }
+        return new Section(this.getId(), this.upStation, that.downStation, this.distance.sum(that.distance));
     }
 
     public Station getUpStation() {
         return upStation;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getDownStation() {
@@ -75,16 +97,16 @@ public class Section {
         if (this == o) return true;
         if (!(o instanceof Section)) return false;
         Section section = (Section) o;
-        return Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation());
+        return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUpStation(), getDownStation());
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "구간[" + upStation.toString() + "-" + downStation.toString() + ", 거리" + distance + "]";
+        return "구간[id:" + this.id + upStation.toString() + "-" + downStation.toString() + ", 거리" + distance + "]";
     }
 }

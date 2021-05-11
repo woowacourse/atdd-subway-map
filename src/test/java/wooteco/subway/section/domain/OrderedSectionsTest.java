@@ -130,6 +130,28 @@ class OrderedSectionsTest {
                 .isInstanceOf(SectionsHasDuplicateException.class);
     }
 
+    @DisplayName("구간 삭제 테스트")
+    @Test
+    void removeSectionTest() {
+        //given
+        OrderedSections sections = getFirstToFifthSections();
+        //when
+        OrderedSections newSections = sections.removeSection(JAMSIL_STATION);
+        //then
+        assertThat(newSections.getSections()).containsExactly(FIRST_AND_SECOND_MERGED_SECTION, THIRD_SECTION, FOURTH_SECTION);
+    }
+
+    @DisplayName("크기가 1인 구간에서 구간을 삭제하려고 하면 예외")
+    @Test
+    void whenOnlyOneSectionsRemoveTest() {
+        //given
+        OrderedSections onlyOneSection = new OrderedSections(new Section(GANGNAM_STATION, JAMSIL_STATION, 10));
+        //when
+        //then
+        assertThatThrownBy(() -> onlyOneSection.removeSection(GANGNAM_STATION))
+                .isInstanceOf(SectionsSizeTooSmallException.class);
+    }
+
     @DisplayName("새로운 구간의 길이가 기존의 구간길이보다 크거나 같으면 예외")
     @Test
     void whenNewSectionTooLong() {
@@ -146,8 +168,8 @@ class OrderedSectionsTest {
         //given
         //when
         //then
-        assertThatThrownBy(() -> getFirstToFifthSections().removeSection(FIFTH_SECTION))
-            .isInstanceOf(SectionsHasNotSectionException.class);
+        assertThatThrownBy(() -> getFirstToFifthSections().removeSection(YEOKSAM_STATION))
+                .isInstanceOf(SectionsHasNotSectionException.class);
     }
 
     private OrderedSections getFirstToFifthSections() {
