@@ -187,7 +187,7 @@ class SectionApiControllerTest {
 
         //then
         result.andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string("해당 역이 존재하지 않습니다."));
     }
 
@@ -313,7 +313,7 @@ class SectionApiControllerTest {
         );
 
         //then
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isNotFound());
     }
 
     @Test
