@@ -73,7 +73,7 @@ public class SectionService {
 
         previousSection.validateNewDistance(newSection);
 
-        if (sectionDao.updateDownStation(newSection, upStation) != 1) {
+        if (sectionDao.updateDownStation(previousSection, upStation) != 1) {
             throw new DuplicateSectionException();
         }
     }
@@ -84,25 +84,28 @@ public class SectionService {
 
         originSection.validateNewDistance(newSection);
 
-        if (sectionDao.updateUpStation(newSection, downStation) != 1) {
+        if (sectionDao.updateUpStation(originSection, downStation) != 1) {
             throw new DuplicateSectionException();
         }
     }
 
     public int deleteSection(long lineId, long stationId) {
         Station station = stationService.showStation(stationId);
-        Optional<Section> previousSection = sectionDao.findSectionBySameDownStation(lineId, station);
+        Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, station);
         Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, station);
 
-        if (previousSection.isPresent() && unknownNextSection.isPresent()) {
+        if (unKnownPreviousSection.isPresent() && unknownNextSection.isPresent()) {
             Section nextSection = unknownNextSection.get();
+            Section previousSection = unKnownPreviousSection.get();
+            previousSection.addDistance(nextSection);
+            
             Station newDownStation = stationService.showStation(nextSection.getDownStationId());
-            sectionDao.updateDownStation(previousSection.get(), newDownStation);
+            sectionDao.updateDownStation(previousSection, newDownStation);
             return deleteSection(nextSection);
         }
 
-        if (previousSection.isPresent()) {
-            return deleteSection(previousSection.get());
+        if (unKnownPreviousSection.isPresent()) {
+            return deleteSection(unKnownPreviousSection.get());
         }
 
         if (unknownNextSection.isPresent()) {

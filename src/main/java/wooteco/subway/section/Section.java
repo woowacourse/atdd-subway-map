@@ -8,7 +8,7 @@ import wooteco.subway.line.LineRequest;
 public class Section {
     private final long upStationId;
     private final long downStationId;
-    private final int distance;
+    private int distance;
     private final long lineId;
 
     public Section(long lineId, long upStationId, long downStationId, int distance) {
@@ -37,6 +37,7 @@ public class Section {
         if (this.distance < newSection.distance) {
             throw new ImpossibleDistanceException();
         }
+        this.distance -= newSection.distance;
     }
 
     public long getLineId() {
@@ -70,5 +71,9 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId, distance, lineId);
+    }
+
+    public void addDistance(Section nextSection) {
+        this.distance += nextSection.distance;
     }
 }

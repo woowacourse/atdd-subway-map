@@ -78,14 +78,14 @@ public class SectionDao {
         return result.stream().findAny();
     }
 
-    public int updateDownStation(Section section, Station upStation) {
-        String sql = "UPDATE SECTION set DOWN_STATION_ID = ? WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
-        return jdbcTemplate.update(sql, upStation.getId(), section.getLineId(), section.getDownStationId());
+    public int updateDownStation(Section originSection, Station newStation) {
+        String sql = "UPDATE SECTION set DOWN_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
+        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(), originSection.getDownStationId());
     }
 
-    public int updateUpStation(Section section, Station downStation) {
-        String sql = "UPDATE SECTION set UP_STATION_ID = ? WHERE LINE_ID = ? AND UP_STATION_ID = ?";
-        return jdbcTemplate.update(sql, downStation.getId(), section.getLineId(), section.getUpStationId());
+    public int updateUpStation(Section originSection, Station newStation) {
+        String sql = "UPDATE SECTION set UP_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND UP_STATION_ID = ?";
+        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(), originSection.getUpStationId());
     }
 
     public int deleteSection(Section section) {
