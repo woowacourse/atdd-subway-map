@@ -9,12 +9,12 @@ public class SectionRequest {
     @NotNull
     private Long downStationId;
     @NotNull
-    private int distance;
+    private Integer distance;
 
     private SectionRequest() {
     }
 
-    private SectionRequest(Long upStationId, Long downStationId, int distance) {
+    private SectionRequest(Long upStationId, Long downStationId, Integer distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
@@ -32,7 +32,7 @@ public class SectionRequest {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 }

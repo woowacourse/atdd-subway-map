@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "2");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -68,6 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "4");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -91,6 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "4");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -115,6 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -141,6 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -165,6 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "2");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -189,6 +195,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "3");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -219,6 +226,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "3");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -232,6 +240,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("upStationId", "1");
         params2.put("downStationId", "2");
         params2.put("color", "red");
+        params2.put("distance", "1");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(params2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -241,21 +250,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> getAllLinesResponse = RestAssured
+            .given()
+            .log().all()
             .when()
             .get("/lines")
-            .then().log().all()
+            .then()
+            .log().all()
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(it -> it.getId())
+        List<Long> resultLineIds = getAllLinesResponse.jsonPath()
+            .getList(".", LineResponse.class)
+            .stream()
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
+
+        assertThat(getAllLinesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -267,6 +282,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", "3호선");
         params.put("upStationId", "1");
         params.put("downStationId", "2");
+        params.put("distance", "1");
         params.put("color", "red");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
@@ -297,6 +313,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -341,6 +358,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", "1");
         params.put("downStationId", "2");
         params.put("color", "red");
+        params.put("distance", "1");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -385,6 +403,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("upStationId", "1");
         params1.put("downStationId", "2");
         params1.put("color", "red");
+        params1.put("distance", "1");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -398,6 +417,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params2.put("upStationId", "1");
         params2.put("downStationId", "2");
         params2.put("color", "red");
+        params2.put("distance", "1");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(params2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

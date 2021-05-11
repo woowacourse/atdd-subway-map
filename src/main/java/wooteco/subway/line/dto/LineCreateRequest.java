@@ -15,13 +15,13 @@ public class LineCreateRequest {
     @NotNull
     private Long downStationId;
     @NotNull
-    private int distance;
+    private Integer distance;
 
     private LineCreateRequest() {
     }
 
     private LineCreateRequest(String name, String color, Long upStationId, Long downStationId,
-        int distance) {
+        Integer distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
@@ -53,7 +53,7 @@ public class LineCreateRequest {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 

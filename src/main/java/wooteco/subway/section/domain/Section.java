@@ -8,9 +8,9 @@ public class Section {
     private Long lineId;
     private Long upStationId;
     private Long downStationId;
-    private int distance;
+    private Integer distance;
 
-    private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    private Section(Long id, Long lineId, Long upStationId, Long downStationId, Integer distance) {
         validateIfDownStationSameAsUpStation(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
@@ -19,7 +19,7 @@ public class Section {
         this.distance = distance;
     }
 
-    public static Section of(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public static Section of(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return new Section(null,
             lineId,
             upStationId,
@@ -28,7 +28,7 @@ public class Section {
     }
 
     public static Section of(Long id, Long lineId, Long upStationId, Long downStationId,
-        int distance) {
+        Integer distance) {
         return new Section(id,
             lineId,
             upStationId,
@@ -66,7 +66,7 @@ public class Section {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 }
