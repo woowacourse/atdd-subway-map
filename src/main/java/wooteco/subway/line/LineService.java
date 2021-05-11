@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
@@ -16,9 +17,17 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Line line = new Line(lineRequest);
+//        createValidate(lineRequest);
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
+            lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         Line newLine = lineDao.save(line);
         return new LineResponse(newLine);
+    }
+
+    private void createValidate(LineRequest lineRequest) {
+        // 생성할 상행과 하행이 있는지 확인
+
+        // Section 으로 분리하여 책임을 분산 -> Section 으로 어떻게 분리하지? !?! 가능하네? request에서 line으로 던져줄때 만들어서 던져주자!
     }
 
     public LineResponse findById(Long id) {
@@ -35,14 +44,17 @@ public class LineService {
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        validate(id);
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(),
+            lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+            lineRequest.getDistance());
 
-        Line line = new Line(id, lineRequest);
-        lineDao.update(line);
+        validate(lineDao.update(line));
     }
 
-    private void validate(Long id) {
-        findById(id);
+    private void validate(int updateRow) {
+        if (updateRow != 1) {
+            throw new NotExistItemException();
+        }
     }
 
     public void delete(Long id) {

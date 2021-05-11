@@ -21,6 +21,8 @@ import wooteco.subway.line.dto.LineResponse;
 class LineServiceTest {
 
     private final LineService lineService;
+    private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+    private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
 
     public LineServiceTest(LineService lineService) {
         this.lineService = lineService;
@@ -30,26 +32,23 @@ class LineServiceTest {
     @DisplayName("노선을 생성한다.")
     void create() {
         //given
-        LineRequest lineRequest = new LineRequest("2호선", "green");
 
         //when
-        LineResponse lineResponse = lineService.create(lineRequest);
+        LineResponse lineResponse = lineService.create(line2Request);
 
         //then
-        checkedThen(lineRequest, lineResponse);
+        checkedThen(line2Request, lineResponse);
     }
 
     @Test
     @DisplayName("중복된 이름의 노선을 생성하면 에러가 발생한다.")
     void createWithDuplicateName() {
         //given
-        LineRequest lineRequest = new LineRequest("2호선", "green");
-
         //when
-        lineService.create(lineRequest);
+        lineService.create(line2Request);
 
         //then
-        assertThatThrownBy(() -> lineService.create(lineRequest))
+        assertThatThrownBy(() -> lineService.create(line2Request))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -57,14 +56,13 @@ class LineServiceTest {
     @DisplayName("id를 이용하여 노선을 찾는다.")
     void findById() {
         //given
-        LineRequest lineRequest = new LineRequest("2호선", "green");
-        lineService.create(lineRequest);
+        lineService.create(line2Request);
 
         //when
         LineResponse lineResponse = lineService.findById(1L);
 
         //then
-        checkedThen(lineRequest, lineResponse);
+        checkedThen(line2Request, lineResponse);
     }
 
     @Test
@@ -78,44 +76,40 @@ class LineServiceTest {
     @DisplayName("노선 전체를 가져온다.")
     void findAll() {
         //given
-        LineRequest lineRequest1 = new LineRequest("2호선", "green");
-        LineRequest lineRequest2 = new LineRequest("3호선", "orange");
-        lineService.create(lineRequest1);
-        lineService.create(lineRequest2);
+        lineService.create(line2Request);
+        lineService.create(line3Request);
 
         //when
         List<LineResponse> lines = lineService.findAll();
 
         //then
         assertThat(lines).hasSize(2);
-        checkedThen(lineRequest1, lines.get(0));
-        checkedThen(lineRequest2, lines.get(1));
+        checkedThen(line2Request, lines.get(0));
+        checkedThen(line3Request, lines.get(1));
     }
 
     @Test
     @DisplayName("노선의 정보를 수정한다.")
     void update() {
         //given
-        LineRequest lineRequest1 = new LineRequest("2호선", "green");
-        lineService.create(lineRequest1);
-
-        LineRequest lineRequest2 = new LineRequest("3호선", "orange");
+        lineService.create(line2Request);
 
         //when
-        lineService.update(1L, lineRequest2);
+        lineService.update(1L, line3Request);
 
         //then
-        checkedThen(lineRequest2, lineService.findById(1L));
+        checkedThen(new LineRequest("3호선", "bg-orange-600", 1L, 2L, 10), lineService.findById(1L));
     }
 
     @Test
     @DisplayName("없는 노선의 정보를 수정하면 에러가 발생한다.")
     void updateWithNotExistItem() {
         //given
-        LineRequest lineRequest = new LineRequest("3호선", "orange");
 
-        //when, then
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest))
+        //when
+
+        //then
+        assertThatThrownBy(() -> lineService.update(1L, line2Request))
             .isInstanceOf(NotExistItemException.class);
     }
 
@@ -123,13 +117,11 @@ class LineServiceTest {
     @DisplayName("기존에 있는 이름으로 노선을 수정시 에러가 발생한다.")
     void updateWithDuplicateName() {
         //given
-        LineRequest lineRequest1 = new LineRequest("2호선", "green");
-        LineRequest lineRequest2 = new LineRequest("3호선", "orange");
-        lineService.create(lineRequest1);
-        lineService.create(lineRequest2);
+        lineService.create(line2Request);
+        lineService.create(line3Request);
 
         //when, then
-        assertThatThrownBy(() -> lineService.update(1L, lineRequest2))
+        assertThatThrownBy(() -> lineService.update(1L, line3Request))
             .isInstanceOf(DuplicateException.class);
     }
 
@@ -137,8 +129,7 @@ class LineServiceTest {
     @DisplayName("id를 이용하여 노선을 삭제한다.")
     void delete() {
         //given
-        LineRequest lineRequest1 = new LineRequest("2호선", "green");
-        lineService.create(lineRequest1);
+        lineService.create(line2Request);
 
         //when
         lineService.delete(1L);
@@ -150,5 +141,8 @@ class LineServiceTest {
     private void checkedThen(LineRequest lineRequest, LineResponse lineResponse) {
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
         assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
+        assertThat(lineResponse.getUpStationId()).isEqualTo(lineRequest.getUpStationId());
+        assertThat(lineResponse.getDownStationId()).isEqualTo(lineRequest.getDownStationId());
+        assertThat(lineResponse.getDistance()).isEqualTo(lineRequest.getDistance());
     }
 }
