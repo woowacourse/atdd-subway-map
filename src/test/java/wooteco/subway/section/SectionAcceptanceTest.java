@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +22,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private SectionDao sectionDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private StationDao stationDao;
+
+    private Station firstStation;
+    private Station secondStation;
+    private Station thirdStation;
 
     @BeforeEach
     void beforeEach() {
         jdbcTemplate.execute("truncate table SECTION");
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        firstStation = stationDao.save("first");
+        secondStation = stationDao.save("second");
+        thirdStation = stationDao.save("third");
+        stationDao.save("fourth");
+        stationDao.save("fifth");
         String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values(?,?,?,?)";
         jdbcTemplate.update(sql, 1L, 1L, 2L, 10);
         jdbcTemplate.update(sql, 1L, 2L, 3L, 10);
@@ -35,23 +50,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("정상적인 중간 구간 저장")
     public void saveSectionWithNormalCase() {
         ExtractableResponse<Response> response = createSectionResponse(
-                new SectionRequest(2L, 10L, 1)
+                new SectionRequest(2L, 4L, 1)
         );
 
         SectionResponse sectionResponse = response.body().as(SectionResponse.class);
         assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new SectionResponse(3L, 1L, 2L, 10L, 1));
+                .isEqualTo(new SectionResponse(4L, 1L, 2L, 4L, 1));
     }
 
     @Test
     @DisplayName("등록되지 않은 노선에 구간 저장")
     public void saveSectionWithNonExistingLineCase() {
         ExtractableResponse<Response> response = RestAssured.given()
-                .body(new SectionRequest(2L, 10L, 1))
+                .body(new SectionRequest(2L, 4L, 1))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/2/sections")
+                .post("/lines/3/sections")
                 .then()
                 .extract();
 
@@ -66,7 +81,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이의 거리가 기존 구간의 거리 이상일 경우의 중간 구간 저장")
     public void saveSectionWithDistanceExceptionCase() {
         ExtractableResponse<Response> response = createSectionResponse(
-                new SectionRequest(2L, 10L, 10)
+                new SectionRequest(2L, 4L, 10)
         );
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
@@ -81,26 +96,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점 구간 등록")
     public void saveSectionWithUpEndStationCase() {
         ExtractableResponse<Response> response = createSectionResponse(
-                new SectionRequest(10L, 1L, 1)
+                new SectionRequest(4L, 1L, 1)
         );
 
         SectionResponse sectionResponse = response.body().as(SectionResponse.class);
         assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new SectionResponse(3L, 1L, 10L, 1L, 1));
+                .isEqualTo(new SectionResponse(4L, 1L, 4L, 1L, 1));
     }
 
     @Test
     @DisplayName("행 종점 구간 등록")
     public void saveSectionWithDownEndPointCase() {
         ExtractableResponse<Response> response = createSectionResponse(
-                new SectionRequest(2L, 10L, 1)
+                new SectionRequest(2L, 4L, 1)
         );
 
         SectionResponse sectionResponse = response.body().as(SectionResponse.class);
         assertThat(sectionResponse)
                 .usingRecursiveComparison()
-                .isEqualTo(new SectionResponse(3L, 1L, 2L, 10L, 1));
+                .isEqualTo(new SectionResponse(4L, 1L, 2L, 4L, 1));
     }
 
     @Test
@@ -122,7 +137,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간의 양 역이 노선에 아무것도 포함된 것이 없을 경우의 구간 등록")
     public void saveSectionWithNeitherStationContainCase() {
         ExtractableResponse<Response> response = createSectionResponse(
-                new SectionRequest(10L, 20L, 1)
+                new SectionRequest(4L, 5L, 1)
         );
 
         ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
@@ -151,7 +166,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(section)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new Section(null, 1L, 1L, 3L, 20));
+                .isEqualTo(new Section(null, 1L, firstStation, thirdStation, 20));
     }
 
     @Test

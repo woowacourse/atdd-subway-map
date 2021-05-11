@@ -6,6 +6,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.exception.StationExistenceException;
+import wooteco.subway.station.exception.StationNotFoundException;
 
 import java.sql.PreparedStatement;
 import java.util.Optional;
@@ -13,9 +17,11 @@ import java.util.Optional;
 @Repository
 public class SectionDao {
     private final JdbcTemplate jdbcTemplate;
+    private final StationDao stationDao;
 
-    public SectionDao(JdbcTemplate jdbcTemplate) {
+    public SectionDao(JdbcTemplate jdbcTemplate, StationDao stationDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.stationDao = stationDao;
     }
 
     public Section save(Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -29,7 +35,9 @@ public class SectionDao {
             ps.setString(4, String.valueOf(distance));
             return ps;
         }, keyHolder);
-        return new Section(keyHolder.getKey().longValue(), lineId, upStationId, downStationId, distance);
+        Station upStation = stationDao.findById(upStationId).orElseThrow(StationNotFoundException::new);
+        Station downStation = stationDao.findById(downStationId).orElseThrow(StationNotFoundException::new);
+        return new Section(keyHolder.getKey().longValue(), lineId, upStation, downStation, distance);
     }
 
     public int delete(Long id) {
@@ -96,8 +104,8 @@ public class SectionDao {
                 new Section(
                         rs.getLong("id"),
                         rs.getLong("line_id"),
-                        rs.getLong("up_station_id"),
-                        rs.getLong("down_station_id"),
+                        stationDao.findById(rs.getLong("up_station_id")).orElseThrow(StationExistenceException::new),
+                        stationDao.findById(rs.getLong("down_station_id")).orElseThrow(StationExistenceException::new),
                         rs.getInt("distance")
                 );
     }

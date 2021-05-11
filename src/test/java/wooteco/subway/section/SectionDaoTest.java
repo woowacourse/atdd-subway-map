@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,11 +17,23 @@ class SectionDaoTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private SectionDao sectionDao;
+    @Autowired
+    private StationDao stationDao;
+
+    private Station firstStation;
+    private Station secondStation;
 
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("truncate table SECTION");
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        firstStation = stationDao.save("FirstStation");
+        secondStation = stationDao.save("SecondStation");
+        stationDao.save("ThirdStation");
+        stationDao.save("FourthStation");
+        stationDao.save("FifthStation");
     }
 
     @Test
@@ -28,7 +42,7 @@ class SectionDaoTest {
         Section savedSection = sectionDao.save(1L, 1L, 2L, 10);
         assertThat(savedSection)
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(1L, 1L, 1L, 2L, 10));
+                .isEqualTo(new Section(1L, 1L, firstStation, secondStation, 10));
     }
 
     @Test
@@ -56,13 +70,13 @@ class SectionDaoTest {
     @Test
     @DisplayName("역 ID로 구간 검색")
     public void findSectionByStationId() {
-        sectionDao.save(1L, 4L, 5L, 10);
+        sectionDao.save(1L, 1L, 2L, 10);
 
-        assertThat(sectionDao.findSectionByUpStationId(1L, 4L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByUpStationId(1L, 100L).isPresent()).isFalse();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isTrue();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 2L).isPresent()).isFalse();
 
-        assertThat(sectionDao.findSectionByDownStationId(1L, 5L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByDownStationId(1L, 100L).isPresent()).isFalse();
+        assertThat(sectionDao.findSectionByDownStationId(1L, 2L).isPresent()).isTrue();
+        assertThat(sectionDao.findSectionByDownStationId(1L, 1L).isPresent()).isFalse();
     }
 
     @Test
@@ -76,7 +90,6 @@ class SectionDaoTest {
         assertThat(sectionDao.hasEndStationInSection(1L, 2L, 3L)).isFalse();
         assertThat(sectionDao.hasEndStationInSection(1L, 3L, 4L)).isTrue();
         assertThat(sectionDao.hasEndStationInSection(1L, 4L, 5L)).isTrue();
-        assertThat(sectionDao.hasEndStationInSection(1L, 10L, 1L)).isTrue();
     }
 
     @Test

@@ -63,7 +63,7 @@ public class StationDao {
         String sql = "select name from STATION where id = ?";
 
         try {
-            return Optional.ofNullable(new Station(jdbcTemplate.queryForObject(sql, String.class, id)));
+            return Optional.ofNullable(new Station(id, jdbcTemplate.queryForObject(sql, String.class, id)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

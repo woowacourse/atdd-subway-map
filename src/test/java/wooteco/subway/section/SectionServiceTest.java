@@ -10,6 +10,8 @@ import wooteco.subway.section.exception.SectionCantDeleteException;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
 import wooteco.subway.section.exception.SectionInitializationException;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,11 +25,24 @@ class SectionServiceTest {
     private SectionService sectionService;
     @Autowired
     private SectionDao sectionDao;
+    @Autowired
+    private StationDao stationDao;
+
+    private Station firstStation;
+    private Station secondStation;
+    private Station thirdStation;
+    private Station fourthStation;
 
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("truncate table SECTION");
         jdbcTemplate.execute("alter table SECTION alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        firstStation = stationDao.save("first");
+        secondStation = stationDao.save("second");
+        thirdStation = stationDao.save("third");
+        fourthStation = stationDao.save("fourth");
     }
 
     @Test
@@ -35,18 +50,18 @@ class SectionServiceTest {
     public void saveSectionWithNormalCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 1));
         sectionService.save(sectionDto);
 
         assertThat(sectionDao.findSectionByUpStationId(1L, 2L).get())
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(3L, 1L, 2L, 10L, 1));
+                .isEqualTo(new Section(3L, 1L, secondStation, fourthStation, 1));
     }
 
     @Test
     @DisplayName("등록되지 않은 노선에 구간을 저장하는 경우 확인")
     public void saveSectionWithNonExistingLineCase() {
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 1));
         assertThatThrownBy(() -> sectionService.save(sectionDto))
                 .isInstanceOf(SectionInitializationException.class);
     }
@@ -56,8 +71,8 @@ class SectionServiceTest {
     public void saveSectionWithDistanceExceptionCase() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 10));
-        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(2L, 10L, 11));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 10));
+        SectionDto sectionDto2 = SectionDto.of(1L, new SectionRequest(2L, 4L, 11));
 
         assertThatThrownBy(() -> sectionService.save(sectionDto))
                 .isInstanceOf(SectionDistanceException.class);
@@ -69,24 +84,24 @@ class SectionServiceTest {
     @DisplayName("상행 종점 구간 등록")
     public void saveSectionWithUpEndStiationCase() {
         sectionDao.save(1L, 1L, 2L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(10L, 1L, 1));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(4L, 1L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findSectionByUpStationId(1L, 10L).get())
+        assertThat(sectionDao.findSectionByUpStationId(1L, 4L).get())
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(2L, 1L, 10L, 1L, 1));
+                .isEqualTo(new Section(2L, 1L, fourthStation, firstStation, 1));
     }
 
     @Test
     @DisplayName("하행 종점 구간 등록")
     public void saveSectionWithDownEndStationCase() {
         sectionDao.save(1L, 1L, 2L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 4L, 1));
         sectionService.save(sectionDto);
 
         assertThat(sectionDao.findSectionByUpStationId(1L, 2L).get())
                 .usingRecursiveComparison()
-                .isEqualTo(new Section(2L, 1L, 2L, 10L, 1));
+                .isEqualTo(new Section(2L, 1L, secondStation, fourthStation, 1));
     }
 
     @Test
@@ -106,7 +121,7 @@ class SectionServiceTest {
     @DisplayName("구간의 양 역이 노선에 아무것도 포함된 것이 없을 경우의 구간 등록")
     public void saveSectionWithNeitherStationContainCase() {
         sectionDao.save(1L, 1L, 2L, 10);
-        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(10L, 20L, 1));
+        SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(3L, 4L, 1));
 
         assertThatThrownBy(() -> sectionService.save(sectionDto))
                 .isInstanceOf(SectionInclusionException.class);
@@ -149,6 +164,6 @@ class SectionServiceTest {
         assertThat(section)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new Section(null, 1L, 1L, 3L, 20));
+                .isEqualTo(new Section(null, 1L, firstStation, thirdStation, 20));
     }
 }

@@ -1,17 +1,19 @@
 package wooteco.subway.section;
 
+import wooteco.subway.station.Station;
+
 public class Section {
     private Long id;
     private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private Station upStation;
+    private Station downStation;
     private int distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -23,12 +25,20 @@ public class Section {
         return lineId;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
     public Long getUpStationId() {
-        return upStationId;
+        return upStation.getId();
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStation.getId();
     }
 
     public int getDistance() {
