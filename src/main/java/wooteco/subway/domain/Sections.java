@@ -100,6 +100,16 @@ public class Sections {
     }
 
     private Optional<Section> affectedSection(Section newSection) {
+        Optional<Section> sectionAsUpStation = affectedSectionAsUpStation(newSection);
+        Optional<Section> sectionAsDownStation = affectedSectionAsDownStation(newSection);
+
+        if (sectionAsUpStation.isPresent()) {
+            return sectionAsUpStation;
+        }
+        return sectionAsDownStation;
+    }
+
+    private Optional<Section> affectedSectionAsUpStation(Section newSection) {
         Optional<Section> sectionByUpStation = sections.stream()
                 .filter(section -> section.isUpStation(newSection.getUpStation()))
                 .findAny();
@@ -109,6 +119,10 @@ public class Sections {
             section.updateUpStation(newSection);
             return Optional.of(section);
         }
+        return Optional.empty();
+    }
+
+    private Optional<Section> affectedSectionAsDownStation(Section newSection) {
         Optional<Section> sectionByDownStation = sections.stream()
                 .filter(section -> section.isDownStation(newSection.getDownStation()))
                 .findAny();
@@ -145,7 +159,6 @@ public class Sections {
             originalSection.updateDownStation(newSection);
             return Optional.of(originalSection);
         }
-
         return Optional.empty();
     }
 
