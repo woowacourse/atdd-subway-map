@@ -1,7 +1,10 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.state.State;
+import wooteco.subway.line.state.StateFactory;
 import wooteco.subway.name.domain.LineName;
 import wooteco.subway.name.domain.Name;
+import wooteco.subway.station.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,7 @@ public class Line {
     private final Long id;
     private final Name name;
     private final String color;
-    private final List<Section> sections = new ArrayList<>();
+    private final State state = StateFactory.initialize(new Sections());
 
     public Line(String name, String color) {
         this(null, new LineName(name), color);
@@ -42,7 +45,11 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public Sections getSections() {
+        return state.sections();
+    }
+
+    public void addSection(Section targetSection) {
+        state.addSection(this, targetSection);
     }
 }

@@ -79,36 +79,12 @@ public class LineService {
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
-        Sections sections = new Sections(toSections(line));
-        Sections originSections = new Sections(sections.sections());
+        Sections originSections = new Sections(toSections(line));
+        Section targetSection = new Section(findStationById(sectionAddRequest.getUpStationId()), findStationById(sectionAddRequest.getDownStationId()), sectionAddRequest.getDistance());
 
-        Station targetUpStation = findStationById(sectionAddRequest.getUpStationId());
-        Station targetDownStation = findStationById(sectionAddRequest.getDownStationId());
-        int targetDistance = sectionAddRequest.getDistance();
+        line.addSection(targetSection);
 
-        sections.upwardEndPointRegistration(line, targetUpStation, targetDownStation, targetDistance);
-        sections.downwardEndPointRegistration(line, targetUpStation, targetDownStation, targetDistance);
-
-        dirtyChecking(originSections, sections);
-
-        // TODO : 예외
-        //  lineId가 존재하는지
-        //  line의 section에 upstationId와 downStationId 둘다 존재하는지 - 노선의 구간에 이미 등록되어있음
-        //  upstationId 또는 downStationId로 section을 찾는데, 찾은 section의 distance가 sectionAddRequest의 distance보다 작거나 같은 경우
-
-
-        // TODO : line의 section에 sectionAddRequest의 upstationId가 존재하는지
-        //  존재하면 sectionAddRequest의 upstationId로 section을 찾고
-        //  찾은 section의 upstationId를 sectionAddRequest의 downStationId로 수정한다.
-        //  찾은 section의 distance를 sectionAddRequest의 distance를 뺀 값으로 수정한다.
-        //
-
-        // TODO : line의 section에 sectionAddRequest의 downStationId가 존재하는지
-        //  존재하면 sectionAddRequest의 downStationId로 section을 찾고
-        //  찾은 section의 downStationId를 sectionAddRequest의 upStationId로 수정한다.
-        //  찾은 section의 distance를 sectionAddRequest의 distance를 뺀 값으로 수정한다.
-
-        // TODO : section save
+        dirtyChecking(originSections, line.getSections());
     }
 
     private void dirtyChecking(final Sections originSections, final Sections sections) {

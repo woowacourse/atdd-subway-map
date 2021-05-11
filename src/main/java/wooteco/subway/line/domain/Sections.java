@@ -41,17 +41,51 @@ public class Sections {
         return Collections.unmodifiableList(sortedSections);
     }
 
-    public void upwardEndPointRegistration(Line line, Station targetUpStation, Station targetDownStation, int targetDistance) {
+    public void upwardEndPointRegistration(final Line line, final Section targetSection) {
         Section headSection = headSection();
-        if (headSection.sameUpStation(targetDownStation)) {
-            this.sections.add(new Section(line, targetUpStation, targetDownStation, targetDistance));
+        if (headSection.sameUpStation(tailSection().downStation())) {
+            targetSection.changeLine(line);
+            this.sections.add(targetSection);
         }
     }
 
-    public void downwardEndPointRegistration(Line line, Station targetUpStation, Station targetDownStation, int targetDistance) {
+    public void downwardEndPointRegistration(final Line line, final Section targetSection) {
         Section tailSection = tailSection();
-        if (tailSection.sameDownStation(targetUpStation)) {
-            this.sections.add(new Section(line, targetUpStation, targetDownStation, targetDistance));
+        if (tailSection.sameDownStation(tailSection().upStation())) {
+            targetSection.changeLine(line);
+            this.sections.add(targetSection);
+        }
+    }
+
+    public void betweenUpwardRegistration(final Line line, final Section targetSection) {
+        Section findSection = findByUpStationSection(targetSection.upStation());
+        if (Objects.isNull(findSection)) {
+            return;
+        }
+        validateDistance(findSection.distance(), targetSection.distance());
+        targetSection.changeLine(line);
+
+        this.sections.remove(findSection);
+        this.sections.add(targetSection);
+        this.sections.add(new Section(targetSection.line(), targetSection.downStation(), findSection.downStation(), findSection.distance() - targetSection.distance()));
+    }
+
+    public void betweenDownwardRegistration(final Line line, final Section targetSection) {
+        Section findSection = findByDownStationSection(targetSection.downStation());
+        if (Objects.isNull(findSection)) {
+            return;
+        }
+        validateDistance(findSection.distance(), targetSection.distance());
+        targetSection.changeLine(line);
+
+        this.sections.remove(findSection);
+        this.sections.add(targetSection);
+        this.sections.add(new Section(targetSection.line(), findSection.upStation(), targetSection.upStation(), findSection.distance() - targetSection.distance()));
+    }
+
+    private void validateDistance(int baseDistance, int targetDistance) {
+        if (baseDistance <= targetDistance) {
+            throw new IllegalStateException("기존 역 사이 길이보다 크거나 같을 수 없습니다");
         }
     }
 
@@ -99,6 +133,24 @@ public class Sections {
             }
         }
         return checkCount;
+    }
+
+    private Section findByUpStationSection(Station targetUpStation) {
+        for (Section section : sections) {
+            if (section.sameUpStation(targetUpStation)) {
+                return section;
+            }
+        }
+        return null;
+    }
+
+    private Section findByDownStationSection(Station targetDownStation) {
+        for (Section section : sections) {
+            if (section.sameDownStation(targetDownStation)) {
+                return section;
+            }
+        }
+        return null;
     }
 
     public List<Section> changedSections(final Sections sections) {

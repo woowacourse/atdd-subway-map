@@ -14,6 +14,10 @@ public class Section {
     public Section() {
     }
 
+    public Section(final Station upStation, final Station downStation, final int distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
     public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
         this(null, line, upStation, downStation, distance);
     }
@@ -35,6 +39,9 @@ public class Section {
     }
 
     public void changeLine(Line line) {
+        if (Objects.isNull(line)) {
+            return;
+        }
         this.line = line;
         line.getSections().add(this);
     }
