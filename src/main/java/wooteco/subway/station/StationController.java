@@ -46,10 +46,4 @@ public class StationController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ErrorResponse> duplicateKeyExceptionHandle(DuplicateKeyException e) {
-        ErrorResponse response = ErrorResponse.of("Database error", e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 }
