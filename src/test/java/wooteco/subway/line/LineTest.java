@@ -19,6 +19,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.Stations;
 
 class LineTest {
+
     private Line line;
 
     @BeforeEach

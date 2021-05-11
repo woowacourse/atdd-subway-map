@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.line.exception.ClientRuntimeException;
 import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.line.exception.ClientRuntimeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

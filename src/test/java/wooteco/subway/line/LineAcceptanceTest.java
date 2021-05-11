@@ -6,7 +6,6 @@ import static wooteco.subway.station.StationAcceptanceTest.지하철역_등록;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
