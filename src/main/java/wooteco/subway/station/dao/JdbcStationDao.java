@@ -59,7 +59,7 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public void remove(Long id) {
         this.jdbcTemplate.update(DELETE_BY_ID, id);
     }
 

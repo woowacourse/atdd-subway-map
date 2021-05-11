@@ -32,7 +32,7 @@ public class LineApiController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showAll() {
-        List<Line> lines = lineService.showAll();
+        List<Line> lines = lineService.findAll();
         List<LineResponse> responses = new ArrayList<>();
         for (Line line : lines) {
             responses.add(LineResponse.create(line));
@@ -46,17 +46,17 @@ public class LineApiController {
             throw new InsufficientLineInformationException();
         }
 
-        Station upStation = stationService.findStation(lineRequest.getUpStationId());
-        Station downStation = stationService.findStation(lineRequest.getDownStationId());
+        Station upStation = stationService.find(lineRequest.getUpStationId());
+        Station downStation = stationService.find(lineRequest.getDownStationId());
 
-        Line line = lineService.createLine(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+        Line line = lineService.create(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
         LineResponse lineResponse = LineResponse.create(line);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
-        Line line = lineService.findLine(lineId);
+        Line line = lineService.find(lineId);
         return ResponseEntity.ok(LineResponse.create(line));
 
     }

@@ -27,17 +27,17 @@ public class SectionApiController {
             throw new NotPositiveDistanceException();
         }
 
-        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
-        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        Station upStation = stationService.find(sectionRequest.getUpStationId());
+        Station downStation = stationService.find(sectionRequest.getDownStationId());
         Section section =
-                sectionService.createSection(Section.create(upStation, downStation, sectionRequest.getDistance()), lineId);
+                sectionService.create(Section.create(upStation, downStation, sectionRequest.getDistance()), lineId);
 
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(SectionResponse.create(section));
     }
 
     @DeleteMapping
     public ResponseEntity<Void> removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.removeSection(lineId, stationId);
+        sectionService.remove(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

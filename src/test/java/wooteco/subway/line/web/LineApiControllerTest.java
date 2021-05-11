@@ -160,7 +160,7 @@ class LineApiControllerTest extends ApiControllerTest {
         LineRequest 사호선 = new LineRequest("4호선", "bg-blue-600", 강남역.getId(), 잠실역.getId(), 10);
         ResultActions createdLineResult = 노선_생성(사호선);
         LineResponse lineResponse = 응답(createdLineResult);
-        sectionService.createSection(Section.create(강남역, 석촌역, 5), lineResponse.getId());
+        sectionService.create(Section.create(강남역, 석촌역, 5), lineResponse.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));

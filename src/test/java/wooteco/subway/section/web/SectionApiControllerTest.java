@@ -384,7 +384,7 @@ class SectionApiControllerTest extends ApiControllerTest {
     }
 
     private Line 노선_생성(Station upStation, Station downStation) {
-        return lineService.createLine("1호선", "bg-blue-300", upStation, downStation, ORIGINAL_DISTANCE);
+        return lineService.create("1호선", "bg-blue-300", upStation, downStation, ORIGINAL_DISTANCE);
     }
 
     private Station 하행역() {

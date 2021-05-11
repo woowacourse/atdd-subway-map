@@ -51,7 +51,7 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
-    public void delete(Long id) {
+    public void remove(Long id) {
         stations.removeIf(station -> station.isSameId(id));
     }
 }

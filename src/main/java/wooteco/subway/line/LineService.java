@@ -21,35 +21,48 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public List<Line> showAll() {
+    public Line find(Long lineId) {
+        validateExistById(lineId);
+
+        Line line = lineDao.findById(lineId);
+        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        line.insertSections(sections);
+
+        return line;
+    }
+
+    public List<Line> findAll() {
         List<Line> lines = lineDao.showAll();
         for (Line line : lines) {
             Sections sections = sectionDao.findSectionsByLineId(line.getId());
             line.insertSections(sections);
         }
+
         return lines;
     }
 
     @Transactional
-    public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
-        if (lineDao.existByInfo(name, color)) {
-            throw new DuplicatedLineInformationException();
-        }
+    public Line create(String name, String color, Station upStation, Station downStation, int distance) {
+        validateExistInfo(name, color);
+
         Line line = lineDao.create(Line.create(name, color));
         Section section = Section.create(upStation, downStation, distance);
         sectionDao.create(section, line.getId());
         line.addSection(section);
+
         return line;
     }
 
-    public Line findLine(Long lineId) {
+    private void validateExistInfo(String name, String color) {
+        if (lineDao.existByInfo(name, color)) {
+            throw new DuplicatedLineInformationException();
+        }
+    }
+
+    private void validateExistById(Long lineId) {
         if (!lineDao.existById(lineId)) {
             throw new LineNotFoundException();
         }
-        Line line = lineDao.findById(lineId);
-        Sections sections = sectionDao.findSectionsByLineId(lineId);
-        line.insertSections(sections);
-        return line;
     }
 
 }

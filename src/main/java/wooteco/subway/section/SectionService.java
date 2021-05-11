@@ -24,7 +24,7 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     @Transactional
-    public Section createSection(Section section, Long lineId) {
+    public Section create(Section section, Long lineId) {
         Sections sections = sectionDao.findSectionsByLineId(lineId);
         Optional<Section> affectedSection = sections.affectedSection(section);
 
@@ -34,25 +34,34 @@ public class SectionService {
     }
 
     @Transactional
-    public void removeSection(Long lineId, Long stationId) {
-        if (!lineDao.existById(lineId)) {
-            throw new LineNotFoundException();
-        }
-        if (!stationDao.existById(stationId)) {
-            throw new StationNotFoundException();
-        }
-
-        if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
-            throw new NotEnoughSectionException();
-        }
+    public void remove(Long lineId, Long stationId) {
+        validateExistLine(lineId);
+        validateExistStation(stationId);
+        validateIsLastSection(lineId);
 
         List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
-
-        sectionDao.removeSections(lineId, sections);
-
         Optional<Section> affectedSection = foundSections.transformSection(stationId);
 
+        sectionDao.removeSections(lineId, sections);
         affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));
+    }
+
+    private void validateIsLastSection(Long lineId) {
+        if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
+            throw new NotEnoughSectionException();
+        }
+    }
+
+    private void validateExistStation(Long stationId) {
+        if (!stationDao.existById(stationId)) {
+            throw new StationNotFoundException();
+        }
+    }
+
+    private void validateExistLine(Long lineId) {
+        if (!lineDao.existById(lineId)) {
+            throw new LineNotFoundException();
+        }
     }
 }

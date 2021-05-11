@@ -16,12 +16,10 @@ public class StationService {
 
     private final StationDao stationDao;
 
-    @Transactional
-    public Station save(Station station) {
-        if (stationDao.existByName(station.getName())) {
-            throw new DuplicatedStationException();
-        }
-        return stationDao.create(station);
+    public Station find(Long id) {
+        validateExist(id);
+
+        return stationDao.findById(id);
     }
 
     public List<Station> findAll() {
@@ -29,14 +27,26 @@ public class StationService {
     }
 
     @Transactional
-    public void deleteStation(Long id) {
-        stationDao.delete(id);
+    public Station save(Station station) {
+        validateExistName(station);
+
+        return stationDao.create(station);
     }
 
-    public Station findStation(Long id) {
+    @Transactional
+    public void deleteStation(Long id) {
+        stationDao.remove(id);
+    }
+
+    private void validateExist(Long id) {
         if (!stationDao.existById(id)) {
             throw new StationNotFoundException();
         }
-        return stationDao.findById(id);
+    }
+
+    private void validateExistName(Station station) {
+        if (stationDao.existByName(station.getName())) {
+            throw new DuplicatedStationException();
+        }
     }
 }

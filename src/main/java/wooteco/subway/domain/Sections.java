@@ -61,19 +61,26 @@ public class Sections {
                 .filter(originalSection -> isAdjacentSection(newSection, originalSection))
                 .collect(Collectors.toList());
 
-        if (collect.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation())) &&
-                collect.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))) {
+        if (isCycleSection(newSection, collect)) {
             throw new InvalidSectionException();
         }
-        if (collect.size() == 2) {
-            Station upStation = newSection.getUpStation();
-            if (collect.stream()
-                    .anyMatch(section -> section.isUpStation(upStation))) {
-                return updateSection(collect.get(1), newSection);
-            }
+        if (isMiddleSection(newSection, collect)) {
+            return updateSection(collect.get(1), newSection);
+
         }
         final Section originalSection = collect.get(FIRST_ELEMENT);
         return updateSection(originalSection, newSection);
+    }
+
+    private boolean isMiddleSection(Section newSection, List<Section> collect) {
+        return collect.size() == 2 &&
+                collect.stream()
+                .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
+    }
+
+    private boolean isCycleSection(Section newSection, List<Section> collect) {
+        return collect.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation())) &&
+                collect.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()));
     }
 
     private boolean isAdjacentSection(Section newSection, Section originalSection) {
@@ -117,20 +124,32 @@ public class Sections {
         if (sections.size() == 1) {
             return Optional.empty();
         }
+
         Station downStation = null;
         Station upStation = null;
         int distance = 0;
+
         for (Section section : sections) {
-            if (section.isUpStationId(stationId)) {
-                downStation = section.getDownStation();
-            }
-            if (section.isDownStationId(stationId)) {
-                upStation = section.getUpStation();
-            }
+            downStation = determineDownStation(stationId, downStation, section);
+            upStation = determineUpStation(stationId, upStation, section);
             distance += section.getDistance();
         }
 
         return Optional.of(Section.create(upStation, downStation, distance));
+    }
+
+    private Station determineUpStation(Long stationId, Station upStation, Section section) {
+        if (section.isDownStationId(stationId)) {
+            upStation = section.getUpStation();
+        }
+        return upStation;
+    }
+
+    private Station determineDownStation(Long stationId, Station downStation, Section section) {
+        if (section.isUpStationId(stationId)) {
+            downStation = section.getDownStation();
+        }
+        return downStation;
     }
 
     public boolean hasSize(int size) {
