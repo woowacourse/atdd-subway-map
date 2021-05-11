@@ -11,11 +11,6 @@ public class LineUpdateRequest {
     private LineUpdateRequest() {
     }
 
-    private LineUpdateRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public String getName() {
         return name;
     }
