@@ -3,9 +3,13 @@ package wooteco.subway.line.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.domain.*;
+import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
+import wooteco.subway.line.domain.rule.FindSectionHaveSameUpRule;
+import wooteco.subway.line.domain.rule.FindSectionRule;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +64,25 @@ public class LineService {
     public void addSection(final Long id, final Section section) {
         Line line = findById(id);
         Sections sections = line.getSections();
-        sections.checkAddSectionValidation(section);
+        sections.validateEnableAddSection(section);
+
+        boolean isEndPoint = sections.checkEndPoint(section);
+        if (isEndPoint) {
+            lineRepository.addSection(id, section);
+            return;
+        }
+
+        addSectionBetween(id, sections, section);
+    }
+
+    private void addSectionBetween(final Long id, final Sections sections, final Section section) {
+        List<FindSectionRule> findSectionRules = Arrays.asList(new FindSectionHaveSameUpRule(),
+                new FindSectionHaveSameDownRule());
+        Section deleteSection = sections.findDeleteByAdding(section, findSectionRules);
+        Section updateSection = sections.generateUpdate(section, deleteSection);
+
+        lineRepository.deleteSection(id, deleteSection);
+        lineRepository.addSection(id, updateSection);
         lineRepository.addSection(id, section);
     }
 

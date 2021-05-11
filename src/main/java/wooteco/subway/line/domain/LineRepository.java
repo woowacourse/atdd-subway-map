@@ -1,7 +1,5 @@
 package wooteco.subway.line.domain;
 
-import java.util.List;
-
 public interface LineRepository {
     Line save(Line line);
 
@@ -15,9 +13,5 @@ public interface LineRepository {
 
     void addSection(Long id, Section section);
 
-    Section findSectionByUpStationId(Long id, Long upStationId);
-
-    Section findSectionByDownStationId(Long id, Long downStationId);
-
-
+    void deleteSection(Long id, Section section);
 }

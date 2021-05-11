@@ -1,5 +1,7 @@
 package wooteco.subway.line.domain;
 
+import wooteco.subway.line.domain.rule.FindSectionRule;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +9,8 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
-    public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 노선의 길이보다 크거나 같을 수 없습니다.";
-    public static final String ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE = "상행역과 하행역 둘 중 하나가 노선에 존재해야 합니다.";
+    public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 기존 구간 길이보다 크거나 같을 수 없습니다.";
+    public static final String ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE = "상행역과 하행역 둘 중 하나만 노선에 존재해야 합니다.";
 
     private final LinkedList<Section> sections;
 
@@ -20,28 +22,29 @@ public class Sections {
         return sections;
     }
 
-
-    public void checkAddSectionValidation(Section section) {
-        if (hasStation(section.getUpStationId()) == hasStation(section.getDownStationId())) {
+    public void validateEnableAddSection(Section newSection) {
+        if (hasStation(newSection.getUpStationId()) == hasStation(newSection.getDownStationId())) {
             throw new IllegalArgumentException(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE);
-        }
-
-        System.out.println("홀리몰리홀리몰리 : " + checkEndPoint(section));
-        if (!checkEndPoint(section) && sumSectionDistance() <= section.getDistance()) {
-            throw new IllegalArgumentException(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE);
         }
     }
 
-    private boolean checkEndPoint(Section section) {
+    public Section findDeleteByAdding(Section newSection, List<FindSectionRule> findSectionRules) {
+        for (FindSectionRule rule : findSectionRules) {
+            Optional<Section> section = rule.findSection(this, newSection);
+            if (section.isPresent()) {
+                return section.get();
+            }
+        }
+
+        throw new IllegalArgumentException(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE);
+    }
+
+    public boolean checkEndPoint(Section section) {
         Section upSection = sections.getFirst();
         Section downSection = sections.getLast();
-        System.out.println("홀리몰리홀리몰리 업 : " + upSection);
-        System.out.println("홀리몰리홀리몰리 다운 : " + downSection);
-        System.out.println("홀리몰리홀리몰리 추가되는거 : " + section);
         return section.getDownStationId().equals(upSection.getUpStationId())
                 || section.getUpStationId().equals(downSection.getDownStationId());
     }
-
 
     public int sumSectionDistance() {
         return sections.stream().mapToInt(Section::getDistance).sum();
@@ -58,34 +61,30 @@ public class Sections {
         LinkedList<Section> sortedSection = new LinkedList<>();
         Section firstSection = findStartSection(sections);
         sortedSection.add(firstSection);
-
-        while (sortedSection.size() < sections.size()) {
-            Section lastSection = sortedSection.get(sortedSection.size() - 1);
-            Section nextSection = findNextSection(sections, lastSection.getDownStationId());
-            sortedSection.add(nextSection);
+        System.out.println(sortedSection);
+        while (true) {
+            Section lastSection = sortedSection.getLast();
+            Optional<Section> nextSection = findNextSection(sections, lastSection.getDownStationId());
+            if (!nextSection.isPresent()) {
+                break;
+            }
+            System.out.println(sortedSection);
+            sortedSection.add(nextSection.get());
         }
 
         return sortedSection;
     }
 
 
-    private Section findNextSection(List<Section> sections, Long downStationId) {
-        Optional<Section> nextSection = sections.stream()
+    private Optional<Section> findNextSection(List<Section> sections, Long downStationId) {
+        return sections.stream()
                 .filter(section -> downStationId.equals(section.getUpStationId()))
                 .findFirst();
 
-        if (nextSection.isPresent()) {
-            return nextSection.get();
-        }
-
-        throw new IllegalArgumentException("다음역을 찾을 수 없습니다.");
     }
-
 
     private Section findStartSection(List<Section> sections) {
         List<Long> downStationIdList = getDownStationIdList(sections);
-
-
         Optional<Section> startSection = sections.stream()
                 .filter(section -> !downStationIdList.contains(section.getUpStationId()))
                 .findFirst();
@@ -97,9 +96,33 @@ public class Sections {
         throw new IllegalArgumentException("노선의 상행역을 찾을 수 없습니다.");
     }
 
+    private List<Long> getUpStationIdList(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+    }
+
     private List<Long> getDownStationIdList(List<Section> sections) {
         return sections.stream()
                 .map(Section::getDownStationId)
                 .collect(Collectors.toList());
+    }
+
+    public Section generateUpdate(final Section newSection, final Section deleteSection) {
+        int distance = deleteSection.getDistance() - newSection.getDistance();
+
+        if (distance <= 0) {
+            throw new IllegalArgumentException(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE);
+        }
+
+        if (newSection.getUpStationId().equals(deleteSection.getUpStationId())) {
+            return new Section(newSection.getDownStationId(), deleteSection.getDownStationId(), distance);
+        }
+
+        if (newSection.getDownStationId().equals(deleteSection.getDownStationId())) {
+            return new Section(deleteSection.getUpStationId(), newSection.getUpStationId(), distance);
+        }
+
+        throw new IllegalArgumentException("노선의 상행역 혹은 하행역을 찾을 수 없습니다.");
     }
 }

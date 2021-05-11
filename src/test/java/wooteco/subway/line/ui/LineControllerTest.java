@@ -410,6 +410,46 @@ class LineControllerTest {
                 .containsExactly(kangnam.getId(), yangjae.getId(), kwangkyo.getId());
     }
 
+    @DisplayName("하나의 노선에는 갈래길이 허용되지 않기 때문에 구간이 추가되기 전에 갈래길이 생기지 않도록 기존 구간을 변경한다.")
+    @Test
+    void addSectionInLine_blockTwoWay() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station pankyo = setDummyStation("판교역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        SectionAddRequest sectionUpAddRequest = new SectionAddRequest(kangnam.getId(), pankyo.getId(), 5);
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionUpAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        Line savedLine = lineRepository.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(10);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(2);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(kangnam.getId(), pankyo.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(pankyo.getId(), yangjae.getId());
+
+    }
 
     private Station setDummyStation(String stationName) {
         Station station = new Station(stationName);
