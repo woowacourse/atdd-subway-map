@@ -70,11 +70,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = lineGetRequest("/lines");
 
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsExactlyElementsOf(expectedLineIds);
@@ -128,12 +128,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(lineUpdateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then().log().all()
-                .extract();
+            .body(lineUpdateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -193,10 +193,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

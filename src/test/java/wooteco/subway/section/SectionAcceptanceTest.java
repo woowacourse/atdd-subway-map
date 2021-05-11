@@ -36,23 +36,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void findLineForCreateSection() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/1")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
 
         StationResponse stationResponse1 = new StationResponse(new Station(1L, "강남역"));
         StationResponse stationResponse2 = new StationResponse(new Station(2L, "역삼역"));
         StationResponse stationResponse3 = new StationResponse(new Station(3L, "아차산역"));
 
         LineResponse lineResponse = new LineResponse(new Line(1L, "2호선", "초록색"),
-                Arrays.asList(stationResponse1, stationResponse2, stationResponse3));
+            Arrays.asList(stationResponse1, stationResponse2, stationResponse3));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
 
         assertThat(resultResponse).usingRecursiveComparison()
-                .isEqualTo(lineResponse);
+            .isEqualTo(lineResponse);
     }
 
     @DisplayName("노선과 이어지지 않는 구간 생성시 예외를 발생한다.")
@@ -86,11 +86,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .queryParam("stationId", 5)
-                .delete("/lines/2/sections")
-                .then().log().all()
-                .extract();
+            .when()
+            .queryParam("stationId", 5)
+            .delete("/lines/2/sections")
+            .then().log().all()
+            .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         findLineForDeleteSection();
@@ -98,22 +98,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void findLineForDeleteSection() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/2")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/lines/2")
+            .then().log().all()
+            .extract();
 
         StationResponse stationResponse1 = new StationResponse(new Station(4L, "탄현역"));
         StationResponse stationResponse2 = new StationResponse(new Station(6L, "홍대입구역"));
 
         LineResponse lineResponse = new LineResponse(new Line(2L, "경의중앙선", "하늘색"),
-                Arrays.asList(stationResponse1, stationResponse2));
+            Arrays.asList(stationResponse1, stationResponse2));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
 
         assertThat(resultResponse).usingRecursiveComparison()
-                .isEqualTo(lineResponse);
+            .isEqualTo(lineResponse);
     }
 
     @DisplayName("마지막 지하철구간을 삭제시 예외를 발생한다.")

@@ -54,17 +54,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = stationPostRequest(request2);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+            .when()
+            .get("/stations")
+            .then().log().all()
+            .extract();
 
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsExactlyElementsOf(expectedLineIds);
@@ -77,10 +77,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

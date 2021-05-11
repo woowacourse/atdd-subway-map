@@ -1,8 +1,8 @@
 package wooteco.subway.line.domain;
 
 import wooteco.subway.exception.EmptyInputException;
-import wooteco.subway.exception.line.LineSuffixException;
 import wooteco.subway.exception.NullInputException;
+import wooteco.subway.exception.line.LineSuffixException;
 
 import java.util.Objects;
 
