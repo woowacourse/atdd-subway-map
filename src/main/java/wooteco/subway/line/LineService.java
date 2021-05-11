@@ -5,22 +5,25 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.line.section.Section;
+import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
-import wooteco.subway.line.section.SectionService;
+import wooteco.subway.line.section.SectionResponse;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
+import wooteco.subway.station.Stations;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
-    private final SectionService sectionService;
+    private final SectionDao sectionDao;
     private final StationService stationService;
 
-    public LineService(final LineDao lineDao, final SectionService sectionService, final StationService stationService) {
+    public LineService(final LineDao lineDao, final SectionDao sectionDao, final StationService stationService) {
         this.lineDao = lineDao;
-        this.sectionService = sectionService;
+        this.sectionDao = sectionDao;
         this.stationService = stationService;
     }
 
@@ -32,9 +35,43 @@ public class LineService {
         final Long downStationId = lineRequest.getDownStationId();
         final int distance = lineRequest.getDistance();
 
-        sectionService.createSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
+        createSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
         return LineResponse.from(line);
     }
+
+    private SectionResponse createSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Section section = sectionDao.save(sectionRequest.toEntity(lineId));
+        return SectionResponse.from(section);
+    }
+
+    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Line line = composeLine(lineId);
+        final Long upStationId = sectionRequest.getUpStationId();
+        final Long downStationId = sectionRequest.getDownStationId();
+        final int distance = sectionRequest.getDistance();
+
+        line.validateStationsToAddSection(upStationId, downStationId);
+
+        if (line.isTerminalStation(upStationId, downStationId)) {
+            return createSection(lineId, sectionRequest);
+        }
+
+        final Section targetSection = line.findUpdatedTarget(upStationId, downStationId, distance);
+        final Section updatedSection = targetSection.createUpdatedSection(upStationId, downStationId, distance);
+        sectionDao.update(updatedSection);
+        return createSection(lineId, sectionRequest);
+    }
+
+    private Line composeLine(final Long lineId) {
+        final Line line = lineDao.findById(lineId).orElseThrow(() ->
+            new DataNotFoundException("해당 Id의 노선이 없습니다."));
+        final Sections sections = new Sections(sectionDao.findByLineId(lineId));
+        final List<Station> stationsGroup = sections.distinctStationIds().stream()
+            .map(stationService::findById)
+            .collect(Collectors.toList());
+        return new Line(line.getId(), line.getName(), line.getColor(), sections, new Stations(stationsGroup));
+    }
+
 
     public List<LineResponse> findLines() {
         return lineDao.findAll().stream().
@@ -43,12 +80,7 @@ public class LineService {
     }
 
     public LineResponse findLine(final Long id) {
-        final Line line = lineDao.findById(id).orElseThrow(() -> new DataNotFoundException("해당 Id의 노선이 없습니다."));
-        final Sections sections = sectionService.findSectionsByLineId(id);
-        final List<Station> stations = sections.distinctStationIds().stream()
-            .map(stationService::findById)
-            .collect(Collectors.toList());
-        line.addStations(stations);
+        final Line line = composeLine(id);
         return LineResponse.from(line);
     }
 

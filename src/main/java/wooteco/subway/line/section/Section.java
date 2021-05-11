@@ -22,6 +22,19 @@ public class Section {
         this.distance = distance;
     }
 
+    public void validateSmaller(final int distance) {
+        if (this.distance <= distance) {
+            throw new RuntimeException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
+        }
+    }
+
+    public Section createUpdatedSection(final Long upStationId, final Long downStationId, final int distance) {
+        if (this.upStationId.equals(upStationId)) {
+            return new Section(id, lineId, downStationId, this.downStationId, this.distance - distance);
+        }
+        return new Section(id, lineId, this.upStationId, upStationId, this.distance - distance);
+    }
+
     public Long getId() {
         return id;
     }

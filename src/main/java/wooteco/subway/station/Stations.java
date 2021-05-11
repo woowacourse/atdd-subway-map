@@ -18,7 +18,8 @@ public class Stations {
         this.stationGroup = new LinkedHashMap<>(stationGroup);
     }
 
-    public void addStations(final List<Station> stations) {
+    public Stations(final List<Station> stations) {
+        this.stationGroup = new LinkedHashMap<>();
         stationGroup.putAll(stations.stream()
             .collect(Collectors.toMap(Station::getId, Function.identity(),
                 (existing, replacement) -> existing, LinkedHashMap::new)));

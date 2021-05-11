@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class Sections {
 
@@ -98,6 +99,22 @@ public class Sections {
         return distinctStationIds().contains(stationId);
     }
 
+    public boolean isFirstStationId(Long downStationId) {
+        return getFirstSection().getUpStationId().equals(downStationId);
+    }
+
+    private Section getFirstSection() {
+        return sectionGroup.get(0);
+    }
+
+    public boolean isLastStationId(final Long upStationId) {
+        return getLastSection().getDownStationId().equals(upStationId);
+    }
+
+    private Section getLastSection() {
+        return sectionGroup.get(sectionGroup.size() - 1);
+    }
+
     public long matchedStationId(final Long upStationId, final Long downStationId) {
         if (containsStation(upStationId)) {
             return upStationId;
@@ -130,6 +147,15 @@ public class Sections {
             .filter(section -> section.getDownStationId() == existentStationId)
             .findAny()
             .get();
+    }
+
+    public Section findSameForm(final Long upStationId, final Long downStationId) {
+        final Predicate<Section> upStationFilter = section -> section.getUpStationId().equals(upStationId);
+        final Predicate<Section> downStationFilter = section -> section.getDownStationId().equals(downStationId);
+        return sectionGroup.stream()
+            .filter(upStationFilter.or(downStationFilter))
+            .findAny()
+            .orElseThrow(() -> new RuntimeException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
     }
 
     public List<Section> toList() {
