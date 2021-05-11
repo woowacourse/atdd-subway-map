@@ -149,12 +149,45 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (checkSectionAtEdge(station)) {
+            removeSectionAtEdge(station);
+            return;
+        }
+        removeSectionInBetween(station);
+    }
+
+    public boolean checkSectionAtEdge(Station station) {
+        final List<Station> stations = lineUpStations();
+        return (stations.get(0).equals(station) || stations.get(stations.size() - 1).equals(station));
+    }
+
+    public Section removeSectionAtEdge(Station station) {
         final List<Station> stations = lineUpStations();
         validateStation(station, stations);
         validateLeftSection();
-        if (removeTopSection(station, stations)) return;
-        if (removeBottomSection(station, stations)) return;
-        removeSectionInBetween(station);
+        if (stations.get(0).equals(station)) {
+            final Section section = findSectionStationAsUpStation(station);
+            sections.remove(section);
+            return section;
+        }
+        final Section section = findSectionStationAsDownStation(station);
+        sections.remove(section);
+        return section;
+    }
+
+    public Map<Section, Map<Section, Section>> removeSectionInBetween(Station station) {
+        final List<Station> stations = lineUpStations();
+        validateStation(station, stations);
+        validateLeftSection();
+        final Section upperSection = findSectionStationAsDownStation(station);
+        final Section lowerSection = findSectionStationAsUpStation(station);
+        final int totalDistance = lowerSection.addDistance(upperSection);
+        final Section newSection = new Section(lineId, upperSection.getUpStation(), lowerSection.getDownStation(), totalDistance);
+        sections.add(newSection);
+        sections.remove(lowerSection);
+        sections.remove(upperSection);
+        final Map<Section, Section> sectionsDeleted = Collections.singletonMap(lowerSection, upperSection);
+        return Collections.singletonMap(newSection, sectionsDeleted);
     }
 
     private void validateStation(Station station, List<Station> stations) {
@@ -167,33 +200,5 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException("구간이 하나밖에 없어 삭제할 수 없습니다");
         }
-    }
-
-    private boolean removeBottomSection(Station station, List<Station> stations) {
-        if (stations.get(stations.size() - 1).equals(station)) {
-            final Section section = findSectionStationAsDownStation(station);
-            sections.remove(section);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean removeTopSection(Station station, List<Station> stations) {
-        if (stations.get(0).equals(station)) {
-            final Section section = findSectionStationAsUpStation(station);
-            sections.remove(section);
-            return true;
-        }
-        return false;
-    }
-
-    private void removeSectionInBetween(Station station) {
-        final Section upperSection = findSectionStationAsDownStation(station);
-        final Section lowerSection = findSectionStationAsUpStation(station);
-        final int totalDistance = lowerSection.addDistance(upperSection);
-        final Section newSection = new Section(lineId, upperSection.getUpStation(), lowerSection.getDownStation(), totalDistance);
-        sections.remove(lowerSection);
-        sections.remove(upperSection);
-        sections.add(newSection);
     }
 }

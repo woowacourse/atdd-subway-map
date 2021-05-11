@@ -37,8 +37,16 @@ public class Line {
         return sections.insertSectionInBetween(section);
     }
 
-    public void removeSection(Station station) {
-        sections.removeSection(station);
+    public boolean checkSectionAtEdge(Station station) {
+        return sections.checkSectionAtEdge(station);
+    }
+
+    public Section removeSectionAtEdge(Station station) {
+        return sections.removeSectionAtEdge(station);
+    }
+
+    public Map<Section, Map<Section, Section>> removeSectionInBetween(Station station) {
+        return sections.removeSectionInBetween(station);
     }
 
     public Long getId() {

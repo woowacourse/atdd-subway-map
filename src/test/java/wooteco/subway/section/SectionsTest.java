@@ -238,4 +238,11 @@ public class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간이 하나밖에 없어 삭제할 수 없습니다");
     }
+
+    @DisplayName("양끝 구간을 검증해낸다")
+    @Test
+    void checkSectionEdge() {
+        final boolean atEdge = sections.checkSectionAtEdge(new Station(1L, "대화역"));
+        assertThat(atEdge).isTrue();
+    }
 }

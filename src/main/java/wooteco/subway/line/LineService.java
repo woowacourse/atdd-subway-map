@@ -121,19 +121,46 @@ public class LineService {
         final Section upperSection = changedSections.keySet().iterator().next();
         final Section lowerSection = changedSections.get(upperSection);
 
-        final Long upperSectionUpStationId = upperSection.getUpStation().getId();
-        final Long upperSectionDownStationId = upperSection.getDownStation().getId();
-        final Long lowerSectionUpStationId = lowerSection.getUpStation().getId();
-        final Long lowerSectionDownStationId = lowerSection.getDownStation().getId();
+        saveSectionToDB(upperSection);
+        saveSectionToDB(lowerSection);
+        sectionDao.delete(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
+    }
 
-        sectionDao.save(lineId, upperSectionUpStationId, upperSectionDownStationId, upperSection.getDistance());
-        sectionDao.save(lineId, lowerSectionUpStationId, lowerSectionDownStationId, lowerSection.getDistance());
-        sectionDao.delete(lineId, upperSectionUpStationId, lowerSectionDownStationId);
+    private void saveSectionToDB(Section section) {
+        final Long lineId = section.getLineId();
+        final Long upStationId = section.getUpStation().getId();
+        final Long downStationId = section.getDownStation().getId();
+        final int distance = section.getDistance();
+        sectionDao.save(lineId, upStationId, downStationId, distance);
     }
 
     public void deleteSection(long lineId, long stationId) {
         final Line line = findLineById(lineId);
         final Station station = findStationById(stationId);
-        line.removeSection(station);
+        if (line.checkSectionAtEdge(station)) {
+            Section section = line.removeSectionAtEdge(station);
+            sectionDao.delete(lineId, section.getUpStation().getId(), section.getDownStation().getId());
+            return;
+        }
+        deleteSectionInBetween(line, station);
+    }
+
+    private void deleteSectionInBetween(Line line, Station station) {
+        Map<Section, Map<Section, Section>> sectionsToRemove = line.removeSectionInBetween(station);
+        final Section sectionToSave = sectionsToRemove.keySet().iterator().next();
+        saveSectionToDB(sectionToSave);
+
+        final Map<Section, Section> sectionsToDelete = sectionsToRemove.get(sectionToSave);
+        final Section upperSectionToDelete = sectionsToDelete.keySet().iterator().next();
+        final Section lowerSectionToDelete = sectionsToDelete.get(upperSectionToDelete);
+        deleteSectionFromDB(upperSectionToDelete);
+        deleteSectionFromDB(lowerSectionToDelete);
+    }
+
+    private void deleteSectionFromDB(Section section) {
+        final Long lineId = section.getLineId();
+        final Long upStationId = section.getUpStation().getId();
+        final Long downStationId = section.getDownStation().getId();
+        sectionDao.delete(lineId, upStationId, downStationId);
     }
 }
