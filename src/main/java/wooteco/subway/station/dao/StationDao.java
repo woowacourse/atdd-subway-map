@@ -3,6 +3,7 @@ package wooteco.subway.station.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -57,6 +58,15 @@ public class StationDao {
         String sql = "DELETE FROM station WHERE id = ?";
         int updateCount = jdbcTemplate.update(sql, id);
         if (updateCount == 0) {
+            throw new NotFoundException("존재하지 않는 역 ID 입니다.");
+        }
+    }
+
+    public Station findStationById(long id) {
+        String sql = "SELECT id, name FROM station WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, mapperStation(), id);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("존재하지 않는 역 ID 입니다.");
         }
     }

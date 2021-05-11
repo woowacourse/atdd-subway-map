@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.SectionAdditionException;
+import wooteco.subway.exception.SectionDeleteException;
+import wooteco.subway.exception.WrongDistanceException;
 
 @ControllerAdvice
 public class ControllerHandler {
@@ -33,6 +36,21 @@ public class ControllerHandler {
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(WrongDistanceException.class)
+    public ResponseEntity<String> notFoundElement(WrongDistanceException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SectionAdditionException.class)
+    public ResponseEntity<String> invalidSectionForAddition(SectionAdditionException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(SectionDeleteException.class)
+    public ResponseEntity<String> invalidSectionForAddition(SectionDeleteException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }
