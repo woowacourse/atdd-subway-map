@@ -15,16 +15,14 @@ public class Line {
     public Line() {
     }
 
-    public Line(Long id, String name, String color) {
-        validateSuffix(name);
-        this.id = id;
-        this.name = name;
-        this.color = color;
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
         validateSuffix(name);
         validateLength(name);
+        this.id = id;
         this.name = name;
         this.color = color;
     }
