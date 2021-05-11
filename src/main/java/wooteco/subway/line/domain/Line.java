@@ -37,6 +37,10 @@ public class Line {
         this.stations = stations;
     }
 
+    public void addStations(final List<Station> stations) {
+        this.stations.addAll(stations);
+    }
+
     public boolean isId(Long id) {
         return this.id.equals(id);
     }

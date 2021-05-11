@@ -1,6 +1,9 @@
 package wooteco.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import wooteco.subway.line.exception.SectionException;
@@ -75,5 +78,41 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.contains(stationId))
                 .collect(Collectors.toList());
+    }
+
+    public List<Long> toOrderedStationIds() {
+        final Map<Long, Long> stationIdMap = createIdMap(sections);
+
+        final Long beginningUpStation = findBeginningUpStation(stationIdMap);
+
+        final List<Long> test = createOrderedStationIdList(beginningUpStation, stationIdMap);
+        test.forEach(System.out::println);
+        return test;
+    }
+
+    private Map<Long, Long> createIdMap(final List<Section> sections) {
+        final Map<Long, Long> idMap = new HashMap<>();
+        for (final Section section : sections) {
+            idMap.put(section.getUpStationId(), section.getDownStationId());
+        }
+        return idMap;
+    }
+
+    private Long findBeginningUpStation(final Map<Long, Long> stationIdMap) {
+        return stationIdMap.keySet().stream()
+                .filter(key -> !stationIdMap.containsValue(key))
+                .findFirst()
+                .orElseThrow(() -> new SectionException("노선의 구간이 올바르게 정렬되지 않았습니다."));
+    }
+
+    private List<Long> createOrderedStationIdList(final Long beginningUpStation, final Map<Long, Long> stationIdMap) {
+        List<Long> orderedStationIds = new ArrayList<>();
+        orderedStationIds.add(beginningUpStation);
+        for (int i = 0; i < stationIdMap.size(); i++) {
+            final Long currentId = orderedStationIds.get(i);
+            final Long nextId = stationIdMap.get(currentId);
+            orderedStationIds.add(nextId);
+        }
+        return orderedStationIds;
     }
 }

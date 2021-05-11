@@ -11,6 +11,7 @@ import wooteco.subway.line.controller.dto.SectionCreateDto;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.domain.Station;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +41,8 @@ public class LineService {
 
     public LineDto show(final Long id) {
         final Line line = findById(id);
+        final List<Station> stations = sectionService.orderedStationsByLineId(line.getId());
+        line.addStations(stations);
 
         return LineDto.of(line);
     }

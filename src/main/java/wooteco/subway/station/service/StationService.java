@@ -50,4 +50,10 @@ public class StationService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationException("존재하지 않는 역입니다"));
     }
+
+    public List<Station> findAllById(final List<Long> stationIds) {
+        return stationIds.stream()
+                .map(this::findById)
+                .collect(Collectors.toList());
+    }
 }

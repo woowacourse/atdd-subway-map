@@ -10,6 +10,7 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.SectionRepository;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
 @Service
@@ -92,5 +93,10 @@ public class SectionService {
 
     private void deleteSection(Section section) {
         sectionRepository.delete(section.getId());
+    }
+
+    public List<Station> orderedStationsByLineId(final Long lineId) {
+        final Sections sections = sectionRepository.findAllByLineId(lineId);
+        return stationService.findAllById(sections.toOrderedStationIds());
     }
 }
