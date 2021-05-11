@@ -8,6 +8,7 @@ import wooteco.subway.section.api.dto.SectionDto;
 import wooteco.subway.section.model.Section;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class SectionDao {
@@ -27,15 +28,33 @@ public class SectionDao {
         return new SectionDto(id, lineId, upStationId, downStationId, distance);
     };
 
-    public void save(long createdId, LineRequest lineRequest) {
+    public void save(Long lineId, LineRequest lineRequest) {
         String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, createdId, lineRequest.getUpStationId(),
+        jdbcTemplate.update(sql, lineId, lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(), lineRequest.getDistance());
+    }
+
+    public void saveAll(List<Section> sections) {
+        String sql = "INSERT INTO `section` (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+        List<Object[]> params = sections.stream()
+                .map(this::parseToSectionParams)
+                .collect(Collectors.toList());
+        jdbcTemplate.batchUpdate(sql, params);
+    }
+
+    private Object[] parseToSectionParams(Section section) {
+        return new Object[]{section.getLineId(), section.getUpStationId(), section.getDownStationId(),
+                section.getDistance()};
     }
 
     public List<SectionDto> findSectionsByLineId(Long id) {
         String sql = "SELECT id, line_id, up_station_id, down_station_id, distance " +
                 "FROM section WHERE line_id = ?";
         return jdbcTemplate.query(sql, mapperSection, id);
+    }
+
+    public void deleteAllByLineId(Long lineId) {
+        String sql = "DELETE FROM section WHERE line_id = ?";
+        jdbcTemplate.update(sql, lineId);
     }
 }

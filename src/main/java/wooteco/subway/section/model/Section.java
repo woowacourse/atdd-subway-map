@@ -35,7 +35,7 @@ public class Section {
 
     private void validateDistance(int distance) throws WrongDistanceException {
         if (distance <= 0) {
-            throw new WrongDistanceException("");
+            throw new WrongDistanceException("거리는 1 이상이어야 합니다.");
         }
     }
 
@@ -57,5 +57,33 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean hasUpStation(Station newUpStation) {
+        return this.upStation.equals(newUpStation);
+    }
+
+    public boolean hasDownStation(Station newDownStation) {
+        return this.downStation.equals(newDownStation);
+    }
+
+    public Section splitSectionByUpStation(Section newSection) {
+        return new Section(this.id, this.line, newSection.getDownStation(), this.downStation, this.distance - newSection.getDistance());
+    }
+
+    public Section splitSectionByDownStation(Section newSection) {
+        return new Section(this.id, this.line, this.upStation, newSection.getUpStation(), this.distance - newSection.getDistance());
+    }
+
+    public Long getLineId() {
+        return this.line.getId();
+    }
+
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.api.dto.LineRequest;
+import wooteco.subway.section.api.dto.SectionDto;
 import wooteco.subway.section.model.Section;
 
 import java.util.List;
@@ -35,7 +36,7 @@ class SectionDaoTest {
         sectionDao.save(lineId, request);
         sectionDao.save(lineId, request2);
         //when
-        List<Section> sections = sectionDao.findSectionsByLineId(lineId);
+        List<SectionDto> sections = sectionDao.findSectionsByLineId(lineId);
         //then
         assertThat(sections).hasSize(2);
     }

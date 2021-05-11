@@ -1,6 +1,8 @@
 package wooteco.subway.section.api.dto;
 
+import wooteco.subway.line.model.Line;
 import wooteco.subway.section.model.Section;
+import wooteco.subway.station.model.Station;
 
 public class SectionDto {
 
@@ -17,6 +19,14 @@ public class SectionDto {
         this.downStationId = downStationId;
         this.distance = distance;
     }
+
+//    public static Section ofSection(Long lineId, Line line, Station upStation, Station downStation, int distance) {
+//        return new Section(sectionDto.getId(),
+//                lineDao.findLineById(sectionDto.getLineId()),
+//                stationDao.findStationById(sectionDto.getUpStationId()),
+//                stationDao.findStationById(sectionDto.getDownStationId()),
+//                sectionDto.getDistance()))
+//    }
 
     public Long getId() {
         return id;
