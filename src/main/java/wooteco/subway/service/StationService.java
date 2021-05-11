@@ -45,13 +45,13 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public List<StationResponse> makeStationResponses(Set<SimpleStation> stations) {
+    public List<StationResponse> makeStationResponses(List<Long> stationIds) {
         final List<StationResponse> stationResponses = new ArrayList<>();
-        for (SimpleStation station : stations) {
-            if (!stationDao.isExistById(station.getId())) {
+        for (Long stationId : stationIds) {
+            if (!stationDao.isExistById(stationId)) {
                 throw new StationNotFoundException();
             }
-            stationResponses.add(new StationResponse(stationDao.findById(station.getId())));
+            stationResponses.add(new StationResponse(stationDao.findById(stationId)));
         }
         return stationResponses;
     }

@@ -7,35 +7,35 @@ import wooteco.subway.service.dto.LineWithStationsDto;
 import java.util.List;
 
 // 특정 노선 조회 시 사용되는 응답
-public class LineRetrieveResponse {
+public class LineWithAllSectionsResponse {
     private Long id;
     private String color;
     private String name;
     private List<StationResponse> stations;
 
-    public LineRetrieveResponse() {
+    public LineWithAllSectionsResponse() {
     }
 
-    public LineRetrieveResponse(Line line) {
+    public LineWithAllSectionsResponse(Line line) {
         this(line.getId(), line.getColor(), line.getName());
     }
 
-    public LineRetrieveResponse(LineDto lineDto) {
+    public LineWithAllSectionsResponse(LineDto lineDto) {
         this(lineDto.getId(), lineDto.getColor(), lineDto.getName());
     }
 
-    public LineRetrieveResponse(LineWithStationsDto lineWithStations) {
+    public LineWithAllSectionsResponse(LineWithStationsDto lineWithStations) {
         this(lineWithStations.getId(), lineWithStations.getColor(),
                 lineWithStations.getName(), lineWithStations.getStations());
     }
 
-    public LineRetrieveResponse(Long id, String color, String name) {
+    public LineWithAllSectionsResponse(Long id, String color, String name) {
         this.id = id;
         this.color = color;
         this.name = name;
     }
 
-    public LineRetrieveResponse(Long id, String color, String name, List<StationResponse> stations) {
+    public LineWithAllSectionsResponse(Long id, String color, String name, List<StationResponse> stations) {
         this.id = id;
         this.color = color;
         this.name = name;

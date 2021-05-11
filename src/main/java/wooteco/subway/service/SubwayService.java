@@ -29,9 +29,10 @@ public class SubwayService {
     public LineWithStationsDto findAllInfoByLineId(Long id) {
         final LineDto lineDto = lineService.findById(id);
         final Sections sections = new Sections(sectionService.findAllByLineId(id));
-        final Set<SimpleStation> stations = sections.toSet();
-        final List<StationResponse> stationResponses = makeStationResponse(stations);
-        return new LineWithStationsDto(lineDto, sortByStationId(stationResponses));
+        final List<Long> sortedStationIds = sections.sortSectionsByOrder();
+//        final Set<SimpleStation> stations = sections.toSet();
+        final List<StationResponse> stationResponses = makeStationResponse(sortedStationIds);
+        return new LineWithStationsDto(lineDto, stationResponses);
     }
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
@@ -40,14 +41,14 @@ public class SubwayService {
         sectionService.insertSections(id, sectionInsertRequest);
     }
 
-    private List<StationResponse> sortByStationId(List<StationResponse> stationResponses) {
+    private List<StationResponse> sortByOrder(List<StationResponse> stationResponses) {
         return stationResponses.stream()
                 .sorted(Comparator.comparing(StationResponse::getId))
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> makeStationResponse(Set<SimpleStation> stations) {
-        return stationService.makeStationResponses(stations);
+    private List<StationResponse> makeStationResponse(List<Long> stationIds) {
+        return stationService.makeStationResponses(stationIds);
     }
 
 }

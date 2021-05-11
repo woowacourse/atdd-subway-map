@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.controller.response.LineRetrieveResponse;
+import wooteco.subway.controller.response.LineWithAllSectionsResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineRetrieveResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineWithAllSectionsResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);

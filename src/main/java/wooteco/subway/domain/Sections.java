@@ -1,7 +1,6 @@
 package wooteco.subway.domain;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Sections {
     private final List<Section> sections;
@@ -10,19 +9,35 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Section> sortBySectionId() {
-        return Collections.unmodifiableList(sections.stream()
-                .sorted(Comparator.comparing(Section::getId))
-                .collect(Collectors.toList())
-        );
+    public List<Long> sortSectionsByOrder() {
+        Deque<Long> sortedStationIds = new ArrayDeque<>();
+        Map<Long, Long> upStationIds = new LinkedHashMap<>();
+        Map<Long, Long> downStationIds = new LinkedHashMap<>();
+
+        init(sortedStationIds, upStationIds, downStationIds);
+        sortByOrder(sortedStationIds, upStationIds, downStationIds);
+        return new ArrayList<>(sortedStationIds);
     }
 
-    public Set<SimpleStation> toSet() {
-        Set<SimpleStation> stations = new HashSet<>();
+    private void init(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
         for (Section section : sections) {
-            stations.add(new SimpleStation(section.getUpStationId()));
-            stations.add(new SimpleStation(section.getDownStationId()));
+            upStationIds.put(section.getUpStationId(), section.getDownStationId());
+            downStationIds.put(section.getDownStationId(), section.getUpStationId());
         }
-        return stations;
+
+        Section randomSection = sections.get(0);
+        sortedStationIds.addFirst(randomSection.getUpStationId());
+        sortedStationIds.addLast(randomSection.getDownStationId());
+    }
+
+    private void sortByOrder(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
+        while (downStationIds.containsKey(sortedStationIds.peekFirst())) {
+            final Long id = sortedStationIds.peekFirst();
+            sortedStationIds.addFirst(downStationIds.get(id));
+        }
+        while (upStationIds.containsKey(sortedStationIds.peekLast())) {
+            final Long id = sortedStationIds.peekLast();
+            sortedStationIds.addLast(upStationIds.get(id));
+        }
     }
 }
