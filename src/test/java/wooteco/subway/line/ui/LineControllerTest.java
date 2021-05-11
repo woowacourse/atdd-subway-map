@@ -338,7 +338,7 @@ class LineControllerTest {
                 .body(is(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE));
     }
 
-    @DisplayName("새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어있는 역을 기준으로 새로운 구간을 추가한다. - 노선의 끝에 추가")
+    @DisplayName("새로 등록할 구간의 상행역과 하행역 중 노선에 이미 등록되어있는 역을 기준으로 새로운 구간을 추가한다. - 노선의 끝 추가")
     @Test
     void addSectionInLine() {
         //given
@@ -448,8 +448,8 @@ class LineControllerTest {
         assertThat(savedLine.getSections().toList())
                 .extracting(Section::getDownStationId)
                 .containsExactly(pankyo.getId(), yangjae.getId());
-
     }
+
 
     private Station setDummyStation(String stationName) {
         Station station = new Station(stationName);
