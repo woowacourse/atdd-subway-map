@@ -10,7 +10,6 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
@@ -19,6 +18,7 @@ import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -74,7 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Station station1 = new Station(1L, "잠실새내역");
         Station station2 = new Station(2L, "잠실역");
-        Section section1 = new Section(station1.getId(), station2.getId(), 5);
+        Section section1 = new Section(1L, 2L, 5);
         Line line = new Line("2호선", "green");
 
         LineRequest lineRequest = new LineRequest(line, section1);
@@ -88,21 +88,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
 
         long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
-
-        Station station3 = new Station(3L, "강남역");
-        Station station4 = new Station(4L, "역삼역");
-        Section section2 = new Section(station3.getId(), station4.getId(), 3);
+        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 3);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(section2)
+            .body(sectionRequest)
             .when()
             .post("/lines/" + id + "/sections")
             .then().log().all()
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.statusCode()).isEqualTo(201);
     }
 }

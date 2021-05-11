@@ -13,8 +13,8 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
-    public Section createSection(Section section, Long lindId) {
-        long id = sectionDao.save(section, lindId);
+    public Section createSection(Section section, Long lineId) {
+        long id = sectionDao.save(section, lineId);
         section.setId(id);
         return section;
     }
