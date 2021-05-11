@@ -27,25 +27,30 @@ public class SectionService {
         return saveWithForkCase(sectionDto);
     }
 
+    public void delete(Long lindId, Long stationId) {
+
+    }
+
     private void validateSectionInclusion(SectionDto sectionDto) {
-        if (hasBothStations(sectionDto.getUpStationId(), sectionDto.getDownStationId()) ||
-                hasNeitherStations(sectionDto.getUpStationId(), sectionDto.getDownStationId())) {
+        if (hasBothStations(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId()) ||
+                hasNeitherStations(sectionDto.getLineId(), sectionDto.getUpStationId(), sectionDto.getDownStationId())) {
             throw new SectionInclusionException();
         }
     }
 
-    private boolean hasBothStations(Long upStationId, Long downStationId) {
-        return sectionDao.isExistingStation(upStationId) &&
-                sectionDao.isExistingStation(downStationId);
+    private boolean hasBothStations(Long lineId, Long upStationId, Long downStationId) {
+        return sectionDao.isExistingStation(lineId, upStationId) &&
+                sectionDao.isExistingStation(lineId, downStationId);
     }
 
-    private boolean hasNeitherStations(Long upStationId, Long downStationId) {
-        return !sectionDao.isExistingStation(upStationId) &&
-                !sectionDao.isExistingStation(downStationId);
+    private boolean hasNeitherStations(Long lineId, Long upStationId, Long downStationId) {
+        return !sectionDao.isExistingStation(lineId, upStationId) &&
+                !sectionDao.isExistingStation(lineId, downStationId);
     }
 
     private boolean hasEndPointInSection(SectionDto sectionDto) {
-        return sectionDao.hasEndPointInSection(sectionDto.getUpStationId(), sectionDto.getDownStationId());
+        return sectionDao.hasEndPointInSection(sectionDto.getLineId(),
+                sectionDto.getUpStationId(), sectionDto.getDownStationId());
     }
 
     private Section saveWithForkCase(SectionDto sectionDto) {
@@ -63,10 +68,10 @@ public class SectionService {
     private Section findSectionWithExistingStation(SectionDto sectionDto) {
         SectionStandard sectionStandard = calculateSectionStandard(sectionDto);
         if (sectionStandard == SectionStandard.FROM_UP_STATION) {
-             return sectionDao.findSectionByUpStationId(sectionDto.getUpStationId())
+             return sectionDao.findSectionByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
                      .orElseThrow(SectionNotFoundException::new);
         }
-        return sectionDao.findSectionByDownStationId(sectionDto.getDownStationId())
+        return sectionDao.findSectionByDownStationId(sectionDto.getLineId(), sectionDto.getDownStationId())
                 .orElseThrow(SectionNotFoundException::new);
     }
 
@@ -77,7 +82,7 @@ public class SectionService {
     }
 
     private SectionStandard calculateSectionStandard(SectionDto sectionDto) {
-        if (sectionDao.isExistingStation(sectionDto.getUpStationId())) {
+        if (sectionDao.isExistingStation(sectionDto.getLineId(), sectionDto.getUpStationId())) {
             return SectionStandard.FROM_UP_STATION;
         }
         return SectionStandard.FROM_DOWN_STATION;

@@ -35,20 +35,22 @@ class SectionDaoTest {
     @DisplayName("구간 삭제 확인")
     public void delete() {
         sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.findSectionByUpStationId(1L).isPresent()).isTrue();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isTrue();
 
         sectionDao.delete(1L);
-        assertThat(sectionDao.findSectionByUpStationId(1L).isPresent()).isFalse();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isFalse();
     }
 
     @Test
     @DisplayName("구간에 존재하는 역인지 확인")
     public void isExistingStation() {
-        assertThat(sectionDao.isExistingStation(1L)).isFalse();
+        assertThat(sectionDao.isExistingStation(1L, 1L)).isFalse();
 
         sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.isExistingStation(1L)).isTrue();
-        assertThat(sectionDao.isExistingStation(2L)).isTrue();
+        assertThat(sectionDao.isExistingStation(1L, 1L)).isTrue();
+        assertThat(sectionDao.isExistingStation(1L, 2L)).isTrue();
+        assertThat(sectionDao.isExistingStation(2L, 1L)).isFalse();
+        assertThat(sectionDao.isExistingStation(2L, 2L)).isFalse();
     }
 
     @Test
@@ -56,11 +58,11 @@ class SectionDaoTest {
     public void findSectionByStationId() {
         sectionDao.save(1L, 4L, 5L, 10);
 
-        assertThat(sectionDao.findSectionByUpStationId(4L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByUpStationId(100L).isPresent()).isFalse();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 4L).isPresent()).isTrue();
+        assertThat(sectionDao.findSectionByUpStationId(1L, 100L).isPresent()).isFalse();
 
-        assertThat(sectionDao.findSectionByDownStationId(5L).isPresent()).isTrue();
-        assertThat(sectionDao.findSectionByDownStationId(100L).isPresent()).isFalse();
+        assertThat(sectionDao.findSectionByDownStationId(1L, 5L).isPresent()).isTrue();
+        assertThat(sectionDao.findSectionByDownStationId(1L, 100L).isPresent()).isFalse();
     }
 
     @Test
@@ -70,10 +72,10 @@ class SectionDaoTest {
         sectionDao.save(1L, 2L, 3L, 10);
         sectionDao.save(1L, 3L, 4L, 10);
 
-        assertThat(sectionDao.hasEndPointInSection(1L, 2L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(2L, 3L)).isFalse();
-        assertThat(sectionDao.hasEndPointInSection(3L, 4L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(4L, 5L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(10L, 1L)).isTrue();
+        assertThat(sectionDao.hasEndPointInSection(1L, 1L, 2L)).isTrue();
+        assertThat(sectionDao.hasEndPointInSection(1L, 2L, 3L)).isFalse();
+        assertThat(sectionDao.hasEndPointInSection(1L, 3L, 4L)).isTrue();
+        assertThat(sectionDao.hasEndPointInSection(1L, 4L, 5L)).isTrue();
+        assertThat(sectionDao.hasEndPointInSection(1L, 10L, 1L)).isTrue();
     }
 }

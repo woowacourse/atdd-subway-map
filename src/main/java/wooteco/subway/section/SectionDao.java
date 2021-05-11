@@ -37,42 +37,42 @@ public class SectionDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean isExistingStation(Long id) {
-        String sql = "select count(*) from SECTION where UP_STATION_ID = ? or DOWN_STATION_ID = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id, id) != 0;
+    public boolean isExistingStation(Long lineId, Long stationId) {
+        String sql = "select count(*) from SECTION where LINE_ID = ? and (UP_STATION_ID = ? or DOWN_STATION_ID = ?)";
+        return jdbcTemplate.queryForObject(sql, Integer.class, lineId, stationId, stationId) != 0;
     }
 
-    public Optional<Section> findSectionByDownStationId(Long downStationId) {
-        String sql = "select * from SECTION where DOWN_STATION_ID = ?";
+    public Optional<Section> findSectionByDownStationId(Long lineId, Long downStationId) {
+        String sql = "select * from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), downStationId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, downStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public Optional<Section> findSectionByUpStationId(Long upStationId) {
-        String sql = "select * from SECTION where UP_STATION_ID = ?";
+    public Optional<Section> findSectionByUpStationId(Long lineId, Long upStationId) {
+        String sql = "select * from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), upStationId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, sectionRowMapper(), lineId, upStationId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public boolean hasEndPointInSection(Long upStationId, Long downStationId) {
-        String upStationIdCondition = "select count(*) from SECTION where UP_STATION_ID = ?";
-        String downStationIdCondition = "select count(*) from SECTION where DOWN_STATION_ID = ?";
+    public boolean hasEndPointInSection(Long lineId, Long upStationId, Long downStationId) {
+        String upStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
+        String downStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
 
-        return endPointCondition(upStationIdCondition, downStationIdCondition, upStationId)
-                || endPointCondition(downStationIdCondition, upStationIdCondition, downStationId);
+        return endPointCondition(upStationIdCondition, downStationIdCondition, lineId, upStationId)
+                || endPointCondition(downStationIdCondition, upStationIdCondition, lineId, downStationId);
     }
 
-    private boolean endPointCondition(String query, String query2, Long id) {
-        return (jdbcTemplate.queryForObject(query, Integer.class, id) == 1 &&
-                jdbcTemplate.queryForObject(query2, Integer.class, id) == 0)
-                || (jdbcTemplate.queryForObject(query, Integer.class, id) == 0 &&
-                jdbcTemplate.queryForObject(query2, Integer.class, id) == 1);
+    private boolean endPointCondition(String query, String query2, Long lineId, Long stationId) {
+        return (jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId) == 1 &&
+                jdbcTemplate.queryForObject(query2, Integer.class, lineId, stationId) == 0)
+                || (jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId) == 0 &&
+                jdbcTemplate.queryForObject(query2, Integer.class, lineId, stationId) == 1);
     }
 
     private RowMapper<Section> sectionRowMapper() {

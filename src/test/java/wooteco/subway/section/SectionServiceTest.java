@@ -36,7 +36,7 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findSectionByUpStationId(2L).get())
+        assertThat(sectionDao.findSectionByUpStationId(1L, 2L).get())
                 .usingRecursiveComparison()
                 .isEqualTo(new Section(3L, 1L, 2L, 10L, 1));
     }
@@ -62,7 +62,7 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(10L, 1L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findSectionByUpStationId(10L).get())
+        assertThat(sectionDao.findSectionByUpStationId(1L, 10L).get())
                 .usingRecursiveComparison()
                 .isEqualTo(new Section(2L, 1L, 10L, 1L, 1));
     }
@@ -74,7 +74,7 @@ class SectionServiceTest {
         SectionDto sectionDto = SectionDto.of(1L, new SectionRequest(2L, 10L, 1));
         sectionService.save(sectionDto);
 
-        assertThat(sectionDao.findSectionByUpStationId(2L).get())
+        assertThat(sectionDao.findSectionByUpStationId(1L, 2L).get())
                 .usingRecursiveComparison()
                 .isEqualTo(new Section(2L, 1L, 2L, 10L, 1));
     }
