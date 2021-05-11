@@ -1,19 +1,21 @@
 package wooteco.subway.dto.section.request;
 
-import javax.validation.constraints.NotBlank;
+import wooteco.subway.domain.Section;
 
-public class SectionRequest {
-    @NotBlank
+import javax.validation.constraints.NotNull;
+
+public class SectionInsertRequest {
+    @NotNull
     private Long upStationId;
-    @NotBlank
+    @NotNull
     private Long downStationId;
-    @NotBlank
+    @NotNull
     private int distance;
 
-    public SectionRequest() {
+    public SectionInsertRequest() {
     }
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public SectionInsertRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
@@ -29,5 +31,9 @@ public class SectionRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Section toEntity(Long lineId) {
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 }

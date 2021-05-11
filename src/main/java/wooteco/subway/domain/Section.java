@@ -12,16 +12,16 @@ public class Section {
     }
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, upStationId, downStationId, distance);
+
+    }
+
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(lineId, upStation.getId(), downStation.getId(), distance);
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
@@ -30,6 +30,10 @@ public class Section {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public boolean isShorterThan(Section otherSection) {
+        return distance < otherSection.getDistance();
     }
 
     public Long getId() {

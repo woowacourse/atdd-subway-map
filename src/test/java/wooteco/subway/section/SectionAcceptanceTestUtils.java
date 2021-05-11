@@ -65,7 +65,7 @@ public class SectionAcceptanceTestUtils {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when()
-                .post("/lines/{id}/sections", LINE_ID)
+                .post("/lines/{lineId}/sections", LINE_ID)
                 .then().log().all()
                 .extract();
     }
@@ -78,8 +78,8 @@ public class SectionAcceptanceTestUtils {
     }
 
     public static void assertStationsList(List<Station> stations) {
-        LineResponse responseDto = getAllStationsListOf(LINE_ID);
-        assertStationsListResponseDto(responseDto, stations);
+        LineResponse response = getAllStationsListOf(LINE_ID);
+        assertStationsListResponse(response, stations);
     }
 
     private static LineResponse getAllStationsListOf(Long lineId) {
@@ -96,9 +96,9 @@ public class SectionAcceptanceTestUtils {
         return response.as(LineResponse.class);
     }
 
-    private static void assertStationsListResponseDto(LineResponse responseDto, List<Station> stations) {
-        assertDefaultLineInforms(responseDto);
-        assertStationsListResponseDtosOrder(responseDto.getStations(), stations);
+    private static void assertStationsListResponse(LineResponse lineResponse, List<Station> stations) {
+        assertDefaultLineInforms(lineResponse);
+        assertStationsListResponsesOrder(lineResponse.getStations(), stations);
     }
 
     private static void assertDefaultLineInforms(LineResponse responseDto) {
@@ -107,7 +107,7 @@ public class SectionAcceptanceTestUtils {
         assertThat(responseDto.getColor()).isEqualTo(LINE_COLOR);
     }
 
-    private static void assertStationsListResponseDtosOrder(List<StationResponse> actualResponses, List<Station> expectedStations) {
+    private static void assertStationsListResponsesOrder(List<StationResponse> actualResponses, List<Station> expectedStations) {
         assertThat(actualResponses).hasSize(expectedStations.size());
         for (int i = 0; i < actualResponses.size(); i++) {
             StationResponse actual = actualResponses.get(i);

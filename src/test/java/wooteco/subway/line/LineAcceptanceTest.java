@@ -24,7 +24,7 @@ import static wooteco.subway.section.SectionAcceptanceTestUtils.createLineWithSe
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final List<Station> STATIONS = Arrays.asList(STATION_1, STATION_2);
+    private static final List<Station> STATIONS = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
