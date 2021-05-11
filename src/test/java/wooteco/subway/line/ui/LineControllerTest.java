@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static wooteco.subway.line.service.LineService.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
+import static wooteco.subway.line.service.LineService.ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -104,8 +105,13 @@ class LineControllerTest {
     @Test
     void allLines() {
         //given
-        Line newLine = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
-        Line twoLine = setDummyLine("봉천역", "신림역", 10, "2호선", "bg-red-500");
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station bongchun = setDummyStation("봉천역");
+        Station sinlim = setDummyStation("신림역");
+
+        Line newLine = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        Line twoLine = setDummyLine(bongchun, sinlim, 10, "2호선", "bg-red-500");
 
         //when
         final ExtractableResponse<Response> response = RestAssured
@@ -124,19 +130,21 @@ class LineControllerTest {
         assertThat(responses)
                 .hasSize(2)
                 .extracting(LineResponse::getName)
-                .contains("신분당선", "2호선");
+                .contains(newLine.getName(), twoLine.getName());
 
         assertThat(responses)
                 .hasSize(2)
                 .extracting(LineResponse::getColor)
-                .contains("bg-red-600", "bg-red-500");
+                .contains(newLine.getColor(), twoLine.getColor());
     }
 
     @DisplayName("노선을 검색한다")
     @Test
     void findById_findLineById() {
         //given
-        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
 
         //when
         final ExtractableResponse<Response> response = RestAssured
@@ -178,7 +186,9 @@ class LineControllerTest {
     @Test
     void modifyById_modifyLineFromUserInputs() {
         //given
-        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
 
         //when
         final ExtractableResponse<Response> response = RestAssured
@@ -201,7 +211,9 @@ class LineControllerTest {
     @Test
     void deleteById_deleteLineFromUserInputs() {
         //given
-        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
 
         //when
         RestAssured
@@ -223,7 +235,9 @@ class LineControllerTest {
     @DisplayName("노선에 포함된 역들을 순서대로 조회한다.")
     void showSectionsInLine() {
         //given
-        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
         final List<Station> stations = lineService.getStations(line.getId());
         LineResponse testResponse = new LineResponse(line, stations);
 
@@ -247,9 +261,11 @@ class LineControllerTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void addSectionInLine_SectionLengthHaveToLessThanStationLength() {
         //given
-        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
-        Station station = setDummyStation("판교역");
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, station.getId(), 10);
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        Station pankyo = setDummyStation("판교역");
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(kangnam.getId(), pankyo.getId(), 10);
         //when
         //then
         RestAssured
@@ -264,6 +280,29 @@ class LineControllerTest {
                 .body(is(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE));
     }
 
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    void addSectionInLine_SectionHasToNewStationInLine() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(kangnam.getId(), yangjae.getId(), 5);
+
+        //when
+        //then
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(is(ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE));
+
+    }
 
 
     private Station setDummyStation(String stationName) {
@@ -271,16 +310,10 @@ class LineControllerTest {
         return stationRepository.save(station);
     }
 
-    private Line setDummyLine(String upStationName, String downStationName, int distance, String lineName, String lineColor) {
-        Station upStation = new Station(upStationName);
-        Station downStation = new Station(downStationName);
-
-        Station savedUpStation = stationRepository.save(upStation);
-        Station savedDownStation = stationRepository.save(downStation);
-
+    private Line setDummyLine(Station upStation, Station downStation, int distance, String lineName, String lineColor) {
         Sections sections = new Sections(
                 Collections.singletonList(
-                        new Section(savedUpStation.getId(), savedDownStation.getId(), distance)
+                        new Section(upStation.getId(), downStation.getId(), distance)
                 )
         );
 

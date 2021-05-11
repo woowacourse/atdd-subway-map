@@ -16,4 +16,11 @@ public class Sections {
     public int sumSectionDistance() {
         return sections.stream().mapToInt(Section::getDistance).sum();
     }
+
+    public boolean hasStation(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationId)
+                        || section.getDownStationId().equals(stationId))
+                .count() == 1;
+    }
 }
