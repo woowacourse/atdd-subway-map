@@ -3,7 +3,7 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationServiceDto;
 

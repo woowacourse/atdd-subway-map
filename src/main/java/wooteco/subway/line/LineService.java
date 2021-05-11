@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;

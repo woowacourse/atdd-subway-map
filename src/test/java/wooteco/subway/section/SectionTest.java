@@ -1,11 +1,10 @@
 package wooteco.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.exception.DuplicateStationException;
+import wooteco.subway.exception.section.DuplicateStationException;
 
 class SectionTest {
     @Test

@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.line;
+
+import wooteco.subway.exception.NullException;
 
 public class NullColorException extends NullException {
 

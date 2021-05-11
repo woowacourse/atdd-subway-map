@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import wooteco.subway.exception.InvalidSectionOnLineException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.section.InvalidSectionOnLineException;
+import wooteco.subway.exception.station.NotFoundStationException;
 
 public class Sections {
 

@@ -4,8 +4,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.DuplicateLineException;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.line.DuplicateLineException;
+import wooteco.subway.exception.line.NotFoundLineException;
 
 @RestControllerAdvice
 public class LineControllerAdvice {

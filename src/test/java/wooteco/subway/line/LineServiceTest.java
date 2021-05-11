@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineServiceDto;

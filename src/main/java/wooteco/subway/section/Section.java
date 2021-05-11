@@ -1,7 +1,7 @@
 package wooteco.subway.section;
 
 import wooteco.subway.domain.Id;
-import wooteco.subway.exception.DuplicateStationException;
+import wooteco.subway.exception.section.DuplicateStationException;
 
 public class Section {
 

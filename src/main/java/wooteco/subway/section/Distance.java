@@ -1,6 +1,6 @@
 package wooteco.subway.section;
 
-import wooteco.subway.exception.InvalidDistanceException;
+import wooteco.subway.exception.section.InvalidDistanceException;
 
 public class Distance {
 

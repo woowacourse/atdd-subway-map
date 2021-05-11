@@ -1,7 +1,6 @@
 package wooteco.subway.section.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import wooteco.subway.exception.InvalidSectionOnLineException;
+import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.section.Section;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
