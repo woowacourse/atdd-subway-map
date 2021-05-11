@@ -134,4 +134,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("구간에 등록된 역을 제거 시 예외가 발생한다.")
+    @Test
+    void deleteStationException2() {
+        // given
+        String uri = "/stations/{id}";
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(uri, 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
