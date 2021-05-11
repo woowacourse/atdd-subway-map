@@ -89,7 +89,7 @@ public class SectionService {
         }
     }
 
-    public int deleteSection(long lineId, long stationId) {
+    public int deleteSectionByStationId(long lineId, long stationId) {
         Station station = stationService.showStation(stationId);
         Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, station);
         Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, station);
@@ -98,7 +98,7 @@ public class SectionService {
             Section nextSection = unknownNextSection.get();
             Section previousSection = unKnownPreviousSection.get();
             previousSection.addDistance(nextSection);
-            
+
             Station newDownStation = stationService.showStation(nextSection.getDownStationId());
             sectionDao.updateDownStation(previousSection, newDownStation);
             return deleteSection(nextSection);
@@ -124,25 +124,25 @@ public class SectionService {
 
     public List<Station> makeOrderedStations(long id) {
         try {
-            long startStationId = sectionDao.findStartStationIdByLineId(id);
-            long endStationId = sectionDao.findEndStationIdByLineId(id);
-            Map<Long, Long> sections = sectionDao.findSectionsByLineId(id);
-
-            return orderStations(startStationId, endStationId, sections);
+            return orderStations(sectionDao.findSectionsByLineId(id));
         } catch (DataAccessException e) {
             throw new NoSuchStationInLineException();
         }
     }
 
-    public List<Station> orderStations(long startStationId, long endStationId, Map<Long, Long> sections) {
+    private List<Station> orderStations(Map<Station, Station> sections) {
         List<Station> stations = new ArrayList<>();
-        long sectionStartId = startStationId;
-        stations.add(stationService.showStation(sectionStartId));
 
-        while (sectionStartId != endStationId) {
-            long sectionEndId = sections.get(sectionStartId);
-            stations.add(stationService.showStation(sectionEndId));
-            sectionStartId = sectionEndId;
+        Station startStation = sections.keySet().stream()
+            .filter(station -> !sections.containsValue(station))
+            .findAny()
+            .orElseThrow(IllegalInputException::new);
+        stations.add(startStation);
+
+        for (int i = 0; i < sections.size(); i++) {
+            Station endStation = sections.get(startStation);
+            stations.add(endStation);
+            startStation = endStation;
         }
 
         return stations;

@@ -86,10 +86,10 @@ class SectionServiceTest {
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.addSection(endSection));
         assertEquals(3L, sectionService.addSection(startSection));
-        assertEquals(stationName1, sectionService.makeOrderedStations(1L).get(0).getName());
-        assertEquals(stationName2, sectionService.makeOrderedStations(1L).get(1).getName());
-        assertEquals(stationName3, sectionService.makeOrderedStations(1L).get(2).getName());
-        assertEquals(stationName4, sectionService.makeOrderedStations(1L).get(3).getName());
+        assertEquals(stationName4, sectionService.makeOrderedStations(1L).get(0).getName());
+        assertEquals(stationName1, sectionService.makeOrderedStations(1L).get(1).getName());
+        assertEquals(stationName2, sectionService.makeOrderedStations(1L).get(2).getName());
+        assertEquals(stationName3, sectionService.makeOrderedStations(1L).get(3).getName());
     }
 
     @DisplayName("구간을 삭제한다.")

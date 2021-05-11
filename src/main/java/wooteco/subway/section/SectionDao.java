@@ -45,23 +45,20 @@ public class SectionDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public long findStartStationIdByLineId(long id) {
-        String sql = "SELECT UP_STATION_ID FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID NOT IN (SELECT DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ?)";
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, id, id));
-    }
-
-    public long findEndStationIdByLineId(long id) {
-        String sql = "SELECT DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ? AND DOWN_STATION_ID NOT IN (SELECT UP_STATION_ID FROM SECTION WHERE LINE_ID = ?)";
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Long.class, id, id));
-    }
-
-    public Map<Long, Long> findSectionsByLineId(long id) {
+    public Map<Station, Station> findSectionsByLineId(long id) {
         String sql = "SELECT UP_STATION_ID, DOWN_STATION_ID FROM SECTION WHERE LINE_ID = ?";
         List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql, id);
-        Map<Long, Long> sections = new HashMap<>();
+        Map<Station, Station> sections = new HashMap<>();
 
         for (Map<String, Object> result : resultList) {
-            sections.put((Long)result.get("UP_STATION_ID"), (Long)result.get("DOWN_STATION_ID"));
+            long up_station_id = (long)result.get("UP_STATION_ID");
+            long down_station_id = (long)result.get("DOWN_STATION_ID");
+            sections.put(
+                new Station(up_station_id,
+                    jdbcTemplate.queryForObject("SELECT NAME FROM STATION WHERE ID = ?", String.class, up_station_id)),
+                new Station(down_station_id,
+                    jdbcTemplate.queryForObject("SELECT NAME FROM STATION WHERE ID = ?", String.class,
+                        down_station_id)));
         }
         return sections;
     }
@@ -80,12 +77,14 @@ public class SectionDao {
 
     public int updateDownStation(Section originSection, Station newStation) {
         String sql = "UPDATE SECTION set DOWN_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
-        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(), originSection.getDownStationId());
+        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(),
+            originSection.getDownStationId());
     }
 
     public int updateUpStation(Section originSection, Station newStation) {
         String sql = "UPDATE SECTION set UP_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND UP_STATION_ID = ?";
-        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(), originSection.getUpStationId());
+        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(),
+            originSection.getUpStationId());
     }
 
     public int deleteSection(Section section) {

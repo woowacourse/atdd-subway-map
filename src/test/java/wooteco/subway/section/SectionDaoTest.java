@@ -49,20 +49,6 @@ class SectionDaoTest {
         assertEquals(sectionId + 1, sectionDao.save(section2));
     }
 
-    @DisplayName("노선의 시작역 id를 반환한다.")
-    @Test
-    void findStartStation() {
-        save();
-        assertEquals(1L, sectionDao.findStartStationIdByLineId(1L));
-    }
-
-    @DisplayName("노선의 끝역 id를 반환한다.")
-    @Test
-    void findEndStation() {
-        save();
-        assertEquals(3L, sectionDao.findEndStationIdByLineId(1L));
-    }
-
     @DisplayName("같은 노선의 모든 구간을 조회해 map으로 반환한다.")
     @Test
     void findSections() {
@@ -71,12 +57,7 @@ class SectionDaoTest {
         expectedSections.put(stationDao.findById(1L), stationDao.findById(2L));
         expectedSections.put(stationDao.findById(2L), stationDao.findById(3L));
 
-        Map<Long, Long> expect = new HashMap<>();
-        expect.put(1L, 2L);
-        expect.put(2L, 3L);
-        Map<Long, Long> sectionsByLineId = sectionDao.findSectionsByLineId(1L);
-
-        assertEquals(expect, sectionsByLineId);
+        assertEquals(expectedSections, sectionDao.findSectionsByLineId(1L));
     }
 
     @DisplayName("UpStation이 같은 구간을 조회한다.")
