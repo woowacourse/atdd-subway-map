@@ -74,9 +74,13 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] upStationId나 downStationId가 등록되어 있지 않다면 예외 처리
     - [x] distance가 0 이하면 예외 처리
 - [ ] 구간 추가
-    - [ ] 요청한 노선에 upStationId와 downStationId 중 하나라도 연결이 안 되어 있다면 예외처리
-    - [ ] 요청한 노선에 이미 upstationId와 downStationId가 둘 다 등록되어 있다면 예외처리
-    - [ ] 요청한 구간의 distance >= 기존 구간의 distance 라면 예외처리
+    - [x] 기본 예외 상황
+        - [x] 요청한 노선에 upStation와 downStation이 둘 다 없다면 예외처리
+        - [x] 요청한 노선에 upstation와 downStation가 둘 다 이미 등록되어 있다면 예외처리
+    - [x] 요청한 구간이 종점에 붙이는 구간인 경우
+    - [x] 요청한 구간이 기존 역들 사이에 붙이는 경우
+        - [x] 요청한 구간의 distance >= 기존 구간의 distance 라면 예외처리
+        - [x] 기존의 연결관계를 해제시키고 새로운 연결관계 구축
 - [ ] 역 목록 응답
     - [ ] 상행 종점 ~ 하행 종점의 역 목록을 응답할 것
 - [ ] 구간 제거
