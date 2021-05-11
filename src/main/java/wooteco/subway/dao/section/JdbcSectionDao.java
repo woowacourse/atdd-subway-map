@@ -2,7 +2,6 @@ package wooteco.subway.dao.section;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -11,8 +10,6 @@ import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -83,20 +80,5 @@ public class JdbcSectionDao implements SectionDao {
     @Override
     public void insertSection(Section affectedSection, Long lineId) {
         save(affectedSection, lineId);
-    }
-
-    private RowMapper getRowMapper() {
-        RowMapper rowMapper = new RowMapper() {
-            @Override
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Long id = rs.getLong("id");
-                Long lineId = rs.getLong("line_id");
-                Long upStationId = rs.getLong("up_station_id");
-                Long downStationId = rs.getLong("down_station_id");
-                Integer distance = rs.getInt("distance");
-                return Section.of(id, lineId, Station.from("111"), Station.from("222"), distance);
-            }
-        };
-        return rowMapper;
     }
 }
