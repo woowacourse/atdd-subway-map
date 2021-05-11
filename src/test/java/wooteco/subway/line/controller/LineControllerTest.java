@@ -206,7 +206,7 @@ class LineControllerTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        List<StationResponse> expectedStationResponses = Arrays.asList(new StationResponse(1L,"강남역"), new StationResponse(2L, "역삼역"));
+        List<StationResponse> expectedStationResponses = Arrays.asList(new StationResponse(1L, "강남역"), new StationResponse(2L, "역삼역"));
         LineResponse expectedLineResponse = new LineResponse(
                 1L,
                 "신분당선",
@@ -436,6 +436,45 @@ class LineControllerTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("잘못된 line id로, 구간 삭제를 시도하면, 404 상태코드를 받는다.")
+    @Test
+    void notFoundLineIdWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/100/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("잘못된 station id로, 구간 삭제를 시도하면, 404 상태코드를 받는다.")
+    @Test
+    void notFoundStationIdWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=100")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("라인이 2개 이하의 구간를 가진 상태에서 구간 삭제를 시도하면, 400 상태코드를 받는다.")
+    @Test
+    void sizeFailWhenDeleteSection() {
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=1")
                 .then().log().all()
                 .extract();
 

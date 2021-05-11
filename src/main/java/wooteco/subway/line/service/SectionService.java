@@ -12,6 +12,8 @@ import java.util.List;
 
 @Service
 public class SectionService {
+    private static final int LINE_MIN_SIZE = 2;
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
@@ -77,6 +79,21 @@ public class SectionService {
     private void validateLineId(final Long lineId) {
         if (!lineRepository.isExistId(lineId)) {
             throw new NotFoundException("존재하지 않는 Line id 입니다.");
+        }
+    }
+
+    public void delete(final Long lineId, final Long stationId) {
+        validateDeleteRequest(lineId, stationId);
+    }
+
+    private void validateDeleteRequest(final Long lineId, final Long stationId) {
+        validateLineId(lineId);
+        List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(lineId);
+        if (!stationIdsByLineId.contains(stationId)) {
+            throw new NotFoundException("해당 station id는 입력받은 Line id에 속해있지 않습니다.");
+        }
+        if (stationIdsByLineId.size() <= LINE_MIN_SIZE) {
+            throw new IllegalArgumentException("해당 라인이 포함하고 있는 구간이 2개 이하입니다");
         }
     }
 }
