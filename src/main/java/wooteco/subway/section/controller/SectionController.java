@@ -26,7 +26,7 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest,
+    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest,
                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new WrongSectionInformationExcetpion("요청이 올바르지 않습니다.");

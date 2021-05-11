@@ -18,7 +18,7 @@ import wooteco.subway.station.fixture.StationFixture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.line.controller.LineControllerTestUtils.지하철노선을_생성한다;
-import static wooteco.subway.section.domain.Fixture.*;
+import static wooteco.subway.section.domain.Fixture.TEST_DISTANCE;
 import static wooteco.subway.station.controller.StationControllerTestUtils.지하철역을_생성한다;
 
 @DisplayName("구간 기능 테스트")
@@ -47,21 +47,10 @@ class SectionControllerTest extends AcceptanceTest {
     void createSection() {
         // given
         SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10);
-
         // when
         ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
-
-        LineResponse lineResponse = response.as(LineResponse.class);
-
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getName()).isEqualTo(LineFixture.TEST_LINE_NAME);
-        assertThat(lineResponse.getColor()).isEqualTo(LineFixture.TEST_COLOR_NAME);
-
-        String firstStationName = lineResponse.getStations().get(0).getName();
-        String secondStationName = lineResponse.getStations().get(1).getName();
-
-        assertThat(firstStationName).isEqualTo(StationFixture.GANG_SAM_STATION_REQUEST.getName());
-        assertThat(secondStationName).isEqualTo(StationFixture.JAM_SIL_STATION_REQUEST.getName());
     }
 
     private ExtractableResponse<Response> 구간을_생성한다(long lineId, SectionRequest sectionRequest) {
@@ -83,14 +72,12 @@ class SectionControllerTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        LineResponse lineResponse = response.as(LineResponse.class);
-        Long secondStationId = lineResponse.getStations().get(0).getId();
+        String uri = response.header("Location");
         // then
         RestAssured.given().log().all()
                 .when()
-                .delete("/lines/" + LINE_ID + "/sections?stationId=" + secondStationId)
+                .delete(uri + "/sections?stationId=" + JAM_SIL_ID)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
