@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import wooteco.subway.exception.service.ObjectNotFoundException;
 import wooteco.subway.exception.service.ValidationFailureException;
 
 public class Sections {
@@ -116,18 +117,18 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
-    public Section findSectionHasUpStation(long existentStationId) {
+    public Section findSectionHasUpStation(long stationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getUpStationId() == existentStationId)
+            .filter(section -> section.getUpStationId() == stationId)
             .findAny()
-            .get();
+            .orElseThrow(() -> new ObjectNotFoundException("해당 역을 상행역으로 가지는 구간을 찾을 수 없습니다."));
     }
 
-    public Section findSectionHasDownStation(long existentStationId) {
+    public Section findSectionHasDownStation(long stationId) {
         return sectionGroup.stream()
-            .filter(section -> section.getDownStationId() == existentStationId)
+            .filter(section -> section.getDownStationId() == stationId)
             .findAny()
-            .get();
+            .orElseThrow(() -> new ObjectNotFoundException("해당 역을 하행역으로 가지는 구간을 찾을 수 없습니다."));
     }
 
     public Section findSameForm(final Long upStationId, final Long downStationId) {

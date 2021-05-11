@@ -38,7 +38,7 @@ public class StationDao {
             };
             jdbcTemplate.update(preparedStatementCreator, keyHolder);
             final long id = keyHolder.getKey().longValue();
-            return findById(id).get();
+            return findById(id).orElseThrow(() -> new DataNotFoundException("해당 역을 찾을 수 없습니다."));
         } catch (DuplicateKeyException e) {
             throw new DuplicatedFieldException("중복된 이름의 지하철역입니다.");
         }
