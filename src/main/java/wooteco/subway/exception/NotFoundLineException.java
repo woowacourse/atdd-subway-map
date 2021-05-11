@@ -1,8 +1,8 @@
 package wooteco.subway.exception;
 
-public class NotFoundLineException extends RuntimeException {
+public class NotFoundLineException extends NotFoundException {
 
-    public NotFoundLineException(final String errorMessage) {
-        super(errorMessage);
+    public NotFoundLineException() {
+        super("해당 노선이 존재하지 않습니다.");
     }
 }
