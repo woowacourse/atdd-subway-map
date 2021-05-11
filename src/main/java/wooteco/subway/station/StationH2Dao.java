@@ -48,12 +48,6 @@ public class StationH2Dao implements StationDao {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM STATION WHERE id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id=?";
         try {
@@ -87,5 +81,11 @@ public class StationH2Dao implements StationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM STATION WHERE id=?";
+        jdbcTemplate.update(sql, id);
     }
 }

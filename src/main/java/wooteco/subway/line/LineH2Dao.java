@@ -50,25 +50,19 @@ public class LineH2Dao implements LineDao {
     }
 
     @Override
-    public void update(Long id, String name, String color) {
-        String sql = "UPDATE LINE SET name=?, color=? WHERE id=?";
-        jdbcTemplate.update(sql, name, color, id);
-    }
-
-    @Override
     public Optional<Line> findById(Long id) {
         String sql = "SELECT * FROM LINE WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                id));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Line(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("color")
+                        );
+                    },
+                    id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -79,15 +73,15 @@ public class LineH2Dao implements LineDao {
         String sql = "SELECT * FROM LINE WHERE name=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                name));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Line(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("color")
+                        );
+                    },
+                    name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -98,18 +92,24 @@ public class LineH2Dao implements LineDao {
         String sql = "SELECT * FROM LINE WHERE color=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Line(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("color")
-                    );
-                },
-                color));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Line(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("color")
+                        );
+                    },
+                    color));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void update(Long id, String name, String color) {
+        String sql = "UPDATE LINE SET name=?, color=? WHERE id=?";
+        jdbcTemplate.update(sql, name, color, id);
     }
 
     @Override

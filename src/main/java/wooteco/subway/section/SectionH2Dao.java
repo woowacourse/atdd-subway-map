@@ -57,18 +57,6 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
-    public void updateUpStation(Long id, Long upStationId, int distance) {
-        String sql = "UPDATE SECTION SET up_station_id=?, distance=? WHERE id=?";
-        jdbcTemplate.update(sql, upStationId, distance, id);
-    }
-
-    @Override
-    public void updateDownStation(Long id, Long downStationId, int distance) {
-        String sql = "UPDATE SECTION SET down_station_id=?, distance=? WHERE id=?";
-        jdbcTemplate.update(sql, downStationId, distance, id);
-    }
-
-    @Override
     public List<Section> findByStation(Long lineId, Long stationId) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
@@ -84,12 +72,6 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM SECTION WHERE id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id=?";
         return jdbcTemplate.query(sql,
@@ -102,5 +84,23 @@ public class SectionH2Dao implements SectionDao {
                 );
                 return section;
             }, lineId);
+    }
+
+    @Override
+    public void updateUpStation(Long id, Long upStationId, int distance) {
+        String sql = "UPDATE SECTION SET up_station_id=?, distance=? WHERE id=?";
+        jdbcTemplate.update(sql, upStationId, distance, id);
+    }
+
+    @Override
+    public void updateDownStation(Long id, Long downStationId, int distance) {
+        String sql = "UPDATE SECTION SET down_station_id=?, distance=? WHERE id=?";
+        jdbcTemplate.update(sql, downStationId, distance, id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM SECTION WHERE id=?";
+        jdbcTemplate.update(sql, id);
     }
 }
