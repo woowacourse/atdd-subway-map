@@ -29,19 +29,19 @@ class StationJdbcDaoTest {
         jdbcTemplate.update("INSERT INTO STATION (name) VALUES (?)", "강남역");
     }
 
+    private final Station station = new Station("잠실역");
+
+
     @DisplayName("역 저장 테스트")
     @Test
     void save() {
-        Station station = new Station("잠실역");
         Station savedStation = stationDao.save(station);
-
         assertThat(savedStation.getName()).isEqualTo(station.getName());
     }
 
     @DisplayName("역 목록 조회 테스트")
     @Test
     void findAll() {
-        Station station = new Station("잠실역");
         List<Station> savedStation = Arrays.asList(station, new Station("강남역"));
         stationDao.save(station);
 
@@ -51,7 +51,6 @@ class StationJdbcDaoTest {
     @DisplayName("역 삭제 테스트")
     @Test
     void delete() {
-        Station station = new Station("잠실역");
         Station savedStation = stationDao.save(station);
         stationDao.delete(savedStation.getId());
 

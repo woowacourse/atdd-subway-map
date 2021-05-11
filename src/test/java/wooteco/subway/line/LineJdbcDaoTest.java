@@ -29,20 +29,21 @@ class LineJdbcDaoTest {
         jdbcTemplate.update("INSERT INTO LINE (name, color) VALUES (?, ?)", "2호선", "초록색");
     }
 
+    private final Line line = new Line("3호선", "주황색");
+
     @DisplayName("노선 저장 테스트")
     @Test
     void save() {
-        Line line = new Line("3호선", "주황색");
         Line savedLine = lineDao.save(line);
 
-        assertThat(savedLine.getName()).isEqualTo(line.getName());
-        assertThat(savedLine.getColor()).isEqualTo(line.getColor());
+        assertThat(savedLine).usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(line);
     }
 
     @DisplayName("노선 목록 조회 테스트")
     @Test
     void findAll() {
-        Line line = new Line("3호선", "주황색");
         List<Line> savedLines = Arrays.asList(line, new Line("2호선", "초록색"));
         lineDao.save(line);
 
@@ -75,7 +76,6 @@ class LineJdbcDaoTest {
     @DisplayName("노선 삭제 테스트")
     @Test
     void delete() {
-        Line line = new Line("3호선", "주황색");
         Line savedLine = lineDao.save(line);
         lineDao.delete(savedLine.getId());
 
