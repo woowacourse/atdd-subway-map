@@ -52,7 +52,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간을 생성하는 요청을 보낸다.")
     void createSection() {
         String isuStationId = RequestUtil.requestCreateStation("이수역").header("Location").split("/")[2];
-        ExtractableResponse<Response> response = RequestUtil.requestSection(lineLocation.split("/")[2], namSungStationId, isuStationId, "3");
+        ExtractableResponse<Response> response = RequestUtil.requestCreateSection(lineLocation.split("/")[2], namSungStationId, isuStationId, "3");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -63,7 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection() {
         // given
         String sangDoStationId = RequestUtil.requestCreateStation("상도역").header("Location").split("/")[2];
-        RequestUtil.requestSection(lineLocation.split("/")[2], sangDoStationId, namSungStationId, "7");
+        RequestUtil.requestCreateSection(lineLocation.split("/")[2], sangDoStationId, namSungStationId, "7");
 
         // when
         ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
