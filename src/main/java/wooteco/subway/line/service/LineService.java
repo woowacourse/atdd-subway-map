@@ -57,8 +57,4 @@ public class LineService {
             throw new WrongLineIdException("노선이 존재하지 않습니다.");
         }
     }
-
-    public void deleteAll() {
-        lineDao.deleteAll();
-    }
 }

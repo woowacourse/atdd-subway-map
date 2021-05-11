@@ -58,14 +58,6 @@ public class SectionDao {
         );
     }
 
-    public SectionDto findBySectionId(Long id) {
-        String sql = "SELECT * " +
-                "FROM SECTION " +
-                "WHERE id = ?";
-
-        return jdbcTemplate.queryForObject(sql, SECTION_DTO_ROW_MAPPER, id);
-    }
-
     public void save(Long lineId, OrderedSections lineSections) {
         deleteLine(lineId);
 
@@ -96,13 +88,6 @@ public class SectionDao {
                 "WHERE line_id = ?";
 
         jdbcTemplate.update(sql, lineId);
-    }
-
-    public void deleteSection(Long sectionId) {
-        String sql = "DELETE FROM SECTION " +
-                "WHERE id = ?";
-
-        jdbcTemplate.update(sql, sectionId);
     }
 
     public long count(Long lineId) {

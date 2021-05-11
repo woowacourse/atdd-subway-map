@@ -130,7 +130,7 @@ public class OrderedSections {
 
     private void validateSectionsIsSequential(List<Section> sections, Optional<Section> sectionByStation) {
         if (!sectionByStation.isPresent() && !sections.isEmpty()) {
-            throw new SectionsIllegalArgumentException(String.format("역이 연속되지 않습니다. 연속되지 않은 구간 : "+ sections.toString()));
+            throw new SectionsIllegalArgumentException(String.format("역이 연속되지 않습니다. 연속되지 않은 구간 : " + sections.toString()));
         }
     }
 
