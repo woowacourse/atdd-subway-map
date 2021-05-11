@@ -33,7 +33,6 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-
     public void setUpStation(Station upStation) {
         this.upStation = upStation;
     }
@@ -43,15 +42,11 @@ public class Section {
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public long getLineId() {
-        return lineId;
-    }
-
-    public int getDistance() {
-        return this.distance;
+        return this.lineId;
     }
 
     public Station getUpStation() {
@@ -60,6 +55,10 @@ public class Section {
 
     public Station getDownStation() {
         return this.downStation;
+    }
+
+    public int getDistance() {
+        return this.distance;
     }
 
     @Override

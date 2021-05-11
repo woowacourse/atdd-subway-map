@@ -34,12 +34,12 @@ public class Line {
         this.sections.delete(station);
     }
 
-    public Sections getSections() {
-        return this.sections;
-    }
-
     public void setSectionsFrom(List<Section> sections) {
         this.sections = new Sections(sections);
+    }
+
+    public Sections getSections() {
+        return this.sections;
     }
 
     public List<Station> getStations() {
