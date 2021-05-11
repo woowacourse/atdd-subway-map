@@ -94,24 +94,15 @@ public class LineService {
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
         Sections originSections = new Sections(toSections(line));
-
         Station targetStation = findStationById(stationId);
 
         line.deleteStation(targetStation);
-
-        List<Section> sections = line.getSections().sections();
 
         deleteDirtyChecking(originSections, line.getSections());
     }
 
     private void deleteDirtyChecking(final Sections originSections, final Sections sections) {
-        List<Section> changedSections = new ArrayList<>();
-        for (Section section : originSections.sections()) {
-            if (!sections.sections().contains(section)) {
-                changedSections.add(section);
-            }
-        }
-
+        List<Section> changedSections = sections.changedSections(originSections);
         for (Section section : changedSections) {
             SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
             sectionDao.delete(changedSectionEntity.getId());

@@ -240,6 +240,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station3.getName());
     }
 
+    @DisplayName("구간을 제거한다. (하행 종점역)")
+    @Test
+    void deleteDownwardEndPointStation() {
+        int distance = 5;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+
+        //when
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station3.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName());
+    }
+
     @Test
     @DisplayName("상행 종점역을 저장한다")
     void upwardEndPointRegistration() {

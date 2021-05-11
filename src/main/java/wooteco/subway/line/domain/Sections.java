@@ -99,6 +99,12 @@ public class Sections {
             return;
         }
         deleteUpwardEndPointStation(station);
+        deleteDownwardEndPointStation(station);
+    }
+
+    private void deleteDownwardEndPointStation(Station station) {
+        Section findSection = findByDownStationSection(station);
+        this.sections.remove(findSection);
     }
 
     private void deleteUpwardEndPointStation(final Station station) {
