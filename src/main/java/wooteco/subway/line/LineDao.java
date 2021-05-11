@@ -42,7 +42,7 @@ public class LineDao {
         return lines;
     }
 
-    public Line find(Long id) {
+    public Line findById(Long id) {
         String query = "SELECT * FROM line WHERE id = ?";
         return jdbcTemplate.queryForObject(query,
             (resultSet, rowNum) -> {
@@ -77,4 +77,5 @@ public class LineDao {
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
 }

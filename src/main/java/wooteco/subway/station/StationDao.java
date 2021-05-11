@@ -53,4 +53,16 @@ public class StationDao {
             throw new NoSuchLineException("없는 노선입니다.");
         }
     }
+
+    public Station findById(long id) {
+        String query = "SELECT * FROM station WHERE ID = (?)";
+        return jdbcTemplate.queryForObject(query, (resultSet, rowNum) -> {
+            Station station = new Station(
+                resultSet.getLong("id"),
+                resultSet.getString("name")
+            );
+            return station;
+        }, id);
+    }
+
 }

@@ -72,7 +72,7 @@ public class LineDaoTest {
     @Test
     void failFindLineByIdTest() {
         assertThatThrownBy(() -> {
-            lineDao.find(1L);
+            lineDao.findById(1L);
         }).isInstanceOf(EmptyResultDataAccessException.class);
     }
 
@@ -82,7 +82,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
 
         assertDoesNotThrow(() -> {
-            lineDao.find(1L);
+            lineDao.findById(1L);
         });
     }
 
