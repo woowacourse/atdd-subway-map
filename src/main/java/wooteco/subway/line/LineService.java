@@ -32,6 +32,21 @@ public class LineService {
         return savedLine;
     }
 
+    public List<Line> findAll() {
+        return lineDao.findAll();
+    }
+
+    public Line findById(Long id) {
+        return lineDao.findById(id)
+            .orElseThrow(NoLineException::new);
+    }
+
+    public void update(Long id, LineRequest lineRequest) {
+        validateDuplicatedName(lineRequest.getName());
+        validateDuplicatedColor(lineRequest.getColor());
+        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
+    }
+
     private void validateDuplicatedName(String name) {
         lineDao.findByName(name)
             .ifPresent(this::throwDuplicationException);
@@ -44,19 +59,6 @@ public class LineService {
 
     private void throwDuplicationException(Line line) {
         throw new LineDuplicationException();
-    }
-
-    public List<Line> findAll() {
-        return lineDao.findAll();
-    }
-
-    public Line findById(Long id) {
-        return lineDao.findById(id)
-            .orElseThrow(NoLineException::new);
-    }
-
-    public void update(Long id, LineRequest lineRequest) {
-        lineDao.update(id, lineRequest.getName(), lineRequest.getColor());
     }
 
     public void delete(Long id) {
