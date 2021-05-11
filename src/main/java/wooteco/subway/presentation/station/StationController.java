@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.value.StationName;
+import wooteco.subway.presentation.station.dto.StationDtoAssembler;
 import wooteco.subway.presentation.station.dto.StationRequest;
 import wooteco.subway.presentation.station.dto.StationResponse;
 
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 @RestController
 public class StationController {
 
+    private final StationDtoAssembler stationDtoAssembler;
     private final StationService stationService;
 
-    public StationController(final StationService stationService) {
+    public StationController(StationDtoAssembler stationDtoAssembler, StationService stationService) {
+        this.stationDtoAssembler = stationDtoAssembler;
         this.stationService = stationService;
     }
 
@@ -29,11 +32,11 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         Station station = new Station(new StationName(stationRequest.getName()));
         Station newStation = stationService.createStation(station);
-        StationResponse stationResponse = new StationResponse(newStation.getId(), newStation.getName());
+        StationResponse stationResponse = stationDtoAssembler.station(newStation);
 
-        return ResponseEntity.created(
-                URI.create("/stations/" + newStation.getId())
-        ).body(stationResponse);
+        return ResponseEntity
+                .created(URI.create("/stations/" + newStation.getId()))
+                .body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +44,7 @@ public class StationController {
         List<Station> stations = stationService.findAll();
 
         List<StationResponse> stationResponses = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(stationDtoAssembler::station)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(stationResponses);

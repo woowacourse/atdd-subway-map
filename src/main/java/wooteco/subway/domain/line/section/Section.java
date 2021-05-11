@@ -5,6 +5,7 @@ import wooteco.subway.domain.line.value.section.Distance;
 import wooteco.subway.domain.line.value.section.SectionId;
 import wooteco.subway.domain.station.value.StationId;
 
+import java.beans.ConstructorProperties;
 import java.util.Objects;
 
 public class Section {

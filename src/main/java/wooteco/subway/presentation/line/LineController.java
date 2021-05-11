@@ -15,12 +15,11 @@ import wooteco.subway.domain.line.value.line.LineColor;
 import wooteco.subway.domain.line.value.line.LineId;
 import wooteco.subway.domain.line.value.line.LineName;
 import wooteco.subway.domain.line.value.section.Distance;
-import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.value.StationId;
-import wooteco.subway.presentation.line.dto.SectionRequest;
+import wooteco.subway.presentation.line.dto.LineDtoAssembler;
 import wooteco.subway.presentation.line.dto.LineRequest;
 import wooteco.subway.presentation.line.dto.LineResponse;
-import wooteco.subway.presentation.station.dto.StationResponse;
+import wooteco.subway.presentation.line.dto.SectionRequest;
 
 import java.net.URI;
 import java.util.Collections;
@@ -32,17 +31,30 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("lines")
 public class LineController {
 
+    private final LineDtoAssembler lineDtoAssembler;
     private final LineService lineService;
     private final StationService stationService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineDtoAssembler lineDtoAssembler,
+                          LineService lineService,
+                          StationService stationService) {
+        this.lineDtoAssembler = lineDtoAssembler;
         this.lineService = lineService;
         this.stationService = stationService;
     }
 
-    //todo Do not use LineRequest, just Entity.
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
+        final Line line = createNewLineFrom(lineRequest);
+
+        final Line savedLine = lineService.save(line);
+
+        return ResponseEntity
+                .created(URI.create("/lines/" + savedLine.getLineId()))
+                .body(lineDtoAssembler.line(savedLine));
+    }
+
+    private Line createNewLineFrom(LineRequest lineRequest) {
         final Section section = new Section(
                 new StationId(lineRequest.getUpStationId()),
                 new StationId(lineRequest.getDownStationId()),
@@ -57,56 +69,23 @@ public class LineController {
                 sections
         );
 
-        final Line savedLine = lineService.save(line);
-        List<StationResponse> stationResponses = getStationResponses(savedLine);
-
-
-        return ResponseEntity
-                .created(URI.create("/lines/" + savedLine.getLineId()))
-                .body(
-                        new LineResponse(
-                                savedLine.getLineId(),
-                                savedLine.getLineName(),
-                                savedLine.getLineColor(),
-                                stationResponses
-                        )
-                );
+        return line;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> allLines() {
         final List<LineResponse> lineResponses = lineService.allLines().stream()
-                .map(line ->
-                        new LineResponse(
-                                line.getLineId(),
-                                line.getLineName(),
-                                line.getLineColor(),
-                                getStationResponses(line)
-                        )
-                ).collect(toList());
+                .map(lineDtoAssembler::line)
+                .collect(toList());
 
         return ResponseEntity.ok(lineResponses);
-    }
-
-    private List<StationResponse> getStationResponses(Line line) {
-        return line.getStationIds().stream()
-                .map(stationService::findById)
-                .map(StationResponse::new)
-                .collect(toList());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
         final Line line = lineService.findById(id);
 
-        return ResponseEntity.ok(
-                new LineResponse(
-                        line.getLineId(),
-                        line.getLineName(),
-                        line.getLineColor(),
-                        getStationResponses(line)
-                )
-        );
+        return ResponseEntity.ok(lineDtoAssembler.line(line));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -153,22 +132,7 @@ public class LineController {
         lineService.addNewSection(lineId, section);
         Line line = lineService.findById(lineId);
 
-        List<Station> stations = line.getStationIds().stream()
-                .map(stationService::findById)
-                .collect(toList());
-
-        List<StationResponse> stationResponses = stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(toList());
-
-        return ResponseEntity.ok(
-                new LineResponse(
-                        line.getLineId(),
-                        line.getLineName(),
-                        line.getLineColor(),
-                        stationResponses
-                )
-        );
+        return ResponseEntity.ok(lineDtoAssembler.line(line));
     }
 
     @ExceptionHandler(DuplicateKeyException.class)

@@ -6,6 +6,7 @@ import wooteco.subway.domain.line.value.line.LineColor;
 import wooteco.subway.domain.line.value.line.LineId;
 import wooteco.subway.domain.line.value.line.LineName;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,8 +23,13 @@ public class Line {
         this.sections = sections;
     }
 
+
     public Line(LineName lineName, LineColor lineColor, Sections sections) {
         this(LineId.empty(), lineName, lineColor, sections);
+    }
+
+    public Line(LineName lineName, LineColor lineColor) {
+        this(LineId.empty(), lineName, lineColor, Sections.empty());
     }
 
     public Line(LineId lineId, LineName lineName, LineColor lineColor) {
