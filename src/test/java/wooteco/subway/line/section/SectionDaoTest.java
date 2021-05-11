@@ -1,16 +1,19 @@
 package wooteco.subway.line.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.exception.DataNotFoundException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineDao;
 
@@ -85,5 +88,42 @@ class SectionDaoTest {
         sectionDao.update(updatedSection);
 
         assertThat(sectionDao.findById(createdSection.getId()).get()).isEqualTo(updatedSection);
+    }
+
+    @DisplayName("존재하지 않는 구간의 Id로 구간을 수정하면 예외가 발생한다.")
+    @Test
+    void updateWithAbsentId() {
+        final Long id = getAbsentId();
+        assertThatThrownBy(() -> sectionDao.update(new Section(id, 1L, 1L, 10)))
+            .isInstanceOf(DataNotFoundException.class)
+            .hasMessage("해당 Id의 구간이 없습니다.");
+    }
+
+    private Long getAbsentId() {
+        final Line createdLine = lineDao.save(new Line("2호선", "black"));
+        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section createdSection = sectionDao.save(section);
+
+        sectionDao.deleteById(createdSection.getId());
+        return createdSection.getId();
+    }
+
+    @DisplayName("특정 구간을 삭제한다.")
+    @Test
+    void delete() {
+        final Line createdLine = lineDao.save(new Line("2호선", "black"));
+        final Section section = new Section(createdLine.getId(), 2L, 4L, 10);
+        final Section createdSection = sectionDao.save(section);
+
+        sectionDao.deleteById(createdSection.getId());
+        assertThat(sectionDao.findById(createdSection.getId())).isEqualTo(Optional.empty());
+    }
+
+    @DisplayName("존재하지 않는 구간의 Id로 구간을 제거하면 예외가 발생한다.")
+    @Test
+    void deleteWithAbsentId() {
+        assertThatThrownBy(() -> sectionDao.deleteById(getAbsentId()))
+            .hasMessage("해당 Id의 구간이 없습니다.")
+            .isInstanceOf(DataNotFoundException.class);
     }
 }
