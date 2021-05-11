@@ -3,7 +3,10 @@ package wooteco.subway.line.dto;
 import javax.validation.constraints.Positive;
 
 public class SectionRequest {
+    @Positive
     private Long upStationId;
+
+    @Positive
     private Long downStationId;
 
     @Positive

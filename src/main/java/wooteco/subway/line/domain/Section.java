@@ -30,12 +30,6 @@ public class Section {
         return downStation;
     }
 
-    public Map<Station, Station> stations() {
-        return new HashMap<Station, Station>() {{
-            put(upStation, downStation);
-        }};
-    }
-
     public int getDistance() {
         return distance;
     }
