@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
+import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.station.StationRepository;
 
 import java.util.List;
@@ -65,4 +66,16 @@ public class LineService {
     public void deleteById(final Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void addNewSection(Long lineId, Section section) {
+        Line line = lineRepository.findById(lineId);
+        line.addSection(section);
+
+        lineRepository.update(line);
+    }
+
+    public List<Long> getStationsById(Long id) {
+        return lineRepository.findById(id).getStationIds();
+    }
+
 }

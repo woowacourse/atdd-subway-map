@@ -46,6 +46,14 @@ public class Line {
         return sections.getSections();
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Long> getStationIds() {
+        return sections.getStationIds();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,5 +66,4 @@ public class Line {
     public int hashCode() {
         return Objects.hash(lineId, lineName, lineColor);
     }
-
 }

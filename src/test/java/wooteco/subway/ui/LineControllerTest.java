@@ -196,4 +196,8 @@ class LineControllerTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("새로운 구간을 추가한다")
+    @Test
+    void createNewSection() {
+    }
 }

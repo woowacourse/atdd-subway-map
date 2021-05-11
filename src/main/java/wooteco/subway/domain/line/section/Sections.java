@@ -1,17 +1,197 @@
 package wooteco.subway.domain.line.section;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class Sections {
+
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
+    }
+
+    public void add(Section section) {
+        validateThatConnectableStationIsExisting(section);
+        validateThatSectionIsAlreadyExisting(section);
+
+        if (registerTerminal(section)) return;
+        preventForkedRoad(section);
+    }
+
+    private boolean registerTerminal(Section section) {
+        Deque<Long> stationIds = new ArrayDeque<>(getStationIds());
+
+        if (Objects.equals(stationIds.getFirst(), section.getDownStationId()) ||
+                Objects.equals(stationIds.getLast(), section.getUpStationId())) {
+            sections.add(section);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void validateThatSectionDistanceIsLowerThenExistingSection(Section section, Section selectedSection) {
+        if (selectedSection.getDistance() <= section.getDistance()) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다");
+        }
+    }
+
+    private void preventForkedRoad(Section section) {
+        if (caseWhereDownStationExists(section)) return;
+        if (caseWhereUpStationExists(section)) return;
+    }
+
+    //todo reduce duplicated code
+    private boolean caseWhereDownStationExists(Section section) {
+        Optional<Section> wrappedSelectedSection = getSectionThatHasSameDownStationByFromSections(section);
+        if (!wrappedSelectedSection.isPresent()) {
+            return false;
+        }
+
+        Section selectedSection = wrappedSelectedSection.get();
+
+        validateThatSectionDistanceIsLowerThenExistingSection(section, selectedSection);
+
+        Section newSection = new Section(selectedSection.getId(),
+                selectedSection.getLineId(),
+                selectedSection.getUpStationId(),
+                section.getUpStationId(),
+                selectedSection.getDistance() - section.getDistance()
+        );
+
+        sections.remove(selectedSection);
+        sections.add(section);
+        sections.add(newSection);
+
+        return true;
+    }
+
+    private boolean caseWhereUpStationExists(Section section) {
+        Optional<Section> wrappedSelectedSection = getSectionThatHasSameUpStationByFromSections(section);
+        if (!wrappedSelectedSection.isPresent()) {
+            return false;
+        }
+
+        Section selectedSection = wrappedSelectedSection.get();
+
+        validateThatSectionDistanceIsLowerThenExistingSection(section, selectedSection);
+
+        Section newSection = new Section(selectedSection.getId(),
+                selectedSection.getLineId(),
+                section.getDownStationId(),
+                selectedSection.getDownStationId(),
+                selectedSection.getDistance() - section.getDistance()
+        );
+
+        sections.remove(selectedSection);
+        sections.add(section);
+        sections.add(newSection);
+
+        return true;
+    }
+
+    private Optional<Section> getSectionThatHasSameUpStationByFromSections(Section sourceSection) {
+        return sections.stream()
+                .filter(
+                        section -> Objects.equals(sourceSection.getUpStationId(), section.getUpStationId())
+                )
+                .findAny();
+    }
+
+    private Optional<Section> getSectionThatHasSameDownStationByFromSections(Section sourceSection) {
+        return sections.stream()
+                .filter(
+                        section -> Objects.equals(sourceSection.getDownStationId(), section.getDownStationId())
+                )
+                .findAny();
+    }
+
+    private void validateThatSectionIsAlreadyExisting(Section newSection) {
+        List<Long> stationIds = getStationIds();
+        int indexOfUpStationId = stationIds.indexOf(newSection.getUpStationId());
+        int indexOfDownStationId = stationIds.indexOf(newSection.getDownStationId());
+
+
+        if (indexOfUpStationId != -1 && indexOfDownStationId != -1) {
+            throw new IllegalArgumentException("상행선과 하행선이 이미 존재합니다");
+        }
+
+    }
+
+    private void validateThatConnectableStationIsExisting(Section newSection) {
+        List<Long> stationIds = sections.stream()
+                .flatMap(section ->
+                        Stream.of(
+                                section.getUpStationId(),
+                                section.getDownStationId()
+                        )
+                )
+                .distinct()
+                .collect(toList());
+
+        if (!stationIds.contains(newSection.getDownStationId()) &&
+                !stationIds.contains(newSection.getUpStationId())) {
+            throw new IllegalArgumentException("연결할 수 있는 역을 찾을 수 없습니다.");
+        }
     }
 
     public List<Section> getSections() {
-        return new ArrayList(sections);
+        return new ArrayList<>(sections);
+    }
+
+    public List<Long> getStationIds() {
+        if (sections.isEmpty()) return Collections.emptyList();
+
+        long maxStationsId = getMaxStationsId();
+
+        long[] stationIndexesByUpStationId = new long[(int) maxStationsId + 1];
+        long[] stationIndexesByDownStationId = new long[(int) maxStationsId + 1];
+
+        initializeStationIdArray(stationIndexesByUpStationId, stationIndexesByDownStationId);
+
+        return sortStationIds(stationIndexesByUpStationId, stationIndexesByDownStationId);
+    }
+
+    private List<Long> sortStationIds(long[] stationIndexesByUpStationId, long[] stationIndexesByDownStationId) {
+        Deque<Long> stationIds = new ArrayDeque<>();
+
+        Section section = sections.get(0);
+        stationIds.addFirst(section.getUpStationId());
+        stationIds.addLast(section.getDownStationId());
+
+        long nextId;
+        while ((nextId = stationIndexesByDownStationId[stationIds.getFirst().intValue()]) != 0) {
+            stationIds.addFirst(nextId);
+        }
+
+        while ((nextId = stationIndexesByUpStationId[stationIds.getLast().intValue()]) != 0) {
+            stationIds.addLast(nextId);
+        }
+
+        return new ArrayList<>(stationIds);
+    }
+
+    private void initializeStationIdArray(long[] stationIndexesByUpStationId, long[] stationIndexesByDownStationId) {
+        sections.forEach(section -> {
+            int upStationId = section.getUpStationId().intValue();
+            int downStationId = section.getDownStationId().intValue();
+
+            stationIndexesByUpStationId[upStationId] = downStationId;
+            stationIndexesByDownStationId[downStationId] = upStationId;
+        });
+    }
+
+    private long getMaxStationsId() {
+        return sections.stream()
+                .flatMapToLong(section -> LongStream.of(
+                        section.getUpStationId(),
+                        section.getDownStationId()))
+                .max()
+                .getAsLong();
     }
 
 }

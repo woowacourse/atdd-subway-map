@@ -61,6 +61,9 @@ public class LineRepositoryImpl implements LineRepository {
     @Override
     public void update(Line line) {
         lineDao.update(line);
+
+        List<Section> sections = line.getSections();
+        sectionDao.update(sections);
     }
 
     @Override

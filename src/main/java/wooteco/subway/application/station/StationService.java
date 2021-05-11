@@ -27,4 +27,8 @@ public class StationService {
         return stationRepository.delete(id);
     }
 
+    public Station findById(Long id) {
+        return stationRepository.findById(id);
+    }
+
 }

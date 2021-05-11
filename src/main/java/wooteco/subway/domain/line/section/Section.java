@@ -3,20 +3,30 @@ package wooteco.subway.domain.line.section;
 import java.util.Objects;
 
 public class Section {
+    private final Long id;
     private final Long lineId;
     private final Long upStationId;
     private final Long downStationId;
     private final Long distance;
 
-    public Section(Long lineId, Long upStationId, Long downStationId, Long distance) {
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, Long distance) {
+        this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
+    public Section(Long lineId, Long upStationId, Long downStationId, Long distance) {
+        this(null, lineId, upStationId, downStationId, distance);
+    }
+
     public Section(Long upStationId, Long downStationId, Long distance) {
         this(null, upStationId, downStationId, distance);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getLineId() {

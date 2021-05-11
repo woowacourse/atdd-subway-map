@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
@@ -13,8 +14,11 @@ import wooteco.subway.domain.line.value.LineColor;
 import wooteco.subway.domain.line.value.LineId;
 import wooteco.subway.domain.line.value.LineName;
 import wooteco.subway.application.line.LineService;
+import wooteco.subway.domain.station.Station;
+import wooteco.subway.ui.dto.SectionRequest;
 import wooteco.subway.ui.dto.line.LineRequest;
 import wooteco.subway.ui.dto.line.LineResponse;
+import wooteco.subway.ui.dto.station.StationResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,9 +32,11 @@ import static java.util.stream.Collectors.toList;
 public class LineController {
 
     private final LineService lineService;
+    private final StationService stationService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -103,6 +109,31 @@ public class LineController {
         lineService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{lineId}/sections")
+    public ResponseEntity<LineResponse> addNewSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long lineId) {
+        Section section = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+
+        lineService.addNewSection(lineId, section);
+        Line line = lineService.findById(lineId);
+
+        List<Station> stations = line.getStationIds().stream()
+                .map(stationService::findById)
+                .collect(toList());
+
+        List<StationResponse> stationResponses = stations.stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(toList());
+
+        return ResponseEntity.ok(
+                new LineResponse(
+                        line.getLineId(),
+                        line.getLineName(),
+                        line.getLineColor(),
+                        stationResponses
+                )
+        );
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
