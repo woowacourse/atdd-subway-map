@@ -108,7 +108,6 @@ public class Section {
 
     public void setDownStation(Station downStation) {
         this.downStation = downStation;
-
     }
 
     @Override
