@@ -24,7 +24,7 @@ public class Section {
 
     public void validateSmaller(final int distance) {
         if (this.distance <= distance) {
-            throw new RuntimeException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
+            throw new BiggerDistanceException("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
         }
     }
 
