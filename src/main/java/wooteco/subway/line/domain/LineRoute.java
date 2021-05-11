@@ -44,15 +44,6 @@ public class LineRoute {
             .containsKey(upStationId));
     }
 
-    private Long expandUptoDown(Long upStationId) {
-        if (upToDownStationMap.containsKey(upStationId)) {
-            Section nextSection = upToDownStationMap.get(upStationId);
-            upToDownSerializedMap.addLast(nextSection.getDownStationId());
-            upStationId = nextSection.getDownStationId();
-        }
-        return upStationId;
-    }
-
     private Long expandDownToUp(Long downStationId) {
         if (downToUpStationMap.containsKey(downStationId)) {
             Section nextSection = downToUpStationMap.get(downStationId);
@@ -62,17 +53,26 @@ public class LineRoute {
         return downStationId;
     }
 
+    private Long expandUptoDown(Long upStationId) {
+        if (upToDownStationMap.containsKey(upStationId)) {
+            Section nextSection = upToDownStationMap.get(upStationId);
+            upToDownSerializedMap.addLast(nextSection.getDownStationId());
+            upStationId = nextSection.getDownStationId();
+        }
+        return upStationId;
+    }
+
+    public boolean isInsertSectionInEitherEndsOfLine(Section section) {
+        return isEndOfUpLine(section.getUpStationId()) || isEndOfDownLine(
+            section.getDownStationId());
+    }
+
     private boolean isEndOfUpLine(Long stationId) {
         return upToDownSerializedMap.getLast().equals(stationId);
     }
 
     private boolean isEndOfDownLine(Long stationId) {
         return upToDownSerializedMap.getFirst().equals(stationId);
-    }
-
-    public boolean isInsertSectionInEitherEndsOfLine(Section section) {
-        return isEndOfUpLine(section.getUpStationId()) || isEndOfDownLine(
-            section.getDownStationId());
     }
 
     public Section getSectionNeedToBeUpdatedForInsert(Section section) {
