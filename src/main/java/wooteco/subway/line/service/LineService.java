@@ -18,7 +18,6 @@ import wooteco.subway.station.api.dto.StationResponse;
 import wooteco.subway.station.dao.StationDao;
 
 @Service
-@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -31,6 +30,7 @@ public class LineService {
         this.stationDao = stationDao;
     }
 
+    @Transactional
     public LineDetailsResponse createLine(LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
@@ -60,12 +60,12 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return LineResponse.listOf(lines);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         sectionDao.deleteAllByLineId(id);
         lineDao.deleteById(id);

@@ -3,7 +3,6 @@ package wooteco.subway.line.api.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 import wooteco.subway.line.model.Line;
-import wooteco.subway.station.api.dto.StationResponse;
 
 public class LineResponse {
 
