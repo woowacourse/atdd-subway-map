@@ -16,7 +16,7 @@ public class StationService {
     private final StationDao stationDao;
 
     public Station save(Station station) {
-        if (stationDao.findStationByName(station.getName()).isPresent()) {
+        if (stationDao.findByName(station.getName()).isPresent()) {
             throw new DuplicatedStationException();
         }
         return stationDao.save(station);
@@ -31,6 +31,6 @@ public class StationService {
     }
 
     public Station findStation(Long id) {
-        return stationDao.findStationById(id).orElseThrow(StationNotFoundException::new);
+        return stationDao.findById(id).orElseThrow(StationNotFoundException::new);
     }
 }

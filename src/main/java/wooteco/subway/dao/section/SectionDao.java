@@ -8,11 +8,11 @@ import java.util.List;
 public interface SectionDao {
     Section save(Section section, Long lineId);
 
-    Sections findSectionsByLineId(Long lineId);
+    Sections findByLineId(Long lineId);
 
     void deleteById(Long id);
 
-    List<Section> findSectionContainsStationId(Long lineId, Long stationId);
+    List<Section> findContainsStationId(Long lineId, Long stationId);
 
     void deleteStations(Long lineId, List<Section> sections);
 

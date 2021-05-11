@@ -32,7 +32,7 @@ public class LineService {
 
     public Line findLine(Long lineId) {
         Line line = lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
-        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = sectionDao.findByLineId(lineId);
         line.insertSections(sections);
         return line;
     }

@@ -39,13 +39,13 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationById(Long id) {
+    public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM station WHERE id = ?";
         return jdbcTemplate.query(sql, getRowMapper(), id).stream().findAny();
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
+    public Optional<Station> findByName(String name) {
         String sql = "SELECT * FROM station WHERE name = ?";
         return jdbcTemplate.query(sql, getRowMapper(), name).stream().findAny();
     }

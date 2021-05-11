@@ -23,7 +23,7 @@ public class SectionService {
     private final SectionDao sectionDao;
 
     public Section createSection(Section section, Long lineId) {
-        Sections sections = sectionDao.findSectionsByLineId(lineId);
+        Sections sections = sectionDao.findByLineId(lineId);
         Section sectionWithLineId = Section.of(section, lineId);
         Optional<Section> affectedSection = sections.changeSection(sectionWithLineId);
 
@@ -46,12 +46,12 @@ public class SectionService {
 
     public void removeSection(Long lineId, Long stationId) {
         lineDao.findById(lineId).orElseThrow(LineNotFoundException::new);
-        stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
-        if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
+        stationDao.findById(stationId).orElseThrow(StationNotFoundException::new);
+        if (sectionDao.findByLineId(lineId).hasSize(1)) {
             throw new NotEnoughSectionException();
         }
 
-        List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
+        List<Section> sections = sectionDao.findContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
 
         //TODO : 라인 아이디가 없을 시 예외처리

@@ -31,13 +31,13 @@ public class InMemorySectionDao implements SectionDao {
     }
 
     @Override
-    public Sections findSectionsByLineId(Long lineId) {
+    public Sections findByLineId(Long lineId) {
         final List<Section> sections = new ArrayList<>(this.sections.get(lineId));
         return Sections.from(sections);
     }
 
     @Override
-    public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
+    public List<Section> findContainsStationId(Long lineId, Long stationId) {
         return sections.get(lineId)
                 .stream()
                 .filter(section -> section.hasStation(stationId))
