@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.station.controller.dto.StationCreateDto;
 import wooteco.subway.station.controller.dto.StationDto;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
@@ -22,7 +23,8 @@ public class StationService {
     }
 
     @Transactional
-    public StationDto save(final Station requestedStation) {
+    public StationDto save(final StationCreateDto stationInfo) {
+        final Station requestedStation = new Station(stationInfo.getName());
         final Optional<Station> station = stationRepository.findByName(requestedStation.getName());
 
         if (station.isPresent()) {

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.station.controller.dto.StationCreateDto;
 import wooteco.subway.station.controller.dto.StationDto;
 import wooteco.subway.station.controller.dto.StationRequest;
 import wooteco.subway.station.controller.dto.StationResponse;
-import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
 @RestController
@@ -30,9 +30,9 @@ public final class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody final StationRequest stationRequest) {
-        final Station requestedStation = new Station(stationRequest);
+        final StationCreateDto stationInfo = stationRequest.toStationCreateDto();
 
-        final StationDto createdStationInfo = stationService.save(requestedStation);
+        final StationDto createdStationInfo = stationService.save(stationInfo);
 
         final StationResponse stationResponse = StationResponse.of(createdStationInfo);
         final Long stationId = stationResponse.getId();

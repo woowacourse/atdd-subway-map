@@ -11,6 +11,10 @@ public class StationRequest {
         this.name = name;
     }
 
+    public StationCreateDto toStationCreateDto() {
+        return StationCreateDto.of(name);
+    }
+
     public String getName() {
         return name;
     }
