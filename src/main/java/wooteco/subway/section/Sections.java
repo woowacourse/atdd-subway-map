@@ -81,11 +81,11 @@ public class Sections {
     }
 
     private void sortByIds(Deque<Long> sortedStationIds, Map<Long, Long> upStationIds, Map<Long, Long> downStationIds) {
-        while (upStationIds.containsKey(sortedStationIds.peekFirst())) {
+        while (downStationIds.containsKey(sortedStationIds.peekFirst())) {
             Long currentId = sortedStationIds.peekFirst();
             sortedStationIds.addFirst(downStationIds.get(currentId));
         }
-        while (downStationIds.containsKey(sortedStationIds.peekLast())) {
+        while (upStationIds.containsKey(sortedStationIds.peekLast())) {
             Long currentId = sortedStationIds.peekLast();
             sortedStationIds.addLast(upStationIds.get(currentId));
         }
