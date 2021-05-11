@@ -59,14 +59,7 @@ public class SectionService {
 
     private void insertSectionInMiddleOfLine(Section section, LineRoute lineRoute) {
         Section updateSection = lineRoute.getSectionNeedToBeUpdatedForInsert(section);
-        validateSectionDistanceGap(updateSection);
         sectionDao.update(updateSection);
-    }
-
-    private void validateSectionDistanceGap(Section section) {
-        if (section.getDistance() <= INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT) {
-            throw new SubwayIllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
-        }
     }
 
     @Transactional(readOnly = false)

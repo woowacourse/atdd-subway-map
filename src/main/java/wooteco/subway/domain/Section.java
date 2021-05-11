@@ -2,12 +2,18 @@ package wooteco.subway.domain;
 
 import wooteco.subway.exception.SubwayIllegalArgumentException;
 
-public class Section {
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
+public class Section {
     private final Long id;
+    @NotNull(message = "구간의 노선 Id는 필수로 입력하여야 합니다.")
     private final Long lineId;
+    @NotNull(message = "구간의 상행역 Id는 필수로 입력하여야 합니다.")
     private final Long upStationId;
+    @NotNull(message = "구간의 하행역 Id는 필수로 입력하여야 합니다.")
     private final Long downStationId;
+    @Min(value = 1, message = "구간의 거리가 잘못 되었습니다.")
     private final int distance;
 
     private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {

@@ -3,11 +3,11 @@ package wooteco.subway.dto;
 import javax.validation.constraints.NotNull;
 
 public class SectionRequest {
-    @NotNull
+    @NotNull(message = "구간의 상행역 Id는 필수로 입력하여야 합니다.")
     private Long upStationId;
-    @NotNull
+    @NotNull(message = "구간의 하행역 Id는 필수로 입력하여야 합니다.")
     private Long downStationId;
-    @NotNull
+    @NotNull(message = "구간의 거리 정보는 필수로 입력하여야 합니다.")
     private int distance;
 
     private SectionRequest() {

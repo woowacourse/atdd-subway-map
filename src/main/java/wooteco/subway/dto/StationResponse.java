@@ -2,8 +2,12 @@ package wooteco.subway.dto;
 
 import wooteco.subway.domain.Station;
 
+import javax.validation.constraints.NotBlank;
+
 public class StationResponse {
+    @NotBlank(message = "응답하려는 역의 id 값이 비었습니다.")
     private Long id;
+    @NotBlank(message = "응답하려는 역의 name 값이 비었습니다.")
     private String name;
 
     private StationResponse() {
