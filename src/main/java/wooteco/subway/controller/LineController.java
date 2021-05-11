@@ -4,13 +4,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
-import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineWithAllSectionsResponse;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.LineDto;
 
-import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
