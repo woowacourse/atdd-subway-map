@@ -26,12 +26,19 @@ public class Construction {
     }
 
     public void insertSection(Section section) {
+        validateSectionToInsert(section);
         validateToConstruct();
         if (isEndSectionInsertion(section)) {
             sectionsToCreate.add(section);
             return;
         }
         insertSectionWhenNotEndSectionInsertion(section);
+    }
+
+    private void validateSectionToInsert(Section section) {
+        if (!section.getLine().equals(line)) {
+            throw new IllegalArgumentException("다른 노선의 구간은 추가할 수 없습니다.");
+        }
     }
 
     private void validateToConstruct() {
@@ -157,7 +164,7 @@ public class Construction {
         return new ArrayList<>(sectionsToCreate);
     }
 
-    public List<Section> getSectionsToRemove() {
+    public List<Section> sectionsToRemove() {
         return new ArrayList<>(sectionsToRemove);
     }
 }

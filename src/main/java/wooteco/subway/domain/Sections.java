@@ -17,12 +17,12 @@ public class Sections {
 
     public List<Station> pathByLine(Line line) {
         Set<Section> sectionsInLine = sectionsByLine(line);
-        Section now = firstSectionByLine(sectionsInLine);
-        Section lastSection = lastSectionByLine(sectionsInLine);
+        Section now = firstSectionInLine(sectionsInLine);
+        Section lastSection = lastSectionInLine(sectionsInLine);
         List<Station> result = new ArrayList<>(Collections.singletonList(now.getUpStation()));
         while (!now.equals(lastSection)) {
             result.add(now.getDownStation());
-            now = nextSectionByLine(sectionsInLine, now);
+            now = nextSectionInLine(sectionsInLine, now);
         }
         result.add(now.getDownStation());
         return result;
@@ -34,7 +34,7 @@ public class Sections {
             .collect(Collectors.toSet());
     }
 
-    private Section firstSectionByLine(Set<Section> sectionsInLine) {
+    private Section firstSectionInLine(Set<Section> sectionsInLine) {
         return sectionsInLine.stream()
             .filter(section -> sectionsInLine.stream()
                 .noneMatch(section1 -> section.getUpStation().equals(section1.getDownStation())))
@@ -42,7 +42,7 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("첫 번째 구간이 존재하지 않습니다."));
     }
 
-    private Section lastSectionByLine(Set<Section> sectionsInLine) {
+    private Section lastSectionInLine(Set<Section> sectionsInLine) {
         return sectionsInLine.stream()
             .filter(section -> sectionsInLine.stream()
                 .noneMatch(section1 -> section.getDownStation().equals(section1.getUpStation())))
@@ -50,7 +50,7 @@ public class Sections {
             .orElseThrow(() -> new IllegalArgumentException("마지막 구간이 존재하지 않습니다."));
     }
 
-    private Section nextSectionByLine(Set<Section> sectionsInLine, Section now) {
+    private Section nextSectionInLine(Set<Section> sectionsInLine, Section now) {
         return sectionsInLine.stream()
             .filter(section -> now.getDownStation().equals(section.getUpStation()))
             .findFirst()

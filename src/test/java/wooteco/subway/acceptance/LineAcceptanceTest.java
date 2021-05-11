@@ -1,4 +1,4 @@
-package wooteco.subway.acceptance.line;
+package wooteco.subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

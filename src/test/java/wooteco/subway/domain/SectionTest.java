@@ -9,16 +9,31 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-@DisplayName("구간 도메인 테스트")
 public class SectionTest {
 
-    Section section;
+    private Section section;
 
     @BeforeEach
     void setUp() {
         section = new Section(
             1L, new Line("2호선", "bg-red-600"), new Station(1L, "왕십리역"),
             new Station(2L, "답삽리역"), new Distance(3));
+    }
+
+    @DisplayName("ID가 같으면 같은 구간으로 취급한다.")
+    @Test
+    void equals() {
+        assertThat(section).isEqualTo(new Section(
+            1L, new Line("3호선", "bg-blue-600"), new Station(3L, "서울역"),
+            new Station(4L, "시청역"), new Distance(4)));
+    }
+
+    @DisplayName("ID가 다르면 다른 구간으로 취급한다.")
+    @Test
+    void notEquals() {
+        assertThat(section).isNotEqualTo(new Section(
+            2L, new Line("2호선", "bg-red-600"), new Station(1L, "왕십리역"),
+            new Station(2L, "답삽리역"), new Distance(3)));
     }
 
     @DisplayName("구간의 상행 역과 하행 역이 같으면 예외처리 된다.")

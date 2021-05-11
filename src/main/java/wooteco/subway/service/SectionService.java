@@ -71,7 +71,7 @@ public class SectionService {
         for (Section sectionToCreate : construction.sectionsToCreate()) {
             createSection(sectionToCreate);
         }
-        for (Section sectionToRemove : construction.getSectionsToRemove()) {
+        for (Section sectionToRemove : construction.sectionsToRemove()) {
             remove(sectionToRemove.getId());
         }
     }
