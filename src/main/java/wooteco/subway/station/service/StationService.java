@@ -1,7 +1,6 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 

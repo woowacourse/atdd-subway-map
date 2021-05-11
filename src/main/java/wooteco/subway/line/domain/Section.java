@@ -2,9 +2,6 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.station.domain.Station;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Section {
     private Line line;
     private Station upStation;
