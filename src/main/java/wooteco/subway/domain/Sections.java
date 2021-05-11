@@ -162,4 +162,8 @@ public class Sections {
     public int hashCode() {
         return Objects.hash(sections);
     }
+
+    public List<Section> sections() {
+        return this.sections;
+    }
 }

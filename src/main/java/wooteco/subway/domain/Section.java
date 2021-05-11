@@ -3,9 +3,17 @@ package wooteco.subway.domain;
 import java.util.Objects;
 
 public class Section {
-    private final Station upStation;
-    private final Station downStation;
+    private long id;
+    private long lineId;
+    private Station upStation;
+    private Station downStation;
     private final int distance;
+
+    public Section(long id, long lineId, int distance) {
+        this.id = id;
+        this.lineId = lineId;
+        this.distance = distance;
+    }
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
@@ -23,6 +31,24 @@ public class Section {
 
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public long getLineId() {
+        return lineId;
     }
 
     public int getDistance() {

@@ -33,6 +33,16 @@ public class Line {
         this.sections.delete(station);
     }
 
+    public Sections getSections() {
+        return this.sections;
+    }
+
+    public void setSections(Sections sections) {
+        // todo Sections 정렬
+        // sections.sort(); 혹은 생성자에서 정렬
+        this.sections = sections;
+    }
+
     public Long getId() {
         return id;
     }
