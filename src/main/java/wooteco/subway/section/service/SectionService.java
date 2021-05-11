@@ -29,9 +29,9 @@ public class SectionService {
 
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        Set<Long> sectionsIds = lineRoute.getStationIds();
+        Set<Long> stationIds = lineRoute.getStationIds();
 
-        validateIfSectionContainsOnlyOneStationInLine(sectionsIds, section);
+        validateIfSectionContainsOnlyOneStationInLine(stationIds, section);
 
         if (lineRoute.isInsertSectionInEitherEndsOfLine(section)) {
             sectionDao.save(section);
@@ -41,11 +41,9 @@ public class SectionService {
         sectionDao.save(section);
     }
 
-    private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> sectionsIds,
-        Section section) {
-        long count = sectionsIds.stream()
-            .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId
-                .equals(section.getUpStationId()))
+    private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> stationIds, Section section) {
+        long count = stationIds.stream()
+            .filter(stationId -> stationId.equals(section.getDownStationId()) || stationId.equals(section.getUpStationId()))
             .count();
 
         if (count != INSERT_SECTION_IN_LINE_LIMIT) {
@@ -84,7 +82,6 @@ public class SectionService {
                 downSection.get().getUpStationId(),
                 upSection.get().getDownStationId(),
                 upSection.get().getDistance() + downSection.get().getDistance()));
-            return;
         }
 
         upSection.ifPresent(section -> sectionDao.delete(section.getId()));
