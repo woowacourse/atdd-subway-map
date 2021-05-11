@@ -9,14 +9,14 @@ public class Section {
     public Section() {
     }
 
-    public Section(long upStationId, long downStationId, int distance) {
+    public Section(long id, long upStationId, long downStationId, int distance) {
+        this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Section(long id, long upStationId, long downStationId, int distance) {
-        this.id = id;
+    public Section(long upStationId, long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

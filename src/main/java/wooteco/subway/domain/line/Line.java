@@ -23,15 +23,15 @@ public class Line {
         this.color = color;
     }
 
-    public Line(long id, String name, String color, long upwardTerminalId, long downwardTerminalId) {
-        this.id = id;
+    public Line(String name, String color, long upwardTerminalId, long downwardTerminalId) {
         this.name = name;
         this.color = color;
         this.upwardTerminalId = upwardTerminalId;
         this.downwardTerminalId = downwardTerminalId;
     }
 
-    public Line(String name, String color, long upwardTerminalId, long downwardTerminalId) {
+    public Line(long id, String name, String color, long upwardTerminalId, long downwardTerminalId) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.upwardTerminalId = upwardTerminalId;
