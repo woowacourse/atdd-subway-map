@@ -1,5 +1,6 @@
 package wooteco.subway.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,6 +15,7 @@ public class LineDaoTest extends AcceptanceTest {
     private LineRepository lineRepository;
 
     @Test
+    @DisplayName("노선을 생성한다.")
     void create() {
         // given
         Line line = new Line("2호선", "color name");
@@ -26,6 +28,7 @@ public class LineDaoTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("모든 노선 목록을 조회한다.")
     void findAll() {
         // given
         Line line1 = new Line("1호선", "color name");
@@ -41,6 +44,7 @@ public class LineDaoTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선 id로 노선을 찾는다.")
     void findByIdTest() {
         // given
         Line line = new Line("7호선", "color name");
@@ -54,6 +58,7 @@ public class LineDaoTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선을 수정한다.")
     void update() {
         // given
         Line line = new Line("7호선", "color name");
@@ -68,6 +73,7 @@ public class LineDaoTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("노선을 삭제한다.")
     void removeTest() {
         // given
         Line line = new Line("7호선", "color name");

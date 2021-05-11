@@ -47,8 +47,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    @DisplayName("지하철역을 생성한다.")
     @Test
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "상도역");
@@ -59,13 +59,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 예외가 발생한다.")
     void createStationWithDuplicateName() {
         // when
         Map<String, String> params = new HashMap<>();
@@ -77,12 +78,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
     @Test
+    @DisplayName("지하철역을 조회한다.")
     void getStations() {
         /// given
         Map<String, String> params1 = new HashMap<>();
@@ -103,6 +105,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
@@ -110,6 +113,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
@@ -121,8 +125,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
     @Test
+    @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -130,6 +134,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .delete(location)
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

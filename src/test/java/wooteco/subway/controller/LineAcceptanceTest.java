@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    private String location;
+    private String lineLocation;
     private String namSungStationId;
     private String naeBangStationId;
 
@@ -48,14 +49,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then()
                 .extract();
 
-        location = createResponse.header("Location");
+        lineLocation = createResponse.header("Location");
     }
 
     @AfterEach
     void stash() {
         RestAssured.given().log().all()
                 .when()
-                .delete(location)
+                .delete(lineLocation)
                 .then()
                 .extract();
     }
@@ -85,9 +86,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 목록을 조회하는 요청을 보낸다.")
     void showLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = RequestUtil.requestCreateLine("신분당선", "red", "강남역", "판교역", "24");
-
-        ExtractableResponse<Response> createResponse2 = RequestUtil.requestCreateLine("2호선", "green", "홍대역", "잠실역", "30");
+        ExtractableResponse<Response> createResponse1 =
+                RequestUtil.requestCreateLine("신분당선", "red", "강남역", "판교역", "24");
+        ExtractableResponse<Response> createResponse2 =
+                RequestUtil.requestCreateLine("2호선", "green", "홍대역", "잠실역", "30");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -113,7 +115,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(location)
+                .get(lineLocation)
                 .then().log().all()
                 .extract();
 
@@ -144,13 +146,13 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(location)
+                .put(lineLocation)
                 .then().log().all()
                 .extract();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get(location)
+                .get(lineLocation)
                 .then().log().all()
                 .extract();
 
@@ -168,7 +170,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .delete(location)
+                .delete(lineLocation)
                 .then().log().all()
                 .extract();
 

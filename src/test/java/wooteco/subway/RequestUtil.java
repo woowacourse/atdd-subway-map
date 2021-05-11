@@ -39,7 +39,7 @@ public class RequestUtil {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> requestSection(String lineId, String upStationId, String downStationId, String distance) {
+    public static ExtractableResponse<Response> requestCreateSection(String lineId, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
