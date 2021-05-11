@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
 
 public class Sections {
@@ -64,6 +65,15 @@ public class Sections {
         }
     }
 
+    public void insertAvailable(final Section section) {
+        boolean isUpStationExisted = checkExistedOnLine(section.getUpStationId());
+        boolean isDownStationExisted = checkExistedOnLine(section.getDownStationId());
+
+        if (isUpStationExisted == isDownStationExisted) {
+            throw new InvalidSectionOnLineException();
+        }
+    }
+
     public void validateDeletableCount() {
         if (sections.size() < DELETABLE_COUNT) {
             throw new IllegalStateException("구간을 제거할 수 없습니다.");
@@ -71,10 +81,17 @@ public class Sections {
     }
 
     public void validateExistStation(final Long stationId) {
-        sections.stream()
-            .filter(section -> section.getUpStationId().equals(stationId) ||
-                section.getDownStationId().equals(stationId))
-            .findAny()
-            .orElseThrow(NotFoundStationException::new);
+        if (checkExistedOnLine(stationId)) {
+            throw new NotFoundStationException();
+        }
+    }
+
+    private boolean checkExistedOnLine(final Long stationId) {
+        boolean isMatchedAtUpStation = sections.stream()
+            .anyMatch(it -> stationId.equals(it.getUpStationId()));
+        boolean isMatchedAtDownStation = sections.stream()
+            .anyMatch(it -> stationId.equals(it.getDownStationId()));
+
+        return isMatchedAtUpStation || isMatchedAtDownStation;
     }
 }

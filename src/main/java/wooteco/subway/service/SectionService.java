@@ -21,26 +21,13 @@ public class SectionService {
 
     public SectionServiceDto save(@Valid final SectionServiceDto sectionServiceDto) {
         Section section = sectionServiceDto.toEntity();
-        validateSavable(section);
-
         Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
+        sections.insertAvailable(section);
 
         if (sections.isBothEndSection(section)) {
             return saveSectionAtEnd(section);
         }
         return saveSectionAtMiddle(section);
-    }
-
-    private void validateSavable(Section section) {
-        boolean existUpStation = sectionDao
-            .findByLineIdAndUpStationId(section.getLineId(), section.getUpStationId()).isPresent();
-        boolean existDownStation = sectionDao
-            .findByLineIdAndDownStationId(section.getLineId(), section.getDownStationId())
-            .isPresent();
-
-        if (existUpStation == existDownStation) {
-            throw new InvalidSectionOnLineException();
-        }
     }
 
     private SectionServiceDto saveSectionAtEnd(final Section section) {
