@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-
     private final StationService stationService;
 
     public StationController(StationService stationService) {

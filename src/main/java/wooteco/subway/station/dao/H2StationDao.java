@@ -79,16 +79,6 @@ public class H2StationDao implements StationDao {
     }
 
     @Override
-    public boolean checkExistId(Long id) {
-        String sql = "SELECT COUNT(*) " +
-                "FROM STATION " +
-                "WHERE ID = ?";
-
-        int countOfId = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
-        return countOfId > 0;
-    }
-
-    @Override
     public void delete(Station station) {
         String sql = "DELETE " +
                 "FROM STATION " +

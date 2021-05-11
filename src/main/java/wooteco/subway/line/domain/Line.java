@@ -13,6 +13,7 @@ public class Line {
     public Line(String name, String color) {
         this(null, name, color);
     }
+
     public Line(Long id, String name, String color) {
         this(id, new LineName(name), new LineColor(color));
     }

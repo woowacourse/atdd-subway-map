@@ -88,6 +88,13 @@ public class Section {
         throw new WrongSectionInfoException(String.format("해당 구간이 변경될 수 없습니다. 구간 ID : %d", lineId));
     }
 
+    public Section merge(Section anotherSection, Long stationId) {
+        if (upStation.isSameId(stationId)) {
+            return new Section(null, lineId, anotherSection.upStation, downStation, distance.sum(anotherSection.distance));
+        }
+        return new Section(null, lineId, upStation, anotherSection.downStation, distance.sum(anotherSection.distance));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,13 +106,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public Section merge(Section anotherSection, Long stationId) {
-        if (upStation.isSameId(stationId)) {
-            return new Section(null, lineId, anotherSection.upStation, downStation, distance.sum(anotherSection.distance));
-        }
-        return new Section(null, lineId, upStation, anotherSection.downStation, distance.sum(anotherSection.distance));
-
     }
 }

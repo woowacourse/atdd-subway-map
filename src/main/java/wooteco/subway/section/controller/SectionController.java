@@ -8,7 +8,6 @@ import wooteco.subway.section.servcie.SectionService;
 @RestController
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
-
     private final SectionService sectionService;
 
     public SectionController(SectionService sectionService) {
@@ -23,7 +22,7 @@ public class SectionController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        sectionService.deleteSection(lineId, stationId);
+        sectionService.deleteStationInSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

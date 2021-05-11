@@ -14,8 +14,6 @@ public interface StationDao {
 
     boolean checkExistName(StationName name);
 
-    boolean checkExistId(Long id);
-
     void delete(Station station);
 
     void deleteAll();

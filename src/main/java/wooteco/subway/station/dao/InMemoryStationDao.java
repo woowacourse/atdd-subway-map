@@ -47,12 +47,6 @@ public class InMemoryStationDao implements StationDao {
                 .anyMatch(station -> station.getName().equals(name));
     }
 
-    @Override
-    public boolean checkExistId(Long id) {
-        return stations.stream()
-                .anyMatch(station -> station.getId().equals(id));
-    }
-
     private Station setId(Station station) {
         Field field = ReflectionUtils.findField(Station.class, "id");
         field.setAccessible(true);

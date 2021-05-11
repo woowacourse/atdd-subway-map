@@ -8,11 +8,13 @@ import java.util.regex.Pattern;
 public class StationName {
     private static final int MAX_NAME_LENGTH = 20;
     private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[·가-힣a-zA-Z0-9\\(\\)\\s]*$");
+    private static final String BLANK_OVER_ONE_REGEX = " +";
+    private static final String BLANK = " ";
 
     private final String name;
 
     public StationName(final String name) {
-        String trimAndRemoveDuplicateBlankName = name.trim().replaceAll(" +", " ");
+        String trimAndRemoveDuplicateBlankName = name.trim().replaceAll(BLANK_OVER_ONE_REGEX, BLANK);
         validateNameLength(trimAndRemoveDuplicateBlankName);
         validateInvalidName(trimAndRemoveDuplicateBlankName);
         this.name = trimAndRemoveDuplicateBlankName;

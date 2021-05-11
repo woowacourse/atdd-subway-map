@@ -6,6 +6,7 @@ import wooteco.subway.station.domain.Station;
 import java.util.*;
 
 public class Sections {
+    private static final int MIN_SORT_COUNT = 2;
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -47,7 +48,7 @@ public class Sections {
     }
 
     private List<Section> sort(List<Section> sections) {
-        if (sections.size() < 2) {
+        if (sections.size() < MIN_SORT_COUNT) {
             return sections;
         }
         Map<Station, Section> upStations = new HashMap<>();

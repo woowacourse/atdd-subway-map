@@ -14,7 +14,6 @@ import java.util.List;
 
 @Service
 public class SectionService {
-
     private final SectionDao sectionDao;
     private final StationDao stationDao;
 
@@ -28,7 +27,10 @@ public class SectionService {
         Station upStation = stationDao.findById(upStationId);
         Station downStation = stationDao.findById(downStationId);
         validateSameStation(upStation, downStation);
+        return processAddIfCan(lineId, distance, upStation, downStation);
+    }
 
+    private Section processAddIfCan(Long lineId, int distance, Station upStation, Station downStation) {
         Section section = new Section(lineId, upStation, downStation, new Distance(distance));
         Sections sections = sectionDao.findByLineId(lineId);
         if (sections.isEmpty() || sections.isUpLastSection(section) || sections.isDownLastSection(section)) {
@@ -47,9 +49,13 @@ public class SectionService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
+    public void deleteStationInSection(Long lineId, Long stationId) {
         validateCanDelete(lineId);
         List<Section> sameStationSections = sectionDao.findByLineIdAndStationId(lineId, stationId);
+        processDeleteIfCan(stationId, sameStationSections);
+    }
+
+    private void processDeleteIfCan(Long stationId, List<Section> sameStationSections) {
         if (sameStationSections.size() == 1) {
             sectionDao.delete(sameStationSections.get(0));
             return;
@@ -63,12 +69,8 @@ public class SectionService {
     }
 
     private void validateCanDelete(Long lineId) {
-        if (sectionDao.canDelete(lineId)) {
+        if (!sectionDao.canDelete(lineId)) {
             throw new WrongSectionInfoException(String.format("구간을 삭제할 수 없습니다. 구간 ID: %d", lineId));
         }
-    }
-
-    public Sections findByLineId(Long id) {
-        return sectionDao.findByLineId(id);
     }
 }
