@@ -1,5 +1,6 @@
 package wooteco.subway.station;
 
+import wooteco.subway.exception.StationLengthException;
 import wooteco.subway.exception.StationSuffixException;
 
 import java.util.Objects;
@@ -20,6 +21,7 @@ public class Station {
 
     public Station(String name) {
         validateSuffix(name);
+        validateLength(name);
         this.name = name;
     }
 
@@ -31,6 +33,12 @@ public class Station {
 
     private boolean isNotEndsWithStation(String name) {
         return !name.endsWith(SUFFIX);
+    }
+
+    private void validateLength(String name) {
+        if (name.length() < 2) {
+            throw new StationLengthException();
+        }
     }
 
     public Long getId() {
