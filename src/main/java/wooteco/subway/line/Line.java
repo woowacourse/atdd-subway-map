@@ -1,38 +1,27 @@
 package wooteco.subway.line;
 
-import java.util.Objects;
 import wooteco.subway.domain.Id;
 
 public class Line {
 
     private Id id;
-    private String name;
-    private String color;
+    private Name name;
+    private Color color;
 
     public Line() {
     }
 
     public Line(final String name, final String color) {
-        this.id = new Id(null);
-        this.name = name;
-        this.color = color;
+        this(null, new Name(name), new Color(color));
     }
 
     public Line(final Long id, final String name, final String color) {
-        this.id = new Id(id);
-        this.name = name;
-        this.color = color;
+        this(new Id(id), new Name(name), new Color(color));
     }
 
-    public Line(final String name) {
+    public Line(final Id id, final Name name, final Color color) {
+        this.id = id;
         this.name = name;
-    }
-
-    public void changeName(String name) {
-        this.name = name;
-    }
-
-    public void changeColor(String color) {
         this.color = color;
     }
 
@@ -44,27 +33,10 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {
-        return color;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        return color.getValue();
     }
 }
