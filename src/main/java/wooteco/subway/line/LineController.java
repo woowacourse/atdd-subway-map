@@ -17,16 +17,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.SectionDto;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     private LineDao lineDao;
+    private SectionDao sectionDao;
 
     @Autowired
-    public LineController(LineDao lineDao) {
+    public LineController(LineDao lineDao, SectionDao sectionDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @PostMapping("")
@@ -34,6 +38,10 @@ public class LineController {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         long id = lineDao.save(line);
+        SectionDto sectionDto = new SectionDto(id, lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(),
+            lineRequest.getDistance());
+        sectionDao.save(sectionDto);
         LineResponse lineResponse = new LineResponse(id, line.getName(),
             line.getColor());
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
