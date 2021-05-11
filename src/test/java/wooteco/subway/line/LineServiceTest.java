@@ -1,10 +1,7 @@
 package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
-import wooteco.subway.line.section.SectionRequest;
-import wooteco.subway.line.section.SectionResponse;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
