@@ -69,6 +69,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하려하면 예외가 발생한다.")
+    @Test
+    void createStationWithDuplicateName() {
+        // when
+        ExtractableResponse<Response> response = RequestUtil.requestCreateLine("7호선", "red", "판교역", "강남역", "23");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @Test
     @DisplayName("노선 목록을 조회하는 요청을 보낸다.")
     void showLines() {
