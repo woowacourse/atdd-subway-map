@@ -12,7 +12,7 @@ public class Sections {
     }
 
     public Sections(Section section) {
-        sections = new HashSet<>(Arrays.asList(section));
+        sections = new HashSet<>(Collections.singletonList(section));
     }
 
     public List<Station> path() {
@@ -35,16 +35,14 @@ public class Sections {
     private Optional<Section> lastSection() {
         return sections.stream()
                 .filter(section1 -> !sections.stream()
-                        .filter(section2 -> section1.downStation().equals(section2.upStation()))
-                        .findFirst().isPresent()
+                        .anyMatch(section2 -> section1.downStation().equals(section2.upStation()))
                 ).findFirst();
     }
 
     private Optional<Section> firstSection() {
         return sections.stream()
                 .filter(section1 -> !sections.stream()
-                        .filter(section2 -> section1.upStation().equals(section2.downStation()))
-                        .findFirst().isPresent()
+                        .anyMatch(section2 -> section1.upStation().equals(section2.downStation()))
                 ).findFirst();
     }
 

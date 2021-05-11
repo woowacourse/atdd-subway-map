@@ -40,7 +40,6 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "SELECT * FROM line";
-
         return jdbcTemplate.query(sql, LINE_ROW_MAPPER);
     }
 
