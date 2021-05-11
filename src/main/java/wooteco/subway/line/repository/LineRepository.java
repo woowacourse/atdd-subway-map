@@ -18,6 +18,7 @@ import java.util.Objects;
 @Repository
 public class LineRepository {
     private static final int NO_EXIST_COUNT = 0;
+
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNum) -> new Line(
             resultSet.getLong("id"),

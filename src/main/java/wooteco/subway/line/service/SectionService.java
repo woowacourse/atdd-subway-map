@@ -1,6 +1,7 @@
 package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateException;
 import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.line.dto.SectionRequest;
@@ -24,22 +25,22 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional
     public void lineCreateAdd(final Long lineId, final SectionRequest sectionRequest) {
         validateLineId(lineId);
         validateStations(sectionRequest);
         sectionRepository.save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
 
+    @Transactional
     public void add(final Long lineId, final SectionRequest sectionRequest) {
         validateAddRequest(lineId, sectionRequest);
         List<Long> stationIdsByLineId = sectionRepository.getStationIdsByLineId(lineId);
 
-        // upStation만 Line에 존재하는 경우,
         if (stationIdsByLineId.contains(sectionRequest.getUpStationId())) {
             addBaseOnUpStation(lineId, sectionRequest);
             return;
         }
-        // downStation만 Line에 존재하는 경우.
         addBaseOnDownStation(lineId, sectionRequest);
     }
 
@@ -82,6 +83,7 @@ public class SectionService {
         }
     }
 
+    @Transactional
     public void delete(final Long lineId, final Long stationId) {
         validateDeleteRequest(lineId, stationId);
         sectionRepository.deleteSection(lineId, stationId);

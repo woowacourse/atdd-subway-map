@@ -15,8 +15,8 @@ import java.util.*;
 @Repository
 public class SectionRepository {
     private static final int NO_EXIST_COUNT = 0;
-    private final JdbcTemplate jdbcTemplate;
 
+    private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Long> stationIdRowMapperByUpStationId = (resultSet, rowNum) -> resultSet.getLong("up_station_id");
     private final RowMapper<Long> stationIdRowMapperByDownStationId = (resultSet, rowNum) -> resultSet.getLong("down_station_id");
 
@@ -59,12 +59,16 @@ public class SectionRepository {
 
     private void saveSectionBetweenStationsBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND up_station_id = ?";
-        int currentShortestDistance = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId()));
-        if (currentShortestDistance <= sectionRequest.getDistance()) {
+        int beforeDistance = jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getUpStationId());
+        if (beforeDistance <= sectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
         }
+        sectionUpdateBetweenSaveBaseOnUpStation(lineId, sectionRequest, beforeConnectedStationId, beforeDistance);
+    }
+
+    private void sectionUpdateBetweenSaveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId, final int beforeDistance) {
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        save(lineId, sectionRequest.getDownStationId(), beforeConnectedStationId, currentShortestDistance - sectionRequest.getDistance());
+        save(lineId, sectionRequest.getDownStationId(), beforeConnectedStationId, beforeDistance - sectionRequest.getDistance());
         delete(lineId, sectionRequest.getUpStationId(), beforeConnectedStationId);
     }
 
@@ -80,13 +84,17 @@ public class SectionRepository {
 
     private void saveSectionBetweenStationsBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId) {
         String query = "SELECT distance FROM section WHERE line_id = ? AND down_station_id = ?";
-        int currentShortestDistance = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getDownStationId()));
-        if (currentShortestDistance <= sectionRequest.getDistance()) {
+        int beforeDistance = jdbcTemplate.queryForObject(query, Integer.class, lineId, sectionRequest.getDownStationId());
+        if (beforeDistance <= sectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
         }
+        sectionUpdateBetweenSaveBaseOnDownStation(lineId, sectionRequest, beforeConnectedStationId, beforeDistance);
+    }
+
+    private void sectionUpdateBetweenSaveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest, final Long beforeConnectedStationId, final int beforeDistance) {
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         delete(lineId, beforeConnectedStationId, sectionRequest.getDownStationId());
-        save(lineId, beforeConnectedStationId, sectionRequest.getUpStationId(), currentShortestDistance - sectionRequest.getDistance());
+        save(lineId, beforeConnectedStationId, sectionRequest.getUpStationId(), beforeDistance - sectionRequest.getDistance());
     }
 
     private void delete(final Long lineId, final Long upStationId, final Long downStationId) {
@@ -106,12 +114,6 @@ public class SectionRepository {
         deleteSectionBaseOnDownStation(lineId, stationId);
     }
 
-    private void deleteSectionBaseOnDownStation(final Long lineId, final Long stationId) {
-        String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
-        Long frontStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
-        delete(lineId, frontStationId, stationId);
-    }
-
     private void deleteSectionBaseOnUpStation(final Long lineId, final Long stationId) {
         String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
         Long backStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
@@ -119,12 +121,22 @@ public class SectionRepository {
             query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
             Long frontStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, stationId));
             int connectDistance = getBetweenDistance(lineId, stationId);
-            delete(lineId, frontStationId, stationId);
-            delete(lineId, stationId, backStationId);
-            save(lineId, frontStationId, backStationId, connectDistance);
+            sectionUpdateWhenBetweenDelete(lineId, stationId, backStationId, frontStationId, connectDistance);
         } catch (EmptyResultDataAccessException e) {
             delete(lineId, stationId, backStationId);
         }
+    }
+
+    private void deleteSectionBaseOnDownStation(final Long lineId, final Long stationId) {
+        String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
+        Long frontStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
+        delete(lineId, frontStationId, stationId);
+    }
+
+    private void sectionUpdateWhenBetweenDelete(final Long lineId, final Long stationId, final Long backStationId, final Long frontStationId, final int connectDistance) {
+        delete(lineId, frontStationId, stationId);
+        delete(lineId, stationId, backStationId);
+        save(lineId, frontStationId, backStationId, connectDistance);
     }
 
     private int getBetweenDistance(final Long lineId, final Long stationId) {
@@ -132,7 +144,6 @@ public class SectionRepository {
         int distance = jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId);
 
         query = "SELECT distance FROM section WHERE line_id = ? AND down_station_id = ?";
-        distance += jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId);
-        return distance;
+        return distance + jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId);
     }
 }

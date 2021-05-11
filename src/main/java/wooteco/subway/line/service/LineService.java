@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class LineService {
     private final StationService stationService;
     private final LineRepository lineRepository;
@@ -35,6 +34,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         Line newLine = new Line(lineRequest.getColor(), lineRequest.getName());
         if (lineRepository.isExistName(newLine)) {
@@ -63,6 +63,7 @@ public class LineService {
         );
     }
 
+    @Transactional
     public void updateLine(final Long id, final LineRequest lineRequest) {
         lineRepository.update(new Line(id, lineRequest.getColor(), lineRequest.getName()));
     }
