@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
-class SectionServiceTest {
+class FinalStationsServiceTest {
 
     @Autowired
     private LineService lineService;
@@ -28,7 +28,7 @@ class SectionServiceTest {
     private StationService stationService;
 
     @Autowired
-    private SectionService sectionService;
+    private SectionServiceTemp sectionService;
 
     private Station aStation;
     private Station bStation;
