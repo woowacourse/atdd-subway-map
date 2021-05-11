@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.section.SectionRequest;
 import wooteco.subway.section.SectionService;
 
 import java.net.URI;
@@ -65,10 +66,10 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<String> addSection(@RequestBody LineRequest lineRequest, @PathVariable long lineId) {
-        long upStationId = lineRequest.getUpStationId();
-        long downStationId = lineRequest.getDownStationId();
-        int distance = lineRequest.getDistance();
+    public ResponseEntity<String> addSection(@RequestBody SectionRequest sectionRequest, @PathVariable long lineId) {
+        long upStationId = sectionRequest.getUpStationId();
+        long downStationId = sectionRequest.getDownStationId();
+        int distance = sectionRequest.getDistance();
 
         long existStationId = sectionService.findExistStation(lineId, upStationId, downStationId);
         return checkAndAddSection(lineId, existStationId, upStationId, downStationId, distance);
