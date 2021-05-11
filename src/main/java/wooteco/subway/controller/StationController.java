@@ -24,12 +24,6 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder webDataBinder) {
-        StationValidator stationValidator = new StationValidator();
-        webDataBinder.addValidators(stationValidator);
-    }
-
     @PostMapping()
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         StationResponse stationResponse = new StationResponse(stationService.create(stationRequest));
