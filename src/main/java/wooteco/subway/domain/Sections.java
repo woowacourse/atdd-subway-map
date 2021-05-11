@@ -14,7 +14,7 @@ public class Sections {
 
     public Sections(Station upStation, Station downStation, int distance) {
         this.sections = new ArrayList<>();
-        sections.add(new Section(upStation, downStation, distance));
+        this.sections.add(new Section(upStation, downStation, distance));
     }
 
     public void add(Station upStation, Station downStation, int distance) {
@@ -24,7 +24,7 @@ public class Sections {
         validateRegisteredStations(hasUpStation, hasDownStation);
 
         if (hasUpStation) {
-            if (isUp(upStation)) {
+            if (isUpStationOfAnywhere(upStation)) {
                 Section sectionToUpdate = getSectionWhereUpStationIs(upStation);
                 addMiddle(sectionToUpdate, downStation, distance);
                 return;
@@ -34,7 +34,7 @@ public class Sections {
         }
 
         if (hasDownStation) {
-            if (isDown(downStation)) {
+            if (isDownStationOfAnywhere(downStation)) {
                 Section sectionToUpdate = getSectionWhereDownStationIs(downStation);
                 addMiddle(sectionToUpdate, upStation, sectionToUpdate.getDistance() - distance);
                 return;
@@ -46,6 +46,15 @@ public class Sections {
     private boolean contains(Station station) {
         return this.sections.stream()
                 .anyMatch(section -> section.hasAny(station));
+    }
+
+    private static void validateRegisteredStations(boolean hasUpStation, boolean hasDownStation) {
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException("두 역이 모두 해당 노선에 등록되어 있습니다.");
+        }
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("두 역이 모두 노선에 등록되어 있지 않습니다.");
+        }
     }
 
     private Section getSectionWhereUpStationIs(Station upStation) {
@@ -78,76 +87,67 @@ public class Sections {
         this.sections.add(index, section);
     }
 
-    private void validateDistance(int distance, Section sectionToDelete) {
+    private static void validateDistance(int distance, Section sectionToDelete) {
         if (distance > sectionToDelete.getDistance()) {
             throw new IllegalArgumentException("기존 구간의 길이를 넘어서는 구간을 추가할 수 없습니다.");
         }
     }
 
-    private void validateRegisteredStations(boolean hasUpStation, boolean hasDownStation) {
-        if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("두 역이 모두 해당 노선에 등록되어 있습니다.");
-        }
-        if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("두 역이 모두 노선에 등록되어 있지 않습니다.");
-        }
-    }
-
-    private boolean isUp(Station station) {
-        return this.sections.stream()
-                .anyMatch(section -> section.isUpStation(station));
-    }
-
-    private boolean isDown(Station station) {
-        return this.sections.stream()
-                .anyMatch(section -> section.isDownStation(station));
-    }
-
     public void delete(Station station) {
-        boolean hasUpStation = isUp(station);
-        boolean hasDownStation = isDown(station);
+        boolean hasUpStation = isUpStationOfAnywhere(station);
+        boolean hasDownStation = isDownStationOfAnywhere(station);
 
         if (!hasUpStation && !hasDownStation) {
             throw new IllegalArgumentException("등록되지 않은 역입니다.");
         }
 
         if (hasUpStation && hasDownStation) {
-            removeStationFromMiddleOfSection(station);
+            this.removeStationFromMiddleOfSection(station);
             return;
         }
 
         if (hasUpStation) {
-            sections.remove(0);
+            this.sections.remove(0);
             return;
         }
 
         if (hasDownStation) {
-            sections.remove(sections.size() - 1);
+            this.sections.remove(sections.size() - 1);
             return;
         }
     }
 
+    private boolean isUpStationOfAnywhere(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+    }
+
+    private boolean isDownStationOfAnywhere(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isDownStation(station));
+    }
+
     private void removeStationFromMiddleOfSection(Station station) {
-        Section sectionToUpdateLeftSide = this.sections.stream()
+        Section sectionToMergeLeftSide = this.sections.stream()
                 .filter(section -> section.isDownStation(station))
                 .findAny()
                 .get();
 
-        Section sectionToUpdateRightSide = this.sections.stream()
+        Section sectionToMergeRightSide = this.sections.stream()
                 .filter(section -> section.isUpStation(station))
                 .findAny()
                 .get();
 
-        Section sectionMerged = mergeSection(sectionToUpdateLeftSide, sectionToUpdateRightSide);
-        int index = sections.indexOf(sectionToUpdateLeftSide);
+        Section sectionMerged = mergeSection(sectionToMergeLeftSide, sectionToMergeRightSide);
+        int index = sections.indexOf(sectionToMergeLeftSide);
 
-        sections.remove(sectionToUpdateLeftSide);
-        sections.remove(sectionToUpdateRightSide);
+        sections.remove(sectionToMergeLeftSide);
+        sections.remove(sectionToMergeRightSide);
 
         sections.add(index, sectionMerged);
     }
 
-    private Section mergeSection(Section left, Section right) {
+    private static Section mergeSection(Section left, Section right) {
         return new Section(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
     }
 
@@ -159,7 +159,7 @@ public class Sections {
         List<Station> stations = this.sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(this.sections.get(this.sections.size()-1).getDownStation());
+        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
         return stations;
     }
 
