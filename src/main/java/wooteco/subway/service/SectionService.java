@@ -8,6 +8,7 @@ import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.service.dto.DeleteStationDto;
@@ -28,7 +29,7 @@ public class SectionService {
     public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
         Section section = sectionServiceDto.toEntity();
         Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
-
+        checkExistedStation(sectionServiceDto);
         if (sections.isNotEmpty()) {
             throw new InvalidSectionOnLineException();
         }
@@ -44,6 +45,21 @@ public class SectionService {
             return saveSectionAtEnd(section);
         }
         return saveSectionAtMiddle(section, sections);
+    }
+
+    private void checkExistedStation(SectionServiceDto sectionServiceDto) {
+        List<StationServiceDto> dtos = stationService.showStations();
+        Long upStationId = sectionServiceDto.getUpStationId();
+        Long downStationId = sectionServiceDto.getDownStationId();
+        checkOneStation(upStationId, dtos);
+        checkOneStation(downStationId, dtos);
+    }
+
+    private void checkOneStation(Long stationId, List<StationServiceDto> dtos) {
+        dtos.stream().map(StationServiceDto::getId)
+            .filter(it -> it.equals(stationId))
+            .findAny()
+            .orElseThrow(NotFoundStationException::new);
     }
 
     private SectionServiceDto saveSectionAtEnd(final Section section) {

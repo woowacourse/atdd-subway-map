@@ -190,9 +190,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        System.out.println("오긴오냐?");
-        System.out.println(response.statusCode());
-
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
@@ -299,6 +296,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("지하철역 테이블에 없는 역으로 구간 등록 시도시 예외처리")
+    @Test
+    public void insertNullStation() {
+        // given
+        final String color = "bg-purple-405";
+        final String name = "부산선";
+        final long upStationId = 1L;
+        final long downStationId = 2L;
+        final int distance = 10;
+
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
+
+        //when
+        ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        //then
+        assertThat(formResponse.statusCode()).isEqualTo(404);
     }
 
     @DisplayName("이미 다른 노선이 사용중인 색깔로 바꾼다")
