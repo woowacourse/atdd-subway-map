@@ -37,7 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면 예외를 발생한다.")
     @Test
     void createLineWithDuplicateName() {
         LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 5);
@@ -50,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(new LineDuplicationException().getMessage());
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 생성하면 예외를 발생한다.")
     @Test
     void createLineWithDuplicateColor() {
         LineRequest beforeRequest = new LineRequest("2호선", "초록색", 1L, 2L, 5);
