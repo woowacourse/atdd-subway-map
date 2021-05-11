@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,6 +40,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @MockBean
     private StationDao stationDao;
+
+    @Autowired
+    private LineService lineService;
 
     @BeforeEach
     void beforeEach() {
@@ -89,7 +93,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                                                                        .split("/")[2]))
                                            .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath()
-                                           .getList("lineResponses", LineResponse.class)
+                                           .getList("", LineResponse.class)
                                            .stream()
                                            .map(LineResponse::getId)
                                            .collect(Collectors.toList());
@@ -111,6 +115,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = response.body()
                                             .as(LineResponse.class);
 
+        Long id = Long.valueOf(uri.split("/")[2]);
+
+        assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineService.findById(id));
         assertThat(lineResponse.getColor()).isEqualTo(color1);
         assertThat(lineResponse.getName()).isEqualTo(name1);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

@@ -1,16 +1,25 @@
 package wooteco.subway.line;
 
+import wooteco.subway.station.Station;
+
+import java.util.List;
 import java.util.Objects;
 
 public class Line {
     private Long id;
     private String name;
     private String color;
+    private Sections sections;
 
-    public Line(Long id, String name, String color) {
+    public Line(LineEntity lineEntity, Sections sections) {
+        this(lineEntity.getId(), lineEntity.getName(), lineEntity.getColor(), sections);
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -23,6 +32,14 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<Station> stationRoute() {
+        return sections.path();
     }
 
     @Override

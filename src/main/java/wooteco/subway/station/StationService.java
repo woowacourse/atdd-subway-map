@@ -3,7 +3,7 @@ package wooteco.subway.station;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.exception.ErrorCode;
+import wooteco.subway.station.exception.StationError;
 import wooteco.subway.station.exception.StationException;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class StationService {
     public Station createStation(StationRequest stationRequest) {
         String stationName = stationRequest.getName();
         if (isStationExist(stationName)) {
-            throw new StationException(ErrorCode.ALREADY_EXIST_STATION_NAME);
+            throw new StationException(StationError.ALREADY_EXIST_STATION_NAME);
         }
         return stationDao.save(stationName);
     }
@@ -33,7 +33,7 @@ public class StationService {
             return stationDao.findByName(name)
                              .isPresent();
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new StationException(ErrorCode.INCORRECT_SIZE_STATION_FIND_BY_ID);
+            throw new StationException(StationError.INCORRECT_SIZE_STATION_FIND_BY_ID);
         }
     }
 

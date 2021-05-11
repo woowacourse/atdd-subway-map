@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.exception.LineError;
+import wooteco.subway.line.exception.LineException;
 
 import java.util.Optional;
 
@@ -37,22 +39,22 @@ class LineDaoTest {
     @Test
     @DisplayName("이름으로 노선 검색")
     void findByName() {
-        Optional<Line> findStation = lineDao.findByName(lineName1);
-        assertTrue(findStation.isPresent());
+        Optional<LineEntity> lineEntity = lineDao.findByName(lineName1);
+        assertTrue(lineEntity.isPresent());
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 이름 검색")
     void findNoneExistLineByName() {
-        Optional<Line> findStation = lineDao.findByName(lineName2);
-        assertFalse(findStation.isPresent());
+        Optional<LineEntity> findLine = lineDao.findByName(lineName2);
+        assertFalse(findLine.isPresent());
     }
 
     @Test
     @DisplayName("존재하지 않는 노선 Id 검색")
     void findNoneExistLineById() {
-        Optional<Line> findStation = lineDao.findById(10L);
-        assertFalse(findStation.isPresent());
+        Optional<LineEntity> findLine = lineDao.findById(10L);
+        assertFalse(findLine.isPresent());
     }
 
     @Test
@@ -71,11 +73,16 @@ class LineDaoTest {
     @Test
     @DisplayName("노선 정보 수정")
     void update() {
-        Long savedLineId = lineDao.save(lineName2, color2);
-        lineDao.update(savedLineId, "3호선", "주황색");
+        String updateName = "3호선";
+        String updateColor = "주황색";
 
-        assertThat(lineDao.findById(savedLineId)
-                          .get()).isEqualTo(new Line(savedLineId, "3호선", "주황색"));
+        Long savedLineId = lineDao.save(lineName2, color2);
+        lineDao.update(savedLineId, updateName, updateColor);
+
+        LineEntity updatedLineEntity = lineDao.findById(savedLineId).orElseThrow(()->new LineException(LineError.NOT_EXIST_LINE_ID));
+
+        assertThat(updatedLineEntity.getName()).isEqualTo(updateName);
+        assertThat(updatedLineEntity.getColor()).isEqualTo(updateColor);
     }
 
     @Test

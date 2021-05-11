@@ -4,9 +4,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.LineResponses;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -25,7 +25,7 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<LineResponses> showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok(lineService.findAll());
     }
 

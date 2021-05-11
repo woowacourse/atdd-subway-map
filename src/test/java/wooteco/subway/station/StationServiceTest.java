@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.station.dto.StationRequest;
-import wooteco.subway.station.exception.ErrorCode;
+import wooteco.subway.station.exception.StationError;
 import wooteco.subway.station.exception.StationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,6 +35,6 @@ class StationServiceTest {
         stationService.createStation(stationRequest);
         assertThatThrownBy(() -> stationService.createStation(stationRequest))
                 .isInstanceOf(StationException.class)
-                .hasMessage(ErrorCode.ALREADY_EXIST_STATION_NAME.getMessage());
+                .hasMessage(StationError.ALREADY_EXIST_STATION_NAME.getMessage());
     }
 }

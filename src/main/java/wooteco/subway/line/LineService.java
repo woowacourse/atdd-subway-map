@@ -2,17 +2,17 @@ package wooteco.subway.line;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.LineResponses;
-import wooteco.subway.line.exception.ErrorCode;
+import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.exception.StationError;
+import wooteco.subway.station.exception.StationException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,38 +27,50 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public LineResponses findAll() {
-        return LineResponses.of(lineDao.findAll());
+    public List<LineResponse> findAll() {
+        return lineDao.findAll()
+                      .stream()
+                      .map(LineResponse::new)
+                      .collect(Collectors.toList());
     }
 
 
     public LineResponse findById(Long id) {
+        return new LineResponse(lineById(id));
+    }
+
+    private Line lineById(Long id) {
         try {
-            Line line = lineDao.findById(id)
-                               .orElseThrow(() -> new LineException(ErrorCode.NOT_EXIST_LINE_ID));
-            List<StationResponse> stationResponses = findStationsByLineId(id);
-            return new LineResponse(line, stationResponses);
+            LineEntity lineEntity = lineDao.findById(id)
+                                           .orElseThrow(() -> new LineException(LineError.NOT_EXIST_LINE_ID));
+            return new Line(lineEntity, sectionsByLineId(id));
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new LineException(ErrorCode.INCORRECT_SIZE_LINE_FIND_BY_ID);
+            throw new LineException(LineError.INCORRECT_SIZE_LINE_FIND_BY_ID);
         }
     }
 
-    private List<StationResponse> findStationsByLineId(Long id) {
-        Sections sections = new Sections(sectionDao.findByLineId(id));
-        List<Long> routeWithStationId = sections.stationRoute();
-        return routeWithStationId.stream()
-                                 .map(stationDao::findById)
-                                 .map(Optional::get)
-                                 .map(StationResponse::new)
-                                 .collect(Collectors.toList());
+    private Sections sectionsByLineId(Long id) {
+        List<SectionEntity> sectionEntities = sectionDao.findByLineId(id);
+        List<Section> sections = new ArrayList<>();
+        for (SectionEntity sectionEntity : sectionEntities) {
+            Station upStation = stationById(sectionEntity.getUpStationId());
+            Station downStation = stationById(sectionEntity.getDownStationId());
+            sections.add(new Section(upStation, downStation, sectionEntity.getDistance()));
+        }
+        return new Sections(sections);
+    }
+
+    private Station stationById(Long id) {
+        return stationDao.findById(id)
+                         .orElseThrow(() -> new StationException(StationError.NO_STATION_BY_ID));
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
         if (isLineExist(lineRequest.getName())) {
-            throw new LineException(ErrorCode.ALREADY_EXIST_LINE_NAME);
+            throw new LineException(LineError.ALREADY_EXIST_LINE_NAME);
         }
         if (notExistingStation(lineRequest.getDownStationId()) || notExistingStation(lineRequest.getUpStationId())) {
-            throw new LineException(ErrorCode.NOT_EXIST_STATION_ON_LINE_REQUEST);
+            throw new LineException(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST);
         }
         Long createdLineId = lineDao.save(lineRequest.getName(), lineRequest.getColor());
         SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
@@ -76,7 +88,7 @@ public class LineService {
             return lineDao.findByName(name)
                           .isPresent();
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new LineException(ErrorCode.INCORRECT_SIZE_LINE_FIND_BY_NAME);
+            throw new LineException(LineError.INCORRECT_SIZE_LINE_FIND_BY_NAME);
         }
     }
 

@@ -21,8 +21,8 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Line> lineRowMapper() {
-        return (resultSet, rowNum) -> new Line(
+    private RowMapper<LineEntity> lineRowMapper() {
+        return (resultSet, rowNum) -> new LineEntity(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("color")
@@ -42,19 +42,19 @@ public class LineDao {
                       .longValue();
     }
 
-    public Optional<Line> findById(Long id) throws IncorrectResultSizeDataAccessException {
+    public Optional<LineEntity> findById(Long id) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where id = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), id);
+        List<LineEntity> result = jdbcTemplate.query(sql, lineRowMapper(), id);
         return Optional.ofNullable(DataAccessUtils.singleResult(result));
     }
 
-    public Optional<Line> findByName(String name) throws IncorrectResultSizeDataAccessException {
+    public Optional<LineEntity> findByName(String name) throws IncorrectResultSizeDataAccessException {
         String sql = "select id, name, color from LINE where name = ?";
-        List<Line> result = jdbcTemplate.query(sql, lineRowMapper(), name);
+        List<LineEntity> result = jdbcTemplate.query(sql, lineRowMapper(), name);
         return Optional.ofNullable(DataAccessUtils.singleResult(result));
     }
 
-    public List<Line> findAll() {
+    public List<LineEntity> findAll() {
         String sql = "select id, name, color from LINE";
         return jdbcTemplate.query(sql, lineRowMapper());
     }

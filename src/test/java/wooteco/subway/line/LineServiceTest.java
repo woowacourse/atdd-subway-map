@@ -10,7 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.exception.ErrorCode;
+import wooteco.subway.line.exception.LineError;
 import wooteco.subway.line.exception.LineException;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -64,7 +64,7 @@ class LineServiceTest {
         lineService.createLine(LINE_REQUEST);
         assertThatThrownBy(() -> lineService.createLine(LINE_REQUEST))
                 .isInstanceOf(LineException.class)
-                .hasMessage(ErrorCode.ALREADY_EXIST_LINE_NAME.getMessage());
+                .hasMessage(LineError.ALREADY_EXIST_LINE_NAME.getMessage());
     }
 
     @Test
@@ -72,6 +72,6 @@ class LineServiceTest {
     void createLineWithNotExistStation() {
         LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 10L, 3);
         assertThatThrownBy(() -> lineService.createLine(lineRequest)).isInstanceOf(LineException.class)
-                                                                     .hasMessage(ErrorCode.NOT_EXIST_STATION_ON_LINE_REQUEST.getMessage());
+                                                                     .hasMessage(LineError.NOT_EXIST_STATION_ON_LINE_REQUEST.getMessage());
     }
 }

@@ -14,8 +14,8 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Section> sectionRowMapper() {
-        return (resultSet, rowNum) -> new Section(
+    private RowMapper<SectionEntity> sectionRowMapper() {
+        return (resultSet, rowNum) -> new SectionEntity(
                 resultSet.getLong("id"),
                 resultSet.getLong("line_id"),
                 resultSet.getLong("up_station_id"),
@@ -29,7 +29,7 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
-    public List<Section> findByLineId(Long lineId) {
+    public List<SectionEntity> findByLineId(Long lineId) {
         String sql = "select ID, LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE from SECTION where LINE_ID = ?";
         return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }

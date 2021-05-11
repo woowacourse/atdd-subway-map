@@ -1,13 +1,14 @@
 package wooteco.subway.station.exception;
 
-public enum ErrorCode {
+public enum StationError {
     ALREADY_EXIST_STATION_NAME(400, "존재하는 역 이름입니다."),
+    NO_STATION_BY_ID(400, "해당 ID에 역은 존재하지 않습니다"),
     INCORRECT_SIZE_STATION_FIND_BY_ID(500, "해당 ID에 해당하는 역이 많습니다.");
 
     private final int statusCode;
     private final String message;
 
-    ErrorCode(int statusCode, String message) {
+    StationError(int statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }

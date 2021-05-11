@@ -1,5 +1,7 @@
 package wooteco.subway.line;
 
+import wooteco.subway.station.Station;
+
 import java.util.*;
 
 public class Sections {
@@ -9,32 +11,32 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Long> stationRoute() {
-        Map<Long, Section> upStationMap = new HashMap<>();
-        Map<Long, Section> downStationMap = new HashMap<>();
+    public List<Station> path() {
+        Map<Station, Section> upStationMap = new HashMap<>();
+        Map<Station, Section> downStationMap = new HashMap<>();
 
-        Deque<Long> sortedStationId = new ArrayDeque<>();
+        Deque<Station> sortedStation = new ArrayDeque<>();
 
         for (Section section : sections) {
-            upStationMap.put(section.getUpStationId(), section);
-            downStationMap.put(section.getDownStationId(), section);
+            upStationMap.put(section.getUpStation(), section);
+            downStationMap.put(section.getDownStation(), section);
         }
 
-        sortedStationId.addFirst(sections.get(0)
-                                         .getUpStationId());
-        sortedStationId.addLast(sections.get(0)
-                                        .getDownStationId());
+        sortedStation.addFirst(sections.get(0)
+                                       .getUpStation());
+        sortedStation.addLast(sections.get(0)
+                                      .getDownStation());
 
-        while (upStationMap.containsKey(sortedStationId.getLast())) {
-            sortedStationId.addLast(upStationMap.get(sortedStationId.getLast())
-                                                .getDownStationId());
+        while (upStationMap.containsKey(sortedStation.getLast())) {
+            sortedStation.addLast(upStationMap.get(sortedStation.getLast())
+                                              .getDownStation());
         }
 
-        while (downStationMap.containsKey(sortedStationId.getFirst())) {
-            sortedStationId.addFirst(downStationMap.get(sortedStationId.getFirst())
-                                                   .getUpStationId());
+        while (downStationMap.containsKey(sortedStation.getFirst())) {
+            sortedStation.addFirst(downStationMap.get(sortedStation.getFirst())
+                                                 .getUpStation());
         }
 
-        return new ArrayList<>(sortedStationId);
+        return new ArrayList<>(sortedStation);
     }
 }
