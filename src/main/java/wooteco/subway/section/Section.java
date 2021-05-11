@@ -1,5 +1,7 @@
 package wooteco.subway.section;
 
+import wooteco.subway.exception.SectionDuplicationException;
+
 public class Section {
 
     private Long id;
@@ -10,17 +12,22 @@ public class Section {
     public Section() {
     }
 
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this(null, upStationId, downStationId, distance);
+    }
+
     public Section(Long id, Long upStationId, Long downStationId, int distance) {
+        validateDuplicateUpAndDownIds(upStationId, downStationId);
         this.id = id;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    private void validateDuplicateUpAndDownIds(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new SectionDuplicationException();
+        }
     }
 
     public boolean isUpStation(Long id) {
