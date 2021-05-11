@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.service.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;
@@ -92,8 +93,8 @@ class LineTest {
 
         final Line newLine = new Line(1L, "temp", "black", sectionGroup, Collections.emptyMap());
         assertThatThrownBy(newLine::validateSizeToDeleteSection)
-            .isInstanceOf(SectionSizeException.class)
-            .hasMessage("해당 구간을 지울 수 없습니다.");
+            .isInstanceOf(ValidationFailureException.class)
+            .hasMessage("구간이 한 개 이하면 지울 수 없습니다.");
     }
 
     @DisplayName("상행 종점역을 찾는다.")
@@ -118,7 +119,7 @@ class LineTest {
     @Test
     void findTerminalSection_fail() {
         assertThatThrownBy(() -> line.findTerminalSection(4L))
-            .isInstanceOf(NoSuchElementException.class)
-            .hasMessage("종점이 아닙니다.");
+            .isInstanceOf(ValidationFailureException.class)
+            .hasMessage("해당역은 종점이 아닙니다.");
     }
 }

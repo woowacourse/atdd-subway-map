@@ -3,7 +3,7 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.repository.DataNotFoundException;
+import wooteco.subway.exception.service.ObjectNotFoundException;
 
 @Service
 public class StationService {
@@ -28,7 +28,7 @@ public class StationService {
 
     public Station findById(final Long id) {
         return stationDao.findById(id).
-            orElseThrow(() -> new DataNotFoundException("해당 Id의 지하철역이 없습니다."));
+            orElseThrow(() -> new ObjectNotFoundException("해당 Id의 지하철역이 없습니다."));
     }
 
     public void deleteStation(final Long id) {

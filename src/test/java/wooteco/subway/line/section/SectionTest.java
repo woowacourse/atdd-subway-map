@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.service.ValidationFailureException;
 
 class SectionTest {
 
@@ -14,7 +15,7 @@ class SectionTest {
     @Test
     void validateSmaller() {
         assertThatThrownBy(() -> SECTION.validateSmaller(10))
-            .isInstanceOf(BiggerDistanceException.class)
+            .isInstanceOf(ValidationFailureException.class)
             .hasMessage("새로 추가할 구간의 거리가 기존 구간의 거리보다 크거나 같으면 안 됩니다.");
     }
 

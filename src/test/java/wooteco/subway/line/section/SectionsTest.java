@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.exception.service.ValidationFailureException;
 
 public class SectionsTest {
 
@@ -49,7 +50,7 @@ public class SectionsTest {
     @Test
     void validateBothExistentStation() {
         assertThatThrownBy(() -> sections.validateBothExistentStation(2L, 4L))
-            .isInstanceOf(BothExistentStationException.class)
+            .isInstanceOf(ValidationFailureException.class)
             .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
@@ -57,7 +58,7 @@ public class SectionsTest {
     @Test
     void validateNoneExistentStation() {
         assertThatThrownBy(() -> sections.validateNoneExistentStation(6L, 7L))
-            .isInstanceOf(NoneExistentStationException.class)
+            .isInstanceOf(ValidationFailureException.class)
             .hasMessage("상행역과 하행역 둘 다 포함되어있지 않습니다.");
     }
 

@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import wooteco.subway.exception.service.ValidationFailureException;
 
 public class Sections {
 
@@ -85,13 +86,13 @@ public class Sections {
 
     public void validateBothExistentStation(final Long upStationId, final Long downStationId) {
         if (containsStation(upStationId) && containsStation(downStationId)) {
-            throw new BothExistentStationException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new ValidationFailureException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 
     public void validateNoneExistentStation(final Long upStationId, final Long downStationId) {
         if (!containsStation(upStationId) && !containsStation(downStationId)) {
-            throw new NoneExistentStationException("상행역과 하행역 둘 다 포함되어있지 않습니다.");
+            throw new ValidationFailureException("상행역과 하행역 둘 다 포함되어있지 않습니다.");
         }
     }
 

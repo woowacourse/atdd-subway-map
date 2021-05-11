@@ -4,8 +4,8 @@ package wooteco.subway.line;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import wooteco.subway.exception.service.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
 import wooteco.subway.station.Station;
@@ -77,7 +77,7 @@ public class Line {
 
     public void validateSizeToDeleteSection() {
         if (sections.size() <= 1) {
-            throw new SectionSizeException("해당 구간을 지울 수 없습니다.");
+            throw new ValidationFailureException("구간이 한 개 이하면 지울 수 없습니다.");
         }
     }
 
@@ -88,7 +88,7 @@ public class Line {
         if (isLastStation(stationId)) {
             return sections.getLastSection();
         }
-        throw new NoSuchElementException("종점이 아닙니다.");
+        throw new ValidationFailureException("해당역은 종점이 아닙니다.");
     }
 
     public Long getId() {
