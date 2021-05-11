@@ -78,15 +78,14 @@ public class LineService {
         List<Station> stations = new ArrayList<>();
         List<Long> stationIds = sections.stream().map(section -> section.getDownStationId())
             .collect(Collectors.toList());
-        List<StationDto> stationDtos = stations.stream()
-            .map(station -> new StationDto(station.getId(), station.getName()))
-            .collect(Collectors.toList());
-
         Station firstStation = stationRepository.findStationById(sections.get(0).getUpStationId())
             .orElseThrow(() -> new SubwayException("해당 라인에 역이 존재하지 않습니다."));
         stations.add(firstStation);
         List<Station> foundStations = stationRepository.findStationsByIds(stationIds);
         stations.addAll(foundStations);
+        List<StationDto> stationDtos = stations.stream()
+            .map(station -> new StationDto(station.getId(), station.getName()))
+            .collect(Collectors.toList());
 
         return new LineFindResponseDto(
             line, stationDtos
@@ -103,6 +102,9 @@ public class LineService {
 
     public void createSectionInLine(Long lineId, Long upStationId, Long downStationId,
         int distance) {
+        Line line = lineRepository.findLineWithSectionsById(lineId);
+        line.validateCreateSectionInLine(upStationId, downStationId);
+
         lineRepository.createSectionInLine(lineId, upStationId, downStationId, distance);
     }
 

@@ -62,19 +62,8 @@ public class LineRepository {
         boolean containsUpStation = containsStationInLine(lineId, upStationId);
         boolean containsDownStation = containsStationInLine(lineId, downStationId);
 
-        // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-        if (!containsUpStation && !containsDownStation) {
-            throw new SubwayException("상행역과 하행역 둘 중 하나도 라인에 포함되어 있지 않으면 구간을 추가할 수 없습니다.");
-        }
-
-        // 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        // -> A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음(A-C 구간도 등록할 수 없음)
-        if (containsUpStation && containsDownStation) {
-            throw new SubwayException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
-        }
-
         // 상행 종점(구간) 등록
-        if (containsDownStation && isStartStation(lineId, downStationId)) {
+        if (isEndStation(lineId, upStationId) || isStartStation(lineId, downStationId)) {
             sectionDao.create(lineId, upStationId, downStationId, distance);
             return;
         }
@@ -128,7 +117,6 @@ public class LineRepository {
             = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
         return foundSectionByUpStationId.isPresent() || foundSectionByDownStationId.isPresent();
     }
-
 
     public void deleteSectionInLine(Long lineId, Long stationId) {
         List<Section> sections = sectionDao.findByLineId(lineId);

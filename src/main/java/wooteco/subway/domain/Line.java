@@ -85,4 +85,24 @@ public class Line {
             .filter(section -> section.getUpStationId() == upStationId)
             .findFirst();
     }
+
+    public void validateCreateSectionInLine(Long upStationId, Long downStationId) {
+        if (!containsStationInLine(upStationId) && !containsStationInLine(downStationId)) {
+            throw new SubwayException("상행역과 하행역 둘 중 하나도 라인에 포함되어 있지 않으면 구간을 추가할 수 없습니다.");
+        }
+
+        if (containsStationInLine(upStationId) && containsStationInLine(downStationId)) {
+            throw new SubwayException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
+    }
+
+    private boolean containsStationInLine(Long stationId) {
+        Optional<Long> sectionWhichHasUpStation = sections.stream().map(section -> section.getUpStationId())
+            .filter(id -> id.equals(stationId))
+            .findFirst();
+        Optional<Long> sectionWhichHasDownStation = sections.stream().map(section -> section.getDownStationId())
+            .filter(id -> id.equals(stationId))
+            .findFirst();
+        return sectionWhichHasUpStation.isPresent() || sectionWhichHasDownStation.isPresent();
+    }
 }
