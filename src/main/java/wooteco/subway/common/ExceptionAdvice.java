@@ -1,4 +1,4 @@
-package wooteco.subway;
+package wooteco.subway.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
