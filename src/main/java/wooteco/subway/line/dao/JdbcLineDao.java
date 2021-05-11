@@ -10,7 +10,6 @@ import wooteco.subway.domain.Line;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -34,9 +33,10 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineByInfo(String name, String color) {
-        String sql = "SELECT * FROM line WHERE name = ? OR color = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), name, color).stream().findAny();
+    public boolean existByInfo(String name, String color) {
+        String sql = "SELECT count(id) FROM line WHERE name = ? OR color = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, int.class, name, color);
+        return count >= 1;
     }
 
     public List<Line> showAll() {
@@ -54,8 +54,15 @@ public class JdbcLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineById(Long lineId) {
+    public Line findById(Long lineId) {
         String sql = "SELECT * FROM line WHERE id = ?";
-        return jdbcTemplate.query(sql, lineRowMapper(), lineId).stream().findAny();
+        return jdbcTemplate.queryForObject(sql, lineRowMapper(), lineId);
+    }
+
+    @Override
+    public boolean existById(Long lineId) {
+        String sql = "SELECT count(id) FROM line WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, int.class, lineId);
+        return count >= 1;
     }
 }

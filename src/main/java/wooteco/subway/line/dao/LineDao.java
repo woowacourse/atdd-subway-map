@@ -8,9 +8,10 @@ import java.util.Optional;
 public interface LineDao {
     Line save(Line line);
 
-    Optional<Line> findLineByInfo(String name, String color);
+    boolean existByInfo(String name, String color);
 
-    Optional<Line> findLineById(Long lineId);
+    Line findById(Long lineId);
+    boolean existById(Long lineId);
 
     List<Line> showAll();
 }

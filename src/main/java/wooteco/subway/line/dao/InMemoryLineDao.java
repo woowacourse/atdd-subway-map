@@ -28,17 +28,23 @@ public class InMemoryLineDao implements LineDao {
     }
 
     @Override
-    public Optional<Line> findLineByInfo(String name, String color) {
+    public boolean existByInfo(String name, String color) {
         return lines.stream()
-                .filter(line -> line.isSameName(name) || line.isSameColor(color))
-                .findAny();
+                .anyMatch(line -> line.isSameName(name) || line.isSameColor(color));
     }
 
     @Override
-    public Optional<Line> findLineById(Long lineId) {
+    public Line findById(Long lineId) {
         return lines.stream()
                 .filter(line -> line.isSameId(lineId))
-                .findAny();
+                .findAny()
+                .get();
+    }
+
+    @Override
+    public boolean existById(Long lineId) {
+        return lines.stream()
+                .anyMatch(line -> line.isSameId(lineId));
     }
 
     @Override

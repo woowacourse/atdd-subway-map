@@ -35,8 +35,9 @@ public class SectionService {
 
     @Transactional
     public void removeSection(Long lineId, Long stationId) {
-        lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
-
+        if (!lineDao.existById(lineId)) {
+            throw new LineNotFoundException();
+        }
         if (!stationDao.existById(stationId)) {
             throw new StationNotFoundException();
         }

@@ -21,9 +21,9 @@ public class LineService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
-    public List<Line> showAll(){
+    public List<Line> showAll() {
         List<Line> lines = lineDao.showAll();
-        for(Line line: lines){
+        for (Line line : lines) {
             Sections sections = sectionDao.findSectionsByLineId(line.getId());
             line.insertSections(sections);
         }
@@ -32,7 +32,7 @@ public class LineService {
 
     @Transactional
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
-        if (lineDao.findLineByInfo(name, color).isPresent()) {
+        if (lineDao.existByInfo(name, color)) {
             throw new DuplicatedLineInformationException();
         }
         Line line = lineDao.save(Line.create(name, color));
@@ -43,7 +43,10 @@ public class LineService {
     }
 
     public Line findLine(Long lineId) {
-        Line line = lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
+        if(!lineDao.existById(lineId)){
+            throw new LineNotFoundException();
+        }
+        Line line = lineDao.findById(lineId);
         Sections sections = sectionDao.findSectionsByLineId(lineId);
         line.insertSections(sections);
         return line;
