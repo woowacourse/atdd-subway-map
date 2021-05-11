@@ -7,7 +7,6 @@ import wooteco.subway.dao.SectionRepository;
 import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -74,7 +73,7 @@ public class LineService {
             section.setDownStation(stationRepository.findById(downStationId));
         }
 
-        line.setSections(new Sections(sections));
+        line.setSectionsFrom(sections);
 
         return LineResponse.from(line);
     }

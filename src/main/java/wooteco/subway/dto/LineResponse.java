@@ -2,11 +2,8 @@ package wooteco.subway.dto;
 
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
-import wooteco.subway.domain.Station;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -48,15 +45,16 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        Set<Station> stationSet = new HashSet<>();
-        List<Section> sections = line.getSections().sections();
-        sections.forEach(section -> stationSet.add(section.getUpStation()));
-        stationSet.add(sections.get(sections.size() -1).getDownStation());
-
-        List<StationResponse> stations = stationSet.stream()
+        List<StationResponse> stationResponses = line.getSections().sections()
+                .stream()
+                .map(Section::getUpStation)
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        List<Section> sections = line.getSections().sections();
+        int size = sections.size();
+        stationResponses.add(StationResponse.from(sections.get(size-1).getDownStation()));
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 }

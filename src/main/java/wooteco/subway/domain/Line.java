@@ -1,5 +1,6 @@
 package wooteco.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Line {
@@ -37,10 +38,8 @@ public class Line {
         return this.sections;
     }
 
-    public void setSections(Sections sections) {
-        // todo Sections 정렬
-        // sections.sort(); 혹은 생성자에서 정렬
-        this.sections = sections;
+    public void setSectionsFrom(List<Section> sections) {
+        this.sections = new Sections(sections);
     }
 
     public Long getId() {

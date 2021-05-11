@@ -23,8 +23,6 @@ public class SectionH2Dao implements SectionRepository {
     private final RowMapper<Section> sectionRowMapper = (rs, rn) -> {
         long sectionId = rs.getLong("id");
         long lineId = rs.getLong("line_id");
-//        long upStationId = rs.getLong("up_station_id");
-//        long downStationId = rs.getLong("down_station_id");
         int distance = rs.getInt("distance");
 
         return new Section(sectionId, lineId, distance);
@@ -50,6 +48,28 @@ public class SectionH2Dao implements SectionRepository {
     }
 
     @Override
+    public void saveSections(long lineId, List<Section> sections) {
+        String query = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) VALUES (?, ?, ?, ?)";
+
+        this.jdbcTemplate.batchUpdate(
+                query,
+                sections,
+                sections.size(),
+                (ps, argument) -> {
+                    ps.setLong(1, lineId);;
+                    ps.setLong(2, argument.getUpStation().getId());
+                    ps.setLong(3, argument.getDownStation().getId());
+                    ps.setInt(4, argument.getDistance());
+                });
+    }
+
+    @Override
+    public void deleteSectionsByLineId(long lineId) {
+        String query = "DELETE FROM SECTION WHERE line_id = ?";
+        this.jdbcTemplate.update(query, lineId);
+    }
+
+    @Override
     public Section findById(long sectionId) {
         String query = "SELECT * FROM SECTION WHERE id = ?";
         return jdbcTemplate.queryForObject(query, sectionRowMapper, sectionId);
@@ -63,13 +83,13 @@ public class SectionH2Dao implements SectionRepository {
 
     @Override
     public Long getUpStationIdById(long id) {
-        String query = "SELECT up_station_id FROM SECTION WHERE line_id = ?";
+        String query = "SELECT up_station_id FROM SECTION WHERE id = ?";
         return jdbcTemplate.queryForObject(query, Long.class, id);
     }
 
     @Override
     public Long getDownStationIdById(long id) {
-        String query = "SELECT down_station_id FROM SECTION WHERE line_id = ?";
+        String query = "SELECT down_station_id FROM SECTION WHERE id = ?";
         return jdbcTemplate.queryForObject(query, Long.class, id);
     }
 }
