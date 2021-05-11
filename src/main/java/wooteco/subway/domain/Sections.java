@@ -75,7 +75,7 @@ public class Sections {
     private boolean isMiddleSection(Section newSection, List<Section> collect) {
         return collect.size() == 2 &&
                 collect.stream()
-                .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
+                        .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
     }
 
     private boolean isCycleSection(Section newSection, List<Section> collect) {
