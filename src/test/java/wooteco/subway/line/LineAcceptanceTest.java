@@ -162,4 +162,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @DisplayName("라인 삽입시 인자가 모자란 경우")
+    @Test
+    void wrongParamsTest() {
+        // given
+        Map<String, String> wrongParams = new HashMap<>();
+        wrongParams.put("name", "2호선");
+        ExtractableResponse<Response> response = testResponse(wrongParams,
+            DEFAULT_MEDIA_TYPE,
+            "/lines");
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

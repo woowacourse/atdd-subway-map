@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.section.SectionAddDto;
 import wooteco.subway.section.SectionDao;
-import wooteco.subway.section.SectionDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -38,10 +38,10 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         long id = lineDao.save(line);
-        SectionDto sectionDto = new SectionDto(id, lineRequest.getUpStationId(),
+        SectionAddDto sectionAddDto = new SectionAddDto(id, lineRequest.getUpStationId(),
             lineRequest.getDownStationId(),
             lineRequest.getDistance());
-        sectionDao.save(sectionDto);
+        sectionDao.save(sectionAddDto);
         LineResponse lineResponse = new LineResponse(id, line.getName(),
             line.getColor());
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
@@ -67,6 +67,14 @@ public class LineController {
     public ResponseEntity<LineResponse> modifyLineDetail(@PathVariable Long id,
         @RequestBody LineRequest lineRequest) {
         lineDao.modify(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
+        @RequestBody SectionRequest sectionRequest) {
+        sectionDao.save(new SectionAddDto(id, sectionRequest));
+
         return ResponseEntity.ok().build();
     }
 
