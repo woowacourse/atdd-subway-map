@@ -53,7 +53,7 @@ public class SectionService {
     }
 
     private void validateToExistId(Long id) {
-        if (!sectionDao.hasSectionWithId(id)) {
+        if (!sectionDao.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 노선ID입니다.");
         }
     }

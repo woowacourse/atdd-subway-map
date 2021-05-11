@@ -72,7 +72,7 @@ public class LineService {
     }
 
     private void validateToExistId(Long id) {
-        if (!lineDao.hasLineWithId(id)) {
+        if (!lineDao.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 노선 ID입니다.");
         }
     }
@@ -88,7 +88,7 @@ public class LineService {
     }
 
     private void validateNotToDuplicateNameAndColor(Long id, String name, String color) {
-        if (lineDao.hasLineWithNameAndColorWithoutId(id, name, color)) {
+        if (lineDao.existsByNameAndColorExceptId(id, name, color)) {
             throw new IllegalArgumentException("이미 존재하는 노선 이름 또는 색깔입니다.");
         }
     }

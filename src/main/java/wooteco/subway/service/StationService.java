@@ -28,7 +28,7 @@ public class StationService {
     }
 
     private void validateNotToDuplicateName(String name) {
-        if (stationDao.hasStationWithName(name)) {
+        if (stationDao.existsByName(name)) {
             throw new IllegalArgumentException("이미 존재하는 이름입니다.");
         }
     }
@@ -55,7 +55,7 @@ public class StationService {
     }
 
     private void validateToExistId(Long id) {
-        if (!stationDao.hasStationWithId(id)) {
+        if (!stationDao.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 역ID입니다.");
         }
     }
