@@ -115,14 +115,14 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
-    public Section findSectionHasThisAsUpStation(long existentStationId) {
+    public Section findSectionHasUpStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getUpStationId() == existentStationId)
             .findAny()
             .get();
     }
 
-    public Section findSectionHasThisAsDownStation(long existentStationId) {
+    public Section findSectionHasDownStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getDownStationId() == existentStationId)
             .findAny()

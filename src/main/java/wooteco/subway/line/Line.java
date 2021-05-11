@@ -4,6 +4,7 @@ package wooteco.subway.line;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
@@ -60,7 +61,6 @@ public class Line {
         return sections.isLastStationId(upStationId);
     }
 
-
     public Section findUpdatedTarget(final Long upStationId, final Long downStationId, final int distance) {
         final Section target = sections.findSameForm(upStationId, downStationId);
         target.validateSmaller(distance);
@@ -68,16 +68,16 @@ public class Line {
     }
 
     public Section findSectionHasUpStation(long existentStationId) {
-        return sections.findSectionHasThisAsUpStation(existentStationId);
+        return sections.findSectionHasUpStation(existentStationId);
     }
 
     public Section findSectionHasDownStation(long existentStationId) {
-        return sections.findSectionHasThisAsDownStation(existentStationId);
+        return sections.findSectionHasDownStation(existentStationId);
     }
 
     public void validateSizeToDeleteSection() {
         if (sections.size() <= 1) {
-            throw new RuntimeException("해당 구간을 지울 수 없습니다.");
+            throw new SectionSizeException("해당 구간을 지울 수 없습니다.");
         }
     }
 
@@ -85,7 +85,10 @@ public class Line {
         if (isStartStation(stationId)) {
             return sections.getFirstSection();
         }
-        return sections.getLastSection();
+        if (isLastStation(stationId)) {
+            return sections.getLastSection();
+        }
+        throw new NoSuchElementException("종점이 아닙니다.");
     }
 
     public Long getId() {

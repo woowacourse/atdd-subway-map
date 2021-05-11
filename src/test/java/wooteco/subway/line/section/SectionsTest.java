@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 public class SectionsTest {
 
-    private Sections sections;
+    public static Sections sections;
 
     @BeforeEach
     void setUp() {
@@ -75,8 +75,8 @@ public class SectionsTest {
 
     @DisplayName("특정 상행역을 갖는 구간을 찾는다.")
     @Test
-    void findSectionHasThisAsUpStation() {
-        assertThat(sections.findSectionHasThisAsUpStation(2L))
+    void findSectionHasUpStation() {
+        assertThat(sections.findSectionHasUpStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
             .isEqualTo(new Section(1L, 2L, 1L, 6));
@@ -84,8 +84,8 @@ public class SectionsTest {
 
     @DisplayName("특정 하행역을 갖는 구간을 찾는다.")
     @Test
-    void findSectionHasThisAsDownStation() {
-        assertThat(sections.findSectionHasThisAsDownStation(2L))
+    void findSectionHasDownStation() {
+        assertThat(sections.findSectionHasDownStation(2L))
             .usingRecursiveComparison()
             .ignoringFields("id")
             .isEqualTo(new Section(1L, 3L, 2L, 10));
