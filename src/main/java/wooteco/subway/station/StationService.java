@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import wooteco.subway.exception.station.DuplicatedStationTitleException;
 import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationServiceDto;
@@ -27,8 +28,14 @@ public class StationService {
 
     public StationServiceDto save(final StationServiceDto stationServiceDto) {
         Station station = stationServiceDto.toEntity();
-        Station saveStation = stationDao.save(station);
+        String name = stationServiceDto.getName();
 
+        int matchedStationNumber = stationDao.countByName(name);
+        if(matchedStationNumber != 0) {
+            throw new DuplicatedStationTitleException();
+        }
+
+        Station saveStation = stationDao.save(station);
         return StationServiceDto.from(saveStation);
     }
 

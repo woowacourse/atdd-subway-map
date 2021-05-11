@@ -43,6 +43,12 @@ public class StationDao {
         return jdbcTemplate.query(statement, rowMapper);
     }
 
+    public int countByName(final String name) {
+        String statement = "SELECT * FROM STATION WHERE name = ?";
+        List<Station> stations =  jdbcTemplate.query(statement, rowMapper, name);
+        return stations.size();
+    }
+
     public int delete(final long id) {
         String statement = "DELETE FROM station WHERE id = ?";
         return jdbcTemplate.update(statement, id);

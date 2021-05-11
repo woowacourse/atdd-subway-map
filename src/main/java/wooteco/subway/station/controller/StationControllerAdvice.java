@@ -4,6 +4,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import wooteco.subway.exception.station.DuplicatedStationTitleException;
 import wooteco.subway.exception.station.NotFoundStationException;
 
 @RestControllerAdvice
@@ -21,4 +22,9 @@ public class StationControllerAdvice {
             .build();
     }
 
+    @ExceptionHandler(DuplicatedStationTitleException.class)
+    public ResponseEntity duplicatedStationTitleExceptionResponse() {
+        return ResponseEntity.status(409)
+            .build();
+    }
 }
