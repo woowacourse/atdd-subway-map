@@ -16,15 +16,20 @@ public class Station {
     }
 
     public Station(Long id, String name) {
+        validate(name);
         this.id = id;
         this.name = name;
     }
 
     public Station(String name) {
+        validate(name);
+        this.name = name;
+    }
+
+    private void validate(String name) {
         validateNotNull(name);
         validateNotEmpty(name);
         validateSuffix(name);
-        this.name = name;
     }
 
     private void validateNotNull(String name) {
@@ -34,7 +39,7 @@ public class Station {
     }
 
     private void validateNotEmpty(String name) {
-        if ("".equals(name)) {
+        if ("".equals(name.substring(0, name.length()-1))) {
             throw new EmptyInputException();
         }
     }
