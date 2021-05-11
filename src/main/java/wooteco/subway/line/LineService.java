@@ -113,4 +113,10 @@ public class LineService {
         line.insertSection(new Section(lineId, upStation, downStation, distance));
         sectionDao.save(lineId, upStationId, downStationId, distance);
     }
+
+    public void deleteSection(long lineId, long stationId) {
+        final Line line = findLineById(lineId);
+        final Station station = findStationById(stationId);
+        line.removeSection(station);
+    }
 }

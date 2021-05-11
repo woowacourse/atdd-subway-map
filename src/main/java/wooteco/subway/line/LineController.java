@@ -53,7 +53,7 @@ public class LineController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+    public ResponseEntity<String> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
         lineService.updateLine(id, lineName, lineColor);
@@ -67,11 +67,17 @@ public class LineController {
     }
 
     @PostMapping("{id}/sections")
-    public ResponseEntity<String> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable long id) {
+    public ResponseEntity<String> createSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
         long upStationId = sectionRequest.getUpStationId();
         long downStationId = sectionRequest.getDownStationId();
         int distance = sectionRequest.getDistance();
         lineService.createSection(id, upStationId, downStationId, distance);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("{id}/sections")
+    public ResponseEntity<String> deleteSection(@PathVariable long id, @RequestParam long stationId) {
+        lineService.deleteSection(id, stationId);
+        return ResponseEntity.noContent().build();
     }
 }

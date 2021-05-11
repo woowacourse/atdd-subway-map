@@ -241,4 +241,46 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    private ExtractableResponse<Response> sendDeleteRequest(String lineId, String stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
+    @DisplayName("역을 입력해 구간을 삭제한다")
+    @Test
+    void deleteSection() {
+        // given
+        String lineId = createTestLine(1, 2, "10");
+        Map<String, Object> section1 = new HashMap<>();
+        section1.put("upStationId", 2);
+        section1.put("downStationId", 3);
+        section1.put("distance", "5");
+        ExtractableResponse<Response> section1Response = sendPostRequest(section1, "/lines/" + lineId + "/sections");
+
+        Map<String, Object> section2 = new HashMap<>();
+        section2.put("upStationId", 3);
+        section2.put("downStationId", 4);
+        section2.put("distance", "5");
+        ExtractableResponse<Response> section2Response = sendPostRequest(section2, "/lines/" + lineId + "/sections");
+        //when
+        final ExtractableResponse<Response> deleteResponse = sendDeleteRequest(lineId, "2");
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간이 하나 남은 경우 삭제가 불가하다")
+    @Test
+    void deleteSectionException() {
+        // given
+        String lineId = createTestLine(1, 2, "10");
+        //when
+        final ExtractableResponse<Response> deleteResponse = sendDeleteRequest(lineId, "2");
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

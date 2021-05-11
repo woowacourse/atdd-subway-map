@@ -27,6 +27,11 @@ public class PageControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> illegalStateExceptionHandle() {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> methodArgumentNotValidExceptionHandle() {
         return ResponseEntity.badRequest().build();
