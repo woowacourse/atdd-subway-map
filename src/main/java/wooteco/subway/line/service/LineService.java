@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;

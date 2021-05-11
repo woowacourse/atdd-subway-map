@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.line.controller.LineControllerTestUtils.지하철노선을_생성한다;
 
 @DisplayName("지하철 노선 테스트")
-class LineControllerTest extends AcceptanceTest {
+public class LineControllerTest extends AcceptanceTest {
     private static final String TEST_LINE_NAME = "강남노선";
     private static final String TEST_COLOR_NAME = "orange darken-4";
     private static final Long TEST_UP_STATION_ID = 1L;
@@ -36,13 +37,7 @@ class LineControllerTest extends AcceptanceTest {
     void createLine() {
         // given
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(REQUEST_BODY);
 
         final LineResponse lineResponse = response.body().as(LineResponse.class);
         // then
@@ -52,30 +47,19 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+
+
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
     @Transactional
     @Test
     void createLineWithDuplicateName() {
         // given
-        RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        지하철노선을_생성한다(REQUEST_BODY);
 
         // when
         LineRequest duplicateNameRequest = new LineRequest(TEST_LINE_NAME, "red darken-3", TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(duplicateNameRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(duplicateNameRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -86,25 +70,12 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        지하철노선을_생성한다(REQUEST_BODY);
 
         // when
         LineRequest duplicateColorRequest = new LineRequest("다른이름역", TEST_COLOR_NAME, TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(duplicateColorRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(duplicateColorRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -115,13 +86,7 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        final ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(REQUEST_BODY);
 
         // when
         String uri = createResponse.header("Location");
@@ -143,23 +108,11 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = 지하철노선을_생성한다(REQUEST_BODY);
 
         LineRequest anotherRequestBody = new LineRequest("마이크로소프트호선", "blue darken-4", TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
 
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(anotherRequestBody)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse2 = 지하철노선을_생성한다(anotherRequestBody);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -184,13 +137,7 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(REQUEST_BODY);
 
         // when
         String updateName = "빨리빨리노선";
@@ -226,13 +173,7 @@ class LineControllerTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(REQUEST_BODY);
 
         // when
         String uri = createResponse.header("Location");

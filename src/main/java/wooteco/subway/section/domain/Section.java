@@ -24,6 +24,10 @@ public class Section {
         this(id, upStation, downStation, new SectionDistance(distance));
     }
 
+    public Section(Long id, Section section) {
+        this(id, section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
     public Section(Long id, Station upStation, Station downStation, SectionDistance distance) {
         checkSameStations(upStation, downStation);
         this.id = id;
