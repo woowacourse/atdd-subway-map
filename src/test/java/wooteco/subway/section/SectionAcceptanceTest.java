@@ -202,4 +202,72 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         List<Station> expectedSections = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
         assertStationsList(expectedSections);
     }
+
+    @DisplayName("구간 제거 - 상행 종점역을 제거할 때")
+    @Test
+    void deleteFirstStation() {
+        // given
+        List<Station> beforeStations = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
+        createLineWithSections(beforeStations);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(STATION_1);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<Station> afterStations = Arrays.asList(STATION_2, STATION_3, STATION_4);
+        assertStationsList(afterStations);
+    }
+
+    @DisplayName("구간 제거 - 하행 종점역을 제거할 때")
+    @Test
+    void deleteLastStation() {
+        // given
+        List<Station> beforeStations = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
+        createLineWithSections(beforeStations);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(STATION_4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<Station> afterStations = Arrays.asList(STATION_1, STATION_2, STATION_3);
+        assertStationsList(afterStations);
+    }
+
+    @DisplayName("구간 제거 - 두 번째 역을 제거할 때")
+    @Test
+    void deleteSecondStation() {
+        // given
+        List<Station> beforeStations = Arrays.asList(STATION_1, STATION_2, STATION_3, STATION_4);
+        createLineWithSections(beforeStations);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(STATION_2);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        List<Station> afterStations = Arrays.asList(STATION_1, STATION_3, STATION_4);
+        assertStationsList(afterStations);
+    }
+
+    @DisplayName("구간(역) 제거 예외 - 노선에 한 개의 구간만 존재할 때")
+    @Test
+    void deleteException_When_OnlyOneSectionExists() {
+        // given
+        List<Station> beforeStations = Arrays.asList(STATION_1, STATION_2);
+        createLineWithSections(beforeStations);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(STATION_1);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        List<Station> afterStations = Arrays.asList(STATION_1, STATION_2);
+        assertStationsList(afterStations);
+    }
 }

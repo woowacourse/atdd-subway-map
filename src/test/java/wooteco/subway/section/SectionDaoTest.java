@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.domain.Section;
-import wooteco.subway.repository.dao.SectionDao;
+import wooteco.subway.dao.SectionDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,10 +39,5 @@ public class SectionDaoTest {
         assertThat(강남_잠실.getLineId()).isEqualTo(lineId);
         assertThat(강남_잠실.getUpStationId()).isEqualTo(upStationId);
         assertThat(강남_잠실.getDownStationId()).isEqualTo(downStationId);
-    }
-
-    @Test
-    @DisplayName("id를 통한 섹션 조회")
-    void find() {
     }
 }

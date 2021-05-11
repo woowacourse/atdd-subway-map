@@ -1,4 +1,4 @@
-package wooteco.subway.repository.dao;
+package wooteco.subway.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -51,13 +51,18 @@ public class SectionDao {
     }
 
 
-    public void updateUpStationId(Long targetId, Long upStationId, Long downStationId, Long lineId) {
-        String query = "UPDATE section SET up_station_id = ? WHERE up_station_id = ? AND down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, targetId, upStationId, downStationId, lineId);
+    public void updateUpStationId(Long targetId, int distance, Long upStationId, Long downStationId, Long lineId) {
+        String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE up_station_id = ? AND down_station_id = ? AND line_id = ?";
+        jdbcTemplate.update(query, targetId, distance, upStationId, downStationId, lineId);
     }
 
-    public void updateDownStationId(Long targetId, Long upStationId, Long downStationId, Long lineId) {
-        String query = "UPDATE section SET down_station_id = ? WHERE up_station_id = ? AND down_station_id = ? AND line_id = ?";
-        jdbcTemplate.update(query, targetId, upStationId, downStationId, lineId);
+    public void updateDownStationId(Long targetId, int distance, Long upStationId, Long downStationId, Long lineId) {
+        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE up_station_id = ? AND down_station_id = ? AND line_id = ?";
+        jdbcTemplate.update(query, targetId, distance, upStationId, downStationId, lineId);
+    }
+
+    public void deleteById(Long id) {
+        String query = "DELETE FROM section WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

@@ -27,4 +27,10 @@ public class SectionController {
                 .created(URI.create("/lines/" + lineId + "/sections/" + sectionInsertResponse.getId()))
                 .body(sectionInsertResponse);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSectionById(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteSectionById(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 }

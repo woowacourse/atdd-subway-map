@@ -15,6 +15,17 @@ public class Sections {
         this.sections = sections;
     }
 
+    public void validate(Section section) {
+        Deque<Long> stationIdsInOrder = getSortedStationIds();
+        if (stationIdsInOrder.contains(section.getUpStationId()) && stationIdsInOrder.contains(section.getDownStationId())) {
+            throw new SectionAlreadyExistBothStationException(section);
+        }
+
+        if (!stationIdsInOrder.contains(section.getUpStationId()) && !stationIdsInOrder.contains(section.getDownStationId())) {
+            throw new SectionNotExistBothStationException(section);
+        }
+    }
+
     public Deque<Long> getSortedStationIds() {
         Deque<Long> sortedStationIds = new ArrayDeque<>();
         Map<Long, Long> upStationIds = new LinkedHashMap<>();
@@ -37,17 +48,6 @@ public class Sections {
             sortedStationIds.addLast(downStationIds.get(currentId));
         }
         return sortedStationIds;
-    }
-
-    public void validate(Section section) {
-        Deque<Long> stationIdsInOrder = getSortedStationIds();
-        if (stationIdsInOrder.contains(section.getUpStationId()) && stationIdsInOrder.contains(section.getDownStationId())) {
-            throw new SectionAlreadyExistBothStationException(section);
-        }
-
-        if (!stationIdsInOrder.contains(section.getUpStationId()) && !stationIdsInOrder.contains(section.getDownStationId())) {
-            throw new SectionNotExistBothStationException(section);
-        }
     }
 
     private List<Long> getUpStationIds() {
@@ -82,5 +82,71 @@ public class Sections {
 
     public boolean isExistInDownStationIds(Long stationId) {
         return getDownStationIds().contains(stationId);
+    }
+
+    public boolean isFirstOrLastStation(Long stationIdToDelete) {
+        return getFirstStationId().equals(stationIdToDelete)
+                || getLastStationId().equals(stationIdToDelete);
+    }
+
+    private Long getFirstStationId() {
+        return getUpStationIds().stream()
+                .filter(upId -> getDownStationIds().stream()
+                        .noneMatch(downId -> downId.equals(upId)))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("상행 종점이 없습니다."));
+    }
+
+    private Long getLastStationId() {
+        return getDownStationIds().stream()
+                .filter(downId -> getUpStationIds().stream()
+                        .noneMatch(upId -> upId.equals(downId)))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("하행 종점이 없습니다."));
+    }
+
+    public int getSectionsSize() {
+        return sections.size();
+    }
+
+    public Long getSectionIdToDelete(Long stationIdToDelete) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationIdToDelete)
+                        || section.getDownStationId().equals(stationIdToDelete))
+                .map(section -> section.getId())
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 역 : " + stationIdToDelete + "에 해당하는 구간이 없습니다."));
+    }
+
+    public Long getUpStationSectionId(Long stationIdToDelete) {
+        Section UpStationSection = getUpStationSection(stationIdToDelete);
+        return UpStationSection.getId();
+    }
+
+    private Section getUpStationSection(Long stationIdToDelete) {
+        return sections.stream()
+                .filter(section -> section.getDownStationId().equals(stationIdToDelete))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(stationIdToDelete + "역 삭제 에러"));
+    }
+
+    public Long getDownStationSectionId(Long stationIdToDelete) {
+        Section DownStationSection = getDownStationSection(stationIdToDelete);
+        return DownStationSection.getId();
+    }
+
+    private Section getDownStationSection(Long stationIdToDelete) {
+        return sections.stream()
+                .filter(section -> section.getUpStationId().equals(stationIdToDelete))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(stationIdToDelete + "역 삭제 에러"));
+    }
+
+    public Section getNewSection(Long lineId, Long stationIdToDelete) {
+        Section upStationSection = getUpStationSection(stationIdToDelete);
+        Section downStationSection = getDownStationSection(stationIdToDelete);
+
+        int newDistance = upStationSection.getDistance() + downStationSection.getDistance();
+        return new Section(lineId, upStationSection.getUpStationId(), downStationSection.getDownStationId(), newDistance);
     }
 }

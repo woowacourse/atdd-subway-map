@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.exception.station.StationDuplicateException;
-import wooteco.subway.repository.dao.StationDao;
+import wooteco.subway.dao.StationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
