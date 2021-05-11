@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import wooteco.subway.exception.illegal.ImpossibleDeleteException;
 import wooteco.subway.exception.illegal.ImpossibleDistanceException;
 import wooteco.subway.exception.nosuch.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
+import wooteco.subway.line.StationsInLine;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.service.SectionService;
 import wooteco.subway.station.Station;
@@ -86,10 +88,12 @@ class SectionServiceTest {
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.addSection(endSection));
         assertEquals(3L, sectionService.addSection(startSection));
-        assertEquals(stationName4, sectionService.makeOrderedStations(1L).get(0).getName());
-        assertEquals(stationName1, sectionService.makeOrderedStations(1L).get(1).getName());
-        assertEquals(stationName2, sectionService.makeOrderedStations(1L).get(2).getName());
-        assertEquals(stationName3, sectionService.makeOrderedStations(1L).get(3).getName());
+
+        List<Station> stations = sectionService.makeStationsInLine(1L).getStations();
+        assertEquals(stationName4, stations.get(0).getName());
+        assertEquals(stationName1, stations.get(1).getName());
+        assertEquals(stationName2, stations.get(2).getName());
+        assertEquals(stationName3, stations.get(3).getName());
     }
 
     @DisplayName("구간을 삭제한다.")

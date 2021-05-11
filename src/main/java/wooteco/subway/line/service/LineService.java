@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.duplicate.DuplicateLineException;
 import wooteco.subway.exception.nosuch.NoSuchLineException;
 import wooteco.subway.line.Line;
+import wooteco.subway.line.StationsInLine;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.service.SectionService;
 
@@ -42,7 +43,8 @@ public class LineService {
 
     public Line showLine(long id) {
         Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
-        return new Line(line, sectionService.makeOrderedStations(id));
+        StationsInLine stationsInLine = sectionService.makeStationsInLine(id);
+        return new Line(line, stationsInLine.getStations());
     }
 
     public void updateLine(long id, Line line) {

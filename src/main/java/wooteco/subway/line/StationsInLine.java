@@ -1,10 +1,13 @@
 package wooteco.subway.line;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import wooteco.subway.exception.illegal.BothStationInLineException;
+import wooteco.subway.exception.illegal.IllegalInputException;
 import wooteco.subway.exception.nosuch.BothStationNotInLineException;
 import wooteco.subway.station.Station;
 
@@ -19,8 +22,24 @@ public class StationsInLine {
             .collect(Collectors.toList());
     }
 
-    public void validStations(long upStationId, long downStationId) {
+    public static StationsInLine from(Map<Station, Station> sections) {
+        List<Station> stations = new ArrayList<>();
+        Station startStation = sections.keySet().stream()
+            .filter(station -> !sections.containsValue(station))
+            .findAny()
+            .orElseThrow(IllegalInputException::new);
+        stations.add(startStation);
 
+        for (int i = 0; i < sections.size(); i++) {
+            Station endStation = sections.get(startStation);
+            stations.add(endStation);
+            startStation = endStation;
+        }
+
+        return new StationsInLine(stations);
+    }
+
+    public void validStations(long upStationId, long downStationId) {
         if (stationIds.containsAll(Arrays.asList(upStationId, downStationId))) {
             throw new BothStationInLineException();
         }
@@ -28,7 +47,6 @@ public class StationsInLine {
         if (!stationIds.contains(upStationId) && !stationIds.contains(downStationId)) {
             throw new BothStationNotInLineException();
         }
-
     }
 
     public boolean isEndStations(long upStationId, long downStationId) {

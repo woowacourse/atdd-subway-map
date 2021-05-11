@@ -1,6 +1,5 @@
 package wooteco.subway.section.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,11 +42,10 @@ public class SectionService {
         long upStationId = section.getUpStationId();
         long downStationId = section.getDownStationId();
 
-        List<Station> orderedStations = makeOrderedStations(section.getLineId());
-        StationsInLine stations = new StationsInLine(orderedStations);
+        StationsInLine stationsInLine = makeStationsInLine(section.getLineId());
 
-        stations.validStations(upStationId, downStationId);
-        checkSavingOptions(section, upStationId, downStationId, stations);
+        stationsInLine.validStations(upStationId, downStationId);
+        checkSavingOptions(section, upStationId, downStationId, stationsInLine);
 
         return sectionDao.save(section);
     }
@@ -118,29 +116,11 @@ public class SectionService {
         return sectionDao.deleteSection(nextSection);
     }
 
-    public List<Station> makeOrderedStations(long id) {
+    public StationsInLine makeStationsInLine(long id) {
         Map<Station, Station> sectionsInLine = sectionDao.findSectionsByLineId(id);
         if (sectionsInLine.isEmpty()) {
             throw new NoSuchStationInLineException();
         }
-        return orderStations(sectionsInLine);
-    }
-
-    private List<Station> orderStations(Map<Station, Station> sections) {
-        List<Station> stations = new ArrayList<>();
-
-        Station startStation = sections.keySet().stream()
-            .filter(station -> !sections.containsValue(station))
-            .findAny()
-            .orElseThrow(IllegalInputException::new);
-        stations.add(startStation);
-
-        for (int i = 0; i < sections.size(); i++) {
-            Station endStation = sections.get(startStation);
-            stations.add(endStation);
-            startStation = endStation;
-        }
-
-        return stations;
+        return StationsInLine.from(sectionsInLine);
     }
 }
