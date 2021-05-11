@@ -55,7 +55,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         /// given
         Map<String, Object> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = Rest.post(params1,"/stations");
+        ExtractableResponse<Response> createResponse1 = Rest.post(params1, "/stations");
 
         Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "역삼역");
