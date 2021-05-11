@@ -32,9 +32,14 @@ public class SectionService {
     }
 
     public void insertSections(Long lineId, SectionInsertRequest sectionInsertRequest) {
-        final Optional<Section> optionalSection = sectionDao.findOneIfInclude(lineId, sectionInsertRequest);
-        // 상행을 추가하거나 하행을 추가하는 부분이 구현되어야함.
+        final Optional<Section> optionalSectionConversed =
+                sectionDao.findOneIfIncludeConversed(lineId, sectionInsertRequest);
+        if (optionalSectionConversed.isPresent()) {
+            sectionDao.insert(lineId, sectionInsertRequest.toSimpleSectionDto());
+            return;
+        }
 
+        final Optional<Section> optionalSection = sectionDao.findOneIfInclude(lineId, sectionInsertRequest);
         final Section section = optionalSection.orElseThrow(NoneOfSectionIncludedInLine::new);
         validateCanBeInserted(section, sectionInsertRequest);
         final SimpleSection updatedSection = updateOriginalSectionToMakeOneLine(section, sectionInsertRequest);

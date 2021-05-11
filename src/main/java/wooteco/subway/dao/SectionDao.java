@@ -77,4 +77,15 @@ public class SectionDao {
         jdbcTemplate.update(query, updatedSection.getUpStationId(), updatedSection.getDownStationId(),
                 updatedSection.getDistance(), lineId);
     }
+
+    public Optional<Section> findOneIfIncludeConversed(Long lineId, SectionInsertRequest sectionInsertRequest) {
+        String query = "SELECT * FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        return jdbcTemplate.query(
+                query,
+                SECTION_MAPPER,
+                lineId,
+                sectionInsertRequest.getDownStationId(),
+                sectionInsertRequest.getUpStationId()).stream()
+                .findAny();
+    }
 }

@@ -36,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS), LINE_URI);
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS1), LINE_URI);
         String uri = response.header("Location");
 
         // then
