@@ -47,15 +47,23 @@ public class JdbcStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationById(Long id) {
+    public Station findById(Long id) {
         String sql = "SELECT * FROM station WHERE id = ?";
-        return this.jdbcTemplate.query(sql, stationRowMapper(), id).stream().findAny();
+        return this.jdbcTemplate.queryForObject(sql, stationRowMapper(), id);
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
-        String sql = "SELECT * FROM station WHERE name = ?";
-        return this.jdbcTemplate.query(sql, stationRowMapper(), name).stream().findAny();
+    public boolean existById(Long id) {
+        String sql = "SELECT count(id) FROM station WHERE id = ?";
+        Integer count = this.jdbcTemplate.queryForObject(sql, int.class, id);
+        return count >= 1;
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        String sql = "SELECT count(id) FROM station WHERE name = ?";
+        Integer count = this.jdbcTemplate.queryForObject(sql, int.class, name);
+        return count >= 1;
     }
 
     @Override

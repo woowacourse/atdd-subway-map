@@ -18,7 +18,7 @@ public class StationService {
 
     @Transactional
     public Station save(Station station) {
-        if (stationDao.findStationByName(station.getName()).isPresent()) {
+        if (stationDao.existByName(station.getName())) {
             throw new DuplicatedStationException();
         }
         return stationDao.save(station);
@@ -34,6 +34,9 @@ public class StationService {
     }
 
     public Station findStation(Long id) {
-        return stationDao.findStationById(id).orElseThrow(StationNotFoundException::new);
+        if (!stationDao.existById(id)) {
+            throw new StationNotFoundException();
+        }
+        return stationDao.findById(id);
     }
 }

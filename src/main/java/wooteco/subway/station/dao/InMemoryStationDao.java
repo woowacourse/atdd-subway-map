@@ -32,17 +32,23 @@ public class InMemoryStationDao implements StationDao {
     }
 
     @Override
-    public Optional<Station> findStationById(Long id) {
+    public Station findById(Long id) {
         return stations.stream()
                 .filter(station -> station.isSameId(id))
-                .findAny();
+                .findAny()
+                .get();
     }
 
     @Override
-    public Optional<Station> findStationByName(String name) {
+    public boolean existById(Long id) {
         return stations.stream()
-                .filter(station -> station.isSameName(name))
-                .findAny();
+                .anyMatch(station -> station.isSameId(id));
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        return stations.stream()
+                .anyMatch(station -> station.isSameName(name));
     }
 
     @Override
