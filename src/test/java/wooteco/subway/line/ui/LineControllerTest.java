@@ -444,6 +444,46 @@ class LineControllerTest {
         assertThat(savedLine.getSections().toList())
                 .extracting(Section::getDownStationId)
                 .containsExactly(pankyo.getId(), yangjae.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDistance)
+                .containsExactly(5, 5);
+
+        //given
+        Station kwangkyo = setDummyStation("광교");
+        sectionUpAddRequest = new SectionAddRequest(pankyo.getId(), kwangkyo.getId(), 3);
+
+        //when
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionUpAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        //then
+        savedLine = lineService.findById(line.getId());
+
+        assertThat(savedLine.getSections().sumSectionDistance()).isEqualTo(10);
+
+        assertThat(savedLine.getSections().toList())
+                .hasSize(3);
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getUpStationId)
+                .containsExactly(kangnam.getId(), pankyo.getId(), kwangkyo.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDownStationId)
+                .containsExactly(pankyo.getId(), kwangkyo.getId(), yangjae.getId());
+
+        assertThat(savedLine.getSections().toList())
+                .extracting(Section::getDistance)
+                .containsExactly(5, 3, 2);
     }
 
     @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 상행 제거")

@@ -54,7 +54,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(stationId)
                         || section.getDownStationId().equals(stationId))
-                .count() == 1;
+                .count() >= 1;
     }
 
     private LinkedList<Section> sort(List<Section> sections) {

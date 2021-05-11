@@ -65,7 +65,6 @@ public class LineService {
         Line line = findById(id);
         Sections sections = line.getSections();
         sections.validateEnableAddSection(section);
-
         boolean isEndPoint = sections.checkEndPoint(section);
         if (isEndPoint) {
             lineRepository.addSection(id, section);
