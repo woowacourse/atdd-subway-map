@@ -16,17 +16,18 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.domain.station.Station;
 
+@DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 추가 - 상행 종점 추가")
     @Test
     void addSection_top() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("addSection_top1역");
+        Station station2 = createTestStation("addSection_top2역");
+        Station station3 = createTestStation("addSection_top3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("addSection_top선", station1.getId(), station2.getId(), 10);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, station3.getId(), station1.getId(), 3);
@@ -45,11 +46,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_bottom() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("addSection_bottom1역");
+        Station station2 = createTestStation("addSection_bottom2역");
+        Station station3 = createTestStation("addSection_bottom3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("addSection_bottom선", station1.getId(), station2.getId(), 10);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, station2.getId(), station3.getId(), 3);
@@ -68,11 +69,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_middle() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("addSection_middle1역");
+        Station station2 = createTestStation("addSection_middle2역");
+        Station station3 = createTestStation("addSection_middle3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("addSection_middle선", station1.getId(), station2.getId(), 10);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, station1.getId(), station3.getId(), 3);
@@ -91,11 +92,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_exception_distance() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("addSection_exception_distance1역");
+        Station station2 = createTestStation("addSection_exception_distance2역");
+        Station station3 = createTestStation("addSection_exception_distance3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 3);
+        Long lineId = createTestLine("addSection_exception_distance선", station1.getId(), station2.getId(), 3);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, station1.getId(), station3.getId(), 4);
@@ -108,10 +109,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_exception_same_station() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("addSection_exception_same_station1역");
+        Station station2 = createTestStation("addSection_exception_same_station2역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("addSection_exception_same_station선", station1.getId(), station2.getId(), 10);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, station1.getId(), station2.getId(), 3);
@@ -124,10 +125,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_exception_none() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("addSection_exception_none1역");
+        Station station2 = createTestStation("addSection_exception_none2역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 2);
+        Long lineId = createTestLine("addSection_exception_none선", station1.getId(), station2.getId(), 2);
 
         // when
         ExtractableResponse<Response> addSectionResponse = addTestSection(lineId, -1L, -1L, 3);
@@ -140,11 +141,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_top() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("deleteSection_top1역");
+        Station station2 = createTestStation("deleteSection_top2역");
+        Station station3 = createTestStation("deleteSection_top3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("deleteSection_top선", station1.getId(), station2.getId(), 10);
         addTestSection(lineId, station2.getId(), station3.getId(), 5);
 
         // when
@@ -163,11 +164,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_bottom() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("deleteSection_bottom1역");
+        Station station2 = createTestStation("deleteSection_bottom2역");
+        Station station3 = createTestStation("deleteSection_bottom3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("deleteSection_bottom선", station1.getId(), station2.getId(), 10);
         addTestSection(lineId, station2.getId(), station3.getId(), 5);
 
         // when
@@ -186,11 +187,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_middle() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
-        Station station3 = createTestStation("종합운동장역");
+        Station station1 = createTestStation("deleteSection_middle1역");
+        Station station2 = createTestStation("deleteSection_middle2역");
+        Station station3 = createTestStation("deleteSection_middle3역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("deleteSection_middle선", station1.getId(), station2.getId(), 10);
         addTestSection(lineId, station2.getId(), station3.getId(), 5);
 
         // when
@@ -209,10 +210,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_exception_none() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("deleteSection_exception_none1역");
+        Station station2 = createTestStation("deleteSection_exception_none2역");
 
-        Long lineId = createTestLine("신분당선", station1.getId(), station2.getId(), 10);
+        Long lineId = createTestLine("deleteSection_exception_none선", station1.getId(), station2.getId(), 10);
 
         // when
         ExtractableResponse<Response> deleteSectionResponse = deleteTestSection(lineId, station2.getId());

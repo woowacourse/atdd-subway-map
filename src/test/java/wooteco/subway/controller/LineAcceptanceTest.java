@@ -15,22 +15,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.response.LineResponse;
 import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.domain.station.Station;
 
 @DisplayName("지하철 노선 관련 기능")
-@Transactional
 class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         //given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("createLine1역");
+        Station station2 = createTestStation("createLine2역");
 
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
@@ -58,8 +56,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("getLines1역");
+        Station station2 = createTestStation("getLines2역");
 
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "2호선");
@@ -112,8 +110,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("showLine1역");
+        Station station2 = createTestStation("showLine2역");
 
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "4호선");
@@ -153,8 +151,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("updateLine1역");
+        Station station2 = createTestStation("updateLine2역");
 
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "5호선");
@@ -202,8 +200,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Station station1 = createTestStation("잠실역");
-        Station station2 = createTestStation("잠실새내역");
+        Station station1 = createTestStation("deleteLine1역");
+        Station station2 = createTestStation("deleteLine2역");
 
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "7호선");
