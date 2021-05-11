@@ -2,8 +2,6 @@ package wooteco.subway.station;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -14,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wooteco.subway.station.dao.StationDaoMemory;
+import wooteco.subway.station.dao.StationDaoH2;
 import wooteco.subway.station.dto.NonIdStationDto;
 import wooteco.subway.station.dto.StationDto;
 
@@ -22,7 +20,7 @@ import wooteco.subway.station.dto.StationDto;
 class StationServiceTest {
 
     @Mock
-    private StationDaoMemory mockDao;
+    private StationDaoH2 mockDao;
 
     @InjectMocks
     private StationService stationService;
