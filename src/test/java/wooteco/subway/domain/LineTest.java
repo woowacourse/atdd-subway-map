@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class LineTest {
+
     @DisplayName("ID가 같으면 같은 노선으로 취급한다.")
     @Test
     void equals() {

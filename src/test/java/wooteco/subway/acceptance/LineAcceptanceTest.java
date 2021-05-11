@@ -19,7 +19,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.acceptance.AcceptanceTest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.StationResponse;
 
