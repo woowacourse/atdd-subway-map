@@ -11,8 +11,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.repository.DataNotFoundException;
+import wooteco.subway.exception.repository.DuplicatedFieldException;
 
 @Repository
 public class StationDao {
@@ -40,7 +40,7 @@ public class StationDao {
             final long id = keyHolder.getKey().longValue();
             return findById(id).get();
         } catch (DuplicateKeyException e) {
-            throw new DuplicatedNameException("중복된 이름의 지하철역입니다.");
+            throw new DuplicatedFieldException("중복된 이름의 지하철역입니다.");
         }
     }
 

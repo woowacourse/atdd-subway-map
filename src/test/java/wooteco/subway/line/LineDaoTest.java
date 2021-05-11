@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.exception.DuplicatedNameException;
+import wooteco.subway.exception.repository.DataNotFoundException;
+import wooteco.subway.exception.repository.DuplicatedFieldException;
 
 @JdbcTest
 class LineDaoTest {
@@ -47,7 +47,7 @@ class LineDaoTest {
 
         assertThatThrownBy(() -> lineDao.save(line))
             .hasMessage("중복된 이름의 노선입니다.")
-            .isInstanceOf(DuplicatedNameException.class);
+            .isInstanceOf(DuplicatedFieldException.class);
     }
 
     @DisplayName("노선을 제거한다.")

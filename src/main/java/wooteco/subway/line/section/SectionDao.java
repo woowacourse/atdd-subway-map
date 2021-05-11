@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.exception.DataNotFoundException;
+import wooteco.subway.exception.repository.DataNotFoundException;
 
 @Repository
 public class SectionDao {
