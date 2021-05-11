@@ -115,7 +115,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @ParameterizedTest(name = "구간 추가 - 실패(empty)")
-    @CsvSource(value = {",,", "1,,2", ",1,2", "1,2,"})
+    @CsvSource(value = {"'','',''", "1,'',2", "'',1,2", "1,2,''"})
     void createSectionFailuresWhenEmpty(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("distance", distance);

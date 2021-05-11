@@ -1,12 +1,14 @@
 package wooteco.subway.domain;
 
+import java.util.Objects;
+
 public class Station {
     private final Long id;
     private final String name;
 
     private Station(Long id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
     }
 
     public static Station from(String name) {

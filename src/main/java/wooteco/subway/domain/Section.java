@@ -2,6 +2,8 @@ package wooteco.subway.domain;
 
 import wooteco.subway.exception.SubwayIllegalArgumentException;
 
+import java.util.Objects;
+
 public class Section {
     private final Long id;
     private final Long lineId;
@@ -12,9 +14,9 @@ public class Section {
     private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validateIfDownStationSameAsUpStation(upStationId, downStationId);
         this.id = id;
-        this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.lineId = Objects.requireNonNull(lineId);
+        this.upStationId = Objects.requireNonNull(upStationId);
+        this.downStationId = Objects.requireNonNull(downStationId);
         this.distance = distance;
     }
 

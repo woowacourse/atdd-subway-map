@@ -1,6 +1,8 @@
 package wooteco.subway.domain;
 
 
+import java.util.Objects;
+
 public class Line {
     private final Long id;
     private final String name;
@@ -8,8 +10,8 @@ public class Line {
 
     private Line(Long id, String name, String color) {
         this.id = id;
-        this.name = name;
-        this.color = color;
+        this.name = Objects.requireNonNull(name);
+        this.color = Objects.requireNonNull(color);
     }
 
     public static Line of(Long id, String name, String color) {
