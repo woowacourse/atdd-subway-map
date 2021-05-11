@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.controller.dto.SectionDto;
 import wooteco.subway.controller.dto.StationDto;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
@@ -21,6 +22,7 @@ import wooteco.subway.repository.LineRepository;
 import wooteco.subway.repository.StationRepository;
 
 @Service
+@Transactional
 public class LineService {
 
   private static final int FIRST_INDEX = 0;
