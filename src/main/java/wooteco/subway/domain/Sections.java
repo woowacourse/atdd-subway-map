@@ -124,7 +124,7 @@ public class Sections {
             if (section.isUpStationId(stationId)) {
                 downStation = section.getDownStation();
             }
-            if(section.isDownStationId(stationId)){
+            if (section.isDownStationId(stationId)) {
                 upStation = section.getUpStation();
             }
             distance += section.getDistance();

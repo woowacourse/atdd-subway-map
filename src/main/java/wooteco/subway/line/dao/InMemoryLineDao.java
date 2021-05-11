@@ -6,12 +6,11 @@ import wooteco.subway.domain.Line;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class InMemoryLineDao implements LineDao {
 
+    private final List<Line> lines = new ArrayList<>();
     private Long seq = 0L;
-    private List<Line> lines = new ArrayList<>();
 
     private Line createNewObject(Line line) {
         Field field = ReflectionUtils.findField(Line.class, "id");

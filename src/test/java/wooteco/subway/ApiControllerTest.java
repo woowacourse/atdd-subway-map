@@ -18,7 +18,7 @@ public class ApiControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         jdbcTemplate.execute(
                 "DROP TABLE IF EXISTS STATION;" +
                         "DROP TABLE IF EXISTS LINE;" +

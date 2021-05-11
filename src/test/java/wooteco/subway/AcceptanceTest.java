@@ -12,11 +12,10 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @LocalServerPort
     int port;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setUp() {

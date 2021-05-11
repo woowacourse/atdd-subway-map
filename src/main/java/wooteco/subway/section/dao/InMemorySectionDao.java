@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class InMemorySectionDao implements SectionDao {
 
+    private final Map<Long, List<Section>> sections = new HashMap<>();
     private Long seq = 0L;
-    private Map<Long, List<Section>> sections = new HashMap<>();
 
     private Section createNewObject(Section section) {
         Field field = ReflectionUtils.findField(Section.class, "id");

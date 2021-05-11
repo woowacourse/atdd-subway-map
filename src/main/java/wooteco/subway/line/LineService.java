@@ -43,7 +43,7 @@ public class LineService {
     }
 
     public Line findLine(Long lineId) {
-        if(!lineDao.existById(lineId)){
+        if (!lineDao.existById(lineId)) {
             throw new LineNotFoundException();
         }
         Line line = lineDao.findById(lineId);

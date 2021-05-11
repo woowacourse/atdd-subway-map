@@ -45,24 +45,21 @@ class SectionApiControllerTest extends ApiControllerTest {
     @Test
     @DisplayName("구간 등록 - 성공(상행종점 등록)")
     void createSection_success_up() throws Exception {
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         Station 강남역 = stationDao.create(Station.create("강남역"));
-
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 잠실역.getId(),
-                4);
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
-
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -70,23 +67,23 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 성공(하행종점 등록)")
     void createSection_success_down() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
 
-        Line line = createLine(잠실역, 잠실새내역);
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         SectionRequest sectionRequest = new SectionRequest(잠실새내역.getId(), 강남역.getId(), 4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -94,23 +91,23 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 성공(상행기준 중간구간 구간 등록)")
     void createSection_success_middle_up() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
 
-        Line line = createLine(잠실역, 잠실새내역);
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         SectionRequest sectionRequest = new SectionRequest(잠실역.getId(), 강남역.getId(), 4);
 
         // when
         ResultActions result = 구간_추가(sectionRequest, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -118,23 +115,23 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 성공(하행기준 중간구간 구간 등록)")
     void createSection_success_middle_down() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
 
-        Line line = createLine(잠실역, 잠실새내역);
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         SectionRequest 강남_잠실새내 = new SectionRequest(강남역.getId(), 잠실새내역.getId(), 4);
 
         // when
         ResultActions result = 구간_추가(강남_잠실새내, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(2);
     }
 
@@ -142,13 +139,13 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(b-k)--> a-b-k-c-d)")
     void createSection_success_middle() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
         Station 동탄역 = stationDao.create(Station.create("동탄역"));
         Station 수서역 = stationDao.create(Station.create("수서역"));
 
-        Line line = createLine(잠실역, 잠실새내역);
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         SectionRequest 강남_잠실 = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
         SectionRequest 잠실새내_동탄 = new SectionRequest(잠실새내역.getId(), 동탄역.getId(), 4);
@@ -159,13 +156,13 @@ class SectionApiControllerTest extends ApiControllerTest {
         // when
         SectionRequest 잠실_수서 = new SectionRequest(잠실역.getId(), 수서역.getId(), 2);
         ResultActions result = 구간_추가(잠실_수서, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(4);
     }
 
@@ -173,13 +170,13 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(k-c)--> a-b-k-c-d)")
     void createSection_success_middle_1() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
         Station 동탄역 = stationDao.create(Station.create("동탄역"));
         Station 수서역 = stationDao.create(Station.create("수서역"));
 
-        Line line = createLine(잠실역, 잠실새내역);
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         SectionRequest 강남_잠실 = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
         SectionRequest 잠실새내_동탄 = new SectionRequest(잠실새내역.getId(), 동탄역.getId(), 4);
@@ -190,13 +187,13 @@ class SectionApiControllerTest extends ApiControllerTest {
         // when
         SectionRequest 수서_잠실새내 = new SectionRequest(수서역.getId(), 잠실새내역.getId(), 2);
         ResultActions result = 구간_추가(수서_잠실새내, line.getId());
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
 
         // then
         result.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
 
-        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(4);
     }
 
@@ -204,10 +201,10 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 실패(새로 추가할 거리가 기존 거리보다 같거나 큰 경우)")
     void createSection_fail_overDistance() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         Station 강남역 = stationDao.create(Station.create("강남역"));
-        final Line line = createLine(잠실역, 잠실새내역);
+        final Line line = 노선_생성(잠실역, 잠실새내역);
 
         final SectionRequest 강남_잠실새내 =
                 new SectionRequest(강남역.getId(), 잠실새내역.getId(), ORIGINAL_DISTANCE);
@@ -225,9 +222,9 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 실패(존재하지 않는 역을 등록할 경우)")
     void createSection_fail_notExistStation() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        final Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        final Line line = 노선_생성(잠실역, 잠실새내역);
 
         final SectionRequest sectionRequest =
                 new SectionRequest(Long.MAX_VALUE, 잠실새내역.getId(), ORIGINAL_DISTANCE);
@@ -244,10 +241,10 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 실패(자연수가 아닌 거리를 등록할 경우)")
     void createSection_fail_notNumberDistance() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         final Station 강남역 = stationDao.create(Station.create("강남역"));
-        final Line line = createLine(잠실역, 잠실새내역);
+        final Line line = 노선_생성(잠실역, 잠실새내역);
 
         final SectionRequest 강남_잠실새내 =
                 new SectionRequest(강남역.getId(), 잠실새내역.getId(), 0);
@@ -266,9 +263,9 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 실패(의미상 중복된 섹션을 등록할 경우)")
     void createSection_fail_duplicatedSection() throws Exception {
         //given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        final Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        final Line line = 노선_생성(잠실역, 잠실새내역);
         final SectionRequest 잠실새내_잠실 = new SectionRequest(잠실새내역.getId(), 잠실역.getId(), 3);
 
         //when
@@ -284,13 +281,12 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 등록 - 실패(새로운 섹션의 두 역이 모두 같은 노선에 포함된 경우)")
     void createSection_fail_existStations() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
         final Station 강남역 = stationDao.create(Station.create("강남역"));
-        final Line line = createLine(잠실역, 강남역);
+        final Line line = 노선_생성(잠실역, 강남역);
 
         final SectionRequest 강남_잠실새내 = new SectionRequest(강남역.getId(), 잠실새내역.getId(), 3);
-
         final SectionRequest 잠실_잠실새내 = new SectionRequest(잠실역.getId(), 잠실새내역.getId(), 3);
 
         구간_추가(강남_잠실새내, line.getId());
@@ -308,9 +304,9 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 제거 - 성공")
     void deleteSection_success() throws Exception {
         // given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         Station 강남역 = stationDao.create(Station.create("강남역"));
 
@@ -319,13 +315,14 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         구간_추가(강남_잠실, line.getId());
         // when
-        ResultActions result = mockMvc.perform(delete("/lines/" + line.getId() + "/sections?stationId=" + 잠실역.getId()));
+        ResultActions result = mockMvc.perform(
+                delete("/lines/" + line.getId() + "/sections?stationId=" + 잠실역.getId()));
+        final Sections sections = sectionDao.findSectionsByLineId(line.getId());
 
         // then
         result.andDo(print())
                 .andExpect(status().isNoContent());
 
-        final Sections sections = sectionDao.findSectionsByLineId(line.getId());
         assertThat(sections.sections().size()).isEqualTo(1);
         assertThat(sections.sections().get(0).getUpStation().getName()).isEqualTo("강남역");
         assertThat(sections.sections().get(0).getDownStation().getName()).isEqualTo("잠실새내역");
@@ -336,7 +333,8 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
     public void deleteSection_fail_notExistLine() throws Exception {
         //given & when
-        final ResultActions result = mockMvc.perform(delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
+        final ResultActions result = mockMvc.perform(
+                delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
         //then
 
         result.andExpect(status().isNotFound());
@@ -346,9 +344,9 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 제거 - 실패(역이 해당 노선에 등록되어 있지 않을 시)")
     public void deleteSection_fail_noStationInLine() throws Exception {
         //given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         //when
         final ResultActions result = mockMvc.perform(
@@ -364,9 +362,9 @@ class SectionApiControllerTest extends ApiControllerTest {
     @DisplayName("구간 제거 - 실패(노선에 구간이 하나밖에 존재하지 않을 시)")
     public void deleteSection_fail_onlyOneSectionExist() throws Exception {
         //given
-        final Station 잠실역 = upStation();
-        final Station 잠실새내역 = downStation();
-        Line line = createLine(잠실역, 잠실새내역);
+        final Station 잠실역 = 상행역();
+        final Station 잠실새내역 = 하행역();
+        Line line = 노선_생성(잠실역, 잠실새내역);
 
         //when
         final ResultActions result = mockMvc.perform(
@@ -385,15 +383,15 @@ class SectionApiControllerTest extends ApiControllerTest {
         );
     }
 
-    private Line createLine(Station upStation, Station downStation) {
+    private Line 노선_생성(Station upStation, Station downStation) {
         return lineService.createLine("1호선", "bg-blue-300", upStation, downStation, ORIGINAL_DISTANCE);
     }
 
-    private Station downStation() {
+    private Station 하행역() {
         return stationDao.create(Station.create(DOWN_STATION_NAME));
     }
 
-    private Station upStation() {
+    private Station 상행역() {
         return stationDao.create(Station.create(UP_STATION_NAME));
     }
 }
