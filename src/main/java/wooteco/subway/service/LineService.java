@@ -3,17 +3,24 @@ package wooteco.subway.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.exceptions.LineDuplicationException;
 import wooteco.subway.exceptions.LineNotFoundException;
 import wooteco.subway.repository.LineDao;
+import wooteco.subway.repository.SectionDao;
+import wooteco.subway.repository.StationDao;
 
 @Service
 public class LineService {
 
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
+    private final StationDao stationDao;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, SectionDao sectionDao, StationDao stationDao) {
         this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
+        this.stationDao = stationDao;
     }
 
     public Line createLine(Line line) {
@@ -28,8 +35,11 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineDao.findById(id)
+        Line line = lineDao.findById(id)
             .orElseThrow(LineNotFoundException::new);
+        Sections sections = sectionDao.findByLine(id);
+        line.setSections(sections);
+        return line;
     }
 
     public void editLine(Line line) {

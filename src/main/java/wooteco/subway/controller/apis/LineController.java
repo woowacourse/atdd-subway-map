@@ -43,13 +43,10 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = lineService.createLine(lineRequest.toLine());
-
         Station station1 = stationService.findById(lineRequest.getUpStationId());
         Station station2 = stationService.findById(lineRequest.getDownStationId());
-
         Section section = new Section(station1, station2, lineRequest.getDistance());
         sectionService.createSection(section, line.getId());
-
         LineResponse lineResponse = new LineResponse(
             line,
             Arrays.asList(
@@ -72,7 +69,11 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        LineResponse lineResponse = new LineResponse(line, new ArrayList<>());
+        List<StationResponse> stations = line.getStations().stream()
+            .map(stationService::findById)
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
+        LineResponse lineResponse = new LineResponse(line, stations);
         return ResponseEntity.ok(lineResponse);
     }
 

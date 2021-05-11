@@ -18,12 +18,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
+import wooteco.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -89,6 +93,34 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
         LineResponse getResponse = new LineResponse(id, "5호선", "red", new ArrayList<>());
+
+        // when
+        RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())  // then
+            .body(is(OBJECT_MAPPER.writeValueAsString(getResponse)));
+    }
+
+    @DisplayName("노선 조회 시 포함된 역들을 보여준다.")
+    @Sql("/station.init.sql")
+    @Test
+    void showLine2() throws JsonProcessingException {
+        // given
+        Station station1 = new Station(1L, "잠실역");
+        Station station2 = new Station(2L, "잠실새내역");
+
+        LineRequest lineRequest = new LineRequest("5호선", "red", 1L, 2L, 7);
+        ExtractableResponse<Response> lineResponse = postLineApi(lineRequest)
+            .extract();
+
+        long id = Long.parseLong(lineResponse.header("Location").split("/")[2]);
+        LineResponse getResponse = new LineResponse(id, "5호선", "red", Arrays.asList(
+            new StationResponse(station1),
+            new StationResponse(station2)
+        ));
 
         // when
         RestAssured.given().log().all()
