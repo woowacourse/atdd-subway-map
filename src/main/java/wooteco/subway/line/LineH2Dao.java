@@ -77,28 +77,6 @@ public class LineH2Dao implements LineDao {
     @Override
     public Optional<Line> findByName(String name) {
         String sql = "SELECT * FROM LINE WHERE name=?";
-        List<Line> lines = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    Line line = new Line(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("color")
-                    );
-                    return line;
-                }, name);
-        return lines.stream().findAny();
-    }
-
-    @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM LINE WHERE id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Optional<Line> findByName(String name) {
-        String sql = "SELECT * FROM LINE WHERE name=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                 sql,
@@ -132,5 +110,11 @@ public class LineH2Dao implements LineDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM LINE WHERE id=?";
+        jdbcTemplate.update(sql, id);
     }
 }
