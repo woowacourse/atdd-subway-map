@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import wooteco.subway.exception.LineNotFoundException;
-import wooteco.subway.exception.StationNotFoundException;
 import wooteco.subway.exception.SubwayException;
+import wooteco.subway.exception.line.LineNotFoundException;
+import wooteco.subway.exception.station.StationNotFoundException;
 
 @RestControllerAdvice
 public class SubwayAdvice {
