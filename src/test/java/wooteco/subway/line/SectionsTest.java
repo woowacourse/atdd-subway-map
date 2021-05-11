@@ -17,8 +17,8 @@ class SectionsTest {
     private static final Station SAMSUNG_STATION = new Station(2L, "삼성역");
     private static final Station GANGNAM_STATION = new Station(3L, "강남역");
 
-    private static final Section JAMSIL_TO_SAMSUNG = new Section(JAMSIL_STATION, SAMSUNG_STATION, 1);
-    private static final Section SAMSUNG_TO_GANGNAM = new Section(SAMSUNG_STATION, GANGNAM_STATION, 5);
+    private static final Section JAMSIL_TO_SAMSUNG = new Section(JAMSIL_STATION, SAMSUNG_STATION, 10);
+    private static final Section SAMSUNG_TO_GANGNAM = new Section(SAMSUNG_STATION, GANGNAM_STATION, 6);
 
     private Sections sections;
 
@@ -75,5 +75,37 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
                                                        .hasMessage(SectionError.NONE_STATION_IN_PATH.getMessage());
+    }
+
+    @Test
+    @DisplayName("같은 역 입력 들어왔을 때")
+    void sectionSameStation() {
+        Station station = new Station(5L, "new");
+        Section section = new Section(station, station, 3);
+
+        assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
+                                                       .hasMessage(SectionError.SAME_STATION_INPUT.getMessage());
+    }
+
+    @Test
+    @DisplayName("하행으로부터 갈림길 방지 연결")
+    void addFromDownStation() {
+        Station station = new Station(5L, "new");
+        Section section = new Section(station, SAMSUNG_STATION, 3);
+
+        Sections newSections = sections.add(section);
+
+        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, station, SAMSUNG_STATION, GANGNAM_STATION);
+    }
+
+    @Test
+    @DisplayName("상행으로부터 갈림길 방지 연결")
+    void addFromUpStation() {
+        Station station = new Station(5L, "new");
+        Section section = new Section(SAMSUNG_STATION,station, 3);
+
+        Sections newSections = sections.add(section);
+
+        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, station, GANGNAM_STATION);
     }
 }

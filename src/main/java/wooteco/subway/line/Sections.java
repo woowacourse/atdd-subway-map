@@ -50,9 +50,42 @@ public class Sections {
         checkBothStationNotInPath(section);
         if (isEndPointAddition(section)) {
             sections.add(section);
+            return new Sections(sections);
         }
 
-        return new Sections(sections);
+        if (path.contains(section.getDownStation())) {
+            Section existingSection = sections.stream()
+                                              .filter(sec -> sec.getDownStation()
+                                                                .equals(section.getDownStation()))
+                                              .findAny()
+                                              .orElseThrow(() -> new SectionException(SectionError.NO_SECTION_FOUND));
+            if (existingSection.getDistance() <= section.getDistance()) {
+                throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
+            }
+            int diff = existingSection.getDistance() - section.getDistance();
+            sections.add(new Section(existingSection.getUpStation(), section.getUpStation(), diff));
+            sections.remove(existingSection);
+            sections.add(section);
+            return new Sections(sections);
+        }
+
+        if (path.contains(section.getUpStation())) {
+            Section existingSection = sections.stream()
+                                              .filter(sec -> sec.getUpStation()
+                                                                .equals(section.getUpStation()))
+                                              .findAny()
+                                              .orElseThrow(() -> new SectionException(SectionError.NO_SECTION_FOUND));
+            if (existingSection.getDistance() <= section.getDistance()) {
+                throw new SectionException(SectionError.CANNOT_DIVIDE_ORIGIN_SECTION);
+            }
+            int diff = existingSection.getDistance() - section.getDistance();
+            sections.add(new Section(section.getDownStation(), existingSection.getDownStation(), diff));
+            sections.remove(existingSection);
+            sections.add(section);
+            return new Sections(sections);
+        }
+        throw new SectionException(SectionError.UNCATHCED_ADD_ERROR);
+
     }
 
     private void checkSameStationInput(Section section) {
@@ -82,5 +115,9 @@ public class Sections {
 
     public List<Station> path() {
         return new ArrayList<>(path);
+    }
+
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
     }
 }
