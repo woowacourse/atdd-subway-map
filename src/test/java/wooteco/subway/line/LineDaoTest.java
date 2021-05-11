@@ -63,7 +63,7 @@ public class LineDaoTest {
         lineDao.save(new Line("신분당선", "black"));
         lineDao.save(new Line("2호선", "white"));
         List<Line> lines = lineDao.findAll();
-        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).hasSize(2);
         assertThat(lines.get(0).getId()).isEqualTo(1L);
         assertThat(lines.get(1).getId()).isEqualTo(2L);
     }

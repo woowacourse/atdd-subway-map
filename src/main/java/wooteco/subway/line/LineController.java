@@ -29,7 +29,7 @@ public class LineController {
         this.lineDao = lineDao;
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
@@ -39,7 +39,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLine() {
         List<Line> lines = lineDao.findAll();
         List<LineResponse> lineResponses = lines.stream()
