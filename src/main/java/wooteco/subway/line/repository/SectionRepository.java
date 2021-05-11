@@ -25,7 +25,7 @@ public class SectionRepository {
         for (Section section : findSections) {
             Station upStation = findStationByStationId(section.upStation().id());
             Station downStation = findStationByStationId(section.downStation().id());
-            sections.add(new Section(section.id(), upStation, downStation, section.distance()));
+            sections.add(new Section(section.id(), id, upStation, downStation, section.distance()));
         }
         return sections;
     }
@@ -46,6 +46,6 @@ public class SectionRepository {
     }
 
     public void update(Long lineId, Section section) {
-        sectionDao.update(new Section(lineId, section.upStation(), section.downStation(), section.distance()));
+        sectionDao.update(new Section(section.id(), lineId, section.upStation(), section.downStation(), section.distance()));
     }
 }

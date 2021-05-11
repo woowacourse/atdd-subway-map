@@ -52,36 +52,23 @@ public class Line {
         return color;
     }
 
-    public boolean sameId(final Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean sameName(final String name) {
-        return this.name.equals(name);
-    }
-
-    public void changeName(final String name) {
-        this.name = name;
-    }
-
-    public void changeColor(String color) {
-        this.color = color;
-    }
-
     public void initSections(List<Section> sections) {
         this.sections = new Sections(sections);
-    }
-
-    public Line addedSectionLine(Section section) {
-        Sections newSections = this.sections.addedSections(section);
-        return new Line(id, name, color, newSections);
     }
 
     public List<Station> stations() {
         return sections.sortedStations();
     }
 
-    public Section affectedSection(Line originLine) {
-        return sections.affectedSection(originLine.sections);
+    public Station duplicatedStation(Section anotherSection) {
+        return sections.duplicatedStation(anotherSection);
+    }
+
+    public Section findSectionWithUpStation(Station duplicatedStation) {
+        return sections.findSectionWithUpStation(duplicatedStation);
+    }
+
+    public Section findSectionWithDownStation(Station duplicatedStation) {
+        return sections.findSectionWithDownStation(duplicatedStation);
     }
 }

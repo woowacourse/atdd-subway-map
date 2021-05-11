@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Sql(scripts = {"classpath:schema.sql", "classpath:dummy.sql"})
+@Sql(scripts = {"classpath:schema.sql", "classpath:data.sql"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class StationDaoImplTest {
 
@@ -67,7 +67,7 @@ class StationDaoImplTest {
         //when
         List<Station> stations = stationDao.findAll();
 
-        assertThat(stations).hasSize(2);
+        assertThat(stations).hasSize(5);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() throws JsonProcessingException {
         // given
-        StationDto station = new StationDto("강남역");
+        StationDto station = new StationDto("잠새역");
         String content = objectMapper.writeValueAsString(station);
 
         // when
@@ -70,7 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() throws JsonProcessingException {
         // given
-        StationDto station = new StationDto("강남역");
+        StationDto station = new StationDto("방배역");
         String content = objectMapper.writeValueAsString(station);
 
         ExtractableResponse<Response> createResponse1 = addStation(content);

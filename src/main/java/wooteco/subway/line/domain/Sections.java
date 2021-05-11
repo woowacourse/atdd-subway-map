@@ -2,71 +2,44 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.station.domain.Station;
 
-import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Sections {
+    private static final Section EMPTY = new Section(0L, new Station(0L), new Station(0L), 0);
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
-    // TODO :
-    //  존재하면 sectionAddRequest의 upstationId로 section을 찾고
-    //  찾은 section의 distance가 sectionAddRequest의 distance보다 작거나 같은 경우는 예외다.
-    //  찾은 section의 upstationId를 sectionAddRequest의 downStationId로 수정한다.
-    //  찾은 section의 distance를 sectionAddRequest의 distance를 뺀 값으로 수정한다.
-    // TODO :
-    //  존재하면 sectionAddRequest의 downStationId로 section을 찾고
-    //  찾은 section의 distance가 sectionAddRequest의 distance보다 작거나 같은 경우는 예외다.
-    //  찾은 section의 downStationId를 sectionAddRequest의 upStationId로 수정한다.
-    //  찾은 section의 distance를 sectionAddRequest의 distance를 뺀 값으로 수정한다.
-
-    public Sections addedSections(Section anotherSection) {
-        checkAbleToAddSection(anotherSection);
-        Station upStation = anotherSection.upStation();
-        Station downStation = anotherSection.downStation();
-        if (sortedStations().contains(upStation)) {
-            Section targetSection = findSectionWithUpStation(upStation);
-            checkAbleToAddByDistance(anotherSection, targetSection);
-            targetSection.changeUpStation(anotherSection.downStation());
-            targetSection.subDistance(anotherSection.distance());
-            return new Sections(new ArrayList<>(sections));
+    public Station duplicatedStation(Section anotherSection) {
+        List<Station> stations = new ArrayList<>();
+        if (hasStation(anotherSection.upStation())) {
+            stations.add(anotherSection.upStation());
         }
-
-        Section targetSection = findSectionWithDownStation(downStation);
-        checkAbleToAddByDistance(anotherSection, targetSection);
-        targetSection.changeDownStation(anotherSection.upStation());
-        targetSection.subDistance(anotherSection.distance());
-        return new Sections(new ArrayList<>(sections));
-
-    }
-
-    private void checkAbleToAddByDistance(Section anotherSection, Section targetSection) {
-        if (targetSection.lessDistanceThan(anotherSection)) {
-            throw new IllegalArgumentException("[ERROR] 기존 구간 길이보다 크거나 같으면 등록할 수 없습니다.");
+        if (hasStation(anotherSection.downStation())) {
+            stations.add(anotherSection.downStation());
         }
+        if (stations.size() != 1) {
+            throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
+        }
+        return stations.get(0);
+
     }
 
-    private Section findSectionWithUpStation(Station upStation) {
+    public Section findSectionWithUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.hasUpStation(upStation))
                 .findFirst()
-                .get();
+                .orElse(EMPTY);
     }
 
-    private Section findSectionWithDownStation(Station downStation) {
+    public Section findSectionWithDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.hasDownStation(downStation))
                 .findFirst()
-                .get();
-    }
-
-    private void checkAbleToAddSection(Section section) {
-        if (!isOnlyOneRegistered(section)) {
-            throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
-        }
+                .orElse(EMPTY);
     }
 
     public boolean isOnlyOneRegistered(Section anotherSection) {
@@ -114,10 +87,5 @@ public class Sections {
             keyStation = nextKeyStation;
         }
         return sortedStations;
-    }
-
-    public Section affectedSection(Sections originSections) {
-        sections.removeAll(originSections.sections);
-        return sections.get(0);
     }
 }

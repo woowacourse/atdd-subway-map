@@ -7,6 +7,7 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.SectionRequest;
 import wooteco.subway.line.repository.LineRepository;
+import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class LineService {
         lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
-//
+    //
 //    public void delete(final Long id) {
 //        lineDao.delete(id);
 //    }
@@ -55,11 +56,27 @@ public class LineService {
 //
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
-        Line originLine = lineRepository.findById(lineId);
-        Line addedLine = originLine.addedSectionLine(
-                new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()));
-        Section toUpdateSection = addedLine.affectedSection(originLine);
+        Line line = lineRepository.findById(lineId);
+        Section toAddSection = new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Station targetStation = line.duplicatedStation(toAddSection);
+        if (toAddSection.hasUpStation(targetStation)) {
+            Section targetSection = line.findSectionWithUpStation(targetStation);
+            checkAbleToAddByDistance(toAddSection, targetSection);
+            lineRepository.updateSection(lineId,
+                    new Section(targetSection.id(), lineId, toAddSection.downStation(), targetSection.downStation(), targetSection.distance() - toAddSection.distance()));
+        }
+        if (toAddSection.hasDownStation(targetStation)) {
+            Section targetSection = line.findSectionWithDownStation(targetStation);
+            checkAbleToAddByDistance(toAddSection, targetSection);
+            lineRepository.updateSection(lineId,
+                    new Section(targetSection.id(), lineId, targetSection.upStation(), toAddSection.upStation(), targetSection.distance() - toAddSection.distance()));
+        }
+        lineRepository.addSection(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+    }
 
-        lineRepository.updateSection(lineId, toUpdateSection);
+    private void checkAbleToAddByDistance(Section addSection, Section targetSection) {
+        if (targetSection.lessDistanceThan(addSection)) {
+            throw new IllegalArgumentException("[ERROR] 기존 구간 길이보다 크거나 같으면 등록할 수 없습니다.");
+        }
     }
 }

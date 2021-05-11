@@ -37,7 +37,7 @@ public class SectionDaoImpl implements SectionDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, section.id());
+            ps.setLong(1, section.lineId());
             ps.setLong(2, section.upStation().id());
             ps.setLong(3, section.downStation().id());
             ps.setInt(4, section.distance());
@@ -71,24 +71,6 @@ public class SectionDaoImpl implements SectionDao {
             throw new IllegalArgumentException("[ERROR] 노선에 구간이 등록되어 있지 않습니다.");
         }
         return sectionEntities;
-    }
-
-    @Override
-    public Map<Long, Long> findUpDownStationIdByLineId(Long lineId) {
-        String sql = "SELECT up_station_id, s.name, down_station_id, s.name FROM SECTION ";
-        return null;
-    }
-
-    private ResultSetExtractor<Map<Station, Station>> stationRowMapper() {
-        Map<Station, Station> stationMap = new HashMap<>();
-        return (ResultSet rs) -> {
-            while (rs.next()) {
-                stationMap.put(
-                        new Station(rs.getLong(1), rs.getString(2)),
-                        new Station(rs.getLong(3), rs.getString(4)));
-            }
-            return stationMap;
-        };
     }
 
     @Override

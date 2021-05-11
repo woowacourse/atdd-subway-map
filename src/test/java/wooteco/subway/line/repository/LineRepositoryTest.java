@@ -8,6 +8,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class LineRepositoryTest {
@@ -25,6 +26,14 @@ class LineRepositoryTest {
         assertThat(line.stations().get(0).id()).isNotNull();
         assertThat(line.stations().get(0).name()).isNotNull();
         assertThat(line.stations().get(0)).isEqualTo(EXIST_UP_STATION);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id로 노선을 조회할시 예외가 발생한다.")
+    void findByIdException() {
+        assertThatThrownBy(() -> lineRepository.findById(0L))
+        .isInstanceOf(IllegalArgumentException.class);
+
     }
 
     @Test

@@ -9,6 +9,7 @@ spring:
     username: sa
     password:
     schema: classpath*:schema/schema.sql
+    data: classpath*:schema/data.sql
   h2:
     console:
       enabled: true     # h2 console 설정
