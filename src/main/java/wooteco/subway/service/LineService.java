@@ -1,6 +1,9 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.dao.LineDao;
+import wooteco.subway.dao.SectionDao;
+import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -11,9 +14,6 @@ import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.exception.line.LineDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.exception.station.StationNotExistException;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
 
 import java.util.List;
 import java.util.stream.Collectors;

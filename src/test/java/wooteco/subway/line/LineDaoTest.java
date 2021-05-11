@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import wooteco.subway.domain.Line;
 import wooteco.subway.dao.LineDao;
+import wooteco.subway.domain.Line;
 
 import java.util.List;
 

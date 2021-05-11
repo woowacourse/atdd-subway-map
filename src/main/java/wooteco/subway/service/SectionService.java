@@ -1,13 +1,13 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.section.request.SectionInsertRequest;
 import wooteco.subway.dto.section.response.SectionInsertResponse;
 import wooteco.subway.exception.section.SectionDistanceException;
 import wooteco.subway.exception.section.SectionMiniMumDeleteException;
-import wooteco.subway.dao.SectionDao;
 
 @Service
 public class SectionService {
@@ -38,7 +38,7 @@ public class SectionService {
 
     public void deleteSectionById(Long lineId, Long stationIdToDelete) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-        if(sections.getSectionsSize() == 1){
+        if (sections.getSectionsSize() == 1) {
             throw new SectionMiniMumDeleteException(lineId);
         }
         if (sections.isFirstOrLastStation(stationIdToDelete)) {
