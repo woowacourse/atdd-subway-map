@@ -58,9 +58,17 @@ public class Sections {
     }
 
     public List<Section> removeStation(final Long stationId) {
+        validateSectionsLength();
+
         final List<Section> relatedSections = relatedSectionsOf(stationId);
         relatedSections.forEach(sections::remove);
         return relatedSections;
+    }
+
+    private void validateSectionsLength() {
+        if (sections.size() == 1) {
+            throw new SectionException("구간이 하나밖에 없는 노선에서는 역을 제거할 수 없습니다.");
+        }
     }
 
     private List<Section> relatedSectionsOf(final Long stationId) {
