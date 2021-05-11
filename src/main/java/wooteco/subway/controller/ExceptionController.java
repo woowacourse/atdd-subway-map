@@ -53,20 +53,29 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(DuplicateStationException.class)
-    public ResponseEntity<Void> duplicatedStationExceptionResponse(final DuplicateStationException e) {
+    public ResponseEntity<Void> duplicatedStationExceptionResponse(
+        final DuplicateStationException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(final MethodArgumentNotValidException e) {
+    public ResponseEntity<Void> methodArgumentNotValidExceptionResponse(
+        final MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
             .build();
     }
 
     @ExceptionHandler(InvalidSectionOnLineException.class)
-    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(final InvalidSectionOnLineException e) {
+    public ResponseEntity<Void> alreadyExistedStationsOnLineExceptionResponse(
+        final InvalidSectionOnLineException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> illegalArgumentExceptionResponse(final IllegalArgumentException e) {
+        return ResponseEntity.notFound()
             .build();
     }
 }
