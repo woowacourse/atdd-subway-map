@@ -4,6 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -18,13 +19,17 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody LineRequest lineRequest) {
         long upStationId = lineRequest.getUpStationId();
         long downStationId = lineRequest.getDownStationId();
+        if (upStationId == downStationId) {
+            throw new IllegalArgumentException("상행역과 하행역은 같은 역이 될 수 없습니다.");
+        }
         String lineName = lineRequest.getName();
         String lineColor = lineRequest.getColor();
+        int distance = lineRequest.getDistance();
 
-        LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor);
+        LineResponse lineResponse = lineService.createLine(upStationId, downStationId, lineName, lineColor, distance);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 

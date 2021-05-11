@@ -68,9 +68,11 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 노선 삭제
 - [x] 스프링 빈 적용
 - [x] H2 적용
-- [ ] 노선 추가 시 구간 추가
-    - [ ] upStationId와 downStationId가 같다면 예외 처리
-    - [ ] distance가 0 이하면 예외 처리
+- [x] 노선 추가시 구간 추가
+    - [x] 상행역, 하행역, 거리 없는 경우 예외처리
+    - [x] upStationId와 downStationId가 같다면 예외 처리
+    - [x] upStationId나 downStationId가 등록되어 있지 않다면 예외 처리
+    - [x] distance가 0 이하면 예외 처리
 - [ ] 구간 추가
     - [ ] 요청한 노선에 upStationId와 downStationId 중 하나라도 연결이 안 되어 있다면 예외처리
     - [ ] 요청한 노선에 이미 upstationId와 downStationId가 둘 다 등록되어 있다면 예외처리
@@ -103,3 +105,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - Repository 계층의 필요성에 대해 생각해 보게 되었다!
     - 현재 Dao가 충분히 필요한 정보를 모으지 못한 채 도메인 객체를 반환해서 생기는 문제 같다!
 - 역이 제거되면...? Section 테이블의 정보들은...?
+- 이미 있는 역인지를 검증하는 게 맞겠지?
+- 노선 수정할 때의 LineRequest와 생성할 때의 lineRequest가 다르네
+    - 각각 Dto를 만들어줘야 할까?
+    - 중복된 필드 값을 사용하는데 각각 필요한 validation이 다를 때 어찌하지?

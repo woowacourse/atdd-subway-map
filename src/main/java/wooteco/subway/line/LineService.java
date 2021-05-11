@@ -7,6 +7,7 @@ import wooteco.subway.section.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,13 +27,23 @@ public class LineService {
         this.sectionDao = sectionDao;
     }
 
-    public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor) {
+    public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
         final Optional<Line> lineWithSameName = lineDao.findByName(lineName);
         if (lineWithSameName.isPresent()) {
             throw new IllegalArgumentException("노선 이름이 중복됩니다.");
         }
         Line line = lineDao.save(lineName, lineColor);
-        sectionDao.save(line.getId(), upStationId, downStationId);
+
+        final Station upStation = stationDao.findById(upStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        final Station downStation = stationDao.findById(downStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        List<Station> stations = new ArrayList<>();
+        stations.add(upStation);
+        stations.add(downStation);
+        line.setStations(stations);
+
+        sectionDao.save(line.getId(), upStationId, downStationId, distance);
         return LineResponse.from(line);
     }
 
