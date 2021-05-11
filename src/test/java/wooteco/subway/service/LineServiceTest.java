@@ -20,6 +20,7 @@ import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.LineServiceDto;
+import wooteco.subway.service.dto.ReadLineDto;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -93,12 +94,12 @@ public class LineServiceTest {
         when(mockLineDao.show(id)).thenReturn(new Line(id, name, color));
 
         // when
-        LineServiceDto requestedDto = lineService.findOne(new LineServiceDto((id)));
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto((id)));
 
         // then
-        assertThat(requestedDto.getId()).isEqualTo(id);
-        assertThat(requestedDto.getName()).isEqualTo(name);
-        assertThat(requestedDto.getColor()).isEqualTo(color);
+        assertThat(readLineDto.getId()).isEqualTo(id);
+        assertThat(readLineDto.getName()).isEqualTo(name);
+        assertThat(readLineDto.getColor()).isEqualTo(color);
     }
 
     @Test
@@ -116,10 +117,10 @@ public class LineServiceTest {
         lineService.update(new LineServiceDto(id, updateName, updateColor));
 
         // then
-        LineServiceDto responseDto = lineService.findOne(new LineServiceDto(id));
-        assertThat(responseDto.getId()).isEqualTo(1);
-        assertThat(responseDto.getName()).isEqualTo(updateName);
-        assertThat(responseDto.getColor()).isEqualTo("녹담색");
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto(id));
+        assertThat(readLineDto.getId()).isEqualTo(1);
+        assertThat(readLineDto.getName()).isEqualTo(updateName);
+        assertThat(readLineDto.getColor()).isEqualTo("녹담색");
     }
 
     @Test

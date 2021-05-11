@@ -64,7 +64,7 @@
 
 ### 3. Section과 연관된 다른 Service 기능 추가 구현
 - [x] Line 추가 시에 Section도 같이 추가 적용
-- [ ] Line 조회 시에 해당 Station도 모두 조회
+- [x] Line 조회 시에 해당 Station도 모두 조회
 
 ### 4. Line 추가시 2개의 Station 연결정보(Section)도 함께 등록
 노선 추가 시 3가지 정보를 추가로 입력 받음

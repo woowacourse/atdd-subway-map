@@ -1,21 +1,28 @@
 package wooteco.subway.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.section.InvalidSectionOnLineException;
+import wooteco.subway.exception.station.NotFoundStationException;
 import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.SectionServiceDto;
+import wooteco.subway.service.dto.StationServiceDto;
 
 @Service
 public class SectionService {
 
     private final SectionDao sectionDao;
+    private final StationService stationService;
 
-    public SectionService(final SectionDao sectionDao) {
+    public SectionService(final SectionDao sectionDao, final StationService stationService) {
         this.sectionDao = sectionDao;
+        this.stationService = stationService;
     }
 
     public SectionServiceDto saveByLineCreate(@Valid final SectionServiceDto sectionServiceDto) {
@@ -79,6 +86,24 @@ public class SectionService {
         sectionDao.delete(upSection);
         sectionDao.delete(downSection);
         sectionDao.save(updatedSection);
+    }
+
+    public List<StationResponse> findAllbyLindId(final Long lineId) {
+        Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
+        return sections.sortedStationIds()
+            .stream()
+            .map(this::stationReponseById)
+            .collect(Collectors.toList());
+    }
+
+    private StationResponse stationReponseById(final Long id) {
+        StationServiceDto dto = stationService.showStations()
+            .stream()
+            .filter(element -> id.equals(element.getId()))
+            .findAny()
+            .orElseThrow(NotFoundStationException::new);
+
+        return new StationResponse(dto.getId(), dto.getName());
     }
 }
 

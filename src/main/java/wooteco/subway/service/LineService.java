@@ -5,11 +5,15 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.controller.dto.response.StationResponse;
 import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.dto.CreateLineDto;
+import wooteco.subway.service.dto.CreateSectionDto;
 import wooteco.subway.service.dto.LineServiceDto;
+import wooteco.subway.service.dto.ReadLineDto;
 import wooteco.subway.service.dto.SectionServiceDto;
 
 @Service
@@ -41,9 +45,10 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineServiceDto findOne(@Valid final LineServiceDto lineServiceDto) {
+    public ReadLineDto findOne(@Valid final LineServiceDto lineServiceDto) {
         Line line = lineDao.show(lineServiceDto.getId());
-        return LineServiceDto.from(line);
+        List<StationResponse> stationResponses = sectionService.findAllbyLindId(line.getId());
+        return ReadLineDto.of(line, stationResponses);
     }
 
     public void update(@Valid final LineServiceDto lineServiceDto) {
@@ -58,5 +63,10 @@ public class LineService {
         if (lineDao.delete(lineServiceDto.getId()) == NOT_FOUND) {
             throw new NotFoundLineException();
         }
+    }
+
+    public void createSection(CreateSectionDto createSectionDto) {
+        SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
+        sectionService.save(sectionServiceDto);
     }
 }

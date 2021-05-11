@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.controller.dto.request.SectionRequest;
 import wooteco.subway.controller.dto.request.UpdateLineRequest;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.dto.CreateLineDto;
+import wooteco.subway.service.dto.CreateSectionDto;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.service.dto.ReadLineDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -53,9 +56,10 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        LineServiceDto lineServiceDto = lineService.findOne(new LineServiceDto(id));
-        LineResponse lineResponse = LineResponse.from(lineServiceDto);
-
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto(id));
+        LineResponse lineResponse = LineResponse.from(readLineDto);
+        System.out.println(lineResponse.getName());
+        System.out.println(lineResponse.getStations());
         return ResponseEntity.ok(lineResponse);
     }
 
@@ -65,6 +69,16 @@ public class LineController {
 
         LineServiceDto lineServiceDto = LineServiceDto.from(id, updateLineRequest);
         lineService.update(lineServiceDto);
+
+        return ResponseEntity.ok()
+            .build();
+    }
+
+    @PostMapping(value="/{lineId}/sections")
+    public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
+        @PathVariable final long lineId) {
+        CreateSectionDto createSectionDto = CreateSectionDto.of(lineId, sectionRequest);
+        lineService.createSection(createSectionDto);
 
         return ResponseEntity.ok()
             .build();
