@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -22,6 +25,7 @@ class SectionDaoTest {
 
     private Station firstStation;
     private Station secondStation;
+    private Station thirdStation;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +35,7 @@ class SectionDaoTest {
         jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
         firstStation = stationDao.save("FirstStation");
         secondStation = stationDao.save("SecondStation");
-        stationDao.save("ThirdStation");
+        thirdStation = stationDao.save("ThirdStation");
         stationDao.save("FourthStation");
         stationDao.save("FifthStation");
     }
@@ -98,5 +102,19 @@ class SectionDaoTest {
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(0);
         sectionDao.save(1L, 1L, 2L, 10);
         assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("라인 ID로 구간 조회")
+    public void findSectionsByLineId() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        sectionDao.save(1L, 2L, 3L, 10);
+        List<Section> sections = sectionDao.findSectionsByLineId(1L);
+
+        assertThat(sections).containsExactlyInAnyOrderElementsOf(
+                Arrays.asList(
+                new Section(1L, 1L, firstStation, secondStation, 10),
+                new Section(2L, 1L, secondStation, thirdStation, 10))
+        );
     }
 }

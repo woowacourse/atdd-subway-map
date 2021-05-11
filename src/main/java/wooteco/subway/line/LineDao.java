@@ -6,17 +6,22 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.section.Section;
+import wooteco.subway.section.SectionDao;
 
 import java.sql.PreparedStatement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class LineDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SectionDao sectionDao;
 
-    public LineDao(JdbcTemplate jdbcTemplate) {
+    public LineDao(JdbcTemplate jdbcTemplate, SectionDao sectionDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.sectionDao = sectionDao;
     }
 
     private RowMapper<Line> lineRowMapper() {
@@ -42,8 +47,11 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         String sql = "select id, name, color from LINE where id = ?";
+        List<Section> sections = sectionDao.findSectionsByLineId(id);
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), id));
+            Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
+            line.setSections(sections);
+            return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -52,7 +60,9 @@ public class LineDao {
     public Optional<Line> findByName(String name) {
         String sql = "select id, name, color from LINE where name = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, lineRowMapper(), name));
+            Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), name);
+            line.setSections(sectionDao.findSectionsByLineId(line.getId()));
+            return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -60,7 +70,12 @@ public class LineDao {
 
     public List<Line> findAll() {
         String sql = "select id, name, color from LINE";
-        return jdbcTemplate.query(sql, lineRowMapper());
+        List<Line> lines = jdbcTemplate.query(sql, lineRowMapper());
+        for (Line line : lines) {
+            List<Section> sections = sectionDao.findSectionsByLineId(line.getId());
+            line.setSections(sections);
+        }
+        return lines;
     }
 
     public int update(Long id, String name, String color) {

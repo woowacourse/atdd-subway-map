@@ -12,6 +12,7 @@ import wooteco.subway.station.exception.StationExistenceException;
 import wooteco.subway.station.exception.StationNotFoundException;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -48,6 +49,11 @@ public class SectionDao {
     public int delete(Long lineId, Long stationId) {
         String sql = "delete from SECTION where LINE_ID = ? and (UP_STATION_ID = ? or DOWN_STATION_ID = ?)";
         return jdbcTemplate.update(sql, lineId, stationId, stationId);
+    }
+
+    public List<Section> findSectionsByLineId(Long lineId) {
+        String sql = "select ID, LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE from SECTION where LINE_ID = ?";
+        return jdbcTemplate.query(sql, sectionRowMapper(), lineId);
     }
 
     public boolean isExistingStation(Long lineId, Long stationId) {

@@ -2,6 +2,8 @@ package wooteco.subway.section;
 
 import wooteco.subway.station.Station;
 
+import java.util.Objects;
+
 public class Section {
     private Long id;
     private Long lineId;
@@ -43,5 +45,18 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
