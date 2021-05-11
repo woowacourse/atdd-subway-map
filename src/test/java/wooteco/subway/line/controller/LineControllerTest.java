@@ -196,7 +196,7 @@ class LineControllerTest extends AcceptanceTest {
         assertThat(line2.get("name")).isEqualTo("2호선");
     }
 
-    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보와 담고 있는 stations List를 반환한다.")
+    @DisplayName("id를 통해 노선을 조회하면, 해당 노선 정보와 담고 있는 stations List를 상행선, 하행선 순으로 반환한다.")
     @Test
     void getLineWithStationResponses() {
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
@@ -215,6 +215,16 @@ class LineControllerTest extends AcceptanceTest {
         );
         assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
                 isEqualTo(expectedLineResponse);
+
+        List<StationResponse> wrongStationResponses = Arrays.asList(new StationResponse(2L, "역삼역"), new StationResponse(1L, "강남역"));
+        expectedLineResponse = new LineResponse(
+                1L,
+                "신분당선",
+                "bg-red-600",
+                wrongStationResponses
+        );
+        assertThat(getResponse.as(LineResponse.class)).usingRecursiveComparison().
+                isNotEqualTo(expectedLineResponse);
     }
 
     @DisplayName("잘못된 id를 통해 노선을 조회하면, 404 상태 코드를 받는다.")
