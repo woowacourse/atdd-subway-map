@@ -2,6 +2,7 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.section.exception.SectionsHasDuplicateException;
+import wooteco.subway.section.exception.SectionsHasNotSectionException;
 import wooteco.subway.section.exception.SectionsIllegalArgumentException;
 import wooteco.subway.section.exception.SectionsSizeTooSmallException;
 import wooteco.subway.station.domain.Station;
@@ -174,6 +175,18 @@ public class OrderedSections {
         return sections.stream()
                 .filter(section -> section.isExist(station))
                 .collect(toList());
+    }
+
+    public OrderedSections removeSection(Section section) {
+        checkSectionIsPresent(section);
+        return this;
+    }
+
+    private void checkSectionIsPresent(Section section) {
+        if (!sections.contains(section)) {
+            throw new SectionsHasNotSectionException(
+                    String.format("해당 구간에 삭제하려는 구간이 없습니다. 구간 : %s", section.toString()));
+        }
     }
 
     public List<Section> getSections() {

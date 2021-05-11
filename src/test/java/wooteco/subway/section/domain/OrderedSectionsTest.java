@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import wooteco.subway.section.exception.SectionDistanceTooShortException;
 import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.section.exception.SectionsHasDuplicateException;
+import wooteco.subway.section.exception.SectionsHasNotSectionException;
 import wooteco.subway.section.exception.SectionsIllegalArgumentException;
 import wooteco.subway.section.exception.SectionsSizeTooSmallException;
 
@@ -137,6 +138,16 @@ class OrderedSectionsTest {
         //then
         assertThatThrownBy(() -> getFirstToFifthSections().addSection(TOO_LONG_SECTION))
                 .isInstanceOf(SectionDistanceTooShortException.class);
+    }
+
+    @DisplayName("노선을 삭제하려할 때 등록되어있지 않은 노선이면 예외")
+    @Test
+    void whenSectionsHasNotSection() {
+        //given
+        //when
+        //then
+        assertThatThrownBy(() -> getFirstToFifthSections().removeSection(FIFTH_SECTION))
+            .isInstanceOf(SectionsHasNotSectionException.class);
     }
 
     private OrderedSections getFirstToFifthSections() {
