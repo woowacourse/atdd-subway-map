@@ -8,7 +8,7 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
     public List<Station> path() {
@@ -38,5 +38,9 @@ public class Sections {
         }
 
         return new ArrayList<>(sortedStation);
+    }
+
+    public void add(Section section) {
+        sections.add(section);
     }
 }
