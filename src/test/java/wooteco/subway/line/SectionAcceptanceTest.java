@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -94,7 +96,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addDownStationOfSection() {
         // given
         Long newStationId = 4L;
-        sectionRequest = new SectionRequest(firstUpStationId, newStationId, 3);
+        sectionRequest = new SectionRequest(firstUpStationId, newStationId, 30);
 
         // when
         ExtractableResponse<Response> response = postSections(sectionRequest);
@@ -113,7 +115,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addUpStationOfSection() {
         // given
         Long newStationId = 4L;
-        sectionRequest = new SectionRequest(newStationId, lastDownStationId, 3);
+        sectionRequest = new SectionRequest(newStationId, lastDownStationId, 30);
 
         // when
         ExtractableResponse<Response> response = postSections(sectionRequest);
@@ -125,5 +127,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations.get(0).getId()).isEqualTo(2L);
         assertThat(stations.get(1).getId()).isEqualTo(4L);
         assertThat(stations.get(2).getId()).isEqualTo(3L);
+    }
+
+    @DisplayName("추가되는 구간의 거리 길이가 기존 구간보다 크거나 같은 경우 예외처리된다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"30", "40"})
+    void invalidSectionDistance(int distance) {
+        // given
+        sectionRequest = new SectionRequest(firstUpStationId, 4L, 30);
+        postSections(sectionRequest);
+        sectionRequest = new SectionRequest(4L, 1L, distance);
+
+        // when
+        ExtractableResponse<Response> response = postSections(sectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("거리가 현재 존재하는 구간보다 크거나 같습니다!");
     }
 }

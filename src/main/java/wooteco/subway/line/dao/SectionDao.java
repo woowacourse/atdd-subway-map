@@ -2,12 +2,15 @@ package wooteco.subway.line.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class SectionDao {
@@ -23,24 +26,20 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
-    public Map<Station, Station> findSectionById(Long lineId) {
-        String query = "select up_station_id, s1.name, down_station_id, s2.name " +
+    public List<Section> findSectionById(Long lineId) {
+        String query = "select up_station_id, s1.name, down_station_id, s2.name, distance " +
                 "from section " +
                 "INNER JOIN station as s1 " +
                 "INNER JOIN station as s2 " +
                 "where section.line_id = ? AND section.up_station_id = s1.id AND section.down_station_id = s2.id";
-        return jdbcTemplate.query(query, stationRowMapper(), lineId);
+        return jdbcTemplate.query(query, sectionRowMapper(lineId), lineId);
     }
 
-    private ResultSetExtractor<Map<Station, Station>> stationRowMapper() {
-        Map<Station, Station> stationMap = new HashMap<>();
-        return (ResultSet rs) -> {
-            while (rs.next()) {
-                stationMap.put(
-                        new Station(rs.getLong(1), rs.getString(2)),
-                        new Station(rs.getLong(3), rs.getString(4)));
-            }
-            return stationMap;
+    private RowMapper<Section> sectionRowMapper(Long lineId) {
+        return (rs, rowNum) -> {
+            Station upStation = new Station(rs.getLong(1), rs.getString(2));
+            Station downStation = new Station(rs.getLong(3), rs.getString(4));
+            return new Section(new Line(lineId), upStation, downStation, rs.getInt(5));
         };
     }
 
@@ -49,17 +48,17 @@ public class SectionDao {
         jdbcTemplate.update(query);
     }
 
-    public void updateUpStation(Long lineId, Long upStationId, Long newUpStationId) {
-        String query = "UPDATE section SET up_station_id = ? " +
+    public void updateUpStation(Long lineId, Long upStationId, Long newUpStationId, int distance) {
+        String query = "UPDATE section SET up_station_id = ?, distance = ? " +
                 "WHERE line_id = ? " +
                 "AND up_station_id = ?";
-        jdbcTemplate.update(query, newUpStationId, lineId, upStationId);
+        jdbcTemplate.update(query, newUpStationId, distance, lineId, upStationId);
     }
 
-    public void updateDownStation(Long lineId, Long downStationId, Long newDownStationId) {
-        String query = "UPDATE section SET down_station_id = ? " +
+    public void updateDownStation(Long lineId, Long downStationId, Long newDownStationId, int distance) {
+        String query = "UPDATE section SET down_station_id = ?, distance = ? " +
                 "WHERE line_id = ? " +
                 "AND down_station_id = ?";
-        jdbcTemplate.update(query, newDownStationId, lineId, downStationId);
+        jdbcTemplate.update(query, newDownStationId, distance, lineId, downStationId);
     }
 }

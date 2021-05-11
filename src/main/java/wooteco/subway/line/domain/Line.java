@@ -5,6 +5,10 @@ public class Line {
     private String name;
     private String color;
 
+    public Line(Long lineId) {
+        this(lineId, null, null);
+    }
+
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;

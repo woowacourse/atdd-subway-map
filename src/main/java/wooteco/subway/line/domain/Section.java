@@ -2,6 +2,9 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.station.domain.Station;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Section {
     private Line line;
     private Station upStation;
@@ -25,6 +28,12 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Map<Station, Station> stations() {
+        return new HashMap<Station, Station>() {{
+            put(upStation, downStation);
+        }};
     }
 
     public int getDistance() {
