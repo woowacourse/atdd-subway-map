@@ -55,6 +55,7 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponseDto> getAllLines() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()

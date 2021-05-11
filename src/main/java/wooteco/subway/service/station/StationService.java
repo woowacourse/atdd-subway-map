@@ -39,6 +39,7 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public long deleteStationById(Long id) {
         return stationDao.deleteById(id);
     }

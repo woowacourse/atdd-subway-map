@@ -29,6 +29,7 @@ public class LineStationsListService {
         this.lineDao = lineDao;
     }
 
+    @Transactional(readOnly = true)
     public LineStationsListResponseDto getAllStationsInOrderListByLineId(Long lineId) {
         LineStationsInOrder lineStationsInOrder = getLineStationsInOrder(lineId);
         List<Long> stationIdsInOrder = lineStationsInOrder.getStationIdsInOrder();
