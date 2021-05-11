@@ -38,4 +38,19 @@ public class RequestUtil {
                 .then()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> requestSection(String lineId, String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then()
+                .extract();
+    }
 }
