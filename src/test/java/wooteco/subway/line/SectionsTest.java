@@ -3,11 +3,14 @@ package wooteco.subway.line;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.line.exception.SectionError;
+import wooteco.subway.line.exception.SectionException;
 import wooteco.subway.station.Station;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
     private static final Station JAMSIL_STATION = new Station(1L, "잠실역");
@@ -36,9 +39,9 @@ class SectionsTest {
         Station newStation = new Station(4L, "new");
         Section addFirst = new Section(newStation, JAMSIL_STATION, 3);
 
-        sections.add(addFirst);
+        Sections newSections = sections.add(addFirst);
 
-        assertThat(sections.path()).containsExactly(newStation, JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION);
+        assertThat(newSections.path()).containsExactly(newStation, JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION);
     }
 
     @Test
@@ -47,8 +50,30 @@ class SectionsTest {
         Station newStation = new Station(4L, "new");
         Section addLast = new Section(GANGNAM_STATION, newStation, 3);
 
-        sections.add(addLast);
+        Sections newSections = sections.add(addLast);
 
-        assertThat(sections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION, newStation);
+        assertThat(newSections.path()).containsExactly(JAMSIL_STATION, SAMSUNG_STATION, GANGNAM_STATION, newStation);
+    }
+
+    @Test
+    @DisplayName("두 역 모두 노선에 포함되어 있는 경우 에러 발생")
+    void sectionAddBothInPath() {
+        Section section = new Section(GANGNAM_STATION, SAMSUNG_STATION, 3);
+
+
+        assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
+                                                       .hasMessage(SectionError.BOTH_STATION_IN_PATH.getMessage());
+    }
+
+    @Test
+    @DisplayName("두 역 모두 노선에 포함되지 않은 경우 에러 발생")
+    void sectionAddNoneInPath() {
+        Station stationA = new Station(4L, "new");
+        Station stationB = new Station(5L, "new2");
+        Section section = new Section(stationA, stationB, 3);
+
+
+        assertThatThrownBy(() -> sections.add(section)).isInstanceOf(SectionException.class)
+                                                       .hasMessage(SectionError.NONE_STATION_IN_PATH.getMessage());
     }
 }
