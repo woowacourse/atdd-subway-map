@@ -62,3 +62,6 @@
 - [x] 연결된 Section들은 Station의 Id로 정렬한다.
 
 #### 구간 제거
+
+
+- [ ] Fixture 모두 정리하기

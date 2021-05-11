@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 public class StationAcceptanceTestFixture {
+
+    public static void insertStation(Station station) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", station.getName());
+        requestWhenCreateStation(params);
+    }
+
     public static void insertStations(List<Station> stations) {
         for (Station station : stations) {
             Map<String, String> params = new HashMap<>();

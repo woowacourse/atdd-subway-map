@@ -30,42 +30,6 @@ public class LineAcceptanceTestFixture {
                 .collect(Collectors.toList());
     }
 
-    public static ExtractableResponse<Response> extractResponseWhenGet(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .get(path)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> extractResponseWhenPost(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> extractResponseWhenPut(Map<String, String> params2) {
-        return RestAssured.given().log().all()
-                .body(params2)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/1")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> extractResponseWhenDelete(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-    }
-
     public static Map<String, String> createLineRequest(String color, String name, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);

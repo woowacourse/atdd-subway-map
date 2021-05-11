@@ -14,10 +14,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.dao.fixture.CommonFixture.*;
 import static wooteco.subway.dao.fixture.DomainFixture.*;
 import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
 
 public class LineAcceptanceTest extends AcceptanceTest {
+    private static final String LINE_URI = "/lines";
+
     private static final Map<String, String> PARAMS1 =
             createLineRequest("bg-red-600", "1호선", 1L, 2L, 7);
     private static final Map<String, String> PARAMS2 =
@@ -31,7 +34,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS));
+        ExtractableResponse<Response> response = extractResponseWhenPost(createLineWithSection(STATIONS), LINE_URI);
         String uri = response.header("Location");
 
         // then
@@ -45,10 +48,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        extractResponseWhenPost(PARAMS1);
+        extractResponseWhenPost(PARAMS1, LINE_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS1);
+        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS1, LINE_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,10 +61,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateColor() {
         // given
-        extractResponseWhenPost(PARAMS1);
+        extractResponseWhenPost(PARAMS1, LINE_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS_SAME_COLOR);
+        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS_SAME_COLOR, LINE_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -71,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithWrongName() {
         // given
-        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS_INCORRECT_FORMAT);
+        ExtractableResponse<Response> response = extractResponseWhenPost(PARAMS_INCORRECT_FORMAT, LINE_URI);
 
         // when - then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -98,8 +101,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(PARAMS1);
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(PARAMS2);
+        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(PARAMS1, LINE_URI);
+        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(PARAMS2, LINE_URI);
 
         // when
         ExtractableResponse<Response> response = extractResponseWhenGet("lines");
@@ -119,10 +122,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        extractResponseWhenPost(PARAMS1);
+        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(PARAMS1, LINE_URI);
+        String uri = createResponse.header("Location");
 
         //when
-        ExtractableResponse<Response> response = extractResponseWhenPut(PARAMS2);
+        ExtractableResponse<Response> response = extractResponseWhenPut(PARAMS2, uri);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -133,7 +137,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = extractResponseWhenPost(PARAMS1);
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(PARAMS1, LINE_URI);
 
         // when
         String uri = createResponse.header("Location");

@@ -17,9 +17,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static wooteco.subway.dao.fixture.CommonFixture.*;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    public static final String STATIONS_URI = "/stations";
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -28,7 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = setStation("name", "영통역");
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+        ExtractableResponse<Response> response = extractResponseWhenPost(params, STATIONS_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -40,10 +43,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = setStation("name", "강남역");
-        extractResponseWhenPost(params);
+        extractResponseWhenPost(params, STATIONS_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+        ExtractableResponse<Response> response = extractResponseWhenPost(params, STATIONS_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,7 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithWrongName() {
         // given
         Map<String, String> params = setStation("name", "강남");
-        ExtractableResponse<Response> response = extractResponseWhenPost(params);
+        ExtractableResponse<Response> response = extractResponseWhenPost(params, STATIONS_URI);
 
         // when - then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -65,13 +68,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         // given
         Map<String, String> params1 = setStation("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(params1);
+        ExtractableResponse<Response> createResponse1 = extractResponseWhenPost(params1, STATIONS_URI);
 
         Map<String, String> params2 = setStation("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2);
+        ExtractableResponse<Response> createResponse2 = extractResponseWhenPost(params2, STATIONS_URI);
 
         // when
-        ExtractableResponse<Response> response = extractResponseWhenGet();
+        ExtractableResponse<Response> response = extractResponseWhenGet(STATIONS_URI);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -89,7 +92,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         Map<String, String> params = setStation("name", "강남역");
-        ExtractableResponse<Response> createResponse = extractResponseWhenPost(params);
+        ExtractableResponse<Response> createResponse = extractResponseWhenPost(params, STATIONS_URI);
 
         // when
         String uri = createResponse.header("Location");
@@ -103,31 +106,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put(key, value);
         return params;
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenDelete(String uri) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenPost(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> extractResponseWhenGet() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
     }
 }
