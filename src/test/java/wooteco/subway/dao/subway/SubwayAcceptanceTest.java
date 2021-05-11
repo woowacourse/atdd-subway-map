@@ -12,8 +12,7 @@ import wooteco.subway.controller.response.StationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static wooteco.subway.dao.fixture.CommonFixture.extractResponseWhenGet;
-import static wooteco.subway.dao.fixture.CommonFixture.extractResponseWhenPost;
+import static wooteco.subway.dao.fixture.CommonFixture.*;
 import static wooteco.subway.dao.fixture.DomainFixture.STATIONS1;
 import static wooteco.subway.dao.fixture.DomainFixture.STATIONS2;
 import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
@@ -22,7 +21,7 @@ import static wooteco.subway.dao.subway.SubwayAcceptanceTestFixture.*;
 @Sql("classpath:tableInit.sql")
 public class SubwayAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("노선을 ID로 조회하여 포함된 모든 구간을 나타낸다.")
+    @DisplayName("노선 조회 - 노선을 ID로 조회하여 포함된 모든 구간을 나타낸다.")
     @Test
     void getLine() {
         // given
@@ -44,7 +43,7 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("ID에 해당하는 노선에 구간을 추가한다.")
+    @DisplayName("구간 추가 - ID에 해당하는 노선에 구간을 추가한다.")
     @Test
     void addSection() {
         // given
@@ -63,7 +62,7 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponses.size()).isEqualTo(3);
     }
 
-    @DisplayName("상행 종점을 추가한다.")
+    @DisplayName("구간 추가 - 상행 종점을 추가한다.")
     @Test
     void expandUpStation() {
         // given
@@ -82,7 +81,7 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponses.size()).isEqualTo(3);
     }
 
-    @DisplayName("하행 종점을 추가한다.")
+    @DisplayName("구간 추가 - 하행 종점을 추가한다.")
     @Test
     void expandDownStation() {
         // given
@@ -102,7 +101,7 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("기존 구간보다 거리가 길기 때문에 구간 추가가 불가능하다.")
+    @DisplayName("구간 추가 - 기존 구간보다 거리가 길기 때문에 구간 추가가 불가능하다.")
     void addSectionWhenDistancesAreMismatch() {
         // given
         ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
@@ -130,7 +129,7 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("상행과 하행이 모두 노선에 포함되어있지 않은 역이므로 구간 추가가 불가능하다.")
+    @DisplayName("구간 추가 - 상행과 하행이 모두 노선에 포함되어있지 않은 역이므로 구간 추가가 불가능하다.")
     void addSectionWhenEndSectionsAreNotIncluded() {
         // given
         ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
@@ -141,5 +140,64 @@ public class SubwayAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 노선 중 중간역을 삭제한다.")
+    void deleteSectionInMiddle() {
+        // given
+        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        final String uri = createResponse.header("Location") + "/sections";
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionExpandUpStationRequest(), uri);
+
+        // when
+        final ExtractableResponse<Response> deleteResponse = extractResponseWhenDelete(uri + "?stationId=1");
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 노선 중 하행 종점을 삭제한다.")
+    void deleteSectionInLast() {
+        // given
+        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        final String uri = createResponse.header("Location") + "/sections";
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionExpandUpStationRequest(), uri);
+
+        // when
+        final ExtractableResponse<Response> deleteResponse = extractResponseWhenDelete(uri + "?stationId=2");
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 노선 중 상행 종점을 삭제한다.")
+    void deleteSectionInFirst() {
+        // given
+        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        final String uri = createResponse.header("Location") + "/sections";
+        final ExtractableResponse<Response> response = extractResponseWhenPost(createAddSectionExpandUpStationRequest(), uri);
+
+        // when
+        final ExtractableResponse<Response> deleteResponse = extractResponseWhenDelete(uri + "?stationId=3");
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    @DisplayName("구간 제거 - 노선에 구간이 1개인 경우에는 삭제가 불가능하다.")
+    void deleteSectionInException() {
+        // given
+        final ExtractableResponse<Response> createResponse = extractResponseWhenPost(createLineWithSection(STATIONS1), "/lines"); // 노선 등록
+        final String uri = createResponse.header("Location") + "/sections";
+
+        // when
+        final ExtractableResponse<Response> deleteResponse = extractResponseWhenDelete(uri + "?stationId=2");
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
