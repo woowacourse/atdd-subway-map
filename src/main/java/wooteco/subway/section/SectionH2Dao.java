@@ -1,5 +1,6 @@
 package wooteco.subway.section;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -38,18 +39,21 @@ public class SectionH2Dao implements SectionDao {
     @Override
     public Optional<Section> findBySameUpOrDownId(Long lineId, Section newSection) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
-        List<Section> sections = jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> {
-                Section section = new Section(
-                    rs.getLong("id"),
-                    rs.getLong("up_station_id"),
-                    rs.getLong("down_station_id"),
-                    rs.getInt("distance")
-                );
-                return section;
-            }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId());
-        return sections.stream().findAny();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> {
+                        Section section = new Section(
+                                rs.getLong("id"),
+                                rs.getLong("up_station_id"),
+                                rs.getLong("down_station_id"),
+                                rs.getInt("distance")
+                        );
+                        return section;
+                    }, lineId, newSection.getUpStationId(), lineId, newSection.getDownStationId()));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
