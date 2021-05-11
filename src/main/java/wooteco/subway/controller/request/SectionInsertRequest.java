@@ -1,14 +1,19 @@
 package wooteco.subway.controller.request;
 
-public class SectionRequest {
+import javax.validation.constraints.NotNull;
+
+public class SectionInsertRequest {
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @NotNull
     private int distance;
 
-    public SectionRequest() {
+    public SectionInsertRequest() {
     }
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public SectionInsertRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

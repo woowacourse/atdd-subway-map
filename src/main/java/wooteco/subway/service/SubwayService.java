@@ -1,14 +1,11 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
-import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
-import wooteco.subway.dao.StationDao;
-import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.exception.station.StationNotFoundException;
+import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
 import wooteco.subway.service.dto.SimpleStationDto;
 
@@ -21,26 +18,29 @@ import java.util.stream.Collectors;
 @Service
 public class SubwayService {
 
-    private final LineDao lineDao;
-    private final SectionDao sectionDao;
-    private final StationDao stationDao;
+    private final LineService lineService;
+    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public SubwayService(LineDao lineDao, SectionDao sectionDao,
-                         StationDao stationDao) {
-        this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
-        this.stationDao = stationDao;
+    public SubwayService(LineService lineService, SectionService sectionService, StationService stationService) {
+        this.lineService = lineService;
+        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     public LineWithStationsDto findAllInfoByLineId(Long id) {
-        if (!lineDao.isExistById(id)) {
-            throw new LineNotFoundException();
-        }
-        final Line line = lineDao.findById(id);
-        final Sections sections = new Sections(sectionDao.findAllByLineId(id));
+        final LineDto lineDto = lineService.findById(id);
+        final Sections sections = new Sections(sectionService.findAlByLineId(id));
         final Set<SimpleStationDto> stations = sections.toSet();
         final List<StationResponse> stationResponses = makeStationResponse(stations);
-        return new LineWithStationsDto(line, sortByStationId(stationResponses));
+        return new LineWithStationsDto(lineDto, sortByStationId(stationResponses));
+    }
+
+    public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
+        // 1. 해당 LineId가 존재하는지 확인한다.
+        // 1-1. 존재하지 않으면 LineNotFoundException 던진다.
+        // 2. 해당 LineId를 가진 모든 섹션을 가져온다.
+        //
     }
 
     private List<StationResponse> sortByStationId(List<StationResponse> stationResponses) {
@@ -50,13 +50,7 @@ public class SubwayService {
     }
 
     private List<StationResponse> makeStationResponse(Set<SimpleStationDto> stations) {
-        final List<StationResponse> stationResponses = new ArrayList<>();
-        for (SimpleStationDto station : stations) {
-            if (!stationDao.isExistById(station.getId())) {
-                throw new StationNotFoundException();
-            }
-            stationResponses.add(new StationResponse(stationDao.findById(station.getId())));
-        }
-        return stationResponses;
+        return stationService.makeStationResponses(stations);
     }
+
 }

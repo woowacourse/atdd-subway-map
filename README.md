@@ -48,7 +48,7 @@
 - [x] (예외) upStationId, downStationId가 같은 경우 생성 불가
 
 #### 구간 추가
-- [ ] lineId와 {upStationId, downStationId, distance로 구현된 Request}를 받는다.
+- [x] lineId와 {upStationId, downStationId, distance로 구현된 Request}를 받는다.
 - [ ] lineId로 구간을 조회한다.
 - [ ] 해당 노선의 상행 또는 하행에 upStationId, downStationId 둘 중 하나가 포함되어있는지 확인한다.
   - [ ] (예외) 상행 - 하행이 모두 같은 구간으로 포함되어있는 경우 예외를 던진다.

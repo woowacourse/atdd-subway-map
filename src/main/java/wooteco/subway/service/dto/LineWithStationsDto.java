@@ -14,8 +14,8 @@ public class LineWithStationsDto {
     public LineWithStationsDto() {
     }
 
-    public LineWithStationsDto(Line line, List<StationResponse> stations) {
-        this(line.getId(), line.getColor(), line.getName(), stations);
+    public LineWithStationsDto(LineDto lineDto, List<StationResponse> stations) {
+        this(lineDto.getId(), lineDto.getColor(), lineDto.getName(), stations);
     }
 
     public LineWithStationsDto(Long id, String color, String name, List<StationResponse> stations) {
