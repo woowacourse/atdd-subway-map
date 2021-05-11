@@ -17,7 +17,7 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    public LineService(final LineDao lineRepository) {
+    public LineService(final LineRepository lineRepository, final SectionService sectionService) {
         this.lineRepository = lineRepository;
     }
 

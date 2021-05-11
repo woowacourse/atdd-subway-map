@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.line.controller.dto.LineCreateDto;
+import wooteco.subway.line.controller.dto.SectionRequest;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.controller.dto.LineDto;
 import wooteco.subway.line.controller.dto.LineRequest;
@@ -29,12 +31,12 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        final Line requestedLine = new Line(lineRequest);
+    public ResponseEntity<LineResponse> saveLine(@RequestBody final LineRequest lineRequest) {
+        final LineCreateDto lineInfo = lineRequest.toLineCreateDto();
 
-        final LineDto createdLineInfo = lineService.save(requestedLine);
+        final LineDto savedLineInfo = lineService.save(lineInfo);
 
-        final LineResponse lineResponse = LineResponse.of(createdLineInfo);
+        final LineResponse lineResponse = LineResponse.of(savedLineInfo);
         final Long lineId = lineResponse.getId();
         return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);
     }
