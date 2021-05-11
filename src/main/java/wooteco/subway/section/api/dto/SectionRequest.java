@@ -1,4 +1,4 @@
-package wooteco.subway.line;
+package wooteco.subway.section.api.dto;
 
 public class SectionRequest {
 

@@ -1,7 +1,8 @@
 package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.line.SectionRequest;
+import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.api.dto.SectionRequest;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.api.dto.SectionDto;
 import wooteco.subway.section.dao.SectionDao;
@@ -25,6 +26,7 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public void save(Long lineId, SectionRequest sectionRequest) {
         List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
         Sections sections = new Sections(mapToSections(sectionDtos));
@@ -48,6 +50,7 @@ public class SectionService {
                 sectionRequest.getDistance());
     }
 
+    @Transactional
     public void deleteById(Long lineId, Long stationId) {
         List<SectionDto> sectionDtos = sectionDao.findSectionsByLineId(lineId);
         Sections sections = new Sections(mapToSections(sectionDtos));
