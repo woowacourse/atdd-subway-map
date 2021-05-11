@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,13 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.station.dto.NonIdStationDto;
-import wooteco.subway.station.dto.StationDto;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.dto.StationServiceDto;
 
 @RestController
-@RequestMapping("/stations")
+@RequestMapping(value = "/stations")
 public class StationController {
 
     private final StationService stationService;
@@ -29,14 +29,11 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(
-        @RequestBody final StationRequest stationRequest) {
+        @Valid @RequestBody final StationRequest stationRequest) {
 
-        NonIdStationDto nonIdstationDto = new NonIdStationDto(stationRequest.getName());
-        StationDto savedStationDto = stationService.save(nonIdstationDto);
-        StationResponse stationResponse = new StationResponse(
-            savedStationDto.getId(),
-            savedStationDto.getName()
-        );
+        StationServiceDto stationServiceDto = new StationServiceDto(stationRequest.getName());
+        StationServiceDto savedStationServiceDto = stationService.save(stationServiceDto);
+        StationResponse stationResponse = StationResponse.from(savedStationServiceDto);
 
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
             .body(stationResponse);
@@ -44,20 +41,20 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        List<StationDto> stationDtos = stationService.showStations();
-        List<StationResponse> stationResponses = stationDtos.stream()
-            .map(it -> new StationResponse(it.getId(), it.getName()))
+        List<StationServiceDto> stationServiceDtos = stationService.showStations();
+        List<StationResponse> stationResponses = stationServiceDtos.stream()
+            .map(StationResponse::from)
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok()
-            .body(stationResponses);
+        return ResponseEntity.ok(stationResponses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable final Long id) {
-        stationService.delete(new StationDto(id));
+        stationService.delete(new StationServiceDto(id));
 
-        return ResponseEntity.noContent()
+        return ResponseEntity.ok()
             .build();
     }
 }
+
