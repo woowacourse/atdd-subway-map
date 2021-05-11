@@ -145,4 +145,41 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo("거리가 현재 존재하는 구간보다 크거나 같습니다!");
     }
+
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        // given
+        sectionRequest = new SectionRequest(firstUpStationId, 4L, 30);
+        postSections(sectionRequest);
+        Long deleteStationId = 3L;
+
+        // when
+        ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .delete("lines/" + lineId + "/sections?stationId=" + deleteStationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간 삭제 시 라인에 역이 2개인 경우 삭제 불가능하다.")
+    @Test
+    void invalidSectionWhenDelete() {
+        // given
+        Long deleteStationId = 3L;
+
+        // when
+        ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .delete("lines/" + lineId + "/sections?stationId=" + deleteStationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("종점역만 남은 경우 삭제를 수행할 수 없습니다!");
+    }
 }

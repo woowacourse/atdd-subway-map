@@ -1,15 +1,12 @@
 package wooteco.subway.line.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.domain.Station;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -26,12 +23,12 @@ public class SectionDao {
         jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 
-    public List<Section> findSectionById(Long lineId) {
-        String query = "select up_station_id, s1.name, down_station_id, s2.name, distance " +
-                "from section " +
+    public List<Section> findSectionBylineId(Long lineId) {
+        String query = "SELECT up_station_id, s1.name, down_station_id, s2.name, distance " +
+                "FROM section " +
                 "INNER JOIN station as s1 " +
                 "INNER JOIN station as s2 " +
-                "where section.line_id = ? AND section.up_station_id = s1.id AND section.down_station_id = s2.id";
+                "WHERE section.line_id = ? AND section.up_station_id = s1.id AND section.down_station_id = s2.id";
         return jdbcTemplate.query(query, sectionRowMapper(lineId), lineId);
     }
 
@@ -60,5 +57,10 @@ public class SectionDao {
                 "WHERE line_id = ? " +
                 "AND down_station_id = ?";
         jdbcTemplate.update(query, newDownStationId, distance, lineId, downStationId);
+    }
+
+    public void deleteByStationId(Long lineId, Long stationId) {
+        String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? OR down_station_id = ?";
+        jdbcTemplate.update(query, lineId, stationId, stationId);
     }
 }
