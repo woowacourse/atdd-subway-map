@@ -52,7 +52,7 @@ public class SectionRepository {
         String query = "SELECT COUNT(*) FROM section WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId, stationId);
 
-        return count != 2;
+        return count == 1;
     }
 
     public void deleteRelevantSections(final Long lineId, final Long stationId) {
