@@ -1,6 +1,7 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.exception.IllegalSectionStatusException;
+import wooteco.subway.exception.SectionDeleteException;
 import wooteco.subway.exception.SectionUpdateException;
 import wooteco.subway.exception.notfoundexception.NotFoundSectionException;
 
@@ -195,8 +196,10 @@ public class Sections {
         return Optional.of(new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(), updateSectionDistance));
     }
 
-    // todo
     private void validateDeleteSection() {
+        if(sections.size() == 1) {
+            throw new SectionDeleteException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
     }
 
     private boolean isEndStation(Long stationId) {

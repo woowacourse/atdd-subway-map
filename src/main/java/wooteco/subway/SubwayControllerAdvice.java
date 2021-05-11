@@ -40,4 +40,9 @@ public class SubwayControllerAdvice {
     public ResponseEntity<String> sectionUpdateException(SectionUpdateException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    @ExceptionHandler(SectionDeleteException.class)
+    public ResponseEntity<String> sectionDeleteException(SectionDeleteException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }
