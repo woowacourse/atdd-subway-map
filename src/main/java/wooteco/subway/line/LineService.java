@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
@@ -12,6 +13,7 @@ import wooteco.subway.line.dto.LineIdDto;
 import wooteco.subway.line.dto.NonIdLineDto;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
@@ -58,10 +60,11 @@ public class LineService {
 
         final Line line = lineDao.show(lineDto.getId())
             .orElseThrow(() -> new EmptyResultDataAccessException(0));
-
-        Line changedLine = new Line(name, color);
         checkUpdatedNameAndColor(lineDto);
-        lineDao.update(lineDto.getId(), changedLine);
+
+        line.changeColor(color);
+        line.changeName(name);
+        lineDao.update(lineDto.getId(), line);
     }
 
     private void checkUpdatedNameAndColor(final LineDto lineDto) {
