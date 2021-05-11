@@ -81,6 +81,16 @@ public class SectionDao {
         return condition1 || condition2;
     }
 
+    public void updateDistanceAndDownStation(Long lineId, Long upStationId, Long downStationId, int distance) {
+        String query = "update SECTION set DOWN_STATION_ID = ?, DISTANCE = ? where LINE_ID = ? and UP_STATION_ID = ?";
+        jdbcTemplate.update(query, downStationId, distance, lineId, upStationId);
+    }
+
+    public int numberOfEnrolledSection(Long lineId) {
+        String query = "select count(*) from SECTION where LINE_ID = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, lineId);
+    }
+
     private RowMapper<Section> sectionRowMapper() {
         return (rs, rowNum) ->
                 new Section(
@@ -90,15 +100,5 @@ public class SectionDao {
                         rs.getLong("down_station_id"),
                         rs.getInt("distance")
                 );
-    }
-
-    public void updateDistanceAndDownStation(Long lineId, Long upStationId, Long downStationId, int distance) {
-        String query = "update SECTION set DOWN_STATION_ID = ?, DISTANCE = ? where LINE_ID = ? and UP_STATION_ID = ?";
-        jdbcTemplate.update(query, downStationId, distance, lineId, upStationId);
-    }
-
-    public boolean isExistingLine(Long lineId) {
-        String query = "select count(*) from SECTION where LINE_ID = ?";
-        return jdbcTemplate.queryForObject(query, Integer.class, lineId) != 0;
     }
 }

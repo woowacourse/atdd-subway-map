@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.section.exception.SectionCantDeleteException;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
 import wooteco.subway.section.exception.SectionInitializationException;
@@ -109,5 +110,45 @@ class SectionServiceTest {
 
         assertThatThrownBy(() -> sectionService.save(sectionDto))
                 .isInstanceOf(SectionInclusionException.class);
+    }
+
+    @Test
+    @DisplayName("종점 역이 포함된 구간 삭제")
+    public void deleteSectionWithContainingEndStatonCase() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        sectionDao.save(1L, 2L, 3L, 10);
+        sectionService.delete(1L, 1L);
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("구간이 1개 이하인 경우의 삭제")
+    public void deleteSectionWithLessThantOneSectionCase() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        assertThatThrownBy(() -> sectionService.delete(1L, 1L))
+                .isInstanceOf(SectionCantDeleteException.class);
+    }
+
+    @Test
+    @DisplayName("등록된 노선이 아닌 경우의 삭제")
+    public void deleteSectionWithNonExistingLineCase() {
+        assertThatThrownBy(() -> sectionService.delete(1L, 1L))
+                .isInstanceOf(SectionInitializationException.class);
+    }
+
+    @Test
+    @DisplayName("중간 구간을 삭제한 경우")
+    public void deleteSectionWithMiddleSectionCase() {
+        sectionDao.save(1L, 1L, 2L, 10);
+        sectionDao.save(1L, 2L, 3L, 10);
+        sectionDao.save(1L, 3L, 4L, 10);
+
+        sectionService.delete(1L, 2L);
+        Section section = sectionDao.findSectionByUpStationId(1L, 1L).get();
+
+        assertThat(section)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new Section(null, 1L, 1L, 3L, 20));
     }
 }

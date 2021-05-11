@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Autowired
+    private SectionDao sectionDao;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -26,6 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         String sql = "insert into SECTION (LINE_ID, UP_STATION_ID, DOWN_STATION_ID, DISTANCE) values(?,?,?,?)";
         jdbcTemplate.update(sql, 1L, 1L, 2L, 10);
         jdbcTemplate.update(sql, 1L, 2L, 3L, 10);
+        jdbcTemplate.update(sql, 2L, 2L, 3L, 10);
     }
 
     @Test
@@ -39,6 +42,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(sectionResponse)
                 .usingRecursiveComparison()
                 .isEqualTo(new SectionResponse(3L, 1L, 2L, 10L, 1));
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 노선에 구간 저장")
+    public void saveSectionWithNonExistingLineCase() {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(new SectionRequest(2L, 10L, 1))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/2/sections")
+                .then()
+                .extract();
+
+        ErrorResponse errorResponse = response.body().as(ErrorResponse.class);
+        assertThat(errorResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("timeStamp")
+                .isEqualTo(new ErrorResponse("SECTION_EXCEPTION", "해당 노선은 등록되지 않은 노선입니다."));
     }
 
     @Test
@@ -112,12 +133,79 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                         "구간의 양 역이 노선에 둘 다 존재해서는 안되고, 둘 다 존재하지 않아서도 안됩니다."));
     }
 
+    @Test
+    @DisplayName("종점이 포함된 역의 구간 삭제")
+    public void deleteSectionWithContainingEndStationCase() {
+        ExtractableResponse<Response> response = deleteSectionResponse(1L);
+
+        assertThat(sectionDao.findSectionByUpStationId(1L, 1L).isPresent()).isFalse();
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("중간 구간 삭제")
+    public void deleteSectionWithMiddleCase() {
+        ExtractableResponse<Response> response = deleteSectionResponse(2L);
+
+        Section section = sectionDao.findSectionByUpStationId(1L, 1L).get();
+        assertThat(section)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new Section(null, 1L, 1L, 3L, 20));
+    }
+
+    @Test
+    @DisplayName("등록된 구간이 1개 밖에 없는 경우 구간 삭제")
+    public void deleteSectionWithContainingOnlyOneSectionCase() {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/2/sections?stationId=2")
+                .then()
+                .extract();
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+
+        assertThat(errorResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("timeStamp")
+                .isEqualTo(new ErrorResponse("SECTION_EXCEPTION",
+                        "구간이 1개인 경우에는 구간을 삭제할 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 노선에 구간 삭제")
+    public void deleteSectionWithNonExistingLineCase() {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/3/sections?stationId=1")
+                .then()
+                .extract();
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+
+        assertThat(errorResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("timeStamp")
+                .isEqualTo(new ErrorResponse("SECTION_EXCEPTION",
+                        "해당 노선은 등록되지 않은 노선입니다."));
+    }
+
     private ExtractableResponse<Response> createSectionResponse(SectionRequest sectionRequest) {
         return RestAssured.given()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/1/sections")
+                .then()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteSectionResponse(Long stationId) {
+        String uri = "/lines/1/sections?stationId=" + stationId;
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(uri)
                 .then()
                 .extract();
     }

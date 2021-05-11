@@ -1,10 +1,7 @@
 package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.section.exception.SectionDistanceException;
-import wooteco.subway.section.exception.SectionInclusionException;
-import wooteco.subway.section.exception.SectionInitializationException;
-import wooteco.subway.section.exception.SectionNotFoundException;
+import wooteco.subway.section.exception.*;
 import wooteco.subway.station.exception.StationNotFoundException;
 
 @Service
@@ -32,13 +29,21 @@ public class SectionService {
 
     public void delete(Long lineId, Long stationId) {
         validateSectionInitialization(lineId);
-        if (sectionDao.isExistingStation(lineId, stationId)) {
+        validateSectionNumber(lineId);
+        if (!sectionDao.isExistingStation(lineId, stationId)) {
             throw new StationNotFoundException();
         }
         if (sectionDao.isEndStation(lineId, stationId)) {
             sectionDao.delete(lineId, stationId);
+            return;
         }
         deleteAndConnectSection(lineId, stationId);
+    }
+
+    private void validateSectionNumber(Long lineId) {
+        if (sectionDao.numberOfEnrolledSection(lineId) <= 1) {
+            throw new SectionCantDeleteException();
+        }
     }
 
     private void deleteAndConnectSection(Long lineId, Long stationId) {
@@ -55,7 +60,7 @@ public class SectionService {
     }
 
     private void validateSectionInitialization(Long lineId) {
-        if (!sectionDao.isExistingLine(lineId)) {
+        if (sectionDao.numberOfEnrolledSection(lineId) == 0) {
             throw new SectionInitializationException();
         }
     }

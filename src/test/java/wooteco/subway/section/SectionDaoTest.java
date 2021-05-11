@@ -80,10 +80,10 @@ class SectionDaoTest {
     }
 
     @Test
-    @DisplayName("존재하는 노선인지 확인")
+    @DisplayName("노선에 등록된 구간 수 확")
     public void isExistingLine() {
-        assertThat(sectionDao.isExistingLine(1L)).isFalse();
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(0);
         sectionDao.save(1L, 1L, 2L, 10);
-        assertThat(sectionDao.isExistingLine(1L)).isTrue();
+        assertThat(sectionDao.numberOfEnrolledSection(1L)).isEqualTo(1);
     }
 }
