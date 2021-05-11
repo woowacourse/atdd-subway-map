@@ -38,6 +38,12 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
+    public List<Section> findByStationId(Long stationId) {
+        String findAllQuery = "SELECT * FROM section where up_station_id = ? or down_station_id = ?";
+        return jdbcTemplate.query(findAllQuery, sectionRowMapper, stationId, stationId);
+    }
+
+    @Override
     public void update(Section section) {
         String updateQuery = "UPDATE section SET up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
         jdbcTemplate.update(updateQuery,
