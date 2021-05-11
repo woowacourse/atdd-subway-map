@@ -6,15 +6,15 @@ import wooteco.subway.line.domain.Section;
 public class SectionCreateDto {
 
     private final Long lineId;
-    private final Long downStationId;
     private final Long upStationId;
+    private final Long downStationId;
     private final int distance;
     private final boolean isOfNewLine;
 
-    private SectionCreateDto(final Long lineId, final Long downStationId, final Long upStationId, final int distance, final boolean isOfNewLine) {
+    private SectionCreateDto(final Long lineId, final Long upStationId, final Long downStationId, final int distance, final boolean isOfNewLine) {
         this.lineId = lineId;
-        this.downStationId = downStationId;
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
         this.isOfNewLine = isOfNewLine;
     }
@@ -22,8 +22,8 @@ public class SectionCreateDto {
     public static SectionCreateDto ofNewLine(final Line line, final LineCreateDto lineInfo) {
         return new SectionCreateDto(
                 line.getId(),
-                lineInfo.getDownStationId(),
                 lineInfo.getUpStationId(),
+                lineInfo.getDownStationId(),
                 lineInfo.getDistance(),
                 true
         );
@@ -32,8 +32,8 @@ public class SectionCreateDto {
     public static SectionCreateDto ofExistingLine(final Long lineId, final Long downStationId, final Long upStationId, final int distance) {
         return new SectionCreateDto(
                 lineId,
-                downStationId,
                 upStationId,
+                downStationId,
                 distance,
                 false
         );
@@ -42,8 +42,8 @@ public class SectionCreateDto {
     public Section toSection() {
         return new Section(
                 lineId,
-                downStationId,
                 upStationId,
+                downStationId,
                 distance
         );
     }
@@ -52,12 +52,12 @@ public class SectionCreateDto {
         return lineId;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
     public Long getUpStationId() {
         return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public int getDistance() {

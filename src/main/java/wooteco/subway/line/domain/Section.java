@@ -6,39 +6,57 @@ public class Section {
 
     private final Long id;
     private final Long lineId;
-    private final Long downStationId;
     private final Long upStationId;
+    private final Long downStationId;
     private final int distance;
 
-    public Section(final Long lineId, final Long downStationId, final Long upStationId, final int distance) {
-        this(null, lineId, downStationId, upStationId, distance);
+    public Section(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
-    public Section(final Long id, final Long lineId, final Long downStationId,
-            final Long upStationId, final int distance) {
+    public Section(final Long id, final Long lineId, final Long upStationId,
+            final Long downStationId, final int distance) {
         this.id = id;
         this.lineId = lineId;
-        this.downStationId = downStationId;
         this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public Section updateWith(final Section another) {
+    public Section combineWith(final Section another) {
         validateDistance(another);
-        if (isSame(this.downStationId, another.downStationId)) {
+        if (isSame(this.upStationId, another.upStationId)) {
             return new Section(
                     this.id,
                     this.lineId,
-                    another.upStationId,
-                    this.upStationId,
+                    another.downStationId,
+                    this.downStationId,
                     this.distance - another.distance);
         }
         return new Section(
                 this.id,
                 this.lineId,
-                this.downStationId,
-                another.downStationId,
+                this.upStationId,
+                another.upStationId,
                 this.distance - another.distance
+        );
+    }
+
+    public Section shortenWith(final Section another) {
+        if (isSame(this.downStationId, another.upStationId)) {
+            return new Section(
+                    this.id,
+                    this.lineId,
+                    this.upStationId,
+                    another.downStationId,
+                    this.distance + another.distance);
+        }
+        return new Section(
+                this.id,
+                this.lineId,
+                another.upStationId,
+                this.downStationId,
+                this.distance + another.distance
         );
     }
 
@@ -77,16 +95,24 @@ public class Section {
         return canConnect(another) || canJoin(another);
     }
 
+    public boolean contains(final Long stationId) {
+        return this.upStationId.equals(stationId) || this.downStationId.equals(stationId);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Long getLineId() {
         return lineId;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
     public Long getUpStationId() {
         return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public int getDistance() {

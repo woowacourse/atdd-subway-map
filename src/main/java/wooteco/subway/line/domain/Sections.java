@@ -24,7 +24,7 @@ public class Sections {
                 return Optional.empty();
             }
             if (section.canJoin(requestedSection)) {
-                return Optional.ofNullable(section.updateWith(requestedSection));
+                return Optional.ofNullable(section.combineWith(requestedSection));
             }
         }
         throw new SectionException("해당 노선에 추가될 수 없는 구간입니다.");
@@ -55,5 +55,17 @@ public class Sections {
         if ((requestedSection.canJoin(firstSection) && requestedSection.canJoin(secondSection)) || (requestedSection.canConnect(firstSection) && requestedSection.canConnect(secondSection))) {
             throw new SectionException("갈래길을 형성할 수 없습니다.");
         }
+    }
+
+    public List<Section> removeStation(final Long stationId) {
+        final List<Section> relatedSections = relatedSectionsOf(stationId);
+        relatedSections.forEach(sections::remove);
+        return relatedSections;
+    }
+
+    private List<Section> relatedSectionsOf(final Long stationId) {
+        return sections.stream()
+                .filter(section -> section.contains(stationId))
+                .collect(Collectors.toList());
     }
 }

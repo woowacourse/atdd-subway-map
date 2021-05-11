@@ -1,8 +1,10 @@
 package wooteco.subway.line.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.controller.dto.SectionCreateDto;
+import wooteco.subway.line.controller.dto.SectionDeleteDto;
 import wooteco.subway.line.controller.dto.SectionDto;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.SectionRepository;
@@ -60,14 +62,35 @@ public class SectionService {
         stationService.findById(downStationId);
         stationService.findById(upStationId);
     }
-//
-//    @Transactional
-//    public SectionDto update(final SectionCreateDto sectionInfo) {
-//
-//    }
-//
-//    @Transactional
-//    public void delete(final SectionDeleteDto sectionInfo) {
-//
-//    }
+
+    @Transactional
+    public void delete(final SectionDeleteDto sectionInfo) {
+        final Sections sections = sectionRepository.findAllByLineId(sectionInfo.getLineId());
+
+        final List<Section> changedSections = sections.removeStation(sectionInfo.getStationId());
+        if (changedSections.size() == 2) {
+            updateSections(changedSections);
+        }
+        if (changedSections.size() == 1) {
+            deleteSection(changedSections);
+        }
+    }
+
+    private void updateSections(final List<Section> changedSections) {
+        final Section updatingSection = changedSections.get(0);
+        final Section deletingSection = changedSections.get(1);
+
+        final Section updatedSection = updatingSection.shortenWith(deletingSection);
+
+        sectionRepository.update(updatedSection);
+        deleteSection(deletingSection);
+    }
+
+    private void deleteSection(final List<Section> changedSections) {
+        changedSections.forEach(this::deleteSection);
+    }
+
+    private void deleteSection(Section section) {
+        sectionRepository.delete(section.getId());
+    }
 }

@@ -7,4 +7,6 @@ public interface SectionRepository {
     Sections findAllByLineId(final Long lineId);
 
     void update(final Section section);
+
+    void delete(final Long id);
 }
