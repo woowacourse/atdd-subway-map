@@ -46,8 +46,7 @@ public class LineService {
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
         return sectionDtos.stream()
-                .map(sectionDto -> new Section(sectionDto.getId(),
-                        lineDao.findLineById(sectionDto.getLineId()),
+                .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
                         stationDao.findStationById(sectionDto.getUpStationId()),
                         stationDao.findStationById(sectionDto.getDownStationId()),
                         sectionDto.getDistance()))

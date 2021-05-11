@@ -24,8 +24,8 @@ class SectionsTest {
     private Station bStation = new Station(2L, "B");
     private Station cStation = new Station(3L, "C");
 
-    private Section abSection = new Section(1L, line, aStation, bStation, 10);
-    private Section bcSection = new Section(2L, line, bStation, cStation, 10);
+    private Section abSection = new Section(line, aStation, bStation, 10);
+    private Section bcSection = new Section(line, bStation, cStation, 10);
 
     @BeforeEach
     void setUp() {
@@ -37,10 +37,10 @@ class SectionsTest {
     @Test
     void addSection() {
         //given
-        Section newUpStationSection = new Section(1L, line, aStation, new Station(4L, "D"), 9);
-        Section newUpStationSection2 = new Section(2L, line, cStation, new Station(5L, "G"), 11);
-        Section newDownStationSection = new Section(3L, line, new Station(6L, "E"), cStation, 9);
-        Section newDownStationSection2 = new Section(4L, line, new Station(7L, "F"), aStation, 11);
+        Section newUpStationSection = new Section(line, aStation, new Station(4L, "D"), 9);
+        Section newUpStationSection2 = new Section(line, cStation, new Station(5L, "G"), 11);
+        Section newDownStationSection = new Section(line, new Station(6L, "E"), cStation, 9);
+        Section newDownStationSection2 = new Section(line, new Station(7L, "F"), aStation, 11);
         //when
         sections.add(newUpStationSection);
         sections.add(newUpStationSection2);
@@ -55,8 +55,8 @@ class SectionsTest {
     @Test
     void addError() {
         //given
-        Section unConnectableSection = new Section(1L, line, new Station(4L, "D"), new Station(5L, "E"), 8);
-        Section inValidDistanceSection = new Section(1L, line, new Station(5L, "E"), cStation, 11);
+        Section unConnectableSection = new Section(line, new Station(4L, "D"), new Station(5L, "E"), 8);
+        Section inValidDistanceSection = new Section(line, new Station(5L, "E"), cStation, 11);
 
         //then
         assertThatThrownBy(() -> sections.add(unConnectableSection))

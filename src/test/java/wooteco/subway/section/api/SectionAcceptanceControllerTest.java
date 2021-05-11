@@ -82,7 +82,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
     }
 
     private Map<String, Object> 구간_저장을_위한_요청정보(long downStationId, long upStationId, int distance) {

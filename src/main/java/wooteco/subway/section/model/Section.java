@@ -9,15 +9,14 @@ import java.util.Objects;
 
 public class Section {
 
-    private final Long id;
+//    private final Long id;
     private final Line line;
     private final Station upStation;
     private final Station downStation;
     private final int distance;
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         validateSection(upStation, downStation, distance);
-        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -54,15 +53,15 @@ public class Section {
     }
 
     public Section splitByUpStation(Section newSection) {
-        return new Section(this.id, this.line, newSection.getDownStation(), this.downStation, this.distance - newSection.getDistance());
+        return new Section(this.line, newSection.getDownStation(), this.downStation, this.distance - newSection.getDistance());
     }
 
     public Section splitByDownStation(Section newSection) {
-        return new Section(this.id, this.line, this.upStation, newSection.getUpStation(), this.distance - newSection.getDistance());
+        return new Section(this.line, this.upStation, newSection.getUpStation(), this.distance - newSection.getDistance());
     }
 
     public Section merge(Section targetSection) {
-        return new Section(this.id, this.line, this.upStation,
+        return new Section(this.line, this.upStation,
                 targetSection.downStation, this.distance + targetSection.distance);
     }
 
@@ -76,10 +75,6 @@ public class Section {
 
     public Long getDownStationId() {
         return this.downStation.getId();
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Line getLine() {
@@ -103,11 +98,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+        return distance == section.distance && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
+        return Objects.hash(line, upStation, downStation, distance);
     }
 }

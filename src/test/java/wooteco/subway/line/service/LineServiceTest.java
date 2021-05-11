@@ -10,6 +10,7 @@ import wooteco.subway.line.api.dto.LineResponse;
 import wooteco.subway.line.api.dto.LineDetailsResponse;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.model.Line;
+import wooteco.subway.section.dao.SectionDao;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,9 @@ class LineServiceTest {
 
     @Mock
     private LineDao lineDao;
+
+    @Mock
+    private SectionDao sectionDao;
 
     @InjectMocks
     private LineService lineService;

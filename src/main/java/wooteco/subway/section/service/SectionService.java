@@ -34,8 +34,7 @@ public class SectionService {
 
     private List<Section> mapToSections(List<SectionDto> sectionDtos) {
         return sectionDtos.stream()
-                .map(sectionDto -> new Section(sectionDto.getId(),
-                        lineDao.findLineById(sectionDto.getLineId()),
+                .map(sectionDto -> new Section(lineDao.findLineById(sectionDto.getLineId()),
                         stationDao.findStationById(sectionDto.getUpStationId()),
                         stationDao.findStationById(sectionDto.getDownStationId()),
                         sectionDto.getDistance()))
@@ -43,7 +42,7 @@ public class SectionService {
     }
 
     private Section convertToSection(Long lineId, SectionRequest sectionRequest) {
-        return new Section(lineId, lineDao.findLineById(lineId),
+        return new Section(lineDao.findLineById(lineId),
                 stationDao.findStationById(sectionRequest.getUpStationId()),
                 stationDao.findStationById(sectionRequest.getDownStationId()),
                 sectionRequest.getDistance());
