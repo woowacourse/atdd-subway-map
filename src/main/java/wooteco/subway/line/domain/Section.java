@@ -24,9 +24,7 @@ public class Section {
     }
 
     public Section updateWith(final Section another) {
-        if (this.distance <= another.distance) {
-            throw new SectionException("구간의 거리가 노선에 이미 존재하는 관련 구간의 거리보다 깁니다.");
-        }
+        validateDistance(another);
         if (isSame(this.downStationId, another.downStationId)) {
             return new Section(
                     this.id,
@@ -42,6 +40,12 @@ public class Section {
                 another.downStationId,
                 this.distance - another.distance
         );
+    }
+
+    private void validateDistance(final Section another) {
+        if (this.distance <= another.distance) {
+            throw new SectionException("구간의 거리가 노선에 이미 존재하는 관련 구간의 거리보다 길거나 같습니다.");
+        }
     }
 
     public boolean hasSameStations(final Section another) {
