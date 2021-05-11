@@ -33,6 +33,14 @@ public class Section {
                 distance);
     }
 
+    public static Section of(Long lineId, Section downSection, Section upSection) {
+        return new Section(null,
+                lineId,
+                downSection.getUpStationId(),
+                upSection.getDownStationId(),
+                upSection.getDistance() + downSection.getDistance());
+    }
+
     public static Section of(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         return new Section(id,
                 lineId,

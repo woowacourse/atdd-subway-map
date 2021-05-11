@@ -18,8 +18,7 @@ import java.util.Set;
 public class SectionService {
 
     public static final int DELETE_STATION_IN_LINE_LIMIT = 2;
-    public static final int INSERT_SECTION_IN_LINE_LIMIT = 1;
-    public static final int INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT = 0;
+
     private final SectionDao sectionDao;
 
     public SectionService(SectionDao sectionDao) {
@@ -65,10 +64,8 @@ public class SectionService {
 
         if (upSection.isPresent() && downSection.isPresent()) {
             sectionDao.save(Section.of(lineId,
-                    downSection.get().getUpStationId(),
-                    upSection.get().getDownStationId(),
-                    upSection.get().getDistance() + downSection.get().getDistance()));
-            return;
+                    downSection.get(),
+                    upSection.get()));
         }
 
         upSection.ifPresent(section -> sectionDao.delete(section.getId()));
