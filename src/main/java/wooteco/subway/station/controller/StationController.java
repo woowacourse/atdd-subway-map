@@ -25,7 +25,7 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StationResponse> createStation(@RequestBody @Valid StationRequest stationRequest) {
         StationResponse stationResponse = stationService.save(stationRequest.getName());
         return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId()))
@@ -33,7 +33,7 @@ public class StationController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponse>> getAllStations() {
         List<StationResponse> stationResponses = stationService.findAll();
         return ResponseEntity.ok(stationResponses);
     }
