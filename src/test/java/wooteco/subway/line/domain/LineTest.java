@@ -24,7 +24,6 @@ class LineTest {
         line = new Line("9호선", "bg-red-600", Arrays.asList(section));
     }
 
-
     @Test
     @DisplayName("라인 정상 생성 테스트 ")
     void create() {
@@ -36,41 +35,34 @@ class LineTest {
     @DisplayName("초기 구간을 설정한다.")
     void addSection() {
         Line line = new Line("9호선", "bg-red-600");
-        Section section = new Section(station1, station2, 10);
+        Section section = new Section(1L, 1L, station1, station2, 10);
 
         line.initSections(Arrays.asList(section));
         assertThat(line.stations()).hasSize(2);
     }
 
-//    @Test
-//    @DisplayName("구간을 추가한 노선을 반환한다.")
-//    void addedSectionLine() {
-//        // given
-//        Station station3 = new Station(3L, "잠실역");
-//        Section toAddSection = new Section(station3, station1, 1);
-//
-//        // when
-//        Section affectedSection = line.addAndReturnAffectedSection(toAddSection);
-//
-//        // then
-//        assertThat(affectedSection.id()).isEqualTo(1L);
-//        assertThat(affectedSection.upStation()).isEqualTo(station1);
-//        assertThat(affectedSection.downStation()).isEqualTo(station3);
-//        assertThat(affectedSection.distance()).isEqualTo(5);
-//    }
+    @Test
+    @DisplayName("등록하려는 구간으로 등록된 구간들에 이미 존재하는 역을 찾는다.")
+    void duplicatedStation() {
+        Station station3 = new Station(3L, "잠실역");
+        Station findStation = line.registeredStation(new Section(1L, station1, station3, 10));
 
-    //    @Test
-//    @DisplayName("구간을 추가시 등록하려는 구간의 모든 역이 노선에 이미 등록되어 있으면 예외가 발생한다.")
-//    void addedSectionLine() {
-//        assertThatThrownBy(() -> line.addSection(section))
-//                .isInstanceOf(IllegalStateException.class);
-//    }
-//
-//    @Test
-//    @DisplayName("구간 추가시 등록하려는 구간의 역이 노선에 등록되어 있지 않으면 예외가 발생한다.")
-//    void addSectionException2() {
-//        Section newSection = new Section(new Station(3L, "강변역"), new Station(4L, "선릉역"), 10);
-//        assertThatThrownBy(() -> line.addSection(newSection))
-//                .isInstanceOf(IllegalStateException.class);
-//    }
+        assertThat(findStation).isEqualTo(station1);
+    }
+
+    @Test
+    @DisplayName("해당 station을 upStation으로 가지고 있는 구간을 찾는다.")
+    void findSectionWithUpStation() {
+        Section findSection = line.findSectionWithUpStation(station1);
+
+        assertThat(findSection).isEqualTo(section);
+    }
+
+    @Test
+    @DisplayName("해당 station을 downStation으로 가지고 있는 구간을 찾는다.")
+    void findSectionWithDownStation() {
+        Section findSection = line.findSectionWithDownStation(station2);
+
+        assertThat(findSection).isEqualTo(section);
+    }
 }

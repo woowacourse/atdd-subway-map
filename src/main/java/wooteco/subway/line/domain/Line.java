@@ -60,8 +60,8 @@ public class Line {
         return sections.sortedStations();
     }
 
-    public Station duplicatedStation(Section anotherSection) {
-        return sections.duplicatedStation(anotherSection);
+    public Station registeredStation(Section anotherSection) {
+        return sections.registeredStation(anotherSection);
     }
 
     public Section findSectionWithUpStation(Station duplicatedStation) {

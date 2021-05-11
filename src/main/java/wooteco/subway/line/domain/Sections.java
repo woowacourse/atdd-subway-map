@@ -13,7 +13,7 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public Station duplicatedStation(Section anotherSection) {
+    public Station registeredStation(Section anotherSection) {
         List<Station> stations = new ArrayList<>();
         if (hasStation(anotherSection.upStation())) {
             stations.add(anotherSection.upStation());
@@ -40,13 +40,6 @@ public class Sections {
                 .filter(section -> section.hasDownStation(downStation))
                 .findFirst()
                 .orElse(EMPTY);
-    }
-
-    public boolean isOnlyOneRegistered(Section anotherSection) {
-        boolean hasUpStation = hasStation(anotherSection.upStation());
-        boolean hasDownStation = hasStation(anotherSection.downStation());
-        return (hasUpStation && !hasDownStation) || (!hasUpStation && hasDownStation);
-
     }
 
     private boolean hasStation(Station station) {

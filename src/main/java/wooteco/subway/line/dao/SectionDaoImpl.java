@@ -45,7 +45,7 @@ public class SectionDaoImpl implements SectionDao {
         }, keyHolder);
 
         long newId = keyHolder.getKey().longValue();
-        return new Section(newId, section.upStation(), section.downStation(), section.distance());
+        return new Section(newId, section.lineId(), section.upStation(), section.downStation(), section.distance());
     }
 
     @Override

@@ -22,7 +22,7 @@
       }
       ```
     - [x] 노선 추가시 구간 정보도 함께 등록
-- [ ] 지하철 구간 추가 API 구현
+- [x] 지하철 구간 추가 API 구현
   ```json
     POST /lines/1/sections HTTP/1.1
     accept: */*
