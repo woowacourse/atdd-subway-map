@@ -35,9 +35,8 @@ public class SectionService {
 
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(section.getLineId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
-        Set<Long> sectionsIds = lineRoute.getStationIds();
 
-        validateIfSectionContainsOnlyOneStationInLine(sectionsIds, section);
+        lineRoute.validateIfSectionContainsOnlyOneStationInLine(section);
 
         if (lineRoute.isInsertSectionInEitherEndsOfLine(section)) {
             sectionDao.save(section);
@@ -45,16 +44,6 @@ public class SectionService {
         }
         insertSectionInMiddleOfLine(section, lineRoute);
         sectionDao.save(section);
-    }
-
-    private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> sectionsIds, Section section) {
-        long count = sectionsIds.stream()
-                .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
-                .count();
-
-        if (count != INSERT_SECTION_IN_LINE_LIMIT) {
-            throw new NotFoundException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
-        }
     }
 
     private void insertSectionInMiddleOfLine(Section section, LineRoute lineRoute) {
@@ -68,7 +57,7 @@ public class SectionService {
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
         if (lineRoute.getStationIds().size() == DELETE_STATION_IN_LINE_LIMIT) {
-            throw new SubwayIllegalArgumentException("종점은 삭제 할 수 없습니다.");
+            throw new SubwayIllegalArgumentException("구간이 하나인 노선에서 역은 더이상 삭제 할 수 없습니다.");
         }
 
         Optional<Section> upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);

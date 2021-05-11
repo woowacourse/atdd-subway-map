@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.exception.SubwayIllegalArgumentException;
+
 import java.util.*;
 
 public class LineRoute {
@@ -90,5 +92,19 @@ public class LineRoute {
 
     public Set<Long> getStationIds() {
         return new HashSet<>(upToDownSerializedMap);
+    }
+
+    public void validateIfSectionContainsOnlyOneStationInLine(Section section) {
+        long count = upToDownSerializedMap.stream()
+                .filter(sectionId -> sectionId.equals(section.getDownStationId()) || sectionId.equals(section.getUpStationId()))
+                .count();
+
+        if (count < 1) {
+            throw new SubwayIllegalArgumentException("추가하려는 구간의 상행과 하행 중 한개의 역은 노선에 존재하여야 합니다.");
+        }
+
+        if (count > 1) {
+            throw new SubwayIllegalArgumentException("추가하려는 구간의 상행과 하행 모두 노선에 존재합니다.");
+        }
     }
 }
