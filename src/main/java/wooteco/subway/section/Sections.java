@@ -2,8 +2,7 @@ package wooteco.subway.section;
 
 import wooteco.subway.exception.SubWayException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,7 +10,34 @@ public class Sections {
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = sort(sections);
+    }
+
+    private List<Section> sort(List<Section> sections) {
+        Queue<Section> waiting = new LinkedList<>(sections);
+        Deque<Section> result = new ArrayDeque<>();
+
+        result.addLast(waiting.remove());
+        sortUpToDown(waiting, result);
+
+        return new ArrayList<>(result);
+    }
+
+    private void sortUpToDown(Queue<Section> waiting, Deque<Section> result) {
+        while (!waiting.isEmpty()) {
+            Section section = waiting.remove();
+            Section frontBase = result.peek();
+            Section lastBase = result.peekLast();
+            if (section.isSameUp(lastBase.getDownStationId())) {
+                result.addLast(section);
+                continue;
+            }
+            if (section.isSameDown(frontBase.getUpStationId())) {
+                result.addFirst(section);
+                continue;
+            }
+            waiting.add(section);
+        }
     }
 
     public void validateSavableSection(Section section) {
@@ -23,10 +49,6 @@ public class Sections {
         if (matchCount == 2 || matchCount == 0) {
             throw new SubWayException("등록 불가능한 구간입니다.");
         }
-    }
-
-    public List<Section> toList() {
-        return new ArrayList<>(sections);
     }
 
     public boolean isOnEdge(Section section) {
@@ -68,14 +90,41 @@ public class Sections {
     }
 
     public boolean appendToUp(Section newSection) {
-        return upStationIds(sections).stream()
-                .anyMatch(upId -> upId.equals(newSection.getUpStationId())) &&
-                        downStationIds(sections).stream().noneMatch(downId -> downId.equals(newSection.getDownStationId()));
+        return containUpIdInUpIds(newSection) &&
+                notContainDownIdInDownIds(newSection);
     }
 
     public boolean appendBeforeDown(Section newSection) {
+        return containDownIdInDownIds(newSection) &&
+                notContainUpIdInUpIds(newSection);
+    }
+
+    private boolean containUpIdInUpIds(Section newSection) {
+        return upStationIds(sections).stream()
+                .anyMatch(upId -> upId.equals(newSection.getUpStationId()));
+    }
+
+    private boolean notContainDownIdInDownIds(Section newSection) {
         return downStationIds(sections).stream()
-                .anyMatch(downId -> downId.equals(newSection.getDownStationId())) &&
-                        upStationIds(sections).stream().noneMatch(upId -> upId.equals(newSection.getDownStationId()));
+                .noneMatch(downId -> downId.equals(newSection.getDownStationId()));
+    }
+
+    private boolean containDownIdInDownIds(Section newSection) {
+        return downStationIds(sections).stream()
+                .anyMatch(downId -> downId.equals(newSection.getDownStationId()));
+    }
+
+    private boolean notContainUpIdInUpIds(Section newSection) {
+        return upStationIds(sections).stream()
+                .noneMatch(upId -> upId.equals(newSection.getDownStationId()));
+    }
+
+    public List<Long> toSortedStationIds() {
+        Long lastStationId = sections.get(sections.size()-1).getDownStationId();
+        List<Long> stationIds = sections.stream()
+                .map(Section::getUpStationId)
+                .collect(Collectors.toList());
+        stationIds.add(lastStationId);
+        return stationIds;
     }
 }

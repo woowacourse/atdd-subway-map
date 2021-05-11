@@ -52,11 +52,15 @@ public class Section {
         return distance;
     }
 
-    public boolean containUp(Long upStationId) {
+    public boolean isSameUp(Long upStationId) {
         return this.upStationId.equals(upStationId);
     }
 
-    public boolean containDown(Long downStationId) {
+    public boolean isSameDown(Long downStationId) {
         return this.downStationId.equals(downStationId);
+    }
+
+    public boolean hasLongerDistanceThan(Section oldSection) {
+        return this.distance >= oldSection.getDistance();
     }
 }

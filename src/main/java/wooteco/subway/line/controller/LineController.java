@@ -10,6 +10,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.dto.StationResponse;
 import wooteco.subway.station.service.StationService;
 
 import javax.validation.Valid;
@@ -57,6 +58,9 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         LineResponse line = lineService.findById(id);
+        List<Long> stationIds = sectionService.findAllSectionsId(id);
+        List<StationResponse> stationsByIds = stationService.findStationsByIds(stationIds);
+        line.setStations(stationsByIds);
         return ResponseEntity.ok().body(line);
     }
 

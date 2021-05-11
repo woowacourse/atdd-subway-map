@@ -15,6 +15,7 @@ import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.repository.JdbcLineDao;
 import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -171,6 +172,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long resultLineId = response.as(LineResponse.class).getId();
 
         assertThat(resultLineId).isEqualTo(expectedLineId);
+    }
+
+    @DisplayName("노선 하나를 조회한다.")
+    @Test
+    void testGetLine() {
+        /// given
+        LineRequest 이호선 =
+                new LineRequest("이호선", "bg-red-600", 1L, 2L, 0);
+
+        // when
+        createPostResponse(이호선);
+        ExtractableResponse<Response> response = createGetResponse("/lines/1");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse result = response.as(LineResponse.class);
+
+        assertThat(result.getName()).isEqualTo("이호선");
+        assertThat(result.getColor()).isEqualTo("bg-red-600");
+        assertThat(result.getId()).isEqualTo(1L);
+
+        assertThat(result.getStations()).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new StationResponse(1L, "강남역"), new StationResponse(2L, "잠실역"));
     }
 
     @DisplayName("노선을 수정한다.")

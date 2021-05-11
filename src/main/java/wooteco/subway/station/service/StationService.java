@@ -73,4 +73,11 @@ public class StationService {
         StationResponse down = findBy(sectionRes.getDownStationId());
         return Arrays.asList(up, down);
     }
+
+    public List<StationResponse> findStationsByIds(List<Long> stationIds) {
+        return stationIds.stream()
+                .map(id -> stationRepository.findBy(id))
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+    }
 }
