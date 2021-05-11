@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import java.util.Objects;
 
 import wooteco.subway.exception.IllegalInputException;
+import wooteco.subway.exception.ImpossibleDistanceException;
 import wooteco.subway.line.LineRequest;
 
 public class Section {
@@ -14,7 +15,7 @@ public class Section {
     public Section(long lineId, long upStationId, long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
-        this.distance = validateDistance(distance);
+        this.distance = distance;
         this.lineId = lineId;
     }
 
@@ -26,11 +27,10 @@ public class Section {
         this(id, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
-    private int validateDistance(int distance) {
-        if(distance < 0) {
-            throw new IllegalInputException();
+    public void validateDistance(Section newSection) {
+        if(this.distance < newSection.distance) {
+            throw new ImpossibleDistanceException();
         }
-        return distance;
     }
 
     public long getLineId() {

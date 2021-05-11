@@ -7,26 +7,29 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.exception.NoSuchStationException;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.SectionService;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationService;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
-    private final StationDao stationDao;
-    private final SectionDao sectionDao;
+
+    private final SectionService sectionService;
 
     @Autowired
-    public LineService(LineDao lineDao, StationDao stationDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao, SectionService sectionService) {
         this.lineDao = lineDao;
-        this.stationDao = stationDao;
-        this.sectionDao = sectionDao;
+        this.sectionService = sectionService;
     }
 
     public Line createLine(Line line) {
@@ -43,31 +46,12 @@ public class LineService {
     }
 
     public Line showLine(long id) {
-        long startStationId = sectionDao.findStartStationIdByLineId(id);
-        long endStationId = sectionDao.findEndStationIdByLineId(id);
-        Map<Long, Long> sections = sectionDao.findSectionsByLineId(id);
-
         try {
-            List<Station> stations = orderStations(startStationId, endStationId, sections);
             Line line = lineDao.findById(id);
-            return new Line(line, stations);
+            return new Line(line, sectionService.makeOrderedStations(id));
         } catch (DataAccessException e) {
             throw new NoSuchLineException();
         }
-    }
-
-    private List<Station> orderStations(long startStationId, long endStationId, Map<Long, Long> sections) {
-        List<Station> stations = new ArrayList<>();
-        long sectionStartId = startStationId;
-        stations.add(stationDao.findById(sectionStartId));
-
-        while (sectionStartId != endStationId) {
-            long sectionEndId = sections.get(sectionStartId);
-            stations.add(stationDao.findById(sectionEndId));
-            sectionStartId = sectionEndId;
-        }
-
-        return stations;
     }
 
     public void updateLine(long id, Line line) {
@@ -81,5 +65,4 @@ public class LineService {
             throw new NoSuchLineException();
         }
     }
-
 }

@@ -1,15 +1,19 @@
 package wooteco.subway.station;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.exception.DuplicateStationException;
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.NoSuchStationException;
 
 @Service
+@Transactional
 public class StationService {
 
     private final StationDao stationDao;
@@ -44,4 +48,5 @@ public class StationService {
             throw new NoSuchStationException();
         }
     }
+
 }
