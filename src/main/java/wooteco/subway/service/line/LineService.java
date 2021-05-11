@@ -20,6 +20,8 @@ import wooteco.subway.exception.HttpException;
 
 @Service
 public class LineService {
+    private static final String DUPLICATE_LINE_NAME_OR_COLOR_ERROR_MESSAGE = "노선의 이름 또는 색깔이 이미 사용중입니다.";
+
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
@@ -31,8 +33,7 @@ public class LineService {
     @Transactional
     public LineCreateResponseDto createLine(LineCreateRequestDto lineCreateRequestDto) {
         Line savedLine = getSavedLine(lineCreateRequestDto.getName(), lineCreateRequestDto.getColor());
-        Section savedSection = getSavedSection(savedLine,
-            lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
+        Section savedSection = getSavedSection(savedLine, lineCreateRequestDto.getUpStationId(), lineCreateRequestDto.getDownStationId(), lineCreateRequestDto.getDistance());
         return new LineCreateResponseDto(savedLine, savedSection);
     }
 
@@ -41,7 +42,7 @@ public class LineService {
             Line newLine = new Line(name, color);
             return lineDao.save(newLine);
         } catch (DuplicateKeyException e) {
-            throw new HttpException(BAD_REQUEST, "생성할 노선의 이름 또는 색깔이 이미 사용중입니다.");
+            throw new HttpException(BAD_REQUEST, DUPLICATE_LINE_NAME_OR_COLOR_ERROR_MESSAGE);
         }
     }
 
@@ -54,7 +55,6 @@ public class LineService {
         }
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponseDto> getAllLines() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -63,7 +63,11 @@ public class LineService {
     }
 
     public int updateLine(Long id, LineUpdateRequestDto lineUpdateRequestDto) {
-        return lineDao.update(id, lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
+        try {
+            return lineDao.update(id, lineUpdateRequestDto.getName(), lineUpdateRequestDto.getColor());
+        } catch (DuplicateKeyException e) {
+            throw new HttpException(BAD_REQUEST, DUPLICATE_LINE_NAME_OR_COLOR_ERROR_MESSAGE);
+        }
     }
 
     public int deleteLineById(Long id) {
