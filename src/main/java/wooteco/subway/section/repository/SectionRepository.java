@@ -2,6 +2,7 @@ package wooteco.subway.section.repository;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -41,6 +42,23 @@ public class SectionRepository {
         field.setAccessible(true);
         ReflectionUtils.setField(field, section, id);
         return section;
+    }
+
+    public List<Section> findByLineId(Long lineId) {
+        String sql = "SELECT * FROM SECTION WHERE line_id = ?";
+
+        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Section(
+            resultSet.getLong("id"),
+            resultSet.getLong("line_id"),
+            resultSet.getLong("up_station_id"),
+            resultSet.getLong("down_station_id"),
+            resultSet.getInt("distance")
+        ), lineId);
+    }
+
+    public Integer delete(Section section) {
+        String sql = "DELETE FROM SECTION WHERE id = ?";
+        return jdbcTemplate.update(sql, section.getId());
     }
 
 }

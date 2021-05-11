@@ -19,6 +19,7 @@ import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.service.SectionService;
+import wooteco.subway.station.domain.Station;
 
 @RestController
 @RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,9 +38,7 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineService.createLine(line);
-        Section newSection = new Section(newLine.getId(), lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
-        sectionService.createSection(newSection);
+        sectionService.createSection(section(newLine.getId(), lineRequest));
         LineResponse lineResponse = new LineResponse(newLine);
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId())).body(lineResponse);
     }
@@ -55,8 +54,9 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        List<Station> stations = lineService.findSortedLineStations(id);
         Line line = lineService.showLine(id);
-        LineResponse lineResponse = new LineResponse(line);
+        LineResponse lineResponse = new LineResponse(line, stations);
         return ResponseEntity.ok(lineResponse);
     }
 
@@ -72,6 +72,18 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<Void> addStation(@PathVariable Long lineId,
+        @RequestBody LineRequest lineRequest) {
+        lineService.addSection(section(lineId, lineRequest));
+        return ResponseEntity.ok().build();
+    }
+
+    private Section section(Long lineId, LineRequest lineRequest) {
+        return new Section(lineId, lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
     }
 
 }
