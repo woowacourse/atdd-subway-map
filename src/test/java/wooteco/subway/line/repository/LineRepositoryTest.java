@@ -21,10 +21,10 @@ class LineRepositoryTest {
     void findById() {
         Line line = lineRepository.findById(EXIST_ID);
 
-        assertThat(line.sections()).isNotEmpty();
-        assertThat(line.sections().get(0).upStation().id()).isNotNull();
-        assertThat(line.sections().get(0).downStation().name()).isNotNull();
-        assertThat(line.sections().get(0).upStation()).isEqualTo(EXIST_UP_STATION);
+        assertThat(line.stations()).isNotEmpty();
+        assertThat(line.stations().get(0).id()).isNotNull();
+        assertThat(line.stations().get(0).name()).isNotNull();
+        assertThat(line.stations().get(0)).isEqualTo(EXIST_UP_STATION);
     }
 
     @Test

@@ -17,7 +17,6 @@ public class Line {
     }
 
 
-
     public Line(String name, String color, List<Section> sections) {
         this(0L, name, color, sections);
     }
@@ -73,16 +72,16 @@ public class Line {
         this.sections = new Sections(sections);
     }
 
-    public void addSection(Section section) {
-        //  line의 section에 upstationId와 downStationId 둘다 존재하는지 - 노선의 구간에 이미 등록되어있음
-        sections.add(section);
-    }
-
-    public List<Section> sections() {
-        return sections.sections();
+    public Line addedSectionLine(Section section) {
+        Sections newSections = this.sections.addedSections(section);
+        return new Line(id, name, color, newSections);
     }
 
     public List<Station> stations() {
         return sections.sortedStations();
+    }
+
+    public Section affectedSection(Line originLine) {
+        return sections.affectedSection(originLine.sections);
     }
 }

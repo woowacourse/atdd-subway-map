@@ -21,14 +21,14 @@ class SectionsTest {
         sections = new Sections(Arrays.asList(section));
     }
 
-    @Test
-    @DisplayName("구간 리스트에 구간을 추가한다.")
-    void add() {
-        Section newSection = new Section(new Station(1L), new Station(4L), 10);
-        sections.add(newSection);
-
-        assertThat(sections.sections()).hasSize(2);
-    }
+//    @Test
+//    @DisplayName("구간 리스트에 구간을 추가한다.")
+//    void add() {
+//        Section newSection = new Section(new Station(1L), new Station(4L), 10);
+//        sections.add(newSection);
+//
+//        assertThat(sections.sections()).hasSize(2);
+//    }
 
     @Test
     @DisplayName("노선에 역이 하나만 등록되어 있는지 확인한다. - 두개다 이미 등록되어 있음")
