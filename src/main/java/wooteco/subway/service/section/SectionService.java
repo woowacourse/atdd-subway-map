@@ -62,8 +62,9 @@ public class SectionService {
             return;
         }
         List<Section> updateAndRemoveSections = sections.findUpdateAndRemoveSections(requestStation);
-        Section updateSection = sections.findUpdateAndRemoveSections(requestStation).get(0);
-        sectionRepository.update(updateSection);
-        sectionRepository.delete(updateAndRemoveSections.get(1));
+        Section updateSection = updateAndRemoveSections.get(0);
+        Section removeSection = updateAndRemoveSections.get(1);
+        sectionRepository.update(updateSection.mergeAndUpdate(removeSection));
+        sectionRepository.delete(removeSection);
     }
 }
