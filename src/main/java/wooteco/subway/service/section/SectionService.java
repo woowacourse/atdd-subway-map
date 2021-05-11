@@ -3,8 +3,9 @@ package wooteco.subway.service.section;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.dto.request.LineRequest;
-import wooteco.subway.domain.line.Line;
+import wooteco.subway.controller.dto.request.SectionRequest;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.repository.SectionRepository;
 import wooteco.subway.repository.StationRepository;
@@ -35,5 +36,20 @@ public class SectionService {
 
     public List<Section> findByLineId(Long id) {
         return sectionRepository.findByLineId(id);
+    }
+
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId());
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId());
+        Section newSection = new Section(id, upStation, downStation, sectionRequest.getDistance());
+
+        Sections sections = new Sections(sectionRepository.findByLineId(id));
+        if (sections.canAddToEndSection(newSection)) {
+            sectionRepository.save(newSection);
+            return;
+        }
+        sectionRepository.save(newSection);
+        Section updateSection = sections.addToBetweenExistedSection(newSection);
+        sectionRepository.update(updateSection);
     }
 }
