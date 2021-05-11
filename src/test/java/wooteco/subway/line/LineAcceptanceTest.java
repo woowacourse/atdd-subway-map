@@ -13,7 +13,6 @@ import wooteco.subway.exception.line.LineDuplicationException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,7 +51,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateColor() {
         LineRequest beforeRequest = new LineRequest("2호선", "초록색", 1L, 2L, 5);
         linePostRequest(beforeRequest);
-
         LineRequest afterRequest = new LineRequest("3호선", "초록색", 1L, 2L, 5);
         ExtractableResponse<Response> response = linePostRequest(afterRequest);
 
@@ -69,7 +67,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         LineRequest lineRequest2 = new LineRequest("3호선", "주황색", 1L, 2L, 5);
         ExtractableResponse<Response> createResponse2 = linePostRequest(lineRequest2);
-
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get("/lines")
