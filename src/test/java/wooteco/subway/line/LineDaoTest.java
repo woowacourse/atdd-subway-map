@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
 @SpringBootTest
@@ -52,9 +53,9 @@ class LineDaoTest {
     @DisplayName("노선 id를 통해 노선에 포함된 역의 id들을 조회한다")
     @Test
     void findStationsIdByLineId() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
-        long stationId3 = stationDao.save("신림역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
+        long stationId3 = stationDao.save(new Station("신림역"));
 
         Line line = addLine("2호선", "green");
         long lineId = lineDao.save(line);

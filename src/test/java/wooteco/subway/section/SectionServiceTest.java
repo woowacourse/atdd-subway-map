@@ -47,10 +47,10 @@ class SectionServiceTest {
         Station station3 = new Station(stationName3);
         Station station4 = new Station(stationName4);
 
-        stationService.createStation(stationName1);
-        stationService.createStation(stationName2);
-        stationService.createStation(stationName3);
-        stationService.createStation(stationName4);
+        stationService.createStation(station1);
+        stationService.createStation(station2);
+        stationService.createStation(station3);
+        stationService.createStation(station4);
 
         lineService.createLine(new Line(
             new Line("2호선", "green"), Arrays.asList(station1, station2, station3, station4)));
@@ -111,7 +111,7 @@ class SectionServiceTest {
     @Test
     void deleteSectionException() {
         addEndSection();
-        stationService.createStation("메롱역");
+        stationService.createStation(new Station("메롱역"));
 
         assertThatThrownBy(() -> sectionService.deleteSectionByStationId(1L, 5L))
             .isInstanceOf(NoSuchStationInLineException.class);

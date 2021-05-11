@@ -33,9 +33,9 @@ class SectionDaoTest {
     @DisplayName("새로운 구간을 생성한다")
     @Test
     void save() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
-        long stationId3 = stationDao.save("신림역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
+        long stationId3 = stationDao.save(new Station("신림역"));
 
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
@@ -63,8 +63,8 @@ class SectionDaoTest {
     @DisplayName("UpStation이 같은 구간을 조회한다.")
     @Test
     void findSectionBySameUpStation() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
 
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
@@ -80,9 +80,9 @@ class SectionDaoTest {
     @DisplayName("DownStation이 같은 구간을 조회한다.")
     @Test
     void findSectionBySameDownStation() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
-        long stationId3 = stationDao.save("신림역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
+        long stationId3 = stationDao.save(new Station("신림역"));
 
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
@@ -100,9 +100,9 @@ class SectionDaoTest {
     @DisplayName("upStation, downStation을 수정한다.")
     @Test
     void updateUpStation() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
-        long stationId3 = stationDao.save("신림역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
+        long stationId3 = stationDao.save(new Station("신림역"));
 
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);
@@ -121,9 +121,9 @@ class SectionDaoTest {
     @DisplayName("구간을 삭제한다.")
     @Test
     void deleteSection() {
-        long stationId1 = stationDao.save("강남역");
-        long stationId2 = stationDao.save("잠실역");
-        long stationId3 = stationDao.save("신림역");
+        long stationId1 = stationDao.save(new Station("강남역"));
+        long stationId2 = stationDao.save(new Station("잠실역"));
+        long stationId3 = stationDao.save(new Station("신림역"));
 
         Line line = new Line("2호선", "green");
         long lineId = lineDao.save(line);

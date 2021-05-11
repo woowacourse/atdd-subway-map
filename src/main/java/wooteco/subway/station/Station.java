@@ -2,6 +2,8 @@ package wooteco.subway.station;
 
 import java.util.Objects;
 
+import javax.validation.constraints.NotBlank;
+
 import wooteco.subway.exception.IllegalInputException;
 
 public class Station {
@@ -19,6 +21,10 @@ public class Station {
     public Station(Long id, String name) {
         this(name);
         this.id = id;
+    }
+
+    public Station(long id, Station station) {
+        this(id, station.getName());
     }
 
     private void validateName(String name) {

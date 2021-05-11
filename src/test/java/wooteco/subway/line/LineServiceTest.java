@@ -45,10 +45,7 @@ class LineServiceTest {
         Station station4 = new Station("매봉역");
 
         stations = Arrays.asList(station1, station2, station3, station4);
-        stationService.createStation("강남역");
-        stationService.createStation("서초역");
-        stationService.createStation("잠실역");
-        stationService.createStation("매봉역");
+        stations.forEach(station -> stationService.createStation(station));
     }
 
     @DisplayName("노선을 생성하고 반환한다.")

@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import wooteco.subway.exception.DuplicateStationException;
 import wooteco.subway.exception.NoSuchStationException;
 
 @Service
 @Transactional
+@Validated
 public class StationService {
 
     private final StationDao stationDao;
@@ -19,10 +21,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public Station createStation(String stationName) {
+    public Station createStation(Station station) {
         try {
-            long stationId = stationDao.save(stationName);
-            return new Station(stationId, stationName);
+            long stationId = stationDao.save(station);
+            return new Station(stationId, station);
         } catch (DataAccessException e) {
             throw new DuplicateStationException();
         }
