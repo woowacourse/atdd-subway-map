@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.NotInputDataException;
-import wooteco.subway.station.Station;
 
-@DisplayName("문자열 입력 객체 테스츠")
+@DisplayName("문자열 입력 객체 테스트")
 class StringInputTest {
 
     @Test
