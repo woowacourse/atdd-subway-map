@@ -12,6 +12,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.service.dto.SectionDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,12 @@ class SectionServiceTest {
         given(stationService.findById(downStationId)).willReturn(downStation);
         given(sectionRepository.save(section)).willReturn(sectionId);
 
-        long createdSectionId = sectionService.createSection(upStationId, downStationId, distance, lineId);
+        SectionDto sectionDto = SectionDto.builder()
+                .upStationId(upStationId)
+                .downStationId(downStationId)
+                .distance(distance)
+                .build();
+        long createdSectionId = sectionService.createSection(sectionDto, lineId);
 
         assertThat(createdSectionId).isEqualTo(sectionId);
         verify(stationService, times(1)).findById(upStationId);
@@ -64,13 +70,16 @@ class SectionServiceTest {
         int distance = 14;
         long lineId = 1;
         Station upStation = new Station(upStationId, "천호역");
+        SectionDto sectionDto = SectionDto.builder()
+                .upStationId(upStationId)
+                .downStationId(upStationId)
+                .distance(distance)
+                .build();
         given(stationService.findById(upStationId)).willReturn(upStation);
 
-
-        assertThatCode(() -> sectionService.createSection(upStationId, upStationId, distance, lineId))
+        assertThatCode(() -> sectionService.createSection(sectionDto, lineId))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage(ExceptionStatus.INVALID_SECTION.getMessage());
-
         verify(stationService, times(2)).findById(upStationId);
     }
 
@@ -92,7 +101,12 @@ class SectionServiceTest {
         given(stationService.findById(3L)).willReturn(insertStation);
         given(sectionRepository.findAllByLineId(1L)).willReturn(currentSectionList);
 
-        sectionService.addSection(1L, 3L, 5, 1L);
+        SectionDto sectionDto = SectionDto.builder()
+                .upStationId(1L)
+                .downStationId(3L)
+                .distance(5)
+                .build();
+        sectionService.addSection(sectionDto, 1L);
 
         verify(stationService, times(1)).findById(1L);
         verify(stationService, times(1)).findById(3L);
@@ -115,7 +129,12 @@ class SectionServiceTest {
         given(stationService.findById(3L)).willReturn(newEndStation);
         given(sectionRepository.findAllByLineId(1L)).willReturn(Arrays.asList(currentSection));
 
-        sectionService.addSection(3L, 1L, 5, 1L);
+        SectionDto sectionDto = SectionDto.builder()
+                .upStationId(3L)
+                .downStationId(1L)
+                .distance(5)
+                .build();
+        sectionService.addSection(sectionDto, 1L);
 
         verify(stationService, times(1)).findById(1L);
         verify(stationService, times(1)).findById(3L);

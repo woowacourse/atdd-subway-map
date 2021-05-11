@@ -23,6 +23,7 @@ import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
+import wooteco.subway.service.dto.SectionDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -266,7 +267,12 @@ class LineAcceptanceTest {
         long lineId = testLineIds.get(0);
 
         long newStationId = createStation("의정부역");
-        sectionService.createSection(upStationId, newStationId, 3, lineId);
+        SectionDto sectionDto = SectionDto.builder()
+                .upStationId(upStationId)
+                .downStationId(newStationId)
+                .distance(3)
+                .build();
+        sectionService.createSection(sectionDto, lineId);
 
         List<StationResponse> stationResponses = Arrays.asList(new StationResponse(upStationId, "천호역"),
                 new StationResponse(downStationId, "강남역"));

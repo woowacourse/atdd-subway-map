@@ -7,6 +7,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.repository.SectionRepository;
+import wooteco.subway.service.dto.SectionDto;
 
 import java.util.List;
 
@@ -21,17 +22,17 @@ public class SectionService {
         this.stationService = stationService;
     }
 
-    public long createSection(long upStationId, long downStationId, int distance, long lineId) {
-        Station upStation = stationService.findById(upStationId);
-        Station downStation = stationService.findById(downStationId);
-        Section section = new Section(upStation, downStation, distance, lineId);
+    public long createSection(SectionDto sectionDto, long lineId) {
+        Station upStation = stationService.findById(sectionDto.getUpStationId());
+        Station downStation = stationService.findById(sectionDto.getDownStationId());
+        Section section = new Section(upStation, downStation, sectionDto.getDistance(), lineId);
         return sectionRepository.save(section);
     }
 
-    public void addSection(long upStationId, long downStationId, int distance, long lineId) {
-        Station upStation = stationService.findById(upStationId);
-        Station downStation = stationService.findById(downStationId);
-        Section requestSection = new Section(upStation, downStation, distance, lineId);
+    public void addSection(SectionDto sectionDto, long lineId) {
+        Station upStation = stationService.findById(sectionDto.getUpStationId());
+        Station downStation = stationService.findById(sectionDto.getDownStationId());
+        Section requestSection = new Section(upStation, downStation, sectionDto.getDistance(), lineId);
         Sections currentSections = new Sections(sectionRepository.findAllByLineId(lineId));
         splitAndUpdateSections(currentSections, requestSection);
     }

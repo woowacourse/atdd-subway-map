@@ -3,6 +3,8 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.repository.LineRepository;
+import wooteco.subway.service.dto.LineDto;
+import wooteco.subway.service.dto.SectionDto;
 
 import java.util.List;
 
@@ -17,10 +19,10 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
-    public Line createLine(String name, String color, long upStationId, long downStationId, int distance) {
-        Line line = new Line(name, color);
+    public Line createLine(LineDto lineDto, SectionDto sectionDto) {
+        Line line = new Line(lineDto.getName(), lineDto.getColor());
         long id = lineRepository.save(line);
-        sectionService.createSection(upStationId, downStationId, distance, id);
+        sectionService.createSection(sectionDto, id);
         return lineRepository.findById(id);
     }
 
@@ -32,8 +34,8 @@ public class LineService {
         return lineRepository.findById(id);
     }
 
-    public void editLine(long id, String name, String color) {
-        Line line = new Line(id, name, color);
+    public void editLine(long id, LineDto lineDto) {
+        Line line = new Line(id, lineDto.getName(), lineDto.getColor());
         lineRepository.update(line);
     }
 
