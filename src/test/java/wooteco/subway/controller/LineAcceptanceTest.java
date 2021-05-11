@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import wooteco.subway.controller.dto.LineRequest;
 import wooteco.subway.controller.dto.LineResponse;
@@ -51,9 +50,6 @@ class LineAcceptanceTest {
     @Autowired
     private StationService stationService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private List<Long> testLineIds;
     private List<Long> testStationIds;
     private long upStationId;
@@ -71,8 +67,10 @@ class LineAcceptanceTest {
     @AfterEach
     void tearDown() {
         try {
-            testLineIds.forEach(testLineId -> lineService.deleteLine(testLineId));
-            jdbcTemplate.update("DELETE FROM SECTION");
+            testLineIds.forEach(testLineId -> {
+                lineService.deleteLine(testLineId);
+                sectionService.deleteAllByLineId(testLineId);
+            });
             testStationIds.forEach(testStationId -> stationService.deleteById(testStationId));
         } catch (SubwayException ignored) {
         }

@@ -15,6 +15,7 @@ import wooteco.subway.service.SectionService;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.SectionDto;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         LineDto lineDto = getLineDto(lineRequest);
         SectionDto sectionDto = getSectionDto(lineRequest);
         Line savedLine = lineService.createLine(lineDto, sectionDto);
@@ -78,7 +79,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> editLine(@PathVariable long id, @RequestBody @Valid LineRequest lineRequest) {
         LineDto lineDto = getLineDto(lineRequest);
         lineService.editLine(id, lineDto);
         return ResponseEntity.noContent()
@@ -93,16 +94,20 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<LineResponse> addSection(@PathVariable long id, @RequestBody SectionRequest sectionRequest) {
-        SectionDto sectionDto = SectionDto.builder()
-                .upStationId(sectionRequest.getUpStationId())
-                .downStationId(sectionRequest.getDownStationId())
-                .distance(sectionRequest.getDistance())
-                .build();
+    public ResponseEntity<LineResponse> addSection(@PathVariable long id, @RequestBody @Valid SectionRequest sectionRequest) {
+        SectionDto sectionDto = getSectionDto(sectionRequest);
         sectionService.addSection(sectionDto, id);
         Line line = lineService.findById(id);
         LineResponse lineResponse = writeLineResponse(line);
         return ResponseEntity.ok(lineResponse);
+    }
+
+    private SectionDto getSectionDto(SectionRequest sectionRequest) {
+        return SectionDto.builder()
+                .upStationId(sectionRequest.getUpStationId())
+                .downStationId(sectionRequest.getDownStationId())
+                .distance(sectionRequest.getDistance())
+                .build();
     }
 
     @DeleteMapping("/{id}/sections")
