@@ -12,6 +12,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.CreateSectionDto;
+import wooteco.subway.service.dto.DeleteStationDto;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.service.dto.ReadLineDto;
 import wooteco.subway.service.dto.SectionServiceDto;
@@ -68,5 +69,10 @@ public class LineService {
     public void createSection(CreateSectionDto createSectionDto) {
         SectionServiceDto sectionServiceDto = SectionServiceDto.from(createSectionDto);
         sectionService.save(sectionServiceDto);
+    }
+
+    public void deleteStation(final long lineId, final long stationId) {
+        DeleteStationDto deleteStationDto = new DeleteStationDto(lineId, stationId);
+        sectionService.delete(deleteStationDto);
     }
 }
