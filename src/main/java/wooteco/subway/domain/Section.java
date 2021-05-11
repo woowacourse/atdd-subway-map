@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import wooteco.subway.common.Id;
+import wooteco.subway.exception.badRequest.InvalidDistanceException;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,5 +39,33 @@ public class Section {
 
     public boolean isUpStation(Station targetStation) {
         return upStation.isSameId(targetStation.getId());
+    }
+
+    public boolean isSameSection(Section targetSection) {
+        return this.hasSameId(targetSection.getId());
+    }
+
+    public boolean hasSameId(Long id) {
+        return this.id.equals(id);
+    }
+
+    public void updateUpStation(Section section) {
+        int difference = distanceDifference(section);
+        upStation = section.downStation;
+        distance = difference;
+    }
+
+    public void updateDownStation(Section section) {
+        int difference = distanceDifference(section);
+        downStation = section.upStation;
+        distance = difference;
+    }
+
+    private int distanceDifference(Section section) {
+        int difference = distance - section.distance;
+        if (difference <= 0) {
+            throw new InvalidDistanceException();
+        }
+        return difference;
     }
 }

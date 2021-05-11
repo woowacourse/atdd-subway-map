@@ -44,8 +44,8 @@ public class LineDaoCache implements LineDao {
     }
 
     @Override
-    public void update(Long id, String name, String color) {
-        findCompleteLineById(id).get().changeInfo(name, color);
+    public void update(Line line) {
+        findCompleteLineById(line.getId()).get().changeInfo(line.getName(), line.getColor());
     }
 
     @Override

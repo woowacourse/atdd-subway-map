@@ -15,7 +15,6 @@ import wooteco.subway.AcceptanceTest;
 import wooteco.subway.dao.station.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.web.request.LineRequest;
-import wooteco.subway.web.request.SectionRequest;
 import wooteco.subway.web.response.LineResponse;
 
 @DisplayName("노선 관련 기능")
@@ -204,114 +203,6 @@ class LineApiControllerTest extends AcceptanceTest {
         assertThat(노선_조회(uri).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("구간 등록 - 성공(상행 종점 등록)")
-    @Test
-    void insertSection_success_upStation() {
-        // given
-        final Station upStation = 상행역();
-        final Station downStation = 하행역();
-        final String uri =
-            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
-                .header("Location");
-
-        final Station newStation = 역_생성("대림역");
-        final int newDistance = 5;
-        final SectionRequest sectionRequest =
-            SectionRequest.create(newStation.getId(), upStation.getId(), newDistance);
-
-        // when
-        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
-
-        // then
-        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
-
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).hasSize(3);
-        assertThat(lineResponse.getStations()).extracting("name")
-            .containsExactlyInAnyOrder("대림역", UP_STATION_NAME, DOWN_STATION_NAME);
-    }
-
-    @Test
-    @DisplayName("구간 등록 - 성공(하행 종점 등록)")
-    void insertSection_success_downStation() {
-        // given
-        final Station upStation = 상행역();
-        final Station downStation = 하행역();
-        final String uri =
-            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
-                .header("Location");
-
-        final Station newStation = 역_생성("홍대역");
-        final int newDistance = 5;
-        final SectionRequest sectionRequest =
-            SectionRequest.create(newStation.getId(), upStation.getId(), newDistance);
-
-        // when
-        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
-
-        // then
-        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
-
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).hasSize(3);
-        assertThat(lineResponse.getStations()).extracting("name")
-            .containsExactlyInAnyOrder(UP_STATION_NAME, DOWN_STATION_NAME, "홍대역");
-    }
-
-    @Test
-    @DisplayName("구간 등록 - 성공(상행 기준 중간에 구간 등록)")
-    void insertSection_success_middle_up() {
-        // given
-        final Station upStation = 상행역();
-        final Station downStation = 하행역();
-        final String uri =
-            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
-                .header("Location");
-
-        final Station newStation = 역_생성("홍대역");
-        final int newDistance = 5;
-        final SectionRequest sectionRequest =
-            SectionRequest.create(upStation.getId(), newStation.getId(), newDistance);
-
-        // when
-        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
-
-        // then
-        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
-
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).hasSize(3);
-        assertThat(lineResponse.getStations()).extracting("name")
-            .containsExactlyInAnyOrder(UP_STATION_NAME, "홍대역", DOWN_STATION_NAME);
-    }
-
-    @Test
-    @DisplayName("구간 등록 - 성공(하행 기준 중간에 구간 등록)")
-    void insertSection_success_middle_down() {
-        // given
-        final Station upStation = 상행역();
-        final Station downStation = 하행역();
-        final String uri =
-            노선_생성(LineRequest.create(LINE_NAME, LINE_COLOR, upStation.getId(), downStation.getId(), DISTANCE))
-                .header("Location");
-
-        final Station newStation = 역_생성("홍대역");
-        final int newDistance = 5;
-        final SectionRequest sectionRequest =
-            SectionRequest.create(newStation.getId(), downStation.getId(), newDistance);
-
-        // when
-        final ExtractableResponse<Response> result = 구간_등록(uri, sectionRequest);
-
-        // then
-        final LineResponse lineResponse = 노선_조회(uri).body().as(LineResponse.class);
-
-        assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).hasSize(3);
-        assertThat(lineResponse.getStations()).extracting("name")
-            .containsExactlyInAnyOrder(UP_STATION_NAME, "홍대역", DOWN_STATION_NAME);
-    }
-
     private ExtractableResponse<Response> 노선_생성(LineRequest lineRequest) {
         return RestAssured
             .given()
@@ -365,16 +256,6 @@ class LineApiControllerTest extends AcceptanceTest {
         return RestAssured.given().log().all()
             .when()
             .delete(uri)
-            .then()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> 구간_등록(String uri, SectionRequest sectionRequest) {
-        return RestAssured.given()
-            .body(sectionRequest)
-            .contentType(ContentType.JSON)
-            .when()
-            .post(uri + "/sections")
             .then()
             .extract();
     }

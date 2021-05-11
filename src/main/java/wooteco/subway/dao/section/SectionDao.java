@@ -8,4 +8,6 @@ public interface SectionDao {
     Section save(Section section, Long lineId);
 
     List<Section> findAllByLineId(Long lineId);
+
+    void update(Section section);
 }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import wooteco.subway.common.Id;
 import wooteco.subway.exception.badRequest.WrongInformationException;
-import wooteco.subway.web.response.StationResponse;
 
 @Getter
 public class Line {

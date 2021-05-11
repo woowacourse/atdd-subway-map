@@ -37,9 +37,9 @@ public class JdbcSectionDao implements SectionDao {
 
     @Override
     public List<Section> findAllByLineId(Long lineId) {
-        String sql = "select id, (select name from station where station.id = section.up_station_id) as upStationName, up_station_id as upStationId, "
-            + "(select name from station where station.id = section.down_station_id) as downStationName, down_station_id as downStationId, "
-            + "distance from section where line_id = ?";
+        String sql = "SELECT id, (SELECT name FROM station WHERE station.id = section.up_station_id) AS upStationName, up_station_id AS upStationId, "
+            + "(SELECT name FROM station WHERE station.id = section.down_station_id) AS downStationName, down_station_id AS downStationId, "
+            + "distance FROM SECTION WHERE line_id = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             final long id = rs.getLong("id");
@@ -56,5 +56,11 @@ public class JdbcSectionDao implements SectionDao {
 
             return Section.create(id, upStation, downStation, distance);
         }, lineId);
+    }
+
+    @Override
+    public void update(Section section) {
+        String sql = "UPDATE section SET up_station_id=?, down_station_id=? where id=? ";
+        jdbcTemplate.update(sql, section.upStationId(), section.downStationId(), section.getId());
     }
 }

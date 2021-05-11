@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.Line;
+import wooteco.subway.domain.Section;
 import wooteco.subway.exception.badRequest.WrongInformationException;
 import wooteco.subway.service.LineService;
 import wooteco.subway.web.request.LineRequest;
@@ -75,11 +76,5 @@ public class LineApiController {
     public ResponseEntity removeLine(@PathVariable Long id) {
         lineService.removeLine(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{lineId}/sections")
-    public void insertSection(@PathVariable Long lineId,
-        @RequestBody @Valid SectionRequest sectionRequest, BindingResult bindingResult) {
-
     }
 }

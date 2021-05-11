@@ -1,6 +1,7 @@
 package wooteco.subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +53,7 @@ public class LineService {
         if (lineDao.findLineByNameOrColor(name, color, id).isPresent()) {
             throw new LineInfoDuplicatedException();
         }
-        lineDao.update(id, name, color);
+        lineDao.update(Line.create(id, name, color));
     }
 
     @Transactional
