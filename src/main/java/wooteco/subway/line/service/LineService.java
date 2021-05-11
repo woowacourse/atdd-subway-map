@@ -1,6 +1,5 @@
 package wooteco.subway.line.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.domain.*;
 import wooteco.subway.line.domain.rule.FindSectionHaveSameDownRule;
@@ -20,7 +19,6 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    @Autowired
     public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;

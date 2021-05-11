@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface StationRepository {
     Station save(Station station);
+
     Station findById(Long id);
+
     void delete(Long id);
 
     List<Station> findAll();

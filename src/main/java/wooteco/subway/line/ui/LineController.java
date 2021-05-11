@@ -82,7 +82,6 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-
     @PostMapping(value = "/{id}/sections", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addSection(@PathVariable final Long id, @RequestBody final SectionAddRequest sectionAddRequest) {
         Section section = new Section(sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId(), sectionAddRequest.getDistance());

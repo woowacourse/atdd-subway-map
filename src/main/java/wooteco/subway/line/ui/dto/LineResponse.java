@@ -4,6 +4,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.ui.dto.StationResponse;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,9 +15,7 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse() {
-    }
-
+    @ConstructorProperties({"id", "name", "color", "stations"})
     public LineResponse(final Long id, final String name, final String color, List<Station> stations) {
         this.id = id;
         this.name = name;

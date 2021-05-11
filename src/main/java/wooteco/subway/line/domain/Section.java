@@ -33,13 +33,4 @@ public class Section {
             throw new IllegalArgumentException("구간의 길이가 0과 같거나 작습니다.");
         }
     }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "upStationId=" + upStationId +
-                ", downStationId=" + downStationId +
-                ", distance=" + distance +
-                '}';
-    }
 }
