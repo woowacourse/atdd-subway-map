@@ -1,5 +1,6 @@
 package wooteco.subway.section.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
     }
 
     public List<Station> sortedStations() {
