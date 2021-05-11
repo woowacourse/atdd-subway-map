@@ -60,30 +60,30 @@ public class SectionH2Dao implements SectionDao {
     public List<Section> findByStation(Long lineId, Long stationId) {
         String sql = "SELECT * FROM SECTION WHERE (line_id=? AND up_station_id=?) OR (line_id=? AND down_station_id=?)";
         return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Section section = new Section(
-                    rs.getLong("id"),
-                    rs.getLong("up_station_id"),
-                    rs.getLong("down_station_id"),
-                    rs.getInt("distance")
-                );
-                return section;
-            }, lineId, stationId, lineId, stationId);
+                (rs, rowNum) -> {
+                    Section section = new Section(
+                            rs.getLong("id"),
+                            rs.getLong("up_station_id"),
+                            rs.getLong("down_station_id"),
+                            rs.getInt("distance")
+                    );
+                    return section;
+                }, lineId, stationId, lineId, stationId);
     }
 
     @Override
     public List<Section> findByLineId(Long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id=?";
         return jdbcTemplate.query(sql,
-            (rs, rowNum) -> {
-                Section section = new Section(
-                    rs.getLong("id"),
-                    rs.getLong("up_station_id"),
-                    rs.getLong("down_station_id"),
-                    rs.getInt("distance")
-                );
-                return section;
-            }, lineId);
+                (rs, rowNum) -> {
+                    Section section = new Section(
+                            rs.getLong("id"),
+                            rs.getLong("up_station_id"),
+                            rs.getLong("down_station_id"),
+                            rs.getInt("distance")
+                    );
+                    return section;
+                }, lineId);
     }
 
     @Override

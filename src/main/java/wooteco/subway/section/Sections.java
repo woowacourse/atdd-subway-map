@@ -22,9 +22,9 @@ public class Sections {
 
     private void validateConnected(Section newSection, BiPredicate<Section, Section> biPredicate) {
         sections.stream()
-            .filter(section -> biPredicate.test(section, newSection))
-            .findAny()
-            .orElseThrow(SectionAdditionException::new);
+                .filter(section -> biPredicate.test(section, newSection))
+                .findAny()
+                .orElseThrow(SectionAdditionException::new);
     }
 
     private boolean isConnected(Section newSection, Section section) {
@@ -33,7 +33,7 @@ public class Sections {
 
     private boolean isEndpoint(Section newSection, Section section) {
         return section.isUpStation(newSection.getDownStationId()) ||
-            section.isDownStation(newSection.getUpStationId());
+                section.isDownStation(newSection.getUpStationId());
     }
 
     private boolean isIntermediate(Section newSection, Section section) {
@@ -48,9 +48,9 @@ public class Sections {
 
     private void validateDistance(Section newSection) {
         sections.stream()
-            .filter(section -> section.isUpStation(newSection.getUpStationId()))
-            .findAny()
-            .ifPresent(section -> isValidDistance(newSection, section));
+                .filter(section -> section.isUpStation(newSection.getUpStationId()))
+                .findAny()
+                .ifPresent(section -> isValidDistance(newSection, section));
     }
 
     private void isValidDistance(Section newSection, Section section) {
@@ -101,8 +101,8 @@ public class Sections {
 
     public Section merge(Long stationId) {
         int newDistance = sections.stream()
-            .mapToInt(Section::getDistance)
-            .sum();
+                .mapToInt(Section::getDistance)
+                .sum();
 
         Section upSection = getSection(stationId, this::matchDownStation);
         Section downSection = getSection(stationId, this::matchUpStation);
@@ -112,9 +112,9 @@ public class Sections {
 
     private Section getSection(Long stationId, BiPredicate<Long, Section> biPredicate) {
         return sections.stream()
-            .filter(section -> biPredicate.test(stationId, section))
-            .findAny()
-            .get();
+                .filter(section -> biPredicate.test(stationId, section))
+                .findAny()
+                .get();
     }
 
     private boolean matchUpStation(Long stationId, Section section) {
@@ -127,7 +127,7 @@ public class Sections {
 
     public List<Long> sectionIds() {
         return sections.stream()
-            .map(Section::getId)
-            .collect(toList());
+                .map(Section::getId)
+                .collect(toList());
     }
 }

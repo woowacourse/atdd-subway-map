@@ -38,7 +38,7 @@ public class LineService {
 
     public Line findById(Long id) {
         return lineDao.findById(id)
-            .orElseThrow(LineNonexistenceException::new);
+                .orElseThrow(LineNonexistenceException::new);
     }
 
     public void update(Long id, LineRequest lineRequest) {
@@ -49,12 +49,12 @@ public class LineService {
 
     private void validateDuplicatedName(String name) {
         lineDao.findByName(name)
-            .ifPresent(this::throwDuplicationException);
+                .ifPresent(this::throwDuplicationException);
     }
 
     private void validateDuplicatedColor(String color) {
         lineDao.findByColor(color)
-            .ifPresent(this::throwDuplicationException);
+                .ifPresent(this::throwDuplicationException);
     }
 
     private void throwDuplicationException(Line line) {
@@ -71,6 +71,6 @@ public class LineService {
 
     public void validateId(Long lineId) {
         lineDao.findById(lineId)
-            .orElseThrow(LineNonexistenceException::new);
+                .orElseThrow(LineNonexistenceException::new);
     }
 }

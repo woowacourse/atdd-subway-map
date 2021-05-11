@@ -37,14 +37,14 @@ public class StationH2Dao implements StationDao {
     public List<Station> findAll() {
         String sql = "SELECT * FROM STATION";
         return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> {
-                Station station = new Station(
-                    rs.getLong("id"),
-                    rs.getString("name")
-                );
-                return station;
-            });
+                sql,
+                (rs, rowNum) -> {
+                    Station station = new Station(
+                            rs.getLong("id"),
+                            rs.getString("name")
+                    );
+                    return station;
+                });
     }
 
     @Override
@@ -52,14 +52,14 @@ public class StationH2Dao implements StationDao {
         String sql = "SELECT * FROM STATION WHERE id=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
-                id));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Station(
+                                rs.getLong("id"),
+                                rs.getString("name")
+                        );
+                    },
+                    id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -70,14 +70,14 @@ public class StationH2Dao implements StationDao {
         String sql = "SELECT * FROM STATION WHERE name=?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (rs, rowNum) -> {
-                    return new Station(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                    );
-                },
-                name));
+                    sql,
+                    (rs, rowNum) -> {
+                        return new Station(
+                                rs.getLong("id"),
+                                rs.getString("name")
+                        );
+                    },
+                    name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

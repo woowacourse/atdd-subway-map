@@ -67,12 +67,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest disconnectedSectionRequest = new SectionRequest(4L, 5L, 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(disconnectedSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/1/sections")
-            .then().log().all()
-            .extract();
+                .body(disconnectedSectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -83,12 +83,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest existingSectionRequest = new SectionRequest(1L, 2L, 10);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(existingSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/1/sections")
-            .then().log().all()
-            .extract();
+                .body(existingSectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all()
+                .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -99,12 +99,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest invalidDistanceSectionRequest = new SectionRequest(5L, 3L, 12);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(invalidDistanceSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/2/sections")
-            .then().log().all()
-            .extract();
+                .body(invalidDistanceSectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/2/sections")
+                .then().log().all()
+                .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -148,11 +148,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLastSection() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .queryParam("stationId", 2)
-            .delete("/lines/1/sections")
-            .then().log().all()
-            .extract();
+                .when()
+                .queryParam("stationId", 2)
+                .delete("/lines/1/sections")
+                .then().log().all()
+                .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

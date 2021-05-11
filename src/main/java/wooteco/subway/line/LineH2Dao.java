@@ -38,15 +38,15 @@ public class LineH2Dao implements LineDao {
     public List<Line> findAll() {
         String sql = "SELECT * FROM LINE";
         return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> {
-                Line line = new Line(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("color")
-                );
-                return line;
-            });
+                sql,
+                (rs, rowNum) -> {
+                    Line line = new Line(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("color")
+                    );
+                    return line;
+                });
     }
 
     @Override
