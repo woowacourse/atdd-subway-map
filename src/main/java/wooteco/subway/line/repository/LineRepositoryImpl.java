@@ -1,10 +1,7 @@
 package wooteco.subway.line.repository;
 
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.domain.*;
 
 import java.util.List;
 
@@ -26,8 +23,8 @@ public class LineRepositoryImpl implements LineRepository {
     }
 
     @Override
-    public List<Line> findAll() {
-        return lineDao.allLines();
+    public Lines findAll() {
+        return new Lines(lineDao.allLines());
     }
 
     @Override

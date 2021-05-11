@@ -15,6 +15,7 @@ import wooteco.subway.line.ui.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -30,28 +31,25 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
-        final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        final Section section = new Section(lineCreateRequest.getUpStationId(),
+                lineCreateRequest.getDownStationId(),
+                lineCreateRequest.getDistance());
+        final Sections sections = new Sections(Collections.singletonList(section));
+
+        final Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor(), sections);
         final Line savedLine = lineService.create(line);
 
         final List<Station> stations = lineService.getStations(savedLine.getId());
 
         return ResponseEntity
-                .created(
-                        URI.create("/lines/" + savedLine.getId())
-                )
-                .body(
-                        new LineResponse(
-                                savedLine.getId(),
-                                savedLine.getName(),
-                                savedLine.getColor()
-                        )
-                );
+                .created(URI.create("/lines/" + savedLine.getId()))
+                .body(new LineResponse(savedLine, stations));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> allLines() {
-        final List<LineResponse> lineResponses = lineService.allLines().stream()
+        final List<LineResponse> lineResponses = lineService.allLines().toList().stream()
                 .map(line -> new LineResponse(line, lineService.getStations(line.getId())))
                 .collect(toList());
 
@@ -92,7 +90,6 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
     @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());

@@ -19,7 +19,6 @@ import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
-import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
 import wooteco.subway.line.ui.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
@@ -31,8 +30,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
-import static wooteco.subway.line.service.LineService.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
-import static wooteco.subway.line.service.LineService.ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE;
+import static wooteco.subway.line.service.LineService.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -86,14 +84,19 @@ class LineControllerTest {
     @DisplayName("노선 이름 중복 체크")
     @Test
     void createNewLine_checkDuplicatedLineName() {
-        lineRepository.save(new Line("신분당선", "bg-red-600"));
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+
+        Line newLine = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        final LineCreateRequest request = new LineCreateRequest("bg-red-600", "신분당선", kangnam.getId(), yangjae.getId(), 10);
 
         RestAssured
                 .given().log().all()
                 .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .body(new LineRequest("신분당선", "bg-red-600"))
+                .body(request)
                 .post("/lines")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -196,8 +199,8 @@ class LineControllerTest {
                 .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .body(new LineRequest("구분당선", "bg-red-600"))
-                .put("/lines/" + id)
+                .body(new LineCreateRequest("bg-red-600", "구분당선", kangnam.getId(), yangjae.getId(), 10))
+                .put("/lines/" + line.getId())
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();

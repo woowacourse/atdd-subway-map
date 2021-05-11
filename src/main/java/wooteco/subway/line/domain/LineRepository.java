@@ -5,7 +5,7 @@ import java.util.List;
 public interface LineRepository {
     Line save(Line line);
 
-    List<Line> findAll();
+    Lines findAll();
 
     Line findById(Long id);
 

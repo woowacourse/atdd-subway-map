@@ -2,10 +2,7 @@ package wooteco.subway.line.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.domain.*;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
@@ -14,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    public static final String ERROR_DUPLICATED_LINE_NAME = "라인이 중복되었습니다.";
     public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 노선의 길이보다 크거나 같을 수 없습니다.";
     public static final String ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE = "상행역과 하행역이 이미 노선에 존재합니다.";
 
@@ -28,7 +26,8 @@ public class LineService {
 
     public Line create(Line line) {
         checkCreateValidation(line);
-        final long id = lineRepository.save(line);
+        return lineRepository.save(line);
+    }
 
     public List<Station> getStations(Long lineId) {
         Line line = lineRepository.findById(lineId);
@@ -44,7 +43,7 @@ public class LineService {
 
     }
 
-    public List<Line> allLines() {
+    public Lines allLines() {
         return lineRepository.findAll();
     }
 
@@ -78,10 +77,9 @@ public class LineService {
     }
 
     private void checkCreateValidation(Line line) {
-        boolean duplicated = lineRepository.findAll().contains(line);
-        if (duplicated) {
+        Lines lines = lineRepository.findAll();
+        if (lines.haveSameName(line)) {
             throw new IllegalArgumentException(ERROR_DUPLICATED_LINE_NAME);
         }
-
     }
 }
