@@ -21,4 +21,8 @@ public class SectionService {
     public Sections findByLineId(Long lineId) {
         return JDBCSectionDao.findByLineId(lineId);
     }
+
+    public void addSection(Sections sections, Section section) {
+        Section newSection = sections.addSection(section);
+    }
 }

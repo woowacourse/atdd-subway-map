@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.exception.DuplicatedNameException;
 import wooteco.subway.exception.IllegalLineArgumentException;
-import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.notfoundexception.NotFoundException;
+import wooteco.subway.exception.notfoundexception.NotFoundStationException;
 
 @ControllerAdvice
 public class SubwayControllerAdvice {

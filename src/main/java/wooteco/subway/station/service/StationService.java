@@ -2,12 +2,11 @@ package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.notfoundexception.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

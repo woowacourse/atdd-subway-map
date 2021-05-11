@@ -27,6 +27,14 @@ public class Section {
         return this.upStationId.equals(id);
     }
 
+    public boolean isDownStationId(Long id) {
+        return this.downStationId.equals(id);
+    }
+
+    public boolean compareDistance(int distance) {
+        return this.distance <= distance;
+    }
+
     public Long getId() {
         return id;
     }

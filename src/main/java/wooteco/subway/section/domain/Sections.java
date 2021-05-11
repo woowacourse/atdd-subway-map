@@ -1,6 +1,7 @@
 package wooteco.subway.section.domain;
 
 import wooteco.subway.exception.IllegalSectionStatusException;
+import wooteco.subway.exception.SectionUpdateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Sections {
             }
         }
 
-        throw new IllegalSectionStatusException("잘못된 구간 정보입니다.");
+        throw new IllegalSectionStatusException();
     }
 
     private List<Section> sorting(List<Section> sections, Section topSection) {
@@ -49,8 +50,8 @@ public class Sections {
 
         // todo 인덴트 2
         for (int i = 0; i < size - 1; i++) {
-            for(Section section : sections) {
-                if(section.isUpStationId(curDownStationId)) {
+            for (Section section : sections) {
+                if (section.isUpStationId(curDownStationId)) {
                     sortedSections.add(section);
                     curDownStationId = section.getDownStationId();
                     break;
@@ -60,7 +61,6 @@ public class Sections {
 
         return sortedSections;
     }
-
 
     public List<Long> getStationsId() {
         List<Long> stationsId = sections.stream()
@@ -74,5 +74,47 @@ public class Sections {
 
     private Section getLastSection() {
         return sections.get(sections.size() - 1);
+    }
+
+    public Section addSection(Section section) {
+        validateAddSection(section);
+        return null;
+    }
+
+    private Section validateAddSection(Section section) {
+        Long upStationId = section.getUpStationId();
+        Long downStationId = section.getDownStationId();
+
+        if (sections.stream()
+                .anyMatch(existSection ->
+                        (existSection.isUpStationId(upStationId) && existSection.isDownStationId(downStationId)) ||
+                                (existSection.isUpStationId(downStationId) && existSection.isDownStationId(upStationId)))) {
+            throw new SectionUpdateException("중복된 구간입니다.");
+        }
+
+        if (sections.stream()
+                .noneMatch(existSection ->
+                        (existSection.isUpStationId(upStationId) || existSection.isDownStationId(downStationId)) ||
+                                (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId)))) {
+            throw new SectionUpdateException("상행역 또는 하행역이 포함되어야 합니다.");
+        }
+
+        Section targetSection = sections.stream()
+                .filter(existSection ->
+                        (existSection.isUpStationId(upStationId) || existSection.isDownStationId(downStationId) ||
+                                (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId))))
+                .findFirst().orElseThrow(IllegalSectionStatusException::new);
+
+        if (targetSection.isUpStationId(upStationId) || targetSection.isDownStationId(downStationId)) {
+            validateDistance(targetSection, section);
+        }
+
+        return targetSection;
+    }
+
+    private void validateDistance(Section targetSection, Section section) {
+        if (targetSection.compareDistance(section.getDistance())) {
+            throw new SectionUpdateException("추가할 구간의 거리는 기존 구간 거리보다 작아야 합니다.");
+        }
     }
 }

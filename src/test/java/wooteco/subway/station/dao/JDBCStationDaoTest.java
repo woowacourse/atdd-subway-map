@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestConstructor;
-import wooteco.subway.exception.NotFoundStationException;
+import wooteco.subway.exception.notfoundexception.NotFoundStationException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.DuplicatedNameException;
-import wooteco.subway.exception.NotFoundLineException;
+import wooteco.subway.exception.notfoundexception.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
 
