@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.application.line.LineService;
 import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.section.Section;
@@ -13,7 +14,6 @@ import wooteco.subway.domain.line.section.Sections;
 import wooteco.subway.domain.line.value.LineColor;
 import wooteco.subway.domain.line.value.LineId;
 import wooteco.subway.domain.line.value.LineName;
-import wooteco.subway.application.line.LineService;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.ui.dto.SectionRequest;
 import wooteco.subway.ui.dto.line.LineRequest;
@@ -21,7 +21,6 @@ import wooteco.subway.ui.dto.line.LineResponse;
 import wooteco.subway.ui.dto.station.StationResponse;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,8 +38,9 @@ public class LineController {
         this.stationService = stationService;
     }
 
+    //todo Do not use LineRequest, just Entity.
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) throws URISyntaxException {
+    public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
         final Section section = new Section(
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId(),
@@ -56,6 +56,8 @@ public class LineController {
         );
 
         final Line savedLine = lineService.save(line);
+        List<StationResponse> stationResponses = getStationResponses(savedLine);
+
 
         return ResponseEntity
                 .created(URI.create("/lines/" + savedLine.getLineId()))
@@ -63,7 +65,8 @@ public class LineController {
                         new LineResponse(
                                 savedLine.getLineId(),
                                 savedLine.getLineName(),
-                                savedLine.getLineColor()
+                                savedLine.getLineColor(),
+                                stationResponses
                         )
                 );
     }
@@ -75,11 +78,19 @@ public class LineController {
                         new LineResponse(
                                 line.getLineId(),
                                 line.getLineName(),
-                                line.getLineColor()
+                                line.getLineColor(),
+                                getStationResponses(line)
                         )
                 ).collect(toList());
 
         return ResponseEntity.ok(lineResponses);
+    }
+
+    private List<StationResponse> getStationResponses(Line line) {
+        return line.getStationIds().stream()
+                .map(stationService::findById)
+                .map(StationResponse::new)
+                .collect(toList());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -90,14 +101,23 @@ public class LineController {
                 new LineResponse(
                         line.getLineId(),
                         line.getLineName(),
-                        line.getLineColor()
+                        line.getLineColor(),
+                        getStationResponses(line)
                 )
         );
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+<<<<<<< HEAD
         final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+=======
+        final Line line = new Line(
+                new LineId(id),
+                new LineName(lineRequest.getName()),
+                new LineColor(lineRequest.getColor())
+        );
+>>>>>>> d2a85ea... refactor: 테스트 및 버그 수정
 
         lineService.update(line);
 
@@ -138,11 +158,13 @@ public class LineController {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> duplicationKeyExceptionHandle(Exception e) {
+        System.out.println(e.getMessage());
         return ResponseEntity.badRequest().body("동일한 라인을 등록할 수 없습니다");
     }
 
     @ExceptionHandler(DataAccessException.class)
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
+        System.out.println(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

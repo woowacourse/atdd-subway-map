@@ -9,7 +9,6 @@ import wooteco.subway.domain.line.section.Sections;
 import wooteco.subway.domain.line.value.LineColor;
 import wooteco.subway.domain.line.value.LineId;
 import wooteco.subway.domain.line.value.LineName;
-import wooteco.subway.domain.station.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;

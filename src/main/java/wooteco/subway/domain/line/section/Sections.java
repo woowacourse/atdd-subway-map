@@ -191,7 +191,7 @@ public class Sections {
                         section.getUpStationId(),
                         section.getDownStationId()))
                 .max()
-                .getAsLong();
+                .orElse(-1L);
     }
 
 }

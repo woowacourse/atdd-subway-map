@@ -2,7 +2,6 @@ package wooteco.subway.infrastructure.station;
 
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationName;
 import wooteco.subway.domain.station.StationRepository;
 
 import java.util.List;

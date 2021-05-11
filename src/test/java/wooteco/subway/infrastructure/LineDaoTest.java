@@ -10,7 +10,6 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.infrastructure.line.LineDao;
 import wooteco.util.LineFactory;
 
-import java.beans.ConstructorProperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

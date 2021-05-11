@@ -9,7 +9,6 @@ import wooteco.subway.domain.line.section.Sections;
 import wooteco.subway.domain.line.value.LineColor;
 import wooteco.subway.domain.line.value.LineId;
 import wooteco.subway.domain.line.value.LineName;
-import wooteco.subway.domain.station.Station;
 
 import java.util.List;
 
@@ -50,20 +49,31 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public List<Line> allLines() {
-        return lineDao.allLines();
+        return lineDao.allLines().stream()
+                .map(line -> new Line(
+                        new LineId(line.getLineId()),
+                        new LineName(line.getLineName()),
+                        new LineColor(line.getLineColor()),
+                        new Sections(sectionDao.findAllByLineId(line.getLineId()))
+                )).collect(toList());
     }
 
     @Override
     public Line findById(final Long id) {
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        List<Section> sections = sectionDao.findAllByLineId(line.getLineId());
+
+        return new Line(
+                new LineId(line.getLineId()),
+                new LineName(line.getLineName()),
+                new LineColor(line.getLineColor()),
+                new Sections(sections)
+        );
     }
 
     @Override
     public void update(Line line) {
         lineDao.update(line);
-
-        List<Section> sections = line.getSections();
-        sectionDao.update(sections);
     }
 
     @Override

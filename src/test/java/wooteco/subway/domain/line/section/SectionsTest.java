@@ -8,12 +8,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.util.SectionFactory;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
 
