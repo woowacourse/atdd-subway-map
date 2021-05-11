@@ -23,6 +23,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long upStationId;
     private Long downStationId;
+    private Long newStationId;
     private ExtractableResponse<Response> createResponse;
 
     @DisplayName("상행역, 하행역 및 노선 생성 등의 초기 설정")
@@ -32,6 +33,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         super.setUp();
         upStationId = 지하철역_저장("강남역").body().jsonPath().getLong("id");
         downStationId = 지하철역_저장("잠실역").body().jsonPath().getLong("id");
+        newStationId = 지하철역_저장("건대역").body().jsonPath().getLong("id");
         createResponse = 노선_저장_후_응답(LINE_NAME, LINE_COLOR, upStationId, downStationId, DISTANCE);
     }
 
@@ -39,8 +41,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         //given
-        long newDownStationId = 지하철역_저장("건대역").body().jsonPath().getLong("id");
-        Map<String, Object> params = 구간_저장을_위한_요청정보(newDownStationId, upStationId, DISTANCE - 1);
+        Map<String, Object> params = 구간_저장을_위한_요청정보(newStationId, upStationId, DISTANCE - 1);
 
         //when
         ExtractableResponse<Response> sectionResponse = 구간_추가_후_응답(params);
@@ -68,20 +69,57 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         //given
-        long newDownStationId = 지하철역_저장("건대역").body().jsonPath().getLong("id");
         Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
-        Map<String, Object> params = 구간_저장을_위한_요청정보(newDownStationId, upStationId, DISTANCE - 1);
+        Map<String, Object> params = 구간_저장을_위한_요청정보(newStationId, upStationId, DISTANCE - 1);
         ExtractableResponse<Response> sectionResponse = 구간_추가_후_응답(params);
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .queryParam("stationId", newDownStationId)
+                .queryParam("stationId", newStationId)
                 .when().delete("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선의 구간이 1개 일 때, 구간을 삭제 요청 시 예외처리")
+    @Test
+    void validateMinSectionDelete() {
+        //given
+        Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .queryParam("stationId", upStationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("노선 내 최소한 2개의 역이 존재해야 합니다.");
+    }
+
+    @DisplayName("노선 내 존재하지 않는 구간 삭제 요청 시 예외처리")
+    @Test
+    void validateNotFoundSectionDelete() {
+        //given
+        구간_추가_후_응답(
+                구간_저장을_위한_요청정보(newStationId, upStationId, DISTANCE - 1));
+        long anonymousStationId = 지하철역_저장("신림역").body().jsonPath().getLong("id");
+        Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .queryParam("stationId", anonymousStationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("노선 내 존재하는 역이 없습니다.");
     }
 
     private Map<String, Object> 구간_저장을_위한_요청정보(long downStationId, long upStationId, int distance) {
