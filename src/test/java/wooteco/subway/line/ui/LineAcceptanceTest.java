@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.application.LineService;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.line.domain.LineDao;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
@@ -21,9 +20,7 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -207,6 +204,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간을 제거한다. (상행 종점역)")
+    @Test
+    void deleteUpwardEndPointStation() {
+        int distance = 5;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+
+        //when
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station1.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station2.getName(), station3.getName());
+    }
+
+    @DisplayName("구간을 제거한다. (중간역)")
+    @Test
+    void deleteMiddlewardStation() {
+        int distance = 5;
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), distance);
+
+        //when
+        ExtractableResponse<Response> addResponse = addSectionToHTTP(line.getId(), sectionAddRequest);
+        ExtractableResponse<Response> response = deleteSectionByStationIdToHTTP(line.getId(), station2.getId());
+        ExtractableResponse<Response> findLineResponse = findLineByIdToHTTP(line.getId());
+
+        LineResponse findResponse = findLineResponse.body().as(LineResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station3.getName());
+    }
+
     @Test
     @DisplayName("상행 종점역을 저장한다")
     void upwardEndPointRegistration() {
@@ -295,6 +328,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteSectionByStationIdToHTTP(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .queryParam("stationId",stationId)
+                .delete("/lines/{id}/sections", lineId )
                 .then().log().all()
                 .extract();
     }

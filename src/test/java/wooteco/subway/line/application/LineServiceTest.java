@@ -18,6 +18,7 @@ import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,6 +81,66 @@ class LineServiceTest {
     }
 
     @Test
+    @DisplayName("구간을 제거한다. (상행 종점역)")
+    void deleteByStationId() {
+        //given
+        Long lineId = 1L;
+        Long targetStationId = 1L;
+
+        baseLine();
+        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
+                new SectionEntity(2L, lineId, 1L, 2L, 5),
+                new SectionEntity(3L, lineId, 2L, 3L, 7)
+        ));
+        when(sectionDao.findByLineIdWithUpStationId(lineId, targetStationId))
+                .thenReturn(Optional.of(new SectionEntity(2L, lineId, 1L, targetStationId, 5)));
+        when(sectionDao.findByLineIdWithDownStationId(lineId, targetStationId))
+                .thenReturn(Optional.of(new SectionEntity(2L, lineId, targetStationId, 3L, 7)));
+
+        //when
+        lineService.deleteSectionByStationId(lineId, targetStationId);
+
+        when(sectionDao.findByLineId(1L)).thenReturn(Collections.singletonList(
+                new SectionEntity(2L, lineId, 2L, 3L, 12)
+        ));
+
+        LineResponse response = lineService.findLine(lineId);
+
+        //then
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("검프역", "마찌역");
+    }
+
+/*    @Test
+    @DisplayName("구간을 제거한다. (중간)")
+    void deleteByStationId() {
+        //given
+        Long lineId = 1L;
+        Long targetStationId = 2L;
+
+        baseLine();
+        when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
+                new SectionEntity(2L, lineId, 1L, 2L, 5),
+                new SectionEntity(3L, lineId, 2L, 3L, 7)
+        ));
+        when(sectionDao.findByLineIdWithUpStationId(lineId, targetStationId))
+                .thenReturn(Optional.of(new SectionEntity(2L, lineId, 1L, targetStationId, 5)));
+        when(sectionDao.findByLineIdWithDownStationId(lineId, targetStationId))
+                .thenReturn(Optional.of(new SectionEntity(2L, lineId, targetStationId, 3L, 7)));
+
+        //when
+        lineService.deleteSectionByStationId(lineId, targetStationId);
+
+        when(sectionDao.findByLineId(1L)).thenReturn(Collections.singletonList(
+                new SectionEntity(2L, lineId, 1L, 3L, 12)
+        ));
+
+        LineResponse response = lineService.findLine(lineId);
+
+        //then
+        assertThat(stationResponsesToString(response.getStations())).containsExactly("아마찌역", "마찌역"); }*/
+
+
+    @Test
     @DisplayName("상행 종점 등록 로직")
     void upwardEndPointRegistration() {
         //given
@@ -123,7 +184,7 @@ class LineServiceTest {
         when(sectionDao.findByLineId(1L)).thenReturn(Arrays.asList(
                 new SectionEntity(2L, lineId, 1L, 2L, 5),
                 new SectionEntity(3L, lineId, 2L, 3L, 7),
-        new SectionEntity(4L, lineId, upStationId, downStationId, distance)
+                new SectionEntity(4L, lineId, upStationId, downStationId, distance)
         ));
 
         LineResponse response = lineService.findLine(lineId);

@@ -11,7 +11,7 @@ public class SectionEntity {
     }
 
     public SectionEntity(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this(0L, lineId, upStationId, downStationId, distance);
+        this(null, lineId, upStationId, downStationId, distance);
     }
 
     public SectionEntity(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {

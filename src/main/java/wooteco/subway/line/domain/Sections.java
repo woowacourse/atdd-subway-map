@@ -43,7 +43,7 @@ public class Sections {
 
     public void upwardEndPointRegistration(final Line line, final Section targetSection) {
         Section headSection = headSection();
-        if (headSection.sameUpStation(tailSection().downStation())) {
+        if (headSection.sameUpStation(targetSection.downStation())) {
             targetSection.changeLine(line);
             this.sections.add(targetSection);
         }
@@ -51,7 +51,7 @@ public class Sections {
 
     public void downwardEndPointRegistration(final Line line, final Section targetSection) {
         Section tailSection = tailSection();
-        if (tailSection.sameDownStation(tailSection().upStation())) {
+        if (tailSection.sameDownStation(targetSection.upStation())) {
             targetSection.changeLine(line);
             this.sections.add(targetSection);
         }
@@ -81,6 +81,29 @@ public class Sections {
         this.sections.remove(findSection);
         this.sections.add(targetSection);
         this.sections.add(new Section(targetSection.line(), findSection.upStation(), targetSection.upStation(), findSection.distance() - targetSection.distance()));
+    }
+
+    public void deleteStation(final Station station) {
+        Section upSection = findByUpStationSection(station);
+        Section downSection = findByDownStationSection(station);
+
+        if (!Objects.isNull(upSection) && !Objects.isNull(downSection)) {
+            this.sections.remove(upSection);
+            this.sections.remove(downSection);
+
+            this.sections.add(new Section(
+                    downSection.line(),
+                    downSection.upStation(),
+                    upSection.downStation(),
+                    upSection.distance() + downSection.distance()));
+            return;
+        }
+        deleteUpwardEndPointStation(station);
+    }
+
+    private void deleteUpwardEndPointStation(final Station station) {
+        Section findSection = findByUpStationSection(station);
+        this.sections.remove(findSection);
     }
 
     private void validateDistance(int baseDistance, int targetDistance) {
@@ -161,5 +184,12 @@ public class Sections {
             }
         }
         return changedSections;
+    }
+
+    public Optional<Section> findByUpwardStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.sameUpStation(upStation))
+                .findFirst();
+
     }
 }

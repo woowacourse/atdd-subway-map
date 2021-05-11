@@ -19,4 +19,6 @@ public interface Name {
     boolean sameName(final String name);
 
     Name changeName(String name);
+
+    String toString();
 }

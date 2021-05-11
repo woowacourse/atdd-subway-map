@@ -90,4 +90,15 @@ public class Section {
     public boolean sameDownStation(Station targetStation) {
         return this.downStation.equals(targetStation);
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

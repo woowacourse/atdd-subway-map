@@ -52,4 +52,8 @@ public class Line {
     public void addSection(Section targetSection) {
         state.addSection(this, targetSection);
     }
+
+    public void deleteStation(Station station) {
+        state.deleteStation(station);
+    }
 }

@@ -13,8 +13,10 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,18 +89,53 @@ public class LineService {
         dirtyChecking(originSections, line.getSections());
     }
 
+    @Transactional
+    public void deleteSectionByStationId(Long lineId, Long stationId) {
+        LineEntity findLineEntity = findLineEntityById(lineId);
+        Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
+        Sections originSections = new Sections(toSections(line));
+
+        Station targetStation = findStationById(stationId);
+
+        line.deleteStation(targetStation);
+
+        List<Section> sections = line.getSections().sections();
+
+        deleteDirtyChecking(originSections, line.getSections());
+    }
+
+    private void deleteDirtyChecking(final Sections originSections, final Sections sections) {
+        List<Section> changedSections = new ArrayList<>();
+        for (Section section : originSections.sections()) {
+            if (!sections.sections().contains(section)) {
+                changedSections.add(section);
+            }
+        }
+
+        for (Section section : changedSections) {
+            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
+            sectionDao.delete(changedSectionEntity.getId());
+
+            Optional<Section> findStation = sections.findByUpwardStation(section.upStation());
+            if (findStation.isPresent()) {
+                Section saveSection = findStation.get();
+                sectionDao.save(new SectionEntity(saveSection.line().getId(), saveSection.upStation().getId(), saveSection.downStation().getId(), saveSection.distance()));
+            }
+        }
+    }
+
     private void dirtyChecking(final Sections originSections, final Sections sections) {
         List<Section> changedSections = originSections.changedSections(sections);
         for (Section section : changedSections) {
-            SectionEntity sectionEntity = new SectionEntity(section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
-            if (sectionDao.findByLineIdWithUpStationId(sectionEntity.getLineId(), sectionEntity.getUpStationId()).isPresent()) {
-                sectionDao.deleteByLineIdWithUpStationId(sectionEntity.getLineId(), sectionEntity.getUpStationId());
+            SectionEntity changedSectionEntity = new SectionEntity(section.id(), section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance());
+            if (sectionDao.findByLineIdWithUpStationId(changedSectionEntity.getLineId(), changedSectionEntity.getUpStationId()).isPresent()) {
+                sectionDao.deleteByLineIdWithUpStationId(changedSectionEntity.getLineId(), changedSectionEntity.getUpStationId());
             }
 
-            if (sectionDao.findByLineIdWithDownStationId(sectionEntity.getLineId(), sectionEntity.getDownStationId()).isPresent()) {
-                sectionDao.deleteByLineIdWithDownStationId(sectionEntity.getLineId(), sectionEntity.getDownStationId());
+            if (sectionDao.findByLineIdWithDownStationId(changedSectionEntity.getLineId(), changedSectionEntity.getDownStationId()).isPresent()) {
+                sectionDao.deleteByLineIdWithDownStationId(changedSectionEntity.getLineId(), changedSectionEntity.getDownStationId());
             }
-            sectionDao.save(sectionEntity);
+            sectionDao.save(changedSectionEntity);
         }
     }
 
