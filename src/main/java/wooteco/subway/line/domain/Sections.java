@@ -10,6 +10,9 @@ import wooteco.subway.line.exception.SectionException;
 
 public class Sections {
 
+    private static final int FIRST = 0;
+    private static final int SECOND = 1;
+
     private final List<Section> sections;
 
     public Sections(final List<Section> sections) {
@@ -41,23 +44,33 @@ public class Sections {
 
     private void validateRelated(final Section requestedSection, final List<Section> relatedSections) {
         if (relatedSections.size() == 2) {
-            final Section firstSection = relatedSections.get(0);
-            final Section secondSection = relatedSections.get(1);
+            final Section firstSection = relatedSections.get(FIRST);
+            final Section secondSection = relatedSections.get(SECOND);
+
             validateConnected(firstSection, secondSection);
             validateDifferent(requestedSection, firstSection, secondSection);
         }
     }
 
     private void validateConnected(final Section firstSection, final Section secondSection) {
-        if (!firstSection.canConnect(secondSection)) {
+        if (connectedFarAway(firstSection, secondSection)) {
             throw new SectionException("이미 노선에서 서로 연결된 역들입니다.");
         }
     }
 
+    private boolean connectedFarAway(final Section firstSection, final Section secondSection) {
+        return !firstSection.canConnect(secondSection);
+    }
+
     private void validateDifferent(final Section requestedSection, final Section firstSection, final Section secondSection) {
-        if ((requestedSection.canJoin(firstSection) && requestedSection.canJoin(secondSection)) || (requestedSection.canConnect(firstSection) && requestedSection.canConnect(secondSection))) {
+        if (isForked(requestedSection, firstSection, secondSection)) {
             throw new SectionException("갈래길을 형성할 수 없습니다.");
         }
+    }
+
+    private boolean isForked(final Section requestedSection, final Section firstSection, final Section secondSection) {
+        return (requestedSection.canJoin(firstSection) && requestedSection.canJoin(secondSection))
+                || (requestedSection.canConnect(firstSection) && requestedSection.canConnect(secondSection));
     }
 
     public List<Section> removeStation(final Long stationId) {
@@ -85,9 +98,7 @@ public class Sections {
 
         final Long beginningUpStation = findBeginningUpStation(stationIdMap);
 
-        final List<Long> test = createOrderedStationIdList(beginningUpStation, stationIdMap);
-        test.forEach(System.out::println);
-        return test;
+        return createOrderedStationIdList(beginningUpStation, stationIdMap);
     }
 
     private Map<Long, Long> createIdMap(final List<Section> sections) {
@@ -108,11 +119,13 @@ public class Sections {
     private List<Long> createOrderedStationIdList(final Long beginningUpStation, final Map<Long, Long> stationIdMap) {
         List<Long> orderedStationIds = new ArrayList<>();
         orderedStationIds.add(beginningUpStation);
-        for (int i = 0; i < stationIdMap.size(); i++) {
-            final Long currentId = orderedStationIds.get(i);
+
+        for (int currentIndex = 0; currentIndex < stationIdMap.size(); currentIndex++) {
+            final Long currentId = orderedStationIds.get(currentIndex);
             final Long nextId = stationIdMap.get(currentId);
             orderedStationIds.add(nextId);
         }
+
         return orderedStationIds;
     }
 }

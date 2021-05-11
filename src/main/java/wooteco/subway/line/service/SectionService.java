@@ -73,7 +73,7 @@ public class SectionService {
             updateSections(changedSections);
         }
         if (changedSections.size() == 1) {
-            deleteSection(changedSections);
+            deleteSections(changedSections);
         }
     }
 
@@ -87,8 +87,8 @@ public class SectionService {
         deleteSection(deletingSection);
     }
 
-    private void deleteSection(final List<Section> changedSections) {
-        changedSections.forEach(this::deleteSection);
+    private void deleteSections(final List<Section> sections) {
+        sections.forEach(this::deleteSection);
     }
 
     private void deleteSection(Section section) {
