@@ -1,6 +1,6 @@
 package wooteco.subway.exception;
 
-public class NoSuchStationException extends IllegalArgumentException {
+public class NoSuchStationException extends NoSuchException {
 
     private static final String MESSAGE = "역이 존재하지 않습니다.";
 

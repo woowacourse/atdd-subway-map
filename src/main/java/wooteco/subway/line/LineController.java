@@ -67,21 +67,13 @@ public class LineController {
     @PutMapping("{id}")
     public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
         Line line = new Line(lineRequest);
-        try {
-            lineService.updateLine(id, line);
-        } catch (NoSuchLineException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteLine(@PathVariable long id) {
-        try {
-            lineService.deleteLine(id);
-        } catch (NoSuchLineException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }

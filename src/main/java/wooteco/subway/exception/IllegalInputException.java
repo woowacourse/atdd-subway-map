@@ -1,6 +1,6 @@
 package wooteco.subway.exception;
 
-public class IllegalInputException extends IllegalArgumentException {
+public class IllegalInputException extends IllegalMethodException {
 
     private static final String MESSAGE = "입력이 올바르지 않습니다.";
 

@@ -3,6 +3,8 @@ package wooteco.subway.line;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.constraints.Null;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class LineService {
         try {
             long lineId = lineDao.save(line);
             return Line.of(lineId, line);
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | NullPointerException exception) {
             throw new DuplicateLineException();
         }
     }

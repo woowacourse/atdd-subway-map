@@ -1,6 +1,6 @@
 package wooteco.subway.exception;
 
-public class ImpossibleDistanceException extends IllegalArgumentException {
+public class ImpossibleDistanceException extends IllegalMethodException {
 
     private static final String MESSAGE = "불가능한 거리입니다.";
 

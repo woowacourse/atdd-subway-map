@@ -8,8 +8,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class PageControllerAdvice {
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandle(Exception e) {
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<String> dupliactedExceptionHandle(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchException.class)
+    public ResponseEntity<String> noSuchExceptionHandle(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalMethodException.class)
+    public ResponseEntity<String> illegalMethodExceptionHandle(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
