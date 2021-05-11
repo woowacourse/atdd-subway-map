@@ -86,6 +86,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 구간 제거
     - [x] 구간이 하나인 노선에서는 구간 제거를 할 수 없음 
 
+
 ## 리팩토링 중점 사안
 - [x] Dao에서 도메인을 반환하도록 반환
 - [x] DB Unique를 통해 중복 검사 하지 않을 것
@@ -97,6 +98,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
 - [x] 인수테스트 상태코드 말고도 내용 검증 할 것
     - [x] 노선 중복 테스트 진행
 - [x] Optional.orElseThrow를 통한 가독성 증대
+
 
 ## 질문 사항
 - findById 이후 CRUD 로직을 수행하면 DB를 한 번에 2번 찌르는 건데 병목이 발생하진 않을까?
