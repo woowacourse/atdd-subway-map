@@ -25,11 +25,11 @@ public class Station {
         return name;
     }
 
-    public boolean isSameId(Long id){
+    public boolean isSameId(Long id) {
         return this.id.equals(id);
     }
 
-    public boolean isSameName(String name){
+    public boolean isSameName(String name) {
         return this.name.equals(name);
     }
 }

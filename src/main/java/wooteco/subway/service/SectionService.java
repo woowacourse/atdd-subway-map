@@ -2,11 +2,12 @@ package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.domain.LineRoute;
 import wooteco.subway.dao.SectionDao;
+import wooteco.subway.domain.LineRoute;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.exception.SectionIllegalArgumentException;
+import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.SubwayIllegalArgumentException;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class SectionService {
                 .count();
 
         if (count != INSERT_SECTION_IN_LINE_LIMIT) {
-            throw new SectionIllegalArgumentException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
+            throw new NotFoundException("구간의 역 중에서 한개의 역만은 노선에 존재하여야 합니다.");
         }
     }
 
@@ -64,7 +65,7 @@ public class SectionService {
 
     private void validateSectionDistanceGap(Section section) {
         if (section.getDistance() <= INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT) {
-            throw new SectionIllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
+            throw new SubwayIllegalArgumentException("입력하신 구간의 거리가 잘못되었습니다.");
         }
     }
 
@@ -74,7 +75,7 @@ public class SectionService {
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
         if (lineRoute.getStationIds().size() == DELETE_STATION_IN_LINE_LIMIT) {
-            throw new SectionIllegalArgumentException("종점은 삭제 할 수 없습니다.");
+            throw new SubwayIllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 
         Optional<Section> upSection = lineRoute.getSectionFromUpToDownStationMapByStationId(stationId);

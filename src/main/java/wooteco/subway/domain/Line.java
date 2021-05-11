@@ -1,9 +1,6 @@
 package wooteco.subway.domain;
 
 
-import wooteco.subway.dto.LineCreateRequest;
-import wooteco.subway.dto.LineUpdateRequest;
-
 public class Line {
 
     private final Long id;
@@ -32,11 +29,11 @@ public class Line {
         return color;
     }
 
-    public boolean isSameId(Long id){
+    public boolean isSameId(Long id) {
         return this.id.equals(id);
     }
 
-    public boolean isSameName(String name){
+    public boolean isSameName(String name) {
         return this.name.equals(name);
     }
 }

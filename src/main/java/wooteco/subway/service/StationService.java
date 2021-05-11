@@ -5,7 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Station;
 import wooteco.subway.dto.StationResponse;
-import wooteco.subway.exception.StationIllegalArgumentException;
+import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class StationService {
     public StationResponse save(String stationName) {
         Station station = Station.from(stationName);
         if (stationDao.findByName(stationName).isPresent()) {
-            throw new StationIllegalArgumentException("같은 이름의 역이 있습니다;");
+            throw new DuplicationException("같은 이름의 역이 있습니다;");
         }
         return StationResponse.of(stationDao.save(station));
     }
@@ -38,7 +39,7 @@ public class StationService {
     @Transactional(readOnly = false)
     public void delete(Long id) {
         stationDao.findById(id)
-                .orElseThrow(() -> new StationIllegalArgumentException("삭제하려는 역이 존재하지 않습니다"));
+                .orElseThrow(() -> new NotFoundException("삭제하려는 역이 존재하지 않습니다"));
         stationDao.delete(id);
     }
 }

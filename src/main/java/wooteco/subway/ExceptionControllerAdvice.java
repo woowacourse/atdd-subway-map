@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import wooteco.subway.exception.LineIllegalArgumentException;
-import wooteco.subway.exception.SectionIllegalArgumentException;
-import wooteco.subway.exception.StationIllegalArgumentException;
+import wooteco.subway.exception.DuplicationException;
+import wooteco.subway.exception.NotFoundException;
+import wooteco.subway.exception.SubwayIllegalArgumentException;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice {
@@ -17,23 +17,9 @@ public class ExceptionControllerAdvice {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException error) {
-        return ResponseEntity.badRequest().body(error.getMessage());
-    }
-
-    @ExceptionHandler(StationIllegalArgumentException.class)
-    public ResponseEntity<String> StationIllegalArgumentExceptionHandler(StationIllegalArgumentException error) {
-        return ResponseEntity.badRequest().body(error.getMessage());
-    }
-
-    @ExceptionHandler(LineIllegalArgumentException.class)
-    public ResponseEntity<String> LineIllegalArgumentExceptionHandler(LineIllegalArgumentException error) {
-        return ResponseEntity.badRequest().body(error.getMessage());
-    }
-
-    @ExceptionHandler(SectionIllegalArgumentException.class)
-    public ResponseEntity<String> SectionIllegalArgumentExceptionHandler(SectionIllegalArgumentException error) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, DuplicationException.class, NotFoundException.class,
+            SubwayIllegalArgumentException.class})
+    public ResponseEntity<String> subwayExceptionHandler(Exception error) {
         return ResponseEntity.badRequest().body(error.getMessage());
     }
 }

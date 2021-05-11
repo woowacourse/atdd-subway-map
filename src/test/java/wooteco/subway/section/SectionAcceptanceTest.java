@@ -3,7 +3,6 @@ package wooteco.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 
 import java.util.HashMap;
@@ -19,26 +19,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql({"classpath:test-script/truncate-all-table.sql", "classpath:test-script/initiate-stations.sql", "classpath:test-script/initiate-line.sql",
+        "classpath:test-script/initiate-section.sql"})
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void clear() {
-        jdbcTemplate.update("TRUNCATE TABLE line;");
-        jdbcTemplate.update("TRUNCATE TABLE section;");
-        jdbcTemplate.update("TRUNCATE TABLE station;");
-
-        jdbcTemplate.update("INSERT INTO station(name) VALUES('강남역');");
-        jdbcTemplate.update("INSERT INTO station(name) VALUES('역삼역');");
-        jdbcTemplate.update("INSERT INTO station(name) VALUES('잠실역');");
-
-        jdbcTemplate.update("INSERT INTO line(name, color) VALUES('1호선', 'black')");
-
-        jdbcTemplate.update("INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '1', '3', '3')");
-        jdbcTemplate.update("INSERT INTO section(line_id, up_station_id, down_station_id, distance) VALUES('1', '3', '2', '3')");
-    }
 
     @Test
     @DisplayName("구간 추가 - 성공")
