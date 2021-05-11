@@ -17,7 +17,7 @@ public class StationService {
     private final StationDao stationDao;
 
     public Station find(Long id) {
-        validateExist(id);
+        validateExistStation(id);
 
         return stationDao.findById(id);
     }
@@ -34,11 +34,11 @@ public class StationService {
     }
 
     @Transactional
-    public void deleteStation(Long id) {
+    public void remove(Long id) {
         stationDao.remove(id);
     }
 
-    private void validateExist(Long id) {
+    private void validateExistStation(Long id) {
         if (!stationDao.existById(id)) {
             throw new StationNotFoundException();
         }
