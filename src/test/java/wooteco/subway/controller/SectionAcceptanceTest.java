@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.LineRequest;
 import wooteco.subway.dto.LineResponse;
@@ -31,20 +29,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성하면서 구간을 생성한다.")
     void createLineAndSection() throws JsonProcessingException {
         // given
-        Station station2 = new Station(1L, "잠실역");
-        Station station1 = new Station(2L, "잠실새내역");
+        Station station1 = new Station(1L, "잠실역");
+        Station station2 = new Station(2L, "잠실새내역");
 
-        RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(station1)
-            .when()
-            .post("/stations")
-            .then().log().all();
-
-        Section section = new Section(station1.getId(), station2.getId(), 5);
-        Line line = new Line("2호선", "green");
-
-        LineRequest lineRequest = new LineRequest(line, section);
+        LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 5);
         LineResponse lineResponse = new LineResponse(1L, "2호선", "green",
             Arrays.asList(
                 new StationResponse(station1),
@@ -72,12 +60,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 노선에 구간을 생성 및 추가한다.")
     void createSection() {
         // given
-        Station station1 = new Station(1L, "잠실새내역");
-        Station station2 = new Station(2L, "잠실역");
-        Section section1 = new Section(1L, 2L, 5);
-        Line line = new Line("2호선", "green");
-
-        LineRequest lineRequest = new LineRequest(line, section1);
+        LineRequest lineRequest = new LineRequest("2호선", "green", 1L, 2L, 5);
 
         ExtractableResponse<Response> lineResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)

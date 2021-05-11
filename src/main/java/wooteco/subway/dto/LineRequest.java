@@ -1,7 +1,6 @@
 package wooteco.subway.dto;
 
 import wooteco.subway.domain.line.Line;
-import wooteco.subway.domain.section.Section;
 
 public class LineRequest {
 
@@ -21,11 +20,6 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public LineRequest(Line line, Section section) {
-        this(line.getName(), line.getColor(), section.getUpStationId(), section.getDownStationId(),
-            section.getDistance());
     }
 
     public String getName() {
@@ -54,9 +48,5 @@ public class LineRequest {
 
     public Line toLine() {
         return new Line(name, color);
-    }
-
-    public Section toSection() {
-        return new Section(upStationId, downStationId, distance);
     }
 }

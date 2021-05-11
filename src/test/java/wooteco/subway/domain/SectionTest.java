@@ -17,7 +17,7 @@ public class SectionTest {
         Station station2 = new Station(2L, "잠실역");
 
         // when
-        Section section = new Section(station1.getId(), station2.getId(), 5);
+        Section section = new Section(station1, station2, 5);
 
         // then
         assertThat(section)

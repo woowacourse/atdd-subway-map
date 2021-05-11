@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.station.Station;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
 import wooteco.subway.dto.StationResponse;
@@ -31,11 +32,15 @@ public class SectionController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<SectionResponse> createSection(@PathVariable Long id,
         @RequestBody SectionRequest sectionRequest) {
-        Section section = sectionService.createSection(sectionRequest.toSection(), id);
+        Station station1 = stationService.findById(sectionRequest.getUpStationId());
+        Station station2 = stationService.findById(sectionRequest.getDownStationId());
+
+        Section section = new Section(station1, station2, sectionRequest.getDistance());
+
         SectionResponse sectionResponse = new SectionResponse(
             Arrays.asList(
-                new StationResponse(stationService.findById(section.getUpStationId())),
-                new StationResponse(stationService.findById(section.getDownStationId()))
+                new StationResponse(station1),
+                new StationResponse(station2)
             ),
             section.getDistance()
         );
