@@ -1,23 +1,36 @@
 package wooteco.subway.line;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.station.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@Sql("classpath:schema.sql")
 class LineServiceTest {
 
     @Autowired
     LineService lineService;
+    @Autowired
+    StationService stationService;
+
+    @BeforeEach
+    void setUpStation() {
+        stationService.createStation("1번역");
+        stationService.createStation("2번역");
+        stationService.createStation("3번역");
+        stationService.createStation("4번역");
+    }
 
     @Test
     void createLine() {
@@ -25,7 +38,7 @@ class LineServiceTest {
         String lineName = "2호선";
         String lineColor = "Green";
         //when
-        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor);
+        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor, 10);
         //then
         assertThat(lineResponse.getName()).isEqualTo(lineName);
         assertThat(lineResponse.getColor()).isEqualTo(lineColor);
@@ -36,9 +49,9 @@ class LineServiceTest {
         //given
         String lineName = "2호선";
         String lineColor = "Green";
-        lineService.createLine(1, 2, lineName, lineColor);
+        lineService.createLine(1, 2, lineName, lineColor, 10);
         //when & then
-        assertThatThrownBy(() -> lineService.createLine(1, 2, lineName, lineColor))
+        assertThatThrownBy(() -> lineService.createLine(1, 2, lineName, lineColor, 10))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선 이름이 중복됩니다.");
     }
@@ -48,10 +61,10 @@ class LineServiceTest {
         //given
         String lineName1 = "2호선";
         String lineColor1 = "Green";
-        lineService.createLine(1, 2, lineName1, lineColor1);
+        lineService.createLine(1, 2, lineName1, lineColor1, 10);
         String lineName2 = "3호선";
         String lineColor2 = "Orange";
-        lineService.createLine(3, 4, lineName2, lineColor2);
+        lineService.createLine(3, 4, lineName2, lineColor2, 10);
         //when
         final List<LineResponse> lineResponses = lineService.showLines();
         //then
@@ -70,7 +83,7 @@ class LineServiceTest {
         //given
         String lineName = "2호선";
         String lineColor = "Green";
-        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor);
+        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor, 10);
         //when
         final LineResponse shownLine = lineService.showLine(lineResponse.getId());
         //then
@@ -83,7 +96,7 @@ class LineServiceTest {
         //given
         String lineName = "2호선";
         String lineColor = "Green";
-        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor);
+        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor, 10);
         //when
         String updateName = "3호선";
         String updateColor = "Orange";
@@ -99,7 +112,7 @@ class LineServiceTest {
         //given
         String lineName = "2호선";
         String lineColor = "Green";
-        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor);
+        final LineResponse lineResponse = lineService.createLine(1, 2, lineName, lineColor, 10);
         //when
         lineService.deleteLine(lineResponse.getId());
         //then

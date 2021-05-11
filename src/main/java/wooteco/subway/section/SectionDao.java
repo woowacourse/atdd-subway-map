@@ -11,8 +11,8 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(long lineId, long upStationId, long downStationId) {
-        String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id) values (?, ?, ?)";
-        jdbcTemplate.update(sql, lineId, upStationId, downStationId);
+    public void save(long lineId, long upStationId, long downStationId, int distance) {
+        String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, lineId, upStationId, downStationId, distance);
     }
 }
