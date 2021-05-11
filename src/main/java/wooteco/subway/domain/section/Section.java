@@ -15,6 +15,10 @@ public class Section {
         this (null, null, upStation, downStation, distance);
     }
 
+    public Section(Long lineId, Station upStation, Station downStation, int distance) {
+        this(null, lineId, upStation, downStation, distance);
+    }
+
     public Section(Long id, Long lineId, Station upStation, Station downStation, int distance) {
         validateDistance(distance);
         validateStation(upStation, downStation);
