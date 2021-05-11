@@ -71,11 +71,6 @@ public class LineDaoImpl implements LineDao {
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException("[ERROR] 데이터 전체 삭제는 지원하지 않습니다.");
-    }
-
-    @Override
     public void update(final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ? ";
 

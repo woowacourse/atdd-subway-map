@@ -72,11 +72,6 @@ public class StationDaoImpl implements StationDao {
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException("디비 전체 삭제는 불가능!");
-    }
-
-    @Override
     public void delete(final Long id) {
         int rowCount = jdbcTemplate.update("delete from station where id = ?", id);
         if (rowCount == 0) {
