@@ -19,10 +19,10 @@ public class StationService {
         this.stationDao = stationDao;
     }
 
-    public StationResponse createStation(String stationName) {
+    public Station createStation(String stationName) {
         try {
             long stationId = stationDao.save(stationName);
-            return new StationResponse(stationId, stationName);
+            return new Station(stationId, stationName);
         } catch (DataAccessException e) {
             throw new DuplicateStationException();
         }
