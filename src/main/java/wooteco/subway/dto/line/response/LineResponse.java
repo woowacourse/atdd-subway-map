@@ -4,6 +4,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.dto.station.response.StationResponse;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class LineResponse {
     private String name;
     @NotBlank
     private String color;
+    @NotEmpty
     private List<StationResponse> stations;
 
     public LineResponse() {

@@ -5,6 +5,7 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.line.request.LineInsertRequest;
 import wooteco.subway.dto.line.response.LineResponse;
+import wooteco.subway.dto.station.response.StationResponse;
 import wooteco.subway.exception.line.LineDuplicateException;
 import wooteco.subway.exception.line.LineNotExistException;
 import wooteco.subway.repository.SubwayRepository;
@@ -31,8 +32,9 @@ public class LineService {
 
         Section section = lineInsertRequest.toSectionEntity(insertedLine.getId());
         subwayRepository.insertSectionWithLineId(section);
+        List<StationResponse> stationResponses = stationsToStationResponses(insertedLine);
 
-        return new LineResponse(insertedLine);
+        return new LineResponse(insertedLine, stationResponses);
     }
 
     public List<LineResponse> showAll() {
@@ -42,10 +44,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse showById(Long id) {
-        Line line = lineDao.findById(id)
-                .orElseThrow(() -> new LineNotExistException(id));
-        return new LineResponse(line);
+    public LineResponse showById(Long lineId) {
+        Line line = lineDao.findById(lineId)
+                .orElseThrow(() -> new LineNotExistException(lineId));
+        List<StationResponse> stationResponses = stationsToStationResponses(line);
+
+        return new LineResponse(line, stationResponses);
+    }
+
+    private List<StationResponse> stationsToStationResponses(Line line) {
+        return subwayRepository.findStationsByLineId(line.getId())
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void updateById(Long id, String color, String name) {
