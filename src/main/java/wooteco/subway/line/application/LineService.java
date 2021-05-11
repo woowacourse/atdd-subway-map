@@ -15,6 +15,7 @@ import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,6 +80,8 @@ public class LineService {
 
     @Transactional
     public void addSection(final Long lineId, final SectionAddRequest sectionAddRequest) {
+        validateStations(sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId());
+        validateDuplicationStation(lineId, sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId());
         LineEntity findLineEntity = findLineEntityById(lineId);
         Line line = new Line(findLineEntity.id(), findLineEntity.name(), findLineEntity.color());
         Sections originSections = new Sections(toSections(line));
@@ -87,6 +90,18 @@ public class LineService {
         line.addSection(targetSection);
 
         dirtyChecking(originSections, line.getSections());
+    }
+
+    private void validateDuplicationStation(final Long lineId, final Long upStationId, final Long downStationId) {
+        if (sectionDao.findByLineIdWithUpStationId(lineId, upStationId).isPresent()
+                && sectionDao.findByLineIdWithDownStationId(lineId, downStationId).isPresent()) {
+            throw new IllegalStateException("이미 등록되어 있는 구간임!");
+        }
+
+        if (sectionDao.findByLineIdWithUpStationId(lineId, downStationId).isPresent()
+                && sectionDao.findByLineIdWithDownStationId(lineId, upStationId).isPresent()) {
+            throw new IllegalStateException("이미 등록되어 있는 구간임!");
+        }
     }
 
     @Transactional
@@ -149,7 +164,7 @@ public class LineService {
 
     private void validateDuplication(final LineRequest lineRequest) {
         if (lineDao.findByName(lineRequest.getName()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
+            throw new IllegalStateException("이미 등록된 이름임!");
         }
 
         if (lineDao.findByColor(lineRequest.getColor()).isPresent()) {

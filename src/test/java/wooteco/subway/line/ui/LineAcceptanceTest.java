@@ -1,11 +1,16 @@
 package wooteco.subway.line.ui;
 
+import groovyjarjarpicocli.CommandLine;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +25,10 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -256,6 +263,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName());
+    }
+
+    private static Stream<Arguments> stationIds(){
+        return Stream.of(
+                Arguments.arguments(1L, 2L),
+                Arguments.arguments(2L, 3L),
+                Arguments.arguments(1L, 3L),
+                Arguments.arguments(3L, 1L)
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("구간 등록시 상행역화 하행역이 이미 등록 되어있다면 에러가 발생한다. ")
+    @MethodSource("stationIds")
+    void registrationDuplicateException(Long upStationId, Long downStationId) {
+        //given
+        int distance = 3;
+        SectionAddRequest acceptSectionAddRequest = new SectionAddRequest(station2.getId(), station3.getId(), 7);
+        SectionAddRequest exceptionSectionAddRequest = new SectionAddRequest(upStationId, downStationId, distance);
+
+        //when
+        ExtractableResponse<Response> acceptSaveResponse = addSectionToHTTP(line.getId(), acceptSectionAddRequest);
+
+        ExtractableResponse<Response> exceptionR = addSectionToHTTP(line.getId(), exceptionSectionAddRequest);
+
+
+        //then
+        assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

@@ -153,6 +153,25 @@ class LineServiceTest {
 
 
     @Test
+    @DisplayName("구간 등록시 상행역과 하행역이 이미 등록 되어있다면 에러가 발생한다. ")
+    void registrationDuplicateException() {
+        //given
+        baseLine();
+        long lineId = 1L;
+        long upStationId = 1L;
+        long downStationId = 2L;
+        int distance = 2;
+
+        beforeSaveLineSection(lineId, upStationId, downStationId, distance);
+        //when
+        when(sectionDao.findByLineIdWithUpStationId(lineId, upStationId)).thenReturn(Optional.of(new SectionEntity()));
+        when(sectionDao.findByLineIdWithDownStationId(lineId, downStationId)).thenReturn(Optional.of(new SectionEntity()));
+        //then
+        assertThatThrownBy(() ->lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance)))
+        .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     @DisplayName("상행 종점 등록 로직")
     void upwardEndPointRegistration() {
         //given
