@@ -24,7 +24,7 @@ public class StationService {
         return station;
     }
 
-    private Station findById(long id) {
+    public Station findById(long id) {
         return stationDao.findById(id)
             .orElseThrow(StationNotFoundException::new);
     }
