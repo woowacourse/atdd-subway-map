@@ -1,5 +1,7 @@
 package wooteco.subway.section;
 
+import wooteco.subway.exception.SubwayException;
+
 public class Section {
     private Long id;
     private Long lineId;
@@ -26,6 +28,21 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean isSameUpStation(Section section) {
+        return this.upStationId.equals(section.upStationId);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStationId.equals(section.downStationId);
+    }
+
+    public void updateDistance(Integer distance) {
+        if (this.distance <= distance) {
+            throw new SubwayException("넣을 수 없는 거리입니다.");
+        }
+        this.distance = this.distance - distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -45,5 +62,4 @@ public class Section {
     public Integer getDistance() {
         return distance;
     }
-
 }

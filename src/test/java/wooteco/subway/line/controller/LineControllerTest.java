@@ -56,7 +56,7 @@ class LineControllerTest {
         String content = objectMapper.writeValueAsString(new LineCreateRequest(분당선, 빨간색, 1L, 2L, 3));
         given(lineService.save(any(LineCreateRequest.class)))
                 .willReturn(new LineCreateResponse(1L, 분당선, 빨간색));
-        given(sectionService.save(any(LineCreateResponse.class), any(SectionCreateRequest.class)))
+        given(sectionService.save(any(Long.class), any(SectionCreateRequest.class)))
                 .willReturn(new SectionCreateResponse(1L, 1L, 1L, 2L, 3));
 
         // when

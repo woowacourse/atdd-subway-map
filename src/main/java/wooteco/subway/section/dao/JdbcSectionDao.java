@@ -52,4 +52,17 @@ public class JdbcSectionDao implements SectionDao {
                 rs.getInt("distance")
         );
     }
+
+    @Override
+    public void updateUpStation(Section section, Long downStationId) {
+        String query = "UPDATE section SET up_station_id = ?, distance = ? WHERE line_id = ? AND up_station_id = ?";
+        jdbcTemplate.update(query, downStationId, section.getDistance(), section.getLineId(), section.getUpStationId());
+    }
+
+
+    @Override
+    public void updateDownStation(Section section, Long upStationId) {
+        String query = "UPDATE section SET down_station_id = ?, distance = ? WHERE line_id = ? AND down_station_id = ?";
+        jdbcTemplate.update(query, upStationId, section.getDistance(), section.getLineId(), section.getDownStationId());
+    }
 }

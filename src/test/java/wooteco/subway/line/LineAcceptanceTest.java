@@ -13,7 +13,6 @@ import wooteco.subway.line.dto.request.LineUpdateRequest;
 import wooteco.subway.line.dto.response.LineCreateResponse;
 import wooteco.subway.line.dto.response.LineSectionResponse;
 import wooteco.subway.line.dto.response.LineStationsResponse;
-import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -33,9 +32,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private LineDao lineDao;
-
-    @Autowired
-    private SectionDao sectionDao;
 
     @DisplayName("노선을 생성한다.")
     @Test

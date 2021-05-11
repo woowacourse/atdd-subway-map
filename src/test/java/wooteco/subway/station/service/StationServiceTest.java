@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.exception.station.StationDuplicatedNameException;
+import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.section.dto.response.SectionResponse;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.dao.JdbcStationDao;
@@ -158,5 +159,32 @@ class StationServiceTest {
                         new StationResponse(2L, "잠실역"),
                         new StationResponse(3L, "왕십리역")
                 ));
+    }
+
+    @DisplayName("id로 지하철 역 조회")
+    @Test
+    void findById() {
+        // given
+        given(stationDao.findById(1L))
+                .willReturn(Optional.of(new Station(1L, "강남역")));
+
+        // when
+        StationResponse response = stationService.findById(1L);
+
+        // then
+        assertThat(response).usingRecursiveComparison()
+                .isEqualTo(new StationResponse(1L, "강남역"));
+    }
+
+    @DisplayName("존재하지 않는 id로 지하철 역 조회")
+    @Test
+    void findByIdWithNotExistId() {
+        // given
+        given(stationDao.findById(1L))
+                .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> stationService.findById(1L))
+                .isInstanceOf(StationNotFoundException.class);
     }
 }

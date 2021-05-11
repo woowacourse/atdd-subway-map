@@ -12,6 +12,7 @@ import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.dto.response.LineSectionResponse;
 import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.dto.AddSectionDto;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
 import wooteco.subway.section.dto.response.SectionResponse;
@@ -46,7 +47,7 @@ public class LineController {
         stationService.checkRightStation(sectionCreateRequest.getUpStationId(), sectionCreateRequest.getDownStationId());
         LineCreateResponse newLine = lineService.save(lineCreateRequest);
         SectionCreateResponse initialSection =
-                sectionService.save(newLine, sectionCreateRequest);
+                sectionService.save(newLine.getId(), sectionCreateRequest);
 
         return ResponseEntity.created(URI.create("/lines/" + newLine.getId()))
                 .body(new LineSectionResponse(newLine, initialSection));
@@ -65,6 +66,17 @@ public class LineController {
         List<StationResponse> stations = stationService.findStations(sections);
         return ResponseEntity.ok().body(new LineStationsResponse(line, stations));
     }
+
+    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SectionCreateResponse> addSection(@PathVariable Long id, @RequestBody SectionCreateRequest sectionCreateRequest) {
+        StationResponse upStation = stationService.findById(sectionCreateRequest.getUpStationId());
+        StationResponse downStation = stationService.findById(sectionCreateRequest.getDownStationId());
+        AddSectionDto addSectionDto = new AddSectionDto(id, upStation, downStation, sectionCreateRequest.getDistance());
+        SectionCreateResponse newSection = sectionService.addSection(addSectionDto);
+        return ResponseEntity.created(URI.create("/lines/" + newSection.getLineId() + "/sections/" + newSection.getId()))
+                .body(newSection);
+    }
+
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
