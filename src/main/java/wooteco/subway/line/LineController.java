@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.line.dto.LineDto;
-import wooteco.subway.line.dto.LineIdDto;
+import wooteco.subway.line.dto.CreateLineDto;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
-import wooteco.subway.line.dto.NonIdLineDto;
+import wooteco.subway.line.dto.LineServiceDto;
+import wooteco.subway.line.dto.ReadLineDto;
+import wooteco.subway.line.dto.UpdateLineRequest;
+import wooteco.subway.section.dto.CreateSectionDto;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,11 +34,10 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody final LineRequest lineRequest) {
-        NonIdLineDto nonIdLineDto = new NonIdLineDto(lineRequest.getName(), lineRequest.getColor());
-        LineDto createdLineDto = lineService.createLine(nonIdLineDto);
-        LineResponse lineResponse = new LineResponse(createdLineDto.getId(),
-            createdLineDto.getName(), createdLineDto.getColor());
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
+        CreateLineDto createLineDto = CreateLineDto.from(lineRequest);
+        LineServiceDto createdLineServiceDto = lineService.createLine(createLineDto);
+        LineResponse lineResponse = LineResponse.from(createdLineServiceDto);
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
             .body(lineResponse);
@@ -42,44 +45,56 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineDto> lines = lineService.findAll();
+        List<LineServiceDto> lines = lineService.findAll();
         List<LineResponse> lineResponses = lines.stream()
-            .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+            .map(LineResponse::from)
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok()
-            .body(lineResponses);
+        return ResponseEntity.ok(lineResponses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
-        LineDto lineDto = lineService.findOne(new LineIdDto(id));
-        LineResponse lineResponse = new LineResponse(
-            lineDto.getId(),
-            lineDto.getName(),
-            lineDto.getColor()
-        );
-
-        return ResponseEntity.ok()
-            .body(lineResponse);
-
+        ReadLineDto readLineDto = lineService.findOne(new LineServiceDto(id));
+        LineResponse lineResponse = LineResponse.from(readLineDto);
+        System.out.println(lineResponse.getName());
+        System.out.println(lineResponse.getStations());
+        return ResponseEntity.ok(lineResponse);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(@RequestBody final LineRequest lineRequest,
-        @PathVariable final Long id) {
+    public ResponseEntity<Void> updateLine(
+        @Valid @RequestBody final UpdateLineRequest updateLineRequest, @PathVariable final Long id) {
 
-        LineDto lineDto = new LineDto(id, lineRequest.getName(), lineRequest.getColor());
-        lineService.update(lineDto);
+        LineServiceDto lineServiceDto = LineServiceDto.from(id, updateLineRequest);
+        lineService.update(lineServiceDto);
 
         return ResponseEntity.ok()
             .build();
+    }
 
+    @PostMapping(value="/{lineId}/sections")
+    public ResponseEntity<Void> createSection(@Valid @RequestBody final SectionRequest sectionRequest,
+        @PathVariable final long lineId) {
+        CreateSectionDto createSectionDto = CreateSectionDto.of(lineId, sectionRequest);
+        lineService.createSection(createSectionDto);
+
+        return ResponseEntity.ok()
+            .build();
+    }
+
+    @DeleteMapping(value="/{lineId}/sections")
+    public ResponseEntity<Void> deleteStationOnSection(@PathVariable final long lineId,
+        @RequestParam final long stationId) {
+        lineService.deleteStation(lineId, stationId);
+
+        return ResponseEntity.noContent()
+            .build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
-        lineService.delete(new LineDto(id));
+        lineService.delete(new LineServiceDto(id));
 
         return ResponseEntity.noContent()
             .build();
