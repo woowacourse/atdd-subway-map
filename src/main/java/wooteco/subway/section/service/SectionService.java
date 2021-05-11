@@ -10,6 +10,8 @@ import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.exception.SectionIllegalArgumentException;
+import wooteco.subway.station.dao.StationDao;
+import wooteco.subway.station.exception.StationIllegalArgumentException;
 
 @Service
 public class SectionService {
@@ -17,9 +19,12 @@ public class SectionService {
     public static final int DELETE_STATION_IN_LINE_LIMIT = 2;
     public static final int INSERT_SECTION_IN_LINE_LIMIT = 1;
     public static final int INSERT_SECTION_IN_LINE_DISTANCE_GAP_LIMIT = 0;
+
+    private final StationDao stationDao;
     private final SectionDao sectionDao;
 
-    public SectionService(SectionDao sectionDao) {
+    public SectionService(SectionDao sectionDao, StationDao stationDao) {
+        this.stationDao = stationDao;
         this.sectionDao = sectionDao;
     }
 
@@ -31,6 +36,7 @@ public class SectionService {
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
         Set<Long> stationIds = lineRoute.getStationIds();
 
+        validateStationsInSectionIsExist(sectionRequest);
         validateIfSectionContainsOnlyOneStationInLine(stationIds, section);
 
         if (lineRoute.isInsertSectionInEitherEndsOfLine(section)) {
@@ -39,6 +45,11 @@ public class SectionService {
         }
         insertSectionInMiddleOfLine(section, lineRoute);
         sectionDao.save(section);
+    }
+
+    private void validateStationsInSectionIsExist(SectionRequest sectionRequest) {
+        stationDao.findById(sectionRequest.getDownStationId()).orElseThrow( () -> new StationIllegalArgumentException("해당 지하철 역이 존재하지 않습니다."));
+        stationDao.findById(sectionRequest.getUpStationId()).orElseThrow( () -> new StationIllegalArgumentException("해당 지하철 역이 존재하지 않습니다."));
     }
 
     private void validateIfSectionContainsOnlyOneStationInLine(Set<Long> stationIds, Section section) {
