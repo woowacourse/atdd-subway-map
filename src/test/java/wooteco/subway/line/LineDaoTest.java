@@ -8,12 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
-import wooteco.subway.section.SectionDto;
-import wooteco.subway.section.SectionService;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationRequest;
-import wooteco.subway.station.StationService;
 
 import java.util.Arrays;
 import java.util.List;

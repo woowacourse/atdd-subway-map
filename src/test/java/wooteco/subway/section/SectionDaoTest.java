@@ -113,8 +113,8 @@ class SectionDaoTest {
 
         assertThat(sections).containsExactlyInAnyOrderElementsOf(
                 Arrays.asList(
-                new Section(1L, 1L, firstStation, secondStation, 10),
-                new Section(2L, 1L, secondStation, thirdStation, 10))
+                        new Section(1L, 1L, firstStation, secondStation, 10),
+                        new Section(2L, 1L, secondStation, thirdStation, 10))
         );
     }
 }

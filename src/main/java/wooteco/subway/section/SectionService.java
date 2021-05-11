@@ -102,8 +102,8 @@ public class SectionService {
     private Section findSectionWithExistingStation(SectionDto sectionDto) {
         SectionStandard sectionStandard = calculateSectionStandard(sectionDto);
         if (sectionStandard == SectionStandard.FROM_UP_STATION) {
-             return sectionDao.findSectionByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
-                     .orElseThrow(SectionNotFoundException::new);
+            return sectionDao.findSectionByUpStationId(sectionDto.getLineId(), sectionDto.getUpStationId())
+                    .orElseThrow(SectionNotFoundException::new);
         }
         return sectionDao.findSectionByDownStationId(sectionDto.getLineId(), sectionDto.getDownStationId())
                 .orElseThrow(SectionNotFoundException::new);

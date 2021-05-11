@@ -6,12 +6,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.Sections;
 
 import java.sql.PreparedStatement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +82,6 @@ public class LineDao {
 
     public int delete(Long id) {
         String sql = "delete from LINE where id = ?";
-         return jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }

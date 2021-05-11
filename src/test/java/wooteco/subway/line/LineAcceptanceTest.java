@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
 import wooteco.subway.section.SectionDao;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 import wooteco.subway.station.StationResponse;
 
