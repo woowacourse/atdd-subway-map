@@ -13,6 +13,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.common.ErrorResponse;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,11 +29,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private SectionDao sectionDao;
+    @Autowired
+    private StationDao stationDao;
 
     @BeforeEach
     void beforeEach() {
         jdbcTemplate.execute("truncate table LINE");
         jdbcTemplate.execute("alter table LINE alter column ID restart with 1");
+        jdbcTemplate.execute("truncate table STATION");
+        jdbcTemplate.execute("alter table STATION alter column ID restart with 1");
+        stationDao.save("가양역");
+        stationDao.save("증미역");
     }
 
     @Test
@@ -117,8 +126,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse)
                 .usingRecursiveComparison()
+                .ignoringFields("stations")
                 .isEqualTo(new LineResponse(1L, "2호선", "초록색"));
 
+        assertThat(lineResponse.getStations())
+                .containsExactly(
+                        new StationResponse(1L, "가양역"),
+                        new StationResponse(2L, "증미역")
+                );
     }
 
     @Test
