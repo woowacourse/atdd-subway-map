@@ -17,14 +17,14 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철노선 관련 기능")
+@DisplayName("지하철 노선 관련 기능")
 @Sql("/truncate.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private final LineRequest lineRequest =
         new LineRequest("2호선", "초록색", 1L, 2L, 10);
 
-    @DisplayName("지하철노선을 생성한다.")
+    @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -39,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면 예외를 발생한다.")
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 생성하면 예외가 발생한다.")
     @Test
     void createLineWithDuplicateName() {
         RestAssured.given().log().all()
@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 생성하면 예외를 발생한다.")
+    @DisplayName("기존에 존재하는 노선 색깔로 노선을 생성하면 예외가 발생한다.")
     @Test
     void createLineWithDuplicateColor() {
         RestAssured.given().log().all()
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철노선 목록을 조회한다.")
+    @DisplayName("노선 목록을 조회한다.")
     @Test
     void findAllLines() {
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -122,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철노선을 조회한다.")
+    @DisplayName("노선을 조회한다.")
     @Test
     void findLine() {
         createStation();
@@ -171,7 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    @DisplayName("지하철노선을 수정한다.")
+    @DisplayName("노선을 수정한다.")
     @Test
     void updateLine() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -196,9 +196,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 수정하면 예외를 발생한다.")
+    @DisplayName("기존에 존재하는 노선 이름으로 노선을 수정하면 예외가 발생한다.")
     @Test
-    void updateLineWithDuplicatedName() {
+    void updateLineWithDuplicateName() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -231,9 +231,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 수정하면 예외를 발생한다.")
+    @DisplayName("기존에 존재하는 노선 색깔로 노선을 수정하면 예외가 발생한다.")
     @Test
-    void updateLineWithDuplicatedColor() {
+    void updateLineWithDuplicateColor() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -266,7 +266,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철노선을 제거한다.")
+    @DisplayName("노선을 제거한다.")
     @Test
     void deleteLine() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()

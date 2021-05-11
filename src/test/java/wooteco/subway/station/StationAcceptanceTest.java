@@ -16,13 +16,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철 역 관련 기능")
 @Sql("/truncate.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private final StationRequest stationRequest = new StationRequest("강남역");
 
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("역을 생성한다.")
     @Test
     void createStation() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -37,9 +37,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("기존에 존재하는 역 이름으로 역을 생성하면 예외가 발생한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createStationDuplicateName() {
         RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +60,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("역을 조회한다.")
     @Test
     void getStations() {
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -97,7 +97,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철역을 제거한다.")
+    @DisplayName("역을 제거한다.")
     @Test
     void deleteStation() {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
