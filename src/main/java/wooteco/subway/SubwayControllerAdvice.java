@@ -21,4 +21,10 @@ public class SubwayControllerAdvice {
     public ResponseEntity<String> sqlExceptionHandle() {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> unExpectedExceptionHandler() {
+        return ResponseEntity.badRequest().build();
+    }
+
 }
