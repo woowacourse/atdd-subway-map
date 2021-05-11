@@ -36,7 +36,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 성공")
-    void createLine_success() throws Exception {
+    void create_성공() throws Exception {
         // given
         Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
         Long 잠실새내_id = stationDao.create(Station.create("잠실새내역")).getId();
@@ -61,7 +61,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 실패(노선 중복 이름)")
-    void createLine_duplicatedName() throws Exception {
+    void create_실패_중복이름() throws Exception {
         // given
         lineDao.create(Line.create("1호선", "bg-red-600"));
 
@@ -82,7 +82,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 실패(노선 중복 컬러)")
-    void createLine_duplicatedColor() throws Exception {
+    void create_실패_중복색상() throws Exception {
         // given
         lineDao.create(Line.create("1호선", "bg-green-600"));
 
@@ -103,7 +103,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 실패(request 필수값 누락)")
-    void createLine_notSatisfiedRequest() throws Exception {
+    void create_실패_입력값이상() throws Exception {
         // given
         LineRequest 이름없는노선 =
                 new LineRequest("", "bg-green-600", 1L, 2L, 10);
@@ -119,7 +119,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 실패(등록되지 않는 역을 노선 종점역에 등록할 때)")
-    void createLine_notExistStation() throws Exception {
+    void create_실패_없는역() throws Exception {
         // given
         LineRequest 삼호선 =
                 new LineRequest("3호선", "bg-green-600", 1L, 2L, 10);
@@ -134,7 +134,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 생성 - 실패(상행선과 하행선 역이 같을 경우)")
-    void createLine_sameStations() throws Exception {
+    void create_실패_같은역() throws Exception {
         // given
         Long 잠실역_id = stationDao.create(Station.create("잠실역")).getId();
 
@@ -152,7 +152,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @DisplayName("노선 조회 - 성공")
     @Test
-    void readLine_success() throws Exception {
+    void read_성공() throws Exception {
         //given
         Station 강남역 = stationDao.create(Station.create("강남역"));
         Station 잠실역 = stationDao.create(Station.create("잠실역"));
@@ -173,7 +173,7 @@ class LineApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("노선 조회 - 실패(해당 노선이 없을 경우)")
-    void readLine_fail_notExistLine() throws Exception {
+    void read_실패_없는노선() throws Exception {
         // given & when
         ResultActions result = mockMvc.perform(get("/lines/" + Long.MAX_VALUE));
 

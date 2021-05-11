@@ -44,7 +44,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(상행종점 등록)")
-    void createSection_success_up() throws Exception {
+    void create_성공_상행종점추가() throws Exception {
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
         Line line = 노선_생성(잠실역, 잠실새내역);
@@ -65,7 +65,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(하행종점 등록)")
-    void createSection_success_down() throws Exception {
+    void create_성공_하행종점추가() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -89,7 +89,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(상행기준 중간구간 구간 등록)")
-    void createSection_success_middle_up() throws Exception {
+    void create_성공_중간역상행기준() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -113,7 +113,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(하행기준 중간구간 구간 등록)")
-    void createSection_success_middle_down() throws Exception {
+    void create_성공_중간하행기준() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -137,7 +137,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(b-k)--> a-b-k-c-d)")
-    void createSection_success_middle() throws Exception {
+    void create_성공_중간앞() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -168,7 +168,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(k-c)--> a-b-k-c-d)")
-    void createSection_success_middle_1() throws Exception {
+    void create_성공_중간뒤() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -199,7 +199,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 실패(새로 추가할 거리가 기존 거리보다 같거나 큰 경우)")
-    void createSection_fail_overDistance() throws Exception {
+    void create_실패_거리큼() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -220,7 +220,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 실패(존재하지 않는 역을 등록할 경우)")
-    void createSection_fail_notExistStation() throws Exception {
+    void create_실패_역없음() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -239,7 +239,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 실패(자연수가 아닌 거리를 등록할 경우)")
-    void createSection_fail_notNumberDistance() throws Exception {
+    void create_실패_거리가자연수아님() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -261,7 +261,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 실패(의미상 중복된 섹션을 등록할 경우)")
-    void createSection_fail_duplicatedSection() throws Exception {
+    void create_실패_의미상중복구간() throws Exception {
         //given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -279,7 +279,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 등록 - 실패(새로운 섹션의 두 역이 모두 같은 노선에 포함된 경우)")
-    void createSection_fail_existStations() throws Exception {
+    void create_실패_사이클도는구간() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -302,7 +302,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 성공")
-    void deleteSection_success() throws Exception {
+    void delete_성공() throws Exception {
         // given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -331,7 +331,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선이 존재하지 않을 시)")
-    public void deleteSection_fail_notExistLine() throws Exception {
+    public void delete_실패_노선없음() throws Exception {
         //given & when
         final ResultActions result = mockMvc.perform(
                 delete("/lines/" + Long.MAX_VALUE + "/sections?stationId=1"));
@@ -342,7 +342,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(역이 해당 노선에 등록되어 있지 않을 시)")
-    public void deleteSection_fail_noStationInLine() throws Exception {
+    public void delete_실패_역이노선에없음() throws Exception {
         //given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
@@ -360,7 +360,7 @@ class SectionApiControllerTest extends ApiControllerTest {
 
     @Test
     @DisplayName("구간 제거 - 실패(노선에 구간이 하나밖에 존재하지 않을 시)")
-    public void deleteSection_fail_onlyOneSectionExist() throws Exception {
+    public void delete_실패_마지막남은구간() throws Exception {
         //given
         final Station 잠실역 = 상행역();
         final Station 잠실새내역 = 하행역();
