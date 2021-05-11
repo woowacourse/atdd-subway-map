@@ -1,31 +1,37 @@
-package wooteco.subway.controller.dto.request.line;
+package wooteco.subway.controller.dto.response.line;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Section;
 
-public class LineCreateRequestDto {
-    @NotBlank
+public class LineCreateResponseDto {
+    private Long id;
     private String name;
-    @NotBlank
     private String color;
-    @NotNull
     private Long upStationId;
-    @NotNull
     private Long downStationId;
-    @NotNull
     private Integer distance;
 
-    public LineCreateRequestDto() {
+    public LineCreateResponseDto() {
     }
 
-    public LineCreateRequestDto(String name, String color,
+    public LineCreateResponseDto(Long id, String name, String color,
         Long upStationId, Long downStationId, Integer distance) {
 
+        this.id = id;
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public LineCreateResponseDto(Line line, Section section) {
+        this(line.getId(), line.getName(), line.getColor(),
+            section.getUpStationId(), section.getDownStationId(), section.getDistance());
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

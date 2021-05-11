@@ -1,4 +1,6 @@
-package wooteco.subway.domain;
+package wooteco.subway.domain.line;
+
+import java.util.Objects;
 
 public class Line {
     private final Long id;
@@ -29,5 +31,22 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Line)) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(getId(), line.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

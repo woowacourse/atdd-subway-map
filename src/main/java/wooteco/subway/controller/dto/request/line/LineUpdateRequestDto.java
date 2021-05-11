@@ -1,7 +1,11 @@
 package wooteco.subway.controller.dto.request.line;
 
+import javax.validation.constraints.NotBlank;
+
 public class LineUpdateRequestDto {
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
 
     public LineUpdateRequestDto() {
