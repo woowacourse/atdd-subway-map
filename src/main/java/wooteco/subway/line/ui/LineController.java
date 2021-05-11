@@ -11,6 +11,7 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
 import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.line.ui.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 
 import java.net.URI;
@@ -66,11 +67,11 @@ public class LineController {
         return ResponseEntity.ok(new LineResponse(line, stations));
     }
 
-    @PutMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<Void> modifyById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        final Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SuppressWarnings("rawtypes")
+    public ResponseEntity modifyById(@PathVariable Long id, @RequestBody LineModifyRequest lineModifyRequest) {
+
+        final Line line = new Line(id, lineModifyRequest.getName(), lineModifyRequest.getName());
         lineService.update(line);
 
         return ResponseEntity.noContent().build();
@@ -83,9 +84,17 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @PostMapping(value = "/{id}/sections", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSectionInLine(@PathVariable final Long id, @RequestBody SectionAddRequest sectionAddRequest) {
+        Section section = new Section(sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId(), sectionAddRequest.getDistance());
+        lineService.addSection(id, section);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
     @ExceptionHandler({DataAccessException.class, IllegalArgumentException.class})
     private ResponseEntity<String> handleDatabaseExceptions(Exception e) {
-        System.out.println("msg :" + e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

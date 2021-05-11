@@ -2,6 +2,7 @@ package wooteco.subway.line.repository;
 
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
@@ -9,6 +10,7 @@ import wooteco.subway.line.domain.Sections;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class SectionDao {
@@ -46,5 +48,14 @@ public class SectionDao {
             final int distance = rs.getInt("distance");
             return new Section(upStationId, downStationId, distance);
         }, lineId);
+    }
+
+    public Optional<Section> findSectionByUpStationId(final Long id, final Long upStationId) {
+        final String sql = "SELECT * FROM SECTION WHERE line_id = ? AND up_station_id = ?";
+
+        return jdbcTemplate.queryForObject(sql, (rs, rn) -> Optional.ofNullable(
+                new Section(rs.getLong("up_station_id"),
+                        rs.getLong("down_station_id"),
+                        rs.getInt("distance"))));
     }
 }

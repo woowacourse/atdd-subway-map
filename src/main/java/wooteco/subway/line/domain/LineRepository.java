@@ -12,4 +12,12 @@ public interface LineRepository {
     void update(Line line);
 
     void deleteById(Long id);
+
+    void addSection(Long id, Section section);
+
+    Section findSectionByUpStationId(Long id, Long upStationId);
+
+    Section findSectionByDownStationId(Long id, Long downStationId);
+
+
 }

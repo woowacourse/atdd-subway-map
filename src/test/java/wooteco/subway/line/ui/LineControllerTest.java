@@ -21,6 +21,7 @@ import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
 import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.line.ui.dto.SectionAddRequest;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
@@ -29,6 +30,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.is;
+import static wooteco.subway.line.service.LineService.ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/truncate.sql")
@@ -232,7 +235,6 @@ class LineControllerTest {
                 .get("/lines/" + line.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .assertThat()
                 .extract()
                 .as(LineResponse.class);
 
@@ -240,6 +242,28 @@ class LineControllerTest {
         assertThat(resultResponse.getStations()).hasSize(2);
         assertThat(resultResponse).isEqualTo(testResponse);
     }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    void addSectionInLine_SectionLengthHaveToLessThanStationLength() {
+        //given
+        Line line = setDummyLine("강남역", "양재역", 10, "신분당선", "bg-red-600");
+        Station station = setDummyStation("판교역");
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(1L, station.getId(), 10);
+        //when
+        //then
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(is(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE));
+    }
+
 
 
     private Station setDummyStation(String stationName) {

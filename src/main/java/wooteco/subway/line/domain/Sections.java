@@ -12,4 +12,8 @@ public class Sections {
     public List<Section> toList() {
         return sections;
     }
+
+    public int sumSectionDistance() {
+        return sections.stream().mapToInt(Section::getDistance).sum();
+    }
 }

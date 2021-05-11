@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.repository.SectionDao;
+import wooteco.subway.line.domain.Sections;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    public static final String ERROR_DUPLICATED_LINE_NAME = "라인이 중복되었습니다.";
+    public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 노선의 길이보다 크거나 같을 수 없습니다.";
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -57,6 +57,19 @@ public class LineService {
 
     public void deleteById(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public void addSection(final Long id, final Section section) {
+        Line line = findById(id);
+        validateAddSection(line, section);
+        lineRepository.addSection(id, section);
+    }
+
+    private void validateAddSection(Line line, Section section) {
+        Sections sections = line.getSections();
+        if (sections.sumSectionDistance() <= section.getDistance()) {
+            throw new IllegalArgumentException(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE);
+        }
     }
 
     private void checkCreateValidation(Line line) {

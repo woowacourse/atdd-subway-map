@@ -47,4 +47,25 @@ public class LineRepositoryImpl implements LineRepository {
         lineDao.deleteById(id);
     }
 
+    @Override
+    public void addSection(final Long id, final Section section) {
+
+    }
+
+    @Override
+    public Section findSectionByUpStationId(final Long id, final Long upStationId) {
+        sectionDao.findSectionByUpStationId(id, upStationId).ifPresent(section -> {
+
+        });
+        return null;
+    }
+
+    @Override
+    public Section findSectionByDownStationId(final Long id, final Long downStationId) {
+        sectionDao.findSectionByUpStationId(id, downStationId).ifPresent(section -> {
+
+        });
+        return null;
+    }
+
 }
