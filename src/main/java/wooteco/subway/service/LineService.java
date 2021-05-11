@@ -3,7 +3,6 @@ package wooteco.subway.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.dao.LineDao;
-import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.line.LineColorDuplicateException;
 import wooteco.subway.exception.line.LineNameDuplicateException;
@@ -18,19 +17,14 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineDao lineDao;
-    private final SectionDao sectionDao;
 
-    public LineService(LineDao lineDao, SectionDao sectionDao) {
+    public LineService(LineDao lineDao) {
         this.lineDao = lineDao;
-        this.sectionDao = sectionDao;
     }
 
-    public LineDto create(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        validate(lineAndSectionCreateRequest);
+    public Line create(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         final Long id = lineDao.insert(lineAndSectionCreateRequest.toLine());
-        final Line line = lineDao.findById(id);
-        sectionDao.insert(id, lineAndSectionCreateRequest.toSimpleSection());
-        return new LineDto(line);
+        return lineDao.findById(id);
     }
 
     public List<LineDto> findAll() {
@@ -62,7 +56,7 @@ public class LineService {
         lineDao.delete(id);
     }
 
-    private void validate(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+    public void validate(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         validateSameEndStations(lineAndSectionCreateRequest.getUpStationId(),
                 lineAndSectionCreateRequest.getDownStationId());
         validateDuplicateName(lineAndSectionCreateRequest.getName());

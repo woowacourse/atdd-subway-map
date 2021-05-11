@@ -1,8 +1,10 @@
 package wooteco.subway.service;
 
 import org.springframework.stereotype.Service;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.SimpleStation;
 import wooteco.subway.service.dto.LineDto;
@@ -21,6 +23,13 @@ public class SubwayService {
         this.lineService = lineService;
         this.sectionService = sectionService;
         this.stationService = stationService;
+    }
+
+    public LineDto createLine(LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        lineService.validate(lineAndSectionCreateRequest);
+        final Line line = lineService.create(lineAndSectionCreateRequest);
+        sectionService.insert(line.getId(), lineAndSectionCreateRequest.toSimpleSection());
+        return new LineDto(line);
     }
 
     public LineWithStationsDto findAllInfoByLineId(Long id) {

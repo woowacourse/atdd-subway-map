@@ -24,12 +24,6 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping()
-    public ResponseEntity<LineCreateResponse> create(@RequestBody @Valid LineAndSectionCreateRequest lineAndSectionCreateRequest) {
-        LineCreateResponse lineResponse = new LineCreateResponse(lineService.create(lineAndSectionCreateRequest));
-        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
-    }
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineWithAllSectionsResponse>> showLines() {
         final List<LineDto> lines = lineService.findAll();

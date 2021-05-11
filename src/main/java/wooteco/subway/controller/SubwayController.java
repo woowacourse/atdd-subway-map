@@ -2,11 +2,14 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wooteco.subway.controller.request.LineAndSectionCreateRequest;
 import wooteco.subway.controller.request.SectionInsertRequest;
+import wooteco.subway.controller.response.LineCreateResponse;
 import wooteco.subway.controller.response.LineWithAllSectionsResponse;
 import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.service.SubwayService;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -17,6 +20,12 @@ public class SubwayController {
 
     public SubwayController(SubwayService subwayService) {
         this.subwayService = subwayService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<LineCreateResponse> create(@RequestBody @Valid LineAndSectionCreateRequest lineAndSectionCreateRequest) {
+        LineCreateResponse lineResponse = new LineCreateResponse(subwayService.createLine(lineAndSectionCreateRequest));
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/{lineId}")

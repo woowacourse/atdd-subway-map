@@ -23,6 +23,10 @@ public class SectionService {
         this.sectionDao = sectionDao;
     }
 
+    public void insert(Long lineId, SimpleSection section) {
+        sectionDao.insert(lineId, section);
+    }
+
     public List<Section> findAllByLineId(Long id) {
         return sectionDao.findAllByLineId(id);
     }
