@@ -1,6 +1,5 @@
 package wooteco.subway.section;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.line.Line;
@@ -115,7 +113,7 @@ class SectionDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-       assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, stationDao.findById(3L)).get());
+        assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, stationDao.findById(3L)).get());
     }
 
     @DisplayName("upStation, downStation을 수정한다.")
@@ -156,7 +154,7 @@ class SectionDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-        assertEquals(1,sectionDao.deleteSection(section2));
+        assertEquals(1, sectionDao.deleteSection(section2));
         assertEquals(1, sectionDao.findSectionsByLineId(lineId).size());
     }
 }

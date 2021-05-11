@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import wooteco.subway.exception.BothStationNotInLineException;
 import wooteco.subway.exception.ImpossibleDeleteException;
 import wooteco.subway.exception.ImpossibleDistanceException;
 import wooteco.subway.exception.NoSuchStationInLineException;
@@ -59,7 +58,6 @@ class SectionServiceTest {
         assertEquals(1L, sectionService.createSection(section));
         assertEquals(2L, sectionService.createSection(section1));
     }
-
 
     @DisplayName("구간 추가 시 거리가 맞지 않으면 에러가 발생한다.")
     @Test

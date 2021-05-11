@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
@@ -105,7 +104,8 @@ class LineServiceTest {
     @Test
     void updateLineException() {
         showLine();
-        assertThatThrownBy(() -> lineService.updateLine(2L, new Line("바뀐호선", "black"))).isInstanceOf(NoSuchLineException.class);
+        assertThatThrownBy(() -> lineService.updateLine(2L, new Line("바뀐호선", "black"))).isInstanceOf(
+            NoSuchLineException.class);
     }
 
     @DisplayName("노선을 삭제한다.")

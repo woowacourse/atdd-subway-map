@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineResponse;
 import wooteco.subway.line.LineService;
-import wooteco.subway.station.StationRequest;
 
 @RestController
 @RequestMapping("/lines/{lineId}/sections")
@@ -30,9 +29,11 @@ public class SectionController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> addSection(@PathVariable long lineId, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<LineResponse> addSection(@PathVariable long lineId,
+        @RequestBody SectionRequest sectionRequest) {
         Section section = new Section(lineId, sectionRequest);
         sectionService.addSection(section);
+
         Line line = lineService.showLine(lineId);
         LineResponse lineResponse = new LineResponse(line);
         return ResponseEntity.created(URI.create("/lines/" + lineId)).body(lineResponse);

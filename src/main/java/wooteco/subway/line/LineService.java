@@ -1,8 +1,6 @@
 package wooteco.subway.line;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -11,12 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.exception.DuplicateLineException;
 import wooteco.subway.exception.NoSuchLineException;
-import wooteco.subway.exception.NoSuchStationException;
-import wooteco.subway.section.SectionDao;
 import wooteco.subway.section.SectionService;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationDao;
-import wooteco.subway.station.StationService;
 
 @Service
 @Transactional

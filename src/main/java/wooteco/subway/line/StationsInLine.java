@@ -14,13 +14,12 @@ public class StationsInLine {
         this.stations = stations;
     }
 
-
     public void validStations(Station upStation, Station downStation) {
         if (stations.containsAll(Arrays.asList(upStation, downStation))) {
             throw new BothStationInLineException();
         }
 
-        if(!stations.contains(upStation) && !stations.contains(downStation)) {
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
             throw new BothStationNotInLineException();
         }
 

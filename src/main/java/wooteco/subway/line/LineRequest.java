@@ -1,7 +1,5 @@
 package wooteco.subway.line;
 
-import wooteco.subway.section.Section;
-
 public class LineRequest {
     private String name;
     private String color;

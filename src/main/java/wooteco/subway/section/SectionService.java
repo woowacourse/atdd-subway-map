@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.IllegalInputException;
 import wooteco.subway.exception.ImpossibleDeleteException;
+import wooteco.subway.exception.NoSuchSectionException;
 import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.StationsInLine;
 import wooteco.subway.station.Station;
@@ -68,9 +69,9 @@ public class SectionService {
 
     private void updatePreviousStation(Section newSection, Station upStation, Station downStation) {
         Section previousSection = sectionDao.findSectionBySameDownStation(newSection.getLineId(), downStation)
-            .orElseThrow(IllegalInputException::new);
+            .orElseThrow(NoSuchSectionException::new);
 
-        previousSection.validateDistance(newSection);
+        previousSection.validateNewDistance(newSection);
 
         if (sectionDao.updateDownStation(newSection, upStation) != 1) {
             throw new DuplicateSectionException();
@@ -79,9 +80,9 @@ public class SectionService {
 
     private void updateNextStation(Section newSection, Station upStation, Station downStation) {
         Section originSection = sectionDao.findSectionBySameUpStation(newSection.getLineId(), upStation)
-            .orElseThrow(IllegalInputException::new);
+            .orElseThrow(NoSuchSectionException::new);
 
-        originSection.validateDistance(newSection);;
+        originSection.validateNewDistance(newSection);
 
         if (sectionDao.updateUpStation(newSection, downStation) != 1) {
             throw new DuplicateSectionException();
@@ -90,40 +91,40 @@ public class SectionService {
 
     public int deleteSection(long lineId, long stationId) {
         Station station = stationService.showStation(stationId);
-
         Optional<Section> previousSection = sectionDao.findSectionBySameDownStation(lineId, station);
-        Optional<Section> nextSection = sectionDao.findSectionBySameUpStation(lineId, station);
+        Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, station);
 
-        if (previousSection.isPresent() && nextSection.isPresent()) {
-            Station newDownStation = stationService.showStation(nextSection.get().getDownStationId());
+        if (previousSection.isPresent() && unknownNextSection.isPresent()) {
+            Section nextSection = unknownNextSection.get();
+            Station newDownStation = stationService.showStation(nextSection.getDownStationId());
             sectionDao.updateDownStation(previousSection.get(), newDownStation);
-            return checkPossibleDelete(nextSection.get());
+            return deleteSection(nextSection);
         }
 
         if (previousSection.isPresent()) {
-            return checkPossibleDelete(previousSection.get());
+            return deleteSection(previousSection.get());
         }
 
-        if (nextSection.isPresent()) {
-            return checkPossibleDelete(nextSection.get());
+        if (unknownNextSection.isPresent()) {
+            return deleteSection(unknownNextSection.get());
         }
 
         throw new NoSuchStationInLineException();
     }
 
-    private int checkPossibleDelete(Section nextSection) {
+    private int deleteSection(Section nextSection) {
         if (sectionDao.findSectionsByLineId(nextSection.getLineId()).size() == 1) {
             throw new ImpossibleDeleteException();
         }
         return sectionDao.deleteSection(nextSection);
     }
 
-
     public List<Station> makeOrderedStations(long id) {
         try {
             long startStationId = sectionDao.findStartStationIdByLineId(id);
             long endStationId = sectionDao.findEndStationIdByLineId(id);
             Map<Long, Long> sections = sectionDao.findSectionsByLineId(id);
+
             return orderStations(startStationId, endStationId, sections);
         } catch (DataAccessException e) {
             throw new NoSuchStationInLineException();

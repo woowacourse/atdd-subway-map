@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +27,7 @@ import wooteco.subway.station.StationResponse;
 @Transactional
 @Sql("classpath:test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SectionAcceptanceTest extends AcceptanceTest{
+public class SectionAcceptanceTest extends AcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -102,7 +100,7 @@ public class SectionAcceptanceTest extends AcceptanceTest{
 
     private StationResponse addStation(String stationName) {
         StationRequest stationRequest = new StationRequest(stationName);
-        ExtractableResponse<Response> response= RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -114,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest{
 
     private LineResponse addLine(String name, String color, long upStationId, long downStationId, int distance) {
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
-        ExtractableResponse<Response> response= RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()

@@ -22,7 +22,7 @@ public class Station {
     }
 
     private void validateName(String name) {
-        if (name == null) {
+        if (name == null || name.equals("")) {
             throw new IllegalInputException();
         }
     }

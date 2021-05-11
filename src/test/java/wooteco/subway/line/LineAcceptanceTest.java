@@ -161,7 +161,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> addLine(String name, String color, long upStationId, long downStationId, int distance, int extraFare) {
+    private ExtractableResponse<Response> addLine(String name, String color, long upStationId, long downStationId,
+        int distance, int extraFare) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
