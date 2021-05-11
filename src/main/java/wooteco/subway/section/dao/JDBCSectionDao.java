@@ -67,4 +67,10 @@ public class JDBCSectionDao implements SectionDao {
                 updateSection.getUpStationId(), updateSection.getDownStationId(),
                 updateSection.getDistance(), updateSection.getId());
     }
+
+    @Override
+    public void delete(Long lineId, Long stationId) {
+        String query = "DELETE FROM SECTION WHERE line_id = ? AND (up_station_id = ? OR down_station_id = ?)";
+        this.jdbcTemplate.update(query, lineId, stationId, stationId);
+    }
 }

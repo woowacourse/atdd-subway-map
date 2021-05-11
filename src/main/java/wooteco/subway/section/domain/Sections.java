@@ -195,6 +195,7 @@ public class Sections {
         return Optional.of(new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(), updateSectionDistance));
     }
 
+    // todo
     private void validateDeleteSection() {
     }
 
