@@ -2,7 +2,6 @@ package wooteco.subway.line.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import wooteco.subway.line.Line;
 
 @Component
-@Primary
 public class JdbcLineDao implements LineDao {
 
     private final JdbcTemplate jdbcTemplate;

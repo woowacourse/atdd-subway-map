@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import wooteco.subway.station.Station;
 
 @Component
-@Primary
 public class JdbcStationDao implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
