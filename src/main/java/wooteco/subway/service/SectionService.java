@@ -12,7 +12,7 @@ import wooteco.subway.exception.EntityNotFoundException;
 
 import java.util.Optional;
 
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class SectionService {
 
@@ -49,6 +49,7 @@ public class SectionService {
         }
     }
 
+    @Transactional(readOnly = true)
     private Line findLineByLineId(final Long lineId) {
         return lineDao.findById(lineId).orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 노선이 존재하지 않습니다."));
     }
@@ -98,6 +99,7 @@ public class SectionService {
         return sectionDao.save(section);
     }
 
+    @Transactional(readOnly = true)
     public Section findByLineIdAndId(final Long lineId, final Long sectionId) {
         return sectionDao.findByLineIdAndId(lineId, sectionId)
                          .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 구간이 존재하지 않습니다."));

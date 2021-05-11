@@ -8,7 +8,7 @@ import wooteco.subway.exception.DuplicateNameException;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class StationService {
 
@@ -30,10 +30,12 @@ public class StationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findAll() {
         return stationDao.findAll();
     }
 
+    @Transactional(readOnly = true)
     public void delete(final Long id) {
         stationDao.delete(id);
     }

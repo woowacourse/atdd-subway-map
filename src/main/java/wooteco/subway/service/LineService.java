@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class LineService {
 
@@ -54,10 +54,12 @@ public class LineService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Line> findAll() {
         return lineDao.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Line findById(final Long id) {
         return lineDao.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 노선이 존재하지 않습니다."));
     }
@@ -75,6 +77,7 @@ public class LineService {
         lineDao.delete(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Station> findStationsByLineId(final Long id) {
         final Line line = findById(id);
         final List<Section> sections = sectionDao.findAllByLineId(id);
@@ -88,6 +91,7 @@ public class LineService {
         return orderedStations;
     }
 
+    @Transactional(readOnly = true)
     private Station findStationByStationId(final Long stationId) {
         return stationDao.findById(stationId)
                          .orElseThrow(() -> new EntityNotFoundException("해당 ID와 일치하는 역이 존재하지 않습니다."));
