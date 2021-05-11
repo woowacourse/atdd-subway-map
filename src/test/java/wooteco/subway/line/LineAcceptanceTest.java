@@ -224,6 +224,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         구간_생성값_검증(response, sectionRequest);
     }
 
+    @DisplayName("상행과 하행역의 이름이 같으면 구간 생성에 실패한다.")
+    @Test
+    void createSection_fail_duplicatedStationName() {
+        final String uri = 노선_등록(LINE_2).header("Location") + "/sections";
+        final SectionRequest sectionRequest = new SectionRequest(2L, 2L, 10);
+        final ExtractableResponse<Response> response = 구간_등록(uri, sectionRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private ExtractableResponse<Response> 구간_등록(final String uri, final SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
             .body(sectionRequest)
