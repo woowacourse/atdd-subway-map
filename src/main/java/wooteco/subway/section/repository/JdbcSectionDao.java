@@ -16,9 +16,16 @@ import java.util.Objects;
 @Repository
 public class JdbcSectionDao {
     private JdbcTemplate jdbcTemplate;
-    private final RowMapper<Station> stationRowMapper = (rs, rowNum) -> new Station(
+    private final RowMapper<Station> stationMapper = (rs, rowNum) -> new Station (
             rs.getLong("id"),
             rs.getString("name")
+    );
+    private final RowMapper<Section> sectionMapper = (rs, rowNum) -> new Section (
+            rs.getLong("id"),
+            rs.getLong("line_id"),
+            rs.getLong("up_station_id"),
+            rs.getLong("down_station_id"),
+            rs.getInt("distance")
     );
 
     public JdbcSectionDao(JdbcTemplate jdbcTemplate) {
@@ -42,6 +49,11 @@ public class JdbcSectionDao {
 
     public List<Station> findStationsBy(Long stationId, Long downStationId) {
         String query = "SELECT * FROM station WHERE id in (?, ?)";
-        return jdbcTemplate.query(query,stationRowMapper, stationId, downStationId);
+        return jdbcTemplate.query(query, stationMapper, stationId, downStationId);
+    }
+
+    public List<Section> findAllByLineId(Long lineId) {
+        String query = "SELECT * FROM section WHERE line_id = ?";
+        return jdbcTemplate.query(query, sectionMapper, lineId);
     }
 }

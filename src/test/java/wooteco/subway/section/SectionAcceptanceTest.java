@@ -3,6 +3,7 @@ package wooteco.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,28 +19,77 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("구간 관련 기능")
 @Sql("classpath:test.sql")
 public class SectionAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    void beforeEach() {
+        StationRequest 강남역 = new StationRequest("강남역");
+        StationRequest 잠실역 = new StationRequest("잠실역");
+
+        postResponse("/stations", 강남역);
+        postResponse("/stations", 잠실역);
+
+        LineRequest 이호선 = new LineRequest("이호선", "green", 1L, 2L, 5);
+        postResponse("/lines", 이호선);
+    }
+
     @Test
     @DisplayName("구간 추가")
     void createSection() {
         // given
-        StationRequest 강남역 = new StationRequest("강남역");
-        StationRequest 잠실역 = new StationRequest("잠실역");
-        SectionRequest req = new SectionRequest(1L, 2L, 5);
+        StationRequest 당산역 = new StationRequest("당산역");
+        StationRequest 왕십리역 = new StationRequest("왕십리역");
+
+        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
 
         // when
-        postResponse("/stations", 강남역);
-        postResponse("/stations", 잠실역);
-        ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
+        postResponse("/stations", 당산역);
+        postResponse("/stations", 왕십리역);
+        ExtractableResponse<Response> response = postResponse("/lines/1/sections", 잠실에서당산);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @Test
+    @DisplayName("구간 추가 - 이미 등록된 노선인 경우 예외를 던진다.")
+    void createSectionWhenAlreadyRegistered() {
+        // given
+        SectionRequest req = new SectionRequest(1L, 2L, 5);
+
+        // when
+        ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 추가 - 구간에 등록되어 있지 않은 역을 추가하는 경우 예외를 던진다.")
+    void createSectionWhen() {
+        // given
+        StationRequest 당산역 = new StationRequest("당산역"); // id = 3
+        StationRequest 왕십리역 = new StationRequest("왕십리역"); // id = 4
+        StationRequest 신림역 = new StationRequest("신림역"); // id = 5
+        SectionRequest 잠실에서당산 = new SectionRequest(2L, 3L, 5);
+        SectionRequest 왕십리에서신림 = new SectionRequest(4L, 5L, 2);
+
+        // when
+        postResponse("/stations", 당산역);
+        postResponse("/stations", 왕십리역);
+        postResponse("/stations", 신림역);
+        postResponse("/lines/1/sections", 잠실에서당산);
+
+        ExtractableResponse<Response> response = postResponse("/lines/1/sections", 왕십리에서신림);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("구간 추가 - 존재하지 않는 역으로 등록 요청이 들어오면 예외 발생")
     void createSectionWhenNotExistStations() {
         // given
-        SectionRequest req = new SectionRequest(1L, 2L, 5);
+        SectionRequest req = new SectionRequest(3L, 4L, 5);
 
         // when
         ExtractableResponse<Response> response = postResponse("/lines/1/sections", req);
@@ -59,6 +109,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 삭제")
+    void deleteSection() {
+
     }
 
     private ExtractableResponse<Response> postResponse(String path, StationRequest req) {

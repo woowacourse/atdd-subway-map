@@ -3,6 +3,7 @@ package wooteco.subway.section.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.SubWayException;
 import wooteco.subway.section.Section;
+import wooteco.subway.section.Sections;
 import wooteco.subway.section.dto.SectionRequest;
 import wooteco.subway.section.dto.SectionResponse;
 import wooteco.subway.section.repository.JdbcSectionDao;
@@ -18,12 +19,25 @@ public class SectionService {
         this.jdbcSectionDao = jdbcSectionDao;
     }
 
-    public SectionResponse save(Long id, SectionRequest sectionReq) {
-        // todo: 아마 구간 검증 로직 들어가야 함
+    public SectionResponse save(Long lineId, SectionRequest sectionReq) {
         validateExistStation(sectionReq);
 
-        Section savedSection = jdbcSectionDao.save(id, sectionReq);
+        Section savedSection = jdbcSectionDao.save(lineId, sectionReq);
         return new SectionResponse(savedSection);
+    }
+
+    public SectionResponse add(Long lineId, SectionRequest sectionReq) {
+        validateExistStation(sectionReq);
+        Sections sections = validateSavable(lineId, sectionReq);
+
+        Section savedSection = jdbcSectionDao.save(lineId, sectionReq);
+        return new SectionResponse(savedSection);
+    }
+
+    private Sections validateSavable(Long lineId, SectionRequest sectionReq) {
+        Sections sections =  new Sections(jdbcSectionDao.findAllByLineId(lineId));
+        sections.validateSavableSection(sectionReq);
+        return sections;
     }
 
     private void validateExistStation(SectionRequest sectionReq) {
@@ -32,5 +46,4 @@ public class SectionService {
             throw new SubWayException("등록되지 않은 역은 상행 혹은 하행역으로 추가할 수 없습니다.");
         }
     }
-
 }

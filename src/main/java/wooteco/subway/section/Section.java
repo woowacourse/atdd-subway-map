@@ -10,7 +10,7 @@ public class Section {
     private Long downStationId;
     private int distance;
 
-    private Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validateIfDownStationSameAsUpStation(upStationId, downStationId);
         this.id = id;
         this.lineId = lineId;
@@ -21,6 +21,10 @@ public class Section {
 
     public Section(Long id, Long lineId, SectionRequest sectionReq) {
         this(id, lineId, sectionReq.getUpStationId(), sectionReq.getDownStationId(), sectionReq.getDistance());
+    }
+
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this(null, null, upStationId, downStationId, distance);
     }
 
     private void validateIfDownStationSameAsUpStation(Long upStationId, Long downStationId) {
@@ -47,5 +51,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean containUp(Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
+    public boolean containDown(Long downStationId) {
+        return this.downStationId.equals(downStationId);
     }
 }

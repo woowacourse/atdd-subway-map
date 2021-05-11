@@ -19,7 +19,7 @@ public class SectionController {
 
     @PostMapping
     public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        SectionResponse newSection = sectionService.save(lineId, sectionRequest);
+        SectionResponse newSection = sectionService.add(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(newSection);
     }
 }
