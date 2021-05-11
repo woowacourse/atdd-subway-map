@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.exception.line.DuplicateLineException;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.dto.CreateLineDto;
@@ -36,6 +37,19 @@ public class LineService {
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
         sectionService.saveByLineCreate(sectionServiceDto);
         return LineServiceDto.from(saveLine);
+    }
+
+    private void checkExistedNameAndColor(CreateLineDto nonIdlineDto) {
+        String name = nonIdlineDto.getName();
+        String color = nonIdlineDto.getColor();
+
+        if (lineDao.countByColor(color) != 0) {
+            throw new DuplicateLineException();
+        }
+
+        if (lineDao.countByName(name) != 0) {
+            throw new DuplicateLineException();
+        }
     }
 
     public List<LineServiceDto> findAll() {

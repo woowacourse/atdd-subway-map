@@ -50,6 +50,18 @@ public class LineDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public int countByName(String name) {
+        String statement = "SELECT * FROM LINE WHERE name = ?";
+        List<Line> stations =  jdbcTemplate.query(statement, rowMapper, name);
+        return stations.size();
+    }
+
+    public int countByColor(String color) {
+        String statement = "SELECT * FROM LINE WHERE color = ?";
+        List<Line> stations =  jdbcTemplate.query(statement, rowMapper, color);
+        return stations.size();
+    }
+
     public int update(final long id, final Line line) {
         String sql = "UPDATE LINE SET name = ?, color = ? WHERE id = ?";
         return jdbcTemplate.update(sql, line.getName(), line.getColor(), id);
