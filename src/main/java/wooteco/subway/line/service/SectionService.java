@@ -84,6 +84,7 @@ public class SectionService {
 
     public void delete(final Long lineId, final Long stationId) {
         validateDeleteRequest(lineId, stationId);
+        sectionRepository.deleteSection(lineId, stationId);
     }
 
     private void validateDeleteRequest(final Long lineId, final Long stationId) {

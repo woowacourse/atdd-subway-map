@@ -65,7 +65,7 @@ public class SectionRepository {
         }
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
         save(lineId, sectionRequest.getDownStationId(), beforeConnectedStationId, currentShortestDistance - sectionRequest.getDistance());
-        deleteSection(lineId, sectionRequest.getUpStationId(), beforeConnectedStationId);
+        delete(lineId, sectionRequest.getUpStationId(), beforeConnectedStationId);
     }
 
     public void saveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
@@ -85,15 +85,37 @@ public class SectionRepository {
             throw new IllegalArgumentException("기존에 존재하는 구간의 길이가 더 짧습니다.");
         }
         save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
-        deleteSection(lineId, beforeConnectedStationId, sectionRequest.getDownStationId());
+        delete(lineId, beforeConnectedStationId, sectionRequest.getDownStationId());
         save(lineId, beforeConnectedStationId, sectionRequest.getUpStationId(), currentShortestDistance - sectionRequest.getDistance());
     }
 
-    private void deleteSection(final Long lineId, final Long upStationId, final Long downStationId) {
+    private void delete(final Long lineId, final Long upStationId, final Long downStationId) {
         String query = "DELETE FROM section WHERE line_id = ? AND up_station_id = ? AND down_station_id = ?";
         int affectedRowCount = jdbcTemplate.update(query, lineId, upStationId, downStationId);
         if (affectedRowCount == NO_EXIST_COUNT) {
             throw new NotFoundException("존재하지 않는 구간을 삭제하려 했습니다.");
+        }
+    }
+
+    public void deleteSection(final Long lineId, final Long stationId) {
+        String query = "SELECT EXISTS(SELECT * FROM section WHERE line_id = ? AND up_station_id = ?)";
+        if (jdbcTemplate.queryForObject(query, Boolean.class, lineId, stationId)) {
+            deleteSectionBaseOnUpStation(lineId, stationId);
+            return;
+        }
+    }
+
+    private void deleteSectionBaseOnUpStation(final Long lineId, final Long stationId) {
+        //입력받은걸 상행으로 삼는 하행선 검색
+        String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
+        Long backStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, stationId));
+        try {
+            //입력받은걸 하행으로 삼는 구간이 있는지 확인
+            query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
+            Long frontStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, stationId));
+
+        } catch (EmptyResultDataAccessException e) {
+            delete(lineId, stationId, backStationId);
         }
     }
 }

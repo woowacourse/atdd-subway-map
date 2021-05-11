@@ -480,4 +480,48 @@ class LineControllerTest extends AcceptanceTest {
 
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("상행선 구간 삭제에 성공하면, 204 상태코드를 받는다.")
+    @Test
+    void successDeleteSection() {
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=1")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("중간에 존재하던 구간 삭제에 성공하면, 204 상태코드를 받는다.")
+    @Test
+    void successDeleteSectionBetween() {
+        // 중간 구간 삽입
+        // 1 <-> 3 <-> 2
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 2);
+        RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/1/sections")
+                .then().log().all();
+
+        ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/1/sections?stationId=3")
+                .then().log().all()
+                .extract();
+
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }
