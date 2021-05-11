@@ -24,7 +24,7 @@ public class Station {
 
     private void validateArguments(String name) {
         Objects.requireNonNull(name);
-        if(name.length() < 1){
+        if (name.length() < 1) {
             throw new SubwayIllegalArgumentException("역 이름은 1글자 이상이어야합니다.");
         }
     }

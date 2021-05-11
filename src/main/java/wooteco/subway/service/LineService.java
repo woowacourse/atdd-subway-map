@@ -6,15 +6,14 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.Line;
-import wooteco.subway.domain.Sections;
 import wooteco.subway.domain.Section;
+import wooteco.subway.domain.Sections;
 import wooteco.subway.dto.LineCreateRequest;
 import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.LineUpdateRequest;
 import wooteco.subway.dto.StationResponse;
 import wooteco.subway.exception.DuplicationException;
 import wooteco.subway.exception.NotFoundException;
-import wooteco.subway.exception.SubwayIllegalArgumentException;
 
 import java.util.List;
 import java.util.Optional;
@@ -101,7 +100,7 @@ public class LineService {
 
     private void validateDuplicateNameExceptMyself(Long id, String lineName) {
         Optional<Line> lineByName = lineDao.findByName(lineName);
-        if (lineByName.isPresent() && !lineByName.get().getId().equals(id)) {
+        if (lineByName.isPresent() && !lineByName.get().isSameId(id)) {
             throw new DuplicationException("같은 이름의 노선이 있습니다;");
         }
     }

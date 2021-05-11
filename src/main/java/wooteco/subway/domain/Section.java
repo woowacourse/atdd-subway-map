@@ -25,7 +25,7 @@ public class Section {
         Objects.requireNonNull(lineId);
         Objects.requireNonNull(upStationId);
         Objects.requireNonNull(downStationId);
-        if(distance <= 0){
+        if (distance <= 0) {
             throw new SubwayIllegalArgumentException("거리는 0보다 커야 합니다.");
         }
     }

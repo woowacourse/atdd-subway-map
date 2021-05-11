@@ -20,10 +20,10 @@ public class Line {
     private void validateArguments(String name, String color) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(color);
-        if(name.length() < 1){
+        if (name.length() < 1) {
             throw new SubwayIllegalArgumentException("노선의 이름은 1글자 이상이어야 합니다.");
         }
-        if(color.length() < 1){
+        if (color.length() < 1) {
             throw new SubwayIllegalArgumentException("노선의 색상을 잘못 지정하셨습니다.");
         }
     }
