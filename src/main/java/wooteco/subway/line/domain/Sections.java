@@ -2,7 +2,6 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.line.domain.rule.FindSectionRule;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -62,17 +61,17 @@ public class Sections {
         LinkedList<Section> sortedSection = new LinkedList<>();
         Section firstSection = findStartSection(sections);
         sortedSection.add(firstSection);
-        System.out.println(sortedSection);
+
         while (true) {
             Section lastSection = sortedSection.getLast();
             Optional<Section> nextSection = findNextSection(sections, lastSection.getDownStationId());
+
             if (!nextSection.isPresent()) {
                 break;
             }
-            System.out.println(sortedSection);
+
             sortedSection.add(nextSection.get());
         }
-
         return sortedSection;
     }
 
