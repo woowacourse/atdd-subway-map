@@ -53,7 +53,7 @@ public class SectionService {
         validateSectionDistance(section, originalSection);
         int newSectionDistance = originalSection.getDistanceGap(section);
 
-        if (section.hasSameUpStation(originalSection)) {
+        if (originalSection.hasSameUpStation(section)) {
             return new Section(
                     originalSection.getId(),
                     section.getLineId(),
@@ -125,10 +125,10 @@ public class SectionService {
 
     public List<Station> getAllStations(final Long lineId) {
         Map<Station, Station> upAndDownStations = sectionRepository.getAllUpAndDownStations(lineId);
-        return getOrderedStations(upAndDownStations, lineId);
+        return getOrderedStations(upAndDownStations);
     }
 
-    private List<Station> getOrderedStations(final Map<Station, Station> upAndDownStations, final Long lineId) {
+    private List<Station> getOrderedStations(final Map<Station, Station> upAndDownStations) {
         Station firstStation = getFirstStation(upAndDownStations);
         List<Station> stations = new ArrayList<>(Collections.singletonList(firstStation));
 
