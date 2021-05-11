@@ -27,11 +27,6 @@ class StationDaoImplTest {
         this.stationDao = new StationDaoImpl(jdbcTemplate);
     }
 
-    @BeforeEach
-    void init() {
-
-    }
-
     @Test
     @DisplayName("디비 저장 테스트")
     void save() {
@@ -42,21 +37,6 @@ class StationDaoImplTest {
         Station savedStation = stationDao.save(station);
 
         assertThat(station.name()).isEqualTo(savedStation.name());
-    }
-
-    @Test
-    @DisplayName("동일한 이름의 역을 저장시 에러가 발생한다.")
-    void saveException() {
-        //given
-        Station station = new Station("김밥역");
-        Station secondStation = new Station("김밥역");
-
-        //when
-        Station savedStation = stationDao.save(station);
-
-        //then
-        assertThatThrownBy(() -> stationDao.save(secondStation))
-                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -98,20 +78,6 @@ class StationDaoImplTest {
 
         //then
         assertThat(findByName.name()).isEqualTo(station.name());
-    }
-
-    @Test
-    @DisplayName("DB 전체 삭제시 예외가 발생한다")
-    void clearException() {
-        //given
-        Station station = new Station("김밥역");
-
-        //when
-        Station saveStation = stationDao.save(station);
-
-        //then
-        assertThatThrownBy(stationDao::clear)
-                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test

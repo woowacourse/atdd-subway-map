@@ -1,5 +1,6 @@
 package wooteco.subway.station.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,20 +16,18 @@ import java.util.Optional;
 public class StationDaoImpl implements StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationsMapper;
 
     public StationDaoImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.stationsMapper = (rs, rowNum) -> new Station(
+                rs.getLong("id"),
+                rs.getString("name"));
     }
-
-    static RowMapper<Station> stationsMapper  = (rs, rowNum) -> new Station(
-            rs.getLong("id"),
-            rs.getString("name")
-    );
 
     @Override
     public Station save(final Station station) {
-        validateDuplicate(station);
-        String sql = "INSERT INTO station(name) values(?)";
+        String sql = "INSERT INTO STATION(name) values(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -36,52 +35,46 @@ public class StationDaoImpl implements StationDao {
             ps.setString(1, station.name());
             return ps;
         }, keyHolder);
-        return new Station(keyHolder.getKey().longValue(), station.name());
+        long newId = keyHolder.getKey().longValue();
+        return new Station(newId, station.name());
     }
 
     @Override
     public List<Station> findAll() {
-        return jdbcTemplate.query("select * from station order by id desc",
-                stationsMapper);
+        String sql = "SELECT * " +
+                "FROM STATION " +
+                "ORDER BY id DESC";
+        return jdbcTemplate.query(sql, stationsMapper);
     }
 
     @Override
     public Optional<Station> findById(final Long id) {
-        List<Station> stations = jdbcTemplate.query("select * from station where id = ?",
-                stationsMapper,
-                id);
+        String sql = "SELECT * " +
+                "FROM STATION " +
+                "WHERE id = ?";
 
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(stations.get(0));
+        List<Station> stations = jdbcTemplate.query(sql, stationsMapper, id);
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     @Override
     public Optional<Station> findByName(final String name) {
-        List<Station> stations = jdbcTemplate.query("select * from station where name = ?",
-                stationsMapper,
-                name);
+        String sql = "SELECT * " +
+                "FROM STATION " +
+                "WHERE name = ?";
 
-        if (stations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(stations.get(0));
+        List<Station> stations = jdbcTemplate.query(sql, stationsMapper, name);
+        return Optional.ofNullable(DataAccessUtils.singleResult(stations));
     }
 
     @Override
     public void delete(final Long id) {
-        int rowCount = jdbcTemplate.update("delete from station where id = ?", id);
-        if (rowCount == 0) {
-            throw new IllegalStateException("없는 역입!");
-        }
-    }
+        String sql = "DELETE FROM STATION " +
+                "WHERE id = ?";
 
-    private void validateDuplicate(final Station station) {
-        if (findByName(station.name()).isPresent()) {
-            throw new IllegalStateException("이미 있는 역임!");
+        int rowCount = jdbcTemplate.update(sql, id);
+        if (rowCount == 0) {
+            throw new IllegalStateException("[ERROR] 존재하지 않는 id입니다.");
         }
     }
 }
