@@ -23,7 +23,7 @@ public class LineDao {
     }
 
     public long insert(Line line) {
-        String query = "INSERT INTO line(name, color) VALUES(?, ?)";
+        String query = "INSERT INTO line(name, color, upward_terminal_id, downward_terminal_id) VALUES(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         executeSaveQuery(line, query, keyHolder);
@@ -36,6 +36,8 @@ public class LineDao {
                 PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
                 ps.setString(1, line.getName());
                 ps.setString(2, line.getColor());
+                ps.setLong(3, line.getUpwardTerminalId());
+                ps.setLong(4, line.getDownwardTerminalId());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
@@ -71,7 +73,9 @@ public class LineDao {
                     Line line = new Line(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
-                            resultSet.getString("color")
+                            resultSet.getString("color"),
+                            resultSet.getLong("upward_terminal_id"),
+                            resultSet.getLong("downward_terminal_id")
                     );
                     return line;
                 }, id);
@@ -105,5 +109,15 @@ public class LineDao {
         if (affectedRowNumber == 0) {
             throw new SubwayException(HttpStatus.BAD_REQUEST, "노선 이름이 존재하지 않아 삭제할 수 없습니다.");
         }
+    }
+
+    public void updateUpwardTerminalId(long lineId, long upStationId) {
+        String query = "UPDATE line SET upward_terminal_id=(?) WHERE id = (?)";
+        jdbcTemplate.update(query, upStationId, lineId);
+    }
+
+    public void updateDownwardTerminalId(long lineId, long downStationId) {
+        String query = "UPDATE line SET downward_terminal_id=(?) WHERE id = (?)";
+        jdbcTemplate.update(query, downStationId, lineId);
     }
 }

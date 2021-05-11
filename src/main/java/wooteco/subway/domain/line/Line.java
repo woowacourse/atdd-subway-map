@@ -6,9 +6,8 @@ public class Line {
     private long id;
     private String name;
     private String color;
-    private long upStationId;
-    private long downStationId;
-    private int distance;
+    private long upwardTerminalId;
+    private long downwardTerminalId;
 
     public Line() {
     }
@@ -24,12 +23,19 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color, long upStationId, long downStationId, int distance) {
+    public Line(long id, String name, String color, long upwardTerminalId, long downwardTerminalId) {
+        this.id = id;
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this.upwardTerminalId = upwardTerminalId;
+        this.downwardTerminalId = downwardTerminalId;
+    }
+
+    public Line(String name, String color, long upwardTerminalId, long downwardTerminalId) {
+        this.name = name;
+        this.color = color;
+        this.upwardTerminalId = upwardTerminalId;
+        this.downwardTerminalId = downwardTerminalId;
     }
 
     public long getId() {
@@ -44,16 +50,12 @@ public class Line {
         return color;
     }
 
-    public long getUpStationId() {
-        return upStationId;
+    public long getUpwardTerminalId() {
+        return upwardTerminalId;
     }
 
-    public long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
+    public long getDownwardTerminalId() {
+        return downwardTerminalId;
     }
 
     @Override

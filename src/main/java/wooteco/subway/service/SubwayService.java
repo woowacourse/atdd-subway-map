@@ -6,9 +6,9 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.dao.StationDao;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,9 +25,7 @@ public class SubwayService {
     }
 
     public long createLine(Line line) {
-        long lineId = lineDao.insert(line);
-        sectionDao.insert(lineId, new Section(line.getUpStationId(), line.getDownStationId(), line.getDistance()));
-        return lineId;
+        return lineDao.insert(line);
     }
 
     public List<Line> showLines() {
@@ -40,13 +38,13 @@ public class SubwayService {
     }
 
     public List<Station> getStationsInLine(long id) {
-        List<Section> sections = sectionDao.selectAll(id);
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(stationDao.select(section.getUpStationId()));
-            stations.add(stationDao.select(section.getDownStationId()));
-        }
-        return stations.stream().distinct().collect(Collectors.toList());
+        Sections sections = new Sections(sectionDao.selectAll(id));
+        Line line = lineDao.select(id);
+        List<Long> stationIds = sections.getStationIds(line.getUpwardTerminalId(), line.getDownwardTerminalId());
+
+        return stationIds.stream()
+                .map(stationId -> stationDao.select(stationId))
+                .collect(Collectors.toList());
     }
 
     public void modifyLine(long id, Line line) {
@@ -71,5 +69,23 @@ public class SubwayService {
 
     public long createSection(long lineId, Section section) {
         return sectionDao.insert(lineId, section);
+    }
+
+    public void updateSection(long lineId, Section section) {
+        int affectedRow = sectionDao.update(lineId, section);
+        if (affectedRow == 0) {
+            Line line = lineDao.select(lineId);
+            processSideInsertion(lineId, section, line);
+        }
+    }
+
+    private void processSideInsertion(long lineId, Section section, Line line) {
+        if (section.getDownStationId() == line.getUpwardTerminalId()) {
+            lineDao.updateUpwardTerminalId(lineId, section.getUpStationId());
+        }
+
+        if (section.getUpStationId() == line.getDownwardTerminalId()) {
+            lineDao.updateDownwardTerminalId(lineId, section.getDownStationId());
+        }
     }
 }

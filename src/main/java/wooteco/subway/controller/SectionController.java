@@ -2,7 +2,6 @@ package wooteco.subway.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import wooteco.subway.domain.section.Section;
 import wooteco.subway.dto.SectionRequest;
 import wooteco.subway.dto.SectionResponse;
@@ -20,8 +19,9 @@ public class SectionController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<SectionResponse> createLine(@RequestBody SectionRequest sectionRequest, @PathVariable long lineId) {
+    public ResponseEntity<SectionResponse> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable long lineId) {
         Section section = sectionRequest.createSection();
+        subwayService.updateSection(lineId, section);
         long sectionId = subwayService.createSection(lineId, section);
         SectionResponse sectionResponse = new SectionResponse(sectionId, lineId, section);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionId)).body(sectionResponse);

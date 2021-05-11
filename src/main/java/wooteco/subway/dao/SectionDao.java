@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.section.Section;
 
 import java.sql.PreparedStatement;
@@ -48,5 +47,10 @@ public class SectionDao {
             return section;
         }, id);
         return sections;
+    }
+
+    public int update(long lineId, Section section) {
+        String query = "UPDATE section SET up_station_id=(?) WHERE line_id = (?) AND up_station_id = (?)";
+        return jdbcTemplate.update(query, section.getDownStationId(), lineId, section.getUpStationId());
     }
 }
