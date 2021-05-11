@@ -96,9 +96,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        LineResponse lineResponse =  response.jsonPath().getList(".", LineResponse.class).get(0);
+        LineResponse lineResponse = response.jsonPath().getList(".", LineResponse.class).get(0);
 
-        assertThat(sectionDao.findSectionsByLineId(lineResponse.getId()).get(0).getDistance()).isEqualTo(5);
+        assertThat(sectionDao.findSectionsByLineId(lineResponse.getId()).get(0).getDistance())
+            .isEqualTo(5);
     }
 
     @DisplayName("구간이 2개 이상일 때, 종점인 역을 제거한다.")
@@ -119,7 +120,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> actualResponse = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .delete("/lines/{id}/sections?stationId={upId}", response.header("Location").split("/")[2], upId)
+            .delete("/lines/{id}/sections?stationId={upId}",
+                response.header("Location").split("/")[2], upId)
             .then().log().all()
             .extract();
 

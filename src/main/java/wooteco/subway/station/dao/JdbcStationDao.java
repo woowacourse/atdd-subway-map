@@ -52,7 +52,8 @@ public class JdbcStationDao implements StationDao {
 
     @Override
     public List<Station> findAllByIds(List<Long> ids) {
-        String query = String.format("select * from STATION where id in (%s)", stringify(ids.size()));
+        String query = String
+            .format("select * from STATION where id in (%s)", stringify(ids.size()));
         return jdbcTemplate.query(query, mapper, ids.toArray());
     }
 
