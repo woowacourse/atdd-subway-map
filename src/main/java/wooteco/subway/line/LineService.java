@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
-import wooteco.subway.section.SectionDto;
+import wooteco.subway.section.SectionDbDto;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
@@ -34,8 +34,8 @@ public class LineService {
 
         final Station upStation = findStationById(upStationId);
         final Station downStation = findStationById(downStationId);
-        final SectionDto sectionDto = sectionDao.save(line.getId(), upStation.getId(), downStation.getId(), distance);
-        final Section section = generateSection(sectionDto);
+        final SectionDbDto sectionDbDto = sectionDao.save(line.getId(), upStation.getId(), downStation.getId(), distance);
+        final Section section = generateSection(sectionDbDto);
         final Sections sections = new Sections(line.getId(), Collections.singletonList(section));
 
         line.setSections(sections);
@@ -54,10 +54,10 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
     }
 
-    public Section generateSection(SectionDto sectionDto) {
-        final Station upStation = findStationById(sectionDto.getUpStationId());
-        final Station downStation = findStationById(sectionDto.getDownStationId());
-        return new Section(sectionDto.getLineId(), upStation, downStation, sectionDto.getDistance());
+    public Section generateSection(SectionDbDto sectionDbDto) {
+        final Station upStation = findStationById(sectionDbDto.getUpStationId());
+        final Station downStation = findStationById(sectionDbDto.getDownStationId());
+        return new Section(sectionDbDto.getLineId(), upStation, downStation, sectionDbDto.getDistance());
     }
 
     public List<LineResponse> showLines() {
@@ -86,9 +86,9 @@ public class LineService {
 
     private Sections findSectionsInLine(long lineId) {
         final List<Section> sectionList = new ArrayList<>();
-        final List<SectionDto> sectionDtoList = sectionDao.findByLineId(lineId);
-        for (SectionDto sectionDto : sectionDtoList) {
-            final Section section = generateSection(sectionDto);
+        final List<SectionDbDto> sectionDbDtoList = sectionDao.findByLineId(lineId);
+        for (SectionDbDto sectionDbDto : sectionDbDtoList) {
+            final Section section = generateSection(sectionDbDto);
             sectionList.add(section);
         }
         return new Sections(lineId, sectionList);

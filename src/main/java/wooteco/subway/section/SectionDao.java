@@ -13,7 +13,7 @@ import java.util.Objects;
 @Repository
 public class SectionDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<SectionDto> sectionDtoRowMapper = (resultSet, rowNum) -> new SectionDto(
+    private final RowMapper<SectionDbDto> sectionDtoRowMapper = (resultSet, rowNum) -> new SectionDbDto(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
             resultSet.getLong("up_station_id"),
@@ -25,7 +25,7 @@ public class SectionDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public SectionDto save(long lineId, long upStationId, long downStationId, int distance) {
+    public SectionDbDto save(long lineId, long upStationId, long downStationId, int distance) {
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -39,10 +39,10 @@ public class SectionDao {
         }, keyHolder);
 
         final long sectionId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new SectionDto(sectionId, lineId, upStationId, downStationId, distance);
+        return new SectionDbDto(sectionId, lineId, upStationId, downStationId, distance);
     }
 
-    public List<SectionDto> findByLineId(long lineId) {
+    public List<SectionDbDto> findByLineId(long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(sql, sectionDtoRowMapper, lineId);
     }

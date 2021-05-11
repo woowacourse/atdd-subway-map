@@ -1,13 +1,13 @@
 package wooteco.subway.section;
 
-public class SectionDto {
+public class SectionDbDto {
     long id;
     long lineId;
     long upStationId;
     long downStationId;
     int distance;
 
-    public SectionDto(long id, long lineId, long upStationId, long downStationId, int distance) {
+    public SectionDbDto(long id, long lineId, long upStationId, long downStationId, int distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
