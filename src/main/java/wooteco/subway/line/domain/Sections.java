@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class Sections {
+    private static final int MINIMUM_SIZE = 1;
     private final List<Section> sections;
 
     public Sections() {
@@ -85,6 +86,7 @@ public class Sections {
     }
 
     public void deleteStation(final Station station) {
+        validateSize();
         Section upSection = findByUpStationSection(station);
         Section downSection = findByDownStationSection(station);
 
@@ -101,6 +103,12 @@ public class Sections {
         }
         deleteUpwardEndPointStation(station);
         deleteDownwardEndPointStation(station);
+    }
+
+    private void validateSize() {
+        if (sections.size() == MINIMUM_SIZE) {
+            throw new IllegalStateException("1개의 구간만 있기에 삭제 할 수 없음!");
+        }
     }
 
     public List<Section> changedSections(final Sections sections) {

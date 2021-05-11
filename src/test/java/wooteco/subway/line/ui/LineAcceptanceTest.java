@@ -1,6 +1,5 @@
 package wooteco.subway.line.ui;
 
-import groovyjarjarpicocli.CommandLine;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +23,6 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationDao;
 import wooteco.subway.station.dto.StationResponse;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,6 +43,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station station3;
     private Station station4;
     private Line line;
+
+    private static Stream<Arguments> stationIds() {
+        return Stream.of(
+                Arguments.arguments(1L, 2L),
+                Arguments.arguments(2L, 3L),
+                Arguments.arguments(1L, 3L),
+                Arguments.arguments(3L, 1L)
+        );
+    }
+
+    private static Stream<Arguments> exceptionStationIds() {
+        return Stream.of(
+                Arguments.arguments(3L, 4L),
+                Arguments.arguments(4L, 3L),
+                Arguments.arguments(5L, 6L),
+                Arguments.arguments(0L, 6L)
+        );
+    }
 
     @BeforeEach
     void init() {
@@ -265,15 +280,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponsesToStrings(findResponse.getStations())).containsExactly(station1.getName(), station2.getName());
     }
 
-    private static Stream<Arguments> stationIds(){
-        return Stream.of(
-                Arguments.arguments(1L, 2L),
-                Arguments.arguments(2L, 3L),
-                Arguments.arguments(1L, 3L),
-                Arguments.arguments(3L, 1L)
-        );
-    }
-
     @ParameterizedTest
     @DisplayName("구간 등록시 상행역화 하행역이 이미 등록 되어있다면 예외가 발생한다. ")
     @MethodSource("stationIds")
@@ -293,15 +299,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-
-    private static Stream<Arguments> exceptionStationIds(){
-        return Stream.of(
-                Arguments.arguments(3L, 4L),
-                Arguments.arguments(4L, 3L),
-                Arguments.arguments(5L, 6L),
-                Arguments.arguments(0L, 6L)
-        );
-    }
     @ParameterizedTest
     @DisplayName("구간 등록시 상행역화 하행역 둘다 노선에 등록 되어있지 않다면 예외가 발생한다. ")
     @MethodSource("exceptionStationIds")
@@ -316,6 +313,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(exceptionR.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    @DisplayName("1개의 구간만 있을 때, 역을 삭제를 하려하면 예외가 발생한다")
+    void deleteException() {
+        //given
+        int distance = 5;
+
+        //when
+        ExtractableResponse<Response> findLineResponse = deleteSectionByStationIdToHTTP(line.getId(), station1.getId());
+
+        //then
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     @Test
     @DisplayName("상행 종점역을 저장한다")
@@ -412,8 +423,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> deleteSectionByStationIdToHTTP(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .when()
-                .queryParam("stationId",stationId)
-                .delete("/lines/{id}/sections", lineId )
+                .queryParam("stationId", stationId)
+                .delete("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
