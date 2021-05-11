@@ -15,7 +15,7 @@ public class Sections {
 
     public Optional<Section> change(final Section requestedSection) {
         final List<Section> relatedSections = relatedSectionsOf(requestedSection);
-        validateRelated(relatedSections);
+        validateRelated(requestedSection, relatedSections);
         for (final Section section : relatedSections) {
             if (section.hasSameStations(requestedSection)) {
                 break;
@@ -36,17 +36,24 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void validateRelated(final List<Section> relatedSections) {
+    private void validateRelated(final Section requestedSection, final List<Section> relatedSections) {
         if (relatedSections.size() == 2) {
             final Section firstSection = relatedSections.get(0);
             final Section secondSection = relatedSections.get(1);
-            checkConnected(firstSection, secondSection);
+            validateConnected(firstSection, secondSection);
+            validateDifferent(requestedSection, firstSection, secondSection);
         }
     }
 
-    private void checkConnected(final Section firstSection, final Section secondSection) {
+    private void validateConnected(final Section firstSection, final Section secondSection) {
         if (!firstSection.canConnect(secondSection)) {
             throw new SectionException("이미 노선에서 서로 연결된 역들입니다.");
+        }
+    }
+
+    private void validateDifferent(final Section requestedSection, final Section firstSection, final Section secondSection) {
+        if ((requestedSection.canJoin(firstSection) && requestedSection.canJoin(secondSection)) || (requestedSection.canConnect(firstSection) && requestedSection.canConnect(secondSection))) {
+            throw new SectionException("갈래길을 형성할 수 없습니다.");
         }
     }
 }
