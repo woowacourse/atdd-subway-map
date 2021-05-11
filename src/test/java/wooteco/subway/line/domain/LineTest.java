@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -64,5 +65,31 @@ class LineTest {
         Section findSection = line.findSectionWithDownStation(station2);
 
         assertThat(findSection).isEqualTo(section);
+    }
+
+    @Test
+    @DisplayName("하나의 구간만 가지고 있는지 확인한다.")
+    void hasOnlyOne() {
+        assertThat(line.hasOnlyOneSection()).isTrue();
+    }
+
+    @Test
+    @DisplayName("해당 역을 가지고 있는 구간을 반환한다.")
+    void sectionsWhichHasStation() {
+        List<Section> findSections = line.sectionsWhichHasStation(station1);
+
+        assertThat(findSections).containsExactly(section);
+    }
+
+    @Test
+    @DisplayName("해당 역을 가지고 있는 구간을 반환한다. - 구간을 추가하고 확인")
+    void sectionsWhichHasStation2() {
+        Station station4 = new Station(4L, "강남역");
+        Section newSection = new Section(1L, station2, station4, 5);
+        line = new Line("9호선", "bg-red-600", Arrays.asList(section, newSection));
+
+        List<Section> findSections = line.sectionsWhichHasStation(station2);
+
+        assertThat(findSections).containsExactly(section, newSection);
     }
 }

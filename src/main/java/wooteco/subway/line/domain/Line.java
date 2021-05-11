@@ -16,7 +16,6 @@ public class Line {
         this(0L, name, color, new ArrayList<>());
     }
 
-
     public Line(String name, String color, List<Section> sections) {
         this(0L, name, color, sections);
     }
@@ -56,6 +55,10 @@ public class Line {
         this.sections = new Sections(sections);
     }
 
+    public List<Section> sections() {
+        return sections.sections();
+    }
+
     public List<Station> stations() {
         return sections.sortedStations();
     }
@@ -70,5 +73,20 @@ public class Line {
 
     public Section findSectionWithDownStation(Station duplicatedStation) {
         return sections.findSectionWithDownStation(duplicatedStation);
+    }
+
+    public boolean hasOnlyOneSection() {
+        return sections.size() == 1;
+    }
+
+    public List<Section> sectionsWhichHasStation(Station station) {
+        List<Section> sectionsWhichHasStation = new ArrayList<>();
+        if (!findSectionWithDownStation(station).isEmpty()) {
+            sectionsWhichHasStation.add(findSectionWithDownStation(station));
+        }
+        if (!findSectionWithUpStation(station).isEmpty()) {
+            sectionsWhichHasStation.add(findSectionWithUpStation(station));
+        }
+        return sectionsWhichHasStation;
     }
 }

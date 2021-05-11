@@ -57,11 +57,11 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-//    @DeleteMapping("/{id:[\\d]+}")
-//    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-//        lineService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("/{id:[\\d]+}/sections")
+    public ResponseEntity<Void> deleteLine(@PathVariable("id") Long lineId, @RequestParam Long stationId) {
+        lineService.delete(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/{id:[\\d]+}/sections")
     public ResponseEntity addSection(@PathVariable Long id, @Valid @RequestBody SectionRequest sectionRequest) {

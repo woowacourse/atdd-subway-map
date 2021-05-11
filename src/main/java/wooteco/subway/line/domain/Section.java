@@ -5,6 +5,8 @@ import wooteco.subway.station.domain.Station;
 import java.util.Objects;
 
 public class Section {
+    public static final Section EMPTY = new Section(0L, new Station(0L), new Station(0L), 0);
+
     private Long id;
     private Long lineId;
     private Station upStation;
@@ -69,6 +71,14 @@ public class Section {
 
     public int subtractDistance(Section anotherSection) {
         return this.distance - anotherSection.distance;
+    }
+
+    public int addDistance(Section anotherSection) {
+        return this.distance + anotherSection.distance;
+    }
+
+    public boolean isEmpty() {
+        return this.equals(EMPTY);
     }
 
     @Override

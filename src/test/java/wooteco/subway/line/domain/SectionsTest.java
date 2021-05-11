@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -91,5 +92,11 @@ class SectionsTest {
         Section findSection = sections.findSectionWithDownStation(station3);
 
         assertThat(findSection.id()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("size를 확인한다.")
+    void size() {
+        assertThat(sections.size()).isEqualTo(1);
     }
 }

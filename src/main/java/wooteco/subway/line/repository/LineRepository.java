@@ -51,4 +51,8 @@ public class LineRepository {
     public Section addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         return sectionRepository.save(lineId, upStationId, downStationId, distance);
     }
+
+    public void delete(Long lineId, Long stationId) {
+        sectionRepository.deleteByLineIdAndStationId(lineId, stationId);
+    }
 }

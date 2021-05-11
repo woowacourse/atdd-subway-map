@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.line.dao.SectionDao;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.station.dao.StationDao;
@@ -18,6 +19,7 @@ public class StationService {
         this.sectionDao = sectionDao;
     }
 
+    @Transactional
     public Station save(Station station) {
         validateDuplicate(station.name());
         return stationDao.save(station);
@@ -38,6 +40,7 @@ public class StationService {
                 new IllegalArgumentException("[ERROR] 존재하지 않는 역입니다."));
     }
 
+    @Transactional
     public void delete(Long id) {
         List<Section> sections = sectionDao.findByStationId(id);
         if (!sections.isEmpty()) {

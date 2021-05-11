@@ -40,20 +40,25 @@ public class LineService {
         return lineRepository.findById(id);
     }
 
+    @Transactional
     public void update(final Long id, LineRequest lineRequest) {
         lineRepository.update(new Line(id, lineRequest.getName(), lineRequest.getColor()));
     }
 
-    //
-//    public void delete(final Long id) {
-//        lineDao.delete(id);
-//    }
-//
-//    private Station findStationById(Long stationId) {
-//        return stationDao.findById(stationId)
-//                .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 역입니다."));
-//    }
-//
+    @Transactional
+    public void delete(final Long lineId, final Long stationId) {
+        Line line = lineRepository.findById(lineId);
+        if (line.hasOnlyOneSection()) {
+            throw new IllegalStateException("[ERROR] 구간이 하나만 존재하므로 삭제할 수 없습니다.");
+        }
+        List<Section> sections = line.sectionsWhichHasStation(new Station(stationId));
+        lineRepository.delete(lineId, stationId);
+        if (sections.size() == 2) {
+            lineRepository.addSection(
+                    lineId,sections.get(0).upStation().id(), sections.get(1).downStation().id(),sections.get(0).addDistance(sections.get(1)));
+        }
+    }
+
     @Transactional
     public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId);
