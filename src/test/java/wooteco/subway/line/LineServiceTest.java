@@ -43,7 +43,7 @@ public class LineServiceTest {
         String name = "1호선";
         String color = "파란색";
 
-        when(mockLineDao.create(any(Line.class))).thenReturn(new Line(id, name, color));
+        when(mockLineDao.save(any(Line.class))).thenReturn(new Line(id, name, color));
         when(mockSectionService.saveByLineCreate(any())).thenReturn(null);
 
         // when

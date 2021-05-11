@@ -3,7 +3,6 @@ package wooteco.subway.line.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,7 +30,7 @@ public class LineDao {
         };
     }
 
-    public Line create(final Line line) {
+    public Line save(final Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());

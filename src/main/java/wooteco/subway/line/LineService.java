@@ -32,7 +32,7 @@ public class LineService {
     @Transactional
     public LineServiceDto createLine(@Valid final CreateLineDto createLineDto) {
         Line line = createLineDto.toLineEntity();
-        Line saveLine = lineDao.create(line);
+        Line saveLine = lineDao.save(line);
         SectionServiceDto sectionServiceDto = SectionServiceDto.of(saveLine, createLineDto);
         sectionService.saveByLineCreate(sectionServiceDto);
         return LineServiceDto.from(saveLine);
