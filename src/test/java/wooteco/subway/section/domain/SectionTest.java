@@ -4,10 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.section.exception.SectionHasSameStationsException;
 import wooteco.subway.section.exception.SectionNotSequentialException;
+import wooteco.subway.station.fixture.StationFixture;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static wooteco.subway.section.domain.Fixture.*;
 
 @DisplayName("구간 기능 테스트")
 class SectionTest {
@@ -18,26 +18,26 @@ class SectionTest {
     @Test
     void ifExistTest() {
         //given
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
+        Section section = new Section(StationFixture.GANGNAM_STATION, StationFixture.YEOKSAM_STATION, TEN_DISTANCE);
 
         //when
         //then
-        assertThat(section.isExist(GANGNAM_STATION)).isTrue();
+        assertThat(section.isExist(StationFixture.GANGNAM_STATION)).isTrue();
     }
 
     @DisplayName("다음 구간과 합치는 기능")
     @Test
     void mergeWithDownSectionTest() {
         //given
-        Section upSection = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
-        Section downSection = new Section(YEOKSAM_STATION, JAMSIL_STATION, FIVE_DISTANCE);
+        Section upSection = new Section(StationFixture.GANGNAM_STATION, StationFixture.YEOKSAM_STATION, TEN_DISTANCE);
+        Section downSection = new Section(StationFixture.YEOKSAM_STATION, StationFixture.JAMSIL_STATION, FIVE_DISTANCE);
 
         //when
         Section mergedSection = downSection.mergeWithSequentialSection(upSection);
 
         //then
-        assertThat(mergedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
-        assertThat(mergedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
+        assertThat(mergedSection.getUpStation()).isEqualTo(StationFixture.GANGNAM_STATION);
+        assertThat(mergedSection.getDownStation()).isEqualTo(StationFixture.JAMSIL_STATION);
         assertThat(mergedSection.getDistance()).isEqualTo(TEN_DISTANCE + FIVE_DISTANCE);
     }
 
@@ -45,13 +45,13 @@ class SectionTest {
     @Test
     void updateUpStationTest() {
         //given
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
+        Section section = new Section(StationFixture.GANGNAM_STATION, StationFixture.YEOKSAM_STATION, TEN_DISTANCE);
 
         //when
-        Section updatedSection = section.updateUpStation(JAMSIL_STATION, FIVE_DISTANCE);
+        Section updatedSection = section.updateUpStation(StationFixture.JAMSIL_STATION, FIVE_DISTANCE);
         //then
-        assertThat(updatedSection.getUpStation()).isEqualTo(JAMSIL_STATION);
-        assertThat(updatedSection.getDownStation()).isEqualTo(YEOKSAM_STATION);
+        assertThat(updatedSection.getUpStation()).isEqualTo(StationFixture.JAMSIL_STATION);
+        assertThat(updatedSection.getDownStation()).isEqualTo(StationFixture.YEOKSAM_STATION);
         assertThat(updatedSection.getDistance()).isEqualTo(section.getDistance() - FIVE_DISTANCE);
     }
 
@@ -59,14 +59,14 @@ class SectionTest {
     @Test
     void updateDownStationTest() {
         //given
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
+        Section section = new Section(StationFixture.GANGNAM_STATION, StationFixture.YEOKSAM_STATION, TEN_DISTANCE);
 
         //when
-        Section updatedSection = section.updateDownStation(JAMSIL_STATION, FIVE_DISTANCE);
+        Section updatedSection = section.updateDownStation(StationFixture.JAMSIL_STATION, FIVE_DISTANCE);
 
         //then
-        assertThat(updatedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
-        assertThat(updatedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
+        assertThat(updatedSection.getUpStation()).isEqualTo(StationFixture.GANGNAM_STATION);
+        assertThat(updatedSection.getDownStation()).isEqualTo(StationFixture.JAMSIL_STATION);
         assertThat(updatedSection.getDistance()).isEqualTo(section.getDistance() - FIVE_DISTANCE);
     }
 
@@ -74,8 +74,8 @@ class SectionTest {
     @Test
     void whenNotSequentialSection() {
         //given
-        Section upSection = new Section(GANGNAM_STATION, YEOKSAM_STATION, TEN_DISTANCE);
-        Section downSection = new Section(SADANG_STATION, JAMSIL_STATION, FIVE_DISTANCE);
+        Section upSection = new Section(StationFixture.GANGNAM_STATION, StationFixture.YEOKSAM_STATION, TEN_DISTANCE);
+        Section downSection = new Section(StationFixture.SADANG_STATION, StationFixture.JAMSIL_STATION, FIVE_DISTANCE);
 
         //when
         //then
@@ -90,7 +90,7 @@ class SectionTest {
         //given
         //when
         //then
-        assertThatThrownBy(() -> new Section(GANGNAM_STATION, GANGNAM_STATION, TEN_DISTANCE))
+        assertThatThrownBy(() -> new Section(StationFixture.GANGNAM_STATION, StationFixture.GANGNAM_STATION, TEN_DISTANCE))
                 .isInstanceOf(SectionHasSameStationsException.class);
     }
 }

@@ -3,6 +3,7 @@ package wooteco.subway.line.controller;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dao.LineDao;
+import wooteco.subway.line.fixture.LineFixture;
+import wooteco.subway.station.controller.StationResponse;
+import wooteco.subway.station.fixture.StationFixture;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,15 +22,21 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.line.controller.LineControllerTestUtils.지하철노선을_생성한다;
+import static wooteco.subway.section.domain.Fixture.*;
+import static wooteco.subway.station.controller.StationControllerTestUtils.지하철역을_생성한다;
 
 @DisplayName("지하철 노선 테스트")
 public class LineControllerTest extends AcceptanceTest {
-    private static final String TEST_LINE_NAME = "강남노선";
-    private static final String TEST_COLOR_NAME = "orange darken-4";
-    private static final Long TEST_UP_STATION_ID = 1L;
-    private static final Long TEST_DOWN_STATION_ID = 2L;
-    private static final int TEST_DISTANCE = 10;
-    private static final LineRequest REQUEST_BODY = new LineRequest(TEST_LINE_NAME, TEST_COLOR_NAME, TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
+    private static Long GANG_NAM_ID;
+    private static Long JAM_SIL_ID;
+    private static LineRequest lineRequest;
+
+    @BeforeEach
+    void insertDummyData() {
+        GANG_NAM_ID = 지하철역을_생성한다(StationFixture.GANG_SAM_STATION_REQUEST).as(StationResponse.class).getId();
+        JAM_SIL_ID = 지하철역을_생성한다(StationFixture.JAM_SIL_STATION_REQUEST).as(StationResponse.class).getId();
+        lineRequest = new LineRequest(LineFixture.TEST_LINE_NAME, LineFixture.TEST_COLOR_NAME, GANG_NAM_ID, JAM_SIL_ID, TEST_DISTANCE);
+    }
 
     @Autowired
     private LineDao dao;
@@ -37,27 +47,26 @@ public class LineControllerTest extends AcceptanceTest {
     void createLine() {
         // given
         // when
-        ExtractableResponse<Response> response = 지하철노선을_생성한다(REQUEST_BODY);
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(lineRequest);
 
         final LineResponse lineResponse = response.body().as(LineResponse.class);
         // then
-        assertThat(REQUEST_BODY.getName()).isEqualTo(lineResponse.getName());
-        assertThat(REQUEST_BODY.getColor()).isEqualTo(lineResponse.getColor());
+        assertThat(lineRequest.getName()).isEqualTo(lineResponse.getName());
+        assertThat(lineRequest.getColor()).isEqualTo(lineResponse.getColor());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
 
-
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 생성하면 예외")
     @Transactional
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철노선을_생성한다(REQUEST_BODY);
+        지하철노선을_생성한다(lineRequest);
 
         // when
-        LineRequest duplicateNameRequest = new LineRequest(TEST_LINE_NAME, "red darken-3", TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
+        LineRequest duplicateNameRequest = new LineRequest(LineFixture.TEST_LINE_NAME, "red darken-3", StationFixture.GANGNAM_STATION.getId(), StationFixture.JAMSIL_STATION.getId(), TEST_DISTANCE);
 
         ExtractableResponse<Response> response = 지하철노선을_생성한다(duplicateNameRequest);
 
@@ -65,15 +74,15 @@ public class LineControllerTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("기존에 존재하는 지하철노선 색상으로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 색상으로 생성하면 예외")
     @Transactional
     @Test
     void createLineWithDuplicateColor() {
         // given
-        지하철노선을_생성한다(REQUEST_BODY);
+        지하철노선을_생성한다(lineRequest);
 
         // when
-        LineRequest duplicateColorRequest = new LineRequest("다른이름역", TEST_COLOR_NAME, TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
+        LineRequest duplicateColorRequest = new LineRequest("다른이름역", LineFixture.TEST_COLOR_NAME, StationFixture.GANGNAM_STATION.getId(), StationFixture.JAMSIL_STATION.getId(), TEST_DISTANCE);
 
         ExtractableResponse<Response> response = 지하철노선을_생성한다(duplicateColorRequest);
 
@@ -86,7 +95,7 @@ public class LineControllerTest extends AcceptanceTest {
     @Test
     void getLineById() {
         /// given
-        final ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(REQUEST_BODY);
+        final ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(lineRequest);
 
         // when
         String uri = createResponse.header("Location");
@@ -99,8 +108,8 @@ public class LineControllerTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         final LineResponse lineResponse = response.body().as(LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo(TEST_LINE_NAME);
-        assertThat(lineResponse.getColor()).isEqualTo(TEST_COLOR_NAME);
+        assertThat(lineResponse.getName()).isEqualTo(LineFixture.TEST_LINE_NAME);
+        assertThat(lineResponse.getColor()).isEqualTo(LineFixture.TEST_COLOR_NAME);
     }
 
     @DisplayName("지하철노선을 조회한다.")
@@ -108,9 +117,9 @@ public class LineControllerTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철노선을_생성한다(REQUEST_BODY);
+        ExtractableResponse<Response> createResponse1 = 지하철노선을_생성한다(lineRequest);
 
-        LineRequest anotherRequestBody = new LineRequest("마이크로소프트호선", "blue darken-4", TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
+        LineRequest anotherRequestBody = new LineRequest("마이크로소프트호선", "blue darken-4", StationFixture.GANGNAM_STATION.getId(), StationFixture.JAMSIL_STATION.getId(), TEST_DISTANCE);
 
         ExtractableResponse<Response> createResponse2 = 지하철노선을_생성한다(anotherRequestBody);
 
@@ -137,13 +146,13 @@ public class LineControllerTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = 지하철노선을_생성한다(REQUEST_BODY);
+        ExtractableResponse<Response> response = 지하철노선을_생성한다(lineRequest);
 
         // when
         String updateName = "빨리빨리노선";
         String updateColor = "red darken-3";
 
-        LineRequest updateRequest = new LineRequest(updateName, updateColor, TEST_UP_STATION_ID, TEST_DOWN_STATION_ID, TEST_DISTANCE);
+        LineRequest updateRequest = new LineRequest(updateName, updateColor, StationFixture.GANGNAM_STATION.getId(), StationFixture.JAMSIL_STATION.getId(), TEST_DISTANCE);
 
         String uri = response.header("Location");
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -173,7 +182,7 @@ public class LineControllerTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(REQUEST_BODY);
+        ExtractableResponse<Response> createResponse = 지하철노선을_생성한다(lineRequest);
 
         // when
         String uri = createResponse.header("Location");

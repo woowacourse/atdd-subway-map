@@ -1,8 +1,10 @@
-package wooteco.subway.station;
+package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.exception.InvalidStationNameException;
+import wooteco.subway.station.exception.WrongStationIdException;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class StationService {
 
     public Station save(Station station) {
         if (isDuplicatedName(station)) {
-            throw new IllegalArgumentException(String.format("역 이름이 중복되었습니다. 중복된 역 이름 : %s", station.getName()));
+            throw new InvalidStationNameException(String.format("역 이름이 중복되었습니다. 중복된 역 이름 : %s", station.getName()));
         }
         return stationDao.save(station);
     }
@@ -41,7 +43,7 @@ public class StationService {
 
     private void ifAbsent(Station station) {
         if (!stationDao.checkExistId(station.getId())) {
-            throw new IllegalArgumentException("역이 존재하지 않습니다.");
+            throw new WrongStationIdException("역이 존재하지 않습니다.");
         }
     }
 

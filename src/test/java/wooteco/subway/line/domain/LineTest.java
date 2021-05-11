@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.InvalidLineNameException;
 
 import java.util.stream.Stream;
 
@@ -25,7 +26,7 @@ class LineTest {
 
         //when & then
         assertThatThrownBy(() -> new Line(soLongName, TEST_COLOR))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidLineNameException.class)
                 .hasMessageContaining("노선 이름은 20자를 초과할 수 없습니다.");
     }
 
@@ -54,7 +55,7 @@ class LineTest {
     public void invalidNameTest(String invalidName) {
         //given & when & then
         assertThatThrownBy(() -> new Line(invalidName, TEST_COLOR))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidLineNameException.class)
                 .hasMessageContaining("노선 이름에 유효하지 않은 문자가 있습니다.");
     }
 }

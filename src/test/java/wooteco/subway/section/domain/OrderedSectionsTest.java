@@ -12,6 +12,7 @@ import wooteco.subway.section.exception.SectionsHasDuplicateException;
 import wooteco.subway.section.exception.SectionsHasNotSectionException;
 import wooteco.subway.section.exception.SectionsIllegalArgumentException;
 import wooteco.subway.section.exception.SectionsSizeTooSmallException;
+import wooteco.subway.station.fixture.StationFixture;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -103,7 +104,7 @@ class OrderedSectionsTest {
     @Test
     void whenNotSequentialSectionAddTest() {
         //given
-        Section notSequentialSection = new Section(SAMSUNG_STATION, GYODAE_STATION, 10);
+        Section notSequentialSection = new Section(StationFixture.SAMSUNG_STATION, StationFixture.GYODAE_STATION, 10);
         //when
         //then
         assertThatThrownBy(() -> getFirstToFifthSections().addSection(notSequentialSection))
@@ -136,7 +137,7 @@ class OrderedSectionsTest {
         //given
         OrderedSections sections = getFirstToFifthSections();
         //when
-        OrderedSections newSections = sections.removeSection(JAMSIL_STATION);
+        OrderedSections newSections = sections.removeSection(StationFixture.JAMSIL_STATION);
         //then
         assertThat(newSections.getSections()).containsExactly(FIRST_AND_SECOND_MERGED_SECTION, THIRD_SECTION, FOURTH_SECTION);
     }
@@ -145,10 +146,10 @@ class OrderedSectionsTest {
     @Test
     void whenOnlyOneSectionsRemoveTest() {
         //given
-        OrderedSections onlyOneSection = new OrderedSections(new Section(GANGNAM_STATION, JAMSIL_STATION, 10));
+        OrderedSections onlyOneSection = new OrderedSections(new Section(StationFixture.GANGNAM_STATION, StationFixture.JAMSIL_STATION, 10));
         //when
         //then
-        assertThatThrownBy(() -> onlyOneSection.removeSection(GANGNAM_STATION))
+        assertThatThrownBy(() -> onlyOneSection.removeSection(StationFixture.GANGNAM_STATION))
                 .isInstanceOf(SectionsSizeTooSmallException.class);
     }
 
@@ -168,7 +169,7 @@ class OrderedSectionsTest {
         //given
         //when
         //then
-        assertThatThrownBy(() -> getFirstToFifthSections().removeSection(YEOKSAM_STATION))
+        assertThatThrownBy(() -> getFirstToFifthSections().removeSection(StationFixture.YEOKSAM_STATION))
                 .isInstanceOf(SectionsHasNotSectionException.class);
     }
 

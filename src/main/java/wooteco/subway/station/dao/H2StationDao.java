@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationName;
+import wooteco.subway.station.exception.WrongStationIdException;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -62,7 +63,7 @@ public class H2StationDao implements StationDao {
         );
 
         if (queryResult.isEmpty()) {
-            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 역이 없습니다. ID : %d", id));
+            throw new WrongStationIdException(String.format("데이터베이스에 해당 ID의 역이 없습니다. ID : %d", id));
         }
 
         return queryResult.get(0);

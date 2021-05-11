@@ -3,6 +3,8 @@ package wooteco.subway.station.dao;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationName;
+import wooteco.subway.station.exception.InvalidStationNameException;
+import wooteco.subway.station.exception.WrongStationIdException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class InMemoryStationDao implements StationDao {
     public Station save(Station station) {
         Station persistStation = setId(station);
         if (isDuplicatedName(station)) {
-            throw new IllegalArgumentException(String.format("역 이름이 중복되었습니다. 중복된 역 이름 : %s", station.getName()));
+            throw new InvalidStationNameException(String.format("역 이름이 중복되었습니다. 중복된 역 이름 : %s", station.getName()));
         }
         stations.add(persistStation);
         return persistStation;
@@ -37,7 +39,7 @@ public class InMemoryStationDao implements StationDao {
         return stations.stream()
                 .filter(station -> station.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
+                .orElseThrow(() -> new WrongStationIdException(String.format("ID에 해당하는 역이 없습니다. ID : %d", id)));
     }
 
     @Override
@@ -73,7 +75,7 @@ public class InMemoryStationDao implements StationDao {
 
     private void ifAbsent(Station station) {
         if (!stations.contains(station)) {
-            throw new IllegalArgumentException("역이 존재하지 않습니다.");
+            throw new WrongStationIdException("역이 존재하지 않습니다.");
         }
     }
 }

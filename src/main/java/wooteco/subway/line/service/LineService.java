@@ -3,6 +3,8 @@ package wooteco.subway.line.service;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.exception.InvalidLineNameException;
+import wooteco.subway.line.exception.WrongLineIdException;
 
 import java.util.List;
 
@@ -16,10 +18,10 @@ public class LineService {
 
     public Line save(Line line) {
         if (isDuplicatedName(line)) {
-            throw new IllegalArgumentException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
+            throw new InvalidLineNameException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
         }
         if (isDuplicatedColor(line)) {
-            throw new IllegalArgumentException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
+            throw new InvalidLineNameException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
         }
         return lineDao.save(line);
     }
@@ -52,7 +54,7 @@ public class LineService {
 
     private void ifAbsent(Line line) {
         if (!lineDao.checkExistId(line.getId())) {
-            throw new IllegalArgumentException("노선이 존재하지 않습니다.");
+            throw new WrongLineIdException("노선이 존재하지 않습니다.");
         }
     }
 

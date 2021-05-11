@@ -6,7 +6,7 @@ import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dao.SectionDto;
 import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.station.StationService;
+import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.domain.Station;
 
 import java.util.List;
