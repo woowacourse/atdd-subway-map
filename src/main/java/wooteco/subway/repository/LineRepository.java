@@ -62,14 +62,8 @@ public class LineRepository {
         boolean containsUpStation = containsStationInLine(lineId, upStationId);
         boolean containsDownStation = containsStationInLine(lineId, downStationId);
 
-        // 상행 종점(구간) 등록
-        if (isEndStation(lineId, upStationId) || isStartStation(lineId, downStationId)) {
-            sectionDao.create(lineId, upStationId, downStationId, distance);
-            return;
-        }
-
-        // 하행 종점(구간) 등록
-        if (containsUpStation && isEndStation(lineId, upStationId)) {
+        // 상행, 하행 종점(구간) 등록
+        if (isStartStation(lineId, downStationId) && isEndStation(lineId, upStationId)) {
             sectionDao.create(lineId, upStationId, downStationId, distance);
             return;
         }
