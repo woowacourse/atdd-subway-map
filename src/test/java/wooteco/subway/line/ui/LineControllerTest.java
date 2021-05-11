@@ -14,8 +14,12 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
 import wooteco.subway.line.domain.Section;
 import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.service.LineService;
 import wooteco.subway.line.ui.dto.LineCreateRequest;
 import wooteco.subway.line.ui.dto.LineModifyRequest;
+import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -26,7 +30,13 @@ import static wooteco.subway.line.service.LineService.ERROR_DUPLICATED_LINE_NAME
 class LineControllerTest {
 
     @Autowired
+    private LineService lineService;
+
+    @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private StationRepository stationRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -185,6 +195,41 @@ class LineControllerTest {
                 .delete("/lines/1")
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void showSectionsInLine() {
+
+        Station upStation = new Station("봉천역");
+        Station downStation = new Station("신림역");
+
+        Station savedUpStation = stationRepository.save(upStation);
+        Station savedDownStation = stationRepository.save(downStation);
+
+        Sections sections = new Sections(
+                Collections.singletonList(
+                        new Section(savedUpStation.getId(), savedDownStation.getId(), 10)
+                )
+        );
+
+        Line line = lineRepository.save(new Line("2호선", "bg-red-600", sections));
+
+        final List<Station> stations = lineService.getStations(line.getId());
+        LineResponse testResponse = new LineResponse(line, stations);
+
+        LineResponse resultResponse = RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + line.getId())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .assertThat()
+                .extract()
+                .as(LineResponse.class);
+
+        assertThat(resultResponse.getStations()).hasSize(2);
+        assertThat(resultResponse).isEqualTo(testResponse);
     }
 
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.repository.SectionDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.domain.StationRepository;
 
@@ -29,11 +31,15 @@ public class LineService {
 
     public List<Station> getStations(Long lineId) {
         Line line = lineRepository.findById(lineId);
-
-        return line.getSections().toList()
-                .stream()
+        List<Section> sectionList = line.getSections().toList();
+        List<Station> stations = sectionList.stream()
                 .map(section -> stationRepository.findById(section.getUpStationId()))
                 .collect(Collectors.toList());
+
+        Long lastStationId = sectionList.get(sectionList.size() -1).getDownStationId();
+        stations.add(stationRepository.findById(lastStationId));
+
+        return stations;
 
     }
 

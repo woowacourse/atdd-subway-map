@@ -5,13 +5,17 @@ import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.ui.dto.StationResponse;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LineResponse {
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<StationResponse> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<StationResponse> stations;
+
+    public LineResponse() {
+    }
 
     public LineResponse(final Long id, final String name, final String color, List<Station> stations) {
         this.id = id;
@@ -44,5 +48,28 @@ public class LineResponse {
         return stations.stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final LineResponse that = (LineResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, stations);
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", stations=" + stations +
+                '}';
     }
 }

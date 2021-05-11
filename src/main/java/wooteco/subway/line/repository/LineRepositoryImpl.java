@@ -20,7 +20,9 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public Line save(final Line line) {
-        return lineDao.save(line);
+        Line savedLine = lineDao.save(line);
+        sectionDao.saveAll(savedLine.getId(), savedLine.getSections());
+        return savedLine;
     }
 
     @Override

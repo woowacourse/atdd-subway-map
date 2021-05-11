@@ -20,14 +20,14 @@ public class SectionDao {
 
     public void saveAll(Long lineId, Sections sections) {
         List<Section> sectionList = sections.toList();
-        jdbcTemplate.batchUpdate("INSERT  INTO SECTION VALUES (?, ?, ?, ?)",
+        jdbcTemplate.batchUpdate("INSERT INTO SECTION VALUES (?, ?, ?, ?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(final PreparedStatement ps, final int i) throws SQLException {
                         ps.setLong(1, lineId);
                         ps.setLong(2, sectionList.get(i).getUpStationId());
                         ps.setLong(3, sectionList.get(i).getDownStationId());
-                        ps.setLong(4, sectionList.get(i).getDistance());
+                        ps.setInt(4, sectionList.get(i).getDistance());
                     }
 
                     @Override
