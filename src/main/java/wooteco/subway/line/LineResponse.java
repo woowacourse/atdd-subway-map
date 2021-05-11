@@ -14,14 +14,14 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    private LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
     }
 
-    public static LineResponse from(Line line) {
+    public static LineResponse from(final Line line) {
         final Long id = line.getId();
         final String name = line.getName();
         final String color = line.getColor();

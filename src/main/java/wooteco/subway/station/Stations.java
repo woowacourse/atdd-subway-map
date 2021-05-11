@@ -1,6 +1,5 @@
 package wooteco.subway.station;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +21,6 @@ public class Stations {
         stationGroup.putAll(stations.stream()
             .collect(Collectors.toMap(Station::getId, Function.identity(),
                 (existing, replacement) -> existing, LinkedHashMap::new)));
-    }
-
-    public Map<Long, Station> toMap() {
-        return Collections.unmodifiableMap(stationGroup);
     }
 
     public Stream<Station> toStream() {

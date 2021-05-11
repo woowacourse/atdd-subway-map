@@ -19,15 +19,17 @@ public class Line {
     private final Sections sections;
     private final Stations stations;
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this(null, name, color, Collections.emptyList(), Collections.emptyMap());
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(final Long id, final String name, final String color) {
         this(id, name, color, Collections.emptyList(), Collections.emptyMap());
     }
 
-    public Line(Long id, String name, String color, List<Section> sectionGroup, Map<Long, Station> stationGroup) {
+    public Line(final Long id, final String name, final String color, final List<Section> sectionGroup,
+        final Map<Long, Station> stationGroup) {
+
         this(id, name, color, new Sections(sectionGroup), new Stations(stationGroup));
     }
 

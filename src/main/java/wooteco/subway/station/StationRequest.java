@@ -7,7 +7,7 @@ public class StationRequest {
     public StationRequest() {
     }
 
-    public StationRequest(String name) {
+    public StationRequest(final String name) {
         this.name = name;
     }
 
