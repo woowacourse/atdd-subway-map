@@ -2,9 +2,11 @@ package wooteco.subway.section.domain;
 
 import wooteco.subway.exception.IllegalSectionStatusException;
 import wooteco.subway.exception.SectionUpdateException;
+import wooteco.subway.exception.notfoundexception.NotFoundSectionException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -79,7 +81,7 @@ public class Sections {
     public Section addSection(Section section) {
         Section targetSection = validateAddSection(section);
 
-        if(isBetweenAddCase(section, targetSection)) {
+        if (isBetweenAddCase(section, targetSection)) {
             return getUpdateSection(section, targetSection);
         }
         return section;
@@ -87,7 +89,7 @@ public class Sections {
 
     private Section getUpdateSection(Section section, Section targetSection) {
         int updateSectionDistance = targetSection.getDistance() - section.getDistance();
-        if(section.isUpStationId(targetSection.getUpStationId())) {
+        if (section.isUpStationId(targetSection.getUpStationId())) {
             return new Section(targetSection.getId(), targetSection.getLineId(), section.getDownStationId(), targetSection.getDownStationId(), updateSectionDistance);
         }
         return new Section(targetSection.getId(), targetSection.getLineId(), targetSection.getUpStationId(), section.getUpStationId(), updateSectionDistance);
@@ -111,17 +113,57 @@ public class Sections {
             throw new SectionUpdateException("상행역 또는 하행역이 포함되어야 합니다.");
         }
 
-        Section targetSection = sections.stream()
-                .filter(existSection ->
-                        (existSection.isUpStationId(upStationId) || existSection.isDownStationId(downStationId) ||
-                                (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId))))
-                .findFirst().orElseThrow(IllegalSectionStatusException::new);
+        Section targetSection = targetSection(upStationId, downStationId);
 
         if (isBetweenAddCase(section, targetSection)) {
             validateDistance(targetSection, section);
         }
 
         return targetSection;
+    }
+
+    private Section targetSection(Long upStationId, Long downStationId) {
+        if (isEndStation(upStationId) || isEndStation(downStationId)) {
+            return isTargetSectionExistEnd(upStationId, downStationId);
+        }
+
+        return isTargetSectionExistBetween(upStationId, downStationId);
+    }
+
+    private Section isTargetSectionExistBetween(Long upStationId, Long downStationId) {
+        List<Section> sections = this.sections.stream()
+                .filter(existSection ->
+                        (existSection.isUpStationId(upStationId) || existSection.isDownStationId(downStationId) ||
+                                (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId))))
+                .collect(Collectors.toList());
+
+        Long fixedId = findFixedId(sections, upStationId, downStationId);
+        if(fixedId.equals(upStationId)) {
+            return sections.stream()
+                    .filter(section -> section.isUpStationId(fixedId))
+                    .findFirst()
+                    .orElseThrow(NotFoundSectionException::new);
+        }
+        return sections.stream()
+                .filter(section -> section.isDownStationId(fixedId))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
+    }
+
+    private Section isTargetSectionExistEnd(Long upStationId, Long downStationId) {
+        return sections.stream()
+                .filter(existSection ->
+                        (existSection.isUpStationId(upStationId) || existSection.isDownStationId(downStationId) ||
+                                (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId))))
+                .findFirst().orElseThrow(IllegalSectionStatusException::new);
+    }
+
+    private Long findFixedId(List<Section> sections, Long upStationId, Long downStationId) {
+        Section firstSection = sections.get(0);
+        if (firstSection.isUpStationId(upStationId) || firstSection.isDownStationId(upStationId)) {
+            return upStationId;
+        }
+        return downStationId;
     }
 
     private boolean isBetweenAddCase(Section section, Section targetSection) {
@@ -132,5 +174,34 @@ public class Sections {
         if (targetSection.compareDistance(section.getDistance())) {
             throw new SectionUpdateException("추가할 구간의 거리는 기존 구간 거리보다 작아야 합니다.");
         }
+    }
+
+    public Optional<Section> deleteSection(Long lineId, Long stationId) {
+        validateDeleteSection();
+        if (isEndStation(stationId)) {
+            return Optional.empty();
+        }
+
+        Section upSection = sections.stream()
+                .filter(section -> section.isDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
+        Section downSection = sections.stream()
+                .filter(section -> section.isUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
+        int updateSectionDistance = upSection.getDistance() + downSection.getDistance();
+
+        return Optional.of(new Section(lineId, upSection.getUpStationId(), downSection.getDownStationId(), updateSectionDistance));
+    }
+
+    private void validateDeleteSection() {
+    }
+
+    private boolean isEndStation(Long stationId) {
+        Section topSection = sections.get(0);
+        Section bottomSection = sections.get(sections.size() - 1);
+
+        return topSection.isUpStationId(stationId) || bottomSection.isDownStationId(stationId);
     }
 }
