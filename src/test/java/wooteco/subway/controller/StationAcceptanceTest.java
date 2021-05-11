@@ -14,8 +14,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import wooteco.subway.controller.dto.StationRequest;
-import wooteco.subway.controller.dto.StationResponse;
+import wooteco.subway.controller.request.StationRequest;
+import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.exception.SubwayException;
 import wooteco.subway.service.StationService;
 

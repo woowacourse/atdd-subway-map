@@ -1,10 +1,10 @@
-package wooteco.subway.controller.apis;
+package wooteco.subway.controller.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.controller.dto.StationRequest;
-import wooteco.subway.controller.dto.StationResponse;
+import wooteco.subway.controller.request.StationRequest;
+import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.service.StationService;
 
