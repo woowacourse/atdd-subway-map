@@ -1,24 +1,19 @@
 package wooteco.subway.domain;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
-public class Station {
+public class Line {
     private final Long id;
-    @NotBlank(message = "역의 이름은 필수로 입력하여야 합니다.")
     private final String name;
+    private final String color;
 
-    private Station(Long id, String name) {
+    private Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
+        this.color = color;
     }
 
-    public static Station from(String name) {
-        return new Station(null, name);
-    }
-
-    public static Station of(Long id, String name) {
-        return new Station(id, name);
+    public static Line of(Long id, String name, String color) {
+        return new Line(id, name, color);
     }
 
     public Long getId() {
@@ -29,6 +24,10 @@ public class Station {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     public boolean isSameId(Long id) {
         return this.id.equals(id);
     }
@@ -37,4 +36,3 @@ public class Station {
         return this.name.equals(name);
     }
 }
-
