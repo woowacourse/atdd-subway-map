@@ -58,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("상행 종점 구간 등록")
-    public void saveSectionWithUpEndPointCase() {
+    public void saveSectionWithUpEndStationCase() {
         ExtractableResponse<Response> response = createSectionResponse(
                 new SectionRequest(10L, 1L, 1)
         );

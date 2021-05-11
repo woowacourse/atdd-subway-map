@@ -60,15 +60,15 @@ public class SectionDao {
         }
     }
 
-    public boolean hasEndPointInSection(Long lineId, Long upStationId, Long downStationId) {
+    public boolean hasEndStationInSection(Long lineId, Long upStationId, Long downStationId) {
         String upStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and UP_STATION_ID = ?";
         String downStationIdCondition = "select count(*) from SECTION where LINE_ID = ? and DOWN_STATION_ID = ?";
 
-        return endPointCondition(upStationIdCondition, downStationIdCondition, lineId, upStationId)
-                || endPointCondition(downStationIdCondition, upStationIdCondition, lineId, downStationId);
+        return endStationCondition(upStationIdCondition, downStationIdCondition, lineId, upStationId)
+                || endStationCondition(downStationIdCondition, upStationIdCondition, lineId, downStationId);
     }
 
-    private boolean endPointCondition(String query, String query2, Long lineId, Long stationId) {
+    private boolean endStationCondition(String query, String query2, Long lineId, Long stationId) {
         return (jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId) == 1 &&
                 jdbcTemplate.queryForObject(query2, Integer.class, lineId, stationId) == 0)
                 || (jdbcTemplate.queryForObject(query, Integer.class, lineId, stationId) == 0 &&

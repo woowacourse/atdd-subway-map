@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.section.exception.SectionDistanceException;
 import wooteco.subway.section.exception.SectionInclusionException;
 import wooteco.subway.section.exception.SectionNotFoundException;
+import wooteco.subway.station.exception.StationNotFoundException;
 
 @Service
 public class SectionService {
@@ -20,14 +21,18 @@ public class SectionService {
 
     public Section save(SectionDto sectionDto) {
         validateSectionInclusion(sectionDto);
-        if (hasEndPointInSection(sectionDto)) {
+        if (hasEndStationInSection(sectionDto)) {
             return sectionDao.save(sectionDto.getLineId(), sectionDto.getUpStationId(),
                     sectionDto.getDownStationId(), sectionDto.getDistance());
         }
         return saveWithForkCase(sectionDto);
     }
 
-    public void delete(Long lindId, Long stationId) {
+    public void delete(Long lineId, Long stationId) {
+        if (sectionDao.isExistingStation(lineId, stationId)) {
+            throw new StationNotFoundException();
+        }
+        if(sectionDao.is)
 
     }
 
@@ -48,8 +53,8 @@ public class SectionService {
                 !sectionDao.isExistingStation(lineId, downStationId);
     }
 
-    private boolean hasEndPointInSection(SectionDto sectionDto) {
-        return sectionDao.hasEndPointInSection(sectionDto.getLineId(),
+    private boolean hasEndStationInSection(SectionDto sectionDto) {
+        return sectionDao.hasEndStationInSection(sectionDto.getLineId(),
                 sectionDto.getUpStationId(), sectionDto.getDownStationId());
     }
 

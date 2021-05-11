@@ -67,15 +67,15 @@ class SectionDaoTest {
 
     @Test
     @DisplayName("구간에 포함된 역 중 종점역이 존재하는지 확인")
-    public void isStationEndPoint() {
+    public void isStationEndStiation() {
         sectionDao.save(1L, 1L, 2L, 10);
         sectionDao.save(1L, 2L, 3L, 10);
         sectionDao.save(1L, 3L, 4L, 10);
 
-        assertThat(sectionDao.hasEndPointInSection(1L, 1L, 2L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(1L, 2L, 3L)).isFalse();
-        assertThat(sectionDao.hasEndPointInSection(1L, 3L, 4L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(1L, 4L, 5L)).isTrue();
-        assertThat(sectionDao.hasEndPointInSection(1L, 10L, 1L)).isTrue();
+        assertThat(sectionDao.hasEndStationInSection(1L, 1L, 2L)).isTrue();
+        assertThat(sectionDao.hasEndStationInSection(1L, 2L, 3L)).isFalse();
+        assertThat(sectionDao.hasEndStationInSection(1L, 3L, 4L)).isTrue();
+        assertThat(sectionDao.hasEndStationInSection(1L, 4L, 5L)).isTrue();
+        assertThat(sectionDao.hasEndStationInSection(1L, 10L, 1L)).isTrue();
     }
 }
