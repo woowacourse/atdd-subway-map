@@ -1,7 +1,7 @@
-package wooteco.subway.line.controller.dto;
+package wooteco.subway.section.controller.dto;
 
 
-import wooteco.subway.line.domain.Section;
+import wooteco.subway.section.domain.Section;
 
 public class SectionDto {
 

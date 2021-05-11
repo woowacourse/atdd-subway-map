@@ -1,4 +1,4 @@
-package wooteco.subway.line.controller.dto;
+package wooteco.subway.section.controller.dto;
 
 public class SectionDeleteDto {
 

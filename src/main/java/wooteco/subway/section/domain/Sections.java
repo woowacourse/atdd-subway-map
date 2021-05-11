@@ -1,4 +1,4 @@
-package wooteco.subway.line.domain;
+package wooteco.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.exception.SectionException;
 
 public class Sections {
 

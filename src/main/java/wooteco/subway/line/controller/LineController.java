@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.controller.dto.LineCreateDto;
-import wooteco.subway.line.controller.dto.SectionRequest;
-import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.controller.dto.LineDto;
 import wooteco.subway.line.controller.dto.LineRequest;
 import wooteco.subway.line.controller.dto.LineResponse;
+import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.service.LineService;
 
 @RestController

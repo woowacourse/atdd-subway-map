@@ -1,4 +1,4 @@
-package wooteco.subway.line.controller;
+package wooteco.subway.section.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wooteco.subway.line.controller.dto.SectionCreateDto;
-import wooteco.subway.line.controller.dto.SectionDeleteDto;
-import wooteco.subway.line.controller.dto.SectionRequest;
-import wooteco.subway.line.service.SectionService;
+import wooteco.subway.section.controller.dto.SectionCreateDto;
+import wooteco.subway.section.controller.dto.SectionDeleteDto;
+import wooteco.subway.section.controller.dto.SectionRequest;
+import wooteco.subway.section.service.SectionService;
 
 @RestController
 @RequestMapping("lines/{lineId}/sections")

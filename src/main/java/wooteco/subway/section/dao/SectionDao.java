@@ -1,4 +1,4 @@
-package wooteco.subway.line.dao;
+package wooteco.subway.section.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.domain.SectionRepository;
-import wooteco.subway.line.domain.Sections;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.SectionRepository;
+import wooteco.subway.section.domain.Sections;
 
 @Repository
 public class SectionDao implements SectionRepository {

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import wooteco.subway.line.exception.LineException;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.exception.StationException;
 
 @ControllerAdvice

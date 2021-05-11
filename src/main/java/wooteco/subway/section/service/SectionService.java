@@ -1,15 +1,15 @@
-package wooteco.subway.line.service;
+package wooteco.subway.section.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wooteco.subway.line.controller.dto.SectionCreateDto;
-import wooteco.subway.line.controller.dto.SectionDeleteDto;
-import wooteco.subway.line.controller.dto.SectionDto;
-import wooteco.subway.line.domain.Section;
-import wooteco.subway.line.domain.SectionRepository;
-import wooteco.subway.line.domain.Sections;
-import wooteco.subway.line.exception.SectionException;
+import wooteco.subway.section.controller.dto.SectionCreateDto;
+import wooteco.subway.section.controller.dto.SectionDeleteDto;
+import wooteco.subway.section.controller.dto.SectionDto;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.SectionRepository;
+import wooteco.subway.section.domain.Sections;
+import wooteco.subway.section.exception.SectionException;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.service.StationService;
 
