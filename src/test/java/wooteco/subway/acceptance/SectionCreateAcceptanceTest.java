@@ -1,5 +1,7 @@
 package wooteco.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
@@ -14,8 +16,6 @@ import wooteco.subway.acceptance.template.StationRequest;
 import wooteco.subway.controller.dto.request.LineCreateRequestDto;
 import wooteco.subway.controller.dto.request.SectionRequestDto;
 import wooteco.subway.controller.dto.request.StationRequestDto;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionCreateAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선의 하행선 종점에 구간을 추가하고, 순서대로 잘 등록 됐는 지 테스트")
@@ -92,7 +92,7 @@ public class SectionCreateAcceptanceTest extends AcceptanceTest {
         assertThat(stationId3).isEqualTo(getLineJson.getLong("stations[2].id"));
     }
 
-    @DisplayName("지하철 노선의 상행선 종점에 구간을 추가하고, 순서대로 잘 등록 됐는 지 테스트")
+    @DisplayName("지하철 라인 중간에 구간을 추가하고, 순서대로 잘 등록 됐는 지 테스트")
     @Test
     void createSection_라인_중간() {
         // given

@@ -17,10 +17,13 @@ public class LineRepository {
 
     private final LineDao lineDao;
     private final SectionDao sectionDao;
+    private final SectionsDirtyChecking dirtyChecking;
 
-    public LineRepository(LineDao lineDao, SectionDao sectionDao) {
+    public LineRepository(LineDao lineDao, SectionDao sectionDao,
+        SectionsDirtyChecking dirtyChecking) {
         this.lineDao = lineDao;
         this.sectionDao = sectionDao;
+        this.dirtyChecking = dirtyChecking;
     }
 
     public Line saveLineWithSection(String name, String color, Long upStationId, Long downStationId,
@@ -59,39 +62,58 @@ public class LineRepository {
 
     public void createSectionInLine(Long lineId, Long upStationId, Long downStationId,
         int distance) {
-        boolean containsUpStation = containsStationInLine(lineId, upStationId);
-        boolean containsDownStation = containsStationInLine(lineId, downStationId);
+        List<Section> sections = sectionDao.findByLineId(lineId);
+        dirtyChecking.setInitSections(sections);
+        boolean containsUpStation = containsStationInLine(sections, upStationId);
+        boolean containsDownStation = containsStationInLine(sections, downStationId);
 
         // 상행, 하행 종점(구간) 등록
-        if (isStartStation(lineId, downStationId) && isEndStation(lineId, upStationId)) {
-            sectionDao.create(lineId, upStationId, downStationId, distance);
+        if (isStartStation(sections, downStationId) && isEndStation(sections, upStationId)) {
+            sections.add(new Section(null, lineId, upStationId, downStationId, distance));
+            dirtyChecking.dirtyChecking(sections);
             return;
         }
 
         // 중간 구간 등록
         if (containsUpStation) {
-            Section originSection = sectionDao.findByUpStationIdAndLineId(upStationId, lineId)
-                .get();
+            Section originSection = sections.stream()
+                .filter(section -> section.getUpStationId().equals(upStationId)).findFirst().get();
             validateSectionDistance(distance, originSection);
-            sectionDao.deleteById(originSection.getId());
-            sectionDao.create(lineId, originSection.getUpStationId(), downStationId, distance);
-            sectionDao.create(lineId,
+            sections.remove(originSection);
+            sections.add(new Section(
+                null,
+                lineId,
+                originSection.getUpStationId(),
+                downStationId,
+                distance));
+            sections.add(new Section(
+                null,
+                lineId,
                 downStationId,
                 originSection.getDownStationId(),
-                originSection.getDistance() - distance);
+                originSection.getDistance() - distance));
+            dirtyChecking.dirtyChecking(sections);
             return;
         }
 
         if (containsDownStation) {
-            Section originSection = sectionDao.findByDownStationIdAndLineId(downStationId, lineId)
-                .get();
+            Section originSection = sections.stream()
+                .filter(section -> section.getDownStationId().equals(downStationId)).findFirst().get();
             validateSectionDistance(distance, originSection);
-            sectionDao.deleteById(originSection.getId());
-            sectionDao.create(lineId,
+            sections.remove(originSection);
+            sections.add(new Section(
+                null,
+                lineId,
                 originSection.getUpStationId(),
                 upStationId,
-                originSection.getDistance() - distance);
-            sectionDao.create(lineId, upStationId, originSection.getDownStationId(), distance);
+                originSection.getDistance() - distance));
+            sections.add(new Section(
+                null,
+                lineId,
+                upStationId,
+                originSection.getDownStationId(),
+                distance));
+            dirtyChecking.dirtyChecking(sections);
             return;
         }
 
@@ -104,11 +126,11 @@ public class LineRepository {
         }
     }
 
-    private boolean containsStationInLine(Long lineId, Long stationId) {
-        Optional<Section> foundSectionByDownStationId
-            = sectionDao.findByDownStationIdAndLineId(stationId, lineId);
-        Optional<Section> foundSectionByUpStationId
-            = sectionDao.findByUpStationIdAndLineId(stationId, lineId);
+    private boolean containsStationInLine(List<Section> sections, Long stationId) {
+        Optional<Section> foundSectionByDownStationId = sections.stream()
+            .filter(section -> section.getDownStationId().equals(stationId)).findFirst();
+        Optional<Section> foundSectionByUpStationId = sections.stream()
+            .filter(section -> section.getUpStationId().equals(stationId)).findFirst();
         return foundSectionByUpStationId.isPresent() || foundSectionByDownStationId.isPresent();
     }
 
@@ -150,9 +172,23 @@ public class LineRepository {
         return !downSectionOptional.isPresent();
     }
 
+    private boolean isEndStation(List<Section> sections, Long stationId) {
+        Optional<Section> downSectionOptional = sections.stream()
+            .filter(section -> section.getUpStationId().equals(stationId))
+            .findFirst();
+        return !downSectionOptional.isPresent();
+    }
+
     private boolean isStartStation(Long lineId, Long stationId) {
         Optional<Section> upSectionOptional = sectionDao
             .findByDownStationIdAndLineId(stationId, lineId);
+        return !upSectionOptional.isPresent();
+    }
+
+    private boolean isStartStation(List<Section> sections, Long stationId) {
+        Optional<Section> upSectionOptional = sections.stream()
+            .filter(section -> section.getDownStationId().equals(stationId))
+            .findFirst();
         return !upSectionOptional.isPresent();
     }
 }
