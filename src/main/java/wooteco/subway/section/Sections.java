@@ -14,15 +14,10 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Section newSection) {
-        validate(newSection);
-        sections.add(newSection);
-    }
-
-    private void validate(Section newSection) {
-        validateConnected(newSection, this::isConnected);
-        validateConnected(newSection, this::isNotExisted);
-        validateDistance(newSection);
+    public void validate(Section section) {
+        validateConnected(section, this::isConnected);
+        validateConnected(section, this::isNotExisted);
+        validateDistance(section);
     }
 
     private void validateConnected(Section newSection, BiPredicate<Section, Section> biPredicate) {
@@ -41,9 +36,14 @@ public class Sections {
             section.isDownStation(newSection.getUpStationId());
     }
 
+    private boolean isIntermediate(Section newSection, Section section) {
+        return section.isUpStation(newSection.getUpStationId()) ||
+                section.isDownStation(newSection.getDownStationId());
+    }
+
     private boolean isNotExisted(Section newSection, Section section) {
-        return !(section.isUpStation(newSection.getUpStationId()) &&
-            section.isDownStation(newSection.getDownStationId()));
+        return !(section.isUpStation(newSection.getUpStationId()) && section.isDownStation(newSection.getDownStationId())) ||
+                !(section.isUpStation(newSection.getDownStationId()) && section.isDownStation(newSection.getUpStationId()));
     }
 
     private void validateDistance(Section newSection) {
@@ -57,11 +57,6 @@ public class Sections {
         if (section.isSameOrLongDistance(newSection)) {
             throw new InvalidAddSectionException();
         }
-    }
-
-    private boolean isIntermediate(Section newSection, Section section) {
-        return section.isUpStation(newSection.getUpStationId()) ||
-            section.isDownStation(newSection.getDownStationId());
     }
 
     public List<Long> sortedStationIds() {
