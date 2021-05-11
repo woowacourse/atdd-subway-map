@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import wooteco.subway.exception.service.ObjectNotFoundException;
 import wooteco.subway.exception.service.ValidationFailureException;
 
 public class Sections {
+
+    private static final int MINIMUM_SORTING_COUNT = 2;
 
     private final List<Section> sectionGroup;
 
@@ -30,15 +34,25 @@ public class Sections {
     }
 
     private List<Section> sort(final List<Section> sections) {
-        if (sections.size() < 2) {
+        if (sections.size() < MINIMUM_SORTING_COUNT) {
             return sections;
         }
 
-        final Section from = decideUpStation(sections);
+        final Section firstTerminalStation = decideFirstTerminalStation(sections);
         final List<Section> sortedSections = new ArrayList<>();
-        sortedSections.add(from);
-        findNextSection(from, sections, sortedSections);
+        sortedSections.add(firstTerminalStation);
+        findNextSection(firstTerminalStation, sections, sortedSections);
         return sortedSections;
+    }
+
+    private Section decideFirstTerminalStation(final List<Section> sections) {
+        final Map<Long, Integer> frequency = calculateFrequency(sections);
+        final List<Long> terminalStationIds = findTerminalStationId(frequency);
+
+        return sections.stream()
+            .filter(section -> terminalStationIds.contains(section.getUpStationId()))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 상행역이 없습니다."));
     }
 
     private void findNextSection(final Section current, final List<Section> sections, final List<Section> sortedSections) {
@@ -54,16 +68,6 @@ public class Sections {
         findNextSection(nextSection.get(), sections, sortedSections);
     }
 
-    private Section decideUpStation(final List<Section> sections) {
-        final Map<Long, Integer> frequency = calculateFrequency(sections);
-        final List<Long> lastPoints = findLastPoints(frequency);
-
-        return sections.stream()
-            .filter(section -> lastPoints.contains(section.getUpStationId()))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 상행역이 없습니다."));
-    }
-
     private Map<Long, Integer> calculateFrequency(final List<Section> sections) {
         final Map<Long, Integer> frequency = new HashMap<>();
         for (final Section section : sections) {
@@ -75,14 +79,13 @@ public class Sections {
         return frequency;
     }
 
-    private List<Long> findLastPoints(final Map<Long, Integer> frequency) {
-        final List<Long> candidates = new ArrayList<>();
-        frequency.forEach((id, value) -> {
-            if (value == 1) {
-                candidates.add(id);
-            }
-        });
-        return candidates;
+    private List<Long> findTerminalStationId(final Map<Long, Integer> frequency) {
+        final Predicate<Entry<Long, Integer>> terminalStationFilter = entry -> entry.getValue() == 1;
+        return frequency.entrySet()
+            .stream()
+            .filter(terminalStationFilter)
+            .map(Entry::getKey)
+            .collect(Collectors.toList());
     }
 
     public void validateBothExistentStation(final Long upStationId, final Long downStationId) {
