@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import wooteco.subway.section.exception.SectionDistanceTooShortException;
 import wooteco.subway.section.exception.SectionNotSequentialException;
 import wooteco.subway.section.exception.SectionsHasDuplicateException;
 import wooteco.subway.section.exception.SectionsIllegalArgumentException;
@@ -135,7 +136,7 @@ class OrderedSectionsTest {
         //when
         //then
         assertThatThrownBy(() -> getFirstToFifthSections().addSection(TOO_LONG_SECTION))
-                .isInstanceOf(SectionsHasDuplicateException.class);
+                .isInstanceOf(SectionDistanceTooShortException.class);
     }
 
     private OrderedSections getFirstToFifthSections() {

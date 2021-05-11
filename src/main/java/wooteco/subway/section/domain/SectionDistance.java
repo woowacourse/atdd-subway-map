@@ -25,6 +25,10 @@ public class SectionDistance {
         return new SectionDistance(this.distance + that.getDistance());
     }
 
+    public SectionDistance minus(SectionDistance that) {
+        return new SectionDistance(this.distance - that.getDistance());
+    }
+
     @Override
     public String toString() {
         return String.valueOf(distance);

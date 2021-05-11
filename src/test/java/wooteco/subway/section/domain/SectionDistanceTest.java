@@ -35,4 +35,20 @@ class SectionDistanceTest {
         //then
         assertThat(result.getDistance()).isEqualTo(aDistanceValue + anotherDistanceValue);
     }
+
+    @DisplayName("거리를 빼는 기능 확인")
+    @Test
+    void minus() {
+        //given
+        long aDistanceValue = 20;
+        long anotherDistanceValue = 10;
+
+        SectionDistance aSectionDistance = new SectionDistance(aDistanceValue);
+        SectionDistance anotherSectionDistance = new SectionDistance(anotherDistanceValue);
+        //when
+        SectionDistance result = aSectionDistance.minus(anotherSectionDistance);
+
+        //then
+        assertThat(result.getDistance()).isEqualTo(aDistanceValue - anotherDistanceValue);
+    }
 }

@@ -122,46 +122,48 @@ public class OrderedSections {
     }
 
     public OrderedSections addSection(Section section) {
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        List<Section> upStationSequences = findSequentialSections(upStation);
-        List<Section> downStationSequences = findSequentialSections(downStation);
+        List<Section> upStationSequences = findSequentialSections(section.getUpStation());
+        List<Section> downStationSequences = findSequentialSections(section.getDownStation());
 
         if (upStationSequences.isEmpty() && downStationSequences.isEmpty()) {
             throw new SectionNotSequentialException(
-                    String.format("상행역과 하행역 모두 노선에 존재하지 않습니다. 상행역 : %s, 하행역 : %s", upStation, downStation));
+                    String.format("상행역과 하행역 모두 노선에 존재하지 않습니다. 상행역 : %s, 하행역 : %s", section.getUpStation(), section.getDownStation()));
         }
+
         if (bothNotEmpty(upStationSequences, downStationSequences)) {
             throw new SectionsHasDuplicateException(
-                    String.format("상행역과 하행역이 이미 노선에 모두 존재합니다. 상행역 : %s, 하행역 : %s", upStation, downStation));
+                    String.format("상행역과 하행역이 이미 노선에 모두 존재합니다. 상행역 : %s, 하행역 : %s", section.getUpStation(), section.getDownStation()));
         }
 
-        if (!upStationSequences.isEmpty()) {
-            Optional<Section> adjacentSection = upStationSequences.stream()
-                    .filter(s -> s.getUpStation().equals(upStation))
-                    .findAny();
-            adjacentSection.ifPresent(adjacent -> {
-                sections.remove(adjacent);
-                sections.add(new Section(downStation
-                        , adjacent.getDownStation()
-                        , adjacent.getDistance() - section.getDistance()));
-            });
-        }
-
-        if (!downStationSequences.isEmpty()) {
-            Optional<Section> adjacentSection = downStationSequences.stream()
-                    .filter(s -> s.getDownStation().equals(downStation))
-                    .findAny();
-            adjacentSection.ifPresent(adjacent -> {
-                sections.remove(adjacent);
-                sections.add(new Section(adjacent.getUpStation()
-                        , upStation
-                        , adjacent.getDistance() - section.getDistance()));
-            });
-        }
+        modifyAdjacentUpSection(section, upStationSequences);
+        modifyAdjacentDownSection(section, downStationSequences);
 
         sections.add(section);
         return new OrderedSections(sections);
+    }
+
+    private void modifyAdjacentUpSection(Section section, List<Section> upStationSequences) {
+        if (!upStationSequences.isEmpty()) {
+            Optional<Section> adjacentSection = upStationSequences.stream()
+                    .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                    .findAny();
+            adjacentSection.ifPresent(adjacent -> {
+                sections.remove(adjacent);
+                sections.add(adjacent.updateUpStation(section.getDownStation(), section.getDistance()));
+            });
+        }
+    }
+
+    private void modifyAdjacentDownSection(Section section, List<Section> downStationSequences) {
+        if (!downStationSequences.isEmpty()) {
+            Optional<Section> adjacentSection = downStationSequences.stream()
+                    .filter(s -> s.getDownStation().equals(section.getDownStation()))
+                    .findAny();
+            adjacentSection.ifPresent(adjacent -> {
+                sections.remove(adjacent);
+                sections.add(adjacent.updateDownStation(section.getUpStation(), section.getDistance()));
+            });
+        }
     }
 
     private boolean bothNotEmpty(List<Section> upStationSequences, List<Section> downStationSequences) {

@@ -40,7 +40,7 @@ class SectionTest {
         Section mergedSection = upSection.mergeWithDownSection(downSection);
         //then
         assertThat(mergedSection.getUpStation()).isEqualTo(GANGNAM_STATION);
-        assertThat(mergedSection.getUpStation()).isEqualTo(JAMSIL_STATION);
+        assertThat(mergedSection.getDownStation()).isEqualTo(JAMSIL_STATION);
         assertThat(mergedSection.getDistance()).isEqualTo(TEN_DISTANCE + FIVE_DISTANCE);
     }
 

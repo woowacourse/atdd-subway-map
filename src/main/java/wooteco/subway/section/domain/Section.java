@@ -32,6 +32,14 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public Section updateUpStation(Station upStation, long distance) {
+        return new Section(upStation, downStation, this.distance.minus(new SectionDistance(distance)));
+    }
+
+    public Section updateDownStation(Station downStation, long distance) {
+        return new Section(upStation, downStation, this.distance.minus(new SectionDistance(distance)));
+    }
+
     public Section mergeWithDownSection(Section next) {
         if (isNotSequential(next)) {
             throw new SectionNotSequentialException(
