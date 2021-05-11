@@ -23,9 +23,9 @@ class LineDaoTest {
 
     private final LineDao lineDao;
     private final StationDao stationDao;
-    private final Line line2 = new Line(1L,"2호선", "bg-green-600", 1L, 2L, 10);
-    private final Line line3 = new Line(2L, "3호선", "bg-orange-600", 1L, 3L, 13);
-    private final Line line4 = new Line(3L, "4호선", "bg-skyBlue-600", 1L, 4L, 15);
+    private final Line line2 = new Line(1L,"2호선", "bg-green-600");
+    private final Line line3 = new Line(2L, "3호선", "bg-orange-600");
+    private final Line line4 = new Line(3L, "4호선", "bg-skyBlue-600");
 
     public LineDaoTest(LineDao lineDao, StationDao stationDao) {
         this.lineDao = lineDao;
@@ -92,7 +92,7 @@ class LineDaoTest {
         //given
         lineDao.save(line2);
 
-        Line newLine = new Line(1L, "3호선", "bg-orange-600", 1L, 2L, 10);
+        Line newLine = new Line(1L, "3호선", "bg-orange-600");
 
         //when
         lineDao.update(newLine);
@@ -108,7 +108,7 @@ class LineDaoTest {
         lineDao.save(line2);
         lineDao.save(line3);
 
-        Line updateLine = new Line(1L, "3호선", "bg-orange-600", 1L, 2L, 10);
+        Line updateLine = new Line(1L, "3호선", "bg-orange-600");
 
         //when, then
         assertThatThrownBy(() -> lineDao.update(updateLine))

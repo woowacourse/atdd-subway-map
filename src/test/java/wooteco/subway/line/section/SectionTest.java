@@ -61,7 +61,7 @@ class SectionTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
-    @DisplayName("distance가 0이하이면 에러가 발생한다.")
+    @DisplayName("distance 가 0이하이면 에러가 발생한다.")
     void createWithDistanceIsLessThanZero(int value) {
         //given
         Long upStationId = 1L;

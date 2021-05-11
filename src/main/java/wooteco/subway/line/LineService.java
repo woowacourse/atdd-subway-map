@@ -3,50 +3,66 @@ package wooteco.subway.line;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.exception.NotExistItemException;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.section.SectionService;
+import wooteco.subway.line.section.Sections;
+import wooteco.subway.line.section.dto.SectionRequest;
+import wooteco.subway.station.StationService;
+import wooteco.subway.station.dto.StationResponse;
 
 @Service
+@Transactional
 public class LineService {
 
     private final LineDao lineDao;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
+    public LineService(LineDao lineDao, StationService stationService, SectionService sectionService) {
         this.lineDao = lineDao;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     public LineResponse create(LineRequest lineRequest) {
-//        createValidate(lineRequest);
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
-            lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         Line newLine = lineDao.save(line);
-        return new LineResponse(newLine);
-    }
 
-    private void createValidate(LineRequest lineRequest) {
-        // 생성할 상행과 하행이 있는지 확인
+        SectionRequest sectionRequest = new SectionRequest(lineRequest.getUpStationId(),
+            lineRequest.getDownStationId(), lineRequest.getDistance());
+        sectionService.save(newLine.getId(), sectionRequest);
 
-        // Section 으로 분리하여 책임을 분산 -> Section 으로 어떻게 분리하지? !?! 가능하네? request에서 line으로 던져줄때 만들어서 던져주자!
+        Sections sections = sectionService.findByLineId(newLine.getId());
+
+        List<StationResponse> stations = stationService.findByLineId(newLine.getId(), sections);
+        return new LineResponse(newLine, stations);
     }
 
     public LineResponse findById(Long id) {
         Line line = lineDao.findById(id);
-        return new LineResponse(line);
+
+        Sections sections = sectionService.findByLineId(id);
+        List<StationResponse> stations = stationService.findByLineId(id, sections);
+
+        return new LineResponse(line, stations);
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
 
         return lines.stream()
-            .map(LineResponse::new)
-            .collect(Collectors.toList());
+            .map(line -> {
+                Sections sections = sectionService.findByLineId(line.getId());
+                List<StationResponse> stations = stationService.findByLineId(line.getId(), sections);
+                return new LineResponse(line, stations);
+            }).collect(Collectors.toList());
     }
 
     public void update(Long id, LineRequest lineRequest) {
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor(),
-            lineRequest.getUpStationId(), lineRequest.getDownStationId(),
-            lineRequest.getDistance());
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
 
         validate(lineDao.update(line));
     }
@@ -58,6 +74,7 @@ public class LineService {
     }
 
     public void delete(Long id) {
+        sectionService.deleteByLineId(id);
         lineDao.delete(id);
     }
 }

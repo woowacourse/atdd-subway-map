@@ -5,9 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.assertj.core.api.ThrowableAssert;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,23 +23,48 @@ import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.line.section.dto.SectionRequest;
+import wooteco.subway.station.Station;
+import wooteco.subway.station.StationDao;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private final StationDao stationDao;
     private final String notExistItemMessage = "[ERROR] 해당 아이템이 존재하지 않습니다.";
     private final String noInputMessage = "[ERROR] 입력값이 존재하지 않습니다.";
     private final String duplicateMessage = "[ERROR] 중복된 이름입니다.";
-    private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+    private final LineRequest line2Request = new LineRequest("2호선", "bg-green-600", 1L, 4L, 10);
     private final LineRequest line3Request = new LineRequest("3호선", "bg-orange-600", 1L, 3L, 13);
+    private static final Station gangnamStation = new Station(1L, "강남역");
+    private static final Station jamsilStation = new Station(2L, "잠실역");
+    private static final Station yeoksamStation = new Station(3L, "역삼역");
+    private static final Station sillimStation = new Station(4L, "신림역");
+
+    public LineAcceptanceTest(StationDao stationDao) {
+        this.stationDao = stationDao;
+    }
+
+    @BeforeEach
+    void beforeSetUp() {
+        stationDao.save(gangnamStation);
+        stationDao.save(jamsilStation);
+        stationDao.save(yeoksamStation);
+        stationDao.save(sillimStation);
+    }
 
     @Test
     @DisplayName("지하철 노선 한개가 저장된다.")
     void create() {
+        //given
+
+        //when
         ExtractableResponse<Response> response = createLineAPI(line2Request);
 
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
@@ -50,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("이름에 null을 입력하여 노선을 생성하면 에러가 출력된다.")
+    @DisplayName("이름에 null 을 입력하여 노선을 생성하면 에러가 출력된다.")
     void createLineWithNameDataIsNull() {
         //given
         String name = null;
@@ -86,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("컬러에 null을 입력하여 노선을 생성하면 에러가 출력된다.")
+    @DisplayName("컬러에 null 을 입력하여 노선을 생성하면 에러가 출력된다.")
     void createLineWithColorDataIsNull() {
         //given
         String name = "2호선";
@@ -122,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("upStationId에 null을 입력하여 노선을 생성하면 에러가 출력된다.")
+    @DisplayName("upStationId에 null 을 입력하여 노선을 생성하면 에러가 출력된다.")
     void createLineWithUpStationIdDataIsNull() {
         //given
         String name = "2호선";
@@ -158,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("downStationId에 null을 입력하여 노선을 생성하면 에러가 출력된다.")
+    @DisplayName("downStationId에 null 을 입력하여 노선을 생성하면 에러가 출력된다.")
     void createLineWithDownStationIdDataIsNull() {
         //given
         String name = "2호선";
@@ -236,15 +265,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void getLine() {
         /// given
         createLineAPI(line2Request);
+        List<StationResponse> stations = Arrays
+            .asList(new StationResponse(1L, "강남역"), new StationResponse(4L, "신림역"));
 
         // when
         ExtractableResponse<Response> response = getLineAPI();
 
-        LineResponse lineResponse = response.body().as(LineResponse.class);
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineResponse).usingRecursiveComparison().isEqualTo(new LineResponse(1L, "2호선", "bg-green-600", 1L, 2L, 10));
+
+        LineResponse lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse).usingRecursiveComparison()
+            .isEqualTo(new LineResponse(1L, "2호선", "bg-green-600", stations));
     }
 
     @Test
@@ -312,6 +344,46 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    @Test
+    @DisplayName("Section 을 추가한다.")
+    void createSection() {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
+
+        //when
+        ExtractableResponse<Response> extract = createSectionAPI(sectionRequest);
+
+        //then
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    @DisplayName("변경면 변경에 맞게 순서가 유지되어야 한다.")
+    void getStationWithMultiSection() {
+        //given
+        createLineAPI(line2Request);
+        SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
+        createSectionAPI(sectionRequest);
+
+        List<StationResponse> stations = Arrays.asList(
+            new StationResponse(2L, jamsilStation.getName()),
+            new StationResponse(1L, gangnamStation.getName()),
+            new StationResponse(4L, sillimStation.getName())
+        );
+
+        //when
+        ExtractableResponse<Response> response = getLineAPI();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        assertThat(lineResponse.getStations())
+            .usingRecursiveComparison()
+            .isEqualTo(stations);
+    }
+
     private ExtractableResponse<Response> createLineAPI(LineRequest lineRequest) {
         return RestAssured.given()
             .body(lineRequest)
@@ -326,7 +398,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given()
             .when()
             .delete(uri)
-            .then()
+            .then().log().all()
             .extract();
     }
 
@@ -374,5 +446,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void checkedThenException(ExtractableResponse<Response> response, String message) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).isEqualTo(message);
+    }
+
+    private ExtractableResponse<Response> createSectionAPI(SectionRequest sectionRequest) {
+        return RestAssured.given()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/1/sections")
+            .then()
+            .extract();
     }
 }

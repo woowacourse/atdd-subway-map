@@ -22,10 +22,7 @@ public class LineDao {
     private final RowMapper<Line> lineRowMapper = (resultSet, rowNumber) -> new Line(
         resultSet.getLong("id"),
         resultSet.getString("name"),
-        resultSet.getString("color"),
-        resultSet.getLong("up_station_id"),
-        resultSet.getLong("down_station_id"),
-        resultSet.getInt("distance")
+        resultSet.getString("color")
     );
 
     public LineDao(JdbcTemplate jdbcTemplate) {
@@ -33,7 +30,7 @@ public class LineDao {
     }
 
     public Line save(Line line) {
-        String sql = "insert into LINE (name, color, up_station_id, down_station_id, distance) values (?, ?, ?, ?, ?)";
+        String sql = "insert into LINE (name, color) values (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -41,9 +38,6 @@ public class LineDao {
                 PreparedStatement prepareStatement = con.prepareStatement(sql, new String[]{"id"});
                 prepareStatement.setString(1, line.getName());
                 prepareStatement.setString(2, line.getColor());
-                prepareStatement.setLong(3, line.getUpStationId());
-                prepareStatement.setLong(4, line.getDownStationId());
-                prepareStatement.setInt(5, line.getDistance());
                 return prepareStatement;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
