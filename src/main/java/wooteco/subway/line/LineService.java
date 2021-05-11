@@ -15,6 +15,7 @@ import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 import wooteco.subway.station.Stations;
 
+@Transactional
 @Service
 public class LineService {
 
@@ -28,7 +29,6 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    @Transactional
     public LineResponse createLine(final LineRequest lineRequest) {
         final Line line = lineDao.save(lineRequest.toEntity());
 
@@ -80,12 +80,14 @@ public class LineService {
         return new Line(line.getId(), line.getName(), line.getColor(), sections, new Stations(stationsGroup));
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         return lineDao.findAll().stream().
             map(LineResponse::from).
             collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
         final Line line = composeLine(id);
         return LineResponse.from(line);
