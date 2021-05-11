@@ -14,9 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.controller.dto.request.UpdateLineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.service.dto.CreateLineDto;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -74,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateColor() {
         // given
         LineRequest lineRequest1 = new LineRequest("1호선", "bg-yellow-100", (long) 1, (long) 2, 5);
-        LineRequest lineRequest2 = new LineRequest("3호선", "bg-yellow-200", (long) 3, (long) 4, 5);
+        LineRequest lineRequest2 = new LineRequest("3호선", "bg-yellow-100", (long) 3, (long) 4, 5);
 
         RestAssured.given().log().all()
             .body(lineRequest1)
@@ -145,17 +146,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         final String color = "bg-purple-405";
         final String name = "부산선";
-        Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
+        final long upStationId = 1L;
+        final long downStationId = 2L;
+        final int distance = 10;
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
         ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
+
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -191,27 +194,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void updateLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-white-400");
-        params.put("name", "구미선");
+        CreateLineDto 구미선 = new CreateLineDto("구미선", "bg-blue-100", 1L, 2L, 10);
+
         ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
-            .body(params)
+            .body(구미선)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
             .extract();
+
         long responseId = Long.parseLong(formResponse.header("Location").split("/")[2]);
 
         // when
         final String color = "bg-purple-406";
         final String name = "대구선";
-        Map<String, String> updateParams = new HashMap<>();
-        updateParams.put("color", color);
-        updateParams.put("name", name);
+
+        UpdateLineRequest updateLineRequest = new UpdateLineRequest(name, color);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParams)
+            .body(updateLineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/" + responseId)
@@ -259,12 +261,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     public void updateLineToExistedLine() {
         // given
-        final String color = "bg-purple-400";
+        final String color = "bg-purple-401";
         final String name = "구미선";
         final long upStationId = 1L;
         final long downStationId = 2L;
         final int distance = 10;
-        LineRequest lineRequest = new LineRequest(color, name, upStationId, downStationId,distance);
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId,distance);
         ExtractableResponse<Response> requestResponse = RestAssured.given().log().all()
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -272,9 +274,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract();
-        final String targetColor = "bg-purple-401";
+        final String targetColor = "bg-purple-402";
         final String targetName = "황천선";
-        lineRequest = new LineRequest(targetColor, targetName, upStationId, downStationId,distance);
+        lineRequest = new LineRequest(targetName, targetColor, upStationId, downStationId,distance);
 
         ExtractableResponse<Response> formResponse = RestAssured.given().log().all()
             .body(lineRequest)
@@ -287,12 +289,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
 
-        Map<String, String> updateParams = new HashMap<>();
-        updateParams.put("color", color);
-        updateParams.put("name", name);
+        UpdateLineRequest updateLineRequest = new UpdateLineRequest(targetName, color);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(updateParams)
+            .body(updateLineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/" + responseId)

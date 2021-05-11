@@ -1,6 +1,7 @@
 package wooteco.subway.service.dto;
 
 import javax.validation.constraints.NotNull;
+import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 
 public class SectionServiceDto {
@@ -36,6 +37,11 @@ public class SectionServiceDto {
             section.getDownStationId(),
             section.getDistance()
         );
+    }
+
+    public static SectionServiceDto of(Line line, CreateLineDto dto) {
+        return new SectionServiceDto(line.getId(), dto.getUpStationId(), dto.getDownStationId(),
+            dto.getDistance());
     }
 
     public Section toEntity() {

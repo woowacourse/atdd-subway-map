@@ -18,13 +18,20 @@ import wooteco.subway.dao.LineDao;
 import wooteco.subway.domain.Line;
 import wooteco.subway.exception.line.NotFoundLineException;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.LineServiceDto;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
 
+    private final long UPSTATION_ID = 1;
+    private final long DOWNSTATION_ID = 2;
+    private final int DISTANCE = 10;
+
     @Mock
     private LineDao mockLineDao;
+    @Mock
+    private SectionService mockSectionService;
     @InjectMocks
     private LineService lineService;
 
@@ -37,9 +44,11 @@ public class LineServiceTest {
         String color = "파란색";
 
         when(mockLineDao.create(any(Line.class))).thenReturn(new Line(id, name, color));
+        when(mockSectionService.saveByLineCreate(any())).thenReturn(null);
 
         // when
-        LineServiceDto createdDto = lineService.createLine(new LineServiceDto(name, color));
+        CreateLineDto createLineDto = new CreateLineDto(name, color, UPSTATION_ID, DOWNSTATION_ID, DISTANCE);
+        LineServiceDto createdDto = lineService.createLine(createLineDto);
 
         // then
         assertThat(createdDto.getName()).isEqualTo(name);

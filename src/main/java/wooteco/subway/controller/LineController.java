@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wooteco.subway.controller.dto.request.UpdateLineRequest;
 import wooteco.subway.service.LineService;
+import wooteco.subway.service.dto.CreateLineDto;
 import wooteco.subway.service.dto.LineServiceDto;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
@@ -31,8 +33,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
-        LineServiceDto lineServiceDto = LineServiceDto.from(lineRequest);
-        LineServiceDto createdLineServiceDto = lineService.createLine(lineServiceDto);
+        CreateLineDto createLineDto = CreateLineDto.from(lineRequest);
+        LineServiceDto createdLineServiceDto = lineService.createLine(createLineDto);
         LineResponse lineResponse = LineResponse.from(createdLineServiceDto);
 
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
@@ -58,10 +60,10 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(
-        @Valid @RequestBody final LineRequest lineRequest, @PathVariable final Long id) {
+    public ResponseEntity<Void> updateLine(
+        @Valid @RequestBody final UpdateLineRequest updateLineRequest, @PathVariable final Long id) {
 
-        LineServiceDto lineServiceDto = LineServiceDto.from(id, lineRequest);
+        LineServiceDto lineServiceDto = LineServiceDto.from(id, updateLineRequest);
         lineService.update(lineServiceDto);
 
         return ResponseEntity.ok()

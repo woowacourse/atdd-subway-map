@@ -127,15 +127,10 @@ public class SectionDaoTest {
         // when
 
         // then
-        assertThatThrownBy(() -> sectionDao.findByLineIdAndUpStationId(lineId, 4L))
-            .isInstanceOf(EmptyResultDataAccessException.class);
-        assertThatThrownBy(() -> sectionDao.findByLineIdAndUpStationId(2L, stationDongMyoId))
-            .isInstanceOf(EmptyResultDataAccessException.class);
-        assertThatThrownBy(() -> sectionDao.findByLineIdAndDownStationId(2L, stationDongMyoId))
-            .isInstanceOf(EmptyResultDataAccessException.class);
-        assertThatThrownBy(
-            () -> sectionDao.findByLineIdAndUpStationId(lineId, stationDongDaeMoonId))
-            .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, 9L)).isEmpty();
+        assertThat(sectionDao.findByLineIdAndUpStationId(2L, stationDongMyoId)).isEmpty();
+        assertThat(sectionDao.findByLineIdAndDownStationId(2L, stationDongMyoId)).isEmpty();
+        assertThat(sectionDao.findByLineIdAndUpStationId(lineId, stationDongDaeMoonId)).isEmpty();
     }
 
     @Test

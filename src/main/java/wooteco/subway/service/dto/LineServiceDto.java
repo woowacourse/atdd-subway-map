@@ -1,7 +1,9 @@
 package wooteco.subway.service.dto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import wooteco.subway.controller.dto.request.LineRequest;
+import wooteco.subway.controller.dto.request.UpdateLineRequest;
 import wooteco.subway.domain.Line;
 
 public class LineServiceDto {
@@ -26,7 +28,7 @@ public class LineServiceDto {
         this.color = color;
     }
 
-    public static LineServiceDto from(final Long id, final LineRequest lineRequest) {
+    public static LineServiceDto from(final Long id, final @Valid UpdateLineRequest lineRequest) {
         return new LineServiceDto(id, lineRequest.getName(), lineRequest.getColor());
     }
 
