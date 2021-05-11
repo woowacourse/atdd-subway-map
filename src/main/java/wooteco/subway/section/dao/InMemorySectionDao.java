@@ -57,8 +57,7 @@ public class InMemorySectionDao implements SectionDao {
         return sections.get(lineId)
                 .stream()
                 .filter(section -> section.hasStation(stationId))
-                .collect(
-                        Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override

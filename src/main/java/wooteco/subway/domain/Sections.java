@@ -123,7 +123,8 @@ public class Sections {
         for (Section section : sections) {
             if (section.isUpStationId(stationId)) {
                 downStation = section.getDownStation();
-            } else {
+            }
+            if(section.isDownStationId(stationId)){
                 upStation = section.getUpStation();
             }
             distance += section.getDistance();

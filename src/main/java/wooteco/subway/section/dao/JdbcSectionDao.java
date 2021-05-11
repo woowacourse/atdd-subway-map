@@ -45,11 +45,11 @@ public class JdbcSectionDao implements SectionDao {
             Long id = rs.getLong("id");
             String upStationName = rs.getString("upStationName");
             Long upStationId = rs.getLong("upStationId");
-            Station upStation = Station.from(upStationId, upStationName);
+            Station upStation = Station.create(upStationId, upStationName);
 
             String downStationName = rs.getString("downStationName");
             Long downStationId = rs.getLong("downStationId");
-            Station downStation = Station.from(downStationId, downStationName);
+            Station downStation = Station.create(downStationId, downStationName);
 
             int distance = rs.getInt("distance");
             return Section.create(id, upStation, downStation, distance);
@@ -80,11 +80,11 @@ public class JdbcSectionDao implements SectionDao {
             Long id = rs.getLong("id");
             String upStationName = rs.getString("upStationName");
             Long upStationId = rs.getLong("upStationId");
-            Station upStation = Station.from(upStationId, upStationName);
+            Station upStation = Station.create(upStationId, upStationName);
 
             String downStationName = rs.getString("downStationName");
             Long downStationId = rs.getLong("downStationId");
-            Station downStation = Station.from(downStationId, downStationName);
+            Station downStation = Station.create(downStationId, downStationName);
 
             int distance = rs.getInt("distance");
             return Section.create(id, upStation, downStation, distance);

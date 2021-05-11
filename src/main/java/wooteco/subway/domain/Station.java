@@ -12,11 +12,11 @@ public class Station {
     private Long id;
     private String name;
 
-    public static Station from(String name) {
-        return from(null, name);
+    public static Station create(String name) {
+        return create(null, name);
     }
 
-    public static Station from(Long id, String name) {
+    public static Station create(Long id, String name) {
         return new Station(id, name);
     }
 

@@ -5,11 +5,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.ApiControllerTest;
@@ -42,8 +38,8 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 성공")
     void createLine_success() throws Exception {
         // given
-        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
-        Long 잠실새내_id = stationDao.save(Station.from("잠실새내역")).getId();
+        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
+        Long 잠실새내_id = stationDao.save(Station.create("잠실새내역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
@@ -69,8 +65,8 @@ class LineApiControllerTest extends ApiControllerTest {
         // given
         lineDao.save(Line.create("1호선", "bg-red-600"));
 
-        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
-        Long 석촌역_id = stationDao.save(Station.from("석촌역")).getId();
+        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
+        Long 석촌역_id = stationDao.save(Station.create("석촌역")).getId();
 
         final LineRequest 일호선 =
                 new LineRequest("1호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
@@ -90,8 +86,8 @@ class LineApiControllerTest extends ApiControllerTest {
         // given
         lineDao.save(Line.create("1호선", "bg-green-600"));
 
-        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
-        Long 석촌역_id = stationDao.save(Station.from("석촌역")).getId();
+        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
+        Long 석촌역_id = stationDao.save(Station.create("석촌역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
@@ -140,7 +136,7 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(상행선과 하행선 역이 같을 경우)")
     void createLine_sameStations() throws Exception {
         // given
-        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
+        Long 잠실역_id = stationDao.save(Station.create("잠실역")).getId();
 
         final LineRequest 이호선 =
                 new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실역_id, 10);
@@ -158,9 +154,9 @@ class LineApiControllerTest extends ApiControllerTest {
     @Test
     void readLine_success() throws Exception {
         //given
-        Station 강남역 = stationDao.save(Station.from("강남역"));
-        Station 잠실역 = stationDao.save(Station.from("잠실역"));
-        Station 석촌역 = stationDao.save(Station.from("석촌역"));
+        Station 강남역 = stationDao.save(Station.create("강남역"));
+        Station 잠실역 = stationDao.save(Station.create("잠실역"));
+        Station 석촌역 = stationDao.save(Station.create("석촌역"));
         LineRequest 사호선 =
                 new LineRequest("4호선", "bg-blue-600", 강남역.getId(), 잠실역.getId(), 10);
         ResultActions createdLineResult = 노선_생성(사호선);

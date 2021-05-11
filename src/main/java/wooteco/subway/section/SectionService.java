@@ -25,13 +25,8 @@ public class SectionService {
 
     @Transactional
     public Section createSection(Section section, Long lineId) {
-        //모든 섹션들을 받아옴
         Sections sections = sectionDao.findSectionsByLineId(lineId);
-        // 모든 섹션리스트에 새로 추가할 섹션을 넣어줌
-        // 영향가는 섹션을 찾아서 업데이트 해줌
         Optional<Section> affectedSection = sections.affectedSection(section);
-
-        // 새로운 내용돌을 추가해줌
 
         sections.add(section);
 
@@ -42,6 +37,7 @@ public class SectionService {
     public void removeSection(Long lineId, Long stationId) {
         lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
         stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
+
         if (sectionDao.findSectionsByLineId(lineId).hasSize(1)) {
             throw new NotEnoughSectionException();
         }

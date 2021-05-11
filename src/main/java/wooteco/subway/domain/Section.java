@@ -22,7 +22,6 @@ public class Section {
         return new Section(id, upStation, downStation, distance);
     }
 
-
     public boolean isUpStation(Station targetStation) {
         return upStation.isSameId(targetStation.getId());
     }
@@ -62,5 +61,9 @@ public class Section {
 
     public boolean isUpStationId(Long stationId) {
         return upStation.isSameId(stationId);
+    }
+
+    public boolean isDownStationId(Long stationId) {
+        return downStation.isSameId(stationId);
     }
 }
