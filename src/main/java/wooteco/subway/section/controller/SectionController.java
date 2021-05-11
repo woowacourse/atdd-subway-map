@@ -9,7 +9,7 @@ import wooteco.subway.section.servcie.SectionService;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/lines/{lineId}")
+@RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
 
     private final SectionService sectionService;
@@ -20,9 +20,15 @@ public class SectionController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "/sections")
+    @PostMapping
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         sectionService.addSection(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 

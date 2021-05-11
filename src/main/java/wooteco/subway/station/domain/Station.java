@@ -39,5 +39,9 @@ public class Station {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public boolean isSameId(Long stationId) {
+        return this.id == stationId;
+    }
 }
 

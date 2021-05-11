@@ -11,7 +11,6 @@ import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -100,5 +99,34 @@ public class H2SectionDao implements SectionDao {
                 "FROM SECTION";
 
         jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public void delete(Section section) {
+        String sql = "DELETE " +
+                "FROM SECTION " +
+                "WHERE id = ?";
+
+        jdbcTemplate.update(sql, section.getId());
+    }
+
+    @Override
+    public List<Section> findByLineIdAndStationId(Long lineId, Long stationId) {
+        String sql = "SELECT * " +
+                "FROM SECTION AS s " +
+                "JOIN STATION AS t ON s.up_station_id = t.id " +
+                "JOIN STATION AS a ON s.down_station_id = a.id " +
+                "WHERE line_id = ? AND s.up_station_id = ? OR s.down_station_id = ?";
+        return jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId, stationId, stationId);
+    }
+
+    @Override
+    public boolean canDelete(Long lineId) {
+        String sql = "SELECT COUNT(*) " +
+                "FROM SECTION " +
+                "WHERE line_id = ?";
+
+        int countOfSection = jdbcTemplate.queryForObject(sql, Integer.class, lineId);
+        return countOfSection < 2;
     }
 }

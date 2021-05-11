@@ -78,11 +78,11 @@ public class Section {
     public Section changeSection(Section newSection) {
         if (upStation.equals(newSection.upStation)) {
             return new Section(id, lineId, newSection.downStation, downStation,
-                    distance.calculate(newSection.distance));
+                    distance.subtract(newSection.distance));
         }
         if (downStation.equals(newSection.downStation)) {
             return new Section(id, lineId, upStation, newSection.upStation,
-                    distance.calculate(newSection.distance));
+                    distance.subtract(newSection.distance));
         }
         throw new IllegalArgumentException("구간이 변경될 수 없습니다.");
     }
@@ -98,5 +98,13 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Section merge(Section anotherSection, Long stationId) {
+        if (upStation.isSameId(stationId)) {
+            return new Section(null, lineId, anotherSection.upStation, downStation, distance.sum(anotherSection.distance));
+        }
+        return new Section(null, lineId, upStation, anotherSection.downStation, distance.sum(anotherSection.distance));
+
     }
 }

@@ -22,7 +22,11 @@ public class Distance {
         return this.distance > newDistance.distance;
     }
 
-    public Distance calculate(Distance newDistance) {
+    public Distance subtract(Distance newDistance) {
         return new Distance(distance - newDistance.distance);
+    }
+
+    public Distance sum(Distance newDistance) {
+        return new Distance(distance + newDistance.distance);
     }
 }

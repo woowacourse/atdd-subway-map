@@ -3,6 +3,8 @@ package wooteco.subway.section.dao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 
+import java.util.List;
+
 public interface SectionDao {
     Section save(Section section);
 
@@ -13,4 +15,10 @@ public interface SectionDao {
     void update(Section section);
 
     void deleteAll();
+
+    void delete(Section newSection);
+
+    List<Section> findByLineIdAndStationId(Long lineId, Long stationId);
+
+    boolean canDelete(Long lineId);
 }

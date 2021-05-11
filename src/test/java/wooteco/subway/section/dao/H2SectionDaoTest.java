@@ -14,7 +14,10 @@ import wooteco.subway.station.dao.H2StationDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("H2SectionDao 테스트")
 @JdbcTest
@@ -103,5 +106,21 @@ class H2SectionDaoTest {
         assertThat(sectionDao.findById(newSection.getId())).isEqualTo(updateSection);
     }
 
+    @DisplayName("테이블에 있는 Section 데이터를 삭제한다")
+    @Test
+    public void delete() {
+        //given
+        Station station1 = new Station(1L, "강남역");
+        Station station2 = new Station(2L, "잠실역");
+        Section section = new Section(1L, station1, station2, new Distance(10));
+        Section newSection = sectionDao.save(section);
 
+        //when
+        sectionDao.delete(newSection);
+
+        //then
+        assertThatThrownBy(() -> sectionDao.findById(section.getId()))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("데이터베이스에 해당 ID의 구간이 없습니다.");
+    }
 }

@@ -84,8 +84,8 @@ public class H2StationDao implements StationDao {
                 "FROM STATION " +
                 "WHERE ID = ?";
 
-        int countOfColor = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
-        return countOfColor > 0;
+        int countOfId = jdbcTemplate.queryForObject(sql, Integer.class, id.toString());
+        return countOfId > 0;
     }
 
     @Override

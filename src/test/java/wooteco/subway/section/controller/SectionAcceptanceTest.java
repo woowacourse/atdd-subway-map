@@ -41,12 +41,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationDao stationDao;
 
+    private ExtractableResponse<Response> createResponse;
+
     @BeforeEach
     void set() {
         stationDao.save(STATION_1);
         stationDao.save(STATION_2);
         stationDao.save(STATION_3);
         stationDao.save(STATION_4);
+
+        createResponse = postResponse(LINE_REQUEST, "/lines");
     }
 
     @AfterEach
@@ -59,12 +63,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addUpLastSection() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(4L, 2L, 5);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         ExtractableResponse<Response> getResponse = getResponse(uri);
 
@@ -80,12 +82,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addDownLastSection() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(3L, 1L, 5);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         ExtractableResponse<Response> getResponse = getResponse(uri);
 
@@ -101,11 +101,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSection1() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         ExtractableResponse<Response> getResponse = getResponse(uri);
 
@@ -121,11 +120,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSection2() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(3L, 4L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         ExtractableResponse<Response> getResponse = getResponse(uri);
 
@@ -141,14 +139,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSection3() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest1 = new SectionRequest(1L, 2L, 4);
-        ExtractableResponse<Response> response1 = getPostResponse(sectionRequest1, uri + "/sections");
+        ExtractableResponse<Response> response1 = postResponse(sectionRequest1, uri + "/sections");
 
         // when
         SectionRequest sectionRequest2 = new SectionRequest(2L, 3L, 3);
-        ExtractableResponse<Response> response2 = getPostResponse(sectionRequest2, uri + "/sections");
+        ExtractableResponse<Response> response2 = postResponse(sectionRequest2, uri + "/sections");
         ExtractableResponse<Response> getResponse = getResponse(uri);
 
         // then
@@ -164,12 +161,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionOverDistance() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
-        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 15);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, 10);
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -179,12 +174,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionIfSameStations() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -194,12 +187,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionIfSameStationsReverse() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(4L, 1L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -209,12 +200,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionIfNotExistSameStations() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(2L, 3L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -224,18 +213,85 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionIfEachStationIsSame() {
         // given
-        ExtractableResponse<Response> createResponse = getPostResponse(LINE_REQUEST, "/lines");
-
         // when
         String uri = createResponse.header("Location");
         SectionRequest sectionRequest = new SectionRequest(1L, 1L, 4);
-        ExtractableResponse<Response> response = getPostResponse(sectionRequest, uri + "/sections");
+        ExtractableResponse<Response> response = postResponse(sectionRequest, uri + "/sections");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> getPostResponse(Object object, String url) {
+    @DisplayName("노선에 등록된 상행 종점역을 삭제한다.")
+    @Test
+    public void deleteUpLastStation() {
+        // given
+        String uri = createResponse.header("Location");
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 4);
+        postResponse(sectionRequest, uri + "/sections");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = deleteResponse(uri + "/sections", 1L);
+        ExtractableResponse<Response> getResponse = getResponse(uri);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = getResponse.body().as(LineResponse.class);
+        assertThat(lineResponse.getStations()).containsExactly(new StationResponse(STATION_2),
+                new StationResponse(STATION_4));
+    }
+
+    @DisplayName("노선에 등록된 하행 종점역을 삭제")
+    @Test
+    public void deleteDownLastStation() {
+        // given
+        String uri = createResponse.header("Location");
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 4);
+        postResponse(sectionRequest, uri + "/sections");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = deleteResponse(uri + "/sections", 4L);
+        ExtractableResponse<Response> getResponse = getResponse(uri);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = getResponse.body().as(LineResponse.class);
+        assertThat(lineResponse.getStations()).containsExactly(new StationResponse(STATION_1),
+                new StationResponse(STATION_2));
+    }
+
+    @DisplayName("노선에 등록된 역 중 상,하행 종점역을 제외한 나머지 역 하나 삭제")
+    @Test
+    public void deleteStation() {
+        // given
+        String uri = createResponse.header("Location");
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 4);
+        postResponse(sectionRequest, uri + "/sections");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = deleteResponse(uri + "/sections", 2L);
+        ExtractableResponse<Response> getResponse = getResponse(uri);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final LineResponse lineResponse = getResponse.body().as(LineResponse.class);
+        assertThat(lineResponse.getStations()).containsExactly(new StationResponse(STATION_1),
+                new StationResponse(STATION_4));
+    }
+
+    @DisplayName("노선에 구간이 한 개 밖에 없을 때 역 삭제 시 예외")
+    @Test
+    public void deleteWhenOnlyOneSection() {
+        // given
+        // when
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> deleteResponse = deleteResponse(uri + "/sections", 1L);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> postResponse(Object object, String url) {
         return RestAssured.given().log().all()
                 .body(object)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -249,6 +305,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .when()
                 .get(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteResponse(String url, Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when()
+                .delete(url)
                 .then().log().all()
                 .extract();
     }
