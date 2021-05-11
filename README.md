@@ -35,9 +35,9 @@
 ## 3단계 기능목록
 
 #### 테스트 수정
-- [ ] LineAcceptanceTest를 요구사항에 맞게 수정한다.
-- [ ] SectionAcceptanceTest를 요구사항에 맞게 추가한다.
-- [ ] Fixture 모두 정리하기
+- [x] LineAcceptanceTest를 요구사항에 맞게 수정한다.
+- [x] SectionAcceptanceTest를 요구사항에 맞게 추가한다.
+- [x] Fixture 모두 정리하기
 
 #### 노선 추가
 - [x] 노선을 생성한다.
@@ -70,3 +70,7 @@
 - [x] 종점이 제거될 경우 이전 역이 종점이 된다.
    - [x] 구간이 하나밖에 없는 경우에는 구간 삭제가 불가능하다.
 - [x] 중간역이 제거될 경우 재배치한다. ex. A-B-C 에서 B제거 시 A-C , 거리 또한 업데이트
+
+
+#### 리팩토링
+- [ ] 정렬 시 OutOfMemory 나는 경우가 간간히 발생하는 것 해결하기
