@@ -41,25 +41,21 @@ public class SectionService {
             .findByLineIdAndDownStationId(section.getLineId(), section.getDownStationId());
         Section legacySection = sectionByUpStation
             .orElse(sectionByDownStation.orElseThrow(InvalidSectionOnLineException::new));
-
-        Section updatedSection = section.updateForSave(legacySection);
-        sectionDao.updateStationAndDistance(updatedSection);
+        
+        sectionDao.delete(legacySection);
+        sectionDao.save(section.updateForSave(legacySection));
         return SectionServiceDto.from(sectionDao.save(section));
     }
 
     public void delete(@Valid final DeleteStationDto deleteDto) {
         Sections sections = new Sections(sectionDao.findAllByLineId(deleteDto.getLineId()));
-        validateDeletable(sections, deleteDto);
+        sections.validateDeletableCount();
+        sections.validateExistStation(deleteDto.getStationId());
 
         if (sections.isBothEndStation(deleteDto.getStationId())) {
             deleteStationAtEnd(deleteDto);
         }
         deleteStationAtMiddle(deleteDto);
-    }
-
-    private void validateDeletable(final Sections sections, final DeleteStationDto deleteDto) {
-        sections.validateDeletableCount();
-        sections.validateExistStation(deleteDto.getStationId());
     }
 
     private void deleteStationAtEnd(final DeleteStationDto dto) {
@@ -76,9 +72,9 @@ public class SectionService {
                 .orElseThrow(InvalidSectionOnLineException::new);
 
         Section updatedSection = upSection.updateForDelete(downSection);
-        sectionDao.save(updatedSection);
         sectionDao.delete(upSection);
         sectionDao.delete(downSection);
+        sectionDao.save(updatedSection);
     }
 }
 
