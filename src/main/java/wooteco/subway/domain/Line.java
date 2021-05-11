@@ -54,6 +54,14 @@ public class Line {
         return color;
     }
 
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public boolean isRemovable() {
+        return this.sections.isRemovable();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,9 +82,5 @@ public class Line {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
-    }
-
-    public boolean isRemovable() {
-        return this.sections.isRemovable();
     }
 }

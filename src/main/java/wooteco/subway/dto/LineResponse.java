@@ -29,15 +29,9 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stationResponses = line.getSections().sections()
-                .stream()
-                .map(Section::getUpStation)
+        List<StationResponse> stationResponses = line.getStations().stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
-
-        List<Section> sections = line.getSections().sections();
-        int size = sections.size();
-        stationResponses.add(StationResponse.from(sections.get(size - 1).getDownStation()));
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }

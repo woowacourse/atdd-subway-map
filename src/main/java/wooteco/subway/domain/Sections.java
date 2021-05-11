@@ -3,6 +3,7 @@ package wooteco.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Sections {
     List<Section> sections;
@@ -92,16 +93,6 @@ public class Sections {
         }
     }
 
-    private boolean isUp(Station station) {
-        return this.sections.stream()
-                .anyMatch(section -> section.isUpStation(station));
-    }
-
-    private boolean isDown(Station station) {
-        return this.sections.stream()
-                .anyMatch(section -> section.isDownStation(station));
-    }
-
     public void delete(Station station) {
         boolean hasUpStation = isUp(station);
         boolean hasDownStation = isDown(station);
@@ -122,8 +113,17 @@ public class Sections {
 
         if (hasDownStation) {
             sections.remove(sections.size() - 1);
-            return;
         }
+    }
+
+    private boolean isUp(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+    }
+
+    private boolean isDown(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isDownStation(station));
     }
 
     private void removeStationFromMiddleOfSection(Station station) {
@@ -150,6 +150,22 @@ public class Sections {
         return new Section(left.getUpStation(), right.getDownStation(), left.getDistance() + right.getDistance());
     }
 
+    public List<Section> sections() {
+        return this.sections;
+    }
+
+    public boolean isRemovable() {
+        return this.sections.size() > 1;
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
+        return stations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -161,13 +177,5 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(sections);
-    }
-
-    public List<Section> sections() {
-        return this.sections;
-    }
-
-    public boolean isRemovable() {
-        return this.sections.size() > 1;
     }
 }
