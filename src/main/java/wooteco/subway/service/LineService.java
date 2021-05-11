@@ -87,6 +87,11 @@ public class LineService {
         lineDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("삭제하려는 노선이 존재하지 않습니다"));
         lineDao.delete(id);
+
+        List<Section> allByLineId = sectionDao.findAllByLineId(id);
+        for(Section section : allByLineId){
+            sectionDao.delete(section.getId());
+        }
     }
 
     @Transactional(readOnly = false)
