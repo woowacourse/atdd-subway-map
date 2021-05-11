@@ -61,7 +61,6 @@ public class LineService {
     }
 
     public LineResponse findLineById(long lineId) {
-        // TODO section 레포지토리로 부터 불러오고, 정렬시키기
         Line line = this.lineRepository.findById(lineId);
         List<Section> sections = this.sectionRepository.findAllByLineId(lineId);
 
@@ -74,7 +73,6 @@ public class LineService {
         }
 
         line.setSectionsFrom(sections);
-
         return LineResponse.from(line);
     }
 

@@ -34,9 +34,7 @@ public class SectionService {
         int distance = sectionRequest.getDistance();
 
         line.addSection(upStation, downStation, distance);
-
         this.updateSections(lineId, line);
-
         return LineResponse.from(line);
     }
 
@@ -47,7 +45,6 @@ public class SectionService {
 
         Station station = this.stationRepository.findById(stationId);
         line.deleteStation(station);
-
         this.updateSections(lineId, line);
     }
 
@@ -67,7 +64,6 @@ public class SectionService {
             section.setUpStation(upStation);
             section.setDownStation(downStation);
         }
-
         line.setSectionsFrom(sections);
         return line;
     }
