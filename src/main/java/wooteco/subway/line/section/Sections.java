@@ -74,7 +74,7 @@ public class Sections {
     }
 
     private List<Long> findLastPoints(final Map<Long, Integer> frequency) {
-        final List<Long> candidates = new ArrayList();
+        final List<Long> candidates = new ArrayList<>();
         frequency.forEach((id, value) -> {
             if (value == 1) {
                 candidates.add(id);
@@ -85,13 +85,13 @@ public class Sections {
 
     public void validateBothExistentStation(final Long upStationId, final Long downStationId) {
         if (containsStation(upStationId) && containsStation(downStationId)) {
-            throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new BothExistentStationException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 
     public void validateNoneExistentStation(final Long upStationId, final Long downStationId) {
         if (!containsStation(upStationId) && !containsStation(downStationId)) {
-            throw new RuntimeException("상행역과 하행역 둘 다 포함되어있지 않습니다.");
+            throw new NoneExistentStationException("상행역과 하행역 둘 다 포함되어있지 않습니다.");
         }
     }
 
@@ -99,16 +99,16 @@ public class Sections {
         return distinctStationIds().contains(stationId);
     }
 
-    public boolean isFirstStationId(Long downStationId) {
-        return getFirstSection().getUpStationId().equals(downStationId);
+    public boolean isFirstStationId(Long stationId) {
+        return getFirstSection().getUpStationId().equals(stationId);
     }
 
     public Section getFirstSection() {
         return sectionGroup.get(0);
     }
 
-    public boolean isLastStationId(final Long upStationId) {
-        return getLastSection().getDownStationId().equals(upStationId);
+    public boolean isLastStationId(final Long stationId) {
+        return getLastSection().getDownStationId().equals(stationId);
     }
 
     public Section getLastSection() {
