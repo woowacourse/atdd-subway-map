@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SectionsTest {
 
     private Sections sections;
-    private Long lineId = 3L;
+    private final Long lineId = 3L;
 
     @BeforeEach
     void setUp() {
@@ -219,7 +219,7 @@ public class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 속하지 않은 역입니다.");
     }
-    
+
     @DisplayName("구간이 하나인 노선에서는 구간제거를 할 수 없다")
     @Test
     void removeSectionExceptionOneSectionLeft() {

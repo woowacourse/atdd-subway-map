@@ -4,19 +4,15 @@ import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Line {
 
-    private Long id;
-    private String name;
-    private String color;
+    private final Long id;
+    private final String name;
+    private final String color;
     private Sections sections;
-
-    public Line() {
-    }
 
     public Line(Long id, String name, String color, Sections sections) {
         this.id = id;
@@ -26,7 +22,7 @@ public class Line {
     }
 
     public Line(long id, String name, String color) {
-        this(id, name, color, null);
+        this(id, name, color, new Sections());
     }
 
     public boolean insertSectionAtEdge(Section section) {
@@ -66,6 +62,13 @@ public class Line {
     }
 
     public void setSections(Sections sections) {
+        validateSections(sections);
         this.sections = sections;
+    }
+
+    private void validateSections(Sections sections) {
+        if (!sections.checkSameLineId(id)) {
+            throw new IllegalStateException("노선에 등록될 수 없는 구간입니다.");
+        }
     }
 }

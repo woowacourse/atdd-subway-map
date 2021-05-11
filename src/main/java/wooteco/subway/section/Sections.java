@@ -6,9 +6,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sections {
-
     private Long lineId;
+
     private List<Section> sections;
+
+    public Sections() {
+    }
 
     public Sections(Long lineId, List<Section> sections) {
         validateProperSections(lineId, sections);
@@ -25,21 +28,25 @@ public class Sections {
         }
     }
 
+    public boolean checkSameLineId(Long id) {
+        return this.lineId.equals(id);
+    }
+
     public List<Station> lineUpStations() {
-        final Map<Station, Station> sectionConnectionInfo = generateSectionConnectionInfo();
+        final Map<Station, Station> sectionConnection = generateStationConnection();
 
         Station station = findUpEndStation();
         List<Station> lineUpStations = new ArrayList<>();
-        while (sectionConnectionInfo.containsKey(station)) {
+        while (sectionConnection.containsKey(station)) {
             lineUpStations.add(station);
-            station = sectionConnectionInfo.get(station);
+            station = sectionConnection.get(station);
         }
         lineUpStations.add(station);
 
         return lineUpStations;
     }
 
-    private Map<Station, Station> generateSectionConnectionInfo() {
+    private Map<Station, Station> generateStationConnection() {
         Map<Station, Station> sectionConnectionInfo = new HashMap<>();
         for (Section section : sections) {
             sectionConnectionInfo.put(section.getUpStation(), section.getDownStation());
@@ -78,70 +85,67 @@ public class Sections {
 
     public boolean insertSectionAtEdge(Section section) {
         final List<Station> stations = lineUpStations();
-        final Station upStation = section.getUpStation();
-        final Station downStation = section.getDownStation();
-        validateConnection(stations, upStation, downStation);
-        if (stations.get(0).equals(downStation) || stations.get(stations.size() - 1).equals(upStation)) {
+        validateConnection(stations, section);
+
+        if (stations.get(0).equals(section.getDownStation()) ||
+                stations.get(stations.size() - 1).equals(section.getUpStation())) {
             sections.add(section);
             return true;
         }
         return false;
     }
 
-    public Map<Section, Section> insertSectionInBetween(Section section) {
-        final List<Station> stations = lineUpStations();
+    private void validateConnection(List<Station> stationsInSection, Section section) {
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
-        validateConnection(stations, upStation, downStation);
-        return insertSectionBetweenSections(stations, section, upStation, downStation);
-    }
 
-    private void validateConnection(List<Station> stationsInSection, Station upStation, Station downStation) {
         if ((stationsInSection.contains(upStation) && stationsInSection.contains(downStation)) ||
                 (!stationsInSection.contains(upStation) && !stationsInSection.contains(downStation))) {
             throw new IllegalArgumentException("연결될 수 있는 구간이 아닙니다.");
         }
     }
 
-    private Map<Section, Section> insertSectionBetweenSections(List<Station> stations, Section section, Station upStation, Station downStation) {
-        if (stations.contains(upStation)) {
-            return updateUpperConnection(section, upStation, downStation);
+    public Map<Section, Section> insertSectionInBetween(Section section) {
+        final List<Station> stations = lineUpStations();
+        validateConnection(stations, section);
+        if (stations.contains(section.getUpStation())) {
+            return insertUpperSectionInBetween(section);
         }
-        return updateLowerConnection(section, upStation, downStation);
+        return insertLowerSectionInBetween(section);
     }
 
-    private Map<Section, Section> updateUpperConnection(Section newUpSection, Station upStation, Station downStation) {
-        final Section presentSection = findSectionStationAsUpStation(upStation);
+    private Map<Section, Section> insertUpperSectionInBetween(Section newUpSection) {
+        final Section presentSection = findSectionHoldingAsUpStation(newUpSection.getUpStation());
         presentSection.checkInsertionPossible(newUpSection);
 
         final int downDistance = presentSection.subtractDistance(newUpSection);
-        final Section newDownSection = new Section(lineId, downStation, presentSection.getDownStation(), downDistance);
+        final Section newDownSection = new Section(lineId, newUpSection.getDownStation(), presentSection.getDownStation(), downDistance);
         sections.remove(presentSection);
         sections.add(newUpSection);
         sections.add(newDownSection);
         return Collections.singletonMap(newUpSection, newDownSection);
     }
 
-    private Section findSectionStationAsUpStation(Station upStation) {
+    private Section findSectionHoldingAsUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("구간 조회에 실패했습니다."));
     }
 
-    private Map<Section, Section> updateLowerConnection(Section newDownSection, Station upStation, Station downStation) {
-        final Section presentSection = findSectionStationAsDownStation(downStation);
+    private Map<Section, Section> insertLowerSectionInBetween(Section newDownSection) {
+        final Section presentSection = findSectionHoldingAsDownStation(newDownSection.getDownStation());
         presentSection.checkInsertionPossible(newDownSection);
 
         final int upDistance = presentSection.subtractDistance(newDownSection);
-        final Section newUpSection = new Section(lineId, presentSection.getUpStation(), upStation, upDistance);
+        final Section newUpSection = new Section(lineId, presentSection.getUpStation(), newDownSection.getUpStation(), upDistance);
         sections.remove(presentSection);
         sections.add(newUpSection);
         sections.add(newDownSection);
         return Collections.singletonMap(newUpSection, newDownSection);
     }
 
-    private Section findSectionStationAsDownStation(Station downStation) {
+    private Section findSectionHoldingAsDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findAny()
@@ -165,29 +169,16 @@ public class Sections {
         final List<Station> stations = lineUpStations();
         validateStation(station, stations);
         validateLeftSection();
+
         if (stations.get(0).equals(station)) {
-            final Section section = findSectionStationAsUpStation(station);
+            final Section section = findSectionHoldingAsUpStation(station);
             sections.remove(section);
             return section;
         }
-        final Section section = findSectionStationAsDownStation(station);
+
+        final Section section = findSectionHoldingAsDownStation(station);
         sections.remove(section);
         return section;
-    }
-
-    public Map<Section, Map<Section, Section>> removeSectionInBetween(Station station) {
-        final List<Station> stations = lineUpStations();
-        validateStation(station, stations);
-        validateLeftSection();
-        final Section upperSection = findSectionStationAsDownStation(station);
-        final Section lowerSection = findSectionStationAsUpStation(station);
-        final int totalDistance = lowerSection.addDistance(upperSection);
-        final Section newSection = new Section(lineId, upperSection.getUpStation(), lowerSection.getDownStation(), totalDistance);
-        sections.add(newSection);
-        sections.remove(lowerSection);
-        sections.remove(upperSection);
-        final Map<Section, Section> sectionsDeleted = Collections.singletonMap(lowerSection, upperSection);
-        return Collections.singletonMap(newSection, sectionsDeleted);
     }
 
     private void validateStation(Station station, List<Station> stations) {
@@ -200,5 +191,23 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException("구간이 하나밖에 없어 삭제할 수 없습니다");
         }
+    }
+
+    public Map<Section, Map<Section, Section>> removeSectionInBetween(Station station) {
+        final List<Station> stations = lineUpStations();
+        validateStation(station, stations);
+        validateLeftSection();
+
+        final Section upperSection = findSectionHoldingAsDownStation(station);
+        final Section lowerSection = findSectionHoldingAsUpStation(station);
+        final int totalDistance = lowerSection.addDistance(upperSection);
+        final Section newSection = new Section(lineId, upperSection.getUpStation(), lowerSection.getDownStation(), totalDistance);
+
+        sections.remove(upperSection);
+        sections.remove(lowerSection);
+        final Map<Section, Section> sectionsDeleted = Collections.singletonMap(lowerSection, upperSection);
+
+        sections.add(newSection);
+        return Collections.singletonMap(newSection, sectionsDeleted);
     }
 }

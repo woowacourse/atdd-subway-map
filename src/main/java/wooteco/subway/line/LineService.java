@@ -31,19 +31,15 @@ public class LineService {
     public LineResponse createLine(long upStationId, long downStationId, String lineName, String lineColor, int distance) {
         validateDuplicateName(lineName);
         Line line = lineDao.save(lineName, lineColor);
+
         final Station upStation = findStationById(upStationId);
         final Station downStation = findStationById(downStationId);
         final SectionDto sectionDto = sectionDao.save(line.getId(), upStation.getId(), downStation.getId(), distance);
         final Section section = generateSection(sectionDto);
-        final Sections sections = new Sections(line.getId(), Arrays.asList(section));
+        final Sections sections = new Sections(line.getId(), Collections.singletonList(section));
+
         line.setSections(sections);
         return LineResponse.from(line);
-    }
-
-    public Section generateSection(SectionDto sectionDto) {
-        final Station upStation = findStationById(sectionDto.getUpStationId());
-        final Station downStation = findStationById(sectionDto.getDownStationId());
-        return new Section(sectionDto.getLineId(), upStation, downStation, sectionDto.getDistance());
     }
 
     private void validateDuplicateName(String lineName) {
@@ -56,6 +52,12 @@ public class LineService {
     private Station findStationById(long stationId) {
         return stationDao.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+    }
+
+    public Section generateSection(SectionDto sectionDto) {
+        final Station upStation = findStationById(sectionDto.getUpStationId());
+        final Station downStation = findStationById(sectionDto.getDownStationId());
+        return new Section(sectionDto.getLineId(), upStation, downStation, sectionDto.getDistance());
     }
 
     public List<LineResponse> showLines() {
@@ -89,8 +91,7 @@ public class LineService {
             final Section section = generateSection(sectionDto);
             sectionList.add(section);
         }
-        final Sections sections = new Sections(lineId, sectionList);
-        return sections;
+        return new Sections(lineId, sectionList);
     }
 
     public void updateLine(long lineId, String lineName, String lineColor) {
@@ -119,9 +120,8 @@ public class LineService {
     private void createSectionInBetween(long lineId, Line line, Section newSection) {
         Map<Section, Section> changedSections = line.insertSectionInBetween(newSection);
         final Section upperSection = changedSections.keySet().iterator().next();
-        final Section lowerSection = changedSections.get(upperSection);
-
         saveSectionToDB(upperSection);
+        final Section lowerSection = changedSections.get(upperSection);
         saveSectionToDB(lowerSection);
         sectionDao.delete(lineId, upperSection.getUpStation().getId(), lowerSection.getDownStation().getId());
     }

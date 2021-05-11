@@ -5,21 +5,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
 public class SectionDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public SectionDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<SectionDto> sectionDtoRowMapper = (resultSet, rowNum) -> new SectionDto(
             resultSet.getLong("id"),
             resultSet.getLong("line_id"),
@@ -27,6 +20,10 @@ public class SectionDao {
             resultSet.getLong("down_station_id"),
             resultSet.getInt("distance")
     );
+
+    public SectionDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public SectionDto save(long lineId, long upStationId, long downStationId, int distance) {
         String sql = "INSERT INTO SECTION (line_id, up_station_id, down_station_id, distance) values (?, ?, ?, ?)";
