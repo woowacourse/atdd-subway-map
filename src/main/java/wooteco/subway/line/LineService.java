@@ -39,9 +39,9 @@ public class LineService {
         return LineServiceDto.from(saveLine);
     }
 
-    private void checkExistedNameAndColor(CreateLineDto nonIdlineDto) {
-        String name = nonIdlineDto.getName();
-        String color = nonIdlineDto.getColor();
+    private void checkExistedNameAndColor(CreateLineDto createLineDto) {
+        String name = createLineDto.getName();
+        String color = createLineDto.getColor();
 
         if (lineDao.countByColor(color) != 0) {
             throw new DuplicateLineException();
