@@ -1,6 +1,7 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
@@ -27,7 +28,10 @@ public class StationService {
     }
 
     public void delete(Long id) {
-        stationDao.delete(id);
+        int affectedRowCount = stationDao.delete(id);
+        if (affectedRowCount == 0) {
+            throw new IllegalArgumentException("해당 지하철 역을 삭제할 수 없습니다.");
+        }
     }
 
     public Station findById(Long id) {

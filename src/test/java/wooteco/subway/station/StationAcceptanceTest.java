@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.dto.StationRequest;
 import wooteco.subway.station.dto.StationResponse;
@@ -132,5 +133,31 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("노선에 등록된 지하철 역을 제거할 경우 예외처리한다.")
+    @Test
+    void cannotDeleteWhenStationInLine() {
+        // given
+        Long upStationId = 1L;
+        LineRequest line = new LineRequest("신분당선", "bg-red-600", upStationId, 2L, 10);
+        RestAssured.given().log().all()
+                .body(line)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + upStationId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("해당 지하철 역을 삭제할 수 없습니다.");
     }
 }
