@@ -43,13 +43,73 @@
         - [ ] 삭제하려는 역이 노선에 존재X
         - [ ] 노선에 구간이 하나일 때
 
+#### 구간 관리 플로우
+- 구간 추가
+    - 검증
+        - 실패: 추가하려는 구간의 up, down을 둘다 가지는 구간이 존재
+            - 결과가 0개면 통과
+            - SELECT * FROM section
+              WHERE
+              line_id = {line_id}
+              AND
+              (
+              (up_station_id = {up} AND down_station_id = {down}) 
+              OR 
+              (up_station_id = {down} AND down_station_id = {up})
+              )
+        - 실패: 중간에 추가시 기존구간보다 거리가 큼
+    - 로직
+        - 중간/종점 구분
+            - 새구간과 up이 같거나(OR) down이 같은 구간 존재(둘 다 같을 순 없음) => 중간추가!
+            - SELECT * FROM section
+            WHERE
+            line_id = {line_id}
+            AND
+            (up_station_id = {up} OR down_station_id = {down})
+            - 결과가 1개 이상이면 중간추가
+        - 중간추가
+            - 기존구간 = 위의 "중간/종점 구분" 쿼리 결과
+            - 거리 검증
+            - 구간 2개 생성
+                - (1)새 구간
+                - (2)구간(기존구간에서 한쪽 역id/(1)구간에서 한쪽 역id, 기존구간거리 - (1)구간거리)
+            - 기존 구간 삭제
+        - 종점추가
+            - 새 구간 생성
+- 구간 삭제
+    - 검증
+        - 실패: 노선에 구간이 하나밖에 없음
+            - 결과가 2개 이상이면 통과
+            - SELECT COUNT(*) FROM section
+              WHERE
+              line_id = {line_id}
+        - 실패: 노선에 포함된 역 없음
+          - 결과가 1개 이상이면 통과
+          - SELECT COUNT(*) FROM section 
+            WHERE 
+            line_id = {line_id} 
+            AND
+            (up_station_id = {station_id} OR down_station_id = {station_id})
+    - 로직
+        - 중간/종점 구분
+            - 삭제하려는 station_id를 가지고 있는 구간 개수: 1개면 종점 / 2개면 중간
+            - 구간개수 = 위의 "노선에 포함된 역 없음" 쿼리 결과
+        - 중간삭제
+            - 새 구간 생성(양쪽 구간의 서로 반대쪽 역2개, 양쪽 구간 합친 거리)
+            - 기존 양쪽 구간 삭제
+        - 종점삭제
+            - 삭제하려는 역을 가지고 있는 구간 삭제
+
 ### 예외 처리
 - [x] 서비스에 종속적인 커스텀 예외 정의
 - [x] Dao에서 발생한 DB예외를 서비스레이어에서 처리
 - [x] 리소스 생성 요청시 요청데이터를 바로 리턴하지 말고 DB에서 다시 쿼리하도록 변경
 
-### 설계
+### TODO
 - [ ] 서비스에서 다른 서비스 호출하도록 변경
     - 상위 서비스는 하위 서비스만 참조
     - 하위 서비스는 DAO와 1대1 매핑
 - [ ] 서비스계층이 도메인을 보호해야하나? (서비스에서 DTO를 반환?)
+- [ ] 생성자 인자가 많은 곳에서 빌더 활용
+- [ ] validation에 메시지 추가하기(@NotNull(message = "하행역 정보를 입력해야합니다."))
+- [ ] SimpleJdbcInsert 적용하기
