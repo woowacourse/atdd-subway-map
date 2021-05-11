@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD:src/test/java/wooteco/subway/line/ui/LineControllerTest.java
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Line;
@@ -25,8 +26,12 @@ import wooteco.subway.line.ui.dto.LineRequest;
 import wooteco.subway.domain.line.Line;
 =======
 >>>>>>> d2a85ea... refactor: 테스트 및 버그 수정
+=======
+import org.springframework.web.bind.annotation.PostMapping;
+>>>>>>> 110acd7... feat: 섹션 삭제 기능 추가
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.station.StationRepository;
+import wooteco.subway.ui.dto.SectionRequest;
 import wooteco.subway.ui.dto.line.LineRequest;
 import wooteco.subway.ui.dto.station.StationRequest;
 import wooteco.subway.ui.dto.station.StationResponse;
@@ -34,6 +39,7 @@ import wooteco.util.StationFactory;
 >>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경:src/test/java/wooteco/subway/ui/LineControllerTest.java
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Comparator.comparingInt;
@@ -64,6 +70,8 @@ class LineControllerTest {
         jdbcTemplate.update("DELETE FROM STATION");
         jdbcTemplate.update("ALTER TABLE LINE ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("DELETE FROM LINE");
+        jdbcTemplate.update("ALTER TABLE SECTION ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM SECTION");
     }
 
     @DisplayName("새로운 노선을 생성한다.")
@@ -153,6 +161,8 @@ class LineControllerTest {
     @DisplayName("노션을 수정한다.")
     @Test
     void modifyById_modifyLineFromUserInputs() {
+        insertStation("바보역");
+        insertStation("보바역");
         insertLine("신분당선", "bg-red-600", 1L, 2L, 10L);
 
         RestAssured
@@ -183,6 +193,34 @@ class LineControllerTest {
     @DisplayName("새로운 구간을 추가한다")
     @Test
     void createNewSection() {
+        insertStation("바보역");
+        insertStation("보바역");
+        insertStation("난 바보가 아니다역");
+        insertLine("바보선", "빨강:)", 1L, 2L, 10L);
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .accept(MediaType.ALL_VALUE)
+                .when()
+                    .body(new SectionRequest(1L, 3L, 4L))
+                    .post("/lines/1/sections")
+                .then().log().all()
+                    .body("id", is(1))
+                    .body("name", is("바보선"))
+                    .body("color", is("빨강:)"))
+                    .extract();
+
+        List<StationResponse> stations = response.jsonPath().getList("stations", StationResponse.class);
+        assertThat(stations).
+                usingRecursiveComparison()
+                .isEqualTo(
+                        Arrays.asList(
+                                new StationResponse(1L, "바보역"),
+                                new StationResponse(3L, "난 바보가 아니다역"),
+                                new StationResponse(2L, "보바역")
+                        )
+                );
     }
 
     private void insertLine(String name, String color, Long upStationId, Long downStationId, Long distance) {

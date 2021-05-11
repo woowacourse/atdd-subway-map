@@ -5,6 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.line.section.Section;
+import wooteco.subway.domain.line.section.Sections;
+import wooteco.subway.domain.line.value.LineColor;
+import wooteco.subway.domain.line.value.LineId;
+import wooteco.subway.domain.line.value.LineName;
 import wooteco.subway.domain.station.StationRepository;
 
 import java.util.List;
@@ -60,7 +64,15 @@ public class LineService {
     }
 
     public void update(final Line line) {
-        lineRepository.update(line);
+        List<Section> sections = lineRepository.findById(line.getLineId()).getSections();
+        lineRepository.update(
+                new Line(
+                        new LineId(line.getLineId()),
+                        new LineName(line.getLineName()),
+                        new LineColor(line.getLineColor()),
+                        new Sections(sections)
+                )
+        );
     }
 
     public void deleteById(final Long id) {

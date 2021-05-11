@@ -86,6 +86,33 @@ public class SectionDao {
                 "up_station_id = ?, " +
                 "down_station_id = ?, " +
                 "distance = ? " +
-                "WHERE id";
+                "WHERE id = ?";
+
+        List<Object[]> argsOfSections = sections.stream().map(
+                section -> {
+                    Long upStationId = section.getUpStationId();
+                    Long downStationId = section.getDownStationId();
+                    Long distance = section.getDistance();
+                    Long id = section.getId();
+
+                    return new Object[]{upStationId, downStationId, distance, id};
+                }
+        ).collect(toList());
+
+        jdbcTemplate.batchUpdate(sql, argsOfSections);
+    }
+
+    public void delete(List<Section> sections) {
+        final String sql = "DELETE FROM SECTION WHERE id = ?";
+
+        List<Object[]> argsOfSections = sections.stream().map(
+                section -> {
+                    Long id = section.getId();
+
+                    return new Object[]{id};
+                }
+        ).collect(toList());
+
+        jdbcTemplate.batchUpdate(sql, argsOfSections);
     }
 }

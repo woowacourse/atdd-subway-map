@@ -22,7 +22,7 @@ public class Section {
     }
 
     public Section(Long upStationId, Long downStationId, Long distance) {
-        this(null, upStationId, downStationId, distance);
+        this(null, null, upStationId, downStationId, distance);
     }
 
     public Long getId() {

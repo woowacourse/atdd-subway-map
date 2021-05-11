@@ -11,6 +11,7 @@ import wooteco.subway.domain.line.value.LineId;
 import wooteco.subway.domain.line.value.LineName;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,8 +32,8 @@ public class LineRepositoryImpl implements LineRepository {
         List<Section> sections = savedLine.getSections().stream().map(
                 section -> new Section(
                         savedLine.getLineId(),
-                        section.getDownStationId(),
                         section.getUpStationId(),
+                        section.getDownStationId(),
                         section.getDistance()
                 )
         ).collect(toList());
@@ -73,8 +74,31 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public void update(Line line) {
+        Line originLine = findById(line.getLineId());
+        List<Section> originSections = originLine.getSections();
+        List<Section> changedSections = line.getSections();
+
+        for (Section changedSection : changedSections) {
+            originSections.removeIf(section ->
+                    Objects.equals(section.getId(), changedSection.getId()));
+        }
+
+        List<Section> deletedSections = originSections;
+
+        for (Section originSection : originLine.getSections()) {
+            changedSections.removeIf(section ->
+                    Objects.equals(section, originSection));
+        }
+
+        List<Section> creatableSection = changedSections.stream().filter(section -> section.getId() == null).collect(toList());
+        List<Section> updatableSections = changedSections.stream().filter(section -> section.getId() != null).collect(toList());
+
         lineDao.update(line);
+        sectionDao.delete(deletedSections);
+        sectionDao.update(updatableSections);
+        sectionDao.save(creatableSection);
     }
+
 
     @Override
     public void deleteById(final Long id) {

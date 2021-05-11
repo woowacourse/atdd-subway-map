@@ -109,6 +109,16 @@ class SectionsTest {
                 .hasMessage("연결할 수 있는 역을 찾을 수 없습니다.");
     }
 
+    @DisplayName("구간 삭제")
+    @ParameterizedTest
+    @CsvSource(value = {"4:3:5", "3:4:5","5:3:4"}, delimiter = ':')
+    void delete(Long deleteStationId, Long expectedUpStationId, Long expectedDownStationId) {
+        sections.add(SectionFactory.create(2L, 1L, 4L, 5L, 3L));
+
+        sections.deleteSectionByStationId(deleteStationId);
+        assertThat(sections.getStationIds()).containsExactly(expectedUpStationId, expectedDownStationId);
+    }
+
     @Test
     void getStationIds() {
         //init 3-4

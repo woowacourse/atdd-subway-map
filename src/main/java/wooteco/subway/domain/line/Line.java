@@ -54,6 +54,10 @@ public class Line {
         return sections.getStationIds();
     }
 
+    public void deleteSectionByStationId(Long stationId) {
+        sections.deleteSectionByStationId(stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,5 +1,8 @@
 package wooteco.subway.domain.line.section;
 
+import wooteco.subway.domain.station.Station;
+
+import java.awt.peer.ListPeer;
 import java.util.*;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -192,6 +195,44 @@ public class Sections {
                         section.getDownStationId()))
                 .max()
                 .orElse(-1L);
+    }
+
+    public void deleteSectionByStationId(Long stationId) {
+        if(sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+        }
+
+        Optional<Section> wrappedUpSection = sections.stream()
+                .filter(section -> Objects.equals(section.getUpStationId(), stationId))
+                .findAny();
+
+        Optional<Section> wrappedDownSection = sections.stream()
+                .filter(section -> Objects.equals(section.getDownStationId(), stationId))
+                .findAny();
+
+        if(wrappedDownSection.isPresent() && wrappedUpSection.isPresent()) {
+            Section upSection = wrappedDownSection.get();
+            Section downSection = wrappedUpSection.get();
+
+            sections.remove(upSection);
+            sections.remove(downSection);
+
+            sections.add(new Section(
+                    upSection.getLineId(),
+                    upSection.getUpStationId(),
+                    downSection.getDownStationId(),
+                    upSection.getDistance() + downSection.getDistance()
+            ));
+        }
+
+        if(wrappedDownSection.isPresent() && !wrappedUpSection.isPresent()) {
+            sections.remove(wrappedDownSection.get());
+        }
+
+        if(wrappedUpSection.isPresent() && !wrappedDownSection.isPresent()) {
+            sections.remove(wrappedUpSection.get());
+        }
+
     }
 
 }
