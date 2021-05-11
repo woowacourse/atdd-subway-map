@@ -4,25 +4,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.domain.StationRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
     public static final String ERROR_DUPLICATED_LINE_NAME = "라인이 중복되었습니다.";
 
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     @Autowired
-    public LineService(final LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public Line create(Line line) {
         checkCreateValidation(line);
         final long id = lineRepository.save(line);
 
-        return new Line(id, line.getName(), line.getColor());
+    public List<Station> getStations(Long lineId) {
+        Line line = lineRepository.findById(lineId);
+
+        return line.getSections().toList()
+                .stream()
+                .map(section -> stationRepository.findById(section.getUpStationId()))
+                .collect(Collectors.toList());
+
     }
 
     public List<Line> allLines() {

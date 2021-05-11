@@ -5,9 +5,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.Sections;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.line.ui.dto.LineRequest;
+import wooteco.subway.line.ui.dto.LineCreateRequest;
+import wooteco.subway.line.ui.dto.LineModifyRequest;
 import wooteco.subway.line.ui.dto.LineResponse;
+import wooteco.subway.station.domain.Station;
 
 import java.net.URI;
 import java.util.List;
@@ -29,6 +33,8 @@ public class LineController {
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor());
         final Line savedLine = lineService.create(line);
 
+        final List<Station> stations = lineService.getStations(savedLine.getId());
+
         return ResponseEntity
                 .created(
                         URI.create("/lines/" + savedLine.getId())
@@ -42,35 +48,22 @@ public class LineController {
                 );
     }
 
-    @GetMapping(
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> allLines() {
         final List<LineResponse> lineResponses = lineService.allLines().stream()
-                .map(line ->
-                        new LineResponse(
-                                line.getId(),
-                                line.getName(),
-                                line.getColor()
-                        )
-                ).collect(toList());
+                .map(line -> new LineResponse(line, lineService.getStations(line.getId())))
+                .collect(toList());
 
         return ResponseEntity.ok(lineResponses);
     }
 
-    @GetMapping(value = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
         final Line line = lineService.findById(id);
 
-        return ResponseEntity.ok(
-                new LineResponse(
-                        line.getId(),
-                        line.getName(),
-                        line.getColor()
-                )
-        );
+        final List<Station> stations = lineService.getStations(line.getId());
+
+        return ResponseEntity.ok(new LineResponse(line, stations));
     }
 
     @PutMapping(value = "/{id}",

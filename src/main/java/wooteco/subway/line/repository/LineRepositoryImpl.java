@@ -1,22 +1,25 @@
 package wooteco.subway.line.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
+import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.Sections;
 
 import java.util.List;
 
 @Repository
 public class LineRepositoryImpl implements LineRepository {
     private final LineDao lineDao;
+    private final SectionDao sectionDao;
 
-    public LineRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.lineDao = new LineDao(jdbcTemplate);
+    public LineRepositoryImpl(final LineDao lineDao, final SectionDao sectionDao) {
+        this.lineDao = lineDao;
+        this.sectionDao = sectionDao;
     }
 
     @Override
-    public long save(Line line) {
+    public Line save(final Line line) {
         return lineDao.save(line);
     }
 
@@ -27,7 +30,9 @@ public class LineRepositoryImpl implements LineRepository {
 
     @Override
     public Line findById(final Long id) {
-        return lineDao.findById(id);
+        Line line = lineDao.findById(id);
+        List<Section> sections = sectionDao.sections(id);
+        return new Line(line.getId(), line.getName(), line.getColor(), new Sections(sections));
     }
 
     @Override

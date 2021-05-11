@@ -18,7 +18,7 @@ public class LineDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long save(Line line) {
+    public Line save(Line line) {
         final String sql = "INSERT INTO LINE (name, color) VALUES (?, ?)";
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -27,33 +27,33 @@ public class LineDao {
             final PreparedStatement pstmt = connection.prepareStatement(sql, new String[]{"id"});
             pstmt.setString(1, line.getName());
             pstmt.setString(2, line.getColor());
-
             return pstmt;
         }, keyHolder);
 
-        return keyHolder.getKeyAs(Long.class);
+        Long id = keyHolder.getKeyAs(Long.class);
+
+        return new Line(id, line.getName(), line.getColor(), line.getSections());
     }
 
     public List<Line> allLines() {
         final String sql = "SELECT * FROM LINE";
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            final long id = resultSet.getLong("id");
-            final String name = resultSet.getString("name");
-            final String color = resultSet.getString("color");
-
-            return new Line(id, name, color);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            final long id = rs.getLong("id");
+            final String name = rs.getString("name");
+            final String color = rs.getString("color");
+            return new Line(id, name, color, null);
         });
     }
 
     public Line findById(final Long id) {
         final String sql = "SELECT * FROM LINE WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+        return jdbcTemplate.queryForObject(sql, (rs, rn) -> {
             final String name = rs.getString("name");
             final String color = rs.getString("color");
 
-            return new Line(id, name, color);
+            return new Line(id, name, color, null);
         }, id);
     }
 

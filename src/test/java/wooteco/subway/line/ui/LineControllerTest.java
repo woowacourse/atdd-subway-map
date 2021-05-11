@@ -12,7 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.domain.LineRepository;
-import wooteco.subway.line.ui.dto.LineRequest;
+import wooteco.subway.line.domain.Section;
+import wooteco.subway.line.domain.Sections;
+import wooteco.subway.line.ui.dto.LineCreateRequest;
+import wooteco.subway.line.ui.dto.LineModifyRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -81,6 +84,10 @@ class LineControllerTest {
         lineRepository.save(new Line("신분당선", "bg-red-600"));
         lineRepository.save(new Line("2호선", "bg-green-600"));
 
+
+        lineRepository.save(new Line("신분당선", "bg-red-600", sections));
+        lineRepository.save(new Line("2호선", "bg-green-600", sections));
+
         RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -96,8 +103,15 @@ class LineControllerTest {
     @DisplayName("노선을 검색한다")
     @Test
     void findById_findLineById() {
-        lineRepository.save(new Line("신분당선", "bg-red-600"));
-        lineRepository.save(new Line("2호선", "bg-green-600"));
+
+        Sections sections = new Sections(
+                Arrays.asList(
+                        new Section(1L, 10L, 10),
+                        new Section(1L, 20L, 10)));
+
+
+        lineRepository.save(new Line("신분당선", "bg-red-600", sections));
+        lineRepository.save(new Line("2호선", "bg-green-600", sections));
 
         RestAssured
                 .given().log().all()
@@ -129,7 +143,14 @@ class LineControllerTest {
     @DisplayName("노션을 수정한다.")
     @Test
     void modifyById_modifyLineFromUserInputs() {
-        final long id = lineRepository.save(new Line("신분당선", "bg-red-600"));
+
+        Sections sections = new Sections(
+                Arrays.asList(
+                        new Section(1L, 10L, 10),
+                        new Section(1L, 20L, 10)));
+
+
+        final Line line = lineRepository.save(new Line("신분당선", "bg-red-600", sections));
 
         RestAssured
                 .given().log().all()
@@ -141,8 +162,8 @@ class LineControllerTest {
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
-        final Line line = lineRepository.findById(id);
-        assertThat(line.getName()).isEqualTo("구분당선");
+        final Line updatedLine = lineRepository.findById(line.getId());
+        assertThat(updatedLine.getName()).isEqualTo("구분당선");
 
 
     }
@@ -150,7 +171,12 @@ class LineControllerTest {
     @DisplayName("노션을 삭제한다.")
     @Test
     void deleteById_deleteLineFromUserInputs() {
-        lineRepository.save(new Line("신분당선", "bg-red-600"));
+        Sections sections = new Sections(
+                Arrays.asList(
+                        new Section(1L, 10L, 10),
+                        new Section(1L, 20L, 10)));
+
+        lineRepository.save(new Line("신분당선", "bg-red-600", sections));
 
         RestAssured
                 .given().log().all()
