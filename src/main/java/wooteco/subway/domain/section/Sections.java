@@ -110,7 +110,7 @@ public class Sections {
     public Section append() {
         return sections.stream()
                 .reduce(Section::append)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new SubwayException(ExceptionStatus.SECTION_NOT_CONNECTABLE));
     }
 
     public List<Station> getStations() {
