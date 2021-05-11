@@ -18,4 +18,6 @@ public interface SectionDao {
     List<Section> findAllByLineId(Long lineId);
 
     Map<Long, Long> findUpDownStationIdByLineId(Long lineId);
+
+    void update(Section section);
 }

@@ -90,4 +90,12 @@ public class SectionDaoImpl implements SectionDao {
             return stationMap;
         };
     }
+
+    @Override
+    public void update(Section section) {
+        String sql = "UPDATE SECTION " +
+                "SET up_station_id = ?, down_station_id = ?, distance = ? " +
+                "WHERE id = ?";
+        jdbcTemplate.update(sql, section.upStation().id(), section.downStation().id(), section.distance(), section.id());
+    }
 }

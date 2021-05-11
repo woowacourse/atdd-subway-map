@@ -43,4 +43,8 @@ public class LineRepository {
         Section section = sectionRepository.save(line.id(), upStationId, downStationId, distance);
         return new Line(line.id(), line.name(), line.color(), section);
     }
+
+    public void updateSection(Long lineId, Section section) {
+        sectionRepository.update(lineId, section);
+    }
 }

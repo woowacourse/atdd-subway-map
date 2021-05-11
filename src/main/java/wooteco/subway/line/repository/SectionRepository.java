@@ -44,4 +44,8 @@ public class SectionRepository {
         return stationDao.findById(upStationId)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 역입니다."));
     }
+
+    public void update(Long lineId, Section section) {
+        sectionDao.update(new Section(lineId, section.upStation(), section.downStation(), section.distance()));
+    }
 }
