@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("/truncate.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private final StationRequest stationRequest = new StationRequest("강남역");
