@@ -2,8 +2,6 @@ package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -14,13 +12,13 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito.BDDMyOngoingStubbing;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import wooteco.subway.line.section.Section;
+import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
 import wooteco.subway.line.section.SectionResponse;
-import wooteco.subway.line.section.SectionService;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -29,10 +27,10 @@ class LineServiceTest {
     private LineService lineService;
 
     @Mock
-    private SectionService sectionService;
+    private LineDao lineDao;
 
     @Mock
-    private LineDao lineDao;
+    private SectionDao sectionDao;
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -47,12 +45,14 @@ class LineServiceTest {
         final Line line = new Line(name, color);
         final LineRequest lineRequest = spy(new LineRequest(name, color, upStationId, downStationId, distance, extraFare));
         given(lineDao.save(line)).willReturn(new Line(1L, name, color));
-        given(sectionService.createSection(eq(1L), any(SectionRequest.class))).willReturn(new SectionResponse());
+
+        final Section section = new Section(1L, upStationId, downStationId, distance);
+        given(sectionDao.save(section)).willReturn(new Section(1L, 1L, upStationId, downStationId, distance));
         final LineResponse createdLine = lineService.createLine(lineRequest);
 
         verify(lineRequest, times(1)).toEntity();
         verify(lineDao, times(1)).save(line);
-        verify(sectionService, times(1)).createSection(eq(1L), any(SectionRequest.class));
+        verify(sectionDao, times(1)).save(section);
         assertThat(createdLine.getId()).isEqualTo(1L);
     }
 }

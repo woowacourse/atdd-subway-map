@@ -39,8 +39,28 @@ public class Line {
         this.stations = stations;
     }
 
-    public void addStations(final List<Station> stations) {
-        this.stations.addStations(stations);
+    public void validateStationsToAddSection(final Long upStationId, final Long downStationId) {
+        sections.validateBothExistentStation(upStationId, downStationId);
+        sections.validateNoneExistentStation(upStationId, downStationId);
+    }
+
+    public boolean isTerminalStation(final Long upStationId, final Long downStationId) {
+        return isStartStation(downStationId) || isLastStation(upStationId);
+    }
+
+    private boolean isStartStation(final Long downStationId) {
+        return sections.isFirstStationId(downStationId);
+    }
+
+    private boolean isLastStation(final Long upStationId) {
+        return sections.isLastStationId(upStationId);
+    }
+
+
+    public Section findUpdatedTarget(final Long upStationId, final Long downStationId, final int distance) {
+        final Section target = sections.findSameForm(upStationId, downStationId);
+        target.validateSmaller(distance);
+        return target;
     }
 
     public Long getId() {
