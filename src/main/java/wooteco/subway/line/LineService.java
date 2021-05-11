@@ -10,10 +10,7 @@ import wooteco.subway.section.Sections;
 import wooteco.subway.station.Station;
 import wooteco.subway.station.StationDao;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,8 +107,28 @@ public class LineService {
         final Line line = findLineById(lineId);
         final Station upStation = findStationById(upStationId);
         final Station downStation = findStationById(downStationId);
-        line.insertSection(new Section(lineId, upStation, downStation, distance));
-        sectionDao.save(lineId, upStationId, downStationId, distance);
+        final Section newSection = new Section(lineId, upStation, downStation, distance);
+
+        if (line.insertSectionAtEdge(newSection)) {
+            sectionDao.save(lineId, upStationId, downStationId, distance);
+            return;
+        }
+        createSectionInBetween(lineId, line, newSection);
+    }
+
+    private void createSectionInBetween(long lineId, Line line, Section newSection) {
+        Map<Section, Section> changedSections = line.insertSectionInBetween(newSection);
+        final Section upperSection = changedSections.keySet().iterator().next();
+        final Section lowerSection = changedSections.get(upperSection);
+
+        final Long upperSectionUpStationId = upperSection.getUpStation().getId();
+        final Long upperSectionDownStationId = upperSection.getDownStation().getId();
+        final Long lowerSectionUpStationId = lowerSection.getUpStation().getId();
+        final Long lowerSectionDownStationId = lowerSection.getDownStation().getId();
+
+        sectionDao.save(lineId, upperSectionUpStationId, upperSectionDownStationId, upperSection.getDistance());
+        sectionDao.save(lineId, lowerSectionUpStationId, lowerSectionDownStationId, lowerSection.getDistance());
+        sectionDao.delete(lineId, upperSectionUpStationId, lowerSectionDownStationId);
     }
 
     public void deleteSection(long lineId, long stationId) {

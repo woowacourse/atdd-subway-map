@@ -70,11 +70,30 @@ public class Sections {
     }
 
     public void insertSection(Section section) {
+        if (insertSectionAtEdge(section)) {
+            return;
+        }
+        insertSectionInBetween(section);
+    }
+
+    public boolean insertSectionAtEdge(Section section) {
         final List<Station> stations = lineUpStations();
         final Station upStation = section.getUpStation();
         final Station downStation = section.getDownStation();
         validateConnection(stations, upStation, downStation);
-        insertSectionAccordingToCase(stations, section, upStation, downStation);
+        if (stations.get(0).equals(downStation) || stations.get(stations.size() - 1).equals(upStation)) {
+            sections.add(section);
+            return true;
+        }
+        return false;
+    }
+
+    public Map<Section, Section> insertSectionInBetween(Section section) {
+        final List<Station> stations = lineUpStations();
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        validateConnection(stations, upStation, downStation);
+        return insertSectionBetweenSections(stations, section, upStation, downStation);
     }
 
     private void validateConnection(List<Station> stationsInSection, Station upStation, Station downStation) {
@@ -84,23 +103,14 @@ public class Sections {
         }
     }
 
-    private void insertSectionAccordingToCase(List<Station> stations, Section section, Station upStation, Station downStation) {
-        if (stations.get(0).equals(downStation) || stations.get(stations.size() - 1).equals(upStation)) {
-            sections.add(section);
-            return;
-        }
-        insertSectionInBetween(stations, section, upStation, downStation);
-    }
-
-    private void insertSectionInBetween(List<Station> stations, Section section, Station upStation, Station downStation) {
+    private Map<Section, Section> insertSectionBetweenSections(List<Station> stations, Section section, Station upStation, Station downStation) {
         if (stations.contains(upStation)) {
-            updateUpperConnection(section, upStation, downStation);
-            return;
+            return updateUpperConnection(section, upStation, downStation);
         }
-        updateLowerConnection(section, upStation, downStation);
+        return updateLowerConnection(section, upStation, downStation);
     }
 
-    private void updateUpperConnection(Section newUpSection, Station upStation, Station downStation) {
+    private Map<Section, Section> updateUpperConnection(Section newUpSection, Station upStation, Station downStation) {
         final Section presentSection = findSectionStationAsUpStation(upStation);
         presentSection.checkInsertionPossible(newUpSection);
 
@@ -109,6 +119,7 @@ public class Sections {
         sections.remove(presentSection);
         sections.add(newUpSection);
         sections.add(newDownSection);
+        return Collections.singletonMap(newUpSection, newDownSection);
     }
 
     private Section findSectionStationAsUpStation(Station upStation) {
@@ -118,7 +129,7 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("구간 조회에 실패했습니다."));
     }
 
-    private void updateLowerConnection(Section newDownSection, Station upStation, Station downStation) {
+    private Map<Section, Section> updateLowerConnection(Section newDownSection, Station upStation, Station downStation) {
         final Section presentSection = findSectionStationAsDownStation(downStation);
         presentSection.checkInsertionPossible(newDownSection);
 
@@ -127,6 +138,7 @@ public class Sections {
         sections.remove(presentSection);
         sections.add(newUpSection);
         sections.add(newDownSection);
+        return Collections.singletonMap(newUpSection, newDownSection);
     }
 
     private Section findSectionStationAsDownStation(Station downStation) {

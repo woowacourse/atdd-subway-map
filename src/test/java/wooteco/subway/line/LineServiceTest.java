@@ -1,11 +1,13 @@
 package wooteco.subway.line;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
 import java.util.List;
@@ -119,5 +121,62 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.deleteLine(lineResponse.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 id에 대응하는 노선이 없습니다.");
+    }
+
+    @DisplayName("상행 종점 뒤에 역 붙임")
+    @Test
+    void createSectionTop() {
+        //given
+        String lineName1 = "2호선";
+        String lineColor1 = "Green";
+        LineResponse line = lineService.createLine(2, 3, lineName1, lineColor1, 10);
+        //when
+        lineService.createSection(line.getId(), 1, 2, 10);
+        //then
+        LineResponse lineWithUpdatedSection = lineService.showLine(line.getId());
+        final List<Long> stationsId = lineWithUpdatedSection.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationsId).containsExactly(1L, 2L, 3L);
+    }
+
+    @DisplayName("하행 종점 뒤에 역 붙임")
+    @Test
+    void createSectionBottom() {
+        //given
+        String lineName1 = "2호선";
+        String lineColor1 = "Green";
+        LineResponse line = lineService.createLine(1, 2, lineName1, lineColor1, 10);
+        //when
+        lineService.createSection(line.getId(), 2, 3, 10);
+        //then
+        LineResponse lineWithUpdatedSection = lineService.showLine(line.getId());
+        final List<Long> stationsId = lineWithUpdatedSection.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationsId).containsExactly(1L, 2L, 3L);
+    }
+
+    @DisplayName("역들 사이에 뒤에 역 붙임")
+    @Test
+    void createSectionBetween() {
+        //given
+        String lineName1 = "2호선";
+        String lineColor1 = "Green";
+        LineResponse line = lineService.createLine(1, 3, lineName1, lineColor1, 10);
+        //when
+        lineService.createSection(line.getId(), 2, 3, 5);
+        //then
+        LineResponse lineWithUpdatedSection = lineService.showLine(line.getId());
+        final List<Long> stationsId = lineWithUpdatedSection.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationsId).containsExactly(1L, 2L, 3L);
+    }
+
+
+    @Test
+    void deleteSection() {
+
     }
 }

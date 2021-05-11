@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import wooteco.subway.station.Station;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,5 +48,10 @@ public class SectionDao {
     public List<SectionDto> findByLineId(long lineId) {
         String sql = "SELECT * FROM SECTION WHERE line_id = ?";
         return jdbcTemplate.query(sql, sectionDtoRowMapper, lineId);
+    }
+
+    public void delete(long lineId, Long upStationId, Long downStationId) {
+        String sql = "DELETE FROM SECTION WHERE line_id = (?) AND up_station_id = (?) AND down_station_id = (?)";
+        jdbcTemplate.update(sql, lineId, upStationId, downStationId);
     }
 }

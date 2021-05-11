@@ -6,13 +6,13 @@ import wooteco.subway.station.Station;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Line {
 
     private Long id;
     private String name;
     private String color;
-    //Validation 필요
     private Sections sections;
 
     public Line() {
@@ -29,8 +29,12 @@ public class Line {
         this(id, name, color, null);
     }
 
-    public void insertSection(Section section) {
-        sections.insertSection(section);
+    public boolean insertSectionAtEdge(Section section) {
+        return sections.insertSectionAtEdge(section);
+    }
+
+    public Map<Section, Section> insertSectionInBetween(Section section) {
+        return sections.insertSectionInBetween(section);
     }
 
     public void removeSection(Station station) {
