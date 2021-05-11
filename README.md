@@ -73,7 +73,7 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] upStationId와 downStationId가 같다면 예외 처리
     - [x] upStationId나 downStationId가 등록되어 있지 않다면 예외 처리
     - [x] distance가 0 이하면 예외 처리
-- [ ] 구간 추가
+- [x] 구간 추가
     - [x] 기본 예외 상황
         - [x] 요청한 노선에 upStation와 downStation이 둘 다 없다면 예외처리
         - [x] 요청한 노선에 upstation와 downStation가 둘 다 이미 등록되어 있다면 예외처리
