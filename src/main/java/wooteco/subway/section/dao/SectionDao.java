@@ -21,4 +21,8 @@ public interface SectionDao {
     List<Section> findByLineIdAndStationId(Long lineId, Long stationId);
 
     boolean canDelete(Long lineId);
+
+    boolean existsStationInSection(Long stationId);
+
+    void deleteSections(Long lineId);
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 @Repository
 public class H2SectionDao implements SectionDao {
+    private static final int CAN_DELETE_COUNT = 2;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -49,6 +50,7 @@ public class H2SectionDao implements SectionDao {
             ps.setInt(4, section.getDistance().distance());
             return ps;
         }, keyHolder);
+        
         long sectionId = keyHolder.getKey().longValue();
         return new Section(sectionId, section.getLineId(), section.getUpStation(), section.getDownStation(), section.getDistance());
     }
@@ -78,6 +80,7 @@ public class H2SectionDao implements SectionDao {
                 "JOIN STATION AS t ON s.up_station_id = t.id " +
                 "JOIN STATION AS a ON s.down_station_id = a.id " +
                 "WHERE line_id = ?";
+
         return new Sections(jdbcTemplate.query(sql, SECTION_ROW_MAPPER, lineId));
     }
 
@@ -126,7 +129,26 @@ public class H2SectionDao implements SectionDao {
                 "FROM SECTION " +
                 "WHERE line_id = ?";
 
-        int countOfSection = jdbcTemplate.queryForObject(sql, Integer.class, lineId);
-        return countOfSection < 2;
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, lineId);
+        return count >= CAN_DELETE_COUNT;
+    }
+
+    @Override
+    public boolean existsStationInSection(Long stationId) {
+        String sql = "SELECT COUNT(*) " +
+                "FROM SECTION " +
+                "WHERE up_station_id = ? OR down_station_id = ?";
+
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, stationId, stationId);
+        return count > 0;
+    }
+
+    @Override
+    public void deleteSections(Long lineId) {
+        String sql = "DELETE " +
+                "FROM SECTION " +
+                "WHERE line_id = ?";
+
+        jdbcTemplate.update(sql, lineId);
     }
 }

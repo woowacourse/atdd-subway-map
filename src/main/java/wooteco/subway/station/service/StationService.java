@@ -1,8 +1,8 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.common.exception.not_found.NotFoundStationInfoException;
 import wooteco.subway.common.exception.bad_request.WrongStationInfoException;
+import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 
@@ -10,11 +10,12 @@ import java.util.List;
 
 @Service
 public class StationService {
-
     private final StationDao stationDao;
+    private final SectionDao sectionDao;
 
-    public StationService(StationDao stationDao) {
+    public StationService(StationDao stationDao, SectionDao sectionDao) {
         this.stationDao = stationDao;
+        this.sectionDao = sectionDao;
     }
 
     public Station save(Station station) {
@@ -23,7 +24,6 @@ public class StationService {
         }
         return stationDao.save(station);
     }
-
 
     private boolean isDuplicatedName(Station station) {
         return stationDao.checkExistName(station.getName());
@@ -38,14 +38,10 @@ public class StationService {
     }
 
     public void delete(Station station) {
-        ifAbsent(station);
-        stationDao.delete(station);
-    }
-
-    private void ifAbsent(Station station) {
-        if (!stationDao.checkExistId(station.getId())) {
-            throw new NotFoundStationInfoException("역이 존재하지 않습니다.");
+        if (sectionDao.existsStationInSection(station.getId())) {
+            throw new WrongStationInfoException(String.format("역이 구간에 등록되어 있습니다. 역 ID: %d", station.getId()));
         }
+        stationDao.delete(station);
     }
 
     public void deleteAll() {
