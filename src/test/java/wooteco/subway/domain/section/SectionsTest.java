@@ -4,34 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static wooteco.subway.domain.StationFixture.a;
+import static wooteco.subway.domain.StationFixture.b;
+import static wooteco.subway.domain.StationFixture.c;
+import static wooteco.subway.domain.StationFixture.d;
+import static wooteco.subway.domain.StationFixture.e;
+import static wooteco.subway.domain.StationFixture.f;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.domain.station.Station;
 
 class SectionsTest {
 
     private static Long lineId = 0L;
-    private static Station a;
-    private static Station b;
-    private static Station c;
-    private static Station d;
-    private static Station e;
-    private static Station f;
-
-    @BeforeAll
-    static void beforeAll() {
-        a = new Station("a역");
-        b = new Station("b역");
-        c = new Station("c역");
-        d = new Station("d역");
-        e = new Station("e역");
-        f = new Station("f역");
-    }
 
     @DisplayName("빈 구간 리스트를 생성할 수 없습니다.")
     @Test
@@ -210,6 +198,44 @@ class SectionsTest {
 
         // then
         assertThatThrownBy(() -> sections.addToBetweenExistedSection(addRequest))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간 삭제 - 입력받은 상행 혹은 하행역이 종점인지 확인할 수 있다.")
+    @Test
+    void remove1() {
+        // given
+        Section existedSection1 = new Section(1L, lineId, a, b, 2);
+        Section existedSection2 = new Section(2L, lineId, b, c, 2);
+        Section existedSection3 = new Section(3L, lineId, c, d, 2);
+
+        // when
+        Sections sections = new Sections(Arrays.asList(existedSection1, existedSection2, existedSection3));
+
+        // then
+        assertThat(sections.canRemoveEndSection(a)).isTrue();
+        assertThat(sections.canRemoveEndSection(d)).isTrue();
+        assertThat(sections.canRemoveEndSection(b)).isFalse();
+        assertThat(sections.canRemoveEndSection(c)).isFalse();
+    }
+
+    @DisplayName("구간 삭제 - 삭제하고 싶은 지하철 역을 입력하면 해당 역이 포함된 구간을 반환할 수 있다. (종점역 삭제시 하나, 중간역 삭제시 두개)")
+    @Test
+    void remove2() {
+        // given
+        Section existedSection1 = new Section(1L, lineId, a, b, 2);
+        Section existedSection2 = new Section(2L, lineId, b, c, 2);
+        Section existedSection3 = new Section(3L, lineId, c, d, 2);
+
+        // when
+        Sections sections = new Sections(Arrays.asList(existedSection1, existedSection2, existedSection3));
+
+        // then
+        assertThat(sections.findSectionsByStation(a)).containsExactly(existedSection1);
+        assertThat(sections.findSectionsByStation(b))
+            .containsExactly(existedSection1, existedSection2);
+        assertThat(sections.findSectionsByStation(d)).containsExactly(existedSection3);
+        assertThatThrownBy(() -> sections.findSectionsByStation(e))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

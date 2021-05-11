@@ -1,7 +1,9 @@
 package wooteco.subway.domain.section;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static wooteco.subway.domain.StationFixture.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +12,7 @@ import wooteco.subway.domain.station.Station;
 
 class SectionTest {
 
+    private static final Long lineId = 0L;
     private Station upStation;
     private Station downStation;
 
@@ -49,5 +52,38 @@ class SectionTest {
             () -> assertThatThrownBy(() -> new Section(null, downStation, distance))
                 .isInstanceOf(IllegalArgumentException.class)
         );
+    }
+
+    @DisplayName("구간 분리 - 구간 사이에 다른 구간을 삽입시 (DB에) 업데이트 되야하는 구간을 반환한다.")
+    @Test
+    void splitedAndUpdate() {
+        // given
+        Section existedSection1 = new Section(1L, lineId, a, b, 2);
+        Section requestSection1 = new Section(2L, lineId, a, c, 1);
+
+        Section existedSection2 = new Section(3L, lineId, a, b, 2);
+        Section requestSection2 = new Section(4L, lineId, c, b, 1);
+
+        // when
+        Section needToUpdateSection1 = existedSection1.splitedAndUpdate(requestSection1);
+        Section needToUpdateSection2 = existedSection2.splitedAndUpdate(requestSection2);
+
+        // then
+        assertThat(needToUpdateSection1).isEqualTo(new Section(1L, lineId, c, b, 1));
+        assertThat(needToUpdateSection2).isEqualTo(new Section(3L, lineId, a, c, 1));
+    }
+
+    @DisplayName("구간 병합 - 구간 사이에 지하철 역을 제거시 (DB에) 업데이트 되야하는 구간을 반환한다.")
+    @Test
+    void mergeAndUpdate() {
+        // given
+        Section existedSection1 = new Section(1L, lineId, a, b, 2);
+        Section existedSection2 = new Section(2L, lineId, b, c, 2);
+
+        // when
+        Section needToUpdateSection = existedSection1.mergeAndUpdate(existedSection2);
+
+        // then
+        assertThat(needToUpdateSection).isEqualTo(new Section(1L, lineId, a, c, 4));
     }
 }

@@ -50,6 +50,11 @@ public class Section {
         return new Section(id, lineId, this.upStation, requestSection.getUpStation(), updatedDistance);
     }
 
+    public Section mergeAndUpdate(Section requestSection) {
+        int updatedDistance = this.distance + requestSection.distance;
+        return new Section(id, lineId, this.upStation, requestSection.downStation, updatedDistance);
+    }
+
     private void validateSplitAndUpdate(Section requestSection) {
         if (this.distance <= requestSection.distance) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");

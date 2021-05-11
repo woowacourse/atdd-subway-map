@@ -3,7 +3,7 @@ package wooteco.subway.domain.section;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import wooteco.subway.domain.station.Station;
 
 public class Sections {
@@ -87,6 +87,30 @@ public class Sections {
             .filter(targetSection -> targetSection.getUpStation().equals(section.getUpStation()) || targetSection.getDownStation().equals(section.getDownStation()))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구간입니다."));
+    }
+
+    public boolean canRemoveEndSection(Station station) {
+        validateMoreThanOneSection();
+        Section firstSection = values.get(0);
+        Section lastSection = values.get(values.size() - 1);
+        return firstSection.getUpStation().equals(station) || lastSection.getDownStation().equals(station);
+    }
+
+    private void validateMoreThanOneSection() {
+        if (values.size() == 1) {
+            throw new IllegalArgumentException("해당 노선에 구간이 하나 남았으므로 구간을 제거할 수 없습니다.");
+        }
+    }
+
+    public List<Section> findSectionsByStation(Station station) {
+        List<Section> result =  values.stream()
+            .filter(section -> section.exists(station))
+            .collect(Collectors.toList());
+
+        if (result.size() == 0) {
+            throw new IllegalArgumentException("해당 지하철 역이 존재하는 구간은 없습니다.");
+        }
+        return result;
     }
 
     public List<Section> getValues() {
