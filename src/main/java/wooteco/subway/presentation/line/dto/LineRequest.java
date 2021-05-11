@@ -1,4 +1,4 @@
-package wooteco.subway.ui.dto.line;
+package wooteco.subway.presentation.line.dto;
 
 import java.beans.ConstructorProperties;
 

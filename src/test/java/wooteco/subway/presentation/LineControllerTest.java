@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.presentation;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+<<<<<<< HEAD:src/test/java/wooteco/subway/ui/LineControllerTest.java
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD:src/test/java/wooteco/subway/line/ui/LineControllerTest.java
@@ -29,12 +30,14 @@ import wooteco.subway.domain.line.Line;
 =======
 import org.springframework.web.bind.annotation.PostMapping;
 >>>>>>> 110acd7... feat: 섹션 삭제 기능 추가
+=======
+>>>>>>> 0d2741d... refactor: 페키지 구조 변경:src/test/java/wooteco/subway/presentation/LineControllerTest.java
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.station.StationRepository;
-import wooteco.subway.ui.dto.SectionRequest;
-import wooteco.subway.ui.dto.line.LineRequest;
-import wooteco.subway.ui.dto.station.StationRequest;
-import wooteco.subway.ui.dto.station.StationResponse;
+import wooteco.subway.presentation.line.dto.SectionRequest;
+import wooteco.subway.presentation.line.dto.LineRequest;
+import wooteco.subway.presentation.station.dto.StationRequest;
+import wooteco.subway.presentation.station.dto.StationResponse;
 import wooteco.util.StationFactory;
 >>>>>>> e735a30... refactor: 지하철 노선 추가 API 수정 및 페키지 구조 변경:src/test/java/wooteco/subway/ui/LineControllerTest.java
 

@@ -1,4 +1,4 @@
-package wooteco.subway.ui;
+package wooteco.subway.presentation.line;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -17,10 +17,10 @@ import wooteco.subway.domain.line.value.line.LineName;
 import wooteco.subway.domain.line.value.section.Distance;
 import wooteco.subway.domain.station.Station;
 import wooteco.subway.domain.station.value.StationId;
-import wooteco.subway.ui.dto.SectionRequest;
-import wooteco.subway.ui.dto.line.LineRequest;
-import wooteco.subway.ui.dto.line.LineResponse;
-import wooteco.subway.ui.dto.station.StationResponse;
+import wooteco.subway.presentation.line.dto.SectionRequest;
+import wooteco.subway.presentation.line.dto.LineRequest;
+import wooteco.subway.presentation.line.dto.LineResponse;
+import wooteco.subway.presentation.station.dto.StationResponse;
 
 import java.net.URI;
 import java.util.Collections;
