@@ -11,6 +11,8 @@ import wooteco.subway.station.domain.Station;
 
 import java.util.List;
 
+import static wooteco.subway.line.domain.Section.EMPTY;
+
 @Service
 public class LineService {
     private final LineRepository lineRepository;
@@ -80,7 +82,7 @@ public class LineService {
     }
 
     private void checkAbleToAddByDistance(Section addSection, Section targetSection) {
-        if (targetSection.lessDistanceThan(addSection)) {
+        if (targetSection.lessDistanceThan(addSection) && !targetSection.equals(EMPTY)) {
             throw new IllegalArgumentException("[ERROR] 기존 구간 길이보다 크거나 같으면 등록할 수 없습니다.");
         }
     }
