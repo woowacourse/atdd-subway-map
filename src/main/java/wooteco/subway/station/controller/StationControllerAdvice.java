@@ -1,4 +1,4 @@
-package wooteco.subway.station;
+package wooteco.subway.station.controller;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;

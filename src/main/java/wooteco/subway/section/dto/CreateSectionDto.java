@@ -1,6 +1,6 @@
 package wooteco.subway.section.dto;
 
-import wooteco.subway.line.SectionRequest;
+import wooteco.subway.line.dto.SectionRequest;
 
 public class CreateSectionDto {
 
