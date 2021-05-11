@@ -234,8 +234,8 @@ class LineControllerTest {
 
     }
 
-    @Test
     @DisplayName("노선에 포함된 역들을 순서대로 조회한다.")
+    @Test
     void showSectionsInLine() {
         //given
         Station kangnam = setDummyStation("강남역");
@@ -260,9 +260,10 @@ class LineControllerTest {
         assertThat(resultResponse).isEqualTo(testResponse);
     }
 
-    @Test
+
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
-    void addSectionInLine_SectionLengthHaveToLessThanStationLength() {
+    @Test
+    void addSectionInLine_sectionLengthHaveToLessThanStationLength() {
         //given
         Station kangnam = setDummyStation("강남역");
         Station yangjae = setDummyStation("양재역");
@@ -283,9 +284,10 @@ class LineControllerTest {
                 .body(is(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE));
     }
 
-    @Test
+
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
-    void addSectionInLine_SectionHasToNewStationInLine() {
+    @Test
+    void addSectionInLine_sectionHasToNewStationInLine() {
         //given
         Station kangnam = setDummyStation("강남역");
         Station yangjae = setDummyStation("양재역");
@@ -303,8 +305,34 @@ class LineControllerTest {
                 .post("/lines/" + line.getId() + "/sections")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(is(ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE));
+                .body(is(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE));
 
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSectionInLine_sectionHaveOnlyOneNewStation() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+        Station bongchun = setDummyStation("봉천역");
+        Station sinlim = setDummyStation("신림역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+        SectionAddRequest sectionAddRequest = new SectionAddRequest(bongchun.getId(), sinlim.getId(), 5);
+
+        //when
+        //then
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(sectionAddRequest)
+                .post("/lines/" + line.getId() + "/sections")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(is(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE));
     }
 
 

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class LineService {
     public static final String ERROR_DUPLICATED_LINE_NAME = "라인이 중복되었습니다.";
     public static final String ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE = "구간의 길이가 노선의 길이보다 크거나 같을 수 없습니다.";
-    public static final String ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE = "상행역과 하행역이 이미 노선에 존재합니다.";
+    public static final String ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE = "상행역과 하행역 둘 중 하나가 노선에 존재해야 합니다.";
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -71,8 +71,8 @@ public class LineService {
             throw new IllegalArgumentException(ERROR_SECTION_GRATER_OR_EQUALS_LINE_DISTANCE);
         }
 
-        if (sections.hasStation(section.getUpStationId()) && sections.hasStation(section.getDownStationId())) {
-            throw new IllegalArgumentException(ERROR_SECTION_HAVE_TO_NEW_STATION_IN_LINE);
+        if (sections.hasStation(section.getUpStationId()) == sections.hasStation(section.getDownStationId())) {
+            throw new IllegalArgumentException(ERROR_SECTION_HAVE_TO_ONE_STATION_IN_LINE);
         }
     }
 
