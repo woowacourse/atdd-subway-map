@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Station {
 
-    private Long id;
+    private StationId id;
     private String name;
 
     public Station() {
@@ -15,12 +15,15 @@ public class Station {
     }
 
     public Station(final Long id, final String name) {
-        this.id = id;
+        this.id = new StationId(id);
         this.name = name;
     }
 
     public Long getId() {
-        return id;
+        if (id == null) {
+            return null;
+        }
+        return id.getId();
     }
 
     public String getName() {
