@@ -68,7 +68,7 @@ public class SectionService {
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(lineId);
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
 
-        if (lineRoute.getStationIds().size() == DELETE_STATION_IN_LINE_LIMIT) {
+        if (lineRoute.getStationsSize() == DELETE_STATION_IN_LINE_LIMIT) {
             throw new SectionIllegalArgumentException("종점은 삭제 할 수 없습니다.");
         }
 

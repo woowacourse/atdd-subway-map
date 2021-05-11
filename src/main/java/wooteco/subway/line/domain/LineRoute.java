@@ -105,4 +105,8 @@ public class LineRoute {
     public Set<Long> getStationIds() {
         return new HashSet<>(upToDownSerializedMap);
     }
+
+    public int getStationsSize() {
+        return upToDownSerializedMap.size();
+    }
 }
