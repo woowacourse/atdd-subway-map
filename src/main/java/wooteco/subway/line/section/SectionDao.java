@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.exception.DataNotFoundException;
-import wooteco.subway.line.Line;
 
 @Repository
 public class SectionDao {
@@ -65,6 +64,7 @@ public class SectionDao {
             throw new DataNotFoundException("해당 Id의 구간이 없습니다.");
         }
     }
+
     public void deleteById(final long id) {
         final String sql = "DELETE FROM section WHERE id = ?";
         int deletedCnt = jdbcTemplate.update(sql, id);

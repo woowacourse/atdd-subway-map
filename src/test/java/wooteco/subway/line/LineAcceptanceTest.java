@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.station.StationAcceptanceTest;
 import wooteco.subway.station.StationRequest;
 
 @DisplayName("노선 관련 기능")
@@ -26,8 +25,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     );
 
     public static final LineRequest LINE_3 = new LineRequest(
-            "3호선", "grey darken-2", 5L, 6L, 12, 1500
+        "3호선", "grey darken-2", 5L, 6L, 12, 1500
     );
+
+    public static ExtractableResponse<Response> 노선_등록(final LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+    }
 
     @Override
     @BeforeEach
@@ -68,16 +77,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private long getCreatedId(final ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[2]);
-    }
-
-    public static ExtractableResponse<Response> 노선_등록(final LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-            .body(lineRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
     }
 
     @DisplayName("기존에 존재하는 노선의 이름으로 노선을 생성하면 400 에러가 발생한다.")

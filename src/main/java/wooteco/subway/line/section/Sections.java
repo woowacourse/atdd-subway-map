@@ -115,18 +115,6 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
-    public long matchedStationId(final Long upStationId, final Long downStationId) {
-        if (containsStation(upStationId)) {
-            return upStationId;
-        }
-        return downStationId;
-    }
-
-    public boolean isAddableEndStation(final long existentStationId, final long upStationId, final long downStationId) {
-        return (isUpEndStation(existentStationId) && existentStationId == downStationId) ||
-            (isDownEndStation(existentStationId) && existentStationId == upStationId);
-    }
-
     private boolean isUpEndStation(final long existentStationId) {
         return sectionGroup.get(0).getUpStationId() == existentStationId;
     }
@@ -160,10 +148,6 @@ public class Sections {
 
     public int size() {
         return sectionGroup.size();
-    }
-
-    public List<Section> toList() {
-        return sectionGroup;
     }
 
     @Override
