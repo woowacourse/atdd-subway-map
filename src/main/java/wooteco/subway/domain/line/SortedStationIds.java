@@ -1,4 +1,4 @@
-package wooteco.subway.service;
+package wooteco.subway.domain.line;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import wooteco.subway.domain.section.Section;
 
-public class SortedStations {
+public class SortedStationIds {
 
     Map<Long, Long> up = new HashMap<>();
     Map<Long, Long> down = new HashMap<>();
@@ -15,11 +15,11 @@ public class SortedStations {
 
     private final List<Section> sections;
 
-    public SortedStations(List<Section> sections) {
+    public SortedStationIds(List<Section> sections) {
         this.sections = sections;
     }
 
-    public List<Long> getSorted() {
+    public List<Long> get() {
         init(sections);
         sort();
         return new ArrayList<>(result);
