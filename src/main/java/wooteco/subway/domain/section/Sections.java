@@ -30,6 +30,15 @@ public class Sections {
         return Collections.unmodifiableList(stationIds);
     }
 
+    public boolean isNewStationDownward(Section section) {
+        for (Map.Entry<Map<Long, Long>, Integer> entry : sections.entrySet()) {
+            if (isNewStationDownward(section, entry)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void validateIfPossibleToInsert(Section section, long upwardTerminalId, long downwardTerminalId) {
         validateIfAlreadyExistsInLine(section);
         validateIfBothStationNotExistsInLine(section);

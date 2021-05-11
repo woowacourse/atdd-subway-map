@@ -49,8 +49,13 @@ public class SectionDao {
         return sections;
     }
 
-    public int update(long lineId, Section section) {
+    public void updateNewStationDownward(long lineId, Section section) {
         String query = "UPDATE section SET up_station_id=(?) WHERE line_id = (?) AND up_station_id = (?)";
-        return jdbcTemplate.update(query, section.getDownStationId(), lineId, section.getUpStationId());
+        jdbcTemplate.update(query, section.getDownStationId(), lineId, section.getUpStationId());
+    }
+
+    public void updateNewStationUpward(long lineId, Section section) {
+        String query = "UPDATE section SET down_station_id=(?) WHERE line_id = (?) AND down_station_id = (?)";
+        jdbcTemplate.update(query, section.getUpStationId(), lineId, section.getDownStationId());
     }
 }

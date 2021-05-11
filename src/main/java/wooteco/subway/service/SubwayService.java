@@ -71,8 +71,6 @@ public class SubwayService {
         return sectionDao.insert(lineId, section);
     }
 
-    // TODO: 새로 들어가는 역이 상행역인 경우 처리 안했음
-    //  section 추가하기 전에 db 수정해놓는 메서드 ( 수정 전에 예외 처리 )
     public void updateSection(long lineId, Section section) {
         Sections sections = new Sections(sectionDao.selectAll(lineId));
         Line line = lineDao.select(lineId);
@@ -82,7 +80,11 @@ public class SubwayService {
             processSideInsertion(lineId, line, section);
             return;
         }
-        sectionDao.update(lineId, section);
+
+        if (sections.isNewStationDownward(section)) {
+            sectionDao.updateNewStationDownward(lineId, section);
+        }
+        sectionDao.updateNewStationUpward(lineId, section);
     }
 
     private boolean isSideInsertion(Section section, Line line) {
