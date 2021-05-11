@@ -564,6 +564,27 @@ class LineControllerTest {
                 .containsExactly(yangjae.getId());
     }
 
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거 할 때 제거 할 수 없음")
+    @Test
+    void deleteSection_whenOneSection() {
+        //given
+        Station kangnam = setDummyStation("강남역");
+        Station yangjae = setDummyStation("양재역");
+
+        Line line = setDummyLine(kangnam, yangjae, 10, "신분당선", "bg-red-600");
+
+        //when
+        //then
+        RestAssured
+                .given().log().all()
+                .accept(MediaType.ALL_VALUE)
+                .when()
+                .delete("/lines/" + line.getId() + "/sections?stationId=" + kangnam.getId())
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
     private Station setDummyStation(String stationName) {
         Station station = new Station(stationName);
         return stationRepository.save(station);

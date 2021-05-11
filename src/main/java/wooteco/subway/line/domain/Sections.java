@@ -128,6 +128,10 @@ public class Sections {
     }
 
     public List<Section> deleteSection(final Long stationId) {
+        if (sections.size() == 1) {
+            throw  new IllegalArgumentException("삭제 할 수 없습니다. 현재 구간이 1개 입니다.");
+        }
+
         return sections.stream()
                 .filter(section -> section.getUpStationId().equals(stationId)
                         || section.getDownStationId().equals(stationId))
