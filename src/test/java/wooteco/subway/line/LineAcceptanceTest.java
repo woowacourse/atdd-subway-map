@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
     private static final String LINE_NAME = "2호선";
     private static final String LINE_COLOR = "green";
     private static final int DISTANCE = 1;
@@ -44,7 +45,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void createLine() {
-
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(createResponse.header("Location")).isNotBlank();
     }
@@ -55,7 +55,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         String duplicateLineName = "2호선";
         String newLineColor = "red";
-        ExtractableResponse<Response> response = 노선_저장_후_응답(duplicateLineName, newLineColor, upStationId, downStationId, DISTANCE);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(duplicateLineName, newLineColor,
+            upStationId, downStationId, DISTANCE);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,7 +71,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String wrongLineColor = "";
 
         //when
-        ExtractableResponse<Response> response = 노선_저장_후_응답(wrongLineName, wrongLineColor, upStationId, downStationId, DISTANCE);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(wrongLineName, wrongLineColor,
+            upStationId, downStationId, DISTANCE);
 
         // then
         assertAll(
@@ -90,7 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String duplicateColor = "green";
 
         // when
-        ExtractableResponse<Response> response = 노선_저장_후_응답(newLineName, duplicateColor, upStationId, downStationId, DISTANCE);
+        ExtractableResponse<Response> response = 노선_저장_후_응답(newLineName, duplicateColor,
+            upStationId, downStationId, DISTANCE);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -111,7 +114,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         List<String> expectedLineNames = Arrays.asList(LINE_NAME, lineName2);
-        List<String> resultLineNames = response.jsonPath().getList(".", LineDetailsResponse.class).stream()
+        List<String> resultLineNames = response.jsonPath().getList(".", LineDetailsResponse.class)
+            .stream()
             .map(LineDetailsResponse::getName)
             .collect(Collectors.toList());
 
@@ -129,7 +133,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        LineDetailsResponse lineDetailsResponse = findResponse.jsonPath().getObject(".", LineDetailsResponse.class);
+        LineDetailsResponse lineDetailsResponse = findResponse.jsonPath()
+            .getObject(".", LineDetailsResponse.class);
         assertThat(lineDetailsResponse.getName()).isEqualTo(LINE_NAME);
         assertThat(lineDetailsResponse.getColor()).isEqualTo(LINE_COLOR);
     }
@@ -144,11 +149,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //when
         Long id = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured
+            .given().pathParam("lineId", id).log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/" + id)
+            .when().log().all()
+            .put("/lines/{lineId}")
             .then().log().all()
             .extract();
 
@@ -172,7 +178,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void delete() {
         //when
-        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class).getId();
+        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class)
+            .getId();
         ExtractableResponse<Response> response = 노선_삭제_후_응답(id);
 
         //then
@@ -183,7 +190,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteIfNotExistLineId() {
         //when
-        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class).getId();
+        Long id = createResponse.body().jsonPath().getObject(".", LineDetailsResponse.class)
+            .getId();
         ExtractableResponse<Response> response = 노선_삭제_후_응답(id + 1);
 
         //then
@@ -204,7 +212,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 노선_저장_후_응답(String lineName, String lineColor, Long upStationId,
+    private ExtractableResponse<Response> 노선_저장_후_응답(String lineName, String lineColor,
+        Long upStationId,
         Long downStationId, int distance) {
         Map<String, Object> params = 노선_저장을_위한_요청_정보(lineName, lineColor, upStationId,
             downStationId, distance);
@@ -223,7 +232,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("color", lineColor);
         params.put("name", lineName);
-
         return params;
     }
 
@@ -235,23 +243,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", distance);
-
         return params;
     }
 
     private ExtractableResponse<Response> 노선_삭제_후_응답(Long id) {
-        return RestAssured.given().log().all()
-            .when()
-            .delete("/lines/{lineId}", id)
+        return RestAssured.given().pathParam("lineId", id).log().all()
+            .when().log().all()
+            .delete("/lines/{lineId}")
             .then()
             .log().all()
             .extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_후_응답(String s) {
+    private ExtractableResponse<Response> 노선_조회_후_응답(String path) {
         return RestAssured.given().log().all()
             .when()
-            .get(s)
+            .get(path)
             .then().log().all()
             .extract();
     }

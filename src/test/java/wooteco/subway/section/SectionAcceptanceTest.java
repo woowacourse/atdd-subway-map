@@ -17,6 +17,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionAcceptanceTest extends AcceptanceTest {
+
     private static final String LINE_NAME = "2호선";
     private static final String LINE_COLOR = "green";
     private static final int DISTANCE = 10;
@@ -74,9 +75,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> sectionResponse = 구간_추가_후_응답(params);
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured
+            .given().pathParam("lineId", lineId).log().all()
             .queryParam("stationId", newStationId)
-            .when().delete("/lines/{lineId}/sections", lineId)
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -91,9 +93,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured
+            .given().pathParam("lineId", lineId).log().all()
             .queryParam("stationId", upStationId)
-            .when().delete("/lines/{lineId}/sections", lineId)
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -112,9 +115,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured
+            .given().pathParam("lineId", lineId).log().all()
             .queryParam("stationId", anonymousStationId)
-            .when().delete("/lines/{lineId}/sections", lineId)
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
         //then
@@ -132,11 +136,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 구간_추가_후_응답(Map<String, Object> params) {
         Long lineId = createResponse.jsonPath().getObject(".", LineDetailsResponse.class).getId();
-        ExtractableResponse<Response> sectionResponse = RestAssured.given().log().all()
+        ExtractableResponse<Response> sectionResponse = RestAssured
+            .given().pathParam("lineId", lineId).log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines/{lineId}/sections", lineId)
+            .post("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
         return sectionResponse;
@@ -155,7 +160,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 노선_저장_후_응답(String lineName, String lineColor, Long upStationId,
+    private ExtractableResponse<Response> 노선_저장_후_응답(String lineName, String lineColor,
+        Long upStationId,
         Long downStationId, int distance) {
         Map<String, Object> params = 노선_저장을_위한_요청_정보(lineName, lineColor, upStationId,
             downStationId, distance);
@@ -178,7 +184,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", distance);
-
         return params;
     }
 }
