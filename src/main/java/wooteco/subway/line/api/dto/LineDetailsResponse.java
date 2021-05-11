@@ -1,14 +1,12 @@
 package wooteco.subway.line.api.dto;
 
 import java.util.List;
-import org.springframework.lang.NonNull;
 import wooteco.subway.line.model.Line;
 import wooteco.subway.station.api.dto.StationResponse;
 
 public class LineDetailsResponse {
 
     private Long id;
-    @NonNull
     private String name;
     private String color;
     private List<StationResponse> stations;
