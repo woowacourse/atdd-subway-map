@@ -6,7 +6,7 @@ import wooteco.subway.StringInput;
 public class Station {
 
     private Long id;
-    private StringInput name;
+    private final StringInput name;
 
     public Station(String name) {
         this(0L, name);
