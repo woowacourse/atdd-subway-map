@@ -3,16 +3,16 @@ package wooteco.subway.section.dto;
 import wooteco.subway.section.Section;
 import wooteco.subway.station.dto.StationResponse;
 
-public class AddSectionDto {
+public class AddSectionForm {
     private Long id;
     private StationResponse upStation;
     private StationResponse downStation;
     private Integer distance;
 
-    public AddSectionDto() {
+    public AddSectionForm() {
     }
 
-    public AddSectionDto(Long id, StationResponse upStation, StationResponse downStation, Integer distance) {
+    public AddSectionForm(Long id, StationResponse upStation, StationResponse downStation, Integer distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;

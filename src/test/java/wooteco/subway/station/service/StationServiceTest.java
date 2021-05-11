@@ -117,7 +117,7 @@ class StationServiceTest {
                 .willReturn(Optional.of(잠실역));
 
         // when & then
-        assertThatThrownBy(() -> stationService.checkRightStation(잠실역.getId(), 잠실역.getId()))
+        assertThatThrownBy(() -> stationService.checkValidStation(잠실역.getId(), 잠실역.getId()))
                 .isInstanceOf(SubwayException.class);
     }
 
@@ -129,7 +129,7 @@ class StationServiceTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> stationService.checkRightStation(1L, 2L))
+        assertThatThrownBy(() -> stationService.checkValidStation(1L, 2L))
                 .isInstanceOf(SubwayException.class);
     }
 

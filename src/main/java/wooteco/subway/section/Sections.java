@@ -16,25 +16,26 @@ public class Sections {
         Deque<Section> result = new ArrayDeque<>();
 
         result.addLast(waiting.remove());
+        sortUpToDown(waiting, result);
+
+        return new ArrayList<>(result);
+    }
+
+    private void sortUpToDown(Queue<Section> waiting, Deque<Section> result) {
         while (!waiting.isEmpty()) {
             Section section = waiting.remove();
             Section frontBase = result.peek();
             Section lastBase = result.peekLast();
-
-            if (lastBase.getDownStationId().equals(section.getUpStationId())) {
+            if (section.isSameUpStation(lastBase.getDownStationId())) {
                 result.addLast(section);
                 continue;
             }
-
-            if (frontBase.getUpStationId().equals(section.getDownStationId())) {
+            if (section.isSameDownStation(frontBase.getUpStationId())) {
                 result.addFirst(section);
                 continue;
             }
-
             waiting.add(section);
         }
-
-        return new ArrayList<>(result);
     }
 
 
@@ -70,31 +71,31 @@ public class Sections {
     }
 
     public boolean isEndPoint(Section section) {
-        if (isUpStation(section.getDownStationId())) {
+        if (isUpEndPoint(section.getDownStationId())) {
             return true;
         }
-        return isDownStation(section.getUpStationId());
+        return isDownEndPoint(section.getUpStationId());
     }
 
-    public boolean isUpStation(Long id) {
+    public boolean isUpEndPoint(Long id) {
         Long upStationId = sections.get(0).getUpStationId();
         return upStationId.equals(id);
     }
 
-    public boolean isDownStation(Long id) {
+    public boolean isDownEndPoint(Long id) {
         Long downStationId = sections.get(sections.size() - 1)
                 .getDownStationId();
         return downStationId.equals(id);
     }
 
-    public boolean sectionUpStationInStartPoints(Section section) {
+    public boolean newUpStationInStartPoints(Section section) {
         return sections.stream()
-                .anyMatch(s -> s.isSameUpStation(section));
+                .anyMatch(s -> s.isSameUpStation(section.getUpStationId()));
     }
 
-    public boolean sectionDownStationInEndPoints(Section section) {
+    public boolean newDownStationInEndPoints(Section section) {
         return sections.stream()
-                .anyMatch(s -> s.isSameDownStation(section));
+                .anyMatch(s -> s.isSameDownStation(section.getDownStationId()));
     }
 
     public void checkRemainSectionSize() {

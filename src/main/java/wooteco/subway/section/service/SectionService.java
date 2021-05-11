@@ -6,7 +6,7 @@ import wooteco.subway.exception.SubwayException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
 import wooteco.subway.section.dao.SectionDao;
-import wooteco.subway.section.dto.AddSectionDto;
+import wooteco.subway.section.dto.AddSectionForm;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
 import wooteco.subway.section.dto.response.SectionResponse;
@@ -37,59 +37,69 @@ public class SectionService {
 
     public List<SectionResponse> findAllByLineId(Long id) {
         Sections sections = new Sections(sectionDao.findAllByLineId(id));
-        return sections.getSections().stream().map(SectionResponse::new)
+        return sections.getSections().stream()
+                .map(SectionResponse::new)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public SectionCreateResponse addSection(AddSectionDto addSectionDto) {
-        Section section = addSectionDto.toEntity();
+    public SectionCreateResponse addSection(AddSectionForm addSectionForm) {
+        Section newSection = addSectionForm.toEntity();
+        Sections sections = new Sections(sectionDao.findAllByLineId(newSection.getLineId()));
+        sections.validatesEndPoints(newSection);
 
-        Sections sections = new Sections(sectionDao.findAllByLineId(section.getLineId()));
-
-        sections.validatesEndPoints(section);
-
-        if (sections.isEndPoint(section)) {
-            return save(section);
+        if (sections.isEndPoint(newSection)) {
+            return save(newSection);
         }
 
-        return addSectionInMiddle(sections, section);
+        return addSectionInMiddle(sections, newSection);
     }
 
-    private SectionCreateResponse addSectionInMiddle(Sections sections, Section section) {
-        if (sections.sectionUpStationInStartPoints(section)) {
-            Section candidate = sections.findByUpStationId(section.getUpStationId());
-            candidate.updateDistance(section.getDistance());
-            sectionDao.updateUpStation(candidate, section.getDownStationId());
-            return save(section);
+    private SectionCreateResponse addSectionInMiddle(Sections sections, Section newSection) {
+        if (sections.newUpStationInStartPoints(newSection)) {
+            return updateUpStation(sections, newSection);
         }
 
-        if (sections.sectionDownStationInEndPoints(section)) {
-            Section candidate = sections.findByDownStationId(section.getDownStationId());
-            candidate.updateDistance(section.getDistance());
-            sectionDao.updateDownStation(candidate, section.getUpStationId());
-            return save(section);
+        if (sections.newDownStationInEndPoints(newSection)) {
+            return updateDownStation(sections, newSection);
         }
 
         throw new SubwayException("추가할 수 없는 구간입니다!");
     }
 
+    private SectionCreateResponse updateUpStation(Sections sections, Section newSection) {
+        Section section = sections.findByUpStationId(newSection.getUpStationId());
+        section.updateDistance(newSection.getDistance());
+        sectionDao.updateUpStation(section, newSection.getDownStationId());
+        return save(newSection);
+    }
+
+    private SectionCreateResponse updateDownStation(Sections sections, Section newSection) {
+        Section section = sections.findByDownStationId(newSection.getDownStationId());
+        section.updateDistance(newSection.getDistance());
+        sectionDao.updateDownStation(section, newSection.getUpStationId());
+        return save(newSection);
+    }
+
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Sections sections = new Sections(sectionDao.findAllByLineId(lineId));
-
         sections.checkRemainSectionSize();
 
-        if (sections.isUpStation(stationId)) {
+        if (sections.isUpEndPoint(stationId)) {
             sectionDao.deleteByLineIdAndUpStationId(lineId, stationId);
             return;
         }
 
-        if (sections.isDownStation(stationId)) {
+        if (sections.isDownEndPoint(stationId)) {
             sectionDao.deleteByLineIdAndDownStationId(lineId, stationId);
             return;
         }
 
+        rearrangeSection(lineId, stationId, sections);
+    }
+
+    private void rearrangeSection(Long lineId, Long stationId, Sections sections) {
         Section downStationSection = sections.findByDownStationId(stationId);
         Section upStationSection = sections.findByUpStationId(stationId);
         sectionDao.deleteBySection(upStationSection);

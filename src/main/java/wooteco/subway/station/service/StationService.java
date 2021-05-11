@@ -59,7 +59,7 @@ public class StationService {
         log.info("지하철 역 삭제 성공");
     }
 
-    public void checkRightStation(Long upStationId, Long downStationId) {
+    public void checkValidStation(Long upStationId, Long downStationId) {
         validatesSameStation(upStationId, downStationId);
         validatesExistStation(upStationId);
         validatesExistStation(downStationId);
@@ -85,6 +85,7 @@ public class StationService {
         }
         return sortedStations.stream()
                 .map(stationDao::findById)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());

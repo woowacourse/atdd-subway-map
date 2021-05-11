@@ -19,8 +19,8 @@ class SectionTest {
         Section section = new Section(1L, 1L, 1L, 2L, 3);
 
         // when
-        boolean sameUpStation = section.isSameUpStation(new Section(2L, 1L, 1L, 3L, 4));
-        boolean differentUpStation = section.isSameUpStation(new Section(2L, 1L, 2L, 3L, 4));
+        boolean sameUpStation = section.isSameUpStation(1L);
+        boolean differentUpStation = section.isSameUpStation(2L);
 
         // then
         assertTrue(sameUpStation);
@@ -34,8 +34,8 @@ class SectionTest {
         Section section = new Section(1L, 1L, 1L, 2L, 3);
 
         // when
-        boolean sameDownStation = section.isSameUpStation(new Section(2L, 1L, 1L, 2L, 4));
-        boolean differentDownStation = section.isSameUpStation(new Section(2L, 1L, 2L, 3L, 4));
+        boolean sameDownStation = section.isSameDownStation(2L);
+        boolean differentDownStation = section.isSameDownStation(3L);
 
         // then
         assertTrue(sameDownStation);

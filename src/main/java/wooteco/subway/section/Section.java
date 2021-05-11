@@ -28,12 +28,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isSameUpStation(Section section) {
-        return this.upStationId.equals(section.upStationId);
+    public boolean isSameUpStation(Long stationId) {
+        return this.upStationId.equals(stationId);
     }
 
-    public boolean isSameDownStation(Section section) {
-        return this.downStationId.equals(section.downStationId);
+    public boolean isSameDownStation(Long stationId) {
+        return this.downStationId.equals(stationId);
     }
 
     public void updateDistance(Integer distance) {

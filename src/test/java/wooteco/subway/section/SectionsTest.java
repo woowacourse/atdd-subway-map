@@ -49,8 +49,8 @@ class SectionsTest {
         ));
 
         // when
-        boolean isSame = sections.isUpStation(1L);
-        boolean isNotSame = sections.isUpStation(2L);
+        boolean isSame = sections.isUpEndPoint(1L);
+        boolean isNotSame = sections.isUpEndPoint(2L);
 
         // then
         assertTrue(isSame);
@@ -68,8 +68,8 @@ class SectionsTest {
         ));
 
         // when
-        boolean isSame = sections.isDownStation(4L);
-        boolean isNotSame = sections.isDownStation(3L);
+        boolean isSame = sections.isDownEndPoint(4L);
+        boolean isNotSame = sections.isDownEndPoint(3L);
 
         // then
         assertTrue(isSame);
@@ -87,9 +87,9 @@ class SectionsTest {
         ));
 
         // when
-        boolean isExist = sections.sectionUpStationInStartPoints(
+        boolean isExist = sections.newUpStationInStartPoints(
                 new Section(4L, 1L, 2L, 5L, 1));
-        boolean isNotExist = sections.sectionUpStationInStartPoints(
+        boolean isNotExist = sections.newUpStationInStartPoints(
                 new Section(4L, 1L, 4L, 3L, 1));
 
         // then
@@ -108,9 +108,9 @@ class SectionsTest {
         ));
 
         // when
-        boolean isExist = sections.sectionDownStationInEndPoints(
+        boolean isExist = sections.newDownStationInEndPoints(
                 new Section(4L, 1L, 4L, 3L, 1));
-        boolean isNotExist = sections.sectionDownStationInEndPoints(
+        boolean isNotExist = sections.newDownStationInEndPoints(
                 new Section(4L, 1L, 3L, 5L, 1));
 
         // then

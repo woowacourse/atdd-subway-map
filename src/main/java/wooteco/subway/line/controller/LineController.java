@@ -12,7 +12,7 @@ import wooteco.subway.line.dto.response.LineResponse;
 import wooteco.subway.line.dto.response.LineSectionResponse;
 import wooteco.subway.line.dto.response.LineStationsResponse;
 import wooteco.subway.line.service.LineService;
-import wooteco.subway.section.dto.AddSectionDto;
+import wooteco.subway.section.dto.AddSectionForm;
 import wooteco.subway.section.dto.request.SectionCreateRequest;
 import wooteco.subway.section.dto.response.SectionCreateResponse;
 import wooteco.subway.section.dto.response.SectionResponse;
@@ -44,7 +44,7 @@ public class LineController {
         }
 
         SectionCreateRequest sectionCreateRequest = new SectionCreateRequest(lineCreateRequest);
-        stationService.checkRightStation(sectionCreateRequest.getUpStationId(), sectionCreateRequest.getDownStationId());
+        stationService.checkValidStation(sectionCreateRequest.getUpStationId(), sectionCreateRequest.getDownStationId());
         LineCreateResponse newLine = lineService.save(lineCreateRequest);
         SectionCreateResponse initialSection =
                 sectionService.save(newLine.getId(), sectionCreateRequest);
@@ -76,15 +76,16 @@ public class LineController {
 
         StationResponse upStation = stationService.findById(sectionCreateRequest.getUpStationId());
         StationResponse downStation = stationService.findById(sectionCreateRequest.getDownStationId());
-        AddSectionDto addSectionDto = new AddSectionDto(id, upStation, downStation, sectionCreateRequest.getDistance());
-        SectionCreateResponse newSection = sectionService.addSection(addSectionDto);
+        AddSectionForm addSectionForm = new AddSectionForm(id, upStation, downStation, sectionCreateRequest.getDistance());
+        SectionCreateResponse newSection = sectionService.addSection(addSectionForm);
         return ResponseEntity.created(URI.create("/lines/" + newSection.getLineId() + "/sections/" + newSection.getId()))
                 .body(newSection);
     }
 
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody @Valid LineUpdateRequest lineUpdateRequest, Errors errors) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+                                           @RequestBody @Valid LineUpdateRequest lineUpdateRequest, Errors errors) {
         if (errors.hasErrors()) {
             throw new SubwayException("올바른 값이 아닙니다.");
         }
