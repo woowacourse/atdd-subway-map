@@ -95,7 +95,7 @@ public class SectionDaoImpl implements SectionDao {
     public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
         String sql = "DELETE FROM SECTION " +
                 "WHERE line_id = ? " +
-                "AND (up_station_id = ?, OR down_station_id = ?)";
+                "AND (up_station_id = ? OR down_station_id = ?)";
 
         int rowCount = jdbcTemplate.update(sql, lineId, stationId, stationId);
         if (rowCount == 0) {
