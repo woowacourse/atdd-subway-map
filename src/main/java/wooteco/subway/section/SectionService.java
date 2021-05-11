@@ -17,14 +17,12 @@ import wooteco.subway.exception.NoSuchSectionException;
 import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.StationsInLine;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationService;
 
 @Service
 @Transactional
 public class SectionService {
 
     private final SectionDao sectionDao;
-
 
     @Autowired
     public SectionService(SectionDao sectionDao) {

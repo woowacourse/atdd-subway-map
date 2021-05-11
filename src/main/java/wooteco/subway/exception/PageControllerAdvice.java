@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class PageControllerAdvice {
     @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<String> dupliactedExceptionHandle(Exception e) {
+    public ResponseEntity<String> duplicatedExceptionHandle(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
@@ -24,7 +24,7 @@ public class PageControllerAdvice {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> runtimeExceptionHandle() {
+    public ResponseEntity<Void> runtimeExceptionHandle() {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
     }
 }

@@ -2,8 +2,6 @@ package wooteco.subway.station;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotBlank;
-
 import wooteco.subway.exception.IllegalInputException;
 
 public class Station {

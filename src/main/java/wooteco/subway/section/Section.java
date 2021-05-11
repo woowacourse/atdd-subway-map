@@ -8,8 +8,8 @@ import wooteco.subway.line.LineRequest;
 public class Section {
     private final long upStationId;
     private final long downStationId;
-    private int distance;
     private final long lineId;
+    private int distance;
 
     public Section(long lineId, long upStationId, long downStationId, int distance) {
         this.upStationId = upStationId;

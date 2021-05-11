@@ -19,7 +19,6 @@ import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
 import wooteco.subway.line.LineService;
 import wooteco.subway.station.Station;
-import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
 @SpringBootTest

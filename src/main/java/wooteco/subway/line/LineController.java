@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wooteco.subway.exception.NoSuchLineException;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionService;
 import wooteco.subway.station.StationService;
@@ -65,14 +64,14 @@ public class LineController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
+    public ResponseEntity<Void> updateLine(@RequestBody LineRequest lineRequest, @PathVariable long id) {
         Line line = new Line(lineRequest);
         lineService.updateLine(id, line);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteLine(@PathVariable long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }

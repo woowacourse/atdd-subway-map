@@ -15,13 +15,13 @@ public class StationsInLine {
     public StationsInLine(List<Station> stations) {
         this.stations = stations;
         this.stationIds = stations.stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
+            .map(Station::getId)
+            .collect(Collectors.toList());
     }
 
     public void validStations(long upStationId, long downStationId) {
 
-        if(stationIds.containsAll(Arrays.asList(upStationId, downStationId))) {
+        if (stationIds.containsAll(Arrays.asList(upStationId, downStationId))) {
             throw new BothStationInLineException();
         }
 
