@@ -6,12 +6,10 @@ import wooteco.subway.dao.SectionDao;
 import wooteco.subway.domain.LineRoute;
 import wooteco.subway.domain.Section;
 import wooteco.subway.dto.SectionRequest;
-import wooteco.subway.exception.NotFoundException;
 import wooteco.subway.exception.SubwayIllegalArgumentException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)

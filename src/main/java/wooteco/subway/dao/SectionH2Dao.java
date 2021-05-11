@@ -49,6 +49,12 @@ public class SectionH2Dao implements SectionDao {
     }
 
     @Override
+    public List<Section> findAll() {
+        String findAllQuery = "SELECT * FROM section";
+        return jdbcTemplate.query(findAllQuery, sectionRowMapper);
+    }
+
+    @Override
     public void delete(Long sectionId) {
         String deleteQuery = "DELETE FROM section WHERE id = ?";
         jdbcTemplate.update(deleteQuery, sectionId);

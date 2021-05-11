@@ -14,4 +14,6 @@ public interface SectionDao {
     void delete(Long id);
 
     void update(Section section);
+
+    List<Section> findAll();
 }
