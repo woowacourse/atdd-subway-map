@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import wooteco.subway.name.domain.StationName;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,7 +22,7 @@ class StationNameTest {
     @DisplayName("유효하지 않은 이름의 객체를 가져올 시 예외가 발생한다.")
     void validateName(String name) {
         assertThatThrownBy(() ->
-            new StationName(name)
+                new StationName(name)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 }

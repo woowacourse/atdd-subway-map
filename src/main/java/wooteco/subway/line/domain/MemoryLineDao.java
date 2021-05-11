@@ -55,7 +55,8 @@ public class MemoryLineDao implements LineDao {
     public Optional<LineEntity> findByColor(String color) {
         return lineEntities.stream()
                 .filter(line -> line.sameColor(color))
-                .findAny();    }
+                .findAny();
+    }
 
     @Override
     public void clear() {

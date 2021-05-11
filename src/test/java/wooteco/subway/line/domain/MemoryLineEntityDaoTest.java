@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MemoryLineEntityDaoTest {
     private String name;
     private Long id;
-    private LineDao lineDao = new MemoryLineDao();
+    private final LineDao lineDao = new MemoryLineDao();
 
     @BeforeEach
     void setUp() {

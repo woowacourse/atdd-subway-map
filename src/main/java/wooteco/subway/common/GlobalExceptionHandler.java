@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, DuplicateKeyException.class})
     public ResponseEntity<ResponseError> handleException(RuntimeException e) {

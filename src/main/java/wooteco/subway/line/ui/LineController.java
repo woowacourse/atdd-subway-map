@@ -2,22 +2,16 @@ package wooteco.subway.line.ui;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.common.ResponseError;
 import wooteco.subway.line.application.LineService;
-import wooteco.subway.line.domain.LineDao;
-import wooteco.subway.line.entity.LineEntity;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.dto.LineUpdateRequest;
 import wooteco.subway.line.dto.SectionAddRequest;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")

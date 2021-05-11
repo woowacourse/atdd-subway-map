@@ -168,8 +168,8 @@ class LineServiceTest {
         when(sectionDao.findByLineIdWithUpStationId(lineId, upStationId)).thenReturn(Optional.of(new SectionEntity()));
         when(sectionDao.findByLineIdWithDownStationId(lineId, downStationId)).thenReturn(Optional.of(new SectionEntity()));
         //then
-        assertThatThrownBy(() ->lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance)))
-        .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> lineService.addSection(lineId, new SectionAddRequest(upStationId, downStationId, distance)))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

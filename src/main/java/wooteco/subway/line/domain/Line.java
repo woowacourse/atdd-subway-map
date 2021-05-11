@@ -6,9 +6,6 @@ import wooteco.subway.name.domain.LineName;
 import wooteco.subway.name.domain.Name;
 import wooteco.subway.station.domain.Station;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Line {
     private final Long id;
     private final Name name;

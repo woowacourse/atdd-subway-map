@@ -2,7 +2,6 @@ package wooteco.subway.line.domain;
 
 import wooteco.subway.line.entity.SectionEntity;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 

@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class DBLineDaoTest {
-    private JdbcTemplate jdbcTemplate;
-    private LineDao lineDao;
+    private final JdbcTemplate jdbcTemplate;
+    private final LineDao lineDao;
     private Long id;
     private String name;
     private String color;
