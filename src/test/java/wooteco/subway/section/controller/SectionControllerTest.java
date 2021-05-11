@@ -55,7 +55,7 @@ class SectionControllerTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10);
 
         // when
-        ExtractableResponse<Response> response = 노선을_생성한다(LINE_ID, sectionRequest);
+        ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
 
         LineResponse lineResponse = response.as(LineResponse.class);
 
@@ -70,7 +70,7 @@ class SectionControllerTest extends AcceptanceTest {
         assertThat(secondStationName).isEqualTo(JAM_SIL_STATION_REQUEST.getName());
     }
 
-    private ExtractableResponse<Response> 노선을_생성한다(long lineId, SectionRequest sectionRequest) {
+    private ExtractableResponse<Response> 구간을_생성한다(long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -80,4 +80,24 @@ class SectionControllerTest extends AcceptanceTest {
                 .extract();
     }
 
+    @DisplayName("구간을 삭제한다.")
+    @Transactional
+    @Test
+    void deleteSectionTest() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(JAM_SIL_ID, YEOK_SAM_ID, 10);
+        // when
+        ExtractableResponse<Response> response = 구간을_생성한다(LINE_ID, sectionRequest);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        LineResponse lineResponse = response.as(LineResponse.class);
+        Long secondStationId = lineResponse.getStations().get(0).getId();
+        // then
+        RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + LINE_ID + "/sections?stationId=" + secondStationId)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }

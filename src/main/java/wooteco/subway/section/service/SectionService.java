@@ -52,8 +52,8 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    public void updateSections(long lineId, OrderedSections orderedSections) {
-
+    public void delete(long stationId) {
+        Station byId = stationService.findById(stationId);
+        stationService.delete(byId);
     }
-
 }
