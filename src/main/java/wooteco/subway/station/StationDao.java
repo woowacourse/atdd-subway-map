@@ -3,8 +3,10 @@ package wooteco.subway.station;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,6 +17,10 @@ import wooteco.subway.exception.DuplicateException;
 public class StationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Station> stationRowMapper = (resultSet, rowNumber) -> new Station(
+        resultSet.getLong("id"),
+        resultSet.getString("name")
+    );
 
     public StationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -34,15 +40,12 @@ public class StationDao {
             throw new DuplicateException();
         }
 
-        return createNewObject(station, keyHolder.getKey().longValue());
+        return createNewObject(station, Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     public List<Station> findAll() {
         String sql = "select * from STATION";
-        return jdbcTemplate.query(sql, (resultSet, rowNumber) -> new Station(
-            resultSet.getLong("id"),
-            resultSet.getString("name")
-        ));
+        return jdbcTemplate.query(sql, stationRowMapper);
     }
 
     private Station createNewObject(Station station, Long id) {
@@ -55,5 +58,13 @@ public class StationDao {
     public void delete(Long id) {
         String sql = "delete from STATION where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Station> findByLineId(Long lineId) {
+        String sql = "select distinct id, name "
+            + "from STATION join "
+            + "(select distinct up_station_id, down_station_id from SECTION where line_id = ?) as t "
+            + "on id = up_station_id or id = down_station_id";
+        return jdbcTemplate.query(sql, stationRowMapper, lineId);
     }
 }

@@ -70,10 +70,10 @@ public class LineDao {
         }
     }
 
-    public void update(Line newLine) {
+    public int update(Line newLine) {
         String sql = "update LINE set name = ?, color = ? where id = ?";
         try {
-            jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
+            return jdbcTemplate.update(sql, newLine.getName(), newLine.getColor(), newLine.getId());
         } catch (DuplicateKeyException e) {
             throw new  DuplicateException();
         }

@@ -2,7 +2,6 @@ package wooteco.subway.line;
 
 import java.util.Objects;
 import wooteco.subway.StringInput;
-import wooteco.subway.line.dto.LineRequest;
 
 public class Line {
 
@@ -10,13 +9,6 @@ public class Line {
     private final StringInput name;
     private final StringInput color;
 
-    public Line(LineRequest lineRequest) {
-        this(lineRequest.getName(), lineRequest.getColor());
-    }
-
-    public Line(Long id, LineRequest lineRequest) {
-        this(id, lineRequest.getName(), lineRequest.getColor());
-    }
 
     public Line(String name, String color) {
         this(0L, name, color);
