@@ -1,11 +1,13 @@
 package wooteco.subway.station.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.IllegalIdException;
+import wooteco.subway.exception.line.NoLineException;
+import wooteco.subway.exception.station.NoStationException;
 import wooteco.subway.exception.station.StationDuplicationException;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
 import wooteco.subway.station.dto.StationRequest;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.List;
 
@@ -42,9 +44,15 @@ public class StationService {
         stationDao.delete(id);
     }
 
-    private void validateId(Long id) {
-        if (id <= 0) {
-            throw new IllegalIdException();
-        }
+    public StationResponse findById(Long id) {
+        return new StationResponse(
+            stationDao.findById(id)
+                .orElseThrow(NoStationException::new)
+        );
+    }
+
+    public void validateId(Long stationId) {
+        stationDao.findById(stationId)
+            .orElseThrow(NoLineException::new);
     }
 }

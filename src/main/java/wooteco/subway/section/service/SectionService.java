@@ -1,9 +1,13 @@
-package wooteco.subway.section;
+package wooteco.subway.section.service;
 
 import org.springframework.stereotype.Service;
-import wooteco.subway.exception.InvalidDeleteSectionException;
-import wooteco.subway.station.StationResponse;
-import wooteco.subway.station.StationService;
+import wooteco.subway.exception.section.InvalidDeleteSectionException;
+import wooteco.subway.section.dao.SectionDao;
+import wooteco.subway.section.domain.Section;
+import wooteco.subway.section.domain.Sections;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.station.dto.StationResponse;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 import java.util.Optional;

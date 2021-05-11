@@ -9,10 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
-import wooteco.subway.line.Line;
-import wooteco.subway.line.LineResponse;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.StationResponse;
+import wooteco.subway.line.domain.Line;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.section.dto.SectionRequest;
+import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.util.Arrays;
 
@@ -27,16 +28,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철구간을 생성한다.")
     @Test
     void createSection() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(sectionRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/1/sections")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = sectionPostRequest(sectionRequest, "/lines/1/sections");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         findLineForCreateSection();
     }
 
@@ -65,14 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createDisconnectedSection() {
         SectionRequest disconnectedSectionRequest = new SectionRequest(4L, 5L, 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(disconnectedSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/1/sections")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = sectionPostRequest(disconnectedSectionRequest, "/lines/1/sections");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -81,14 +68,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createExistingSection() {
         SectionRequest existingSectionRequest = new SectionRequest(1L, 2L, 10);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(existingSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/1/sections")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = sectionPostRequest(existingSectionRequest, "/lines/1/sections");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -97,14 +77,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createInvalidDistanceSection() {
         SectionRequest invalidDistanceSectionRequest = new SectionRequest(5L, 3L, 12);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(invalidDistanceSectionRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines/2/sections")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = sectionPostRequest(invalidDistanceSectionRequest, "/lines/2/sections");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -120,7 +93,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
         findLineForDeleteSection();
     }
 
@@ -155,5 +127,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> sectionPostRequest(SectionRequest sectionRequest, String s) {
+        return RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(s)
+            .then().log().all()
+            .extract();
     }
 }

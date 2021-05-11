@@ -1,10 +1,11 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.section.domain.Section;
 
 import java.sql.PreparedStatement;
 import java.util.List;

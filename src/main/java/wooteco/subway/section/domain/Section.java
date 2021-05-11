@@ -1,4 +1,4 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
 public class Section {
 

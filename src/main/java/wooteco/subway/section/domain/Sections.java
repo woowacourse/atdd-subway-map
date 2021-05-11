@@ -1,6 +1,7 @@
-package wooteco.subway.section;
+package wooteco.subway.section.domain;
 
-import wooteco.subway.exception.InvalidAddSectionException;
+import wooteco.subway.exception.section.InvalidAddSectionException;
+import wooteco.subway.section.domain.Section;
 
 import java.util.*;
 import java.util.function.BiPredicate;

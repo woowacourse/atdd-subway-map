@@ -7,6 +7,7 @@ import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.dto.LineRequest;
 import wooteco.subway.line.dto.LineResponse;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.station.dto.StationResponse;
 
 import java.net.URI;
 import java.util.List;

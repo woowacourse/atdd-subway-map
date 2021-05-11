@@ -1,4 +1,6 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dto;
+
+import wooteco.subway.section.domain.Section;
 
 public class SectionResponse {
     private Long id;

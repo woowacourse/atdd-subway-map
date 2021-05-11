@@ -1,4 +1,6 @@
-package wooteco.subway.exception;
+package wooteco.subway.exception.section;
+
+import wooteco.subway.exception.SubwayException;
 
 public class InvalidAddSectionException extends SubwayException {
     public InvalidAddSectionException() {

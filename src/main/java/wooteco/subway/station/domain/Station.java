@@ -49,14 +49,6 @@ public class Station {
         return !name.endsWith(SUFFIX);
     }
 
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
-    public boolean isSameName(Station station) {
-        return this.name.equals(station.name);
-    }
-
     public Long getId() {
         return id;
     }

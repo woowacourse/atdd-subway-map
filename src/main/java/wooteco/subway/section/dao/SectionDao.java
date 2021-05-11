@@ -1,4 +1,6 @@
-package wooteco.subway.section;
+package wooteco.subway.section.dao;
+
+import wooteco.subway.section.domain.Section;
 
 import java.util.List;
 import java.util.Optional;
