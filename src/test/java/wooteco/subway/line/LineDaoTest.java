@@ -77,7 +77,7 @@ class LineDaoTest {
         Line newLine = new Line(name, color);
         long lineId = lineDao.save(newLine);
 
-        Line line = lineDao.findById(lineId);
+        Line line = lineDao.findById(lineId).get();
 
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
@@ -94,7 +94,7 @@ class LineDaoTest {
         Line updatedLine = addLine(newName, newColor);
         assertEquals(1, lineDao.update(lineId, updatedLine));
 
-        Line line = lineDao.findById(lineId);
+        Line line = lineDao.findById(lineId).get();
         assertThat(line.getName()).isEqualTo(newName);
         assertThat(line.getColor()).isEqualTo(newColor);
     }

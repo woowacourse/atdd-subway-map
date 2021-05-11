@@ -1,6 +1,7 @@
 package wooteco.subway.line;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,7 +29,7 @@ public class LineService {
     public Line createLine(Line line) {
         try {
             long lineId = lineDao.save(line);
-            return new Line(lineId, line);
+            return Line.of(lineId, line);
         } catch (DataAccessException e) {
             throw new DuplicateLineException();
         }
@@ -39,12 +40,8 @@ public class LineService {
     }
 
     public Line showLine(long id) {
-        try {
-            Line line = lineDao.findById(id);
-            return new Line(line, sectionService.makeOrderedStations(id));
-        } catch (DataAccessException e) {
-            throw new NoSuchLineException();
-        }
+        Line line = lineDao.findById(id).orElseThrow(NoSuchLineException::new);
+        return new Line(line, sectionService.makeOrderedStations(id));
     }
 
     public void updateLine(long id, Line line) {

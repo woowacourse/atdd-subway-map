@@ -3,6 +3,7 @@ package wooteco.subway.line;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,9 +50,10 @@ public class LineDao {
         return jdbcTemplate.queryForList(sql, Long.class, id);
     }
 
-    public Line findById(long id) {
+    public Optional<Line> findById(long id) {
         String sql = "SELECT * FROM LINE WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, lineRowMapper, id);
+        List<Line> result = jdbcTemplate.query(sql, lineRowMapper, id);
+        return result.stream().findAny();
     }
 
     public int update(long id, Line line) {

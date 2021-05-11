@@ -54,8 +54,8 @@ class SectionDaoTest {
     void findSections() {
         save();
         Map<Station, Station> expectedSections = new HashMap<>();
-        expectedSections.put(stationDao.findById(1L), stationDao.findById(2L));
-        expectedSections.put(stationDao.findById(2L), stationDao.findById(3L));
+        expectedSections.put(stationDao.findById(1L).get(), stationDao.findById(2L).get());
+        expectedSections.put(stationDao.findById(2L).get(), stationDao.findById(3L).get());
 
         assertEquals(expectedSections, sectionDao.findSectionsByLineId(1L));
     }

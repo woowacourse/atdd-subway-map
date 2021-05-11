@@ -39,11 +39,7 @@ public class StationService {
     }
 
     public Station showStation(Long stationId) {
-        try {
-            return stationDao.findById(stationId);
-        } catch (DataAccessException e) {
-            throw new NoSuchStationException();
-        }
+        return stationDao.findById(stationId).orElseThrow(NoSuchStationException::new);
     }
 
 }

@@ -3,6 +3,7 @@ package wooteco.subway.station;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,8 +47,9 @@ public class StationDao {
         return jdbcTemplate.update(sql, stationId);
     }
 
-    public Station findById(Long id) {
+    public Optional<Station> findById(Long id) {
         String sql = "SELECT * FROM STATION WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, stationRowMapper, id);
+        List<Station> result = jdbcTemplate.query(sql, stationRowMapper, id);
+        return result.stream().findAny();
     }
 }

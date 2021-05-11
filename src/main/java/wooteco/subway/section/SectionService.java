@@ -96,9 +96,7 @@ public class SectionService {
             Section nextSection = unknownNextSection.get();
             Section previousSection = unKnownPreviousSection.get();
             previousSection.addDistance(nextSection);
-
-            long downStationId = nextSection.getDownStationId();
-            sectionDao.updateDownStation(previousSection, downStationId);
+            sectionDao.updateDownStation(previousSection, nextSection.getDownStationId());
             return deleteSection(nextSection);
         }
 
@@ -121,11 +119,11 @@ public class SectionService {
     }
 
     public List<Station> makeOrderedStations(long id) {
-        try {
-            return orderStations(sectionDao.findSectionsByLineId(id));
-        } catch (DataAccessException e) {
+        Map<Station, Station> sectionsInLine = sectionDao.findSectionsByLineId(id);
+        if (sectionsInLine.isEmpty()) {
             throw new NoSuchStationInLineException();
         }
+        return orderStations(sectionsInLine);
     }
 
     private List<Station> orderStations(Map<Station, Station> sections) {

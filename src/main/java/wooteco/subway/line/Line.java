@@ -27,11 +27,6 @@ public class Line {
         this.id = id;
     }
 
-    public Line(long id, Line line) {
-        this(line.getName(), line.getColor());
-        this.id = id;
-    }
-
     public Line(Line line, List<Station> stations) {
         this(line.getId(), line.getName(), line.getColor());
         this.stations = stations;
@@ -39,6 +34,10 @@ public class Line {
 
     public Line(LineRequest lineRequest) {
         this(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public static Line of(long id, Line line) {
+        return new Line(id, line.getName(), line.getColor());
     }
 
     private void validateColor(String color) {
