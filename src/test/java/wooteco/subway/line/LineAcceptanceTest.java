@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.util.RestfulOrder.DEFAULT_MEDIA_TYPE;
+import static wooteco.subway.util.RestfulOrder.testResponse;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +23,30 @@ import wooteco.subway.AcceptanceTest;
 
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    static Map<String, String> defaultLineParams;
+
+    @BeforeAll
+    static void fillDefaultDataParams() {
+        defaultLineParams = new HashMap<>();
+        defaultLineParams.put("name", "신분당선");
+        defaultLineParams.put("color", "bg-red-600");
+        defaultLineParams.put("upStationId", "1");
+        defaultLineParams.put("downStationId", "2");
+        defaultLineParams.put("distance", "10");
+    }
+
     @Autowired
     private LineDao lineDao;
+
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = testResponse(params, DEFAULT_MEDIA_TYPE, "/lines");
+        ExtractableResponse<Response> response = testResponse(defaultLineParams, DEFAULT_MEDIA_TYPE,
+            "/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -44,15 +57,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 노선 이름 추가시 예외 처리")
     @Test
     void nameDuplication() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        params.put("color", "bg-green-600");
-        ExtractableResponse<Response> response = testResponse(params, DEFAULT_MEDIA_TYPE, "/lines");
+        testResponse(defaultLineParams, DEFAULT_MEDIA_TYPE, "/lines");
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "강남역");
-        params2.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse2 = testResponse(params, DEFAULT_MEDIA_TYPE,
+        ExtractableResponse<Response> createResponse2 = testResponse(defaultLineParams,
+            DEFAULT_MEDIA_TYPE,
             "/lines");
 
         assertThat(createResponse2.statusCode())
@@ -63,15 +71,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        params1.put("color", "yellow darken-4");
-        ExtractableResponse<Response> createResponse1 = testResponse(params1, DEFAULT_MEDIA_TYPE,
+        ExtractableResponse<Response> createResponse1 = testResponse(defaultLineParams,
+            DEFAULT_MEDIA_TYPE,
             "/lines");
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "서초역");
-        params2.put("color", "yellow darken-4");
+        params2.put("color", "bg-red-600");
+        params2.put("upStationId", "1");
+        params2.put("downStationId", "2");
+        params2.put("distance", "10");
         ExtractableResponse<Response> createResponse2 = testResponse(params2, DEFAULT_MEDIA_TYPE,
             "/lines");
 
@@ -88,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(it -> it.getId())
+            .map(LineResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -123,12 +132,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void modifyLine() {
         lineDao.save(new Line(1L, "name", "yellow darken-4"));
 
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        params1.put("color", "bg-blue-600");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(params1)
+            .body(defaultLineParams)
             .when()
             .put("/lines/1")
             .then().log().all()
@@ -140,10 +146,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        params.put("color", "bg-green-600");
-        ExtractableResponse<Response> createResponse = testResponse(params, DEFAULT_MEDIA_TYPE,
+        ExtractableResponse<Response> createResponse = testResponse(defaultLineParams,
+            DEFAULT_MEDIA_TYPE,
             "/lines");
 
         // when
@@ -158,26 +162,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void testRequest(Map<String, String> params, String mediaType, String path) {
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(mediaType)
-            .when()
-            .post(path)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> testResponse(Map<String, String> params, String mediaType,
-        String path) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(mediaType)
-            .when()
-            .post(path)
-            .then().log().all()
-            .extract();
-
-        return response;
-    }
 }
