@@ -33,10 +33,9 @@ public class SectionService {
         }
 
         final Section createdSection = Section.create(upStation, downStation, distance);
-        sections.affectedSection(createdSection).ifPresent(sectionDao::update);
+        sections.affectedSectionWhenInserting(createdSection).ifPresent(sectionDao::update);
         sectionDao.save(createdSection, lineId);
 
         return createdSection;
     }
-
 }

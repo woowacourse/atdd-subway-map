@@ -42,7 +42,7 @@ public class Section {
     }
 
     public boolean isSameSection(Section targetSection) {
-        return this.hasSameId(targetSection.getId());
+        return this.isUpStation(targetSection.upStation) && this.isDownStation(targetSection.downStation);
     }
 
     public boolean hasSameId(Long id) {
@@ -67,5 +67,9 @@ public class Section {
             throw new InvalidDistanceException();
         }
         return difference;
+    }
+
+    public boolean containsStation(Station station) {
+        return isDownStation(station) || isUpStation(station);
     }
 }

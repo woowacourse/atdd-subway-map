@@ -15,7 +15,5 @@ public class PersistenceUtils {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-
     }
-
 }

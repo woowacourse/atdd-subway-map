@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import wooteco.subway.exception.badRequest.DuplicatedSectionException;
 import wooteco.subway.exception.badRequest.InvalidSectionException;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
 
     private static final int FIRST_INDEX = 0;
-    private static final int SECTION_LIMIT = 1;
 
     private final List<Section> sections;
 
@@ -69,46 +66,37 @@ public class Sections {
             .findAny();
     }
 
-    public Optional<Section> affectedSection(Section newSection) {
-        List<Section> collect = sections.stream()
-            .filter(originalSection -> isAdjacentSection(newSection, originalSection))
-            .collect(Collectors.toList());
+    public Optional<Section> affectedSectionWhenInserting(Section newSection) {
+        boolean existsUpStation = sections.stream()
+            .anyMatch(section -> section.containsStation(newSection.getUpStation()));
 
-        if (collect.size() != SECTION_LIMIT) {
+        boolean existsDownStation = sections.stream()
+            .anyMatch(section -> section.containsStation(newSection.getDownStation()));
+
+        if (isNotInsertable(existsUpStation, existsDownStation)) {
             throw new InvalidSectionException();
         }
 
-        final Section originalSection = collect.get(FIRST_INDEX);
-        return updateSection(originalSection, newSection);
+        return updateSection(newSection, existsUpStation, existsDownStation);
     }
 
-    private boolean isAdjacentSection(Section newSection, Section originalSection) {
-        if (originalSection.isSameSection(newSection)) {
-            throw new DuplicatedSectionException();
+    private Optional<Section> updateSection(Section newSection, boolean existsUpStation,
+        boolean existsDownStation) {
+        Optional<Section> foundSection = Optional.empty();
+        if (existsUpStation) {
+            foundSection = sections.stream().filter(section -> section.isUpStation(newSection.getUpStation())).findAny();
+            foundSection.ifPresent(section -> section.updateUpStation(newSection));
         }
-
-        return originalSection.isUpStation(newSection.getUpStation()) ||
-            originalSection.isDownStation(newSection.getDownStation()) ||
-            originalSection.isUpStation(newSection.getDownStation()) ||
-            originalSection.isDownStation(newSection.getUpStation());
+        if (existsDownStation) {
+            foundSection = sections.stream().filter(section -> section.isDownStation(newSection.getDownStation())).findAny();
+            foundSection.ifPresent(section -> section.updateDownStation(newSection));
+        }
+        return foundSection;
     }
 
-    private Optional<Section> updateSection(Section originalSection, Section newSection) {
-
-        final Station upStation = newSection.getUpStation();
-        final Station downStation = newSection.getDownStation();
-
-        if (originalSection.isUpStation(upStation)) {
-            originalSection.updateUpStation(newSection);
-            return Optional.of(originalSection);
-        }
-
-        if (originalSection.isDownStation(downStation)) {
-            originalSection.updateDownStation(newSection);
-            return Optional.of(originalSection);
-        }
-
-        return Optional.empty();
+    private boolean isNotInsertable(boolean existsUpStation, boolean existsDownStation) {
+        return (existsUpStation && existsDownStation) ||
+            (!existsUpStation && !existsDownStation);
     }
 
     public boolean isEmpty() {
