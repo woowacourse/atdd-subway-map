@@ -98,4 +98,26 @@ class LineServiceTest {
         verify(sectionDao, times(1)).update(any(Section.class));
         verify(sectionDao, times(1)).save(any(Section.class));
     }
+
+    @DisplayName("구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        final Line line = new Line(1L, "2호선", "black");
+        final Section sectionA = new Section(1L, 1L, 2L, 4L, 10);
+        final Section sectionB = new Section(2L, 1L, 4L, 6L, 10);
+        final List<Section> sectionGroup = Arrays.asList(sectionA, sectionB);
+
+        final Long lineId = 1L;
+        given(lineDao.findById(1L)).willReturn(Optional.of(line));
+        given(sectionDao.findByLineId(1L)).willReturn(sectionGroup);
+        given(stationService.findById(anyLong())).willAnswer(invocation -> {
+            final Long id = invocation.getArgument(0);
+            return new Station(id, "역" + id);
+        });
+
+        lineService.deleteSection(lineId, 4L);
+        verify(sectionDao, times(2)).deleteById(anyLong());
+        verify(sectionDao, times(1))
+            .save(new Section(1L, 2L, 6L, 20));
+    }
 }
