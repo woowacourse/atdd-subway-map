@@ -2,13 +2,14 @@ package wooteco.subway.section;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.line.FinalStations;
 import wooteco.subway.line.LineDao;
 import wooteco.subway.line.LineException;
 
 @Service
 @Transactional
 public class SectionService {
-    private final int LIMIT_NUMBER_OF_STATION_IN_LINE = 2;
+    private static final int LIMIT_NUMBER_OF_STATION_IN_LINE = 2;
 
     private final SectionDao sectionDao;
     private final LineDao lineDao;
@@ -18,133 +19,118 @@ public class SectionService {
         this.lineDao = lineDao;
     }
 
-    public void addSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        if (isMiddleSection(lineId, upStationId, downStationId)) {
-            addMiddleSection(lineId, upStationId, downStationId, distance);
+    public void addSection(final Section section) {
+        addSection(section.lineId(), section.front(), section.back(), section.distance());
+    }
+
+    public void addSection(long lineId, long front, long back, int distance) {
+        if (isFinalSection(lineId, front, back)) {
+            addFinalSection(lineId, front, back, distance);
             return;
         }
 
-        if (isFinalUpStation(lineId, downStationId)) {
-            addFinalUpStation(lineId, upStationId, downStationId, distance);
-            return;
-        }
-
-        if (isFinalDownStation(lineId, upStationId)) {
-            addFinalDownStation(lineId, upStationId, downStationId, distance);
+        if (isMiddleSection(lineId, front, back)) {
+            addMiddleSection(lineId, front, back, distance);
             return;
         }
 
         throw new LineException("잘못된 구간 입력입니다.");
     }
 
-    private boolean isMiddleSection(final Long lineId, final Long upStation, final Long downStation) {
-        final boolean existingUpStation = sectionDao.isExistingUpStation(lineId, upStation);
-        final boolean existingDownStation = sectionDao.isExistingDownStation(lineId, downStation);
-
-        return existingUpStation != existingDownStation;
+    private boolean isFinalSection(final Long lineId, final Long station) {
+        return isFinalSection(lineId, station, station);
     }
 
-    private void addMiddleSection(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        if (sectionDao.isExistingUpStation(lineId, upStationId)) {
-            updateSectionFromUpStation(lineId, upStationId, downStationId, distance);
+    private boolean isFinalSection(final Long lineId, final Long front, final Long back) {
+        final FinalStations finalStations = new FinalStations(lineDao.findUpStationId(lineId), lineDao.findDownStationId(lineId));
+        return finalStations.isFinalSection(front, back);
+    }
+
+    private boolean isMiddleSection(final Long lineId, final Long front, final Long back) {
+        return sectionDao.isExistingFrontStation(lineId, front) != sectionDao.isExistingBackStation(lineId, back);
+    }
+
+    private void addFinalSection(Long lineId, Long front, Long back, int distance) {
+        final FinalStations before = new FinalStations(lineDao.findUpStationId(lineId), lineDao.findDownStationId(lineId));
+        final FinalStations after = before.addStations(front, back);
+
+        lineDao.update(lineId, after.getUpStationId(), after.getDownStationId());
+        sectionDao.save(lineId, front, back, distance);
+    }
+
+    private void addMiddleSection(Long lineId, Long front, Long back, int distance) {
+        if (sectionDao.isExistingFrontStation(lineId, front)) {
+            updateSectionFromFront(lineId, front, back, distance);
             return;
         }
-
-        if (sectionDao.isExistingDownStation(lineId, downStationId)) {
-            updateSectionFromDownStation(lineId, upStationId, downStationId, distance);
-            return;
-        }
+        updateSectionFromBack(lineId, front, back, distance);
     }
 
-    private void updateSectionFromUpStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        final Long beforeDownStation = sectionDao.downStationIdOf(lineId, upStationId);
-        final int beforeDistance = distance(lineId, upStationId, beforeDownStation);
+    private void updateSectionFromFront(Long lineId, Long front, Long back, int distance){
+        final Section update = sectionDao.findSectionByFrontStation(lineId, front);
+        final Distance subDistance = new Distance(update.distance()).sub(distance);
 
-        validateAdditionDistance(beforeDistance, distance);
-
-        sectionDao.updateDownStation(lineId, beforeDownStation, downStationId, distance);
-        sectionDao.save(lineId, downStationId, beforeDownStation, beforeDistance - distance);
+        sectionDao.deleteSection(update.id());
+        sectionDao.save(lineId, back, update.back(), subDistance.value());
+        sectionDao.save(lineId, front, back, distance);
     }
 
-    private void updateSectionFromDownStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        final Long beforeUpStation = sectionDao.upStationIdOf(lineId, downStationId);
-        final int beforeDistance = distance(lineId, beforeUpStation, downStationId);
+    private void updateSectionFromBack(Long lineId, Long front, Long back, int distance){
+        final Section update = sectionDao.findSectionByBackStation(lineId, back);
+        final Distance subDistance = new Distance(update.distance()).sub(distance);
 
-        validateAdditionDistance(beforeDistance, distance);
-
-        sectionDao.updateUpStation(lineId, beforeUpStation, upStationId, distance);
-        sectionDao.save(lineId, beforeUpStation, upStationId, beforeDistance - distance);
-    }
-
-    private void addFinalDownStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        sectionDao.save(lineId, upStationId, downStationId, distance);
-        lineDao.updateDownStation(lineId, downStationId);
-    }
-
-    private void addFinalUpStation(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        sectionDao.save(lineId, upStationId, downStationId, distance);
-        lineDao.updateUpStation(lineId, upStationId);
-    }
-
-    private boolean isFinalUpStation(final Long lineId, final Long stationId) {
-        final Long finalUpStation = lineDao.findUpStationId(lineId);
-        return finalUpStation.equals(stationId);
-    }
-
-    private boolean isFinalDownStation(final Long lineId, final Long stationId) {
-        final Long finalDownStation = lineDao.findDownStationId(lineId);
-        return finalDownStation.equals(stationId);
+        sectionDao.deleteSection(update.id());
+        sectionDao.save(lineId, update.front(), front, subDistance.value());
+        sectionDao.save(lineId, front, back, distance);
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
         validateDeleteSection(lineId, stationId);
 
-        if (isFinalUpStation(lineId, stationId)) {
-            deleteFinalUpStation(lineId, stationId);
+        if (isFinalSection(lineId, stationId)) {
+            deleteUpStation(lineId, stationId);
+            deleteDownStation(lineId, stationId);
             return;
         }
 
-        if (isFinalDownStation(lineId, stationId)) {
-            deleteFinalDownStation(lineId, stationId);
-            return;
+        deleteMiddleSection(lineId, stationId);
+    }
+
+    private void deleteMiddleSection(Long lineId, Long stationId) {
+        final Section frontSection = sectionDao.findSectionByBackStation(lineId, stationId);
+        final Section backSection = sectionDao.findSectionByFrontStation(lineId, stationId);
+        final Distance sumDistance = new Distance(frontSection.distance() + backSection.distance());
+
+        sectionDao.deleteSection(frontSection.id());
+        sectionDao.deleteSection(backSection.id());
+        sectionDao.save(lineId, frontSection.front(), backSection.back(), sumDistance.value());
+    }
+
+    private void deleteDownStation(Long lineId, Long stationId) {
+        if (lineDao.isDownStation(lineId, stationId)) {
+            Section sectionToDelete = sectionDao.findSectionByBackStation(lineId, stationId);
+            lineDao.update(lineId, lineDao.findUpStationId(lineId), sectionToDelete.front());
+            sectionDao.deleteSection(sectionToDelete.id());
         }
-
-        deleteMiddleStation(lineId, stationId);
     }
 
-    private void deleteFinalUpStation(final Long lineId, final Long stationId) {
-        final Long downStationId = sectionDao.downStationIdOf(lineId, stationId);
-
-        lineDao.updateUpStation(lineId, downStationId);
-        sectionDao.deleteSection(lineId, stationId, downStationId);
-    }
-
-    private void deleteFinalDownStation(final Long lineId, final Long stationId) {
-        final Long upStationId = sectionDao.upStationIdOf(lineId, stationId);
-
-        lineDao.updateDownStation(lineId, upStationId);
-        sectionDao.deleteSection(lineId, upStationId, stationId);
-    }
-
-    private void deleteMiddleStation(final Long lineId, final Long stationId) {
-        final Long upStationId = sectionDao.upStationIdOf(lineId, stationId);
-        final Long downStationId = sectionDao.downStationIdOf(lineId, stationId);
-
-        sectionDao.updateDownStation(lineId, stationId, downStationId, distance(lineId, upStationId, stationId, downStationId));
-        sectionDao.deleteSection(lineId, stationId, downStationId);
-    }
-
-    public int distance(final Long lineId, final Long upStationId, final Long downStationId) {
-        if (sectionDao.isExistingSection(lineId, upStationId, downStationId)) {
-            return sectionDao.findDistance(lineId, upStationId, downStationId);
+    private void deleteUpStation(Long lineId, Long stationId) {
+        if (lineDao.isUpStation(lineId, stationId)) {
+            Section sectionToDelete = sectionDao.findSectionByFrontStation(lineId, stationId);
+            lineDao.update(lineId, sectionToDelete.back(), lineDao.findDownStationId(lineId));
+            sectionDao.deleteSection(sectionToDelete.id());
         }
-        throw new LineException("존재하지 않는 구간입니다.");
     }
 
-    public int distance(final Long lineId, final Long upStationId, final Long middleStationId, final Long downStationId) {
-        return distance(lineId, upStationId, middleStationId) + distance(lineId, middleStationId, downStationId);
+    public Distance distance(final Long lineId, final Long front, final Long back) {
+        return new Distance(sectionDao.findDistance(lineId, front, back));
     }
 
+    public Distance distance(final Long lineId, final Long front, final Long middle, final Long back) {
+        return distance(lineId, front, middle).add(distance(lineId, middle, back));
+    }
+
+    // TODO :: 두개 뺼 수 있는 방법 
     private void validateDeleteSection(final Long lineId, final Long stationId) {
         if (sectionDao.stationCountInLine(lineId) <= LIMIT_NUMBER_OF_STATION_IN_LINE) {
             throw new LineException("종점 뿐인 노선의 역을 삭제할 수 없습니다.");
@@ -152,12 +138,6 @@ public class SectionService {
 
         if (!sectionDao.isExistingStation(lineId, stationId)) {
             throw new LineException("노선에 존재하지 않는 역을 삭제할 수 없습니다.");
-        }
-    }
-
-    private void validateAdditionDistance(final int beforeDistance, final int distance) {
-        if (distance >= beforeDistance) {
-            throw new LineException("기존의 구간 길이보다 같거나 큰 길이의 삽입이 불가능합니다.");
         }
     }
 }

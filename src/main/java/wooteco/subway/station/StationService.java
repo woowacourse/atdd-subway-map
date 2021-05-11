@@ -21,7 +21,7 @@ public class StationService {
         return findById(id);
     }
 
-    private void validateName(final String name){
+    private void validateName(final String name) {
         if (stationDao.isExistingName(name)) {
             throw new StationException("이미 존재하는 역 이름입니다.");
         }
@@ -37,12 +37,12 @@ public class StationService {
         stationDao.delete(id);
     }
 
-    private void validateExisting(final Long id){
+    private void validateExisting(final Long id) {
         findById(id);
     }
 
     public Station findById(final Long id) {
         return stationDao.findById(id)
-                .orElseThrow(()-> new StationException("존재하지 않는 역입니다."));
+                .orElseThrow(() -> new StationException("존재하지 않는 역입니다."));
     }
 }

@@ -46,6 +46,11 @@ public class LineDao {
         jdbcTemplate.update(sql, name, color, id);
     }
 
+    public void update(final Long id, final Long upStationId, final Long downStationId) {
+        final String sql = "UPDATE LINE SET up_station_id = ?, down_station_id =? WHERE id = ?";
+        jdbcTemplate.update(sql, upStationId, downStationId, id);
+    }
+
     public void updateUpStation(final Long id, final Long upStationId) {
         final String sql = "UPDATE LINE SET up_station_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, upStationId, id);
@@ -56,7 +61,7 @@ public class LineDao {
         jdbcTemplate.update(sql, downStationId, id);
     }
 
-    public Long findUpStationId(final Long id){
+    public Long findUpStationId(final Long id) {
         final String sql = "SELECT up_station_id FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
@@ -64,6 +69,14 @@ public class LineDao {
     public Long findDownStationId(final Long id) {
         final String sql = "SELECT down_station_id FROM LINE WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, id);
+    }
+
+    public boolean isUpStation(final Long id, final Long upStationId) {
+        return findUpStationId(id).equals(upStationId);
+    }
+
+    public boolean isDownStation(final Long id, final Long downStationId) {
+        return findDownStationId(id).equals(downStationId);
     }
 
     public Optional<Line> findById(final Long id) {

@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
 
 import java.util.LinkedList;
@@ -36,7 +37,7 @@ public class LineService {
         final String newName = line.getName();
         final String oldName = findById(id).getName();
 
-        if(!oldName.equals(newName)){
+        if (!oldName.equals(newName)) {
             validateName(newName);
         }
 
@@ -58,21 +59,21 @@ public class LineService {
         return lineDao.findAll();
     }
 
-    public Long upStationId(final Long id){
+    public Long upStationId(final Long id) {
         return lineDao.findUpStationId(id);
     }
 
-    public Long downStationId(final Long id){
+    public Long downStationId(final Long id) {
         return lineDao.findDownStationId(id);
     }
 
-    private void validateName(final String name){
+    private void validateName(final String name) {
         if (lineDao.isExistingName(name)) {
             throw new LineException("이미 존재하는 노선 이름입니다.");
         }
     }
 
-    private void validateExisting(final Long id){
+    private void validateExisting(final Long id) {
         findById(id);
     }
 
@@ -80,11 +81,11 @@ public class LineService {
         final List<Long> stations = new LinkedList<>();
 
         Long stationId = lineDao.findUpStationId(lineId);
-        do {
+        while(!lineDao.isDownStation(lineId, stationId)){
             stations.add(stationId);
-            stationId = sectionDao.downStationIdOf(lineId, stationId);
-        } while (sectionDao.isExistingUpStation(lineId, stationId));
-
+            Section next = sectionDao.findSectionByFrontStation(lineId, stationId);
+            stationId = next.back();
+        }
         stations.add(stationId);
 
         return stations;
