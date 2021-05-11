@@ -5,17 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wooteco.subway.exception.service.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.Stations;
 
 class LineTest {
     private Line line;
@@ -29,10 +25,7 @@ class LineTest {
         sectionGroup.add(new Section(1L, 1L, 4L, 8));
         final Sections sections = new Sections(sectionGroup);
 
-        final List<Station> stationsGroup = sections.distinctStationIds().stream()
-            .map(id -> new Station(id, "역" + id))
-            .collect(Collectors.toList());
-        line = new Line(1L, "2호선", "black", sections, new Stations(stationsGroup));
+        line = new Line(1L, "2호선", "black", sections);
     }
 
     @DisplayName("특정 지하철역을 구간에 추가할 수 있는지 확인한다.")
@@ -90,7 +83,7 @@ class LineTest {
         final List<Section> sectionGroup = new ArrayList<>();
         sectionGroup.add(new Section(1L, 3L, 2L, 10));
 
-        final Line newLine = new Line(1L, "temp", "black", sectionGroup, Collections.emptyMap());
+        final Line newLine = new Line(1L, "temp", "black", sectionGroup);
         assertThatThrownBy(newLine::validateSizeToDeleteSection)
             .isInstanceOf(ValidationFailureException.class)
             .hasMessage("구간이 한 개 이하면 지울 수 없습니다.");

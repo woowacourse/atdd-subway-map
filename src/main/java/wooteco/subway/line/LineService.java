@@ -36,7 +36,7 @@ public class LineService {
         final Long downStationId = lineRequest.getDownStationId();
         final int distance = lineRequest.getDistance();
         createSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
-        return LineResponse.from(line);
+        return findLine(line.getId());
     }
 
     private SectionResponse createSection(final Long lineId, final SectionRequest sectionRequest) {
@@ -76,21 +76,27 @@ public class LineService {
             lineId).orElseThrow(() -> new ObjectNotFoundException("해당 Id의 노선이 없습니다.")
         );
         final Sections sections = new Sections(sectionDao.findByLineId(lineId));
-        final List<Station> stationsGroup = sections.distinctStationIds().stream()
+        return new Line(line.getId(), line.getName(), line.getColor(), sections);
+    }
+
+    private Stations composeStations(final Sections sections) {
+        final List<Station> stationsGroup = sections.distinctStationIds()
+            .stream()
             .map(stationService::findById)
             .collect(Collectors.toList());
-        return new Line(line.getId(), line.getName(), line.getColor(), sections, new Stations(stationsGroup));
+        return new Stations(stationsGroup);
     }
 
     public List<LineResponse> findLines() {
-        return lineDao.findAll().stream().
-            map(LineResponse::from).
+        return lineDao.findAll().
+            stream().
+            map(line -> findLine(line.getId())).
             collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
         final Line line = composeLine(id);
-        return LineResponse.from(line);
+        return LineResponse.from(line, composeStations(line.getSections()));
     }
 
     public void updateLine(final Long id, final LineRequest lineRequest) {

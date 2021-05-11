@@ -12,10 +12,6 @@ public class Stations {
 
     private final Map<Long, Station> stationGroup;
 
-    public Stations(final Map<Long, Station> stationGroup) {
-        this.stationGroup = new LinkedHashMap<>(stationGroup);
-    }
-
     public Stations(final List<Station> stations) {
         this.stationGroup = new LinkedHashMap<>();
         stationGroup.putAll(stations.stream()

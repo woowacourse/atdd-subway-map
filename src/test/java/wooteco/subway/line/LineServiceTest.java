@@ -21,7 +21,6 @@ import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.SectionDao;
 import wooteco.subway.line.section.SectionRequest;
 import wooteco.subway.line.section.SectionResponse;
-import wooteco.subway.station.Station;
 import wooteco.subway.station.StationService;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,10 +74,7 @@ class LineServiceTest {
         final SectionRequest sectionRequest = new SectionRequest(2L, 3L, 7);
         given(lineDao.findById(1L)).willReturn(Optional.of(line));
         given(sectionDao.findByLineId(1L)).willReturn(sectionGroup);
-        given(stationService.findById(anyLong())).willAnswer(invocation -> {
-            final Long id = invocation.getArgument(0);
-            return new Station(id, "역" + id);
-        });
+
 
         final Section expectedSection = new Section(
             10L, lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()
@@ -91,7 +87,6 @@ class LineServiceTest {
 
         verify(lineDao, times(1)).findById(1L);
         verify(sectionDao, times(1)).findByLineId(1L);
-        verify(stationService, times(3)).findById(anyLong());
         verify(sectionDao, times(1)).update(any(Section.class));
         verify(sectionDao, times(1)).save(any(Section.class));
     }
@@ -107,10 +102,6 @@ class LineServiceTest {
         final Long lineId = 1L;
         given(lineDao.findById(1L)).willReturn(Optional.of(line));
         given(sectionDao.findByLineId(1L)).willReturn(sectionGroup);
-        given(stationService.findById(anyLong())).willAnswer(invocation -> {
-            final Long id = invocation.getArgument(0);
-            return new Station(id, "역" + id);
-        });
 
         lineService.deleteSection(lineId, 4L);
         verify(sectionDao, times(2)).deleteById(anyLong());

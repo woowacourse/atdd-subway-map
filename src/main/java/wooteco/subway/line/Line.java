@@ -3,13 +3,10 @@ package wooteco.subway.line;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import wooteco.subway.exception.service.ValidationFailureException;
 import wooteco.subway.line.section.Section;
 import wooteco.subway.line.section.Sections;
-import wooteco.subway.station.Station;
-import wooteco.subway.station.Stations;
 
 public class Line {
 
@@ -17,29 +14,24 @@ public class Line {
     private final String name;
     private final String color;
     private final Sections sections;
-    private final Stations stations;
 
     public Line(final String name, final String color) {
-        this(null, name, color, Collections.emptyList(), Collections.emptyMap());
+        this(null, name, color, Collections.emptyList());
     }
 
     public Line(final Long id, final String name, final String color) {
-        this(id, name, color, Collections.emptyList(), Collections.emptyMap());
+        this(id, name, color, Collections.emptyList());
     }
 
-    public Line(final Long id, final String name, final String color, final List<Section> sectionGroup,
-        final Map<Long, Station> stationGroup) {
-
-        this(id, name, color, new Sections(sectionGroup), new Stations(stationGroup));
+    public Line(final Long id, final String name, final String color, final List<Section> sectionGroup) {
+        this(id, name, color, new Sections(sectionGroup));
     }
 
-    public Line(final Long id, final String name, final String color, final Sections sections,
-        final Stations stations) {
+    public Line(final Long id, final String name, final String color, final Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.sections = sections;
-        this.stations = stations;
     }
 
     public void validateStationsToAddSection(final Long upStationId, final Long downStationId) {
@@ -109,10 +101,6 @@ public class Line {
         return sections;
     }
 
-    public Stations getStations() {
-        return stations;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -124,12 +112,11 @@ public class Line {
         final Line line = (Line) o;
         return Objects.equals(getId(), line.getId()) && Objects
             .equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor())
-            && Objects.equals(getSections(), line.getSections()) && Objects
-            .equals(getStations(), line.getStations());
+            && Objects.equals(getSections(), line.getSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), getSections(), getStations());
+        return Objects.hash(getId(), getName(), getColor(), getSections());
     }
 }
