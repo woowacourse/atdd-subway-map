@@ -22,6 +22,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> response;
     private LineRequest firstLineRequest;
@@ -268,6 +269,58 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
+    @DisplayName("종점역이 바뀌는 구간 추가 요청이 들어왔을 때, 종점역을 바꾼다")
+    @Test
+    void addSection_endStationChange() {
+        StationRequest thirdStationRequest = new StationRequest("광안역");
+        saveStation(thirdStationRequest);
+        saveSection(new SectionRequest(2L, 3L, 5));
+
+        LineResponse lineResponse = getLineResponse();
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(1L, firstStationRequest.getName()),
+                        new Station(2L, secondStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName())
+                )));
+        assertThat(lineResponse).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
+    @DisplayName("전체 구간 내부가 변경되는 추가 요청이 들어왔을 때, 새로운 구간을 끼워 넣는다")
+    @Test
+    void addSection_nonEndStationChange() {
+        StationRequest thirdStationRequest = new StationRequest("광안역");
+        saveStation(thirdStationRequest);
+        saveSection(new SectionRequest(3L, 2L, 5));
+
+        LineResponse lineResponse = getLineResponse();
+        LineResponse expectedResponseBody = LineResponse.toDto(new Line(
+                1L,
+                firstLineRequest.getColor(),
+                firstLineRequest.getName(),
+                Arrays.asList(
+                        new Station(1L, firstStationRequest.getName()),
+                        new Station(3L, thirdStationRequest.getName()),
+                        new Station(2L, secondStationRequest.getName())
+                )));
+        assertThat(lineResponse).usingRecursiveComparison().isEqualTo(expectedResponseBody);
+    }
+
+    @DisplayName("전체 구간 내부가 변경되는 추가 요청이 들어왔을 때, 새로운 들어갈 구간의 길이가 기존의 구간의 길이보다 같거나 크다면 에러를 반환한다")
+    @Test
+    void addSection_nonEndStationChangeWithIllegalDistanceInput_throwException() {
+        StationRequest thirdStationRequest = new StationRequest("광안역");
+        saveStation(thirdStationRequest);
+        ExtractableResponse<Response> sectionResponse = saveSection(new SectionRequest(3L, 2L, 10));
+
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    //TODO: 구간 추가 테스트 추가하기
+
     private void saveStation(final StationRequest station) {
         RestAssured.given().log().all()
                 .body(station)
@@ -296,13 +349,13 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    private void saveSection(final SectionRequest sectionRequest) {
-        RestAssured.given()
+    private ExtractableResponse<Response> saveSection(final SectionRequest sectionRequest) {
+        return RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
                 .when()
                 .post(url + "/sections")
-                .then();
+                .then().extract();
     }
 
     private LineResponse getLineResponse() {

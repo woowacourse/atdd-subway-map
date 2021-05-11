@@ -59,7 +59,7 @@ public class LineController {
     public ResponseEntity<LineResponse> getLine(@PathVariable final Long id) {
         Line line = lineService.getLine(id);
         List<Station> allStations = sectionService.getAllStations(id);
-        line.setStations(allStations);
+        line.addStations(allStations);
 
         LineResponse lineResponse = LineResponse.toDto(line);
         return ResponseEntity.ok().body(lineResponse);
