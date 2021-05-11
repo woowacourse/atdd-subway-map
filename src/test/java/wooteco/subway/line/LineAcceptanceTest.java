@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,11 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private final LineRequest lineRequest =
+        new LineRequest("2호선", "초록색", 1L, 2L, 10);
+
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void createLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -40,8 +39,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -58,16 +55,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("기존에 존재하는 지하철노선 색깔로 지하철노선을 생성한다.")
     @Test
     void createLineWithDuplicateColor() {
-        LineRequest beforeLineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         RestAssured.given().log().all()
-                .body(beforeLineRequest)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -84,16 +79,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void findAllLines() {
-        LineRequest lineRequest1 = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(lineRequest1)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -129,8 +122,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void findLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -156,8 +147,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 수정한다.")
     @Test
     void updateLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -183,8 +172,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine() {
-        LineRequest lineRequest = new LineRequest("2호선", "초록색", 1L, 2L, 10);
-
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

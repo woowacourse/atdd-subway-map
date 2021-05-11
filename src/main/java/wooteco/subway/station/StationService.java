@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.NoStationException;
+import wooteco.subway.exception.StationDuplicationException;
 
 import java.util.List;
 
@@ -15,7 +16,17 @@ public class StationService {
     }
 
     public Station add(StationRequest stationRequest) {
+        validateDuplicatedName(stationRequest.getName());
         return stationDao.save(new Station(stationRequest.getName()));
+    }
+
+    private void validateDuplicatedName(String name) {
+        stationDao.findByName(name)
+            .ifPresent(this::throwDuplicationException);
+    }
+
+    private void throwDuplicationException(Station station) {
+        throw new StationDuplicationException();
     }
 
     public List<Station> stations() {
