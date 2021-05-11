@@ -11,6 +11,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +27,12 @@ class StationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     @BeforeEach
     void setUp() {
-        stationDao = new StationDao(jdbcTemplate);
+        stationDao = new StationDao(dataSource);
         String schemaQuery = "create table if not exists STATION ( id bigint auto_increment not null, nam varchar(255) " +
                 "not null unique, primary key(id))";
         jdbcTemplate.execute(schemaQuery);

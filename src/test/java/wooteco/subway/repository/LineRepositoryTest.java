@@ -14,6 +14,7 @@ import wooteco.subway.domain.section.Section;
 import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,9 @@ class LineRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     private LineDao lineDao;
     private SectionDao sectionDao;
     private StationDao stationDao;
@@ -36,9 +40,9 @@ class LineRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
-        sectionDao = new SectionDao(jdbcTemplate);
-        stationDao = new StationDao(jdbcTemplate);
+        lineDao = new LineDao(dataSource);
+        sectionDao = new SectionDao(dataSource);
+        stationDao = new StationDao(dataSource);
         lineRepository = new LineRepository(lineDao, sectionDao, stationDao);
 
         String sectionSchemaQuery = "create table if not exists SECTION ( id bigint auto_increment not null, " +

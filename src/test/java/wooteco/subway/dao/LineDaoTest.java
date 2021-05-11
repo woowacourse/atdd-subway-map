@@ -11,6 +11,7 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +27,12 @@ class LineDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     @BeforeEach
     void setUp() {
-        lineDao = new LineDao(jdbcTemplate);
+        lineDao = new LineDao(dataSource);
         String schemaQuery = "create table if not exists LINE (id bigint auto_increment not null, name varchar(255) " +
                 "not null unique, color varchar(20) not null, primary key(id))";
         jdbcTemplate.execute(schemaQuery);

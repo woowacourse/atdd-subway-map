@@ -11,6 +11,7 @@ import wooteco.subway.domain.station.Station;
 import wooteco.subway.exception.ExceptionStatus;
 import wooteco.subway.exception.SubwayException;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,9 +28,12 @@ class SectionDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataSource dataSource;
+
     @BeforeEach
     void setUp() {
-        sectionDao = new SectionDao(jdbcTemplate);
+        sectionDao = new SectionDao(dataSource);
         String schemaQuery = "create table if not exists SECTION ( id bigint auto_increment not null, " +
                 "line_id bigint not null, up_station_id bigint not null, down_station_id bigint not null, " +
                 "distance int, primary key(id) )";
