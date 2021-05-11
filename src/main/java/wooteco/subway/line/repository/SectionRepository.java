@@ -50,7 +50,7 @@ public class SectionRepository {
     public void saveBaseOnUpStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
             String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
-            Long beforeConnectedStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId()));
+            Long beforeConnectedStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getUpStationId());
             saveSectionBetweenStationsBaseOnUpStation(lineId, sectionRequest, beforeConnectedStationId);
         } catch (EmptyResultDataAccessException e) {
             save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
@@ -75,7 +75,7 @@ public class SectionRepository {
     public void saveBaseOnDownStation(final Long lineId, final SectionRequest sectionRequest) {
         try {
             String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
-            Long beforeConnectedStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getDownStationId()));
+            Long beforeConnectedStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, sectionRequest.getDownStationId());
             saveSectionBetweenStationsBaseOnDownStation(lineId, sectionRequest, beforeConnectedStationId);
         } catch (EmptyResultDataAccessException e) {
             save(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
@@ -119,7 +119,7 @@ public class SectionRepository {
         Long backStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
         try {
             query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
-            Long frontStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, stationId));
+            Long frontStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
             int connectDistance = getBetweenDistance(lineId, stationId);
             sectionUpdateWhenBetweenDelete(lineId, stationId, backStationId, frontStationId, connectDistance);
         } catch (EmptyResultDataAccessException e) {
