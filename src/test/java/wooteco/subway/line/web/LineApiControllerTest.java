@@ -42,14 +42,14 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 성공")
     void createLine_success() throws Exception {
         // given
-        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
-        Long downStationId = stationDao.save(Station.from("잠실새내역")).getId();
+        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
+        Long 잠실새내_id = stationDao.save(Station.from("잠실새내역")).getId();
 
-        final LineRequest lineRequest =
-                new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
+        final LineRequest 이호선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실새내_id, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(이호선);
 
         // then
         result.andDo(print())
@@ -69,14 +69,14 @@ class LineApiControllerTest extends ApiControllerTest {
         // given
         lineDao.save(Line.create("1호선", "bg-red-600"));
 
-        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
-        Long downStationId = stationDao.save(Station.from("석촌역")).getId();
+        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
+        Long 석촌역_id = stationDao.save(Station.from("석촌역")).getId();
 
-        final LineRequest lineRequest =
-                new LineRequest("1호선", "bg-green-600", upStationId, downStationId, 10);
+        final LineRequest 일호선 =
+                new LineRequest("1호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(일호선);
 
         // then
         result.andDo(print())
@@ -90,14 +90,14 @@ class LineApiControllerTest extends ApiControllerTest {
         // given
         lineDao.save(Line.create("1호선", "bg-green-600"));
 
-        Long upStationId = stationDao.save(Station.from("잠실역")).getId();
-        Long downStationId = stationDao.save(Station.from("석촌역")).getId();
+        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
+        Long 석촌역_id = stationDao.save(Station.from("석촌역")).getId();
 
-        final LineRequest lineRequest =
-                new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 10);
+        final LineRequest 이호선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 석촌역_id, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(이호선);
 
         // then
         result.andDo(print())
@@ -109,11 +109,11 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(request 필수값 누락)")
     void createLine_notSatisfiedRequest() throws Exception {
         // given
-        LineRequest lineRequest =
+        LineRequest 이름없는노선 =
                 new LineRequest("", "bg-green-600", 1L, 2L, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(이름없는노선);
 
         // then
         result.andDo(print())
@@ -125,11 +125,11 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(등록되지 않는 역을 노선 종점역에 등록할 때)")
     void createLine_notExistStation() throws Exception {
         // given
-        LineRequest lineRequest =
+        LineRequest 삼호선 =
                 new LineRequest("3호선", "bg-green-600", 1L, 2L, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(삼호선);
 
         // then
         result.andDo(print())
@@ -140,13 +140,13 @@ class LineApiControllerTest extends ApiControllerTest {
     @DisplayName("노선 생성 - 실패(상행선과 하행선 역이 같을 경우)")
     void createLine_sameStations() throws Exception {
         // given
-        Long stationId = stationDao.save(Station.from("잠실역")).getId();
+        Long 잠실역_id = stationDao.save(Station.from("잠실역")).getId();
 
-        final LineRequest lineRequest =
-                new LineRequest("2호선", "bg-green-600", stationId, stationId, 10);
+        final LineRequest 이호선 =
+                new LineRequest("2호선", "bg-green-600", 잠실역_id, 잠실역_id, 10);
 
         // when
-        ResultActions result = 노선_생성(lineRequest);
+        ResultActions result = 노선_생성(이호선);
 
         // then
         result.andDo(print())
@@ -158,15 +158,15 @@ class LineApiControllerTest extends ApiControllerTest {
     @Test
     void readLine_success() throws Exception {
         //given
-        Station station1 = stationDao.save(Station.from("강남역"));
-        Station station2 = stationDao.save(Station.from("잠실역"));
-        Station station3 = stationDao.save(Station.from("석촌역"));
-        LineRequest lineRequest =
-                new LineRequest("4호선", "bg-blue-600", station1.getId(), station2.getId(), 10);
-        ResultActions createdLineResult = 노선_생성(lineRequest);
+        Station 강남역 = stationDao.save(Station.from("강남역"));
+        Station 잠실역 = stationDao.save(Station.from("잠실역"));
+        Station 석촌역 = stationDao.save(Station.from("석촌역"));
+        LineRequest 사호선 =
+                new LineRequest("4호선", "bg-blue-600", 강남역.getId(), 잠실역.getId(), 10);
+        ResultActions createdLineResult = 노선_생성(사호선);
         LineResponse lineResponse =
                 objectMapper.readValue(createdLineResult.andReturn().getResponse().getContentAsString(), LineResponse.class);
-        sectionService.createSection(Section.create(station1, station3, 5), lineResponse.getId());
+        sectionService.createSection(Section.create(강남역, 석촌역, 5), lineResponse.getId());
 
         //when
         ResultActions result = mockMvc.perform(get("/lines/" + lineResponse.getId()));
