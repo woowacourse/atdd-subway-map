@@ -28,6 +28,9 @@ public class LineRoute {
     }
 
     private void serializeRoute(List<Section> sectionsByLineId) {
+        if(sectionsByLineId.isEmpty()) {
+            return;
+        }
         Long downStationId = sectionsByLineId.get(0).getDownStationId();
         Long upStationId = sectionsByLineId.get(0).getUpStationId();
         do {
