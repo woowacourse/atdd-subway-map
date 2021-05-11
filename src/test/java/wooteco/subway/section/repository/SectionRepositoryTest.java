@@ -97,21 +97,21 @@ public class SectionRepositoryTest {
     @ParameterizedTest
     @CsvSource({"1,true", "2,true", "3,false", "4,true"})
     void isExistInUpStation(long stationId, boolean expectedResult) {
-        assertThat(sectionRepository.isExistInUpStation(lineId, stationId)).isEqualTo(expectedResult);
+        assertThat(sectionRepository.doesExistInUpStation(lineId, stationId)).isEqualTo(expectedResult);
     }
 
     @DisplayName("상행선으로 등록되어 있는 역이면 true 아니면 false를 반환한다")
     @ParameterizedTest
     @CsvSource({"1,false", "2,true", "3,true", "4,true"})
     void isExistInDownStation(long stationId, boolean expectedResult) {
-        assertThat(sectionRepository.isExistInDownStation(lineId, stationId)).isEqualTo(expectedResult);
+        assertThat(sectionRepository.doesExistInDownStation(lineId, stationId)).isEqualTo(expectedResult);
     }
 
     @DisplayName("역이 라인 내에 존재한다면 true 아니라면 false")
     @ParameterizedTest
     @CsvSource({"1,true", "2,true", "3,true", "4,true", "5,false"})
     void isStationExist(long stationId, boolean expectedResult) {
-        assertThat(sectionRepository.isStationExist(lineId, stationId)).isEqualTo(expectedResult);
+        assertThat(sectionRepository.doesStationExist(lineId, stationId)).isEqualTo(expectedResult);
     }
 
     @DisplayName("구간을 저장한다")

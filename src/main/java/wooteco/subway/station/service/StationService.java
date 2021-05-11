@@ -19,7 +19,7 @@ public class StationService {
     }
 
     public Station createStation(final Station station) {
-        if (stationRepository.isNameExist(station)) {
+        if (stationRepository.doesNameExist(station)) {
             throw new DuplicateStationNameException();
         }
         return stationRepository.save(station);
@@ -30,7 +30,7 @@ public class StationService {
     }
 
     public void delete(final Long id) {
-        if (stationRepository.isIdNotExist(id)) {
+        if (stationRepository.doesIdNotExist(id)) {
             throw new NoSuchStationException();
         }
         stationRepository.deleteById(id);
@@ -50,7 +50,7 @@ public class StationService {
     }
 
     private String findNameById(final Long id) {
-        if (stationRepository.isIdNotExist(id)) {
+        if (stationRepository.doesIdNotExist(id)) {
             throw new NoSuchStationException();
         }
         return stationRepository.findNameById(id);

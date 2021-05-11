@@ -76,20 +76,20 @@ public class SectionService {
     }
 
     private boolean bothStationsExist(final Section section) {
-        return sectionRepository.isStationExist(section.getLineId(), section.getUpStationId()) &&
-                sectionRepository.isStationExist(section.getLineId(), section.getDownStationId());
+        return sectionRepository.doesStationExist(section.getLineId(), section.getUpStationId()) &&
+                sectionRepository.doesStationExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean bothStationsDoNotExist(final Section section) {
-        return !sectionRepository.isStationExist(section.getLineId(), section.getUpStationId()) &&
-                !sectionRepository.isStationExist(section.getLineId(), section.getDownStationId());
+        return !sectionRepository.doesStationExist(section.getLineId(), section.getUpStationId()) &&
+                !sectionRepository.doesStationExist(section.getLineId(), section.getDownStationId());
     }
 
     private boolean isNotEndStationSave(final Section section) {
         return !((sectionRepository.isEndStation(section.getLineId(), section.getDownStationId()) &&
-                sectionRepository.isExistInUpStation(section.getLineId(), section.getDownStationId())) ||
+                sectionRepository.doesExistInUpStation(section.getLineId(), section.getDownStationId())) ||
                 (sectionRepository.isEndStation(section.getLineId(), section.getUpStationId()) &&
-                        sectionRepository.isExistInDownStation(section.getLineId(), section.getUpStationId())));
+                        sectionRepository.doesExistInDownStation(section.getLineId(), section.getUpStationId())));
     }
 
     public void deleteSection(final Long lineId, final Long stationId) {
@@ -110,7 +110,7 @@ public class SectionService {
     }
 
     private void validateStationExistence(final Long lineId, final Long stationId) {
-        if (!sectionRepository.isStationExist(lineId, stationId)) {
+        if (!sectionRepository.doesStationExist(lineId, stationId)) {
             throw new NoSuchStationException();
         }
     }
