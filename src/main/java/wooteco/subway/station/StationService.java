@@ -5,44 +5,36 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import wooteco.subway.exception.NotFoundStationException;
 import wooteco.subway.station.dao.StationDao;
-import wooteco.subway.station.dto.NonIdStationDto;
-import wooteco.subway.station.dto.StationDto;
+import wooteco.subway.station.dto.StationServiceDto;
 
 @Service
 public class StationService {
 
+    private static final int NOT_FOUND = 0;
     private final StationDao stationDao;
 
     public StationService(final StationDao stationDao) {
         this.stationDao = stationDao;
     }
 
-    public List<StationDto> showStations() {
+    public List<StationServiceDto> showStations() {
         List<Station> stations = stationDao.showAll();
 
         return stations.stream()
-            .map(station -> new StationDto(station.getId(), station.getName()))
+            .map(StationServiceDto::from)
             .collect(Collectors.toList());
     }
 
-    public StationDto save(final NonIdStationDto nonIdStationDto) {
-        String targetName = nonIdStationDto.getName();
-
-        int matchedStationNumber = stationDao.countByName(targetName);
-        if(matchedStationNumber != 0) {
-            throw new NotFoundStationException("[ERROR] 해당하는 역은 이미 존재합니다.");
-        }
-
-        Station station = new Station(targetName);
+    public StationServiceDto save(final StationServiceDto stationServiceDto) {
+        Station station = stationServiceDto.toEntity();
         Station saveStation = stationDao.save(station);
-        return new StationDto(saveStation.getId(), saveStation.getName());
+
+        return StationServiceDto.from(saveStation);
     }
 
-    public void delete(final StationDto stationDto) {
-        int deletedStationNumber = stationDao.delete(stationDto.getId());
-
-        if (deletedStationNumber == 0) {
-            throw new NotFoundStationException("[ERROR] 존재하지 않는 역입니다.");
+    public void delete(final StationServiceDto stationServiceDto) {
+        if (stationDao.delete(stationServiceDto.getId()) == NOT_FOUND) {
+            throw new NotFoundStationException();
         }
     }
 }
