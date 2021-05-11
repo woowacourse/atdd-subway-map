@@ -2,7 +2,6 @@ package wooteco.subway.section.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wooteco.subway.line.service.LineService;
 import wooteco.subway.section.controller.dto.SectionRequest;
 import wooteco.subway.section.servcie.SectionService;
 

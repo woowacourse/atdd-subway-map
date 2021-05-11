@@ -2,6 +2,7 @@ package wooteco.subway.section.servcie;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.common.exception.bad_request.WrongSectionInfoException;
 import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
@@ -40,7 +41,8 @@ public class SectionService {
 
     private void validateSameStation(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException("같은 역으로 구간을 추가할 수 없습니다.");
+            throw new WrongSectionInfoException(String.format("같은 역으로 구간을 추가할 수 없습니다. 상행역: %s, 하행역: %s",
+                    upStation.getName().text(), downStation.getName().text()));
         }
     }
 
@@ -62,7 +64,7 @@ public class SectionService {
 
     private void validateCanDelete(Long lineId) {
         if (sectionDao.canDelete(lineId)) {
-            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+            throw new WrongSectionInfoException(String.format("구간을 삭제할 수 없습니다. 구간 ID: %d", lineId));
         }
     }
 

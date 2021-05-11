@@ -2,6 +2,8 @@ package wooteco.subway.section.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.subway.common.exception.bad_request.WrongSectionInfoException;
+import wooteco.subway.common.exception.bad_request.WrongStationInfoException;
 import wooteco.subway.station.domain.Station;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,7 +14,7 @@ class SectionTest {
     @Test
     public void whenNotContainDownStation() {
         assertThatThrownBy(() -> new Section(new Station(1L, "강남역"), null, new Distance(10)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongSectionInfoException.class)
                 .hasMessageContaining("역을 모두 입력해주세요.");
     }
 
@@ -20,7 +22,7 @@ class SectionTest {
     @Test
     public void whenNotContainUpStation() {
         assertThatThrownBy(() -> new Section(null, new Station(1L, "강남역"), new Distance(10)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongSectionInfoException.class)
                 .hasMessageContaining("역을 모두 입력해주세요.");
     }
 
@@ -30,7 +32,7 @@ class SectionTest {
         assertThatThrownBy(() -> new Section(
                 new Station(1L, "강남역"),
                 new Station(2L, "역삼역"), null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongSectionInfoException.class)
                 .hasMessageContaining("거리를 입력해주세요.");
     }
 
@@ -40,7 +42,7 @@ class SectionTest {
         assertThatThrownBy(() -> new Section(
                 new Station(1L, "강남역"),
                 new Station(2L, "역삼역"), new Distance(-1)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongSectionInfoException.class)
                 .hasMessageContaining("거리는 양수여야 합니다.");
     }
 }

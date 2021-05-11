@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import wooteco.subway.common.exception.not_found.NotFoundSectionInfoException;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
@@ -12,7 +13,6 @@ import wooteco.subway.station.domain.Station;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class H2SectionDao implements SectionDao {
@@ -65,7 +65,7 @@ public class H2SectionDao implements SectionDao {
                 SECTION_ROW_MAPPER, id);
 
         if (sections.isEmpty()) {
-            throw new NoSuchElementException(String.format("데이터베이스에 해당 ID의 구간이 없습니다. ID : %d", id));
+            throw new NotFoundSectionInfoException(String.format("데이터베이스에 해당 ID의 구간이 없습니다. ID : %d", id));
         }
 
         return sections.get(0);

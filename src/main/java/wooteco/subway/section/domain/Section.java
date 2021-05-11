@@ -1,5 +1,6 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.common.exception.bad_request.WrongSectionInfoException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.Objects;
@@ -30,12 +31,12 @@ public class Section {
 
     private void validateNotEmpty(Distance distance) {
         if (distance == null) {
-            throw new IllegalArgumentException("거리를 입력해주세요.");
+            throw new WrongSectionInfoException("거리를 입력해주세요.");
         }
     }
     private void validateStations(Station upStation, Station downStation) {
         if (upStation == null || downStation == null) {
-            throw new IllegalArgumentException("역을 모두 입력해주세요.");
+            throw new WrongSectionInfoException("역을 모두 입력해주세요.");
         }
     }
 
@@ -75,7 +76,7 @@ public class Section {
         return distance.isLessDistance(newSection.distance);
     }
 
-    public Section changeSection(Section newSection) {
+    public Section modifySection(Section newSection) {
         if (upStation.equals(newSection.upStation)) {
             return new Section(id, lineId, newSection.downStation, downStation,
                     distance.subtract(newSection.distance));
@@ -84,7 +85,7 @@ public class Section {
             return new Section(id, lineId, upStation, newSection.upStation,
                     distance.subtract(newSection.distance));
         }
-        throw new IllegalArgumentException("구간이 변경될 수 없습니다.");
+        throw new WrongSectionInfoException(String.format("해당 구간이 변경될 수 없습니다. 구간 ID : %d", lineId));
     }
 
     @Override

@@ -7,14 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import wooteco.subway.common.exception.not_found.NotFoundSectionInfoException;
 import wooteco.subway.section.domain.Distance;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.station.dao.H2StationDao;
 import wooteco.subway.station.dao.StationDao;
 import wooteco.subway.station.domain.Station;
-
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -120,7 +119,7 @@ class H2SectionDaoTest {
 
         //then
         assertThatThrownBy(() -> sectionDao.findById(section.getId()))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(NotFoundSectionInfoException.class)
                 .hasMessageContaining("데이터베이스에 해당 ID의 구간이 없습니다.");
     }
 }

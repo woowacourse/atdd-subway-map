@@ -1,5 +1,6 @@
 package wooteco.subway.section.domain;
 
+import wooteco.subway.common.exception.bad_request.WrongSectionInfoException;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
@@ -22,9 +23,10 @@ public class Sections {
                 .filter(section -> section.hasSameUpStation(upStation) && !hasAnotherSameStation(downStation)
                         || section.hasSameDownStation(downStation) && !hasAnotherSameStation(upStation))
                 .filter(section -> section.isLessDistance(newSection))
-                .map(section -> section.changeSection(newSection))
+                .map(section -> section.modifySection(newSection))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("구간을 추가할 수 없습니다."));
+                .orElseThrow(() -> new WrongSectionInfoException(String.format("구간을 추가할 수 없습니다. 상행역: %s, 하행역: %s",
+                        upStation.getName().text(), downStation.getName().text())));
     }
 
     public boolean isUpLastSection(Section newSection) {
@@ -59,17 +61,6 @@ public class Sections {
 
     }
 
-    private void makeSortedSections(Map<Station, Section> upStations, Map<Station, Section> tmpUpStations, List<Section> sortedSections) {
-        Section firstSection = upStations.keySet().stream()
-                .map(key -> upStations.get(key))
-                .findFirst().get();
-        sortedSections.add(firstSection);
-        while (tmpUpStations.containsKey(firstSection.getDownStation())) {
-            sortedSections.add(tmpUpStations.get(firstSection.getDownStation()));
-            firstSection = tmpUpStations.get(firstSection.getDownStation());
-        }
-    }
-
     private void checkStations(List<Section> sections, Map<Station, Section> upStations, Map<Station, Section> downStations, Map<Station, Section> tmpUpStations) {
         for (Section section : sections) {
             Station upStation = section.getUpStation();
@@ -81,6 +72,17 @@ public class Sections {
 
             upStations.remove(downStation);
             downStations.remove(upStation);
+        }
+    }
+
+    private void makeSortedSections(Map<Station, Section> upStations, Map<Station, Section> tmpUpStations, List<Section> sortedSections) {
+        Section firstSection = upStations.keySet().stream()
+                .map(key -> upStations.get(key))
+                .findFirst().get();
+        sortedSections.add(firstSection);
+        while (tmpUpStations.containsKey(firstSection.getDownStation())) {
+            sortedSections.add(tmpUpStations.get(firstSection.getDownStation()));
+            firstSection = tmpUpStations.get(firstSection.getDownStation());
         }
     }
 

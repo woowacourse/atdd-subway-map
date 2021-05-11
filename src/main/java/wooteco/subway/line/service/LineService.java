@@ -2,9 +2,10 @@ package wooteco.subway.line.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wooteco.subway.common.exception.not_found.NotFoundLineInfoException;
+import wooteco.subway.common.exception.bad_request.WrongLineInfoException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.line.domain.Line;
-import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.domain.Section;
 import wooteco.subway.section.domain.Sections;
 import wooteco.subway.section.servcie.SectionService;
@@ -26,10 +27,10 @@ public class LineService {
     @Transactional
     public Line save (Line line, Long upStationId, Long downStationId, int distance){
         if (isDuplicatedName(line)) {
-            throw new IllegalArgumentException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
+            throw new WrongLineInfoException(String.format("노선 이름이 중복되었습니다. 중복된 노선 이름 : %s", line.getName()));
         }
         if (isDuplicatedColor(line)) {
-            throw new IllegalArgumentException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
+            throw new WrongLineInfoException(String.format("노선 색상이 중복되었습니다. 중복된 노선 색상 : %s", line.getColor()));
         }
         Line newLine = lineDao.save(line);
         Section newSection = sectionService.addSection(newLine.getId(), upStationId, downStationId, distance);
@@ -64,7 +65,7 @@ public class LineService {
     }
     private void ifAbsent (Line line){
         if (!lineDao.checkExistId(line.getId())) {
-            throw new IllegalArgumentException("노선이 존재하지 않습니다.");
+            throw new NotFoundLineInfoException("노선이 존재하지 않습니다.");
         }
     }
     public void deleteAll () {
