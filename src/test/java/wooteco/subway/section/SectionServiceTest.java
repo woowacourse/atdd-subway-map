@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import wooteco.subway.exception.BothStationNotInLineException;
+import wooteco.subway.exception.ImpossibleDeleteException;
 import wooteco.subway.exception.ImpossibleDistanceException;
 import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
@@ -23,7 +24,7 @@ import wooteco.subway.station.StationService;
 
 @SpringBootTest
 @Transactional
-@Sql("classpath:schema.sql")
+@Sql("classpath:test-schema.sql")
 class SectionServiceTest {
     @Autowired
     private SectionService sectionService;
@@ -102,6 +103,19 @@ class SectionServiceTest {
         addEndSection();
         stationService.createStation("메롱역");
 
-        assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L)).isInstanceOf(NoSuchStationInLineException.class);
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, 5L))
+            .isInstanceOf(NoSuchStationInLineException.class);
+    }
+
+    @DisplayName("하나 남은 구간을 삭제한다.")
+    @Test
+    void ImpossibleDeleteSectionException() {
+        addEndSection();
+
+        assertEquals(1, sectionService.deleteSection(1L, 4L));
+        assertEquals(1, sectionService.deleteSection(1L, 1L));
+
+        assertThatThrownBy(() -> sectionService.deleteSection(1L, 2L))
+            .isInstanceOf(ImpossibleDeleteException.class);
     }
 }

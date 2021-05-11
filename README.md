@@ -77,5 +77,5 @@ This project is [MIT](https://github.com/woowacourse/atdd-subway-map/blob/master
     - [x] 예외3: 등록하고자 하는 두 역이 모두 노선에 포함되어 있지 않으면 추가 불가
   - [x] 노선 조회 시 역 목록 응답
   - [x] 구간 제거
-    - [ ] 예외4: 구간이 하나인 경우 마지막 구간 제거 불가
+    - [x] 예외4: 구간이 하나인 경우 마지막 구간 제거 불가
   

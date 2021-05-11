@@ -6,13 +6,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import wooteco.subway.exception.BothStationInLineException;
 import wooteco.subway.exception.BothStationNotInLineException;
 import wooteco.subway.exception.DuplicateSectionException;
 import wooteco.subway.exception.IllegalInputException;
+import wooteco.subway.exception.ImpossibleDeleteException;
 import wooteco.subway.exception.ImpossibleDistanceException;
 import wooteco.subway.exception.NoSuchStationInLineException;
 import wooteco.subway.line.Line;
@@ -111,18 +111,25 @@ public class SectionService {
         if(previousSection.isPresent() && nextSection.isPresent()) {
             Station newDownStation = stationService.showStation(nextSection.get().getDownStationId());
             sectionDao.updateDownStation(previousSection.get(), newDownStation);
-            return sectionDao.deleteSection(nextSection.get());
+            return checkPossibleDelete(nextSection.get());
         }
 
         if(previousSection.isPresent()) {
-            return sectionDao.deleteSection(previousSection.get());
+            return checkPossibleDelete(previousSection.get());
         }
 
         if(nextSection.isPresent()) {
-            return sectionDao.deleteSection(nextSection.get());
+            return checkPossibleDelete(nextSection.get());
         }
 
         throw new NoSuchStationInLineException();
+    }
+
+    private int checkPossibleDelete(Section nextSection) {
+        if(sectionDao.findSectionsByLineId(nextSection.getLineId()).size() == 1) {
+            throw new ImpossibleDeleteException();
+        }
+        return sectionDao.deleteSection(nextSection);
     }
 
 }
