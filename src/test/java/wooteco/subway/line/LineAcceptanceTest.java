@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.station.StationRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,6 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void findLine() {
+        createStation();
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,18 +132,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
-                .get("/lines")
+                .get(uri)
                 .then().log().all()
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         LineResponse expectedResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
-        LineResponse resultResponse = response.jsonPath().getList(".", LineResponse.class).get(0);
-        assertThat(resultResponse.getId()).isEqualTo(expectedResponse.getId());
-        assertThat(resultResponse.getName()).isEqualTo(expectedResponse.getName());
-        assertThat(resultResponse.getColor()).isEqualTo(expectedResponse.getColor());
+        LineResponse resultResponse = response.jsonPath().getObject(".", LineResponse.class);
+
+        assertThat(resultResponse).usingRecursiveComparison()
+            .ignoringFields("stations")
+            .isEqualTo(expectedResponse);
+    }
+
+    private void createStation() {
+        StationRequest stationRequest = new StationRequest("강남역");
+        StationRequest stationRequest2 = new StationRequest("역삼역");
+
+        RestAssured.given().log().all()
+            .body(stationRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        RestAssured.given().log().all()
+            .body(stationRequest2)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철노선을 수정한다.")
