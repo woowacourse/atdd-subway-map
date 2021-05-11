@@ -8,6 +8,7 @@ import wooteco.subway.dao.StationRepository;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
+import wooteco.subway.dto.LineResponse;
 import wooteco.subway.dto.SectionRequest;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void createSection(long lineId, SectionRequest sectionRequest) {
+    public LineResponse createSection(long lineId, SectionRequest sectionRequest) {
         Line line = this.loadLine(lineId);
 
         Station upStation = this.stationRepository.findById(sectionRequest.getUpStationId());
@@ -35,6 +36,8 @@ public class SectionService {
         line.addSection(upStation, downStation, distance);
 
         this.updateSections(lineId, line);
+
+        return LineResponse.from(line);
     }
 
     public void deleteSection(long lineId, long stationId) {
