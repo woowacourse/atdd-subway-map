@@ -1,12 +1,19 @@
 package wooteco.subway.section;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dto.LineResponse;
+import wooteco.subway.station.dto.StationResponse;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -32,6 +41,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         jdbcTemplate.update("INSERT INTO station(name) VALUES('강남역');");
         jdbcTemplate.update("INSERT INTO station(name) VALUES('역삼역');");
         jdbcTemplate.update("INSERT INTO station(name) VALUES('잠실역');");
+        jdbcTemplate.update("INSERT INTO station(name) VALUES('선릉역');");
 
         jdbcTemplate.update("INSERT INTO line(name, color) VALUES('1호선', 'black')");
 
@@ -44,23 +54,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 추가 - 성공")
     void createSection() {
+        RestAssured.defaultParser = Parser.JSON;
+
         Map<String, String> params = new HashMap<>();
         params.put("distance", "1");
-        params.put("downStationId", "1");
         params.put("upStationId", "4");
+        params.put("downStationId", "1");
         params.put("lineId", "1");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured
+            .given()
+            .log()
+            .all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines/1/sections")
-            .then().log().all()
+            .then()
+            .log()
+            .all()
             .extract();
+
+        // when
+        LineResponse lineResponse = RestAssured
+            .given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then()
+            .log().all()
+            .extract()
+            .as(LineResponse.class);
+
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationIds).containsExactly(4L, 1L , 3L, 2L);
     }
 
     @ParameterizedTest(name = "구간 추가 - 실패(양쪽 종점일 경우, 구간의 상행 하행 모두 노선 내에 존재할 경우")
@@ -165,8 +199,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
+        // when
+        LineResponse lineResponse = RestAssured
+            .given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/1")
+            .then()
+            .log().all()
+            .extract()
+            .as(LineResponse.class);
+
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+
+        List<Long> containsId = new ArrayList<>(Arrays.asList(1L, 3L, 2L));
+        containsId.remove(Long.parseLong(stationId));
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationIds).containsExactly(containsId.toArray(new Long[0]));
     }
 
     @ParameterizedTest(name = "구간을 제거(노선의 역 삭제) - 실패")
