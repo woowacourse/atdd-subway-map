@@ -201,13 +201,12 @@ public class LIneAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() throws JsonProcessingException {
         // given
-        LineRequest lineRequest = new LineRequest("백기선", "bg-red-600");
+        LineRequest lineRequest = new LineRequest("백기선", "bg-red-600", 1L, 2L, 3);
         String content = objectMapper.writeValueAsString(lineRequest);
 
         // when
         ExtractableResponse<Response> createResponse = addLine(content);
 
-        long deleteId = createResponse.body().jsonPath().getLong("id");
         String uri = createResponse.header("Location");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()

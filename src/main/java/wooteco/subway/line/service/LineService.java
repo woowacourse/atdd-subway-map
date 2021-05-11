@@ -48,13 +48,13 @@ public class LineService {
     }
 
     @Transactional
-    public void delete(final Long lineId, final Long stationId) {
+    public void deleteSection(final Long lineId, final Long stationId) {
         Line line = lineRepository.findById(lineId);
         if (line.hasOnlyOneSection()) {
             throw new IllegalStateException("[ERROR] 구간이 하나만 존재하므로 삭제할 수 없습니다.");
         }
         List<Section> sections = line.sectionsWhichHasStation(new Station(stationId));
-        lineRepository.delete(lineId, stationId);
+        lineRepository.deleteSection(lineId, stationId);
         if (sections.size() == 2) {
             lineRepository.addSection(
                     lineId,sections.get(0).upStation().id(), sections.get(1).downStation().id(),sections.get(0).addDistance(sections.get(1)));
@@ -85,5 +85,9 @@ public class LineService {
         if (targetSection.lessDistanceThan(addSection) && !targetSection.equals(EMPTY)) {
             throw new IllegalArgumentException("[ERROR] 기존 구간 길이보다 크거나 같으면 등록할 수 없습니다.");
         }
+    }
+
+    public void delete(Long id) {
+        lineRepository.delete(id);
     }
 }

@@ -52,7 +52,11 @@ public class LineRepository {
         return sectionRepository.save(lineId, upStationId, downStationId, distance);
     }
 
-    public void delete(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         sectionRepository.deleteByLineIdAndStationId(lineId, stationId);
+    }
+
+    public void delete(Long id) {
+        lineDao.delete(id);
     }
 }
