@@ -104,4 +104,12 @@ public class SectionDao {
 
         jdbcTemplate.update(sql, sectionId);
     }
+
+    public long count(Long lineId) {
+        String sql = "SELECT COUNT(*) as CNT " +
+                "FROM SECTION " +
+                "WHERE line_id = ?";
+
+        return jdbcTemplate.queryForObject(sql, Long.class, lineId);
+    }
 }

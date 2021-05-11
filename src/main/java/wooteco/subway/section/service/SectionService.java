@@ -39,7 +39,7 @@ public class SectionService {
         return sectionDao.save(lineId, new Section(upStation, downStation, distance));
     }
 
-    public OrderedSections findSections(long lineId) {
+    public OrderedSections findSections(Long lineId) {
         return convert(sectionDao.findByLineId(lineId));
     }
 
@@ -52,10 +52,18 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    public void delete(long lineId, long stationId) {
+    public void delete(Long lineId, Long stationId) {
         Station byId = stationService.findById(stationId);
         OrderedSections sections = convert(sectionDao.findByLineId(lineId));
 
         sectionDao.save(lineId, sections.removeSection(byId));
+    }
+
+    public void deleteLine(Long lineId) {
+        sectionDao.deleteLine(lineId);
+    }
+
+    public boolean isExist(Long lineId) {
+        return sectionDao.count(lineId) > 0;
     }
 }
