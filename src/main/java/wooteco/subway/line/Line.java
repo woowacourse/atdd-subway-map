@@ -44,8 +44,12 @@ public class Line {
         sections.validateNoneExistentStation(upStationId, downStationId);
     }
 
-    public boolean isTerminalStation(final Long upStationId, final Long downStationId) {
+    public boolean isAddableTerminalStation(final Long upStationId, final Long downStationId) {
         return isStartStation(downStationId) || isLastStation(upStationId);
+    }
+
+    public boolean isTerminalStation(final Long stationId) {
+        return isStartStation(stationId) || isLastStation(stationId);
     }
 
     private boolean isStartStation(final Long downStationId) {
@@ -61,6 +65,27 @@ public class Line {
         final Section target = sections.findSameForm(upStationId, downStationId);
         target.validateSmaller(distance);
         return target;
+    }
+
+    public Section findSectionHasUpStation(long existentStationId) {
+        return sections.findSectionHasThisAsUpStation(existentStationId);
+    }
+
+    public Section findSectionHasDownStation(long existentStationId) {
+        return sections.findSectionHasThisAsDownStation(existentStationId);
+    }
+
+    public void validateSizeToDeleteSection() {
+        if (sections.size() <= 1) {
+            throw new RuntimeException("해당 구간을 지울 수 없습니다.");
+        }
+    }
+
+    public Section findTerminalSection(Long stationId) {
+        if (isStartStation(stationId)) {
+            return sections.getFirstSection();
+        }
+        return sections.getLastSection();
     }
 
     public Long getId() {

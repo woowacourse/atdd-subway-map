@@ -103,7 +103,7 @@ public class Sections {
         return getFirstSection().getUpStationId().equals(downStationId);
     }
 
-    private Section getFirstSection() {
+    public Section getFirstSection() {
         return sectionGroup.get(0);
     }
 
@@ -111,7 +111,7 @@ public class Sections {
         return getLastSection().getDownStationId().equals(upStationId);
     }
 
-    private Section getLastSection() {
+    public Section getLastSection() {
         return sectionGroup.get(sectionGroup.size() - 1);
     }
 
@@ -135,14 +135,14 @@ public class Sections {
         return sectionGroup.get(sectionGroup.size() - 1).getDownStationId() == existentStationId;
     }
 
-    public Section findExistentUpStation(long existentStationId) {
+    public Section findSectionHasThisAsUpStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getUpStationId() == existentStationId)
             .findAny()
             .get();
     }
 
-    public Section findExistentDownStation(long existentStationId) {
+    public Section findSectionHasThisAsDownStation(long existentStationId) {
         return sectionGroup.stream()
             .filter(section -> section.getDownStationId() == existentStationId)
             .findAny()
@@ -156,6 +156,10 @@ public class Sections {
             .filter(upStationFilter.or(downStationFilter))
             .findAny()
             .orElseThrow(() -> new RuntimeException("구간을 추가하기에 적합한 곳을 찾지 못했습니다."));
+    }
+
+    public int size() {
+        return sectionGroup.size();
     }
 
     public List<Section> toList() {
