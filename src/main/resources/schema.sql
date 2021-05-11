@@ -23,4 +23,4 @@ create table if not exists SECTION
     primary key(id)
 );
 
-insert into STATION(name) VALUES ('잠실역'), ('송파역'), ('루터역');
+insert into STATION(name) VALUES ('잠실역'), ('송파역'), ('루터역'), ('우테코역');

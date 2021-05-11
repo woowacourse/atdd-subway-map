@@ -135,4 +135,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("상행/하행 종점역이 같은 경우 예외처리한다.")
+    @Test
+    void duplicateStationsOfLine() {
+        // given
+        LineRequest invalidRequest = new LineRequest("7호선", "bg-red-600", 1L, 1L, 10);
+
+        // when
+        ExtractableResponse<Response> response = postLines(invalidRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("중복된 지하철 역입니다.");
+    }
 }

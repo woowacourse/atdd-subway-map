@@ -1,0 +1,129 @@
+package wooteco.subway.line;
+
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import wooteco.subway.AcceptanceTest;
+import wooteco.subway.line.dao.SectionDao;
+import wooteco.subway.line.dto.LineRequest;
+import wooteco.subway.line.dto.SectionRequest;
+import wooteco.subway.station.dto.StationResponse;
+
+import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class SectionAcceptanceTest extends AcceptanceTest {
+    @Autowired
+    private SectionDao sectionDao;
+
+    private SectionRequest sectionRequest;
+    private Long lineId;
+    private Long firstUpStationId = 2L;
+    private Long lastDownStationId = 3L;
+
+    @BeforeEach
+    void init() {
+        LineRequest lineTwo = new LineRequest("2호선", "bg-red-600", firstUpStationId, lastDownStationId, 60);
+        ExtractableResponse<Response> response = given()
+                .log().all()
+                .body(lineTwo)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        lineId = response.body().jsonPath().getLong("id");
+    }
+
+    @AfterEach
+    void clear() {
+        sectionDao.clear();
+    }
+
+    private ExtractableResponse<Response> postSections(SectionRequest request) {
+        return given()
+                .log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    @DisplayName("추가할 상행/하행 중 둘 다 중복되는 경우 예외처리한다.")
+    @Test
+    void invalidSections() {
+        // given
+        SectionRequest invalidSectionRequest = new SectionRequest(firstUpStationId, lastDownStationId, 10);
+
+        // when
+        ExtractableResponse<Response> response = postSections(invalidSectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("구간은 하나의 역만 중복될 수 있습니다.");
+    }
+
+    @DisplayName("추가할 상행/하행 중 모두 중복되지 않는 경우 예외처리한다.")
+    @Test
+    void invalidSections2() {
+        // given
+        Long newUpStationId = 1L;
+        Long newDownStationId = 4L;
+        SectionRequest invalidSectionRequest = new SectionRequest(newUpStationId, newDownStationId, 10);
+
+        // when
+        ExtractableResponse<Response> response = postSections(invalidSectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("구간은 하나의 역만 중복될 수 있습니다.");
+    }
+
+    @DisplayName("상행역을 기준으로 하행역을 추가한다.")
+    @Test
+    void addDownStationOfSection() {
+        // given
+        Long newStationId = 4L;
+        sectionRequest = new SectionRequest(firstUpStationId, newStationId, 3);
+
+        // when
+        ExtractableResponse<Response> response = postSections(sectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.get(0).getId()).isEqualTo(2L);
+        assertThat(stations.get(1).getId()).isEqualTo(4L);
+        assertThat(stations.get(2).getId()).isEqualTo(3L);
+    }
+
+    @DisplayName("하행역을 기준으로 상행역을 추가한다.")
+    @Test
+    void addUpStationOfSection() {
+        // given
+        Long newStationId = 4L;
+        sectionRequest = new SectionRequest(newStationId, lastDownStationId, 3);
+
+        // when
+        ExtractableResponse<Response> response = postSections(sectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<StationResponse> stations = response.body().jsonPath().getList("stations", StationResponse.class);
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.get(0).getId()).isEqualTo(2L);
+        assertThat(stations.get(1).getId()).isEqualTo(4L);
+        assertThat(stations.get(2).getId()).isEqualTo(3L);
+    }
+}

@@ -17,13 +17,20 @@ public class SectionService {
     }
 
     public void save(Long lineId, Long upStationId, Long downStationId, int distance) {
+        invalidSection(upStationId, downStationId);
         sectionDao.save(lineId, upStationId, downStationId, distance);
     }
 
-    public List<StationResponse> findSectionById(Long id) {
-        List<Station> stationsOfLine = findStationsOfLine(id);
+    private void invalidSection(Long upStationId, Long downStationId) {
+        if (upStationId.equals(downStationId)) {
+            throw new IllegalArgumentException("중복된 지하철 역입니다.");
+        }
+    }
 
-        return stationsOfLine.stream()
+    public List<StationResponse> findSectionById(Long id) {
+        List<Station> stations = stationsOfLine(id);
+
+        return stations.stream()
                 .map(res ->
                         new StationResponse(
                                 res.getId(),
@@ -32,15 +39,18 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findStationsOfLine(Long lineId) {
-        List<Station> stationsOfLine = new ArrayList<>();
+    private List<Station> stationsOfLine(Long lineId) {
         Map<Station, Station> sectionMap = sectionDao.findSectionById(lineId);
+        Station firstUpStation = findFirstUpStation(sectionMap);
+        return orderStationsOfLine(sectionMap, firstUpStation);
+    }
 
-        Station key = findFirstUpStation(sectionMap);
-        stationsOfLine.add(key);
-        while (sectionMap.get(key) != null) {
-            key = sectionMap.get(key);
-            stationsOfLine.add(key);
+    private List<Station> orderStationsOfLine(Map<Station, Station> sectionMap, Station upStation) {
+        List<Station> stationsOfLine = new ArrayList<>();
+        stationsOfLine.add(upStation);
+        while (sectionMap.get(upStation) != null) {
+            upStation = sectionMap.get(upStation);
+            stationsOfLine.add(upStation);
         }
         return stationsOfLine;
     }
@@ -50,5 +60,35 @@ public class SectionService {
         Set<Station> downStations = new HashSet<>(sectionMap.values());
         upStations.removeAll(downStations);
         return upStations.iterator().next();
+    }
+
+    public void saveSectionOfExistLine(Long lineId, Long upStationId, Long downStationId, int distance) {
+        invalidSection(upStationId, downStationId);
+
+        List<Station> stations = stationsOfLine(lineId);
+        List<Station> duplicateStation = countDuplicateStation(upStationId, downStationId, stations);
+        if (duplicateStation.size() != 1) {
+            throw new IllegalArgumentException("구간은 하나의 역만 중복될 수 있습니다.");
+        }
+
+        Station station = duplicateStation.get(0);
+        updateNewStation(station, lineId, upStationId, downStationId);
+
+        sectionDao.save(lineId, upStationId, downStationId, distance);
+    }
+
+    private void updateNewStation(Station station, Long lineId, Long upStationId, Long downStationId) {
+        if (station.getId().equals(upStationId)) {
+            sectionDao.updateUpStation(lineId, upStationId, downStationId);
+            return;
+        }
+
+        sectionDao.updateDownStation(lineId, downStationId, upStationId);
+    }
+
+    private List<Station> countDuplicateStation(Long upStationId, Long downStationId, List<Station> stationsOfLine) {
+        return stationsOfLine.stream()
+                .filter(station -> station.getId().equals(upStationId) || station.getId().equals(downStationId))
+                .collect(Collectors.toList());
     }
 }

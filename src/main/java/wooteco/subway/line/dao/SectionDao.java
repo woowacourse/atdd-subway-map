@@ -43,4 +43,23 @@ public class SectionDao {
             return stationMap;
         };
     }
+
+    public void clear() {
+        String query = "DELETE FROM section";
+        jdbcTemplate.update(query);
+    }
+
+    public void updateUpStation(Long lineId, Long upStationId, Long newUpStationId) {
+        String query = "UPDATE section SET up_station_id = ? " +
+                "WHERE line_id = ? " +
+                "AND up_station_id = ?";
+        jdbcTemplate.update(query, newUpStationId, lineId, upStationId);
+    }
+
+    public void updateDownStation(Long lineId, Long downStationId, Long newDownStationId) {
+        String query = "UPDATE section SET down_station_id = ? " +
+                "WHERE line_id = ? " +
+                "AND down_station_id = ?";
+        jdbcTemplate.update(query, newDownStationId, lineId, downStationId);
+    }
 }
