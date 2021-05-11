@@ -11,6 +11,7 @@ import wooteco.subway.domain.Line;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -42,6 +43,12 @@ public class JdbcLineDao implements LineDao {
     public Optional<Line> findById(Long lineId) {
         String sql = "SELECT * FROM line WHERE id = ?";
         return jdbcTemplate.query(sql, getRowMapper(), lineId).stream().findAny();
+    }
+
+    @Override
+    public List<Line> findAll() {
+        String sql = "SELECT * FROM line";
+        return jdbcTemplate.query(sql, getRowMapper());
     }
 
     private RowMapper getRowMapper() {

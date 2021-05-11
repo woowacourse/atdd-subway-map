@@ -2,6 +2,7 @@ package wooteco.subway.line.dao;
 
 import wooteco.subway.domain.Line;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LineDao {
@@ -10,4 +11,6 @@ public interface LineDao {
     Optional<Line> findByNameAndColor(String name, String color);
 
     Optional<Line> findById(Long lineId);
+
+    List<Line> findAll();
 }

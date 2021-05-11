@@ -1,6 +1,7 @@
 package wooteco.subway.line.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -9,10 +10,13 @@ import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.line.InsufficientLineInformationException;
 import wooteco.subway.line.LineService;
+import wooteco.subway.station.StationResponse;
 import wooteco.subway.station.StationService;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,10 +45,18 @@ public class LineApiController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(lineResponse);
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        List<Line> lines = lineService.findAll();
+        List<LineResponse> lineResponses = lines.stream()
+                .map(LineResponse::create)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(lineResponses);
+    }
+
     @GetMapping("/{lineId}")
     public ResponseEntity<LineResponse> readLine(@PathVariable Long lineId) {
         Line line = lineService.findLine(lineId);
         return ResponseEntity.ok(LineResponse.create(line));
-
     }
 }

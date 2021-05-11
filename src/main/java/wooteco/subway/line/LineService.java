@@ -11,6 +11,8 @@ import wooteco.subway.exception.line.LineNotFoundException;
 import wooteco.subway.line.dao.LineDao;
 import wooteco.subway.section.dao.SectionDao;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class LineService {
@@ -35,4 +37,7 @@ public class LineService {
         return line;
     }
 
+    public List<Line> findAll() {
+        return lineDao.findAll();
+    }
 }

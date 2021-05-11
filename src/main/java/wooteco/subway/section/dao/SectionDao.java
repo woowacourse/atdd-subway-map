@@ -17,4 +17,5 @@ public interface SectionDao {
     void deleteStations(Long lineId, List<Section> sections);
 
     void insertSection(Section affectedSection, Long lineId);
+
 }

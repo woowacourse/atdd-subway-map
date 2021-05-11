@@ -15,6 +15,7 @@ public class Sections {
 
     private static final int SECTION_LIMIT = 1;
     private static final int FIRST_ELEMENT = 0;
+
     private final List<Section> sections;
 
     public static Sections from(Section... sections) {
@@ -27,6 +28,9 @@ public class Sections {
 
     public List<Station> asStations() {
         LinkedList<Station> sortedStation = new LinkedList<>();
+        if (sections.size() < SECTION_LIMIT) {
+            return sortedStation;
+        }
         final Section pivotSection = sections.get(0);
         sortPreviousSections(sortedStation, pivotSection);
         sortFollowingSections(sortedStation, pivotSection);
