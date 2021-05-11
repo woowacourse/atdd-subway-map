@@ -103,14 +103,19 @@ public class SectionRepository {
             deleteSectionBaseOnUpStation(lineId, stationId);
             return;
         }
+        deleteSectionBaseOnDownStation(lineId, stationId);
+    }
+
+    private void deleteSectionBaseOnDownStation(final Long lineId, final Long stationId) {
+        String query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
+        Long frontStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
+        delete(lineId, frontStationId, stationId);
     }
 
     private void deleteSectionBaseOnUpStation(final Long lineId, final Long stationId) {
-        //입력받은걸 상행으로 삼는 하행선 id 검색
         String query = "SELECT down_station_id FROM section WHERE line_id = ? AND up_station_id = ?";
         Long backStationId = jdbcTemplate.queryForObject(query, Long.class, lineId, stationId);
         try {
-            //입력받은걸 하행으로 삼는 구간이 있는지 확인
             query = "SELECT up_station_id FROM section WHERE line_id = ? AND down_station_id = ?";
             Long frontStationId = Objects.requireNonNull(jdbcTemplate.queryForObject(query, Long.class, lineId, stationId));
             int connectDistance = getBetweenDistance(lineId, stationId);
