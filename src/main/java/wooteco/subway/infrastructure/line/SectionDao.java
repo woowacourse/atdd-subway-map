@@ -4,6 +4,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.section.Section;
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.section.Distance;
+import wooteco.subway.domain.line.value.section.SectionId;
+import wooteco.subway.domain.station.value.StationId;
 
 import java.util.List;
 
@@ -60,7 +64,13 @@ public class SectionDao {
             Long downStationId = rs.getLong("down_station_id");
             Long distance = rs.getLong("distance");
 
-            return new Section(id, lineId, upStationId, downStationId, distance);
+            return new Section(
+                    new SectionId(id),
+                    new LineId(lineId),
+                    new StationId(upStationId),
+                    new StationId(downStationId),
+                    new Distance(distance)
+            );
         }, lineId);
     }
 
@@ -77,7 +87,12 @@ public class SectionDao {
             Long downStationId = rs.getLong("down_station_id");
             Long distance = rs.getLong("distance");
 
-            return new Section(lineId, upStationId, downStationId, distance);
+            return new Section(
+                    new LineId(lineId),
+                    new StationId(upStationId),
+                    new StationId(downStationId),
+                    new Distance(distance)
+            );
         };
     }
 

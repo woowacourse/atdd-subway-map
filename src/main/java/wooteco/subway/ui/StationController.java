@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationName;
+import wooteco.subway.domain.station.value.StationName;
 import wooteco.subway.ui.dto.station.StationRequest;
 import wooteco.subway.ui.dto.station.StationResponse;
 

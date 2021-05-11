@@ -6,9 +6,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.section.Sections;
-import wooteco.subway.domain.line.value.LineColor;
-import wooteco.subway.domain.line.value.LineId;
-import wooteco.subway.domain.line.value.LineName;
+import wooteco.subway.domain.line.value.line.LineColor;
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.line.LineName;
 
 import java.sql.PreparedStatement;
 import java.util.List;

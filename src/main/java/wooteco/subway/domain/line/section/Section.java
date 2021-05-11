@@ -1,15 +1,20 @@
 package wooteco.subway.domain.line.section;
 
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.section.Distance;
+import wooteco.subway.domain.line.value.section.SectionId;
+import wooteco.subway.domain.station.value.StationId;
+
 import java.util.Objects;
 
 public class Section {
-    private final Long id;
-    private final Long lineId;
-    private final Long upStationId;
-    private final Long downStationId;
-    private final Long distance;
+    private final SectionId id;
+    private final LineId lineId;
+    private final StationId upStationId;
+    private final StationId downStationId;
+    private final Distance distance;
 
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, Long distance) {
+    public Section(SectionId id, LineId lineId, StationId upStationId, StationId downStationId, Distance distance) {
         this.id = id;
         this.lineId = lineId;
         this.upStationId = upStationId;
@@ -17,32 +22,32 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Long lineId, Long upStationId, Long downStationId, Long distance) {
-        this(null, lineId, upStationId, downStationId, distance);
+    public Section(LineId lineId, StationId upStationId, StationId downStationId, Distance distance) {
+        this(SectionId.empty(), lineId, upStationId, downStationId, distance);
     }
 
-    public Section(Long upStationId, Long downStationId, Long distance) {
-        this(null, null, upStationId, downStationId, distance);
+    public Section(StationId upStationId, StationId downStationId, Distance distance) {
+        this(SectionId.empty(), LineId.empty(), upStationId, downStationId, distance);
     }
 
     public Long getId() {
-        return id;
+        return id.longValue();
     }
 
     public Long getLineId() {
-        return lineId;
+        return lineId.longValue();
     }
 
     public Long getUpStationId() {
-        return upStationId;
+        return upStationId.longValue();
     }
 
     public Long getDownStationId() {
-        return downStationId;
+        return downStationId.longValue();
     }
 
     public Long getDistance() {
-        return distance;
+        return distance.longValue();
     }
 
     @Override

@@ -1,8 +1,8 @@
 package wooteco.util;
 
 import wooteco.subway.domain.station.Station;
-import wooteco.subway.domain.station.StationId;
-import wooteco.subway.domain.station.StationName;
+import wooteco.subway.domain.station.value.StationId;
+import wooteco.subway.domain.station.value.StationName;
 
 public class StationFactory {
 

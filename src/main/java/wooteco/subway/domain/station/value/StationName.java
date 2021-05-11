@@ -1,4 +1,4 @@
-package wooteco.subway.domain.station;
+package wooteco.subway.domain.station.value;
 
 import java.util.Objects;
 
@@ -7,7 +7,14 @@ public class StationName {
     private final String name;
 
     public StationName(String name) {
+        validateStationNameSize(name);
         this.name = name;
+    }
+
+    private void validateStationNameSize(String name) {
+        if(name.isEmpty()) {
+            throw new IllegalArgumentException("글자 수는 0보다 커야 합니다.");
+        }
     }
 
     public String asString() {

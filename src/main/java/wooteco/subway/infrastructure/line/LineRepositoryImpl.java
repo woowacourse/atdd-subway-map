@@ -6,9 +6,12 @@ import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.LineRepository;
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
-import wooteco.subway.domain.line.value.LineColor;
-import wooteco.subway.domain.line.value.LineId;
-import wooteco.subway.domain.line.value.LineName;
+import wooteco.subway.domain.line.value.line.LineColor;
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.line.LineName;
+import wooteco.subway.domain.line.value.section.Distance;
+import wooteco.subway.domain.line.value.section.SectionId;
+import wooteco.subway.domain.station.value.StationId;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,10 +34,10 @@ public class LineRepositoryImpl implements LineRepository {
 
         List<Section> sections = savedLine.getSections().stream().map(
                 section -> new Section(
-                        savedLine.getLineId(),
-                        section.getUpStationId(),
-                        section.getDownStationId(),
-                        section.getDistance()
+                        new LineId(savedLine.getLineId()),
+                        new StationId(section.getUpStationId()),
+                        new StationId(section.getDownStationId()),
+                        new Distance(section.getDistance())
                 )
         ).collect(toList());
 
@@ -90,15 +93,23 @@ public class LineRepositoryImpl implements LineRepository {
                     Objects.equals(section, originSection));
         }
 
-        List<Section> creatableSection = changedSections.stream().filter(section -> section.getId() == null).collect(toList());
-        List<Section> updatableSections = changedSections.stream().filter(section -> section.getId() != null).collect(toList());
+        List<Section> creatableSection = changedSections.stream()
+                .filter(section ->
+                        section.getId() == SectionId.empty().longValue()
+                )
+                .collect(toList());
+
+        List<Section> updatableSections = changedSections.stream()
+                .filter(section ->
+                        section.getId() != SectionId.empty().longValue()
+                )
+                .collect(toList());
 
         lineDao.update(line);
         sectionDao.delete(deletedSections);
         sectionDao.update(updatableSections);
         sectionDao.save(creatableSection);
     }
-
 
     @Override
     public void deleteById(final Long id) {

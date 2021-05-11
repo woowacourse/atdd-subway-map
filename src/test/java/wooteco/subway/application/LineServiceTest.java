@@ -11,6 +11,7 @@ import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.infrastructure.line.LineRepositoryImpl;
 import wooteco.subway.infrastructure.station.StationRepositoryImpl;
 import wooteco.util.LineFactory;
+import wooteco.util.SectionFactory;
 import wooteco.util.StationFactory;
 
 import java.util.Collections;
@@ -40,7 +41,7 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.save(
                 LineFactory.create(1L, "a", "a", Collections.singletonList(
-                        new Section(1L, 1L, 2L, 10L)
+                        SectionFactory.create(1L, 1L, 2L, 10L)
                 ))
         )).isInstanceOf(IllegalArgumentException.class).hasMessage("test");
     }

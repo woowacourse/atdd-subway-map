@@ -11,10 +11,12 @@ import wooteco.subway.application.station.StationService;
 import wooteco.subway.domain.line.Line;
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
-import wooteco.subway.domain.line.value.LineColor;
-import wooteco.subway.domain.line.value.LineId;
-import wooteco.subway.domain.line.value.LineName;
+import wooteco.subway.domain.line.value.line.LineColor;
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.line.LineName;
+import wooteco.subway.domain.line.value.section.Distance;
 import wooteco.subway.domain.station.Station;
+import wooteco.subway.domain.station.value.StationId;
 import wooteco.subway.ui.dto.SectionRequest;
 import wooteco.subway.ui.dto.line.LineRequest;
 import wooteco.subway.ui.dto.line.LineResponse;
@@ -42,9 +44,9 @@ public class LineController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createNewLine(@RequestBody LineRequest lineRequest) {
         final Section section = new Section(
-                lineRequest.getUpStationId(),
-                lineRequest.getDownStationId(),
-                lineRequest.getDistance()
+                new StationId(lineRequest.getUpStationId()),
+                new StationId(lineRequest.getDownStationId()),
+                new Distance(lineRequest.getDistance())
         );
 
         final Sections sections = new Sections(Collections.singletonList(section));
@@ -141,7 +143,12 @@ public class LineController {
 
     @PostMapping(value = "/{lineId}/sections")
     public ResponseEntity<LineResponse> addNewSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long lineId) {
-        Section section = new Section(lineId, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
+        Section section = new Section(
+                new LineId(lineId),
+                new StationId(sectionRequest.getUpStationId()),
+                new StationId(sectionRequest.getDownStationId()),
+                new Distance(sectionRequest.getDistance())
+        );
 
         lineService.addNewSection(lineId, section);
         Line line = lineService.findById(lineId);

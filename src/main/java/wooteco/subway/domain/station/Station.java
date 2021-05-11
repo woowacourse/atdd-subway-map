@@ -1,14 +1,16 @@
 package wooteco.subway.domain.station;
 
+import wooteco.subway.domain.station.value.StationId;
+import wooteco.subway.domain.station.value.StationName;
+
+import java.beans.ConstructorProperties;
 import java.util.Objects;
 
 public class Station {
     private StationId id;
     private StationName name;
 
-    public Station() {
-    }
-
+    @ConstructorProperties({"id", "name"})
     public Station(StationId id, StationName name) {
         this.id = id;
         this.name = name;

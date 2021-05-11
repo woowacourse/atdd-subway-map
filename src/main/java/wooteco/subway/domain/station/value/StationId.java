@@ -1,13 +1,28 @@
-package wooteco.subway.domain.line.value;
+package wooteco.subway.domain.station.value;
 
 import java.util.Objects;
 
-public final class LineId extends Number {
+public class StationId extends Number {
 
     private final Long id;
 
-    public LineId(Long id) {
+    private StationId() {
+        this.id = -1L;
+    }
+
+    public StationId(Long id) {
+        validateThatIsNegativeNumber(id);
         this.id = id;
+    }
+
+    private void validateThatIsNegativeNumber(Long id) {
+        if(id < 0) {
+            throw new IllegalArgumentException("id는 음수일 수 없습니다.");
+        }
+    }
+
+    public static StationId empty() {
+        return new StationId();
     }
 
     @Override
@@ -27,19 +42,20 @@ public final class LineId extends Number {
 
     @Override
     public double doubleValue() {
-        return id.doubleValue();
+        return id.floatValue();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LineId lineId = (LineId) o;
-        return Objects.equals(id, lineId.id);
+        StationId stationId = (StationId) o;
+        return Objects.equals(id, stationId.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

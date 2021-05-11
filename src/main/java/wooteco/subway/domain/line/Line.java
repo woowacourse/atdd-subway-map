@@ -2,9 +2,9 @@ package wooteco.subway.domain.line;
 
 import wooteco.subway.domain.line.section.Section;
 import wooteco.subway.domain.line.section.Sections;
-import wooteco.subway.domain.line.value.LineColor;
-import wooteco.subway.domain.line.value.LineId;
-import wooteco.subway.domain.line.value.LineName;
+import wooteco.subway.domain.line.value.line.LineColor;
+import wooteco.subway.domain.line.value.line.LineId;
+import wooteco.subway.domain.line.value.line.LineName;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,11 +23,11 @@ public class Line {
     }
 
     public Line(LineName lineName, LineColor lineColor, Sections sections) {
-        this(null, lineName, lineColor, sections);
+        this(LineId.empty(), lineName, lineColor, sections);
     }
 
     public Line(LineId lineId, LineName lineName, LineColor lineColor) {
-        this(lineId, lineName, lineColor, null);
+        this(lineId, lineName, lineColor, Sections.empty());
     }
 
     public Long getLineId() {

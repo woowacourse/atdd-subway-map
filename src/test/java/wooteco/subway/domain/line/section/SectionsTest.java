@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import wooteco.util.SectionFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,8 +21,8 @@ class SectionsTest {
     @BeforeEach
     void setUp() {
         sections = new Sections(
-                Arrays.asList(
-                        new Section(1L, 1L, 3L, 4L, 10L)
+                Collections.singletonList(
+                        SectionFactory.create(1L, 1L, 3L, 4L, 10L)
                 )
         );
     }
