@@ -10,7 +10,7 @@ public class Line {
     private final Long id;
     private final String color;
     private final String name;
-    private List<Station> stations;
+    private final List<Station> stations;
 
     public Line(final String color, final String name) {
         this(null, color, name, new ArrayList<>());

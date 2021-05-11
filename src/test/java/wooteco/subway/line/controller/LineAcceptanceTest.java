@@ -309,9 +309,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse).usingRecursiveComparison().isEqualTo(expectedResponseBody);
     }
 
-    @DisplayName("전체 구간 내부가 변경되는 추가 요청이 들어왔을 때, 새로운 들어갈 구간의 길이가 기존의 구간의 길이보다 같거나 크다면 에러를 반환한다")
+    @DisplayName("전체 구간 내부가 변경되는 추가 요청이 들어왔을 때, 새로운 들어갈 구간의 길이가 기존의 구간의 길이보다 같거나 크다면 bad request를 반환한다")
     @Test
-    void addSection_nonEndStationChangeWithIllegalDistanceInput_throwException() {
+    void addSection_nonEndStationChangeWithIllegalDistanceInput() {
         StationRequest thirdStationRequest = new StationRequest("광안역");
         saveStation(thirdStationRequest);
         ExtractableResponse<Response> sectionResponse = saveSection(new SectionRequest(3L, 2L, 10));
@@ -319,7 +319,27 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    //TODO: 구간 추가 테스트 추가하기
+    @DisplayName("이미 구간상 존재하는 두 역에 대한 구간 추가 요청이 들어왔을 때, bad request를 반환한다")
+    @Test
+    void addSection_existingSection() {
+        ExtractableResponse<Response> sectionResponse = saveSection(new SectionRequest(1L, 2L, 10));
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        sectionResponse = saveSection(new SectionRequest(2L, 1L, 15));
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간에 존재하지 않는 두 역에 대한 구간 추가 요청이 들어왔을 때, bad request를 반환한다")
+    @Test
+    void addSection_nonExistingSection() {
+        StationRequest thirdStationRequest = new StationRequest("광안역");
+        StationRequest fourthStationRequest = new StationRequest("수영역");
+        saveStation(thirdStationRequest);
+        saveStation(fourthStationRequest);
+
+        ExtractableResponse<Response> sectionResponse = saveSection(new SectionRequest(3L, 4L, 20));
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     private void saveStation(final StationRequest station) {
         RestAssured.given().log().all()
