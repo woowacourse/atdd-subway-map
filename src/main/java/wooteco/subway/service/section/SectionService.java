@@ -52,4 +52,18 @@ public class SectionService {
         Section updateSection = sections.addToBetweenExistedSection(newSection);
         sectionRepository.update(updateSection);
     }
+
+    public void deleteSection(Long lineId, Long stationId) {
+        Sections sections = new Sections(sectionRepository.findByLineId(lineId));
+        Station requestStation = stationRepository.findById(stationId);
+        if (sections.canRemoveEndSection(requestStation)) {
+            Section removeSection = sections.findUpdateAndRemoveSections(requestStation).get(0);
+            sectionRepository.delete(removeSection);
+            return;
+        }
+        List<Section> updateAndRemoveSections = sections.findUpdateAndRemoveSections(requestStation);
+        Section updateSection = sections.findUpdateAndRemoveSections(requestStation).get(0);
+        sectionRepository.update(updateSection);
+        sectionRepository.delete(updateAndRemoveSections.get(1));
+    }
 }

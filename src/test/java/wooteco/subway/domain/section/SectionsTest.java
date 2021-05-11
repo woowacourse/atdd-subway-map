@@ -251,11 +251,11 @@ class SectionsTest {
         Sections sections = new Sections(Arrays.asList(existedSection1, existedSection2, existedSection3));
 
         // then
-        assertThat(sections.findSectionsByStation(a)).containsExactly(existedSection1);
-        assertThat(sections.findSectionsByStation(b))
+        assertThat(sections.findUpdateAndRemoveSections(a)).containsExactly(existedSection1);
+        assertThat(sections.findUpdateAndRemoveSections(b))
             .containsExactly(existedSection1, existedSection2);
-        assertThat(sections.findSectionsByStation(d)).containsExactly(existedSection3);
-        assertThatThrownBy(() -> sections.findSectionsByStation(e))
+        assertThat(sections.findUpdateAndRemoveSections(d)).containsExactly(existedSection3);
+        assertThatThrownBy(() -> sections.findUpdateAndRemoveSections(e))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

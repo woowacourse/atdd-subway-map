@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.request.SectionRequest;
@@ -64,6 +65,13 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         sectionService.addSection(id, sectionRequest);
+        LineResponse lineResponse = lineService.showLine(id);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionService.deleteSection(id, stationId);
         LineResponse lineResponse = lineService.showLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }

@@ -102,7 +102,7 @@ public class Sections {
         }
     }
 
-    public List<Section> findSectionsByStation(Station station) {
+    public List<Section> findUpdateAndRemoveSections(Station station) {
         List<Section> result =  values.stream()
             .filter(section -> section.exists(station))
             .collect(Collectors.toList());
