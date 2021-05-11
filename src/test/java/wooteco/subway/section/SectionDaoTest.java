@@ -73,7 +73,7 @@ class SectionDaoTest {
         Section section = new Section(lineId, stationId1, stationId2, distance);
         sectionDao.save(section);
 
-        assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, stationDao.findById(1L)).orElseThrow(
+        assertEquals(section, sectionDao.findSectionBySameUpStation(lineId, 1L).orElseThrow(
             IllegalInputException::new));
     }
 
@@ -94,7 +94,7 @@ class SectionDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-        assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, stationDao.findById(3L)).get());
+        assertEquals(section2, sectionDao.findSectionBySameDownStation(lineId, 3L).get());
     }
 
     @DisplayName("upStation, downStation을 수정한다.")
@@ -114,8 +114,8 @@ class SectionDaoTest {
         sectionDao.save(section);
         sectionDao.save(section2);
 
-        assertEquals(1, sectionDao.updateUpStation(section, stationDao.findById(3L)));
-        assertEquals(1, sectionDao.updateDownStation(section, stationDao.findById(1L)));
+        assertEquals(1, sectionDao.updateUpStation(section, 3L));
+        assertEquals(1, sectionDao.updateDownStation(section, 1L));
     }
 
     @DisplayName("구간을 삭제한다.")

@@ -25,12 +25,10 @@ public class SectionService {
 
     private final SectionDao sectionDao;
 
-    private final StationService stationService;
 
     @Autowired
-    public SectionService(SectionDao sectionDao, StationService stationService) {
+    public SectionService(SectionDao sectionDao) {
         this.sectionDao = sectionDao;
-        this.stationService = stationService;
     }
 
     public long createSection(Section section) {
@@ -42,32 +40,33 @@ public class SectionService {
     }
 
     public long addSection(Section section) {
-        Station upStation = stationService.showStation(section.getUpStationId());
-        Station downStation = stationService.showStation(section.getDownStationId());
+        long upStationId = section.getUpStationId();
+        long downStationId = section.getDownStationId();
+
         List<Station> orderedStations = makeOrderedStations(section.getLineId());
         StationsInLine stations = new StationsInLine(orderedStations);
 
-        stations.validStations(upStation, downStation);
-        checkSavingOptions(section, upStation, downStation, stations);
+        stations.validStations(upStationId, downStationId);
+        checkSavingOptions(section, upStationId, downStationId, stations);
 
         return sectionDao.save(section);
     }
 
-    private void checkSavingOptions(Section section, Station upStation, Station downStation, StationsInLine stations) {
-        if (stations.isEndStations(upStation, downStation)) {
+    private void checkSavingOptions(Section section, long upStationId, long downStationId, StationsInLine stations) {
+        if (stations.isEndStations(upStationId, downStationId)) {
             return;
         }
 
-        if (stations.contains(upStation)) {
-            updateNextStation(section, upStation, downStation);
+        if (stations.contains(upStationId)) {
+            updateNextStation(section, upStationId, downStationId);
         }
 
-        if (stations.contains(downStation)) {
-            updatePreviousStation(section, upStation, downStation);
+        if (stations.contains(downStationId)) {
+            updatePreviousStation(section, upStationId, downStationId);
         }
     }
 
-    private void updatePreviousStation(Section newSection, Station upStation, Station downStation) {
+    private void updatePreviousStation(Section newSection, long upStation, long downStation) {
         Section previousSection = sectionDao.findSectionBySameDownStation(newSection.getLineId(), downStation)
             .orElseThrow(NoSuchSectionException::new);
 
@@ -78,7 +77,7 @@ public class SectionService {
         }
     }
 
-    private void updateNextStation(Section newSection, Station upStation, Station downStation) {
+    private void updateNextStation(Section newSection, long upStation, long downStation) {
         Section originSection = sectionDao.findSectionBySameUpStation(newSection.getLineId(), upStation)
             .orElseThrow(NoSuchSectionException::new);
 
@@ -90,17 +89,16 @@ public class SectionService {
     }
 
     public int deleteSectionByStationId(long lineId, long stationId) {
-        Station station = stationService.showStation(stationId);
-        Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, station);
-        Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, station);
+        Optional<Section> unKnownPreviousSection = sectionDao.findSectionBySameDownStation(lineId, stationId);
+        Optional<Section> unknownNextSection = sectionDao.findSectionBySameUpStation(lineId, stationId);
 
         if (unKnownPreviousSection.isPresent() && unknownNextSection.isPresent()) {
             Section nextSection = unknownNextSection.get();
             Section previousSection = unKnownPreviousSection.get();
             previousSection.addDistance(nextSection);
 
-            Station newDownStation = stationService.showStation(nextSection.getDownStationId());
-            sectionDao.updateDownStation(previousSection, newDownStation);
+            long downStationId = nextSection.getDownStationId();
+            sectionDao.updateDownStation(previousSection, downStationId);
             return deleteSection(nextSection);
         }
 

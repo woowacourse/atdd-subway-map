@@ -63,27 +63,27 @@ public class SectionDao {
         return sections;
     }
 
-    public Optional<Section> findSectionBySameUpStation(long lineId, Station upStation) {
+    public Optional<Section> findSectionBySameUpStation(long lineId, long upStationId) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND UP_STATION_ID = ?";
-        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, upStation.getId());
+        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, upStationId);
         return result.stream().findAny();
     }
 
-    public Optional<Section> findSectionBySameDownStation(long lineId, Station downStation) {
+    public Optional<Section> findSectionBySameDownStation(long lineId, long downStationId) {
         String sql = "SELECT * FROM SECTION WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
-        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, downStation.getId());
+        List<Section> result = jdbcTemplate.query(sql, sectionRowMapper, lineId, downStationId);
         return result.stream().findAny();
     }
 
-    public int updateDownStation(Section originSection, Station newStation) {
+    public int updateDownStation(Section originSection, long newStationId) {
         String sql = "UPDATE SECTION set DOWN_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND DOWN_STATION_ID = ?";
-        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(),
+        return jdbcTemplate.update(sql, newStationId, originSection.getDistance(), originSection.getLineId(),
             originSection.getDownStationId());
     }
 
-    public int updateUpStation(Section originSection, Station newStation) {
+    public int updateUpStation(Section originSection, long newStationId) {
         String sql = "UPDATE SECTION set UP_STATION_ID = ?, DISTANCE = ? WHERE LINE_ID = ? AND UP_STATION_ID = ?";
-        return jdbcTemplate.update(sql, newStation.getId(), originSection.getDistance(), originSection.getLineId(),
+        return jdbcTemplate.update(sql, newStationId, originSection.getDistance(), originSection.getLineId(),
             originSection.getUpStationId());
     }
 
