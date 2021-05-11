@@ -68,6 +68,7 @@ class LineServiceTest {
     @DisplayName("구건 저장 시 상행역과 하행역이 같으면예와가 발생한다")
     void saveException() {
         //given
+        when(lineDao.save(any(LineEntity.class))).thenReturn(new LineEntity(1L, "신분당선", "bg-red-600"));
 
         //then
         assertThatThrownBy(() -> lineService.save(new LineRequest("신분당선", "화이트", 1L, 1L, 10)))

@@ -25,6 +25,7 @@ public class Section {
     public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
         changeLine(line);
+        validateStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -100,5 +101,11 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    private void validateStation(final Station upStation, final Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalStateException("상행역과 하행역은 같을 수 없음! ");
+        }
     }
 }

@@ -50,7 +50,6 @@ public class Line {
     }
 
     public void addSection(final Section targetSection) {
-        validateStations(targetSection.upStation(), targetSection.downStation());
         validateDuplicationStation(targetSection.upStation(), targetSection.downStation());
         validateContain(targetSection.upStation(), targetSection.downStation());
 
@@ -59,12 +58,6 @@ public class Line {
 
     public void deleteStation(final Station station) {
         state.deleteStation(station);
-    }
-
-    private void validateStations(final Station upStation, final Station downStation) {
-        if (upStation.equals(downStation)) {
-            throw new IllegalStateException("상행역과 하행역은 같을 수 없습니다");
-        }
     }
 
     private void validateDuplicationStation(final Station upStation, final Station downStation) {

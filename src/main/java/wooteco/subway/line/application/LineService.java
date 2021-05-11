@@ -35,14 +35,11 @@ public class LineService {
     @Transactional
     public LineResponse save(final LineRequest lineRequest) {
         validateDuplication(lineRequest);
-        //validateStations(lineRequest.getUpStationId(), lineRequest.getDownStationId());
         LineEntity savedLineEntity = lineDao.save(new LineEntity(lineRequest.getName(), lineRequest.getColor()));
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
         Line line = new Line(savedLineEntity.id(), savedLineEntity.name(), savedLineEntity.color());
+        Section section = new Section(line, findStationById(lineRequest.getUpStationId()), findStationById(lineRequest.getDownStationId()), lineRequest.getDistance());
 
-        SectionEntity sectionEntity = sectionDao.save(new SectionEntity(line.getId(), upStation.getId(), downStation.getId(), lineRequest.getDistance()));
-        Section section = new Section(sectionEntity.getId(), line, upStation, downStation, sectionEntity.getDistance());
+        sectionDao.save(new SectionEntity(section.line().getId(), section.upStation().getId(), section.downStation().getId(), section.distance()));
         return new LineResponse(line.getId(), line.nameAsString(), line.getColor(), toStationsResponses(Collections.singletonList(section)));
     }
 
