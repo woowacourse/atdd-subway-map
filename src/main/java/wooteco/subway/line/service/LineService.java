@@ -1,7 +1,9 @@
 package wooteco.subway.line.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +46,7 @@ public class LineService {
         return LineResponse.from(savedLine);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineDao.findAll();
         return lines.stream()
@@ -52,14 +54,19 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LineResponse find(Long id) {
         Line line = findLineById(id);
         List<Section> sectionsByLineId = sectionDao.findAllByLineId(line.getId());
         LineRoute lineRoute = new LineRoute(sectionsByLineId);
+
+        Map<Long, Station> stationMap = stationDao.findAllByIds(lineRoute.getStationIds())
+            .stream()
+            .collect(Collectors.toMap(Station::getId, Function.identity()));
+
         List<StationResponse> stations = lineRoute.getOrderedStations()
             .stream()
-            .map(this::findStationById)
+            .map(stationMap::get)
             .map(StationResponse::of)
             .collect(Collectors.toList());
         return LineResponse.of(line, stations);
@@ -76,11 +83,6 @@ public class LineService {
         validateDuplicateNameExceptMyself(id, lineUpdateRequest.getName());
         Line line = lineUpdateRequest.toLine(id);
         lineDao.update(line);
-    }
-
-    private Station findStationById(Long id) {
-        return stationDao.findById(id)
-            .orElseThrow(() -> new StationIllegalArgumentException("해당 지하철 역이 존재하지 않습니다"));
     }
 
     private Line findLineById(Long id) {

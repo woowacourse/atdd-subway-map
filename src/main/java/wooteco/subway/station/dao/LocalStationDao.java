@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ReflectionUtils;
 import wooteco.subway.station.domain.Station;
@@ -32,6 +33,11 @@ public class LocalStationDao implements StationDao {
         return stations.stream()
             .filter(station -> station.getName().equals(stationName))
             .findAny();
+    }
+
+    @Override
+    public List<Station> findAllByIds(Set<Long> stationIds) {
+        return null;
     }
 
     @Override
