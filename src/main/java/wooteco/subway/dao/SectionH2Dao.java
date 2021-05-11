@@ -56,7 +56,7 @@ public class SectionH2Dao implements SectionRepository {
                 sections,
                 sections.size(),
                 (ps, argument) -> {
-                    ps.setLong(1, lineId);;
+                    ps.setLong(1, lineId);
                     ps.setLong(2, argument.getUpStation().getId());
                     ps.setLong(3, argument.getDownStation().getId());
                     ps.setInt(4, argument.getDistance());

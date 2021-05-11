@@ -34,7 +34,6 @@ public class Section {
     }
 
 
-
     public void setUpStation(Station upStation) {
         this.upStation = upStation;
     }

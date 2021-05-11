@@ -53,7 +53,7 @@ public class LineResponse {
 
         List<Section> sections = line.getSections().sections();
         int size = sections.size();
-        stationResponses.add(StationResponse.from(sections.get(size-1).getDownStation()));
+        stationResponses.add(StationResponse.from(sections.get(size - 1).getDownStation()));
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
