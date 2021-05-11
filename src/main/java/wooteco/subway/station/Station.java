@@ -1,10 +1,11 @@
 package wooteco.subway.station;
 
 import java.util.Objects;
+import wooteco.subway.domain.Id;
 
 public class Station {
 
-    private StationId id;
+    private Id id;
     private String name;
 
     public Station() {
@@ -15,7 +16,7 @@ public class Station {
     }
 
     public Station(final Long id, final String name) {
-        this.id = new StationId(id);
+        this.id = new Id(id);
         this.name = name;
     }
 
@@ -23,7 +24,7 @@ public class Station {
         if (id == null) {
             return null;
         }
-        return id.getId();
+        return id.getValue();
     }
 
     public String getName() {

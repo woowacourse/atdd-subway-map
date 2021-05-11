@@ -1,10 +1,11 @@
 package wooteco.subway.line;
 
 import java.util.Objects;
+import wooteco.subway.domain.Id;
 
 public class Line {
 
-    private LineId id;
+    private Id id;
     private String name;
     private String color;
 
@@ -12,13 +13,13 @@ public class Line {
     }
 
     public Line(final String name, final String color) {
-        this.id = new LineId(null);
+        this.id = new Id(null);
         this.name = name;
         this.color = color;
     }
 
     public Line(final Long id, final String name, final String color) {
-        this.id = new LineId(id);
+        this.id = new Id(id);
         this.name = name;
         this.color = color;
     }
@@ -39,7 +40,7 @@ public class Line {
         if (id == null) {
             return null;
         }
-        return id.getId();
+        return id.getValue();
     }
 
     public String getName() {
