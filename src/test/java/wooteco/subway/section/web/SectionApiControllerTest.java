@@ -4,11 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import wooteco.subway.ApiControllerTest;
@@ -144,6 +140,68 @@ class SectionApiControllerTest extends ApiControllerTest {
 
         final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
         assertThat(sections).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(b-k)--> a-b-k-c-d)")
+    void createSection_success_middle() throws Exception {
+        // given
+        final Station 잠실역 = upStation();
+        final Station 잠실새내역 = downStation();
+        Station 강남역 = stationDao.save(Station.from("강남역"));
+        Station 동탄역 = stationDao.save(Station.from("동탄역"));
+        Station 수서역 = stationDao.save(Station.from("수서역"));
+
+        Line line = createLine(잠실역, 잠실새내역);
+
+        SectionRequest 강남_잠실 = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
+        SectionRequest 잠실새내_동탄 = new SectionRequest(잠실새내역.getId(), 동탄역.getId(), 4);
+
+        구간_추가(강남_잠실, line.getId());
+        구간_추가(잠실새내_동탄, line.getId());
+
+        // when
+        SectionRequest 잠실_수서 = new SectionRequest(잠실역.getId(), 수서역.getId(), 2);
+        ResultActions result = 구간_추가(잠실_수서, line.getId());
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(4);
+    }
+
+    @Test
+    @DisplayName("구간 등록 - 성공(중간 구간 등록 a-b-c-d --(k-c)--> a-b-k-c-d)")
+    void createSection_success_middle_1() throws Exception {
+        // given
+        final Station 잠실역 = upStation();
+        final Station 잠실새내역 = downStation();
+        Station 강남역 = stationDao.save(Station.from("강남역"));
+        Station 동탄역 = stationDao.save(Station.from("동탄역"));
+        Station 수서역 = stationDao.save(Station.from("수서역"));
+
+        Line line = createLine(잠실역, 잠실새내역);
+
+        SectionRequest 강남_잠실 = new SectionRequest(강남역.getId(), 잠실역.getId(), 4);
+        SectionRequest 잠실새내_동탄 = new SectionRequest(잠실새내역.getId(), 동탄역.getId(), 4);
+
+        구간_추가(강남_잠실, line.getId());
+        구간_추가(잠실새내_동탄, line.getId());
+
+        // when
+        SectionRequest 수서_잠실새내 = new SectionRequest(수서역.getId(), 잠실새내역.getId(), 2);
+        ResultActions result = 구간_추가(수서_잠실새내, line.getId());
+
+        // then
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+        final List<Section> sections = sectionDao.findSectionsByLineId(line.getId()).sections();
+        assertThat(sections).hasSize(4);
     }
 
     @Test

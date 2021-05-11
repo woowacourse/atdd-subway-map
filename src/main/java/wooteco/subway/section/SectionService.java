@@ -2,6 +2,7 @@ package wooteco.subway.section;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
 import wooteco.subway.exception.line.LineNotFoundException;
@@ -22,14 +23,22 @@ public class SectionService {
     private final LineDao lineDao;
     private final SectionDao sectionDao;
 
+    @Transactional
     public Section createSection(Section section, Long lineId) {
+        //모든 섹션들을 받아옴
         Sections sections = sectionDao.findSectionsByLineId(lineId);
+        // 모든 섹션리스트에 새로 추가할 섹션을 넣어줌
+        // 영향가는 섹션을 찾아서 업데이트 해줌
         Optional<Section> affectedSection = sections.affectedSection(section);
+
+        // 새로운 내용돌을 추가해줌
+
         sections.add(section);
 
         return sectionDao.saveAffectedSections(section, affectedSection, lineId);
     }
 
+    @Transactional
     public void removeSection(Long lineId, Long stationId) {
         lineDao.findLineById(lineId).orElseThrow(LineNotFoundException::new);
         stationDao.findStationById(stationId).orElseThrow(StationNotFoundException::new);
@@ -40,10 +49,8 @@ public class SectionService {
         List<Section> sections = sectionDao.findSectionContainsStationId(lineId, stationId);
         final Sections foundSections = Sections.from(sections);
 
-        //TODO : 라인 아이디가 없을 시 예외처리
         sectionDao.removeSections(lineId, sections);
 
-        // TODO : 연결하자.
         Optional<Section> affectedSection = foundSections.transformSection(stationId);
 
         affectedSection.ifPresent(section -> sectionDao.insertSection(section, lineId));

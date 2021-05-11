@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sections {
 
-    private static final int SECTION_LIMIT = 1;
     private static final int FIRST_ELEMENT = 0;
     private final List<Section> sections;
 
@@ -62,10 +61,17 @@ public class Sections {
                 .filter(originalSection -> isAdjacentSection(newSection, originalSection))
                 .collect(Collectors.toList());
 
-        if (collect.size() != SECTION_LIMIT) {
+        if (collect.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation())) &&
+                collect.stream().anyMatch(section -> section.isDownStation(newSection.getDownStation()))) {
             throw new InvalidSectionException();
         }
-
+        if (collect.size() == 2) {
+            Station upStation = newSection.getUpStation();
+            if (collect.stream()
+                    .anyMatch(section -> section.isUpStation(upStation))) {
+                return updateSection(collect.get(1), newSection);
+            }
+        }
         final Section originalSection = collect.get(FIRST_ELEMENT);
         return updateSection(originalSection, newSection);
     }
@@ -108,13 +114,9 @@ public class Sections {
     }
 
     public Optional<Section> transformSection(Long stationId) {
-        // 상행 종착 또는 하행 종착일 경우
         if (sections.size() == 1) {
             return Optional.empty();
         }
-
-        // downStation -> upStation ,  upStation -> downStation
-
         Station downStation = null;
         Station upStation = null;
         int distance = 0;
@@ -125,10 +127,8 @@ public class Sections {
                 upStation = section.getUpStation();
             }
             distance += section.getDistance();
-
         }
 
-        // 가운데일 경우
         return Optional.of(Section.create(upStation, downStation, distance));
     }
 

@@ -2,6 +2,7 @@ package wooteco.subway.station;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.station.DuplicatedStationException;
 import wooteco.subway.exception.station.StationNotFoundException;
@@ -15,6 +16,7 @@ public class StationService {
 
     private final StationDao stationDao;
 
+    @Transactional
     public Station save(Station station) {
         if (stationDao.findStationByName(station.getName()).isPresent()) {
             throw new DuplicatedStationException();
@@ -26,6 +28,7 @@ public class StationService {
         return stationDao.findAll();
     }
 
+    @Transactional
     public void deleteStation(Long id) {
         stationDao.delete(id);
     }

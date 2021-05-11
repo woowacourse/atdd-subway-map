@@ -2,6 +2,7 @@ package wooteco.subway.line;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.domain.Line;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Sections;
@@ -29,6 +30,7 @@ public class LineService {
         return lines;
     }
 
+    @Transactional
     public Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
         if (lineDao.findLineByInfo(name, color).isPresent()) {
             throw new DuplicatedLineInformationException();
