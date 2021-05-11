@@ -29,6 +29,7 @@ public class JDBCSectionDao implements SectionDao {
                     resultSet.getInt("distance")
             );
 
+    @Override
     public Section save(Section section) {
         String query = "INSERT INTO SECTION(line_id, up_station_id, down_station_id, distance) VALUES(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -50,11 +51,20 @@ public class JDBCSectionDao implements SectionDao {
         );
     }
 
+    @Override
     public Sections findByLineId(Long lineId) {
         String query = "SELECT * FROM SECTION WHERE line_id = ?";
 
         List<Section> sections = this.jdbcTemplate.query(query, actorRowMapper, lineId);
 
         return new Sections(sections);
+    }
+
+    @Override
+    public void update(Section updateSection) {
+        String query = "UPDATE SECTION SET line_id = ?, up_station_id = ?, down_station_id = ?, distance = ? WHERE id = ?";
+        this.jdbcTemplate.update(query, updateSection.getLineId(),
+                updateSection.getUpStationId(), updateSection.getDownStationId(),
+                updateSection.getDistance(), updateSection.getId());
     }
 }

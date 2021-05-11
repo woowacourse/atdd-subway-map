@@ -23,6 +23,8 @@ public class SectionService {
     }
 
     public void addSection(Sections sections, Section section) {
-        Section newSection = sections.addSection(section);
+        Section updateSection = sections.addSection(section);
+        JDBCSectionDao.save(section);
+        JDBCSectionDao.update(updateSection);
     }
 }

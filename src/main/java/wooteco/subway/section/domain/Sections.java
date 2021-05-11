@@ -77,8 +77,20 @@ public class Sections {
     }
 
     public Section addSection(Section section) {
-        validateAddSection(section);
-        return null;
+        Section targetSection = validateAddSection(section);
+
+        if(isBetweenAddCase(section, targetSection)) {
+            return getUpdateSection(section, targetSection);
+        }
+        return section;
+    }
+
+    private Section getUpdateSection(Section section, Section targetSection) {
+        int updateSectionDistance = targetSection.getDistance() - section.getDistance();
+        if(section.isUpStationId(targetSection.getUpStationId())) {
+            return new Section(targetSection.getId(), targetSection.getLineId(), section.getDownStationId(), targetSection.getDownStationId(), updateSectionDistance);
+        }
+        return new Section(targetSection.getId(), targetSection.getLineId(), targetSection.getUpStationId(), section.getUpStationId(), updateSectionDistance);
     }
 
     private Section validateAddSection(Section section) {
@@ -105,11 +117,15 @@ public class Sections {
                                 (existSection.isUpStationId(downStationId) || existSection.isDownStationId(upStationId))))
                 .findFirst().orElseThrow(IllegalSectionStatusException::new);
 
-        if (targetSection.isUpStationId(upStationId) || targetSection.isDownStationId(downStationId)) {
+        if (isBetweenAddCase(section, targetSection)) {
             validateDistance(targetSection, section);
         }
 
         return targetSection;
+    }
+
+    private boolean isBetweenAddCase(Section section, Section targetSection) {
+        return targetSection.isUpStationId(section.getUpStationId()) || targetSection.isDownStationId(section.getDownStationId());
     }
 
     private void validateDistance(Section targetSection, Section section) {
