@@ -8,6 +8,8 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.line.domain.Section;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
@@ -42,5 +44,22 @@ class SectionDaoImplTest {
 
     @Test
     void delete() {
+    }
+
+    @Test
+    @DisplayName("노선 id에 해당하는 모든 구간을 조회한다.")
+    void findAllByLineId() {
+        List<Section> sectionsByLineId = sectionDao.findAllByLineId(1L);
+
+        assertThat(sectionsByLineId).containsExactly(new Section(1L, 1L, 1L, 2L, 10));
+    }
+
+    @Test
+    @DisplayName("구간 정보를 수정한다.")
+    void update() {
+        Section toUpdateSection = new Section(1L, 1L, 2L, 3L, 8);
+        sectionDao.update(toUpdateSection);
+
+        // findById
     }
 }
