@@ -27,7 +27,7 @@ public class LineController {
         Line line = lineRequest.createLine();
         Section section = lineRequest.createSection();
         long id = subwayService.createLine(line);
-        subwayService.createSection(id, section);
+        subwayService.insertSection(id, section);
         return ResponseEntity.created(URI.create("/lines/" + id)).body(new LineResponse(id, line));
     }
 

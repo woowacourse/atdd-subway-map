@@ -10,6 +10,7 @@ import wooteco.subway.domain.section.Sections;
 import wooteco.subway.domain.station.Station;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,8 +68,30 @@ public class SubwayService {
         stationDao.delete(id);
     }
 
-    public long createSection(long lineId, Section section) {
+    public long insertSection(long lineId, Section section) {
         return sectionDao.insert(lineId, section);
+    }
+
+    public void deleteAdjacentSectionByStationId(long lineId, long stationId) {
+        Optional<Section> downwardSection = sectionDao.selectDownwardSection(lineId, stationId);
+        Optional<Section> upwardSection = sectionDao.selectUpwardSection(lineId, stationId);
+
+        if (upwardSection.isPresent() && downwardSection.isPresent()) {
+            sectionDao.delete(lineId, stationId);
+            int newSectionDistance = upwardSection.get().getDistance() + downwardSection.get().getDistance();
+            sectionDao.insert(lineId, new Section(upwardSection.get().getUpStationId(), downwardSection.get().getDownStationId(), newSectionDistance));
+            return;
+        }
+
+        if (upwardSection.isPresent()) {
+            sectionDao.deleteBottomSection(lineId, upwardSection.get());
+            lineDao.updateDownwardTerminalId(lineId, upwardSection.get().getUpStationId());
+        }
+
+        if (downwardSection.isPresent()) {
+            sectionDao.deleteTopSection(lineId, downwardSection.get());
+            lineDao.updateUpwardTerminalId(lineId, downwardSection.get().getDownStationId());
+        }
     }
 
     public void updateSection(long lineId, Section section) {
@@ -82,9 +105,9 @@ public class SubwayService {
         }
 
         if (sections.isNewStationDownward(section)) {
-            sectionDao.updateNewStationDownward(lineId, section);
+            sectionDao.updateWhenNewStationDownward(lineId, section);
         }
-        sectionDao.updateNewStationUpward(lineId, section);
+        sectionDao.updateWhenNewStationUpward(lineId, section);
     }
 
     private boolean isSideInsertion(Section section, Line line) {

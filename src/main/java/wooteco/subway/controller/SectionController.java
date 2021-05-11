@@ -22,8 +22,14 @@ public class SectionController {
     public ResponseEntity<SectionResponse> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable long lineId) {
         Section section = sectionRequest.createSection();
         subwayService.updateSection(lineId, section);
-        long sectionId = subwayService.createSection(lineId, section);
+        long sectionId = subwayService.insertSection(lineId, section);
         SectionResponse sectionResponse = new SectionResponse(sectionId, lineId, section);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionId)).body(sectionResponse);
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<SectionResponse> deleteSection(@PathVariable long lineId, @RequestParam long stationId) {
+        subwayService.deleteAdjacentSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 }
