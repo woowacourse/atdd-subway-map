@@ -3,14 +3,18 @@ package wooteco.subway.line.domain;
 import wooteco.subway.station.domain.Station;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static wooteco.subway.line.domain.Section.EMPTY;
 
 public class Sections {
-    private static final Section EMPTY = new Section(0L, new Station(0L), new Station(0L), 0);
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
         this.sections = new ArrayList<>(sections);
+    }
+
+    public List<Section> sections() {
+        return sections;
     }
 
     public Station registeredStation(Section anotherSection) {
@@ -25,7 +29,6 @@ public class Sections {
             throw new IllegalStateException("[ERROR] 노선에 등록할 구간의 역이 하나만 등록되어 있어야 합니다.");
         }
         return stations.get(0);
-
     }
 
     public Section findSectionWithUpStation(Station upStation) {
@@ -80,5 +83,9 @@ public class Sections {
             keyStation = nextKeyStation;
         }
         return sortedStations;
+    }
+
+    public int size() {
+        return sections.size();
     }
 }

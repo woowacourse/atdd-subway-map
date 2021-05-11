@@ -90,4 +90,16 @@ public class SectionDaoImpl implements SectionDao {
                 "WHERE up_station_id = ? OR down_station_id = ?";
         return jdbcTemplate.query(sql, sectionRowMapper, id, id);
     }
+
+    @Override
+    public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
+        String sql = "DELETE FROM SECTION " +
+                "WHERE line_id = ? " +
+                "AND (up_station_id = ?, OR down_station_id = ?)";
+
+        int rowCount = jdbcTemplate.update(sql, lineId, stationId, stationId);
+        if (rowCount == 0) {
+            throw new IllegalStateException("[ERROR] 존재하지 않는 id입니다.");
+        }
+    }
 }

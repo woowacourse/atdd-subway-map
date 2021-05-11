@@ -48,4 +48,8 @@ public class SectionRepository {
     public void update(Long lineId, Section section) {
         sectionDao.update(new Section(section.id(), lineId, section.upStation(), section.downStation(), section.distance()));
     }
+
+    public void deleteByLineIdAndStationId(Long lineId, Long stationId) {
+        sectionDao.deleteByLineIdAndStationId(lineId, stationId);
+    }
 }
