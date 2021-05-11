@@ -71,15 +71,28 @@ public class SubwayService {
         return sectionDao.insert(lineId, section);
     }
 
+    // TODO: 새로 들어가는 역이 상행역인 경우 처리 안했음
+    //  section 추가하기 전에 db 수정해놓는 메서드 ( 수정 전에 예외 처리 )
     public void updateSection(long lineId, Section section) {
-        int affectedRow = sectionDao.update(lineId, section);
-        if (affectedRow == 0) {
-            Line line = lineDao.select(lineId);
-            processSideInsertion(lineId, section, line);
+        Sections sections = new Sections(sectionDao.selectAll(lineId));
+        Line line = lineDao.select(lineId);
+        sections.validateIfPossibleToInsert(section, line.getUpwardTerminalId(), line.getDownwardTerminalId());
+
+        if (isSideInsertion(section, line)) {
+            processSideInsertion(lineId, line, section);
+            return;
         }
+        sectionDao.update(lineId, section);
     }
 
-    private void processSideInsertion(long lineId, Section section, Line line) {
+    private boolean isSideInsertion(Section section, Line line) {
+        if (section.getDownStationId() == line.getUpwardTerminalId()) {
+            return true;
+        }
+        return section.getUpStationId() == line.getDownwardTerminalId();
+    }
+
+    private void processSideInsertion(long lineId, Line line, Section section) {
         if (section.getDownStationId() == line.getUpwardTerminalId()) {
             lineDao.updateUpwardTerminalId(lineId, section.getUpStationId());
         }
