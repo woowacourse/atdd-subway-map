@@ -39,10 +39,10 @@ public class InMemorySectionDao implements SectionDao {
     @Override
     public List<Section> findSectionContainsStationId(Long lineId, Long stationId) {
         return sections.get(lineId)
-            .stream()
-            .filter(section -> section.hasStation(stationId))
-            .collect(
-            Collectors.toList());
+                .stream()
+                .filter(section -> section.hasStation(stationId))
+                .collect(
+                        Collectors.toList());
     }
 
     @Override

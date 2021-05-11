@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import wooteco.subway.domain.Section;
 import wooteco.subway.domain.Station;
 import wooteco.subway.exception.section.NotPositiveDistanceException;
-import wooteco.subway.web.request.SectionRequest;
-import wooteco.subway.web.response.SectionResponse;
 import wooteco.subway.service.SectionService;
 import wooteco.subway.service.StationService;
+import wooteco.subway.web.request.SectionRequest;
+import wooteco.subway.web.response.SectionResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
