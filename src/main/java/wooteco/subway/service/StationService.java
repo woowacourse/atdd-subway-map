@@ -7,7 +7,7 @@ import wooteco.subway.domain.Station;
 import wooteco.subway.controller.request.StationRequest;
 import wooteco.subway.exception.station.StationDuplicateException;
 import wooteco.subway.exception.station.StationNotFoundException;
-import wooteco.subway.service.dto.SimpleStationDto;
+import wooteco.subway.domain.SimpleStation;
 import wooteco.subway.service.dto.StationDto;
 
 import java.util.ArrayList;
@@ -45,9 +45,9 @@ public class StationService {
         stationDao.deleteById(id);
     }
 
-    public List<StationResponse> makeStationResponses(Set<SimpleStationDto> stations) {
+    public List<StationResponse> makeStationResponses(Set<SimpleStation> stations) {
         final List<StationResponse> stationResponses = new ArrayList<>();
-        for (SimpleStationDto station : stations) {
+        for (SimpleStation station : stations) {
             if (!stationDao.isExistById(station.getId())) {
                 throw new StationNotFoundException();
             }

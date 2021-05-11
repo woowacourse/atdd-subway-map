@@ -1,7 +1,5 @@
 package wooteco.subway.domain;
 
-import wooteco.subway.service.dto.SimpleStationDto;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,11 +17,11 @@ public class Sections {
         );
     }
 
-    public Set<SimpleStationDto> toSet() {
-        Set<SimpleStationDto> stations = new HashSet<>();
+    public Set<SimpleStation> toSet() {
+        Set<SimpleStation> stations = new HashSet<>();
         for (Section section : sections) {
-            stations.add(new SimpleStationDto(section.getUpStationId()));
-            stations.add(new SimpleStationDto(section.getDownStationId()));
+            stations.add(new SimpleStation(section.getUpStationId()));
+            stations.add(new SimpleStation(section.getDownStationId()));
         }
         return stations;
     }

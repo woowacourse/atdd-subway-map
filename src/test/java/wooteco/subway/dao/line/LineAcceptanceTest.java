@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.response.LineRetrieveResponse;
 
@@ -18,6 +19,7 @@ import static wooteco.subway.dao.fixture.CommonFixture.*;
 import static wooteco.subway.dao.fixture.DomainFixture.*;
 import static wooteco.subway.dao.fixture.LineAcceptanceTestFixture.*;
 
+@Sql("classpath:tableInit.sql")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LINE_URI = "/lines";
 

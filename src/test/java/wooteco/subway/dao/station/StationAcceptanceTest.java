@@ -1,12 +1,11 @@
 package wooteco.subway.dao.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.response.StationResponse;
 
@@ -20,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wooteco.subway.dao.fixture.CommonFixture.*;
 
 @DisplayName("지하철역 관련 기능")
+@Sql("classpath:tableInit.sql")
 public class StationAcceptanceTest extends AcceptanceTest {
 
     public static final String STATIONS_URI = "/stations";

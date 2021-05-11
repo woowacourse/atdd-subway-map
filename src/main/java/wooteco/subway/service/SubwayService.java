@@ -4,12 +4,10 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.controller.request.SectionInsertRequest;
 import wooteco.subway.controller.response.StationResponse;
 import wooteco.subway.domain.Sections;
-import wooteco.subway.exception.station.StationNotFoundException;
 import wooteco.subway.service.dto.LineDto;
 import wooteco.subway.service.dto.LineWithStationsDto;
-import wooteco.subway.service.dto.SimpleStationDto;
+import wooteco.subway.domain.SimpleStation;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -30,17 +28,16 @@ public class SubwayService {
 
     public LineWithStationsDto findAllInfoByLineId(Long id) {
         final LineDto lineDto = lineService.findById(id);
-        final Sections sections = new Sections(sectionService.findAlByLineId(id));
-        final Set<SimpleStationDto> stations = sections.toSet();
+        final Sections sections = new Sections(sectionService.findAllByLineId(id));
+        final Set<SimpleStation> stations = sections.toSet();
         final List<StationResponse> stationResponses = makeStationResponse(stations);
         return new LineWithStationsDto(lineDto, sortByStationId(stationResponses));
     }
 
     public void insertSectionInLine(Long id, SectionInsertRequest sectionInsertRequest) {
-        // 1. 해당 LineId가 존재하는지 확인한다.
-        // 1-1. 존재하지 않으면 LineNotFoundException 던진다.
-        // 2. 해당 LineId를 가진 모든 섹션을 가져온다.
-        //
+        lineService.isExistById(id);
+        sectionService.checkEndStationsAreIncluded(id, sectionInsertRequest);
+        sectionService.insertSections(id, sectionInsertRequest);
     }
 
     private List<StationResponse> sortByStationId(List<StationResponse> stationResponses) {
@@ -49,7 +46,7 @@ public class SubwayService {
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> makeStationResponse(Set<SimpleStationDto> stations) {
+    private List<StationResponse> makeStationResponse(Set<SimpleStation> stations) {
         return stationService.makeStationResponses(stations);
     }
 

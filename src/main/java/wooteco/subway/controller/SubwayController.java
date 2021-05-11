@@ -29,7 +29,7 @@ public class SubwayController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineRetrieveResponse> insertSectionInLine(@PathVariable Long id, @RequestBody SectionInsertRequest sectionInsertRequest) {
         subwayService.insertSectionInLine(id, sectionInsertRequest);
-        LineRetrieveResponse lineRetrieveResponse = new LineRetrieveResponse();
+        LineRetrieveResponse lineRetrieveResponse = new LineRetrieveResponse(subwayService.findAllInfoByLineId(id));
         return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).body(lineRetrieveResponse);
     }
 }

@@ -1,5 +1,7 @@
 package wooteco.subway.domain;
 
+import wooteco.subway.controller.request.SectionInsertRequest;
+
 public class Section {
     private Long id;
     private Long lineId;
@@ -44,5 +46,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean compareDistance(SectionInsertRequest insertedSection) {
+        return this.distance > insertedSection.getDistance();
     }
 }

@@ -48,6 +48,12 @@ public class LineService {
         return new LineDto(line);
     }
 
+    public void isExistById(Long id) {
+        if (!lineDao.isExistById(id)) {
+            throw new LineNotFoundException();
+        }
+    }
+
     public void updateById(Long id, LineAndSectionCreateRequest lineAndSectionCreateRequest) {
         lineDao.update(id, lineAndSectionCreateRequest.toLine());
     }
