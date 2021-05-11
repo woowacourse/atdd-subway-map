@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import wooteco.subway.section.Section;
 import wooteco.subway.section.SectionDao;
+import wooteco.subway.section.Sections;
 
 import java.sql.PreparedStatement;
 import java.util.Arrays;
@@ -47,10 +48,9 @@ public class LineDao {
 
     public Optional<Line> findById(Long id) {
         String sql = "select id, name, color from LINE where id = ?";
-        List<Section> sections = sectionDao.findSectionsByLineId(id);
         try {
             Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), id);
-            line.setSections(sections);
+            line.setSections(new Sections(sectionDao.findSectionsByLineId(id)));
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -61,7 +61,7 @@ public class LineDao {
         String sql = "select id, name, color from LINE where name = ?";
         try {
             Line line = jdbcTemplate.queryForObject(sql, lineRowMapper(), name);
-            line.setSections(sectionDao.findSectionsByLineId(line.getId()));
+            line.setSections(new Sections(sectionDao.findSectionsByLineId(line.getId())));
             return Optional.ofNullable(line);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -72,8 +72,7 @@ public class LineDao {
         String sql = "select id, name, color from LINE";
         List<Line> lines = jdbcTemplate.query(sql, lineRowMapper());
         for (Line line : lines) {
-            List<Section> sections = sectionDao.findSectionsByLineId(line.getId());
-            line.setSections(sections);
+            line.setSections(new Sections(sectionDao.findSectionsByLineId(line.getId())));
         }
         return lines;
     }

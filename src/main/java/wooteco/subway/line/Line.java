@@ -2,8 +2,8 @@ package wooteco.subway.line;
 
 import wooteco.subway.section.Section;
 import wooteco.subway.section.Sections;
+import wooteco.subway.station.StationResponse;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,12 +11,16 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private List<Section> sections;
+    private Sections sections;
 
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public List<StationResponse> stations() {
+        return sections.sortedStations();
     }
 
     public Long getId() {
@@ -32,10 +36,10 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return sections.getSections();
     }
 
-    public void setSections(final List<Section> sections) {
+    public void setSections(Sections sections) {
         this.sections = sections;
     }
 
