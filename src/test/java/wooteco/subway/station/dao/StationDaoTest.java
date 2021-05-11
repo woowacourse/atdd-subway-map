@@ -13,39 +13,24 @@ import wooteco.subway.station.Station;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql("classpath:initializeTable.sql")
-class StationDaoH2Test {
+class StationDaoTest {
 
     @Autowired
-    private StationDaoH2 stationDao;
-
-    @Test
-    @DisplayName("이름으로 역 세기")
-    public void countByName() {
-        //given
-        String name = "상봉역";
-        Station station1 = new Station(name);
-        stationDao.save(station1);
-
-        //when
-        int number = stationDao.countByName(name);
-
-        //then
-        assertThat(number).isEqualTo(1);
-    }
+    private StationDao stationDao;
 
     @DisplayName("전체 역 반환 테스트")
     @Test
     public void checkAllStation() {
-        //given
+        // given
         Station station1 = new Station("상봉역");
         stationDao.save(station1);
         Station station2 = new Station("구로디지털단지역");
         stationDao.save(station2);
 
-        //when
+        // when
         List<Station> stations = stationDao.showAll();
 
-        //then
+        // then
         assertThat(stations.get(0).getName()).isEqualTo(station1.getName());
         assertThat(stations.get(1).getName()).isEqualTo(station2.getName());
     }
@@ -53,13 +38,13 @@ class StationDaoH2Test {
     @DisplayName("저장 테스트")
     @Test
     public void checkSave() {
-        //given
+        // given
         Station station1 = new Station("상봉역");
 
-        //when
+        // when
         stationDao.save(station1);
 
-        //then
+        // then
         List<Station> stations = stationDao.showAll();
         Station responseStation = stations.get(0);
         assertThat(responseStation.getName()).isEqualTo("상봉역");
@@ -68,26 +53,26 @@ class StationDaoH2Test {
     @DisplayName("삭제 테스트")
     @Test
     public void delete() {
-        //given
+        // given
         Station station1 = new Station("상봉역");
         stationDao.save(station1);
 
-        //when
+        // when
         int deleteCount = stationDao.delete(1);
 
-        //then
+        // then
         assertThat(deleteCount).isEqualTo(1);
     }
 
     @DisplayName("삭제 실패 테스트")
     @Test
     public void deleteVoidStation() {
-        //given
+        // given
 
-        //when
+        // when
         int deleteCount = stationDao.delete(999);
 
-        //then
+        // then
         assertThat(deleteCount).isEqualTo(0);
     }
 }
