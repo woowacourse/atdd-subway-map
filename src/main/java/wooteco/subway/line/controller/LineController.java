@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wooteco.subway.line.domain.Line;
 import wooteco.subway.line.service.LineService;
+import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.service.SectionService;
 
 import java.net.URI;
@@ -42,7 +43,8 @@ public class LineController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         Line line = lineService.findById(id);
-        return ResponseEntity.ok().body(new LineResponse(line.getId(), line.getName().text(), line.getColor().text()));
+        OrderedSections sections = sectionService.findSections(id);
+        return ResponseEntity.ok().body(new LineResponse(line, sections));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

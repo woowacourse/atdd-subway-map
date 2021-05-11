@@ -6,8 +6,8 @@ import wooteco.subway.section.dao.SectionDao;
 import wooteco.subway.section.dao.SectionDto;
 import wooteco.subway.section.domain.OrderedSections;
 import wooteco.subway.section.domain.Section;
-import wooteco.subway.station.service.StationService;
 import wooteco.subway.station.domain.Station;
+import wooteco.subway.station.service.StationService;
 
 import java.util.List;
 
@@ -52,8 +52,10 @@ public class SectionService {
                 .collect(collectingAndThen(toList(), OrderedSections::new));
     }
 
-    public void delete(long stationId) {
+    public void delete(long lineId, long stationId) {
         Station byId = stationService.findById(stationId);
-        stationService.delete(byId);
+        OrderedSections sections = convert(sectionDao.findByLineId(lineId));
+
+        sectionDao.save(lineId, sections.removeSection(byId));
     }
 }
