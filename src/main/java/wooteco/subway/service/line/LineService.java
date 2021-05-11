@@ -7,27 +7,35 @@ import wooteco.subway.controller.dto.request.LineRequest;
 import wooteco.subway.controller.dto.response.LineResponse;
 import wooteco.subway.dao.line.LineDao;
 import wooteco.subway.domain.line.Line;
+import wooteco.subway.domain.section.Section;
+import wooteco.subway.domain.section.Sections;
+import wooteco.subway.repository.LineRepository;
+import wooteco.subway.service.section.SectionService;
 
 @Service
 public class LineService {
 
-    private final LineDao lineDao;
+    private final LineRepository lineRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineDao lineDao) {
-        this.lineDao = lineDao;
+    public LineService(LineRepository lineRepository,
+        SectionService sectionService) {
+        this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        if (lineDao.existsByName(lineRequest.getName())) {
+        if (lineRepository.existsByName(lineRequest.getName())) {
             throw new IllegalArgumentException("이미 존재하는 지하철 노선 이름입니다.");
         }
 
-        Line newLine = lineDao.save(lineRequest.toDomain());
+        Line newLine = lineRepository.save(lineRequest.toLineDomain());
+        sectionService.createSection(lineRequest, newLine.getId());
         return LineResponse.of(newLine);
     }
 
     public List<LineResponse> showLines() {
-        List<Line> lines = lineDao.findAll();
+        List<Line> lines = lineRepository.findAll();
         return lines
             .stream()
             .map(LineResponse::of)
@@ -35,21 +43,22 @@ public class LineService {
     }
 
     public LineResponse showLine(Long id) {
-        Line line = lineDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선입니다."));
-        return LineResponse.of(line);
+        Line line = lineRepository.findById(id);
+        Sections sections = new Sections(sectionService.findByLineId(id));
+        return LineResponse.of(line, sections);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        if (!lineDao.existsById(id)) {
+        if (!lineRepository.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 지하철 노선입니다.");
         }
 
         Line updateLine = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineDao.update(updateLine);
+        lineRepository.update(updateLine);
     }
 
     public void deleteLine(Long id) {
-        lineDao.deleteById(id);
+        sectionService.deleteSectionsByLineId(id);
+        lineRepository.deleteById(id);
     }
 }

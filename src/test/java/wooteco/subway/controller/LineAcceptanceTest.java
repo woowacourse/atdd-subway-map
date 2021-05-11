@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.AcceptanceTest;
 import wooteco.subway.controller.dto.response.LineResponse;
+import wooteco.subway.controller.dto.response.StationResponse;
+import wooteco.subway.domain.station.Station;
 
 @DisplayName("지하철 노선 관련 기능")
 @Transactional
@@ -26,9 +31,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
+        params.put("upStationId", String.valueOf(station1.getId()));
+        params.put("downStationId", String.valueOf(station2.getId()));
+        params.put("distance", "2");
 
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -49,9 +60,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "2호선");
         param1.put("color", "bg-red-600");
+        param1.put("upStationId", String.valueOf(station1.getId()));
+        param1.put("downStationId", String.valueOf(station2.getId()));
+        param1.put("distance", "4");
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(param1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +80,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> param2 = new HashMap<>();
         param2.put("name", "3호선");
         param2.put("color", "bg-red-600");
+        param2.put("upStationId", String.valueOf(station1.getId()));
+        param2.put("downStationId", String.valueOf(station2.getId()));
+        param2.put("distance", "3");
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(param2)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -94,9 +114,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLine() {
         // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "4호선");
         param1.put("color", "bg-blue-600");
+        param1.put("upStationId", String.valueOf(station1.getId()));
+        param1.put("downStationId", String.valueOf(station2.getId()));
+        param1.put("distance", "4");
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(param1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,15 +143,28 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().get("name").toString()).isEqualTo("4호선");
         assertThat(response.body().jsonPath().get("color").toString()).isEqualTo("bg-blue-600");
+        assertThat(response.body().jsonPath().getList("stations", StationResponse.class))
+            .extracting("id", "name")
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(station1.getId(), station1.getName()),
+                Tuple.tuple(station2.getId(), station2.getName())
+            );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "5호선");
         param1.put("color", "bg-blue-600");
+        param1.put("upStationId", String.valueOf(station1.getId()));
+        param1.put("downStationId", String.valueOf(station2.getId()));
+        param1.put("distance", "4");
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(param1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -164,9 +204,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        Station station1 = createTestStation("잠실역");
+        Station station2 = createTestStation("잠실새내역");
+
         Map<String, String> param1 = new HashMap<>();
         param1.put("name", "7호선");
         param1.put("color", "bg-yellow-600");
+        param1.put("upStationId", String.valueOf(station1.getId()));
+        param1.put("downStationId", String.valueOf(station2.getId()));
+        param1.put("distance", "4");
+
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
             .body(param1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -185,5 +232,19 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Station createTestStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all().extract();
+        Long id = response.body().jsonPath().getLong("id");
+        return new Station(id, name);
     }
 }

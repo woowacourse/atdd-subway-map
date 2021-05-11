@@ -42,7 +42,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toDomain() {
+    public Line toLineDomain() {
         return new Line(name, color);
     }
 }
