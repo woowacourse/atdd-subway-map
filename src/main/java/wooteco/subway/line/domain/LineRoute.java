@@ -16,8 +16,15 @@ public class LineRoute {
     private final Deque<Long> upToDownSerializedMap = new ArrayDeque<>();
 
     public LineRoute(List<Section> sectionsByLineId) {
+        validateSectionsIsEmpty(sectionsByLineId);
         createDirectedRoute(sectionsByLineId);
         serializeRoute(sectionsByLineId);
+    }
+
+    private void validateSectionsIsEmpty(List<Section> sectionsByLineId) {
+        if(sectionsByLineId.isEmpty()) {
+            throw new IllegalArgumentException("구간이 등록되지 않은 정상적인 노선이 아닙니다.");
+        }
     }
 
     private void createDirectedRoute(List<Section> sectionsByLineId) {
@@ -28,9 +35,6 @@ public class LineRoute {
     }
 
     private void serializeRoute(List<Section> sectionsByLineId) {
-        if(sectionsByLineId.isEmpty()) {
-            return;
-        }
         Long downStationId = sectionsByLineId.get(0).getDownStationId();
         Long upStationId = sectionsByLineId.get(0).getUpStationId();
         do {
